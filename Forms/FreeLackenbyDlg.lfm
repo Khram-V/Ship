@@ -1,0 +1,631 @@
+object FreeLackenbyDialog: TFreeLackenbyDialog
+  Left = 668
+  Height = 600
+  Top = 229
+  Width = 1000
+  BorderStyle = bsSingle
+  Caption = 'Lackenby hullform transformation.'
+  ClientHeight = 600
+  ClientWidth = 1000
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.6.0'
+  object Splitter2: TSplitter
+    Cursor = crVSplit
+    Left = 0
+    Height = 3
+    Top = 310
+    Width = 1000
+    Align = alTop
+    Color = clRed
+    ParentColor = False
+    ResizeAnchor = akTop
+  end
+  object Panel2: TPanel
+    Left = 0
+    Height = 280
+    Top = 30
+    Width = 1000
+    Align = alTop
+    BevelOuter = bvLowered
+    ClientHeight = 280
+    ClientWidth = 1000
+    TabOrder = 0
+    object Panel5: TPanel
+      Left = 1
+      Height = 278
+      Top = 1
+      Width = 534
+      Align = alLeft
+      AutoSize = True
+      BevelOuter = bvNone
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 1
+      ClientHeight = 278
+      ClientWidth = 534
+      TabOrder = 0
+      object Panel3: TPanel
+        Left = 0
+        Height = 207
+        Top = 0
+        Width = 534
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.TopBottomSpacing = 10
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 2
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 5
+        ClientHeight = 207
+        ClientWidth = 534
+        TabOrder = 0
+        object Label12: TLabel
+          Left = 10
+          Height = 17
+          Top = 10
+          Width = 201
+          ParentColor = False
+        end
+        object Label2: TLabel
+          Left = 217
+          Height = 17
+          Top = 10
+          Width = 80
+          Caption = 'Current'
+          Font.Height = -12
+          Font.Style = [fsBold]
+          Layout = tlCenter
+          ParentColor = False
+          ParentFont = False
+        end
+        object Label3: TLabel
+          Left = 303
+          Height = 17
+          Top = 10
+          Width = 80
+          Caption = 'Desired'
+          Font.Height = -12
+          Font.Style = [fsBold]
+          Layout = tlCenter
+          ParentColor = False
+          ParentFont = False
+        end
+        object Label8: TLabel
+          Left = 389
+          Height = 17
+          Top = 10
+          Width = 80
+          Caption = 'Difference'
+          Font.Height = -12
+          Font.Style = [fsBold]
+          Layout = tlCenter
+          ParentColor = False
+          ParentFont = False
+        end
+        object Label14: TLabel
+          Left = 475
+          Height = 17
+          Top = 10
+          Width = 49
+          ParentColor = False
+        end
+        object Label1: TLabel
+          Left = 10
+          Height = 32
+          Top = 29
+          Width = 201
+          Caption = 'Displacement'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object DisplacementCurrent: TFloatSpinEdit
+          Left = 217
+          Height = 32
+          Top = 29
+          Width = 80
+          Alignment = taRightJustify
+          Constraints.MinWidth = 80
+          DecimalPlaces = 3
+          Enabled = False
+          MinValue = 0
+          ReadOnly = True
+          TabOrder = 0
+          Value = 0
+        end
+        object DisplacementNew: TFloatSpinEdit
+          Left = 303
+          Height = 32
+          Top = 29
+          Width = 80
+          Alignment = taRightJustify
+          Constraints.MinWidth = 80
+          DecimalPlaces = 3
+          Increment = 0.1
+          MinValue = 0
+          OnEditingDone = Input1AfterSetValue
+          TabOrder = 1
+          Value = 0
+        end
+        object DisplacementDiff: TFloatSpinEdit
+          Left = 389
+          Height = 32
+          Top = 29
+          Width = 80
+          Alignment = taRightJustify
+          Constraints.MinWidth = 80
+          DecimalPlaces = 3
+          Enabled = False
+          MinValue = 0
+          ReadOnly = True
+          TabOrder = 2
+          Value = 0
+        end
+        object Label4: TLabel
+          Left = 475
+          Height = 32
+          Top = 29
+          Width = 49
+          Caption = 'Label4'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label5: TLabel
+          Left = 10
+          Height = 32
+          Top = 63
+          Width = 201
+          Caption = 'Block coefficient'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object BlockCoeffCurrent: TFloatSpinEdit
+          Left = 217
+          Height = 32
+          Top = 63
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 4
+          Enabled = False
+          MinValue = 0
+          ReadOnly = True
+          TabOrder = 3
+          Value = 0
+        end
+        object BlockCoeffNew: TFloatSpinEdit
+          Left = 303
+          Height = 32
+          Top = 63
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 4
+          Increment = 0.01
+          MinValue = 0
+          OnEditingDone = Input2AfterSetValue
+          TabOrder = 4
+          Value = 0
+        end
+        object BlockCoeffDiff: TFloatSpinEdit
+          Left = 389
+          Height = 32
+          Top = 63
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 4
+          Enabled = False
+          MinValue = 0
+          ReadOnly = True
+          TabOrder = 5
+          Value = 0
+        end
+        object Label16: TLabel
+          Left = 475
+          Height = 32
+          Top = 63
+          Width = 49
+          ParentColor = False
+        end
+        object Label7: TLabel
+          Left = 10
+          Height = 32
+          Top = 97
+          Width = 201
+          Caption = 'Prismatic coefficient'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object PrismCoeffCurrent: TFloatSpinEdit
+          Left = 217
+          Height = 32
+          Top = 97
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 4
+          Enabled = False
+          MinValue = 0
+          ReadOnly = True
+          TabOrder = 6
+          Value = 0
+        end
+        object PrismCoeffNew: TFloatSpinEdit
+          Left = 303
+          Height = 32
+          Top = 97
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 4
+          Increment = 0.01
+          MinValue = 0
+          OnEditingDone = Input3AfterSetValue
+          TabOrder = 7
+          Value = 0
+        end
+        object PrismCoeffDiff: TFloatSpinEdit
+          Left = 389
+          Height = 32
+          Top = 97
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 4
+          Enabled = False
+          MinValue = 0
+          ReadOnly = True
+          TabOrder = 8
+          Value = 0
+        end
+        object Label17: TLabel
+          Left = 475
+          Height = 32
+          Top = 97
+          Width = 49
+          ParentColor = False
+        end
+        object Label6: TLabel
+          Left = 10
+          Height = 32
+          Top = 131
+          Width = 201
+          Caption = 'Long. center of buoyancy'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object LongCoBCurrent: TFloatSpinEdit
+          Left = 217
+          Height = 32
+          Top = 131
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 3
+          Enabled = False
+          MinValue = 0
+          ReadOnly = True
+          TabOrder = 9
+          Value = 0
+        end
+        object LongCoBNew: TFloatSpinEdit
+          Left = 303
+          Height = 32
+          Top = 131
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 3
+          Increment = 0.1
+          MinValue = 0
+          TabOrder = 10
+          Value = 0
+        end
+        object LongCoBDiff: TFloatSpinEdit
+          Left = 389
+          Height = 32
+          Top = 131
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 3
+          Enabled = False
+          MinValue = 0
+          ReadOnly = True
+          TabOrder = 11
+          Value = 0
+        end
+        object Label9: TLabel
+          Left = 475
+          Height = 32
+          Top = 131
+          Width = 49
+          Caption = 'Label9'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label10: TLabel
+          Left = 10
+          Height = 32
+          Top = 165
+          Width = 201
+          Caption = 'Maximum no. of iterations'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object IterationBox: TSpinEdit
+          Left = 217
+          Height = 32
+          Top = 165
+          Width = 80
+          Alignment = taRightJustify
+          MaxValue = 50
+          TabOrder = 12
+          Value = 15
+        end
+      end
+      object Panel7: TPanel
+        Left = 0
+        Height = 24
+        Top = 207
+        Width = 534
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 1
+        ClientHeight = 24
+        ClientWidth = 534
+        TabOrder = 1
+        object CheckBox1: TCheckBox
+          Left = 10
+          Height = 24
+          Top = 0
+          Width = 231
+          Alignment = taLeftJustify
+          Caption = 'Redraw after each iteration'
+          Checked = True
+          State = cbChecked
+          TabOrder = 0
+        end
+      end
+      object Panel6: TPanel
+        Left = 0
+        Height = 106
+        Top = 231
+        Width = 534
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.TopBottomSpacing = 10
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 10
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 106
+        ClientWidth = 534
+        TabOrder = 2
+        object Label11: TLabel
+          Left = 10
+          Height = 22
+          Top = 10
+          Width = 186
+          Caption = 'Prismatic coeff. aftship'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object _Label12: TLabel
+          Left = 202
+          Height = 22
+          Top = 10
+          Width = 65
+          Caption = '_Label12'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label13: TLabel
+          Left = 10
+          Height = 22
+          Top = 42
+          Width = 186
+          Caption = 'Prismatic coeff. foreship'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object _Label14: TLabel
+          Left = 202
+          Height = 22
+          Top = 42
+          Width = 65
+          Caption = 'Label12'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label15: TLabel
+          Left = 10
+          Height = 22
+          Top = 74
+          Width = 186
+          Caption = 'Maximum displacement'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object _Label16: TLabel
+          Left = 202
+          Height = 22
+          Top = 74
+          Width = 65
+          Caption = 'Label12'
+          Layout = tlCenter
+          ParentColor = False
+        end
+      end
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 30
+    Top = 0
+    Width = 1000
+    Align = alTop
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 30
+    ClientWidth = 1000
+    Constraints.MinWidth = 60
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 1
+    object Button1: TSpeedButton
+      Left = 4
+      Height = 26
+      Hint = 'Start the hullform transformation.'
+      Top = 2
+      Width = 105
+      Align = alLeft
+      AutoSize = True
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 2
+      BorderSpacing.Right = 4
+      BorderSpacing.Bottom = 2
+      Constraints.MinWidth = 60
+      Caption = 'Transform'
+      Flat = True
+      Glyph.Data = {
+        F6000000424DF600000000000000760000002800000010000000100000000100
+        04000000000080000000130B0000130B00001000000000000000000000000000
+        800000800000008080008000000080008000808000007F7F7F00BFBFBF000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00337000000000
+        7333330888888888033333080808999803333308888888880333330808080808
+        0333330888888888033333080808080803333308888888880333330808080808
+        0333330888888888033333080000000803333308000E0E080333330800000008
+        0333330888888888033333088888888803333370000000007333
+      }
+      OnClick = Button1Click
+      ShowHint = True
+      ParentShowHint = False
+    end
+    object SpeedButton1: TSpeedButton
+      Left = 832
+      Height = 26
+      Top = 2
+      Width = 80
+      Align = alRight
+      AutoSize = True
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 2
+      BorderSpacing.Right = 4
+      BorderSpacing.Bottom = 2
+      Constraints.MinWidth = 80
+      Caption = 'OK'
+      Flat = True
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        00000000000000000000000000000EA628FF0EA628FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000EA628FF0EA628FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000EA628FF0EA628FF0EA628FF000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        000000000000000000000EA628FF0EA628FF0EA628FF0EA628FF000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        000000000000000000000EA628FF0EA628FF0EA628FF0EA628FF000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA6
+        28FF000000000000000000000000000000000000000000000000000000000000
+        00000EA628FF0EA628FF0EA628FF00000000000000000EA628FF0EA628FF0EA6
+        28FF000000000000000000000000000000000000000000000000000000000000
+        000000000000000000000000000000000000000000000EA628FF0EA628FF0EA6
+        28FF0EA628FF0000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000000000000000000000000000EA628FF0EA6
+        28FF0EA628FF0EA628FF00000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000EA6
+        28FF0EA628FF0EA628FF00000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000EA6
+        28FF0EA628FF0EA628FF0EA628FF000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000EA628FF0EA628FF0EA628FF0EA628FF0000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000EA628FF0EA628FF0EA628FF0000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000EA628FF0EA628FF0EA628FF0000000000000000
+      }
+      OnClick = BitBtn1Click
+    end
+    object BitBtn2: TSpeedButton
+      Left = 916
+      Height = 26
+      Top = 2
+      Width = 80
+      Align = alRight
+      AutoSize = True
+      BorderSpacing.Left = 4
+      BorderSpacing.Top = 2
+      BorderSpacing.Right = 4
+      BorderSpacing.Bottom = 2
+      Constraints.MinWidth = 80
+      Caption = 'Cancel'
+      Flat = True
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF00000000000000000000000000000000000000000000
+        00002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000000000000000000000002110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF00000000000000002110
+        C0FF2110C0FF2110C0FF2110C0FF000000000000000000000000000000000000
+        00002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF000000002110C0FF2110
+        C0FF2110C0FF2110C0FF00000000000000000000000000000000000000002110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF00000000000000000000000000000000000000002110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF000000000000000000000000000000002110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF0000000000000000000000002110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF00000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF00000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF0000000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000
+        00000000000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF000000000000
+        00000000000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF00000000000000000000
+        000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF000000002110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000000000000000000000000000
+        0000000000002110C0FF2110C0FF2110C0FF2110C0FF00000000000000002110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF00000000000000000000
+        00002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000000000000000000000000000
+        000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF00000000000000000000000000000000
+      }
+      OnClick = BitBtn2Click
+    end
+  end
+  object Panel4: TPanel
+    Left = 0
+    Height = 287
+    Top = 313
+    Width = 1000
+    Align = alClient
+    BevelOuter = bvNone
+    Caption = 'Panel4'
+    ClientHeight = 287
+    ClientWidth = 1000
+    TabOrder = 2
+    object Splitter1: TSplitter
+      Left = 163
+      Height = 287
+      Top = 0
+      Width = 5
+      Color = clRed
+      ParentColor = False
+    end
+    object LayerBox: TCheckListBox
+      Left = 0
+      Height = 287
+      Top = 0
+      Width = 163
+      Align = alLeft
+      ItemHeight = 0
+      TabOrder = 0
+      TopIndex = -1
+    end
+  end
+end

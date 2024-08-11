@@ -1,0 +1,779 @@
+object FreeLayerDialog: TFreeLayerDialog
+  Left = 614
+  Height = 727
+  Top = 245
+  Width = 800
+  BorderIcons = []
+  Caption = 'Layer properties.'
+  ClientHeight = 727
+  ClientWidth = 800
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.8.0'
+  object Panel1: TPanel
+    Left = 0
+    Height = 703
+    Top = 24
+    Width = 800
+    Align = alClient
+    BevelOuter = bvNone
+    BorderWidth = 6
+    ClientHeight = 703
+    ClientWidth = 800
+    TabOrder = 0
+    object Panel2: TPanel
+      Left = 456
+      Height = 691
+      Top = 6
+      Width = 338
+      Align = alRight
+      AutoSize = True
+      BevelOuter = bvNone
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 1
+      ClientHeight = 691
+      ClientWidth = 338
+      TabOrder = 0
+      object Panel4: TPanel
+        Left = 0
+        Height = 113
+        Top = 0
+        Width = 338
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 2
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 113
+        ClientWidth = 338
+        TabOrder = 0
+        object Label1: TLabel
+          Left = 10
+          Height = 36
+          Top = 0
+          Width = 119
+          Caption = 'Name'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Edit1: TEdit
+          Left = 135
+          Height = 36
+          Top = 0
+          Width = 150
+          OnChange = Edit1Change
+          TabOrder = 0
+        end
+        object Label2: TLabel
+          Left = 10
+          Height = 26
+          Top = 38
+          Width = 119
+          Caption = 'Color'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Panel5: TPanel
+          Left = 135
+          Height = 26
+          Top = 38
+          Width = 150
+          AutoSize = True
+          BevelOuter = bvNone
+          ClientHeight = 26
+          ClientWidth = 150
+          TabOrder = 1
+          object Panel3: TPanel
+            Left = 0
+            Height = 26
+            Top = 0
+            Width = 40
+            Align = alLeft
+            BevelOuter = bvLowered
+            Constraints.MinHeight = 20
+            TabOrder = 0
+            OnClick = Panel3Click
+          end
+        end
+        object Label4: TLabel
+          Left = 10
+          Height = 47
+          Top = 66
+          Width = 119
+          Caption = 'Transparency'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object AlphaBar: TTrackBar
+          Left = 135
+          Height = 47
+          Top = 66
+          Width = 150
+          Max = 100
+          OnChange = AlphaBarChange
+          Position = 0
+          ScalePos = trRight
+          Constraints.MinWidth = 150
+          TabOrder = 2
+        end
+      end
+      object Panel6: TPanel
+        Left = 0
+        Height = 208
+        Top = 113
+        Width = 338
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.VerticalSpacing = 2
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 1
+        ClientHeight = 208
+        ClientWidth = 338
+        TabOrder = 1
+        object CheckBox3: TCheckBox
+          Left = 10
+          Height = 28
+          Top = 0
+          Width = 283
+          Caption = 'Use for hydrostatics'
+          OnClick = CheckBox3Click
+          TabOrder = 0
+        end
+        object CheckBox5: TCheckBox
+          Left = 10
+          Height = 28
+          Top = 30
+          Width = 283
+          Caption = 'Symmetric'
+          OnClick = CheckBox5Click
+          TabOrder = 1
+        end
+        object CheckBox2: TCheckBox
+          Left = 10
+          Height = 28
+          Top = 60
+          Width = 283
+          Caption = 'Intersection curves'
+          OnClick = CheckBox2Click
+          TabOrder = 2
+        end
+        object CheckBox1: TCheckBox
+          Left = 10
+          Height = 28
+          Top = 90
+          Width = 283
+          Caption = 'Developable'
+          OnClick = CheckBox1Click
+          TabOrder = 3
+        end
+        object CheckBox4: TCheckBox
+          Left = 10
+          Height = 28
+          Top = 120
+          Width = 283
+          Caption = 'Show in linesplan'
+          OnClick = CheckBox4Click
+          TabOrder = 4
+        end
+        object CheckBox6: TCheckBox
+          Left = 10
+          Height = 28
+          Top = 150
+          Width = 283
+          Caption = 'Set weigth and CoG manually'
+          OnClick = CheckBox3Click
+          TabOrder = 5
+        end
+        object cbControlNetVisible: TCheckBox
+          Left = 10
+          Height = 28
+          Top = 180
+          Width = 283
+          Caption = 'Control Net Visible'
+          OnClick = cbControlNetVisibleClick
+          TabOrder = 6
+        end
+      end
+      object Panel7: TPanel
+        Left = 0
+        Height = 132
+        Top = 321
+        Width = 338
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.TopBottomSpacing = 10
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 2
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 3
+        ClientHeight = 132
+        ClientWidth = 338
+        TabOrder = 2
+        object Label3: TLabel
+          Left = 10
+          Height = 36
+          Top = 10
+          Width = 132
+          Caption = 'Specific weight'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Edit2: TFloatSpinEdit
+          Left = 148
+          Height = 36
+          Top = 10
+          Width = 80
+          Alignment = taRightJustify
+          AutoSize = False
+          Constraints.MinWidth = 80
+          DecimalPlaces = 3
+          MaxValue = 100000
+          MinValue = 0
+          OnExit = Edit2Exit
+          OnKeyPress = Edit2KeyPress
+          TabOrder = 0
+          Value = 0
+        end
+        object _Label4: TLabel
+          Left = 234
+          Height = 36
+          Top = 10
+          Width = 65
+          Caption = '[t/m^3]'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label5: TLabel
+          Left = 10
+          Height = 36
+          Top = 48
+          Width = 132
+          Caption = 'Thickness'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Edit3: TFloatSpinEdit
+          Left = 148
+          Height = 36
+          Top = 48
+          Width = 80
+          Alignment = taRightJustify
+          AutoSize = False
+          MaxValue = 10000
+          MinValue = 0
+          OnExit = Edit3Exit
+          OnKeyPress = Edit3KeyPress
+          TabOrder = 1
+          Value = 0
+        end
+        object _Label6: TLabel
+          Left = 234
+          Height = 36
+          Top = 48
+          Width = 65
+          Caption = '[mm]'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label6_: TLabel
+          Left = 10
+          Height = 36
+          Top = 86
+          Width = 132
+          Caption = 'Weight'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object WeightBox: TFloatSpinEdit
+          Left = 148
+          Height = 36
+          Top = 86
+          Width = 80
+          Alignment = taRightJustify
+          DecimalPlaces = 3
+          MaxValue = 500000
+          MinValue = 0
+          TabOrder = 2
+          Value = 0
+        end
+        object Label6_0: TLabel
+          Left = 234
+          Height = 36
+          Top = 86
+          Width = 65
+          Caption = '[t]'
+          Layout = tlCenter
+          ParentColor = False
+        end
+      end
+      object Panel8: TPanel
+        Left = 0
+        Height = 30
+        Top = 463
+        Width = 338
+        BorderSpacing.Top = 10
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.TopBottomSpacing = 2
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 2
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 30
+        ClientWidth = 338
+        TabOrder = 3
+        object Label6_1: TLabel
+          Left = 10
+          Height = 26
+          Top = 2
+          Width = 257
+          Caption = 'Coordinates center of gravity'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label6_1_: TLabel
+          Left = 273
+          Height = 26
+          Top = 2
+          Width = 29
+          Caption = '[m]'
+          Layout = tlCenter
+          ParentColor = False
+        end
+      end
+      object Panel9: TPanel
+        Left = 0
+        Height = 36
+        Top = 493
+        Width = 338
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 2
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 6
+        ClientHeight = 36
+        ClientWidth = 338
+        TabOrder = 4
+        object Label6_2: TLabel
+          Left = 10
+          Height = 36
+          Top = 0
+          Width = 16
+          Caption = 'X:'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object XgBox: TFloatSpinEdit
+          Left = 32
+          Height = 36
+          Top = 0
+          Width = 80
+          Alignment = taRightJustify
+          Constraints.MinWidth = 80
+          DecimalPlaces = 3
+          MaxValue = 550
+          MinValue = 0
+          TabOrder = 0
+          Value = 0
+        end
+        object Label6_3: TLabel
+          Left = 118
+          Height = 36
+          Top = 0
+          Width = 16
+          Caption = 'Y:'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object YgBox: TFloatSpinEdit
+          Left = 140
+          Height = 36
+          Top = 0
+          Width = 80
+          Alignment = taRightJustify
+          Constraints.MinWidth = 80
+          DecimalPlaces = 3
+          MinValue = 0
+          TabOrder = 1
+          Value = 0
+        end
+        object Label6_4: TLabel
+          Left = 226
+          Height = 36
+          Top = 0
+          Width = 16
+          Caption = 'Z:'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object ZgBox: TFloatSpinEdit
+          Left = 248
+          Height = 36
+          Top = 0
+          Width = 80
+          Alignment = taRightJustify
+          Constraints.MinWidth = 80
+          DecimalPlaces = 3
+          MaxValue = 35
+          MinValue = 0
+          TabOrder = 2
+          Value = 0
+        end
+      end
+      object GroupBox1: TGroupBox
+        Left = 0
+        Height = 138
+        Top = 539
+        Width = 338
+        BorderSpacing.Top = 10
+        Caption = 'Surface properties. '
+        ChildSizing.LeftRightSpacing = 10
+        ChildSizing.TopBottomSpacing = 8
+        ChildSizing.HorizontalSpacing = 6
+        ChildSizing.VerticalSpacing = 8
+        ChildSizing.Layout = cclTopToBottomThenLeftToRight
+        ChildSizing.ControlsPerLine = 3
+        ClientHeight = 110
+        ClientWidth = 334
+        TabOrder = 5
+        object Label7: TLabel
+          Left = 10
+          Height = 26
+          Top = 8
+          Width = 148
+          Alignment = taRightJustify
+          Caption = 'Area'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label8: TLabel
+          Left = 10
+          Height = 26
+          Top = 42
+          Width = 148
+          Alignment = taRightJustify
+          Caption = 'Weight'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label9: TLabel
+          Left = 10
+          Height = 26
+          Top = 76
+          Width = 148
+          Alignment = taRightJustify
+          Caption = 'Center of gravity'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object _Label10: TLabel
+          Left = 164
+          Height = 26
+          Top = 8
+          Width = 12
+          Caption = '--'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object _Label11: TLabel
+          Left = 164
+          Height = 26
+          Top = 42
+          Width = 12
+          Caption = '--'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object _Label12: TLabel
+          Left = 164
+          Height = 26
+          Top = 76
+          Width = 12
+          Caption = '--'
+          Layout = tlCenter
+          ParentColor = False
+        end
+      end
+    end
+    object LayerBox: TCheckListBox
+      Left = 6
+      Height = 691
+      Top = 6
+      Width = 450
+      Align = alClient
+      ItemHeight = 0
+      OnClick = LayerBoxClick
+      OnClickCheck = LayerBoxClickCheck
+      OnDblClick = LayerBoxDblClick
+      OnItemClick = LayerBoxItemClick
+      OnSelectionChange = LayerBoxSelectionChange
+      TabOrder = 1
+      TopIndex = -1
+    end
+  end
+  object ToolBar1: TToolBar
+    Left = 0
+    Height = 24
+    Top = 0
+    Width = 800
+    AutoSize = True
+    Caption = 'ToolBar1'
+    Color = clForm
+    Images = MenuImages
+    Indent = 5
+    ParentColor = False
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 1
+    object ToolButton20: TToolButton
+      Left = 5
+      Hint = 'Create a new empty layer.'
+      Top = 2
+      ImageIndex = 1
+      OnClick = ToolButton20Click
+    end
+    object ToolButton3: TToolButton
+      Left = 28
+      Hint = 'Remove all empty layers from the model.'
+      Top = 2
+      Caption = 'ToolButton3'
+      ImageIndex = 2
+      OnClick = ToolButton3Click
+    end
+    object _ToolButton2: TToolButton
+      Left = 51
+      Height = 22
+      Top = 2
+      Caption = '_ToolButton2'
+      ImageIndex = 1
+      Style = tbsSeparator
+    end
+    object MoveUp: TToolButton
+      Left = 59
+      Hint = 'Move the layer up in the list.'
+      Top = 2
+      Caption = 'Up'
+      ImageIndex = 3
+      OnClick = MoveUpClick
+    end
+    object MoveDown: TToolButton
+      Left = 82
+      Hint = 'Move the layer down in the list.'
+      Top = 2
+      Caption = 'Down'
+      ImageIndex = 4
+      OnClick = MoveDownClick
+    end
+    object _ToolButton4: TToolButton
+      Left = 105
+      Height = 22
+      Top = 2
+      Caption = '_ToolButton4'
+      ImageIndex = 1
+      Style = tbsSeparator
+    end
+    object ToolButton1: TToolButton
+      Left = 113
+      Hint = 'Close this window.'
+      Top = 2
+      Caption = 'Done'
+      ImageIndex = 0
+      OnClick = ToolButton1Click
+    end
+  end
+  object MenuImages: TImageList
+    left = 56
+    top = 40
+    Bitmap = {
+      4C690500000010000000100000000000000000000000000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FFFFFF
+      00FFFFFF00FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FFFFFF
+      00FF000084FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF00FFFFFF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF000000FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF000084FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF0000
+      84FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000084FF00FF
+      FFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF0000
+      00FF0000000000000000000000000000000000000000000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000000000000000000000BF0000FF0000000000000000000000000000
+      00000000000000000000BF0000FF000000000000000000000000000000000000
+      00000000000000000000BF0000FF00000000BF0000FF00000000000000000000
+      00000000000000000000BF0000FF000000000000000000000000000000000000
+      000000000000BF0000FF0000000000000000565600FF565600FF565600FF5656
+      00FF565600FF565600FF565600FF565600FF565600FF565600FF565600FF5656
+      00FF565600FF6B6B17FF0000000000000000E1E143FFC0C000FFC0C000FFC0C0
+      00FFC0C000FFC0C000FFC0C000FFC0C000FFC0C000FFC0C000FFC0C000FFCFCF
+      0FFFEAEA2BFFFBFB3CFF0000000000000000FEFE7DFFE3E346FFC3C305FFC0C0
+      00FFC0C000FFC0C000FFC0C000FFC0C000FFC4C404FFC8C808FFF3F334FFFBFB
+      3CFFFFFF40FFE9E93BFF0000000000000000D2D274FFFFFF80FFE4E448FFD3D3
+      26FFC0C000FFC0C000FFC0C000FFD6D616FFE8E829FFFFFF40FFFFFF40FFE3E3
+      39FFAAAA2BFF26260AFF0000000000000000636356FFCACA72FFFFFF80FFFCFC
+      7AFFE4E448FFE4E434FFE4E424FFFFFF40FFFFFF40FFFFFF40FF818121FF4C4C
+      13FF000000FF000000FF00000000BF0000FF515151FF636356FFD2D274FFFFFF
+      80FFFFFF80FFFFFF5DFFFFFF40FFFFFF40FFA7A72AFF39390FFF000000FF0000
+      00FF000000FF009B9BFFBF0000FF00000000ADE1E1FF5F6767FF515151FF6161
+      56FFD9D976FF000000FF000000FF000000FF000000FF000000FF003333FF007B
+      7BFF00FFFFFF00FFFFFF0000000000000000C0FFFFFFA5D5D5FF626B6BFF5151
+      51FF515151FF242424FF000000FF000000FF003333FF007272FF00F0F0FF00FF
+      FFFF00FFFFFF00A7A7FF00000000000000005D7B7BFFC0FFFFFFA8D9D9FF93B8
+      B8FF515151FF242424FF000000FF00AAAAFF00D0D0FF00FFFFFF00FFFFFF00C7
+      C7FF005656FF00000000000000000000000000000000587474FFB9F6F6FFBFFD
+      FDFFB4ECECFF50E8E8FF00E4E4FF00FFFFFF00F3F3FF00E3E3FF003232FF0000
+      0000000000000000000000000000000000000000000000000000567171FF88B4
+      B4FFC0FFFFFF56FFFFFF00FFFFFF00AAAAFF005F5FFF0000000000000000BF00
+      00FF0000000000000000000000000000000000000000BF0000FF000000000000
+      0000567272FF267272FF007272FF000000000000000000000000000000000000
+      0000BF0000FF000000000000000000000000BF0000FF00000000000000000000
+      00000000000000000000BF0000FF000000000000000000000000000000000000
+      000000000000BF0000FF00000000BF0000FF0000000000000000000000000000
+      00000000000000000000BF0000FF000000000000000000000000000000000000
+      00000000000000000000BF0000FF000000000000000000000000000000000000
+      0000000000FF0000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00FF30320DFF000000FF00000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000FF3032
+      0DFF525868FF978B96FF000000FF000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000000000FF30320DFF5258
+      68FF978B96FFF7C2B8FFFFFFFFFF000000FF0000000000000000000000000000
+      000000000000000000000000000000000000000000FF30320DFF525868FF978B
+      96FFF7C2B8FFFFFFFFFFF7C2B8FF978B96FF000000FF00000000000000000000
+      000000000000000000000C0C0CFF000000FF30320DFF525868FF978B96FFF7C2
+      B8FFFFFFFFFFF7C2B8FF978B96FFF7C2B8FF978B96FF000000FF000000000000
+      000000000000161616FF168686FF000000FF525868FF978B96FFF7C2B8FFFFFF
+      FFFFF7C2B8FF978B96FFF7C2B8FF978B96FF525868FF30320DFF000000FF0000
+      0000161616FF168686FF00FFFFFF000000FF978B96FFF7C2B8FFFFFFFFFFF7C2
+      B8FF978B96FFF7C2B8FF978B96FF525868FF30320DFF000000FF000000000000
+      00FF168686FF00FFFFFF007F7FFF000000FFF7C2B8FFFFFFFFFFF7C2B8FF978B
+      96FFF7C2B8FF978B96FF525868FF30320DFF000000FF00000000000000FFBFBF
+      BFFF000000FF007F7FFF007F7FFF000000FFFFFFFFFFF7C2B8FF978B96FFF7C2
+      B8FF978B96FF525868FF30320DFF000000FF00000000000000FFBFBFBFFFFFFF
+      FFFFFFFFFFFF000000FF007F7FFF00000000000000FF978B96FFF7C2B8FF978B
+      96FF525868FF30320DFF000000FF00000000000000FF913791FF000000FFFFFF
+      FFFFBFBFBFFF949494FF0C0C0CFF0000000000000000000000FF978B96FF5258
+      68FF30320DFF000000FF00000000000000FFA97DA9FFFFFFFFFF7F007FFF0000
+      00FF9F9F9FFF000000FF00000000000000000000000000000000000000FF3032
+      0DFF000000FF00000000000000FFA97DA9FFFFFFFFFF7F007FFF7F007FFF830C
+      83FF000000FF0000000000000000000000000000000000000000000000000000
+      00FF0000000000000000000000FFF02DF0FF7F007FFF7F007FFF830C83FF0C0C
+      0CFF000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000C0C0CFF830C83FF830C83FF0C0C0CFF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000FF000000FF000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000FF000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000FF000000FF000000FF000000FF000000FF00000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000000000
+      0000000000000000000000000000000000000000000000000000000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00000000000000000000000000000000000000000000000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      00000000000000000000000000000000000000000000000000FF000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      00FF000000000000000000000000000000000000000000000000000000FF0000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000FF0000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00FF000000FF000000FF000000FF000000FF000000FF000000FF000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000FF000000FF000000FF000000FF000000FF00000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000FF000000FF000000FF0000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000FF000000000000000000000000000000000000
+      0000000000000000000000000000
+    }
+  end
+  object ColorDialog: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    left = 48
+    top = 120
+  end
+end

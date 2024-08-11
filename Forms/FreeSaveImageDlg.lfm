@@ -1,0 +1,317 @@
+object SaveImageDialog: TSaveImageDialog
+  Left = 573
+  Height = 250
+  Top = 453
+  Width = 500
+  BorderStyle = bsDialog
+  Caption = 'Save image.'
+  ClientHeight = 250
+  ClientWidth = 500
+  DesignTimePPI = 120
+  OnCreate = FormCreate
+  Position = poOwnerFormCenter
+  LCLVersion = '2.0.0.4'
+  object Panel2: TPanel
+    Left = 0
+    Height = 222
+    Top = 28
+    Width = 500
+    Align = alClient
+    BorderSpacing.InnerBorder = 12
+    BevelOuter = bvNone
+    ChildSizing.TopBottomSpacing = 10
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 1
+    ClientHeight = 222
+    ClientWidth = 500
+    ParentFont = False
+    TabOrder = 0
+    object Panel1: TPanel
+      Left = 0
+      Height = 28
+      Top = 10
+      Width = 500
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 28
+      ClientWidth = 500
+      ParentFont = False
+      TabOrder = 0
+      object Edit3: TEdit
+        Left = 80
+        Height = 28
+        Top = 0
+        Width = 388
+        Align = alClient
+        BorderSpacing.Left = 8
+        ParentFont = False
+        TabOrder = 0
+        Text = 'Edit3'
+      end
+      object SpeedButton1: TSpeedButton
+        Left = 468
+        Height = 28
+        Top = 0
+        Width = 20
+        Align = alRight
+        AutoSize = True
+        BorderSpacing.Right = 12
+        Glyph.Data = {
+          F6000000424DF600000000000000760000002800000010000000100000000100
+          04000000000080000000130B0000130B00001000000010000000000000000084
+          8400FF00FF0000FFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+          FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00222222222222
+          2222222222222222222200000000000222220011111111102222030111111111
+          0222043011111111102203430111111111020434300000000000034343434302
+          2222043434343402222203430000000222222000222222220002222222222222
+          2002222222220222020222222222200022222222222222222222
+        }
+        OnClick = SpeedButton1Click
+        ParentFont = False
+      end
+      object Label7: TLabel
+        Left = 12
+        Height = 28
+        Top = 0
+        Width = 60
+        Align = alLeft
+        BorderSpacing.Left = 12
+        Caption = 'Filename'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+    end
+    object Panel3: TPanel
+      Left = 0
+      Height = 108
+      Top = 38
+      Width = 500
+      BevelOuter = bvNone
+      ChildSizing.LeftRightSpacing = 10
+      ChildSizing.TopBottomSpacing = 10
+      ChildSizing.HorizontalSpacing = 6
+      ChildSizing.VerticalSpacing = 2
+      ChildSizing.Layout = cclTopToBottomThenLeftToRight
+      ChildSizing.ControlsPerLine = 3
+      ClientHeight = 108
+      ClientWidth = 500
+      ParentFont = False
+      TabOrder = 1
+      object Label1: TLabel
+        Left = 10
+        Height = 28
+        Top = 10
+        Width = 95
+        Caption = 'Width'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label2: TLabel
+        Left = 10
+        Height = 28
+        Top = 40
+        Width = 95
+        Caption = 'Height'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label4: TLabel
+        Left = 10
+        Height = 28
+        Top = 70
+        Width = 95
+        Caption = 'Estimated size'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object SpinEdit1: TSpinEdit
+        Left = 111
+        Height = 28
+        Top = 10
+        Width = 100
+        Constraints.MinWidth = 100
+        MaxValue = 100000
+        MinValue = 1
+        OnChange = SpinEdit1Change
+        ParentFont = False
+        TabOrder = 0
+        Value = 1
+      end
+      object SpinEdit2: TSpinEdit
+        Left = 111
+        Height = 28
+        Top = 40
+        Width = 100
+        Constraints.MinWidth = 100
+        MaxValue = 100000
+        MinValue = 1
+        OnChange = SpinEdit2Change
+        ParentFont = False
+        TabOrder = 1
+        Value = 1
+      end
+      object FloatSpinEdit1: TFloatSpinEdit
+        Left = 111
+        Height = 28
+        Top = 70
+        Width = 100
+        MinValue = 0
+        ParentFont = False
+        TabOrder = 2
+        Value = 0
+      end
+      object Label6: TLabel
+        Left = 217
+        Height = 28
+        Top = 10
+        Width = 48
+        Caption = '[pixels]'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label3: TLabel
+        Left = 217
+        Height = 28
+        Top = 40
+        Width = 48
+        Caption = '[pixels]'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+      object Label5: TLabel
+        Left = 217
+        Height = 28
+        Top = 70
+        Width = 48
+        Caption = 'KB'
+        Layout = tlCenter
+        ParentColor = False
+        ParentFont = False
+      end
+    end
+  end
+  object Panel4: TPanel
+    Left = 0
+    Height = 28
+    Top = 0
+    Width = 500
+    Align = alTop
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 28
+    ClientWidth = 500
+    ParentFont = False
+    TabOrder = 1
+    object BitBtn1: TSpeedButton
+      Left = 296
+      Height = 24
+      Top = 2
+      Width = 100
+      Align = alRight
+      AutoSize = True
+      BorderSpacing.Around = 2
+      Constraints.MinWidth = 100
+      Caption = 'OK'
+      Flat = True
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        00000000000000000000000000000EA628FF0EA628FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000EA628FF0EA628FF00000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000EA628FF0EA628FF0EA628FF000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        000000000000000000000EA628FF0EA628FF0EA628FF0EA628FF000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        000000000000000000000EA628FF0EA628FF0EA628FF0EA628FF000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA6
+        28FF000000000000000000000000000000000000000000000000000000000000
+        00000EA628FF0EA628FF0EA628FF00000000000000000EA628FF0EA628FF0EA6
+        28FF000000000000000000000000000000000000000000000000000000000000
+        000000000000000000000000000000000000000000000EA628FF0EA628FF0EA6
+        28FF0EA628FF0000000000000000000000000000000000000000000000000000
+        00000000000000000000000000000000000000000000000000000EA628FF0EA6
+        28FF0EA628FF0EA628FF00000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000EA6
+        28FF0EA628FF0EA628FF00000000000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000EA6
+        28FF0EA628FF0EA628FF0EA628FF000000000000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        00000EA628FF0EA628FF0EA628FF0EA628FF0000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000EA628FF0EA628FF0EA628FF0000000000000000000000000000
+        0000000000000000000000000000000000000000000000000000000000000000
+        0000000000000EA628FF0EA628FF0EA628FF0000000000000000
+      }
+      OnClick = BitBtn1Click
+      ParentFont = False
+    end
+    object BitBtn2: TSpeedButton
+      Left = 398
+      Height = 24
+      Top = 2
+      Width = 100
+      Align = alRight
+      AutoSize = True
+      BorderSpacing.Around = 2
+      Constraints.MinWidth = 100
+      Caption = 'Cancel'
+      Flat = True
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000064000000640000000000000000000000000000000000
+        000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF00000000000000000000000000000000000000000000
+        00002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000000000000000000000002110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF00000000000000002110
+        C0FF2110C0FF2110C0FF2110C0FF000000000000000000000000000000000000
+        00002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF000000002110C0FF2110
+        C0FF2110C0FF2110C0FF00000000000000000000000000000000000000002110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF00000000000000000000000000000000000000002110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF000000000000000000000000000000002110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF0000000000000000000000002110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF00000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF00000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF0000000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000
+        00000000000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF000000000000
+        00000000000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF00000000000000000000
+        000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF000000002110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000000000000000000000000000
+        0000000000002110C0FF2110C0FF2110C0FF2110C0FF00000000000000002110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF00000000000000000000
+        00002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000000000000000000000000000
+        000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
+        C0FF2110C0FF2110C0FF00000000000000000000000000000000
+      }
+      OnClick = BitBtn2Click
+      ParentFont = False
+    end
+  end
+  object SaveDialog: TSaveDialog
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
+    left = 380
+  end
+end

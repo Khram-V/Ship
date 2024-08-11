@@ -1,0 +1,95 @@
+
+{ FREE!ship }
+
+program FreeShip;
+
+{$mode objfpc}{$H+}
+
+uses
+  Controls, Forms, Dialogs,
+  SysUtils, Math, LazUTF8,                // this includes the LCL widgetset
+  DefaultTranslator, Interfaces,
+  FreeLanguageSupport in '../Units/FreeLanguageSupport.pas',
+  Main                in '../Forms/Main.pas',                       {MainForm}
+  FreeVersionUnit     in '../Units/FreeVersionUnit.pas';
+
+var ParametersHelp: boolean=false;
+    sOpenFile : String='';
+    sHelp : String;
+
+procedure InitByParameters; var S: string; p: integer; begin
+  for p:=1 to ParamCount do begin S := ParamStr(p);
+    if S = '--help' then ParametersHelp:=True else
+    if ( lowerCase(UTF8RightStr( S,4 ) ) = '.ftm' )
+    or ( lowerCase(UTF8RightStr( S,4 ) ) = '.fbm' ) then sOpenFile:=S;
+  end;
+end;
+
+procedure PrintParametersHelp( Ans: Boolean );
+  begin
+  sHelp:= #10+'Usage: Free!Ship [parameter] [model]'
+        + #10+ 'Where parameter is: --help = this screen'
+        + #10+ '    model file: <Ship>.ftm or <Ship>.fbm'+#10
+        + #10+ '«Free!Ship» in Pascal.'
+        + #10+ 'Compiled at       '+ReleasedDate+' '+COMPILE_TIME
+        + #10+ 'Compiler version: '+FPCVERSION
+        + #10+ 'Target CPU:       '+TARGET_CPU
+        + #10+ 'Target OS:        '+TARGET_OS
+        + #10+ 'FreeShip version: '+FREESHIP_VERSION; // ResourceVersionInfo
+    if Ans then ShowMessage( sHelp )
+           else WriteLn( sHelp );
+  end;
+
+{$R *.res}
+
+begin
+  InitByParameters;
+  PrintParametersHelp( false );
+  RequireDerivedFormResource:=True;       // new
+  FormatSettings.DecimalSeparator:='.';
+  Application.Initialize;
+
+  if ParametersHelp then begin PrintParametersHelp( true ); exit; end;
+
+  Application.CreateForm( TMainForm,MainForm );
+
+//Application.CreateForm( TFreeCrosscurvesDialog,FreeCrosscurvesDialog );
+
+  LoadLanguage( Mainform.Freeship.Preferences.Language,
+                Mainform.Freeship.Preferences.LanguageFile );
+  ShowTranslatedValues( Mainform );
+  Mainform.FFileName := sOpenFile;
+
+  Application.OnActivate := MainForm.OnActivate;
+
+  try
+  SetExceptionMask(                             // Enabling FPU exception mask
+  [exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
+
+  Application.Run;
+
+  except                 // Floating point operation
+    on E: EMathError do; //    ( 'General floating-point exception caught!' );
+//  on E: EAccessViolation do;
+//  on E: EIntError  do Writeln( 'General integer exception!' );
+//  on E: EDivByZero do Writeln( 'Division by zero exception!' );
+//  on E: EOverflow  do Writeln( 'Overflow exception!' );
+//  on E: EUnderflow do Writeln( 'Underflow exception!' );
+  end
+
+(* except on E: Exception do logger.ShowExceptionCallStack( E ); end;
+type
+ { General math errors }
+   EMathError  = Class( Exception  );  //  General floating-point exception
+   EInvalidOp  = Class( EMathError );
+   EZeroDivide = Class( EMathError );  //  Division by zero exception caught!
+   EOverflow   = Class( EMathError );  //  Overflow exception caught!
+   EUnderflow  = Class( EMathError );  //  Underflow exception caught!
+ { Integer math exceptions }
+   EIntError   = Class( EExternal );   //  General integer exception!
+   EDivByZero  = Class( EIntError );
+   ERangeError = Class( EIntError );
+   EIntOverflow= Class( EIntError );
+*)
+end.
+
