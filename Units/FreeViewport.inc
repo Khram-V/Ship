@@ -746,7 +746,7 @@ begin
       if AskPrintScale then begin
         Str := IntToStr(Trunc(PrintScale) + 1);
         if InputQuery('Print scale ','Enter the printscale 1:',Str) then begin
-          NewPrintScale := StrToFloat(Str);
+          NewPrintScale := GetFloat(Str);
           if NewPrintScale < 0 then begin
              NewPrintScale := 1;
              AbortPrinting := True;

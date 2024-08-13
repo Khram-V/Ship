@@ -264,7 +264,7 @@ var Val : extended;
 begin
    if Text<>'' then begin
       try
-        Val:=StrToFloat(Text);
+        Val:=GetFloat(Text);
       except
         Val:=0;
       end;
@@ -289,7 +289,7 @@ begin
          'Value must be between '+FloatToStrF(FMin,ffFixed,7,Decimals)+' and '
          +FloatToStrF(FMax,ffFixed,7,Decimals),mtError,[mbOk],0);
       Tmp:=FloatToStrF(Value,ffFixed,FDigits,FDecimals);
-      Value:=StrToFloat(Tmp);
+      Value:=GetFloat(Tmp);
 
       if Value<FMin then Value:=FMin else
          if Value>FMax then Value:=FMax;
@@ -347,7 +347,7 @@ begin
       end else exit;
    end else if Key=#13 then
    begin
-      Tmp:=StrToFloat(Text);
+      Tmp:=GetFloat(Text);
       if Valid(Tmp) then begin
          FValue:=Tmp;
          FInitialValue:=FValue;
@@ -374,7 +374,7 @@ begin
       try
          OldText:=Text;
          SendMessage(Self.Handle, WM_PASTE ,0,0);
-         FValue:=StrToFloat(Text);
+         FValue:=GetFloat(Text);
          Valid(FValue);
          FormatText;
          if Length(Text)>MaxLength then {Check Length}
@@ -396,7 +396,7 @@ begin
       inherited KeyPress(Key);
       if Key in [#13] then begin
          if Assigned(FOnBeforeSetValue) then FOnBeforeSetValue(self);
-         FValue:=StrToFloat(Text);
+         FValue:=GetFloat(Text);
          if Assigned(FOnAfterSetValue) then FOnAfterSetValue(self);
          exit;
       end;
@@ -499,7 +499,7 @@ begin
     if ( Text[i] in ['0'..'9',FormatSettings.DecimalSeparator,'-']) then TrashText:=TrashText+Text[i];
     Text:=TrashText;
     if Text='' then Text:='0';
-    X:=StrToFloat(Text);
+    X:=GetFloat(Text);
     if Valid(X) then begin
       IsValid:=true;
       if (FValue<>X)or(FInitialValue<>FValue) then begin

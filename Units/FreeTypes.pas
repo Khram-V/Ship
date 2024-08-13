@@ -92,8 +92,9 @@ Const
   EOL                  = #13#10;
 
 Function F2S( Value: TFloatType ): TFloatType;
+function GetFloat(const S: String): TFloatType;
 Function FloatTypeToStr( Value: TFloatType ): String;
-Function Dist( A:T3DVector ): TFloatType;
+//Function Dist( A:T3DVector ): TFloatType;
 
 Implementation
 
@@ -173,6 +174,33 @@ function FloatTypeToStr( Value: TFloatType ): String;
 var W:Double;
 begin W:=Value; W:=Round( W*1e6 ); Result:=FloatToStrF( W/1e6,ffGeneral,6,6 );
 end;
+
+function GetFloat(const S: String): TFloatType;
+var  LocalFormatSettings: TFormatSettings; I: Integer;
+begin
+  for i:=1 to length(S) do
+    if S[i] ='.' then begin
+      LocalFormatSettings.DecimalSeparator:='.';
+      LocalFormatSettings.ThousandSeparator:=',';
+    end else
+    if S[i] =',' then begin
+      LocalFormatSettings.DecimalSeparator:=',';
+      LocalFormatSettings.ThousandSeparator:='.';
+    end;
+    Result := StrToFloat( S,LocalFormatSettings );
+
+(*
+    in ['.',','] then begin Str[i]:=FormatSettings.DecimalSeparator;
+
+  if ( S[i] in ['0'..'9',FormatSettings.DecimalSeparator,'-']) then TrashText:=TrashText+Text[i] else if i>sel then inc(x);
+  if not TryStrToFloat( S,Result,FormatSettings ) then begin // try an opposite way. this is a workaround if a file was saved with commas
+    LocalFormatSettings.DecimalSeparator:=',';
+    LocalFormatSettings.ThousandSeparator:='.';
+    Result := StrToFloat( S,LocalFormatSettings );
+  end;
+*)
+end;
+
 
 end.
 

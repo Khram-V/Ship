@@ -180,28 +180,18 @@ var
 
 implementation
 
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 function TFREEProjectSettingsDialog.FGetConversionFactor: double;
 begin
-  if Unitbox.ItemIndex = 1 then
-    Result := 1 / 0.3048
-  else
-    Result := 1.0;
+  if Unitbox.ItemIndex = 1 then Result := 1 / 0.3048
+                           else Result := 1.0;
 end;{TFREEProjectSettingsDialog.FGetConversionFactor}
 
 function TFREEProjectSettingsDialog.FGetBeam: double;
 begin
-{  if Edit3.Text = '' then
-    Result := 0.0
-  else
-    Result := StrToFloat(Edit3.Text); }
+{  if Edit3.Text = '' then Result := 0.0
+                      else Result := StrToFloat(Edit3.Text); }
  Result := Edit3.Value;
 end;{TFREEProjectSettingsDialog.FGetBeam}
 
@@ -213,10 +203,8 @@ end;{TFREEProjectSettingsDialog.FSetBeam}
 
 function TFREEProjectSettingsDialog.FGetCoefficient: double;
 begin
-  {if Edit6.Text = '' then
-    Result := 0.0
-  else
-    Result := StrToFloat(Edit6.Text); }
+  { if Edit6.Text = '' then Result := 0.0
+                       else Result := StrToFloat(Edit6.Text); }
   Result := Edit6.Value;
 end;{TFREEProjectSettingsDialog.FGetCoefficient}
 
@@ -228,10 +216,8 @@ end;
 
 function TFREEProjectSettingsDialog.FGetDensity: double;
 begin
-  {if Edit5.Text = '' then
-    Result := 0.0
-  else
-    Result := StrToFloat(Edit5.Text);}
+  {if Edit5.Text = '' then Result := 0.0
+                      else Result := StrToFloat(Edit5.Text);}
   Result := Edit5.Value;
 end;
 

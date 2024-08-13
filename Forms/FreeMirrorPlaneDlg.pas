@@ -70,7 +70,7 @@ begin
    if RadioButton1.Checked then Result.a:=1.0;
    if RadioButton2.Checked then Result.c:=1.0;
    if RadioButton3.Checked then Result.b:=1.0;
-   Result.d:=-StrToFloat(Edit1.Text);
+   Result.d:=-GetFloat(Edit1.Text);
 end;{TFreeMirrorPlaneDialog.FGetPlane}
 
 function TFreeMirrorPlaneDialog.Execute:Boolean;

@@ -47,6 +47,7 @@ begin
   PrintParametersHelp( false );
   RequireDerivedFormResource:=True;       // new
   FormatSettings.DecimalSeparator:='.';
+  DefaultFormatSettings.DecimalSeparator:='.';
   Application.Initialize;
 
   if ParametersHelp then begin PrintParametersHelp( true ); exit; end;

@@ -1729,16 +1729,15 @@ var
   Strings: TStringList;
   Dialog: TSaveDialog;
   Procedure Str2( A,B: single );
-      begin Str:=Str+format( ' %1.4g %1.4g',[F2S(A),F2S(B)] );  end;
-
+    begin Str:=Str+format( ' %1.5g %1.5g',[F2S(A),F2S(B)] );  end;
   Procedure StemStern( Dir:boolean ); // Dir=true - форштевень
-  var I,J,K,M,N: Integer;
+    var I,J,K,M,N: Integer;
   begin Str:='';
     for I:=0 to FreeShip.NumberofButtocks-1 do                                  // поиск нулевого батокса
     with FreeShip.Buttock[I] do begin
       if not Built then Rebuild;
       if Count>0 then
-      if Items[0].Point[0].Y=0 then begin M:=0; z1:=Items[0].Point[0].Z;         // батокс в диаметрильной плоскости
+      if Items[0].Point[0].Y=0 then begin M:=0; z1:=Items[0].Point[0].Z;        // батокс в диаметрильной плоскости
         for J:=0 to Count-1 do begin
           N:=Items[J].NumberOfPoints-1;
           for K:=0 to N do if Items[J].Point[K].Z<=z1 then begin z1:=Items[J].Point[K].Z; M:=K; end;
@@ -1762,6 +1761,7 @@ begin
   Dialog.FileName := ChangeFileExt( Title,'.vsl');
   Dialog.Filter := createDialogFilter('Aurora+Hull Vessel(db)file',['vsl']);
   dialog.Options := [ofOverwritePrompt, ofHideReadOnly];
+  DefaultFormatSettings.DecimalSeparator:='.';
   if Dialog.Execute then begin
     FreeShip.Preferences.ExportDirectory := ExtractFilePath(Dialog.FileName);
     Strings := TStringList.Create;
@@ -1774,8 +1774,11 @@ begin
           + EOL +'; Comment  : '+FProjectComment
           + EOL +';'
           + EOL + #30 + ' < ' + ExtractFilename( Dialog.FileName ) + ' > '      ///+++!!! уточнить где мидель
-          + EOL + InttoStr( FreeShip.NumberofStations )+' '+InttoStr( FreeShip.NumberofStations div 2 )
-          + EOL + FloatToDec(FProjectLength,4)+' '+FloatToDec(FProjectBeam,4)+' '+FloatToDec(FProjectDraft,4)+EOL );
+          + EOL + InttoStr( FreeShip.NumberofStations )
+          + ' ' + InttoStr( FreeShip.NumberofStations div 2 )
+          + EOL + FloatToStrF( FProjectLength,ffGeneral,6,1)
+          + ' ' + FloatToStrF( FProjectBeam,ffGeneral,6,1)
+          + ' ' + FloatToStrF( FProjectDraft,ffGeneral,6,1)+EOL );
 //  T3.Z:=FreeShip.FProjectSettings.FProjectDraft;
     StemStern( false );
     Strings.Add( ' 0'+EOL );
@@ -1847,8 +1850,7 @@ begin
   SaveDialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '.txt');
   SaveDialog.Filter := createDialogFilter('Offsets as 3D points',['txt']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then
-  begin
+  if SaveDialog.Execute then begin
     FreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     Strings := TStringList.Create;
     for I:=0 to FreeShip.NumberofStations-1 do SendIntersection(FreeShip.Station[I]);
@@ -2978,18 +2980,15 @@ begin
       J := Pos(',', Str);
       if J <> 0 then
         Delete(Str, 1, J);
-      for I := 1 to Nx do
-      begin
+      for I := 1 to Nx do begin
         Str := Trim(Str);
         J := Pos(',', Str);
-        if J <> 0 then
-        begin
+        if J <> 0 then begin
           Tmp := Copy(Str, 1, J - 1);
-          XArray[I - 1] := StrToFloat(Tmp);
+          XArray[I - 1] := GetFloat(Tmp);
           Delete(Str, 1, J);
         end
-        else if I = Nx then
-          XArray[I - 1] := StrToFloat(Str);
+        else if I = Nx then XArray[I - 1] := GetFloat(Str);
       end;
 
       Setlength(Grid, Ny);
@@ -2998,33 +2997,25 @@ begin
       begin
         Readln(FFile, Str);
         Setlength(Grid[J - 1], Nx);
-        for I := 0 to Nx do
-        begin
+        for I := 0 to Nx do begin
           Str := Trim(Str);
           K := Pos(',', Str);
-          if K <> 0 then
-          begin
+          if K <> 0 then begin
             Tmp := Copy(Str, 1, K - 1);
             Delete(Str, 1, K);
-            if I = 0 then
-            begin
-              if J = Ny then
-                P.Y := 0
-              else
-                P.Y := StrToFloat(Tmp);
-
-            end
-            else
-            begin
+            if I = 0 then begin
+              if J = Ny then P.Y := 0
+                        else P.Y := GetFloat(Tmp);
+            end else begin
               P.X := XArray[I - 1];
-              P.Z := StrToFloat(Tmp);
+              P.Z := GetFloat(Tmp);
               Grid[J - 1][I - 1] := P;
             end;
           end
           else if I = Nx then
           begin
             P.X := XArray[I - 1];
-            P.Z := StrToFloat(Tmp);
+            P.Z := GetFloat(Tmp);
             Grid[J - 1][I - 1] := P;
           end;
         end;
@@ -3080,10 +3071,10 @@ begin
         J := Pos(',', Str);
         if J <> 0 then begin
           Tmp := Copy(Str, 1, J - 1);
-          XArray[I - 1] := StrToFloat(Tmp);
+          XArray[I - 1] := GetFloat(Tmp);
           Delete(Str, 1, J);
         end
-        else if I = Nx then XArray[I - 1] := StrToFloat(Str);
+        else if I = Nx then XArray[I - 1] := GetFloat(Str);
       end;
 
       Setlength(Grid, Ny);
@@ -3100,11 +3091,11 @@ begin
             Delete(Str, 1, K);
             if I = 0 then begin
               if J = Ny then Angle := 0
-              else Angle := -StrToFloat(Tmp);
+              else Angle := -GetFloat(Tmp);
             end else begin
               P.X := XArray[I - 1] * Cos(DegToRad(Angle));
               P.Y := XArray[I - 1] * Sin(DegToRad(Angle));
-              P.Z := StrToFloat(Tmp);
+              P.Z := GetFloat(Tmp);
               Grid[J - 1][I - 1] := P;
             end;
           end
@@ -3112,7 +3103,7 @@ begin
             P.X := XArray[I - 1] * Cos(DegToRad(Angle));
             P.Y := XArray[I - 1] * Sin(DegToRad(Angle));
             //P.X:=XArray[I-1];
-            P.Z := StrToFloat(Tmp);
+            P.Z := GetFloat(Tmp);
             Grid[J - 1][I - 1] := P;
           end;
         end;

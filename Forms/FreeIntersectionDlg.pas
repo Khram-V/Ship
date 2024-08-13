@@ -425,8 +425,7 @@ begin
       intersection.Distance := f;
       intersection.Rebuild;
       FFreeship.Redraw;
-    end
-    else
+    end else
       sgStations.Cells[grid.Col, grid.Row] := format('%7.4f',[intersection.Distance]);
   except
       sgStations.Cells[grid.Col, grid.Row] := format('%7.4f',[intersection.Distance]);
@@ -488,10 +487,8 @@ var  grid: TStringGrid;
 begin
   if aCol <> 1 then exit;
   grid := Sender as TStringGrid;
-  if TryStrToFloat(NewValue, F) then
-    NewValue := format('%7.4f',[F])
-  else
-    NewValue := OldValue;
+  if TryStrToFloat(NewValue, F) then NewValue := format('%7.4f',[F])
+                                else NewValue := OldValue;
 end;
 
 (*
@@ -500,7 +497,7 @@ var f:TFloatType; intersection:TFreeIntersection; i:integer;
 begin
   try
     intersection := sgWaterlines.Objects[1, sgWaterlines.Row] as TFreeIntersection;
-    f := StrToFloat(sgWaterlines.Cells[1, sgWaterlines.Row]);
+    f := GetFloat(sgWaterlines.Cells[1, sgWaterlines.Row]);
     intersection.Distance := f;
     intersection.Rebuild;
     FFreeship.Redraw;
@@ -625,13 +622,13 @@ begin
   if InputQuery( 'New intersection ', 'Distance: ', Str) then begin
     Int := nil;
     if ShowStations.Checked then
-      Int := FFreeShip.Edit.Intersection_Add(fiStation, StrToFloat(Str));
+      Int := FFreeShip.Edit.Intersection_Add(fiStation, GetFloat(Str));
     if ShowButtocks.Checked then
-      Int := FFreeShip.Edit.Intersection_Add(fiButtock, StrToFloat(Str));
+      Int := FFreeShip.Edit.Intersection_Add(fiButtock, GetFloat(Str));
     if ShowWaterlines.Checked then
-      Int := FFreeShip.Edit.Intersection_Add(fiWaterline, StrToFloat(Str));
+      Int := FFreeShip.Edit.Intersection_Add(fiWaterline, GetFloat(Str));
     if ShowDiagonals.Checked then
-      Int := FFreeShip.Edit.Intersection_Add(fiDiagonal, StrToFloat(Str));
+      Int := FFreeShip.Edit.Intersection_Add(fiDiagonal, GetFloat(Str));
     if Int <> nil then
       //FillBox// Added and sorted, refill the list
       FillGrids;
@@ -650,7 +647,7 @@ var
 begin
   Str := '1.0';
   if not InputQuery( 'New range of intersections ','Distance: ',Str) then exit;
-  Step := abs(StrToFloat(Str));
+  Step := abs(GetFloat(Str));
   if abs(Step) < 1e-3 then
     exit;
   FFreeShip.Extents(Min, Max);

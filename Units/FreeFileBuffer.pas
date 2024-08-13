@@ -102,8 +102,8 @@ private
     function FGetCapacity: integer; override;
   public
     constructor Create;
-    Function StrToFloatType(Const S : String) : TFloatType;
-//  Function FloatTypeToStr(Value: TFloatType): String;
+//    Function StrToFloatType(Const S : String) : TFloatType;
+    Function FloatTypeToStr(Value: TFloatType): String;
     procedure Add(IntegerValue: integer); override; overload;
     procedure Add(Text: string); override; overload;
     procedure Add(BooleanValue: boolean); override; overload;
@@ -631,22 +631,20 @@ begin
   FormatSettings.ShortDateFormat:='yyyy-mm-dd';
   FormatSettings.ShortTimeFormat:='hh:nn:ss';
 end;
-
+(*
 function TFreeTextBuffer.StrToFloatType(const S: String): TFloatType;
 var  LocalFormatSettings: TFormatSettings;
 begin
-  if not TryStrToFloat(S, Result, FormatSettings) then
-    begin
-    // try an opposite way. this is a workaround if a file was saved with commas
+  if not TryStrToFloat(S, Result, FormatSettings) then begin // try an opposite way. this is a workaround if a file was saved with commas
     LocalFormatSettings.DecimalSeparator:=',';
     LocalFormatSettings.ThousandSeparator:='.';
     Result := StrToFloat( S,LocalFormatSettings );
     end;
 end;
-
-//function TFreeTextBuffer.FloatTypeToStr( Value: TFloatType ): String;
-//begin Result := FloatToStr( F2S( Value ) );
-//end;
+*)
+function TFreeTextBuffer.FloatTypeToStr( Value: TFloatType ): String;
+begin Result := FloatToStr( F2S( Value ) );
+end;
 
 function TFreeTextBuffer.FGetCapacity: integer;
 begin Result := FLines.Capacity;
@@ -852,7 +850,7 @@ var
   LocalFormatSettings: TFormatSettings;
 begin
   S := FLines[FPosition];
-  Output := StrToFloatType(S);
+  Output := GetFloat(S);
   Inc(FPosition);
 end;
 {
@@ -889,9 +887,9 @@ procedure TFreeTextBuffer.LoadT3DCoordinate(var Output: T3DCoordinate);
 var S: string;
 begin
   S := FLines[FPosition];
-  Output.X := StrToFloatType(ExtractWord(1, S, [' ']));
-  Output.Y := StrToFloatType(ExtractWord(2, S, [' ']));
-  Output.Z := StrToFloatType(ExtractWord(3, S, [' ']));
+  Output.X := GetFloat(ExtractWord(1, S, [' ']));
+  Output.Y := GetFloat(ExtractWord(2, S, [' ']));
+  Output.Z := GetFloat(ExtractWord(3, S, [' ']));
   Inc(FPosition);
 end;
 
@@ -899,10 +897,10 @@ procedure TFreeTextBuffer.LoadT3DPlane(var Output: T3DPlane);
 var S: string;
 begin
   S := FLines[FPosition];
-  Output.a := StrToFloatType(ExtractWord(1, S, [' ']));
-  Output.b := StrToFloatType(ExtractWord(2, S, [' ']));
-  Output.c := StrToFloatType(ExtractWord(3, S, [' ']));
-  Output.d := StrToFloatType(ExtractWord(4, S, [' ']));
+  Output.a := GetFloat(ExtractWord(1, S, [' ']));
+  Output.b := GetFloat(ExtractWord(2, S, [' ']));
+  Output.c := GetFloat(ExtractWord(3, S, [' ']));
+  Output.d := GetFloat(ExtractWord(4, S, [' ']));
   Inc(FPosition);
 end;
 

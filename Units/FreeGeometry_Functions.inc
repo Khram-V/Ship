@@ -254,18 +254,12 @@ var
   Feet: integer;
   Inches: TFloatType;
 begin
-  if Units = fuImperial then
-  begin
-    if Value < 0 then
-      Feet := -abs(Trunc(Value))
-    else
-      Feet := Trunc(Value);
+  if Units = fuImperial then begin
+    if Value < 0 then Feet := -abs(Trunc(Value))
+                 else Feet := Trunc(Value);
     Inches := abs(Value - Feet) * 12;
     Result := IntToStr(Feet);
-    if (Feet = 0) and (Value < 0) then
-    begin
-      Result := '-' + Result;
-    end;
+    if (Feet = 0) and (Value < 0) then Result := '-' + Result;
     Result := Result + '''' + #32 + FloatToStrF(Inches, ffFixed, 7, 1) + '''''';
   end
   else
@@ -321,7 +315,7 @@ begin
   begin
     if myFracPos > 1 then   // check whether there is an whole feet value
     begin
-      myWholeFeet := StrToFloat(LeftStr(myString, myFracPos - 1));
+      myWholeFeet := GetFloat(LeftStr(myString, myFracPos - 1));
       myString := MidStr(myString, myFracPos + 1, 255);
     end;
 
@@ -331,31 +325,31 @@ begin
     begin
       if myFracPos > 1 then   // check whether there is an whole inch value
       begin
-        myWholeInch := StrToFloat(LeftStr(myString, myFracPos - 1));
+        myWholeInch := GetFloat(LeftStr(myString, myFracPos - 1));
         myString := MidStr(myString, myFracPos, 255);
       end;
       // new: check whether there is a + or a - to add or subtract a half fraction
       myString := MidStr(myString, 2, 255);
       if (RightStr(myString, 1) = '-') then
       begin
-        myFracInch := StrToFloat(LeftStr(myString, Pos('-', myString) - 1)) - 0.5;
+        myFracInch := GetFloat(LeftStr(myString, Pos('-', myString) - 1)) - 0.5;
       end
       else if (RightStr(myString, 1) = '+') then
       begin
-        myFracInch := StrToFloat(LeftStr(myString, Pos('+', myString) - 1)) + 0.5;
+        myFracInch := GetFloat(LeftStr(myString, Pos('+', myString) - 1)) + 0.5;
       end
       else
-        myFracInch := StrToFloat(myString);
+        myFracInch := GetFloat(myString);
       // end new
     end
     else // no fractional inches
     begin
-      myWholeInch := StrToFloat(myString);
+      myWholeInch := GetFloat(myString);
     end;
 
   end
   else
-    myWholeFeet := StrToFloat(myString); // no imperial input format
+    myWholeFeet := GetFloat(myString); // no imperial input format
 
   Result := myOldValue + myFactor * (myWholeFeet + myWholeInch / 12 +
     myFracInch / (12 * InchFractions));
