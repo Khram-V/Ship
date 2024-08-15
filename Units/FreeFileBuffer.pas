@@ -59,20 +59,20 @@ private
 //  procedure Add(const source;Size:Integer);    overload;virtual;
     procedure Add(JPegImage: TJPEGImage);      overload; virtual;
 
-    procedure LoadInteger(var Output: integer);    virtual;
-    procedure LoadString(var Output: string);      virtual;
+    procedure LoadInteger(var Output: integer); virtual;
+    procedure LoadString(var Output: string);   virtual;
 //  procedure Load(var Output:Word);           virtual;
-    procedure LoadTStrings(var Output: TStrings);        virtual;
-    procedure LoadTFreeFileVersion(var Output: TFreeFileVersion);      virtual;
-    procedure LoadBoolean(var Output: boolean);      virtual;
+    procedure LoadTStrings(var Output: TStrings); virtual;
+    procedure LoadTFreeFileVersion(var Output: TFreeFileVersion); virtual;
+    procedure LoadBoolean(var Output: boolean); virtual;
     procedure LoadTColor(var Output: TColor); virtual;
     procedure LoadTNameData(var NameData: TNameData); virtual;
-    procedure LoadTAnchorData(var AnchorData: TAnchorData);  virtual;
-    procedure LoadTLinearConstraintData(var LCData: TLinearConstraintData);  virtual;
-    procedure LoadTFloatType(var Output: TFloatType);       virtual;
-    procedure LoadT3DCoordinate(var Output: T3DCoordinate);       virtual;
-    procedure LoadT3DPlane(var Output: T3DPlane);       virtual;
-    procedure LoadTJPEGImage(var JPegImage: TJPEGImage);       virtual;
+    procedure LoadTAnchorData(var AnchorData: TAnchorData); virtual;
+    procedure LoadTLinearConstraintData(var LCData: TLinearConstraintData); virtual;
+    procedure LoadTFloatType(var Output: TFloatType); virtual;
+    procedure LoadT3DCoordinate(var Output: T3DCoordinate); virtual;
+    procedure LoadT3DPlane(var Output: T3DPlane); virtual;
+    procedure LoadTJPEGImage(var JPegImage: TJPEGImage); virtual;
     procedure LoadTFreeKAPERResistanceData(var Data: TFreeKAPERResistanceData); virtual;
     procedure LoadTFreeDelftSeriesResistanceData(var Data: TFreeDelftSeriesResistanceData); virtual;
 // ?procedure Load(var Dest;Size:Integer); overload;virtual;
@@ -89,21 +89,19 @@ private
     property Position: integer read GetPosition;
     property Encoding: string read FEncoding write FEncoding;
   end;
-  {---------------------------------------------------------------------------------------------------}
-  {                                           TFreeTextBuffer                                         }
-  { Text file used to store file info                                                                 }
-  {---------------------------------------------------------------------------------------------------}
+  {-----------------------------------------------------------}
+  {                                           TFreeTextBuffer }
+  { Text file used to store file info                         }
+  {-----------------------------------------------------------}
   TFreeTextBuffer = class(TFreeFileBuffer)
   private
     FLines: TStringList;
     FPosition: integer; // this is our position
-    FormatSettings: TFormatSettings;
+//  FormatSettings: TFormatSettings;
     procedure FSetCapacity(val: integer); override;
     function FGetCapacity: integer; override;
   public
     constructor Create;
-//    Function StrToFloatType(Const S : String) : TFloatType;
-    Function FloatTypeToStr(Value: TFloatType): String;
     procedure Add(IntegerValue: integer); override; overload;
     procedure Add(Text: string); override; overload;
     procedure Add(BooleanValue: boolean); override; overload;
@@ -616,63 +614,36 @@ function TFreeFileBuffer.GetPosition:integer;
 begin Result:=FPosition;
 end;
 
-{-------------------------------------}
-{ TFreeTextBuffer                     }
-{ Text file used to store file info   }
-{-------------------------------------}
+{-----------------------------------}
+{ TFreeTextBuffer                   }
+{ Text file used to store file info }
+{-----------------------------------}
 constructor TFreeTextBuffer.Create;
-var sdf: String;
-begin
-  FLines := TStringList.Create;
-  inherited Create;
-  FormatSettings := DefaultFormatSettings;
-  FormatSettings.DecimalSeparator:='.';
-  FormatSettings.ThousandSeparator:=',';
-  FormatSettings.ShortDateFormat:='yyyy-mm-dd';
-  FormatSettings.ShortTimeFormat:='hh:nn:ss';
-end;
-(*
-function TFreeTextBuffer.StrToFloatType(const S: String): TFloatType;
-var  LocalFormatSettings: TFormatSettings;
-begin
-  if not TryStrToFloat(S, Result, FormatSettings) then begin // try an opposite way. this is a workaround if a file was saved with commas
-    LocalFormatSettings.DecimalSeparator:=',';
-    LocalFormatSettings.ThousandSeparator:='.';
-    Result := StrToFloat( S,LocalFormatSettings );
-    end;
-end;
-*)
-function TFreeTextBuffer.FloatTypeToStr( Value: TFloatType ): String;
-begin Result := FloatToStr( F2S( Value ) );
-end;
+begin FLines:=TStringList.Create; inherited Create; WestPoint; end;
 
 function TFreeTextBuffer.FGetCapacity: integer;
 begin Result := FLines.Capacity;
 end;
 
-procedure TFreeTextBuffer.FSetCapacity(val: integer);
-begin FLines.Capacity := val;
-end;
+procedure TFreeTextBuffer.FSetCapacity( val: integer );
+begin FLines.Capacity := val; end;
 
 procedure TFreeTextBuffer.Clear;
-begin if FLines <> nil then FLines.Clear;
-      inherited Clear;
-end;
+begin if FLines <> nil then FLines.Clear; inherited Clear; end;
 
 procedure TFreeTextBuffer.Add(Text: string);
-var
-  S: string;
+var S: string;
 begin
-  S := ReplaceStr(Text, '\', '\\');
-  S := ReplaceStr(S, EOL, '\n');
-  FLines.Add(S);
-  Inc(FPosition);
+  S := ReplaceStr( Text, '\', '\\' );
+  S := ReplaceStr( S, EOL, '\n' );
+  FLines.Add( S );
+  Inc( FPosition );
 end;
 
 procedure TFreeTextBuffer.Add(BooleanValue: boolean);
 var S: string;
 begin                         //if BooleanValue then S:='True' else S:='False';
-  S := BoolToStr( BooleanValue,'1','0' );
+  S:=BoolToStr( BooleanValue,'1','0' );
   FLines.Add( S );
   Inc( FPosition );
 end;
@@ -777,7 +748,7 @@ begin
   FLines.Add(L);
   FreeAndNil(Stream);
   Inc(FPosition);
-end;{TFreeTextBuffer.Add}
+end;
 
 procedure TFreeTextBuffer.LoadTJPEGImage(var JPegImage: TJPEGImage);
 var
@@ -792,13 +763,13 @@ begin
   Stream := TMemoryStream.Create;
   Stream.SetSize(Size);
   HexToBin(PChar(FLines[FPosition]), Stream.Memory, Size);
-  //Stream.Write(PData, Size);
+//Stream.Write(PData, Size);
   StrDispose(PData);
   Stream.Position := 0;
   JPEGImage.LoadFromStream(Stream);
   FreeAndNil(Stream);
   Inc(FPosition);
-end;{TFreeTextBuffer.Add}
+end;
 
 procedure TFreeTextBuffer.LoadInteger(var Output: integer);
 var
@@ -847,7 +818,7 @@ end;
 procedure TFreeTextBuffer.LoadTFloatType(var Output: TFloatType);
 var
   S: string;
-  LocalFormatSettings: TFormatSettings;
+//  LocalFormatSettings: TFormatSettings;
 begin
   S := FLines[FPosition];
   Output := GetFloat(S);

@@ -1132,11 +1132,9 @@ begin
       + '|' + createDialogFilter(rsArchimedesSingleBodyHullData, ['app']);
     SaveDialog.FilterIndex := 1;
     Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-    if SaveDialog.Execute then
-    begin
+    if SaveDialog.Execute then begin WestPoint;
       FreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
-      if SaveDialog.FilterIndex = 2 then
-      begin
+      if SaveDialog.FilterIndex = 2 then begin
         // Single body Archimedes
         assignfile(ffile, ChangeFileExt(SaveDialog.FileName, '.app'));
         rewrite(FFile);
@@ -1303,8 +1301,7 @@ begin
   SaveDialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '');
   SaveDialog.Filter := createDialogFilter(rsTextFile,['txt']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then
-  begin
+  if SaveDialog.Execute then begin WestPoint;
     Assignfile(FFile, ChangeFileExt(SaveDialog.FileName, '.txt'));
       {$I-}
     Rewrite(FFile);
@@ -1761,8 +1758,7 @@ begin
   Dialog.FileName := ChangeFileExt( Title,'.vsl');
   Dialog.Filter := createDialogFilter('Aurora+Hull Vessel(db)file',['vsl']);
   dialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  DefaultFormatSettings.DecimalSeparator:='.';
-  if Dialog.Execute then begin
+  if Dialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory := ExtractFilePath(Dialog.FileName);
     Strings := TStringList.Create;
     with FreeShip.FProjectSettings do
@@ -1790,7 +1786,7 @@ begin
       end;                                                   // Z-положительно
       T3.Z:=0.98*T3.Z/N;
       T3.Y:=-FreeShip.FProjectSettings.FProjectBeam; T3.X:=Items[0].Point[0].X;
-      Title := format( '%3d %4.4g',[N,F2S(T3.X)] ); S:='';
+      Title := format( '%3d %-4.4g',[N,F2S(T3.X)] ); S:='';
       for J:=0 to Count-1 do with Items[J] do begin
         N:=NumberOfPoints-1; Str:='';         // ещё и сортировка - не хватало
         if ( Point[N].Z-Point[0].Z>0.01 ) or       // == может быть на палубе
@@ -1850,7 +1846,7 @@ begin
   SaveDialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '.txt');
   SaveDialog.Filter := createDialogFilter('Offsets as 3D points',['txt']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then begin
+  if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     Strings := TStringList.Create;
     for I:=0 to FreeShip.NumberofStations-1 do SendIntersection(FreeShip.Station[I]);
@@ -1884,8 +1880,7 @@ begin
   Dialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '.dxf');
   Dialog.Filter := createDialogFilter(rsAutocadDxfFile,['dxf']);
   dialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if Dialog.Execute then
-  begin
+  if Dialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory := ExtractFilePath(Dialog.FileName);
     Strings := TStringList.Create;
     Strings.Add('0' + EOL + 'SECTION');
@@ -1970,11 +1965,10 @@ begin
   Dialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '.dxf');
   Dialog.Filter := createDialogFilter(rsAutocadDxfFile,['dxf']);
   dialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if Dialog.Execute then
-  begin
+  if Dialog.Execute then begin WestPoint;
     Prev := Screen.Cursor;
     Screen.Cursor := crHourglass;
-    try
+//  try
       FreeShip.Preferences.ExportDirectory := ExtractFilePath(Dialog.FileName);
       Strings := TStringList.Create;
       Strings.Add('0' + EOL + 'SECTION');
@@ -1983,15 +1977,14 @@ begin
         FreeShip.Surface.Layer[i].SaveToDXF(Strings);
       Strings.Add('0' + EOL + 'ENDSEC');
       Strings.Add('0' + EOL + 'EOF');
-      try
+//    try
         Strings.SaveToFile(ChangeFileExt(Dialog.FileName, '.dxf'));
-      except
-        MessageDlg('Could not access ' + ChangeFileExt(Dialog.FileName, '.dxf'),
-          mtError, [mbOK], 0);
-      end;
-    finally
+//    except
+//      MessageDlg('Could not access '+ChangeFileExt(Dialog.FileName, '.dxf'),mtError, [mbOK], 0);
+//    end;
+//  finally
       Screen.Cursor := Prev;
-    end;
+//  end;
     FreeAndNil(Strings);
   end;
   FreeAndNil(Dialog);
@@ -2007,8 +2000,7 @@ begin
   SaveDialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '.fef');
   SaveDialog.Filter := createDialogFilter(rsFREEShipExchangeFormat,['fef']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then
-  begin
+  if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     Strings := TStringList.Create;
     // Add general info and mainparticulars
@@ -2063,11 +2055,8 @@ begin
   Savedialog.FileName := Str;
   SaveDialog.Filter := createDialogFilter(rsGHSFiles,['gf']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if not SaveDialog.Execute then
-  begin
-    FreeAndNil(Savedialog);
-    exit;
-  end;
+  if not SaveDialog.Execute then begin FreeAndNil(Savedialog); exit; end;
+  WestPoint;
   FreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
   PrevCursor := Screen.Cursor;
   Screen.Cursor := crHourGlass;
@@ -2687,8 +2676,7 @@ begin
   Dialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '.igs');
   Dialog.Filter := createDialogFilter(rsIGESFiles,['igs']);
   dialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if Dialog.Execute then
-  begin
+  if Dialog.Execute then begin WestPoint;
     Prev := Screen.Cursor;
     Screen.Cursor := crHourglass;
     PrevLevel := FreeShip.Surface.DesiredSubdivisionLevel;
@@ -2837,19 +2825,14 @@ var
   SaveDialog: TSaveDialog;
   UndoObject: TFreeUndoObject;
 begin
-  if not FreeShip.ProjectSettings.FMainparticularsHasBeenset then
-  begin
-    MessageDlg(Userstring(95), mtWarning, [mbOK], 0);
-    exit;
+  if not FreeShip.ProjectSettings.FMainparticularsHasBeenset then begin
+    MessageDlg(Userstring(95),mtWarning,[mbOK],0); exit;
   end;
   // temporarily switch to metric units for michlet export
-  if FreeShip.ProjectSettings.ProjectUnits = fuImperial then
-  begin
+  if FreeShip.ProjectSettings.ProjectUnits = fuImperial then begin
     UndoObject := CreateUndoObject(Userstring(101), False);
     FreeShip.ProjectSettings.ProjectUnits := fuMetric;
-  end
-  else
-    UndoObject := nil;
+  end else UndoObject := nil;
   try
     if not FreeShip.ProjectSettings.DisableModelCheck then
       Model_Check(False);
@@ -2882,15 +2865,15 @@ begin
     Dialog.Nx := 100;
     Dialog.Ny := 100;
 
-    if Dialog.Execute(FreeShip) then
-    begin
+    if Dialog.Execute(FreeShip) then begin
       SaveDialog := TSaveDialog.Create(FreeShip);
       SaveDialog.InitialDir := FreeShip.Preferences.ExportDirectory;
       SaveDialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '.mlt');
       SaveDialog.Filter := createDialogFilter(rsMichletInputFile,['mlt']);
       Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-      if SaveDialog.Execute then
+      if SaveDialog.Execute then begin WestPoint;
         Dialog.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.mlt'));
+      end;
       FreeAndNil(SaveDialog);
     end;
     FreeAndNil(Dialog);
@@ -3200,8 +3183,7 @@ begin
   SaveDialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '.obj');
   SaveDialog.Filter := createDialogFilter(rsWavefrontFile, ['obj']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then
-  begin
+  if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     Strings := TStringList.Create;
     FreeShip.Surface.ExportObjFile( SaveDialog.FilterIndex=2,Strings );
@@ -3280,8 +3262,7 @@ begin
   SaveDialog.FileName := ChangeFileExt(ExtractFilename(FreeShip.FileName), '.stl');
   SaveDialog.Filter := createDialogFilter(rsSTLFile, ['stl', 'txt']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then
-  begin
+  if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     AssignFile(FFile, Changefileext(SaveDialog.FileName, '.stl'));
       {$I-}
@@ -4604,7 +4585,7 @@ begin result:=false;
                   '|' + FileDialogFilterFreeshipText +
                   '|' + FileDialogFilterFreeshipBinary;
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
-   if SaveDialog.Execute then begin
+   if SaveDialog.Execute then begin WestPoint;
       FreeShip.Preferences.SaveDirectory:=ExtractFilePath( SaveDialog.FileName );
       if CurrentVersion>FreeShip.FileVersion then FreeShip.FStopAskingForFileVersion:=False;
       FreeShip.Filename:=Savedialog.Filename;

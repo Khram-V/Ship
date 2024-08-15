@@ -387,12 +387,11 @@ begin
       Key:=#0;
       exit;
    end;
-
-   {Check for valid Characters}
-   if Key in ['0'..'9', '-',FormatSettings.DecimalSeparator, #8,#13] then
-   begin
-      if Key in [FormatSettings.DecimalSeparator] then if FDataType=dtFloat then
-                                                             else Key:=#0;
+                                                   {Check for valid Characters}
+//  if Key in ['0'..'9', '-',FormatSettings.DecimalSeparator, #8,#13] then begin
+    if Key in ['0'..'9','-','.',#8,#13] then begin
+      if Key in [FormatSettings.DecimalSeparator] then
+      if FDataType=dtFloat then else Key:=#0;
       inherited KeyPress(Key);
       if Key in [#13] then begin
          if Assigned(FOnBeforeSetValue) then FOnBeforeSetValue(self);
@@ -404,8 +403,7 @@ begin
 
    {Clear selection in control If selection include DecimalPoint clear
    all numbers from start selection}
-   if Sellength>0 then
-   begin
+   if Sellength>0 then begin
       if (SelStart+1<=pos(FormatSettings.DecimalSeparator,Text)) and (SelStart+SelLength >= pos(FormatSettings.DecimalSeparator,Text)) then
       begin
          SelLength:=Length(Text)- SelStart;
@@ -453,10 +451,9 @@ begin
    if  (not (Key in [#8,#13])) and (pos(FormatSettings.DecimalSeparator,Text) >0) and (pos(FormatSettings.DecimalSeparator,Text) >= MaxLength-FDecimals)
         and (selstart<=pos(FormatSettings.DecimalSeparator,Text)) or (Key in ['0'..'9'])and (FDecimals <>0) and (selstart<=MaxLength-FDecimals)
         and (Length(Text)>=MaxLength-FDecimals-1) and (pos(FormatSettings.DecimalSeparator,Text)=0) then
-   begin
-      {Add Decimal automatically if max characters before Decimal}
+   begin           {Add Decimal automatically if max characters before Decimal}
       if (Key in ['0'..'9']) and (FDecimals <>0) and (selstart=MaxLength-FDecimals-1)
-          and (pos(FormatSettings.DecimalSeparator,Text)=0) then begin
+       and (pos(FormatSettings.DecimalSeparator,Text)=0) then begin
          key:=FormatSettings.DecimalSeparator;
          exit
       end;

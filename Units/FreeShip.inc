@@ -2083,15 +2083,14 @@ begin
   SaveDialog.FileName := ChangeFileExt(ExtractFilename(FileName), '.part');
   SaveDialog.Filter := createDialogFilter(rsFREEShipGeometryPart,['part']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then
-  begin
+  if SaveDialog.Execute then begin WestPoint;
     Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     // Extract controlPoints and control edges
     Layers := TFasterListTFreeSubdivisionLayer.Create;
     Points := TFasterListTFreeSubdivisionControlPoint.Create;
     Edges := TFasterListTFreeSubdivisionControlEdge.Create;
     Curves := TFasterListTFreeSubdivisionControlCurve.Create;
-    for I := 1 to Faces.Count do begin
+    for I := 1 to Faces.Count do begin WestPoint;
       Face := Faces[I - 1];
       if Layers.SortedIndexOf(Face.Layer) = -1 then
          Layers.AddSorted(Face.Layer);

@@ -264,7 +264,7 @@ begin
   end
   else
 //Result := IntToStr( Round( 1000 * Value ) ); !!!!!!!
-  Result := FloatTypeToStr( Round( Value*100 )/100 );
+  Result := FloatToStr( Round( Value*100 )/100 );
 end;{ConvertDimension}
 
 function ConvertCoordinate(Coord: string; OldCoord: TFloatType): TFloatType;
@@ -1466,12 +1466,12 @@ end;
 function FloatToDec(Value: TFloatType; Maxlength: integer): string;
   // Convert a floatingpoint to a string value with a max. number of specified decimals
   // All trailing zeros will be removed
-var fmt:TFormatSettings;
+//var fmt:TFormatSettings;
 begin
-  fmt:=DefaultFormatSettings;
-  fmt.DecimalSeparator:='.';
-  fmt.ThousandSeparator:=',';
-  Result := FloatToStrF(Value, ffFixed, 10, Maxlength, fmt);
+//  fmt:=DefaultFormatSettings;
+//  fmt.DecimalSeparator:='.';
+//  fmt.ThousandSeparator:=',';
+  Result := FloatToStrF(Value, ffFixed, 10, Maxlength ); //, fmt);
   while Result[Length(Result)] = '0' do Delete(Result, Length(Result), 1);
   if Length(Result) < MaxLength then Result := Result + '0' else
   if Result[Length(Result)] in ['.', ','] then Result := Result + '0';

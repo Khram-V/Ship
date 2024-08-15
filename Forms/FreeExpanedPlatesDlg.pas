@@ -722,8 +722,7 @@ begin
   SaveDialog.FileName := Str;
   SaveDialog.Filter := createDialogFilter(rsAutocadDxfFile,['dxf']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then
-  begin
+  if SaveDialog.Execute then begin WestPoint;
     FFreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     Strings := TStringList.Create;
     Strings.Add('0' + EOL + 'SECTION');
@@ -907,8 +906,7 @@ begin
   SaveDialog.FileName := Str;
   SaveDialog.Filter := createDialogFilter(rsTextFile,['txt']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then
-  begin
+  if SaveDialog.Execute then begin WestPoint;
     FFreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     Strings := TStringList.Create;
     for I := 1 to FPlates.Count do begin

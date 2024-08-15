@@ -441,7 +441,8 @@ end;
 
 procedure TFreeLayerDialog.Edit2KeyPress(Sender: TObject; var Key: Char);
 begin
-   if (Key in [#8,'1'..'9','0',#13]) or (Key=FormatSettings.DecimalSeparator) then else key:=#0;
+   if not (Key in [#8,'1'..'9','0','.',#13]) then key:=#0;
+// if (Key in [#8,'1'..'9','0',#13]) or (Key=FormatSettings.DecimalSeparator) then else key:=#0;
    if Key=#13 then Edit2Exit(self);
 end;
 
@@ -461,7 +462,8 @@ end;
 
 procedure TFreeLayerDialog.Edit3KeyPress(Sender: TObject; var Key: Char);
 begin
-   if (Key in [#8,'1'..'9','0',#13]) or (Key=FormatSettings.DecimalSeparator) then else key:=#0;
+   if not (Key in [#8,'1'..'9','0','.',#13]) then key:=#0;
+// if (Key in [#8,'1'..'9','0',#13]) or (Key=FormatSettings.DecimalSeparator) then else key:=#0;
    if Key=#13 then Edit3Exit(self);
 end;
 

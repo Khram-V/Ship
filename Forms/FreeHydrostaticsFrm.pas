@@ -139,39 +139,23 @@ begin
   _Label11.Caption := Str;
   ShowModal;
   Result := Modalresult = mrOk;
-end;{TFreeHydrostaticsForm.Execute}
+end;
 
 procedure TFreeHydrostaticsForm.Edit1KeyPress(Sender: TObject; var Key: char);
 begin
-  if (Key in [#8, '1'..'9', '0', '-', #13]) or (Key = FormatSettings.DecimalSeparator) then
-  else
-    key := #0;
-end;{TFreeHydrostaticsForm.Edit1KeyPress}
+  if not (Key in [#8, '0'..'9', '.', '-', #13]) then key := #0;
+end;
 
 procedure TFreeHydrostaticsForm.Button1Click(Sender: TObject);
-begin
-  ModalResult := mrOk;
-end;{TFreeHydrostaticsForm.Button1Click}
-
+    begin ModalResult := mrOk; end;
 procedure TFreeHydrostaticsForm.Edit1Exit(Sender: TObject);
-begin
-  StartDraft := StartDraft;
-end;{TFreeHydrostaticsForm.Edit1Exit}
-
+    begin StartDraft := StartDraft; end;
 procedure TFreeHydrostaticsForm.Edit3Exit(Sender: TObject);
-begin
-  DraftStep := DraftStep;
-end;{TFreeHydrostaticsForm.Edit3Exit}
-
+    begin DraftStep := DraftStep; end;
 procedure TFreeHydrostaticsForm.Edit4Exit(Sender: TObject);
-begin
-  Trim := Trim;
-end;{TFreeHydrostaticsForm.Edit4Exit}
-
+    begin Trim := Trim; end;
 procedure TFreeHydrostaticsForm.Edit2Exit(Sender: TObject);
-begin
-  EndDraft := Enddraft;
-end;{TFreeHydrostaticsForm.Edit2Exit}
+    begin EndDraft := Enddraft; end;
 
 procedure TFreeHydrostaticsForm.Button2Click(Sender: TObject);
 var

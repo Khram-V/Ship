@@ -186,7 +186,8 @@ begin
      R:=0.0;
      EditDistance.Value:=0.0;
 
-     Self.Caption := 'Point['+IntToStr(FActiveControlPoint.Id) +']:'+FActiveControlPoint.Name;
+     Self.Caption := 'Point['+IntToStr(FActiveControlPoint.Id)
+                                 +']:'+FActiveControlPoint.Name;
                    {+ ' ('+FloatToStr(FActiveControlPoint.Coordinate.X)
                      +','+FloatToStr(FActiveControlPoint.Coordinate.Y)
                      +','+FloatToStr(FActiveControlPoint.Coordinate.Z)
@@ -603,9 +604,8 @@ end;
 
 procedure TFreeControlPointForm.OrdinateEditorKeyPress(Sender: TObject; var Key: char);
 begin
-  if ((Key >= '0') and (Key <= '9'))
-    or (Key=DefaultFormatSettings.DecimalSeparator) or (Key='.') or (Key=',') or (Key='+') or (Key='-')
-    then EntryMethod := emTyping;
+  if not (Key in ['0'..'9','.','+','-',#13]) then EntryMethod := emTyping;
+//if ((Key >= '0') and (Key <= '9')) or (Key=DefaultFormatSettings.DecimalSeparator) or (Key='.') or (Key=',') or (Key='+') or (Key='-') then EntryMethod := emTyping;
 end;
 
 procedure TFreeControlPointForm.EditYEditingDone(Sender: TObject);
@@ -619,27 +619,22 @@ begin
    if not Self.Active then exit;
    //if not Self.Focused then exit;
    if EnteredControl <> EditY then exit;
-
-   if ActiveControlPoint<>nil then
-   begin
+   if ActiveControlPoint<>nil then begin
       TFreeShip(FreeShip).Surface.Selection_Add(ActiveControlPoint);
       // do only something, if the value has really been changed:
       P:=ActiveControlPoint.Coordinate;
       //Val := ConvertCoordinate(EditY.Text, P.Y);
       Val := EditY.Value;
-      if (abs(P.Y-Val)>1e-5) or (TFreeShip(FreeShip).NumberOfSelectedControlPoints>1) then
-      begin
+      if (abs(P.Y-Val)>1e-5)
+      or (TFreeShip(FreeShip).NumberOfSelectedControlPoints>1) then begin
       // SAP change all selected points
         I := 1;
-         while I <= TFreeShip(FreeShip).NumberOfSelectedControlPoints do
-         begin
-            P := TFreeShip(FreeShip).SelectedControlPoint[I-1].Coordinate;
+         while I<=TFreeShip(FreeShip).NumberOfSelectedControlPoints do begin
+            P:=TFreeShip(FreeShip).SelectedControlPoint[I-1].Coordinate;
             //Val:=ConvertCoordinate(EditY.Text, P.Y);
             Val := EditY.Value;
-            if abs(P.Y-Val)>1e-5 then
-            begin
-               if not saved then
-               begin
+            if abs(P.Y-Val)>1e-5 then begin
+               if not saved then begin
                   TFreeShip(FreeShip).Edit.CreateUndoObject(rsYCoordinate,True);
                   saved := true;
                end;
@@ -651,17 +646,14 @@ begin
          end;
 
 //  finally update the text field:
-         if EditY.Text<>'' then
-         begin
+         if EditY.Text<>'' then begin
             P:=ActiveControlPoint.Coordinate;
             //Val:= ConvertCoordinate(EditY.Text, P.Y);
             Val := EditY.Value;
-         end
-         else Val:= 0;
+         end else Val:= 0;
          EditY.Text:=FloatToDec(Val,4); // update the field in case of input errors
 
-         if saved then
-         begin
+         if saved then begin
             TFreeShip(FreeShip).Built:=False;
             TFreeShip(FreeShip).FileChanged:=True;
             TFreeShip(FreeShip).Redraw;

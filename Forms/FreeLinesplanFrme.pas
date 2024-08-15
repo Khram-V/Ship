@@ -1790,7 +1790,7 @@ begin
   SaveDialog.FileName := ChangeFileExt(Str, '');
   SaveDialog.Filter := createDialogFilter(rsAutocadDxfFile,['dxf']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then begin
+  if SaveDialog.Execute then begin WestPoint;
     Freeship.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     SplitSectionLocation := Freeship.ProjectSettings.ProjectSplitSectionLocation;
 

@@ -294,6 +294,7 @@ end;{TFreeIGESList.Clear}
 constructor TFreeIGESList.Create;
 begin
    Inherited Create;
+   WestPoint;
    FStartSection:=TStringList.Create;
    FGlobalSection:=TStringList.Create;
    FDirectorySection:=TStringList.Create;
@@ -322,39 +323,30 @@ var Str     : AnsiString;
     LastCol : Integer;
 
     function CreateTimeStamp:string;
-    var Time    : TDateTime;
+    var Time: TDateTime;
     begin
        Time:=now;
-       // year
-       Result:=IntToStr(YearOf(Time));
-       // month
-       Tmp:=IntToStr(MonthOf(Time));
+       Result:=IntToStr(YearOf(Time));          // year
+       Tmp:=IntToStr(MonthOf(Time));            // month
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       // day
-       Tmp:=IntToStr(DayOf(Time));
+       Tmp:=IntToStr(DayOf(Time));              // day
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       // separator
-       Result:=Result+'.';
-       // Hours
-       Tmp:=IntToStr(HourOf(Time));
+       Result:=Result+'.';                      // separator
+       Tmp:=IntToStr(HourOf(Time));             // Hours
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       // minutes
-       Tmp:=IntToStr(MinuteOf(Time));
+       Tmp:=IntToStr(MinuteOf(Time));           // minutes
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       // seconds
-       Tmp:=IntToStr(SecondOf(Time));
+       Tmp:=IntToStr(SecondOf(Time));           // seconds
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
        Result:=IntToStr(length(Result))+'H'+Result;
-
     end;{CreateTimeStamp}
-
 begin
-   DefaultFormatSettings.DecimalSeparator := '.';   // Create time string
+// DefaultFormatSettings.DecimalSeparator := '.';   // Create time string
    TimeStr:=CreateTimeStamp;                        // Create the start section
    FStartSection.Clear;
    FStartSection.Add(CheckString('FREE!ship IGES file. (www.freeship.org)',LastColumn,'S',1));
@@ -387,20 +379,14 @@ begin
 
    // split up into lines of max. 72 characters
    Index:=1;
-   while length(Str)>LastColumn do
-   begin
-      //
+   while length(Str)>LastColumn do begin
       Tmp:=Copy(Str,1,LastColumn);
       LastCol:=LastColumn;
-      while (Tmp<>'') and (Tmp[LastCol]<>ParameterDelimiter) do
-      begin
-         if pos(ParameterDelimiter,Tmp)=0 then
-         begin
-            // This must be a stringvalue which spans multiple lines
+      while (Tmp<>'') and (Tmp[LastCol]<>ParameterDelimiter) do begin
+         if pos(ParameterDelimiter,Tmp)=0 then begin // This must be a stringvalue which spans multiple lines
             Tmp:=Uppercase(Tmp);
             break;
-         end else
-         begin
+         end else begin
             Delete(Tmp,LastCol,1);
             Dec(LastCol);
          end;
@@ -410,8 +396,7 @@ begin
       Inc(Index);
       Delete(Str,1,LastCol);
    end;
-   if Str<>'' then
-   begin
+   if Str<>'' then begin
       Tmp:=CheckString(Str,LastColumn,'G',Index);
       FGlobalSection.Add(Tmp);
    end;
@@ -432,7 +417,7 @@ begin
    Strings.AddStrings(FTerminateSection);
    Strings.SaveToFile(ChangeFileExt(Filename,'.igs'));
    FreeAndNil(Strings);
-end;{TFreeIGESList.SaveToFile}
+end;
 
 
 end.

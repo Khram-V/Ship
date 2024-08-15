@@ -364,8 +364,7 @@ begin
   SaveDialog.FileName := 'image.jpg';
   SaveDialog.Filter := createDialogFilter(rsJPEGFiles, ['jpg']);
   Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
-  if SaveDialog.Execute then
-  begin
+  if SaveDialog.Execute then begin
     Image := TJPEGImage.Create;
     Image.Assign(FBitmap);
     Image.CompressionQuality := FQuality;

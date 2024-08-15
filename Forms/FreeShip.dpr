@@ -9,8 +9,9 @@ uses
   Controls, Forms, Dialogs,
   SysUtils, Math, LazUTF8,                // this includes the LCL widgetset
   DefaultTranslator, Interfaces,
-  FreeLanguageSupport in '../Units/FreeLanguageSupport.pas',
   Main                in '../Forms/Main.pas',                       {MainForm}
+  FreeTypes           in '../Units/FreeTypes.pas',
+  FreeLanguageSupport in '../Units/FreeLanguageSupport.pas',
   FreeVersionUnit     in '../Units/FreeVersionUnit.pas';
 
 var ParametersHelp: boolean=false;
@@ -43,11 +44,11 @@ procedure PrintParametersHelp( Ans: Boolean );
 {$R *.res}
 
 begin
+  WestPoint;
   InitByParameters;
   PrintParametersHelp( false );
-  RequireDerivedFormResource:=True;       // new
-  FormatSettings.DecimalSeparator:='.';
-  DefaultFormatSettings.DecimalSeparator:='.';
+  RequireDerivedFormResource:=True;      // new
+
   Application.Initialize;
 
   if ParametersHelp then begin PrintParametersHelp( true ); exit; end;
@@ -64,13 +65,13 @@ begin
   Application.OnActivate := MainForm.OnActivate;
 
   try
-  SetExceptionMask(                             // Enabling FPU exception mask
+  SetExceptionMask(                              // Enabling FPU exception mask
   [exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
 
   Application.Run;
 
-  except                 // Floating point operation
-    on E: EMathError do; //    ( 'General floating-point exception caught!' );
+  except                   // Floating point operation
+    on E: EMathError do;   //  ( 'General floating-point exception caught!' );
 //  on E: EAccessViolation do;
 //  on E: EIntError  do Writeln( 'General integer exception!' );
 //  on E: EDivByZero do Writeln( 'Division by zero exception!' );
@@ -78,19 +79,5 @@ begin
 //  on E: EUnderflow do Writeln( 'Underflow exception!' );
   end
 
-(* except on E: Exception do logger.ShowExceptionCallStack( E ); end;
-type
- { General math errors }
-   EMathError  = Class( Exception  );  //  General floating-point exception
-   EInvalidOp  = Class( EMathError );
-   EZeroDivide = Class( EMathError );  //  Division by zero exception caught!
-   EOverflow   = Class( EMathError );  //  Overflow exception caught!
-   EUnderflow  = Class( EMathError );  //  Underflow exception caught!
- { Integer math exceptions }
-   EIntError   = Class( EExternal );   //  General integer exception!
-   EDivByZero  = Class( EIntError );
-   ERangeError = Class( EIntError );
-   EIntOverflow= Class( EIntError );
-*)
 end.
 

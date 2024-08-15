@@ -92,14 +92,12 @@ Const
   EOL                  = #13#10;
 
 Function F2S( Value: TFloatType ): TFloatType;
-function GetFloat(const S: String): TFloatType;
+Function GetFloat(const S: String): TFloatType;
 Function FloatTypeToStr( Value: TFloatType ): String;
+Procedure WestPoint;
 //Function Dist( A:T3DVector ): TFloatType;
 
 Implementation
-
-//{$I FreeTypes.inc}
-{= header file is FreeTypes.pas }
 
 operator = (c1,c2:T3DCoordinate): boolean;
 begin result := (c1.x=c2.x) and (c1.y=c2.y) and (c1.z=c2.z); end;
@@ -124,12 +122,6 @@ begin result.x := (c.x - v.x);
       result.y := (c.y - v.y);
       result.z := (c.z - v.z);
 end;
-
-//operator - ( A,B:T3DCoordinate ): T3DCoordinate;  // A-B
-//begin result.x := (A.x - B.x);
-//      result.y := (A.y - B.y);
-//      result.z := (A.z - B.z);
-//end;
 
 operator - (c1,c2:T3DCoordinate): T3DVector;
 begin result.x := (c1.x - c2.x);
@@ -161,46 +153,40 @@ begin result.x := (v1.y * v2.z) - (v1.z * v2.y);
       result.z := (v1.x * v2.y) - (v1.y * v2.x);
 end;
 
-Function Dist( A:T3DVector ): TFloatType;
-   begin result:=sqrt( A.x*A.x+A.y*A.y+A.z*A.z ); end;
+//Function Dist( A:T3DVector ): TFloatType;
+//   begin result:=sqrt( A.x*A.x+A.y*A.y+A.z*A.z ); end;
 
 function F2S( Value: TFloatType ): TFloatType;
-   begin Result := Round( Value*1e5 )/1e5; end;
+var W:Double; begin W:=Value; W:=Round( W*1e6 ); Result:=W/1e6; end;
 
 //Function Length( Str: AnsiString ): Integer; overload; // ??? reintroduce; override; virtual;
 //   begin Result:=UTF8Length( Str ); end;
 
 function FloatTypeToStr( Value: TFloatType ): String;
-var W:Double;
-begin W:=Value; W:=Round( W*1e6 ); Result:=FloatToStrF( W/1e6,ffGeneral,6,6 );
-end;
+//begin Result:=FloatToStr( F2S( Value ) ); end;
+begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
 
-function GetFloat(const S: String): TFloatType;
-var  LocalFormatSettings: TFormatSettings; I: Integer;
-begin
+function GetFloat( const S: String ): TFloatType;
+  var LocalFormatSettings: TFormatSettings; I: Integer;
+begin LocalFormatSettings:=DefaultFormatSettings;
   for i:=1 to length(S) do
-    if S[i] ='.' then begin
-      LocalFormatSettings.DecimalSeparator:='.';
-      LocalFormatSettings.ThousandSeparator:=',';
-    end else
+//  if S[i] ='.' then begin
+//    LocalFormatSettings.DecimalSeparator:='.';
+//    LocalFormatSettings.ThousandSeparator:=','; break; end else
     if S[i] =',' then begin
       LocalFormatSettings.DecimalSeparator:=',';
-      LocalFormatSettings.ThousandSeparator:='.';
-    end;
+      LocalFormatSettings.ThousandSeparator:='.'; break; end;
     Result := StrToFloat( S,LocalFormatSettings );
-
-(*
-    in ['.',','] then begin Str[i]:=FormatSettings.DecimalSeparator;
-
-  if ( S[i] in ['0'..'9',FormatSettings.DecimalSeparator,'-']) then TrashText:=TrashText+Text[i] else if i>sel then inc(x);
-  if not TryStrToFloat( S,Result,FormatSettings ) then begin // try an opposite way. this is a workaround if a file was saved with commas
-    LocalFormatSettings.DecimalSeparator:=',';
-    LocalFormatSettings.ThousandSeparator:='.';
-    Result := StrToFloat( S,LocalFormatSettings );
-  end;
-*)
 end;
 
+Procedure WestPoint;
+Begin
+  DefaultFormatSettings.DecimalSeparator:='.';
+  DefaultFormatSettings.ThousandSeparator:=',';
+  DefaultFormatSettings.ShortDateFormat:='yyyy-mm-dd';
+  DefaultFormatSettings.ShortTimeFormat:='hh:nn:ss';
+  FormatSettings:=DefaultFormatSettings;
+end;
 
 end.
 
