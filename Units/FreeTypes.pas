@@ -170,9 +170,9 @@ function GetFloat( const S: String ): TFloatType;
   var LocalFormatSettings: TFormatSettings; I: Integer;
 begin LocalFormatSettings:=DefaultFormatSettings;
   for i:=1 to length(S) do
-//  if S[i] ='.' then begin
-//    LocalFormatSettings.DecimalSeparator:='.';
-//    LocalFormatSettings.ThousandSeparator:=','; break; end else
+    if S[i] ='.' then begin
+      LocalFormatSettings.DecimalSeparator:='.';
+      LocalFormatSettings.ThousandSeparator:=','; break; end else
     if S[i] =',' then begin
       LocalFormatSettings.DecimalSeparator:=',';
       LocalFormatSettings.ThousandSeparator:='.'; break; end;

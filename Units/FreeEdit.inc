@@ -1725,23 +1725,28 @@ var
   T3: T3DCoordinate=(X:0;Y:0;Z:0);
   Strings: TStringList;
   Dialog: TSaveDialog;
+
+  EdgePointLists: TFasterListTFasterListTFreeSubdivisionPoint;
+  Points: TFasterListTFreeSubdivisionPoint;
+  Point: TFreeSubdivisionPoint;
+
   Procedure Str2( A,B: single );
     begin Str:=Str+format( ' %1.5g %1.5g',[F2S(A),F2S(B)] );  end;
-  Procedure StemStern( Dir:boolean ); // Dir=true - форштевень
+  Procedure StemStern( Dir:boolean );                  // Dir=true - форштевень
     var I,J,K,M,N: Integer;
   begin Str:='';
-    for I:=0 to FreeShip.NumberofButtocks-1 do                                  // поиск нулевого батокса
+    for I:=0 to FreeShip.NumberofButtocks-1 do        // поиск нулевого батокса
     with FreeShip.Buttock[I] do begin
       if not Built then Rebuild;
-      if Count>0 then
-      if Items[0].Point[0].Y=0 then begin M:=0; z1:=Items[0].Point[0].Z;        // батокс в диаметрильной плоскости
+      if Count>0 then                     // батокс для диаметрильной плоскости
+      if Items[0].Point[0].Y=0 then begin M:=0; z1:=Items[0].Point[0].Z;
         for J:=0 to Count-1 do begin
           N:=Items[J].NumberOfPoints-1;
           for K:=0 to N do if Items[J].Point[K].Z<=z1 then begin z1:=Items[J].Point[K].Z; M:=K; end;
-          if Dir then begin Str:=' '+InttoStr( M );
+          if Dir then begin Str:=' '+InttoStr( M+1 );
             for K:=M downto 0 do with Items[J].Point[K] do Str2( Z,X );
 //              if Z>=z1 then begin Str2( Z,X ); z1:=Z; end else break;
-          end else begin  Str:=' '+InttoStr( N-M );
+          end else begin  Str:=' '+InttoStr( N-M+1 );
             for K:=M to N do with Items[J].Point[K] do Str2( Z,X );
 //              if Z>=z1 then begin Str2( Z,X ); z1:=Z; end else break;
           end;
@@ -1749,6 +1754,14 @@ var
       end;
     end;
     if Str='' then Strings.Add( EOL+' 0' ) else Strings.Add( Str );
+  end;
+  procedure SendSpline( Spline:TFreespline );
+  var J: integer; P: T3DCoordinate;
+  begin
+    Str:=format( ' %3d ',[Spline.NumberOfPoints] );
+    for J:=1 to Spline.NumberOfPoints do with Spline.Point[J-1] do
+      Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] );
+    Strings.Add( Str );
   end;
 
 begin
@@ -1776,7 +1789,7 @@ begin
           + ' ' + FloatToStrF( FProjectBeam,ffGeneral,6,1)
           + ' ' + FloatToStrF( FProjectDraft,ffGeneral,6,1)+EOL );
 //  T3.Z:=FreeShip.FProjectSettings.FProjectDraft;
-    StemStern( false );
+    StemStern( false );                    // первые две строки для ахтерштевня
     Strings.Add( ' 0'+EOL );
     for I:=0 to FreeShip.NumberofStations-1 do
     with FreeShip.Station[I] do begin
@@ -1788,8 +1801,8 @@ begin
       T3.Y:=-FreeShip.FProjectSettings.FProjectBeam; T3.X:=Items[0].Point[0].X;
       Title := format( '%3d %-4.4g',[N,F2S(T3.X)] ); S:='';
       for J:=0 to Count-1 do with Items[J] do begin
-        N:=NumberOfPoints-1; Str:='';         // ещё и сортировка - не хватало
-        if ( Point[N].Z-Point[0].Z>0.01 ) or       // == может быть на палубе
+        N:=NumberOfPoints-1; Str:='';          // ещё и сортировки - не хватало
+        if ( Point[N].Z-Point[0].Z>0.01 ) or         // == может быть на палубе
          ( ( (Point[0]-T3) * (Point[N]-T3) ).X>=0.0 )
         then begin z1:=Point[0].Z; for K:=0 to N do with Point[K] do Str2( Z,Y ); end
         else begin z1:=Point[N].Z; for K:=N downto 0 do with Point[K] do Str2( Z,Y ); end;
@@ -1797,8 +1810,29 @@ begin
       end;
       Strings.Add( Title+S );
     end;
-    Strings.Add( EOL+' 0' );
-    StemStern( true );
+    Strings.Add( EOL+' 0' );                         // форштевень в завершение
+    StemStern( true );          // и в заключение еще и все контрольные контуры
+
+    if FreeShip.NumberOfControlCurves>0 then begin
+      Strings.Add( EOL+'ContorlCurves['+IntToStr(FreeShip.NumberOfControlCurves)+']' );
+      for I:=0 to FreeShip.NumberOfControlCurves-1 do
+                  SendSpline( FreeShip.ControlCurve[I].Spline );
+    end;
+
+    EdgePointLists := TFasterListTFasterListTFreeSubdivisionPoint.Create;
+    FreeShip.Surface.ExtractAllEdgeLoops( EdgePointLists );
+    if EdgePointLists.Count>0 then begin
+      Strings.Add( EOL+'EdgePoints['+IntToStr( EdgePointLists.Count )+']' );
+      for I:=0 to EdgePointLists.Count-1 do begin
+        Points := EdgePointLists[I];
+        Str:=format( ' %3d ',[Points.Count] ); // ' '+IntToStr( Points.Count );
+        for J:=0 to Points.Count-1 do with Points[J].Coordinate do
+          Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] );
+        Strings.Add( Str );
+        FreeAndNil(Points);
+      end;
+    end;
+    FreeAndNil( EdgePointLists );
     Strings.SaveToFile( ChangeFileExt(Dialog.FileName, '.vsl' ));
     FreeAndNil(Strings);
   end;
@@ -1901,36 +1935,32 @@ begin
     Layername := 'Edges';
     ind := FindDXFColorIndex(FreeShip.Preferences.EdgeColor);
     //Points := TFasterListTFreeSubdivisionPoint.Create;
-    for I := 1 to EdgePointLists.Count do
-    begin
+    for I := 1 to EdgePointLists.Count do begin
       Points := EdgePointLists[I - 1];
       //Points.Add(EdgePointLists[I - 1].StartPoint);
       //Points.Add(EdgePointLists[I - 1].EndPoint);
       Strings.Add('0' + EOL + 'POLYLINE');
-      Strings.Add('8' + EOL + LayerName);   // layername
+      Strings.Add('8' + EOL + LayerName);       // layername
       Strings.Add('62' + EOL + IntToStr(Ind));  // color by layer
-      Strings.Add('70' + EOL + '10');   // not closed
-      Strings.Add('66' + EOL + '1');    // vertices follow
-      for J := 1 to Points.Count do
-      begin
+      Strings.Add('70' + EOL + '10');           // not closed
+      Strings.Add('66' + EOL + '1');            // vertices follow
+      for J := 1 to Points.Count do begin
         Point := Points[J - 1];
         Strings.Add('0' + EOL + 'VERTEX');
         Strings.Add('8' + EOL + LayerName);
         Strings.Add('10' + EOL + FloatToDec(Point.Coordinate.X, 4));
         Strings.Add('20' + EOL + FloatToDec(Point.Coordinate.Y, 4));
         Strings.Add('30' + EOL + FloatToDec(Point.Coordinate.Z, 4));
-        Strings.Add('70' + EOL + '32');    // 3D polyline mesh vertex
+        Strings.Add('70' + EOL + '32');              // 3D polyline mesh vertex
       end;
       Strings.Add('0' + EOL + 'SEQEND');
-      if FreeShip.Visibility.ModelView = mvBoth then
-      begin
+      if FreeShip.Visibility.ModelView = mvBoth then begin
         Strings.Add('0' + EOL + 'POLYLINE');
-        Strings.Add('8' + EOL + LayerName);   // layername
+        Strings.Add('8' + EOL + LayerName);       // layername
         Strings.Add('62' + EOL + IntToStr(Ind));  // color by layer
-        Strings.Add('70' + EOL + '10');   // not closed
-        Strings.Add('66' + EOL + '1');    // vertices follow
-        for J := 1 to Points.Count do
-        begin
+        Strings.Add('70' + EOL + '10');           // not closed
+        Strings.Add('66' + EOL + '1');            // vertices follow
+        for J := 1 to Points.Count do begin
           Point := Points[J - 1];
           Strings.Add('0' + EOL + 'VERTEX');
           Strings.Add('8' + EOL + LayerName);
@@ -3956,31 +3986,27 @@ var
   Value: TFloatType;
   P: T3DCoordinate;
 
-  function NextLine: string;
+  function Next_Line: string;
   begin
-    if Index + 1 < Strings.Count then
-    begin
-      Inc(Index);
-      Result := Strings[index];
-    end
-    else
-    begin
+    if Index + 1 < Strings.Count then begin
+      Inc(Index); Result := Strings[index];
+    end else begin
       Result := '';
       Abort := True;
       MessageDlg(UserString(115), mtError, [mbOK], 0);
     end;
   end;{NextLine}
 
-  function GetInteger(str: string): integer;
+  function Get_Integer(str: string): integer;
   var
     Index: integer;
   begin
     Index := Pos('=', Str);
     Result := 0;
-    if Index <> 0 then
-    begin
-      Str := Copy(Str, Index + 1, Length(Str) - Index);
-      Val(Str, Result, Index);
+    if Index <> 0 then //begin
+       Str := Copy(Str, Index + 1, Length(Str) - Index);
+    Result:=StrToInt( Str );
+(*  Val(Str, Result, Index);
       if Index <> 0 then
       begin
         MessageDlg(Userstring(116) + #32 + IntToStr(I), mtError, [mbOK], 0);
@@ -3989,41 +4015,37 @@ var
     end
     else
       Abort := True;
+*)
   end;{GetInteger}
 
-  function GetFloat(str: string): TFloatType;
+  function Get_Float(str: string): TFloatType;
   var
     Index: integer;
   begin
     Index := Pos('=', Str);
     Result := 0;
-    if Index <> 0 then
-    begin
-      Str := Copy(Str, Index + 1, Length(Str) - Index);
-      Val(Str, Result, Index);
-      if Index <> 0 then
-      begin
+    if Index <> 0 then Str:=Copy(Str,Index+1,Length(Str)-Index);
+    Result:=GetFloat( Str );
+(*  Val(Str, Result, Index);
+      if Index <> 0 then begin
         MessageDlg(Userstring(117) + #32 + IntToStr(I), mtError, [mbOK], 0);
         Abort := True;
       end;
     end
     else
       Abort := True;
+*)
   end;{GetFloat}
 
   function NextParameter(var input: string): string;
-  var
-    Index: integer;
+  var Index: integer;
   begin
     Index := pos(#32, Input);
-    if Index <> 0 then
-    begin
+    if Index <> 0 then begin
       Result := Copy(Input, 1, Index - 1);
       Delete(Input, 1, Index);
       Input := Trim(Input);
-    end
-    else
-    begin
+    end else begin
       Result := '';
       Abort := True;
     end;
@@ -4079,47 +4101,47 @@ begin
           Index := Indices[I - 1];
           Str := Strings[index];
           if (pos('[TYachtLines]', Strings[I - 1]) <> 0) then begin // Read loa
-            Str := NextLine;
-            FreeShip.ProjectSettings.ProjectLength := GetFloat(Str);
-            NextLine;
-            NextLine;
+            Str := Next_Line;
+            FreeShip.ProjectSettings.ProjectLength := Get_Float(Str);
+            Next_Line;
+            Next_Line;
             // read beam over all
-            Str := NextLine;
-            FreeShip.ProjectSettings.ProjectBeam := GetFloat(Str);
-            NextLine;
-            NextLine;
+            Str := Next_Line;
+            FreeShip.ProjectSettings.ProjectBeam := Get_Float(Str);
+            Next_Line;
+            Next_Line;
             // Read draft
-            Str := NextLine;
-            FreeShip.ProjectSettings.ProjectDraft := GetFloat(Str);
+            Str := Next_Line;
+            FreeShip.ProjectSettings.ProjectDraft := Get_Float(Str);
             FreeShip.ProjectSettings.FMainparticularsHasBeenset := True;
-            for J := 1 to 12 do NextLine;
+            for J := 1 to 12 do Next_Line;
           end
           else if (pos('[TShipLines]', Strings[I - 1]) <> 0) then begin
-            NextLine;
+            Next_Line;
             // Read length
-            Str := NextLine;
-            FreeShip.ProjectSettings.ProjectLength := GetFloat(Str);
+            Str := Next_Line;
+            FreeShip.ProjectSettings.ProjectLength := Get_Float(Str);
             // read beam
-            Str := NextLine;
-            FreeShip.ProjectSettings.ProjectBeam := GetFloat(Str);
+            Str := Next_Line;
+            FreeShip.ProjectSettings.ProjectBeam := Get_Float(Str);
             // skip depth
-            NextLine;
+            Next_Line;
             // Read draft
-            Str := NextLine;
-            FreeShip.ProjectSettings.ProjectDraft := GetFloat(Str);
+            Str := Next_Line;
+            FreeShip.ProjectSettings.ProjectDraft := Get_Float(Str);
             FreeShip.ProjectSettings.FMainparticularsHasBeenset := True;
-            for J := 1 to 22 do NextLine;
+            for J := 1 to 22 do Next_Line;
           end;
 
-          NextLine;            // skip OrderU=
-          NextLine;            // skip OrderV=
+          Next_Line;            // skip OrderU=
+          Next_Line;            // skip OrderV=
 
           // Read number of columns
-          Str := NextLine;
-          Cols := GetInteger(Str);
+          Str := Next_Line;
+          Cols := Get_Integer(Str);
           // Read number of rows
-          Str := NextLine;
-          Rows := GetInteger(Str);
+          Str := Next_Line;
+          Rows := Get_Integer(Str);
           if (Cols > 1) and (Rows > 1) then begin
             // Initialize points
             Setlength(Points, Rows);
@@ -4130,7 +4152,7 @@ begin
             end;
             for J := 1 to Cols do begin
               for K := 1 to Rows do begin
-                Str := NextLine;
+                Str := Next_Line;
                 if not abort then begin
                   Str := Trim(Str);
                   P.X := 0;
@@ -4182,11 +4204,11 @@ begin
           for I := 1 to Strings.Count do
             if Pos('[TContours]', Strings[I - 1]) <> 0 then begin
               Index := I - 1;
-              Str := NextLine;
-              N := GetInteger(Str);
+              Str := Next_Line;
+              N := Get_Integer(Str);
               if not abort then
                 for J := 1 to N do begin
-                  Str := NextLine;
+                  Str := Next_Line;
                   if not abort then begin
                     Str := Trim(Str);
                     Tmp := NextParameter(Str);

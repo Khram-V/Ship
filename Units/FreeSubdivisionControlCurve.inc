@@ -846,15 +846,12 @@ begin
 
       // fix crease. free standing edge is always Creased
       E0.Crease:=true;
-      if (i=1) then // fix vertex type
-        V1.VertexType := svCorner;
-      if (i=FControlPoints.Count-1) then // fix vertex type
-        V2.VertexType := svCorner;
-      if V1.VertexType <> svCorner then V1.VertexType := svCrease;
-      if V2.VertexType <> svCorner then V2.VertexType := svCrease;
+      if (i=1) then V1.VertexType := svCorner;               // fix vertex type
+      if (i=FControlPoints.Count-1) then V2.VertexType:=svCorner; // fix vertex type
+      if V1.VertexType <> svCorner then V1.VertexType :=svCrease;
+      if V2.VertexType <> svCorner then V2.VertexType :=svCrease;
 
-      if i=1 then
-      begin
+      if i=1 then begin
         P1:=TFreeSubdivisionPoint.Create(Surface);
         P1.Coordinate := V1.Coordinate;
         P1.VertexType := V1.VertexType;
@@ -874,13 +871,10 @@ begin
       E1.FCrease := true;
       E1.Curve := Self;
       E1.SubdivisionLevel := level;
-      if V1 = E0.StartPoint then
-      begin
+      if V1 = E0.StartPoint then begin
         E1.StartPoint := P1;
         E1.EndPoint := P2;
-      end
-      else
-      begin
+      end else begin
         E1.StartPoint := P2;
         E1.EndPoint := P1;
       end;
