@@ -1068,17 +1068,17 @@ begin                                        // read description
   FDescription := Strings[LineNr];           // read Layer identification
   Inc(LineNr);
   Str := Strings[LineNr];
-  FLayerID := ReadIntFromStr(LineNr, Str);
+  FLayerID := GetInteger( Str);
   if FLayerID > Surface.FLastusedLayerID then
     Surface.FLastusedLayerID := FLayerID;    // read color
-  FColor := ReadIntFromStr(LineNr, Str);     // read SurfaceVisible
-  FSurfaceVisible := ReadBoolFromStr(LineNr, Str);
-  FSymmetric := ReadBoolFromStr(LineNr,Str); // read developability
-  if Str<>'' then FDevelopable := ReadBoolFromStr(LineNr, Str)
+  FColor := GetInteger( Str);     // read SurfaceVisible
+  FSurfaceVisible := GetBoolean( Str);
+  FSymmetric := GetBoolean( Str); // read developability
+  if Str<>'' then FDevelopable := GetBoolean( Str)
              else FDevelopable := False;   // read calc. intersections flag
-  if Str<>'' then FUseForIntersections := ReadBoolFromStr(LineNr, Str)
+  if Str<>'' then FUseForIntersections := GetBoolean( Str)
              else FUseForIntersections := True; // read use in hydrostatics flag
-  if Str<>'' then FUseInHydrostatics := ReadBoolFromStr(LineNr, Str)
+  if Str<>'' then FUseInHydrostatics := GetBoolean( Str)
              else FUseInHydrostatics := True;
 end;
 

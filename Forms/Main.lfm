@@ -2,10 +2,10 @@ object MainForm: TMainForm
   Left = 823
   Height = 520
   Top = 254
-  Width = 962
+  Width = 1280
   Align = alTop
   ClientHeight = 520
-  ClientWidth = 962
+  ClientWidth = 1280
   Color = clAppWorkspace
   Constraints.MinHeight = 200
   Constraints.MinWidth = 300
@@ -26,7 +26,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 27
     Top = 493
-    Width = 962
+    Width = 1280
     Align = alBottom
     AutoSize = True
     BevelOuter = bvLowered
@@ -168,12 +168,12 @@ object MainForm: TMainForm
     Left = 0
     Height = 24
     Top = 0
-    Width = 962
+    Width = 1280
     Align = alTop
     BevelOuter = bvNone
     BorderWidth = 1
     ClientHeight = 24
-    ClientWidth = 962
+    ClientWidth = 1280
     Color = clMenuBar
     ParentBackground = False
     ParentColor = False
@@ -513,7 +513,7 @@ object MainForm: TMainForm
       Left = 1075
       Height = 24
       Top = 0
-      Width = 105
+      Width = 125
       Align = alNone
       ButtonHeight = 24
       ButtonWidth = 24
@@ -524,30 +524,12 @@ object MainForm: TMainForm
       Images = MenuImages
       ParentColor = False
       ParentFont = False
-      TabOrder = 4
+      TabOrder = 5
       Transparent = True
       object ToolButton27: TToolButton
         Left = 3
         Top = 0
         Action = EdgeExtrude
-      end
-      object ToolButton29: TToolButton
-        Tag = 2
-        Left = 51
-        Top = 0
-        Action = EdgeSplit
-      end
-      object ToolButton13: TToolButton
-        Tag = 4
-        Left = 3
-        Top = 24
-        Action = EdgeCollapse
-      end
-      object ToolButton16: TToolButton
-        Tag = 3
-        Left = 75
-        Top = 0
-        Action = NewEdge
       end
       object ToolButton17: TToolButton
         Tag = 1
@@ -555,9 +537,27 @@ object MainForm: TMainForm
         Top = 0
         Action = EdgeCrease
       end
+      object ToolButton29: TToolButton
+        Tag = 2
+        Left = 51
+        Top = 0
+        Action = EdgeSplit
+      end
+      object ToolButton16: TToolButton
+        Tag = 3
+        Left = 75
+        Top = 0
+        Action = NewEdge
+      end
+      object ToolButton13: TToolButton
+        Tag = 4
+        Left = 99
+        Top = 0
+        Action = EdgeCollapse
+      end
     end
     object ToolBarFaces: TToolBar
-      Left = 1200
+      Left = 1202
       Height = 24
       Top = 0
       Width = 52
@@ -584,7 +584,7 @@ object MainForm: TMainForm
       end
     end
     object ToolBarCurves: TToolBar
-      Left = 1250
+      Left = 1254
       Height = 24
       Top = 0
       Width = 37
@@ -598,7 +598,7 @@ object MainForm: TMainForm
       Images = MenuImages
       ParentColor = False
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 7
       Transparent = True
       object ToolButton40: TToolButton
         Left = 3
@@ -612,7 +612,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 469
     Top = 24
-    Width = 962
+    Width = 1280
     Align = alClient
     BevelOuter = bvNone
     ParentBackground = False

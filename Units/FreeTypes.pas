@@ -93,6 +93,8 @@ Const
 
 Function F2S( Value: TFloatType ): TFloatType;
 Function GetFloat(const S: String): TFloatType;
+Function GetInteger( const S:String ): Integer;
+Function GetBoolean( const S:String ): Boolean;
 Function FloatTypeToStr( Value: TFloatType ): String;
 Procedure WestPoint;
 //Function Dist( A:T3DVector ): TFloatType;
@@ -155,28 +157,47 @@ end;
 
 //Function Dist( A:T3DVector ): TFloatType;
 //   begin result:=sqrt( A.x*A.x+A.y*A.y+A.z*A.z ); end;
+//Function Length( Str: AnsiString ): Integer; overload; // ??? reintroduce; override; virtual;
+//   begin Result:=UTF8Length( Str ); end;
 
 function F2S( Value: TFloatType ): TFloatType;
 var W:Double; begin W:=Value; W:=Round( W*1e6 ); Result:=W/1e6; end;
 
-//Function Length( Str: AnsiString ): Integer; overload; // ??? reintroduce; override; virtual;
-//   begin Result:=UTF8Length( Str ); end;
-
 function FloatTypeToStr( Value: TFloatType ): String;
-//begin Result:=FloatToStr( F2S( Value ) ); end;
-begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
+begin Result:=FloatToStr( F2S( Value ) ); end;
+//begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
 
 function GetFloat( const S: String ): TFloatType;
-  var LocalFormatSettings: TFormatSettings; I: Integer;
-begin LocalFormatSettings:=DefaultFormatSettings;
-  for i:=1 to length(S) do
-    if S[i] ='.' then begin
+  var LocalFormatSettings: TFormatSettings; I,J,K: Integer; //Str: String;
+begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
+  for J:=1 to Length( S ) do
+    if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else if I>0 then break
+    else if S[J] ='.' then begin
       LocalFormatSettings.DecimalSeparator:='.';
-      LocalFormatSettings.ThousandSeparator:=','; break; end else
-    if S[i] =',' then begin
+      LocalFormatSettings.ThousandSeparator:=','; end
+    else if S[J] =',' then begin
       LocalFormatSettings.DecimalSeparator:=',';
-      LocalFormatSettings.ThousandSeparator:='.'; break; end;
-    Result := StrToFloat( S,LocalFormatSettings );
+      LocalFormatSettings.ThousandSeparator:='.'; end;
+  if K>0 then Result:=StrToFloat( copy( S,I,K-I ),LocalFormatSettings );
+//if K>0 then begin WriteLn( copy( S,I,K-I )+'['+IntToStr(Length(S))+'] <- '+S ); ReadLn; end;
+end;
+
+Function GetInteger( const S: String ): Integer;
+var I,J,K: Integer;
+begin I:=0; K:=0; Result:=0;
+  for J:=1 to Length( S ) do
+    if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else if I>0 then break;
+  if K>0 then Result:=StrToInt( copy( S,I,K-I ) );
+end;
+
+Function GetBoolean( const S:String ): Boolean;
+var I,J,K: Integer; Str:String;
+begin I:=0; K:=0; Result:=false;
+  for J:=1 to Length( S ) do
+    if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else if I>0 then break;
+  if K>0 then begin Str:=Upcase( copy( S,I,K-I ) );
+    Result:=(Str='1') or (Str='TRUE') or (Str='YES');
+  end;
 end;
 
 Procedure WestPoint;

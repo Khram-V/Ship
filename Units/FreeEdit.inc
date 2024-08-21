@@ -1756,11 +1756,12 @@ var
     if Str='' then Strings.Add( EOL+' 0' ) else Strings.Add( Str );
   end;
   procedure SendSpline( Spline:TFreespline );
-  var J: integer; P: T3DCoordinate;
-  begin
-    Str:=format( ' %3d ',[Spline.NumberOfPoints] );
-    for J:=1 to Spline.NumberOfPoints do with Spline.Point[J-1] do
-      Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] );
+  var J,N: integer; P: T3DCoordinate;
+  begin N:=Spline.NumberOfPoints-1;
+    Str:=format( ' %3d ',[N+1] );
+    if Spline.Point[0].Z<=Spline.Point[N].Z
+    then for J:=0 to N do with Spline.Point[J] do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] )
+    else for J:=N downto 0 do with Spline.Point[J] do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] );
     Strings.Add( Str );
   end;
 
@@ -1824,10 +1825,11 @@ begin
     if EdgePointLists.Count>0 then begin
       Strings.Add( EOL+'EdgePoints['+IntToStr( EdgePointLists.Count )+']' );
       for I:=0 to EdgePointLists.Count-1 do begin
-        Points := EdgePointLists[I];
-        Str:=format( ' %3d ',[Points.Count] ); // ' '+IntToStr( Points.Count );
-        for J:=0 to Points.Count-1 do with Points[J].Coordinate do
-          Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] );
+        Points := EdgePointLists[I]; N:=Points.Count-1;
+        Str:=format( ' %3d ',[N+1] );          // ' '+IntToStr( Points.Count );
+        if Points[0].Coordinate.Z<=Points[N].Coordinate.Z
+        then for J:=0 to N do with Points[J].Coordinate do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] )
+        else for J:=N downto 0 do with Points[J].Coordinate do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] );
         Strings.Add( Str );
         FreeAndNil(Points);
       end;
@@ -3413,9 +3415,9 @@ begin
                 until I = 0;
                 Inc(LineNr);
                 if Str <> '' then begin
-                  P.X := ReadFloatFromStr(LineNr, Str);
-                  P.Y := ReadFloatFromStr(LineNr, Str);
-                  P.Z := ReadFloatFromStr(LineNr, Str);
+                  P.X := GetFloat( Str);
+                  P.Y := GetFloat( Str);
+                  P.Z := GetFloat( Str);
                   Spline.Add(P);
                   Str := #32;
                 end;
@@ -3498,9 +3500,9 @@ begin
             Inc(LineNr);
             Str := Trim(Uppercase(Str));
             if (Str <> '') and (Str <> 'EOF') then begin
-              P.X := ReadFloatFromStr(LineNr, Str);
-              P.Y := ReadFloatFromStr(LineNr, Str);
-              P.Z := ReadFloatFromStr(LineNr, Str);
+              P.X := GetFloat( Str);
+              P.Y := GetFloat( Str);
+              P.Z := GetFloat( Str);
               Spline.Add(P);
               Str := #32;
             end else if Str = '' then begin
@@ -3581,16 +3583,16 @@ begin
     FreeShip.ProjectSettings.FProjectComment := Strings[LineNr];
     Inc(LineNr);
     Str := Strings[LineNr];
-    FreeShip.ProjectSettings.ProjectLength := ReadFloatfromStr(LineNr, Str);
-    FreeShip.ProjectSettings.ProjectBeam := ReadFloatfromStr(LineNr, Str);
-    FreeShip.ProjectSettings.ProjectDraft := ReadFloatfromStr(LineNr, Str);
-    FreeShip.ProjectSettings.ProjectWaterDensity := ReadFloatfromStr(LineNr, Str);
-    //      FreeShip.ProjectSettings.ProjectWaterTemper:=ReadFloatfromStr(LineNr,Str);
-    FreeShip.ProjectSettings.ProjectAppendageCoefficient := ReadFloatfromStr(LineNr, Str);
-    I := ReadIntfromStr(LineNr, Str);
+    FreeShip.ProjectSettings.ProjectLength := GetFloat( Str);
+    FreeShip.ProjectSettings.ProjectBeam := GetFloat( Str);
+    FreeShip.ProjectSettings.ProjectDraft := GetFloat( Str);
+    FreeShip.ProjectSettings.ProjectWaterDensity := GetFloat( Str);
+    //      FreeShip.ProjectSettings.ProjectWaterTemper:=GetFloat( Str);
+    FreeShip.ProjectSettings.ProjectAppendageCoefficient := GetFloat( Str);
+    I := GetInteger( Str);
     FreeShip.ProjectSettings.FProjectUnits := TFreeUnitType(I);
-    FreeShip.ProjectSettings.FMainparticularsHasBeenset := ReadBoolfromStr(LineNr, Str);
-    I := ReadIntfromStr(LineNr, Str);
+    FreeShip.ProjectSettings.FMainparticularsHasBeenset :=GetBoolean( Str);
+    I := GetInteger( Str);
     FreeShip.FPrecision := TFreePrecisionType(I);
     FreeShip.Surface.ImportFEFFile(Strings, LineNr);
     FreeAndNil(Strings);
@@ -3997,44 +3999,20 @@ var
     end;
   end;{NextLine}
 
-  function Get_Integer(str: string): integer;
-  var
-    Index: integer;
+  function Get_Integer( const Str: string): integer;
+  var Index: integer;
   begin
     Index := Pos('=', Str);
     Result := 0;
-    if Index <> 0 then //begin
-       Str := Copy(Str, Index + 1, Length(Str) - Index);
-    Result:=StrToInt( Str );
-(*  Val(Str, Result, Index);
-      if Index <> 0 then
-      begin
-        MessageDlg(Userstring(116) + #32 + IntToStr(I), mtError, [mbOK], 0);
-        Abort := True;
-      end;
-    end
-    else
-      Abort := True;
-*)
+    if Index<>0 then Result:=GetInteger( Copy( Str,Index+1,Length(Str)-Index ));
   end;{GetInteger}
 
-  function Get_Float(str: string): TFloatType;
-  var
-    Index: integer;
+  function Get_Float( const Str: string): TFloatType;
+  var Index: integer;
   begin
-    Index := Pos('=', Str);
+    Index := Pos( '=',Str );
     Result := 0;
-    if Index <> 0 then Str:=Copy(Str,Index+1,Length(Str)-Index);
-    Result:=GetFloat( Str );
-(*  Val(Str, Result, Index);
-      if Index <> 0 then begin
-        MessageDlg(Userstring(117) + #32 + IntToStr(I), mtError, [mbOK], 0);
-        Abort := True;
-      end;
-    end
-    else
-      Abort := True;
-*)
+    if Index<>0 then Result:=GetFloat( Copy(Str,Index+1,Length(Str)-Index) );
   end;{GetFloat}
 
   function NextParameter(var input: string): string;
@@ -5248,20 +5226,16 @@ begin
               until I = 0;
               Inc(Nr);
               Str := Trim(Uppercase(Str));
-              if (Str <> '') and (Str <> 'EOF') then
-              begin
-                P.X := ReadFloatFromStr(Nr, Str);
-                P.Y := ReadFloatFromStr(Nr, Str);
-                P.Z := ReadFloatFromStr(Nr, Str);
+              if (Str <> '') and (Str <> 'EOF') then begin
+                P.X := GetFloat( Str);
+                P.Y := GetFloat( Str);
+                P.Z := GetFloat( Str);
                 Spline.Add(P);
                 Str := #32;
               end
-              else if Str = '' then
-              begin
-                if Spline.NumberOfPoints > 1 then
-                  Curves.Add(Spline)
-                else
-                  FreeAndNil(Spline);
+              else if Str = '' then begin
+                if Spline.NumberOfPoints > 1 then Curves.Add(Spline)
+                                             else FreeAndNil(Spline);
                 Spline := TFreeSpline.Create(FreeShip.Surface);
               end;
             until (Str = 'EOF') or (EOF(FFile));
@@ -5806,9 +5780,9 @@ begin
             Inc(LineNr);
             Str := Trim( Uppercase(Str) );
             if (Str <> '') and (Str <> 'EOF') then begin
-              P.X := ReadFloatFromStr(LineNr, Str);
-              P.Y := ReadFloatFromStr(LineNr, Str);
-              P.Z := ReadFloatFromStr(LineNr, Str);
+              P.X := GetFloat( Str);
+              P.Y := GetFloat( Str);
+              P.Z := GetFloat( Str);
               Marker.Add(P);
               Str := #32;
             end else

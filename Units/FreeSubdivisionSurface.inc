@@ -3615,7 +3615,7 @@ begin
   // Read layer information
   Inc(LineNr);
   Str := Strings[LineNr];
-  N := ReadIntFromStr(LineNr, Str);
+  N := GetInteger( Str);
   for I := 1 to N do
   begin
     if I > NumberOfLayers then
@@ -3627,19 +3627,19 @@ begin
     ;
     Inc(LineNr);
     Str := Strings[LineNr];
-    Layer.FLayerID := ReadIntFromstr(LineNr, Str);
+    Layer.FLayerID := GetInteger( Str);
     if Layer.FLayerID > FLastusedLayerID then
       FLastusedLayerID := Layer.FLayerID;
-    Layer.FColor := ReadIntFromstr(LineNr, Str);
-    Layer.FSurfaceVisible := ReadBoolFromStr(LineNr, Str);
-    Layer.FDevelopable := ReadBoolFromStr(LineNr, Str);
-    Layer.FSymmetric := ReadBoolFromStr(LineNr, Str);
+    Layer.FColor := GetInteger( Str);
+    Layer.FSurfaceVisible := GetBoolean( Str);
+    Layer.FDevelopable := GetBoolean( Str);
+    Layer.FSymmetric := GetBoolean( Str);
     Layer.FSymmetric := True;
-    Layer.FUseForIntersections := ReadBoolFromStr(LineNr, Str);
-    Layer.FUseInHydrostatics := ReadBoolFromStr(LineNr, Str);
-    Layer.FShowInLinesplan := ReadBoolFromStr(LineNr, Str);
-    Layer.FMaterialDensity := ReadFloatFromStr(LineNr, Str);
-    Layer.FThickness := ReadFloatFromStr(LineNr, Str);
+    Layer.FUseForIntersections := GetBoolean( Str);
+    Layer.FUseInHydrostatics := GetBoolean( Str);
+    Layer.FShowInLinesplan := GetBoolean( Str);
+    Layer.FMaterialDensity := GetFloat( Str);
+    Layer.FThickness := GetFloat( Str);
   end;
   if Assigned(FOnChangeLayerData) then
     FOnChangeLayerData(self);
@@ -3647,7 +3647,7 @@ begin
   Inc(LineNr);
   Str := Strings[LineNr];
   // Read controlpoints
-  N := ReadIntFromStr(LineNr, Str);
+  N := GetInteger( Str);
   for I := 1 to N do
   begin
     Point := TFreeSubdivisionControlPoint.Create(self);
@@ -3658,7 +3658,7 @@ begin
   // Read controlEdges
   Inc(LineNr);
   Str := Strings[LineNr];
-  N := ReadIntFromStr(LineNr, Str);
+  N := GetInteger( Str);
   for I := 1 to N do
   begin
     Edge := TFreeSubdivisionControlEdge.Create(self);
@@ -3670,17 +3670,17 @@ begin
   // Read controlFaces
   Inc(LineNr);
   Str := Strings[LineNr];
-  N := ReadIntFromStr(LineNr, Str);
+  N := GetInteger( Str);
   for I := 1 to N do
   begin
     Face := TFreeSubdivisionControlFace.Create(self);
     FControlFaces.Add(Face);
     Inc(LineNr);
     Str := Strings[LineNr];
-    Np := ReadIntFromStr(LineNr, Str);
+    Np := GetInteger( Str);
     for J := 1 to Np do
     begin
-      Index := ReadIntFromStr(LineNr, Str);
+      Index := GetInteger( Str);
       // Attach controlface to controlpoints
       Face.AddPoint(ControlPoint[Index]);
     end;
@@ -3697,7 +3697,7 @@ begin
       P1 := P2;
     end;
     // Read Layerindex
-    Index := ReadIntFromStr(LineNr, Str);
+    Index := GetInteger( Str);
     while Index > NumberOfLayers - 1 do
     begin
       AddNewLayer;
@@ -4160,7 +4160,7 @@ begin
   // First read layerdata
   Inc(LineNr);
   Str := Strings[LineNr];
-  N := ReadIntFromStr(LineNr, Str);
+  N :=GetInteger( Str);
   if N <> 0 then
   begin
     // Delete current layers and load new ones
@@ -4183,7 +4183,7 @@ begin
   // Read index of active layer
   Inc(LineNr);
   Str := Strings[LineNr];
-  N := ReadIntFromStr(LineNr, Str);
+  N := GetInteger( Str);
   ActiveLayer := self.Layer[N];
   if assigned(FOnChangeActiveLayer) then
     FOnChangeActiveLayer(self, self.Layer[0]);
@@ -4191,7 +4191,7 @@ begin
   Inc(LineNr);
   Str := Strings[LineNr];
   // Read controlpoints
-  N := ReadIntFromStr(LineNr, Str);
+  N := GetInteger( Str);
   for I := 1 to N do
   begin
     Point := TFreeSubdivisionControlPoint.Create(self);
@@ -4202,7 +4202,7 @@ begin
   // Read controlEdges
   Inc(LineNr);
   Str := Strings[LineNr];
-  N := ReadIntFromStr(LineNr, Str);
+  N := GetInteger( Str);
   for I := 1 to N do
   begin
     Edge := TFreeSubdivisionControlEdge.Create(self);
@@ -4213,7 +4213,7 @@ begin
   // Read controlFaces
   Inc(LineNr);
   Str := Strings[LineNr];
-  N := ReadIntFromStr(LineNr, Str);
+  N := GetInteger( Str);
   for I := 1 to N do
   begin
     Face := TFreeSubdivisionControlFace.Create(self);

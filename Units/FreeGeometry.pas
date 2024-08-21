@@ -1790,9 +1790,9 @@ function PoundsToNewton(InpLbs: TFloatType): TFloatType;          // converts po
 function ProjectPointOnLine(P, P1, P2: T3DCoordinate): T3DCoordinate; // Projects point  P on the linesegment through P1 and P2
 function ProjectPointOnPlane(P: T3DCoordinate; Plane: T3DPlane): T3DCoordinate; // Projects a point on to a plane
 function RandomColor: TColor;                                     // create a random color
-function ReadBoolFromStr(LineNr: integer; var Source: string): boolean; // Read a single boolean value from a string
-function ReadFloatFromStr(LineNr: integer; var Source: string): TFloatType;   // Read a single floatingpoint value from a string
-function ReadIntFromStr(LineNr: integer; var Source: string): integer; // Read an integer value from a string
+// GetBoolean Read a single boolean value from a string
+// GetFloat   Read a single floatingpoint value from a string
+// GetInteger Read an integer value from a string
 function RotateAroundPoint(P: T3DCoordinate; Center: T3DCoordinate; sinhx, coshx, sinhy, coshy, sinhz, coshz: TFloatType): T3DCoordinate;
 function RotatePointAroundVector(Point, StartPoint, Endpoint: T3DCoordinate): T3DCoordinate; // Function to rotate a point around a vector
 function RotateVector(P0: T3DCoordinate; sinx, cosx, siny, cosy, sinz, cosz: TFloatType): T3DCoordinate; // Rotates a vector around the origin

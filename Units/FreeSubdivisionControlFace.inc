@@ -1291,12 +1291,12 @@ begin
   Inc(LineNr);
   Str := Strings[LineNr];
   // Read controlpoint data
-  N := ReadIntFromStr(LineNr, Str);
+  N := GetInteger( Str);
   FPoints.Clear;
   FPoints.Capacity := N;
   for I := 1 to N do
   begin
-    Index := ReadIntFromStr(LineNr, Str);
+    Index := GetInteger( Str);
     if Index = -1 then Index := 0;
     if Index <> -1 then begin
       P1 := Surface.FControlPoints[Index];
@@ -1305,7 +1305,7 @@ begin
     end;
   end;
   // Read layer-index
-  Index := ReadIntFromStr(LineNr, Str);
+  Index := GetInteger(  Str);
   if (Index >= 0) and (Index < Surface.FLayers.Count)
   then begin FLayer := Surface.Layer[Index]; end
   else begin FLayer := Surface.Layer[0]; end; // Reference to an invalid layer. Assign to owners default layer
@@ -1315,7 +1315,7 @@ begin
 //else raise Exception.Create('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadFromStream!');
 
   if Str <> '' then begin
-    Sel := ReadBoolFromStr(LineNr, Str);
+    Sel := GetBoolean( Str);
     if sel then Selected := True;
   end;
 

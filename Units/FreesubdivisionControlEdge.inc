@@ -726,7 +726,7 @@ begin
   Inc(LineNr);
   Str := Strings[LineNr];
   // FStartpoint
-  Index := ReadIntFromStr(LineNr, Str);
+  Index := GetInteger( Str);
   if index = -1 then
     index := 0;
   if Index <> -1 then
@@ -735,7 +735,7 @@ begin
     FStartPoint.FEdges.Add(Self);
   end;
   // FEndpoint
-  Index := ReadIntFromStr(LineNr, Str);
+  Index := GetInteger( Str);
   if index = -1 then
     index := 0;
   if Index <> -1 then
@@ -744,11 +744,11 @@ begin
     FEndPoint.FEdges.Add(Self);
   end;
   // FCrease
-  FCrease := ReadIntFromStr(LineNr, Str) = 1;
+  FCrease := GetInteger( Str) = 1;
   if Str <> '' then
   begin
     // Flag to indicate that this edge was selected when the model was saved (for undo-purposes)
-    Sel := ReadBoolFromStr(LineNr, Str);
+    Sel := GetBoolean( Str);
     Selected := Sel;
   end;
 end;

@@ -170,7 +170,7 @@ begin
   for i:=0 to N-1 do
     begin
     //CPN:=ReadIntFromStr(LineNr, Str);
-    CPN:=StrToInt(Strs[i]);
+    CPN:=GetInteger( Strs[i] );
     FControlPoints.Add(Surface.FControlPoints[CPN]);
     end;
 end;{TFreeSubdivisionControlPoint.LoadFromStream}

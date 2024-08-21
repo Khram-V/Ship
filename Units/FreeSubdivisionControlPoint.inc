@@ -713,17 +713,17 @@ begin
   // FCoordinate
   Inc(LineNr);
   Str := Strings[LineNr];
-  FCoordinate.X := ReadFloatFromStr(LineNr, Str);
-  FCoordinate.Y := ReadFloatFromStr(LineNr, Str);
-  FCoordinate.Z := ReadFloatFromStr(LineNr, Str);
+  FCoordinate.X := GetFloat( Str);
+  FCoordinate.Y := GetFloat( Str);
+  FCoordinate.Z := GetFloat( Str);
   // FVertexType
   if Str <> '' then
   begin
-    I := ReadIntFromStr(LineNr, Str);
+    I := GetInteger( Str);
     FVertextype := TFreeVertexType(I);
     if Str <> '' then
     begin
-      Sel := ReadBoolFromStr(LineNr, Str);
+      Sel := GetBoolean( Str);
       if sel then
         Selected := True;
     end;
