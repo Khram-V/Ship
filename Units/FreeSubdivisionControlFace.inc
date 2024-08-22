@@ -192,19 +192,15 @@ function TFreeSubdivisionControlFace.DistanceToCursor(X, Y: integer;
   var P: T3DCoordinate; Viewport: TFreeViewport): integer;
 var
   I, Dist, Tmp: integer;
-  Param: TFloatType;
+  D, Param: TFloatType;
   Edge: TFreeSubdivisionEdge;
   Pt1, Pt2: TPoint;
   P1, P2, M: T3DCoordinate;
-  D: TFloatType;
 begin
   Result := 1000000;
   P := ZERO;
-  if Surface.ShowInteriorEdges then
-  begin
-    // check distance to all interior edges
-    for I := 1 to FEdges.Count do
-    begin
+  if Surface.ShowInteriorEdges then begin // check distance to all interior edges
+    for I := 1 to FEdges.Count do begin
       Edge := FEdges[I - 1];
       P1 := Edge.Startpoint.Coordinate;
       P2 := Edge.FEndpoint.Coordinate;
@@ -214,87 +210,59 @@ begin
         if ((P1.X < Surface.SplitSectionLocation) and (P2.X > Surface.SplitSectionLocation)) or
           ((P1.X > Surface.SplitSectionLocation) and (P2.X < Surface.SplitSectionLocation)) then
         begin
-          if P2.X - P1.X <> 0 then
-            M := Interpolate(P1, P2, (Surface.SplitSectionLocation - P1.X) / (P2.X - P1.X))
-          else
-            M := MidPoint(P1, P2);
-          if P1.X <= Surface.SplitSectionLocation then
-          begin
-            // P2 lies on port
+          if P2.X - P1.X <> 0
+          then M:=Interpolate(P1,P2,(Surface.SplitSectionLocation-P1.X)/(P2.X-P1.X))
+          else M := MidPoint(P1, P2);
+          if P1.X <= Surface.SplitSectionLocation then begin // P2 lies on port
             Pt1 := Viewport.Project(P2);
             Pt2 := Viewport.Project(M);
             Tmp := Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
-            if Tmp < Result then
-            begin
-              Result := Tmp;
-              P := Interpolate(P2, M, Param);
-            end;
-            // P1 lies on starboard
+            if Tmp < Result then begin
+              Result := Tmp; P := Interpolate(P2, M, Param);
+            end;                                        // P1 lies on starboard
             P1.Y := -P1.Y;
             M.Y := -M.Y;
             Pt1 := Viewport.Project(P1);
             Pt2 := Viewport.Project(M);
             Tmp := Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
-            if Tmp < Result then
-            begin
-              Result := Tmp;
-              P := Interpolate(P1, M, Param);
+            if Tmp < Result then begin
+              Result := Tmp; P := Interpolate(P1, M, Param);
             end;
-          end
-          else
-          begin
-            // P1 lies on port
+          end else begin                                     // P1 lies on port
             Pt1 := Viewport.Project(P1);
             Pt2 := Viewport.Project(M);
             Tmp := Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
-            if Tmp < Result then
-            begin
-              Result := Tmp;
-              P := Interpolate(P1, M, Param);
-            end;
-            // P2 lies on starboard
+            if Tmp < Result then begin
+              Result := Tmp;  P := Interpolate(P1, M, Param);
+            end;                                        // P2 lies on starboard
             P2.Y := -P2.Y;
             M.Y := -M.Y;
             Pt1 := Viewport.Project(P2);
             Pt2 := Viewport.Project(M);
             Tmp := Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
-            if Tmp < Result then
-            begin
-              Result := Tmp;
-              P := Interpolate(P2, M, Param);
+            if Tmp < Result then begin
+              Result := Tmp; P := Interpolate(P2, M, Param);
             end;
           end;
-        end
-        else
-        begin
-          if P1.X <= Surface.SplitSectionLocation then
-            P1.Y := -P1.Y;
-          if P2.X <= Surface.SplitSectionLocation then
-            P2.Y := -P2.Y;
+        end else begin
+          if P1.X <= Surface.SplitSectionLocation then P1.Y := -P1.Y;
+          if P2.X <= Surface.SplitSectionLocation then P2.Y := -P2.Y;
           Pt1 := Viewport.Project(P1);
           Pt2 := Viewport.Project(P2);
           Tmp := Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
-          if Tmp < Result then
-          begin
-            Result := Tmp;
-            P := Interpolate(P1, P2, Param);
+          if Tmp < Result then begin
+            Result := Tmp; P := Interpolate(P1, P2, Param);
           end;
         end;
-      end
-      else
-      begin
+      end else begin
         //            Dist:=Round(DistanceToLine(Viewport.Project(P1),Viewport.Project(P2),X,Y,Param));
         D := DistanceToLine(Viewport.Project(P1), Viewport.Project(P2), X, Y, Param);
         Dist := Round(D);
-        if I = 1 then
-        begin
-          Result := Dist;
-          P := Interpolate(P1, P2, Param);
+        if I = 1 then begin
+          Result := Dist; P := Interpolate(P1, P2, Param);
         end
-        else if Dist < Result then
-        begin
-          Result := Dist;
-          P := Interpolate(P1, P2, Param);
+        else if Dist < Result then begin
+          Result := Dist; P := Interpolate(P1, P2, Param);
         end;
         if (Layer.Symmetric) and (Surface.DrawMirror) then
         begin
@@ -302,10 +270,8 @@ begin
           P2.Y := -P2.Y;
           Dist := Round(DistanceToLine(Viewport.Project(P1),
             Viewport.Project(P2), X, Y, Param));
-          if Dist < Result then
-          begin
-            Result := Dist;
-            P := Interpolate(P1, P2, Param);
+          if Dist < Result then begin
+            Result := Dist; P := Interpolate(P1, P2, Param);
           end;
         end;
       end;

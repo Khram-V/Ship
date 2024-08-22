@@ -167,17 +167,21 @@ function FloatTypeToStr( Value: TFloatType ): String;
 begin Result:=FloatToStr( F2S( Value ) ); end;
 //begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
 
-function GetFloat( const S: String ): TFloatType;
+Function GetFloat( const S: String ): TFloatType;
   var LocalFormatSettings: TFormatSettings; I,J,K: Integer; //Str: String;
 begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
-  for J:=1 to Length( S ) do
-    if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else if I>0 then break
-    else if S[J] ='.' then begin
-      LocalFormatSettings.DecimalSeparator:='.';
-      LocalFormatSettings.ThousandSeparator:=','; end
-    else if S[J] =',' then begin
-      LocalFormatSettings.DecimalSeparator:=',';
-      LocalFormatSettings.ThousandSeparator:='.'; end;
+  for J:=1 to Length( S ) do begin
+    if S[J]>' ' then begin K:=J+1;
+      if I=0 then I:=J;
+      if S[J] ='.' then begin
+        LocalFormatSettings.DecimalSeparator:='.';
+        LocalFormatSettings.ThousandSeparator:=','; end
+      else if S[J] =',' then begin
+        LocalFormatSettings.DecimalSeparator:=',';
+        LocalFormatSettings.ThousandSeparator:='.'; end;
+    end
+    else if I>0 then break;
+  end;
   if K>0 then Result:=StrToFloat( copy( S,I,K-I ),LocalFormatSettings );
 //if K>0 then begin WriteLn( copy( S,I,K-I )+'['+IntToStr(Length(S))+'] <- '+S ); ReadLn; end;
 end;
