@@ -549,7 +549,7 @@ end;
 
 constructor TMainForm.Create(AOwner: TComponent);
 begin
-  Application.OnException := CustomExceptionHandler;
+  Application.OnException:=CustomExceptionHandler;
 inherited Create(AOwner);
   PanelManager:=WinPanelManager.Create;
   FFileName:='';
@@ -559,7 +559,7 @@ end;
 destructor TMainForm.Destroy;
 var i: Integer; thw:TFreeHullWindow;   ptr:pointer; al:TActionList;
 begin
- FDestroying := true;
+ FDestroying:=true;
  FreeShip.OnChangeActiveLayer:=nil;
  Freeship.OnChangeLayerData:=nil;
  //FreeShip.OnSelectItem:=nil;
@@ -627,9 +627,9 @@ begin
   if (FFileName='') and not FreeShip.ModelIsLoaded then NewModelExecute(Self) else
   if (FFileName<>'') and not FreeShip.ModelIsLoaded and not FreeShip.IsLoadError
   then begin                                                // Skip translation
-    FileExt := Uppercase( ExtractFileExt( FFileName ) );
-       Est := (FileExt = '.FBM') or (FileExt = '.FTM');
-    if Est then Est := Load_and_Scale( FFileName );
+    FileExt:=Uppercase( ExtractFileExt( FFileName ) );
+       Est:=(FileExt = '.FBM') or (FileExt = '.FTM');
+    if Est then Est:=Load_and_Scale( FFileName );
     if not Est then begin
        FreeEmptyModelChooserDialog:=TFreeEmptyModelChooserDialog.Create(Self);  //     ShowTranslatedValues(FreeEmptyModelChooserDialog);
        if FreeEmptyModelChooserDialog.Execute( FFileName ) then begin
@@ -658,7 +658,7 @@ begin
   Application.ProcessMessages;
   if not FModelInitallyLoaded then begin
        InitiallyLoadModel;
-       FModelInitallyLoaded := true;
+       FModelInitallyLoaded:=true;
   end;
 //Freeship.Draw;
   inActivation:=false;
@@ -676,7 +676,7 @@ end;
 procedure TMainForm.cbPrecisionChange(Sender: TObject);
 begin
   if cbPrecision.ItemIndex = ord(FreeShip.Precision) then exit;
-  FreeShip.Precision := TFreePrecisionType(cbPrecision.ItemIndex);
+  FreeShip.Precision:=TFreePrecisionType(cbPrecision.ItemIndex);
   FreeShip.RebuildModel;
   UpdateMenu;
 end;
@@ -740,9 +740,9 @@ begin
    if (Sender = nil)
       and assigned(FreeShip)
       and assigned(FreeShip.ControlpointForm) then
-     FreeShip.ControlpointForm.ActiveControlPoint := nil;
+     FreeShip.ControlpointForm.ActiveControlPoint:=nil;
    if (Sender is TFreeSubdivisionControlPoint) then
-     FreeShip.ControlpointForm.ActiveControlPoint := Sender as TFreeSubdivisionControlPoint;
+     FreeShip.ControlpointForm.ActiveControlPoint:=Sender as TFreeSubdivisionControlPoint;
    UpdateMenu;
 end;
 
@@ -758,7 +758,7 @@ begin UpdateMenu; end;
 procedure TMainForm.HullformWindowOnActivate(Sender:TObject);
 begin
   // bring Action List here to process keys and shortcuts
-  // FActionListHull := TFreeHullWindow(Sender).FreeHullForm.ActionListHull;
+  // FActionListHull:=TFreeHullWindow(Sender).FreeHullForm.ActionListHull;
   // self.InsertComponent(FActionListHull);
 end;
 
@@ -816,7 +816,7 @@ procedure TMainForm.SetAllActionsEnabled( val: boolean );
 var i: integer; A: TAction;
 begin
   for i:=0 to ActionList1.ActionCount-1 do begin
-    A := TAction( ActionList1.Actions[i] );
+    A:=TAction( ActionList1.Actions[i] );
     A.Enabled:=val;
   end;
 end;
@@ -850,7 +850,7 @@ begin
      end;
     }
    // File menu
-   FileSaveas.Enabled := (FreeShip.Surface.NumberOfControlPoints>0)
+   FileSaveas.Enabled:=(FreeShip.Surface.NumberOfControlPoints>0)
                       or (Freeship.FileChanged) or (Freeship.FilenameSet);
    FileSave.Enabled:= FileSaveas.Enabled and Freeship.FileChanged
                       and not Freeship.FileIsReadOnly;
@@ -1005,7 +1005,7 @@ begin
    PointExtrude.Enabled:=Freeship.NumberOfSelectedControlPoints>0;
    TransformLackenby.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
    if cbPrecision.ItemIndex <> ord(FreeShip.Precision) then
-      cbPrecision.ItemIndex := ord(FreeShip.Precision);
+      cbPrecision.ItemIndex:=ord(FreeShip.Precision);
    FreeShip.ControlpointForm.Reload;
    FreeShip.ControlpointForm.FormStyle:=fsSystemStayOnTop;
    if FreeShip.ActiveControlPoint <> nil then
@@ -1026,19 +1026,19 @@ begin
     if not FileExists( vFileName ) then continue;
     sTime:=FormatDateTime('YYYY-MM-DD hh:mm:ss',FileDateToDateTime(FileAgeUTF8(vFileName)));
     Screen.Cursor:=crHourGlass;
-    dlg.Cursor := crHourGlass;
+    dlg.Cursor:=crHourGlass;
     Application.ProcessMessages;
 //  Freeship.Edit.ProgressBar:=dlg.ProgressBar1;
     jpg:=Freeship.Edit.getPreviewImage( vFileName );
     if assigned( jpg ) then begin
-       pic := TPicture.Create;
+       pic:=TPicture.Create;
        pic.Bitmap.Assign( jpg );
        dlg.AddTile( pic,sTime+' - '+vFileName, vFileName );
     end;
     Application.ProcessMessages;
   end;
-  Screen.Cursor := crDefault;
-  dlg.Cursor := crDefault;
+  Screen.Cursor:=crDefault;
+  dlg.Cursor:=crDefault;
 end;
 
 procedure TMainForm.ShowRecentFilesDialog;
@@ -1047,17 +1047,17 @@ var dlg: TTileDialog; i:integer; Answer: Word;
     jpg:TJPEGImage;
     pic:TPicture;
 begin
-  dlg := TTileDialog.create( Self );
-  dlg.FileList := Freeship.Edit.RecentFiles;
-  dlg.onActivate := RecentFilesDialogActivate;
-//Freeship.Edit.ProgressBar := dlg.ProgressBar1;
+  dlg:=TTileDialog.create( Self );
+  dlg.FileList:=Freeship.Edit.RecentFiles;
+  dlg.onActivate:=RecentFilesDialogActivate;
+//Freeship.Edit.ProgressBar:=dlg.ProgressBar1;
   Freeship.Surface.OnFaceRebuilt:=Freeship.Edit.OnFaceRebuilt;
   dlg.ShowModal;
   FreeShipUpdateRecentFileList(nil);   //update just in case if items deleted
   vFileName:=dlg.FileName;
   dlg.Free;
   Freeship.Surface.OnFaceRebuilt:=Freeship.Edit.OnFaceRebuilt;
-  Freeship.Edit.ProgressBar := self.ProgressBarMain;
+  Freeship.Edit.ProgressBar:=self.ProgressBarMain;
   if (vFileName<>'') and (vFileName<>'*') then begin
     Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
     if (Answer=mrCancel) or FreeShip.FileChanged then exit;
@@ -1098,8 +1098,8 @@ end;
 
 procedure TMainForm.SelectionDialogExecute(Sender: TObject);
 begin
-  if FormSelected = nil then FormSelected := TFormSelected.Create(Self);
-     FormSelected.FreeShip := FreeShip;
+  if FormSelected = nil then FormSelected:=TFormSelected.Create(Self);
+     FormSelected.FreeShip:=FreeShip;
  //  FreeShip.Surface.AddOnSelectItemListener(FormSelected.onSelectionUpdate);
  //  FreeShip.Surface.AddOnChangeItemListener(FormSelected.onSelectionUpdate);
  //  FreeShip.Surface.AddOnChangeActiveControlPointListener(FormSelected.onSelectionUpdate);
@@ -1121,11 +1121,11 @@ begin
     then FSplitSectionDialog.SplitSectionLocation:=FreeShip.ProjectSettings.ProjectSplitSectionLocation
     else FSplitSectionDialog.SplitSectionLocation:=FreeShip.Surface.Max.X/2;
   FSplitSectionDialog.OnSplitSectionLocationChange:=OnSplitSectionLocationChange;
-  FreeShip.ProjectSettings.UseDefaultSplitSectionLocation := false;
+  FreeShip.ProjectSettings.UseDefaultSplitSectionLocation:=false;
   FSplitSectionDialog.Show;
   FreeShip.ProjectSettings.ProjectSplitSectionLocation:=FSplitSectionDialog.SplitSectionLocation;
   //FSplitSectionDialog.Free;
-  //FreeShip.FileChanged := True;
+  //FreeShip.FileChanged:=True;
   //FreeShip.Redraw;
   //UpdateMenu;
 end;
@@ -1133,7 +1133,7 @@ end;
 procedure TMainForm.OnSplitSectionLocationChange(Sender: TObject; aValue: TFloatType);
 begin
   FreeShip.ProjectSettings.ProjectSplitSectionLocation:=aValue;
-  FreeShip.FileChanged := True;
+  FreeShip.FileChanged:=True;
   FreeShip.Redraw;
 end;
 
@@ -1146,9 +1146,9 @@ end;
 procedure TMainForm.LayerVisibilityDialogExecute(Sender: TObject);
 begin
   if FreeLayerVisibilityDialog = nil then
-     FreeLayerVisibilityDialog := TFreeLayerVisibilityDialog.Create(Self);
-  FreeLayerVisibilityDialog.FreeShip := FreeShip;
-  FreeLayerVisibilityDialog.OnChange := FreeLayerVisibilityDialogChange;
+     FreeLayerVisibilityDialog:=TFreeLayerVisibilityDialog.Create(Self);
+  FreeLayerVisibilityDialog.FreeShip:=FreeShip;
+  FreeLayerVisibilityDialog.OnChange:=FreeLayerVisibilityDialogChange;
   FreeLayerVisibilityDialog.Show;
 end;
 
@@ -1219,7 +1219,7 @@ end;
 procedure TMainForm.NewWindowSet( Sender: TObject; ViewType: TFreeViewType );
 var HullformWindow : TFreeHullWindow; I : Integer;
 begin // open a new window
-  I := MainClientPanel.ControlCount;
+  I:=MainClientPanel.ControlCount;
   HullformWindow:=TFreeHullWindow.Create( Self );
   HullformWindow.CaptionButtons:=[cbSystemMenu,cbMaximize,cbMinimize,cbRestore];
   HullformWindow.Name:='HullformWindow'+IntToStr( I );
@@ -1243,14 +1243,14 @@ begin NewWindowSet( self,fvPerspective ); end;
 procedure TMainForm.SpinEditFontSizeChange( Sender: TObject );
 var w: integer;  vp:TFreeViewport;
 begin
-  FreeShip.Preferences.FontSize := SpinEditFontSize.value;
+  FreeShip.Preferences.FontSize:=SpinEditFontSize.value;
 //if SpinEditFontSize.value < 10
-//  then SpinEditFontSize.Constraints.MinWidth := 16+24+2
-//  else SpinEditFontSize.Constraints.MinWidth := 16+16+24+2;
-  SpinEditFontSize.Width := SpinEditFontSize.Constraints.MinWidth;
+//  then SpinEditFontSize.Constraints.MinWidth:=16+24+2
+//  else SpinEditFontSize.Constraints.MinWidth:=16+16+24+2;
+  SpinEditFontSize.Width:=SpinEditFontSize.Constraints.MinWidth;
 
   for w:=0 to PanelManager.MList.Count-1 do begin
-    vp := TFreeHullWindow(PanelManager.Panels[w]).Viewport;
+    vp:=TFreeHullWindow(PanelManager.Panels[w]).Viewport;
     vp.invalidate;
   end;
 end;
@@ -1261,7 +1261,7 @@ procedure TMainForm.Cascade; begin PanelManager.Show( true ); end;
 procedure TMainForm.TileWindowExecute(Sender: TObject);
 begin
   {$ifndef LCL}{$ifndef CLX}
-  TileMode := tbHorizontal;
+  TileMode:=tbHorizontal;
   {$endif}{$endif}
   PanelManager.Show( false );
 end;
@@ -1269,7 +1269,7 @@ end;
 procedure TMainForm.CascadeWindowExecute(Sender: TObject);
 begin
   {$ifndef LCL}{$ifndef CLX}
-  TileMode := tbHorizontal;
+  TileMode:=tbHorizontal;
   {$endif}{$endif}
   PanelManager.Show( true );
 end;
@@ -1341,7 +1341,7 @@ begin
          if N<>0 then system.Delete( Filename,N,1 );
       until N=0;
 
-   Answer := Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+   Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
    if (Answer=mrCancel) or FreeShip.FileChanged then exit;
    if not Load_and_Scale( FileName ) then begin
      FreeEmptyModelChooserDialog:=TFreeEmptyModelChooserDialog.Create(Self);
@@ -1360,8 +1360,8 @@ var Menu    : TMenuItem;
     Answer  : word;
 begin
   if FreeShip.Edit.RecentFileCount = 0 then exit;
-  Filename := Freeship.Edit.RecentFile[0];
-  FFilename := Filename;
+  Filename:=Freeship.Edit.RecentFile[0];
+  FFilename:=Filename;
   Load_and_Scale( FileName );
 end;
 {
@@ -1494,22 +1494,22 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
 {$ifndef Windows}
-   if self.Align = alTop then self.Top := 0;
+   if self.Align = alTop then self.Top:=0;
 {$endif}                                        // Removed from LFM, moved here
-   FreeShip             := TFreeShip.Create( self );
-   FreeShip.MainForm    := self;
-   FreeShip.FileChanged := true;
-   FreeShip.Filename    := 'New model.fbm';
-   FreeShip.FileVersion := fv261;
-   FreeShip.OnChangeCursorIncrement := FreeShipChangeCursorIncrement;
-   FreeShip.OnFileChanged           := FreeShipFileChanged;
-   FreeShip.OnUpdateGeometryInfo    := FreeShipUpdateGeometryInfo;
-   FreeShip.OnUpdateRecentFileList  := FreeShipUpdateRecentFileList;
-   FreeShip.OnUpdateUndoData        := FreeShipUpdateUndoData;
-   FreeShip.Precision := fpLow;
-   FAllToolbarsControlsWidth := 0;
-   GlobalFreeship       := Freeship;     // копия для воссоздания новых моделей
-   FModelInitallyLoaded := false;
+   FreeShip            :=TFreeShip.Create( self );
+   FreeShip.MainForm   :=self;
+   FreeShip.FileChanged:=true;
+   FreeShip.Filename   :='New model.fbm';
+   FreeShip.FileVersion:=fv261;
+   FreeShip.OnChangeCursorIncrement:=FreeShipChangeCursorIncrement;
+   FreeShip.OnFileChanged          :=FreeShipFileChanged;
+   FreeShip.OnUpdateGeometryInfo   :=FreeShipUpdateGeometryInfo;
+   FreeShip.OnUpdateRecentFileList :=FreeShipUpdateRecentFileList;
+   FreeShip.OnUpdateUndoData       :=FreeShipUpdateUndoData;
+   FreeShip.Precision:=fpLow;
+   FAllToolbarsControlsWidth:=0;
+   GlobalFreeship      :=Freeship;     // копия для воссоздания новых моделей
+   FModelInitallyLoaded:=false;
 end;
 
 procedure TMainForm.ShowStationsExecute(Sender: TObject);
@@ -1555,16 +1555,16 @@ end;
 procedure TMainForm.Help1Click(Sender: TObject);
 var FileToFind,FManDirectory,FLang,man : string;
 begin
-  FLang := Freeship.Preferences.Language;
-  FManDirectory := Freeship.Preferences.ManualsDirectory;
-  man := FLang+'.pdf';
-  FileToFind := FileSearch(FManDirectory+DirectorySeparator+man,FManDirectory);
+  FLang:=Freeship.Preferences.Language;
+  FManDirectory:=Freeship.Preferences.ManualsDirectory;
+  man:=FLang+'.pdf';
+  FileToFind:=FileSearch(FManDirectory+DirectorySeparator+man,FManDirectory);
   if (FileToFind='') and (FLang<>'English') then begin
     MessageDlg('Manual file "'+man+'" not found in "'+FManDirectory+'" directory'+EOL
               +'English manual will be opened.',mtInformation,[mbOk],0);
-    man := 'English.pdf'
+    man:='English.pdf'
   end;
-  FileToFind := FileSearch(FManDirectory+DirectorySeparator+man,FManDirectory);
+  FileToFind:=FileSearch(FManDirectory+DirectorySeparator+man,FManDirectory);
   if FileToFind='' then begin
      MessageDlg('Manual file "'+man+'" not found in "'+FManDirectory+'" directory',mtInformation,[mbOk],0);
      exit;
@@ -1594,14 +1594,14 @@ procedure TMainForm.ImportVRMLExecute(Sender: TObject);
 //var DateTime : TDateTime;
 //    str_1,str_2 : string;
 begin
-   //   DateTime := Time;  // store the current date and time
-   //   str_1 := TimeToStr(DateTime); // convert the time into a string
+   //   DateTime:=Time;  // store the current date and time
+   //   str_1:=TimeToStr(DateTime); // convert the time into a string
    FreeShip.Edit.File_ImportVRML;
    FOpenHullWindows;
    Application.ProcessMessages;
    FreeShip.ZoomFitAllViewports;
-   //   DateTime := Time;  // store the current date and time
-   //   str_2 := TimeToStr(DateTime); // convert the time into a string
+   //   DateTime:=Time;  // store the current date and time
+   //   str_2:=TimeToStr(DateTime); // convert the time into a string
    //   MessageDlg(('Time import='+str_2+' - '+str_1),mtInformation,[mbOK],0);
    UpdateMenu;
 end;
@@ -1683,17 +1683,17 @@ procedure TMainForm.MoveModelExecute(Sender: TObject);
 begin FreeShip.Edit.Face_Move; UpdateMenu; end;
 
 procedure TMainForm.AddPointExecute(Sender: TObject);
-begin Freeship.EditMode := emAddPoint;
+begin Freeship.EditMode:=emAddPoint;
     //Freeship.Edit.Point_New;
    UpdateMenu;
 end;
 
 procedure TMainForm.DevelopLayersExecute(Sender: TObject);
 begin
-   Screen.Cursor:= crHourglass;
+   Screen.Cursor:=crHourglass;
    Application.ProcessMessages;
    FreeShip.Edit.Layer_Develop;
-   Screen.Cursor:= crDefault;
+   Screen.Cursor:=crDefault;
    UpdateMenu;
 end;
 
@@ -1860,7 +1860,7 @@ begin Freeship.Edit.File_ExportDXF_2DPolylines; UpdateMenu; end;
 
 procedure TMainForm.FreeShipUpdateGeometryInfo(Sender: TObject);
 begin LabelNumbers.Caption
-                := IntToStr(Freeship.Surface.NumberOfControlFaces) +' Faces, '
+                 :=IntToStr(Freeship.Surface.NumberOfControlFaces) +' Faces, '
                  + IntToStr(Freeship.Surface.NumberOfControlEdges) +' Edges, '
                  + IntToStr(Freeship.Surface.NumberOfControlPoints)+' Points, '
                  + IntToStr(Freeship.Surface.NumberOfControlCurves)+' Curves';
@@ -1885,7 +1885,7 @@ begin Freeship.Edit.Point_IntersectLayer; UpdateMenu; end;
 procedure TMainForm.KeelRudderWizardExecute(Sender: TObject);
 begin
    if not Assigned(FreeKeelWizardDialog) then
-     FreeKeelWizardDialog := TFreeKeelWizardDialog.Create(Self);                // ShowTranslatedValues(FreeKeelWizardDialog);
+     FreeKeelWizardDialog:=TFreeKeelWizardDialog.Create(Self);                // ShowTranslatedValues(FreeKeelWizardDialog);
    FreeKeelWizardDialog.Execute(freeship);
    UpdateMenu;
 end;
@@ -1933,5 +1933,5 @@ procedure TMainForm.SelectLeakPointsExecute(Sender: TObject);
 begin Freeship.Edit.Selection_SelectLeakPoints; UpdateMenu; end;
 
 //initialization
-//  ExceptionDlg := TExceptionDlg.create(nil);
+//  ExceptionDlg:=TExceptionDlg.create(nil);
 end.

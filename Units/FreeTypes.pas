@@ -168,7 +168,7 @@ begin Result:=FloatToStr( F2S( Value ) ); end;
 //begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
 
 Function GetFloat( const S: String ): TFloatType;
-  var LocalFormatSettings: TFormatSettings; I,J,K: Integer; //Str: String;
+  var LocalFormatSettings: TFormatSettings; I,J,K: Integer;
 begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
   for J:=1 to Length( S ) do begin
     if S[J]>' ' then begin K:=J+1;
@@ -194,8 +194,8 @@ begin I:=0; K:=0; Result:=0;
   if K>0 then Result:=StrToInt( copy( S,I,K-I ) );
 end;
 
-Function GetBoolean( const S:String ): Boolean;
-var I,J,K: Integer; Str:String;
+Function GetBoolean( const S: String ): Boolean;
+var I,J,K: Integer; Str: String;
 begin I:=0; K:=0; Result:=false;
   for J:=1 to Length( S ) do
     if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else if I>0 then break;
@@ -205,12 +205,11 @@ begin I:=0; K:=0; Result:=false;
 end;
 
 Procedure WestPoint;
-Begin
-  DefaultFormatSettings.DecimalSeparator:='.';
-  DefaultFormatSettings.ThousandSeparator:=',';
-  DefaultFormatSettings.ShortDateFormat:='yyyy-mm-dd';
-  DefaultFormatSettings.ShortTimeFormat:='hh:nn:ss';
-  FormatSettings:=DefaultFormatSettings;
+Begin DefaultFormatSettings.DecimalSeparator:='.';
+      DefaultFormatSettings.ThousandSeparator:=',';
+      DefaultFormatSettings.ShortDateFormat:='yyyy-mm-dd';
+      DefaultFormatSettings.ShortTimeFormat:='hh:nn:ss';
+      FormatSettings:=DefaultFormatSettings;
 end;
 
 end.

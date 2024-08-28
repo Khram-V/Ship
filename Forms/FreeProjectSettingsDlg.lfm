@@ -426,11 +426,11 @@ object FREEProjectSettingsDialog: TFREEProjectSettingsDialog
               Height = 36
               Top = 0
               Width = 425
-              Caption = 'Split Section location'
+              Caption = 'Midship or maximal area station location'
               Layout = tlCenter
               ParentColor = False
             end
-            object fseSplitSectionLocation: TFloatSpinEdit
+            object Edit8: TFloatSpinEdit
               Left = 431
               Height = 36
               Top = 0
@@ -440,7 +440,7 @@ object FREEProjectSettingsDialog: TFREEProjectSettingsDialog
               DecimalPlaces = 4
               MaxValue = 1000
               OnEditingDone = SplitSectionLocationEditingDone
-              ReadOnly = True
+              ReadOnly = false
               TabOrder = 0
             end
             object Label14: TLabel
@@ -458,7 +458,7 @@ object FREEProjectSettingsDialog: TFREEProjectSettingsDialog
               Top = 0
               Width = 163
               Caption = 'Default at 0.5*L'
-              Enabled = False
+              Enabled = true
               OnClick = CheckBox2Click
               TabOrder = 1
             end

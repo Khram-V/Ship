@@ -246,15 +246,15 @@ begin
       ThicknessFactor := 25.4;
     end;
     FProjectWaterDensity := FProjectWaterDensity * WeightFactor;
-    for I := 1 to FreeShip.Surface.NumberOfLayers do begin
-      Layer := FreeShip.Surface.Layer[I - 1];
+    for I:=1 to FreeShip.Surface.NumberOfLayers do begin
+      Layer := FreeShip.Surface.Layer[I-1];
       Layer.MaterialDensity := Layer.MaterialDensity * WeightFactor;
       Layer.Thickness := Layer.Thickness * ThicknessFactor;
     end;
     ScaleVector.X := UnitConversionFactor;
     ScaleVector.Y := UnitConversionFactor;
     ScaleVector.Z := UnitConversionFactor;
-    FreeShip.Edit.Model_Scale(Scalevector, True, True); // Scale and redraw
+    FreeShip.Edit.Model_Scale(Scalevector,True,True);       // Scale and redraw
   end;
 end;
 
@@ -355,7 +355,7 @@ begin
   Dialog.cbShadeUnderwater.Checked := ProjectShadeUnderwaterShip;
   Dialog.Panel4.Color := ProjectUnderWaterColor;
   Dialog.seUnderwaterOpacity.Value := ProjectUnderWaterColorAlpha * 100 div 255;
-  Dialog.SplitSectionLocation := ProjectSplitSectionLocation;
+  Dialog.MainFrame := ProjectSplitSectionLocation;
   Dialog.CheckBox2.Checked := UseDefaultSplitSectionLocation;
   Dialog.CheckBox3.Checked := DisableModelCheck;
   Dialog.cbSavePreviewImage.Checked := SavePreview;
@@ -389,7 +389,7 @@ begin
     ProjectShadeUnderwaterShip := Dialog.cbShadeUnderwater.Checked;
     ProjectUnderWaterColor := Dialog.Panel4.Color;
     ProjectUnderWaterColorAlpha := Dialog.seUnderwaterOpacity.Value * 255 div 100;
-    ProjectSplitSectionLocation := Dialog.SplitSectionLocation;
+    ProjectSplitSectionLocation := Dialog.MainFrame;
     UseDefaultSplitSectionLocation := Dialog.CheckBox2.Checked;
     DisableModelCheck := Dialog.CheckBox3.Checked;
     EnableModelAutoMove := Dialog.CheckBox13.Checked;

@@ -607,9 +607,9 @@ begin
             LengthStr(Owner.ProjectSettings.ProjectUnits));
 
           Strings.Add(S4 + MakeLength(UserString(1023), 50) +
-            ' : ' + Makelength(HeelAngle, -1, 8) + ' ' + UserString(455));
+            ' : ' + Makelength(HeelAngle, -1, 8) + ' °' );
           Strings.Add(S4 + MakeLength(UserString(1024), 50) +
-            ' : ' + Makelength(vTrimAngle, -1, 8) + ' ' + UserString(455));
+            ' : ' + Makelength(vTrimAngle, -1, 8) + ' °' );
           Owner.ProjectSettings.FTrim := Draft;
         end
         else
@@ -620,8 +620,8 @@ begin
           Strings.Add(S4 + MakeLength(UserString(1450), 50) +
             ' : ' + Makelength(hl, -1, 8) + ' ' +
             LengthStr(Owner.ProjectSettings.ProjectUnits));
-          //     Strings.Add(S4+MakeLength(UserString(1023),50)+' : '+Makelength(HeelAngle,-1,8)+' '+UserString(455));
-          //     Strings.Add(S4+MakeLength(UserString(1024),50)+' : '+Makelength(vTrimAngle,-1,8)+' '+UserString(455));
+          //     Strings.Add(S4+MakeLength(UserString(1023),50)+' : '+Makelength(HeelAngle,-1,8)+' °');
+          //     Strings.Add(S4+MakeLength(UserString(1024),50)+' : '+Makelength(vTrimAngle,-1,8)+' °');
         end;
       end
       else
@@ -659,7 +659,7 @@ begin
           Strings.Add(S4 + MakeLength(UserString(1582), 50) +
             ' : ' + MakeLength(
             (FData.CenterOfBuoyancy.X - Total.SurfaceCenterOfGravity.X) *
-            57.29 / hl, -1, 8) + ' ' + UserString(455));
+            57.29 / hl, -1, 8) + ' °' );
       end;
       Strings.Add(S4);
 
