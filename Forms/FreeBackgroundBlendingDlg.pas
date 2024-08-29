@@ -55,23 +55,23 @@ implementation
 
 function TFreeBackgroundBlendDialog.Execute(Viewport: TFreeViewport): boolean;
 begin
-  FViewport := Viewport;
-  Trackbar1.Position := Viewport.BackgroundImage.Alpha;
+  FViewport:=Viewport;
+  Trackbar1.Position:=Viewport.BackgroundImage.Alpha;
   TrackBar1Change(self);                                                        //ShowTranslatedValues(Self);
   Showmodal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TFreeBackgroundBlendDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TFreeBackgroundBlendDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 procedure TFreeBackgroundBlendDialog.TrackBar1Change(Sender: TObject);
 begin
-  FViewport.BackgroundImage.Alpha := Trackbar1.Position;
-  _Label2.Caption := IntToStr(Round(100 * (Trackbar1.Position) / Trackbar1.Max)) + '%';
+  FViewport.BackgroundImage.Alpha:=Trackbar1.Position;
+  _Label2.Caption:=IntToStr(Round(100 * (Trackbar1.Position) / Trackbar1.Max)) + '%';
 end;
 
 end.

@@ -80,30 +80,30 @@ uses LazFileUtils;
  constructor TTile.Create(TheOwner: TComponent);
  begin
    inherited Create(TheOwner);
-   BorderSpacing.Around := 8;
-   BevelOuter := bvNone;
-   // Name := 'Tile';
-   Caption := 'Tile';
+   BorderSpacing.Around:=8;
+   BevelOuter:=bvNone;
+   // Name:='Tile';
+   Caption:='Tile';
 
    FImage:= TImage.Create(Self);
    with FImage do begin
-       Parent := Self;
-       Left := 0;
-       Top := 0;
-       Align := alClient;
-       Center := True;
-       Proportional := True;
-       Stretch := True;
+       Parent:=Self;
+       Left:=0;
+       Top:=0;
+       Align:=alClient;
+       Center:=True;
+       Proportional:=True;
+       Stretch:=True;
      end;
 
    FLabel:= TLabel.Create(Self);
    with FLabel do begin
-       Parent := Self;
-       Align := alBottom;
-       Alignment := taCenter;
-       BorderSpacing.Around := 6;
-       ParentColor := False;
-       WordWrap := True;
+       Parent:=Self;
+       Align:=alBottom;
+       Alignment:=taCenter;
+       BorderSpacing.Around:=6;
+       ParentColor:=False;
+       WordWrap:=True;
      end;
  end;
 
@@ -112,15 +112,15 @@ constructor TTileDialog.Create( AOwner: TComponent );
    inherited Create( AOwner );
    FTileWidth:=400;
    FTileHeight:=300;
-   Width := Screen.Width * 3 div 4;
-   Height := Screen.Height * 3 div 4;
+   Width:=Screen.Width * 3 div 4;
+   Height:=Screen.Height * 3 div 4;
  end;
 
 procedure TTileDialog.ActionOpenAnotherExecute(Sender: TObject);
-begin FSelectedFileName := '*'; Close; end;
+begin FSelectedFileName:='*'; Close; end;
 
 procedure TTileDialog.ActionOpenExecute(Sender: TObject);
-begin FSelectedFileName := FSelectedTile.FileName; Close; end;
+begin FSelectedFileName:=FSelectedTile.FileName; Close; end;
 
 procedure TTileDialog.ActionRemoveExecute(Sender: TObject);
 begin removeSelectedTile; end;
@@ -129,7 +129,7 @@ procedure TTileDialog.PopupMenu1Popup(Sender: TObject);
 begin FSelectedTile:=(PopupMenu1.PopupComponent as TImage).Parent as TTile; end;
 
 procedure TTileDialog.TileOnClick(Sender: TObject);
-begin FSelectedFileName := TTile(TImage(Sender).Parent).FileName; Close; end;
+begin FSelectedFileName:=TTile(TImage(Sender).Parent).FileName; Close; end;
 
 procedure TTileDialog.setTileSize( aWidth,aHeight: integer );
  begin
@@ -142,13 +142,13 @@ procedure TTileDialog.addTile( aPicture: TPicture; aCaption,aFileName:string );
  begin
    vtile:=TTile.Create(Self);
    vtile.FileName:=aFileName;
-   vtile.Width := FTileWidth;
-   vtile.Height := FTileHeight;
-   vtile.Image.Picture := aPicture;
-   vtile.CaptionLabel.Caption := aCaption;
+   vtile.Width:=FTileWidth;
+   vtile.Height:=FTileHeight;
+   vtile.Image.Picture:=aPicture;
+   vtile.CaptionLabel.Caption:=aCaption;
    vtile.Visible:=true;
    fpc:=TFlowPanelControl(FlowPanel.ControlList.Add);
-   fpc.Control := vtile;
+   fpc.Control:=vtile;
    vtile.Parent:=FlowPanel;
    i:=FlowPanel.GetControlIndex(vtile);
    vtile.Image.OnClick:=@TileOnClick;
@@ -159,9 +159,9 @@ procedure TTileDialog.RemoveSelectedTile;
  var i:integer;
  begin
    if not assigned(FSelectedTile) then exit;
-   i := FFileList.IndexOf(FSelectedTile.FileName);
+   i:=FFileList.IndexOf(FSelectedTile.FileName);
    if i>=0 then FFileList.Delete(i);
-   i := FlowPanel.ControlList.IndexOf(FSelectedTile);
+   i:=FlowPanel.ControlList.IndexOf(FSelectedTile);
    if i>=0 then FlowPanel.ControlList.Delete(i);
    FSelectedTile.Free;
    FSelectedTile:=nil;

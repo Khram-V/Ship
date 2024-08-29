@@ -52,37 +52,37 @@ begin
   result.Position.Y:=TrackBarY.Position;
   result.Position.Z:=TrackBarZ.Position;
   result.Ambient:= TrackBarAmbience.Position;
-  result.Intensity := TrackBarIntensity.Position;
+  result.Intensity:=TrackBarIntensity.Position;
 end;
 
 procedure TLightDialog.TrackBarXChange(Sender: TObject);
 begin
-  ViewPort.Light := getLight;
+  ViewPort.Light:=getLight;
 end;
 
 procedure TLightDialog.TrackBarYChange(Sender: TObject);
 begin
-  ViewPort.Light := getLight;
+  ViewPort.Light:=getLight;
 end;
 
 procedure TLightDialog.TrackBarZChange(Sender: TObject);
 begin
-  ViewPort.Light := getLight;
+  ViewPort.Light:=getLight;
 end;
 
 procedure TLightDialog.TrackBarAmbienceChange(Sender: TObject);
 begin
-  ViewPort.Light := getLight;
+  ViewPort.Light:=getLight;
 end;
 
 procedure TLightDialog.TrackBarIntensityChange(Sender: TObject);
 begin
-  ViewPort.Light := getLight;
+  ViewPort.Light:=getLight;
 end;
 
 procedure TLightDialog.FormClose(Sender:TObject; var CloseAction:TCloseAction);
 begin
-  CloseAction := caHide;
+  CloseAction:=caHide;
 end;
 
 procedure TLightDialog.FormShow(Sender: TObject);

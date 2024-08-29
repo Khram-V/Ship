@@ -5,9 +5,9 @@
 procedure TFreeViewport.FSetAngle(Val: TFloatType);
 begin
   if Val <> FAngle then begin
-    FAngle := Val;
-    FCosAngle := cos(DegToRad(FAngle));
-    FSinAngle := sin(DegToRad(FAngle));
+    FAngle:=Val;
+    FCosAngle:=cos(DegToRad(FAngle));
+    FSinAngle:=sin(DegToRad(FAngle));
     FHorScrollbarChange(self);
     InitializeViewport( FMin3D,FMax3D );
   end;
@@ -15,59 +15,59 @@ end;
 
 procedure TFreeViewport.FSetBackgroundMode(val: TFreeViewportBackgroundMode);
 begin
-  FBackgroundMode := val;
+  FBackgroundMode:=val;
   case FBackGroundMode of
-    emSetOrigin: Cursor := crSetOrigin;
-    emSetScale: Cursor := crSetScale;
-    emSetTransparentColor: Cursor := crTranspCol;
+    emSetOrigin: Cursor:=crSetOrigin;
+    emSetScale: Cursor:=crSetScale;
+    emSetTransparentColor: Cursor:=crTranspCol;
     else
-      Cursor := crCross;
+      Cursor:=crCross;
   end;
 end;
 
 procedure TFreeViewport.FSetBrushStyle(Val: TBrushStyle);
 begin
-  if FDrawingcanvas.Brush.Style <> val then FDrawingcanvas.Brush.Style := Val;
+  if FDrawingcanvas.Brush.Style <> val then FDrawingcanvas.Brush.Style:=Val;
 end;
 
 function TFreeViewport.FGetPenStyle: TPenStyle;
-begin Result := FDrawingCanvas.Pen.Style; end;
+begin Result:=FDrawingCanvas.Pen.Style; end;
 
 function TFreeViewport.FGetPenWidth: integer;
-begin Result := FDrawingCanvas.Pen.Width; end;
+begin Result:=FDrawingCanvas.Pen.Width; end;
 
 function TFreeViewport.FGetPrinting: boolean;
 begin
-  if Printer = nil then Result := False
-  else Result := FPrinting and (FDrawingcanvas = printer.Canvas);
+  if Printer = nil then Result:=False
+  else Result:=FPrinting and (FDrawingcanvas = printer.Canvas);
 end;
 
 function TFreeViewport.FGetBrushStyle: TBrushStyle;
-begin Result := FDrawingcanvas.Brush.Style; end;
+begin Result:=FDrawingcanvas.Brush.Style; end;
 
 function TFreeViewport.FGetPenColor: TColor;
-begin Result := FDrawingCanvas.Pen.Color; end;
+begin Result:=FDrawingCanvas.Pen.Color; end;
 
 function TFreeViewport.FGetBrushColor: TColor;
-begin Result := FDrawingCanvas.Brush.Color; end;
+begin Result:=FDrawingCanvas.Brush.Color; end;
 
 function TFreeViewport.FGetFontColor: TColor;
-begin Result := FDrawingCanvas.Font.Color; end;
+begin Result:=FDrawingCanvas.Font.Color; end;
 
 function TFreeViewport.FGetFontName: string;
-begin Result := FDrawingcanvas.Font.Name; end;
+begin Result:=FDrawingcanvas.Font.Name; end;
 
 function TFreeViewport.FGetFontSize: integer;
-begin Result := FDrawingCanvas.Font.Size; end;
+begin Result:=FDrawingCanvas.Font.Size; end;
 
 procedure TFreeViewport.StretchDraw(DestRect: TRect; bmp: TBitmap);
 begin FDrawingCanvas.StretchDraw(DestRect, bmp); end;
 
 function TFreeViewport.TextWidth(val: string): integer;
-begin Result := FDrawingCanvas.TextWidth(val); end;
+begin Result:=FDrawingCanvas.TextWidth(val); end;
 
 function TFreeViewport.TextHeight(val: string): integer;
-begin Result := FDrawingCanvas.TextHeight(val); end;
+begin Result:=FDrawingCanvas.TextHeight(val); end;
 
 procedure TFreeViewport.TextOut(x, y: integer; val: string);
 begin FDrawingCanvas.TextOut(x, y, val); end;
@@ -78,17 +78,17 @@ var
   Dist: TFloatType;
 begin
   if Val <> FCameraType then begin
-    Film := 35;                                          // standard 35mm. film
+    Film:=35;                                          // standard 35mm. film
     case Val of
-      ftWide: Dist := 20;
-      ftStandard: Dist := 50;
-      ftShortTele: Dist := 90;
-      ftMediumTele: Dist := 130;
-      ftFarTele: Dist := 200;
-      else Dist := 50;
+      ftWide: Dist:=20;
+      ftStandard: Dist:=50;
+      ftShortTele: Dist:=90;
+      ftMediumTele: Dist:=130;
+      ftFarTele: Dist:=200;
+      else Dist:=50;
     end;
-    FCameraType := Val;
-    FFieldOfView := RadToDeg( ArcTan( Film/Dist ) );
+    FCameraType:=Val;
+    FFieldOfView:=RadToDeg( ArcTan( Film/Dist ) );
     InitializeViewport( FMin3D,FMax3D );
   end;
 end;
@@ -96,9 +96,9 @@ end;
 procedure TFreeViewport.FSetElevation(Val: TFloatType);
 begin
   if Val <> FElevation then begin
-    FElevation := Val;
-    FCosElevation := cos(DegToRad(FElevation));
-    FSinElevation := sin(DegToRad(FElevation));
+    FElevation:=Val;
+    FCosElevation:=cos(DegToRad(FElevation));
+    FSinElevation:=sin(DegToRad(FElevation));
     FVertScrollbarChange( self );
     InitializeViewport( FMin3D,FMax3D );
   end;
@@ -109,42 +109,42 @@ begin
   if (FLight.Position.X = Val.Position.X) and
      (FLight.Position.Y = Val.Position.Y) and (FLight.Position.Z = Val.Position.Z) and
      (FLight.Ambient = Val.Ambient) and (FLight.Intensity = Val.Intensity) then exit;
-  FLight := Val;
-  FLightIntensity := FLight.Intensity / 255.0;
-  FAmbientIntencity := FLight.Ambient / 255.0;
+  FLight:=Val;
+  FLightIntensity:=FLight.Intensity / 255.0;
+  FAmbientIntencity:=FLight.Ambient / 255.0;
   Refresh;
 end;
 
 procedure TFreeViewport.FSetPan(Val: TPoint);
 begin
-  if (FPan.X <> Val.X) or (FPan.Y <> Val.Y) then begin FPan := Val; Refresh; end;
+  if (FPan.X <> Val.X) or (FPan.Y <> Val.Y) then begin FPan:=Val; Refresh; end;
 end;
 
 procedure TFreeViewport.FSetPenColor(Val: TColor);
-begin if FDrawingcanvas.Pen.Color <> val then FDrawingcanvas.Pen.Color := Val;
+begin if FDrawingcanvas.Pen.Color <> val then FDrawingcanvas.Pen.Color:=Val;
 end;
 
 procedure TFreeViewport.FSetBrushColor(Val: TColor);
-begin if FDrawingcanvas.Brush.Color <> val then FDrawingcanvas.Brush.Color := Val;
+begin if FDrawingcanvas.Brush.Color <> val then FDrawingcanvas.Brush.Color:=Val;
 end;
 
 procedure TFreeViewport.FSetFontColor(Val: TColor);
-begin if FDrawingcanvas.Font.Color <> val then FDrawingcanvas.Font.Color := Val;
+begin if FDrawingcanvas.Font.Color <> val then FDrawingcanvas.Font.Color:=Val;
 end;
 
 procedure TFreeViewport.FSetFontName(val: string);
 begin
   if Uppercase(FDrawingcanvas.Font.Name) <> uppercase(Name) then
-    FDrawingcanvas.Font.Name := Name;
+    FDrawingcanvas.Font.Name:=Name;
 end;
 
 procedure TFreeViewport.FSetFontSize(val: integer);
-begin if FDrawingcanvas.Font.Size <> val then FDrawingcanvas.Font.Size := val;
+begin if FDrawingcanvas.Font.Size <> val then FDrawingcanvas.Font.Size:=val;
 end;
 
 function TFreeViewport.FGetFontHeight: integer;
-begin //Result := FDrawingCanvas.TextHeight('Xy');
-        Result := FDrawingCanvas.Font.Height;
+begin //Result:=FDrawingCanvas.TextHeight('Xy');
+        Result:=FDrawingCanvas.Font.Height;
 end;
 
 procedure TFreeViewport.FSetFontHeight(val: integer);
@@ -153,7 +153,7 @@ var
   CurrentHeight: integer;
 begin
   if FDrawingCanvas.Font.Height <> val then
-     FDrawingCanvas.Font.Height := val;
+     FDrawingCanvas.Font.Height:=val;
   // Sets the fontheight to a height in modelspace
   {Height:=val*Self.Scale*Self.Zoom;
   FSetFontSize(8);
@@ -168,57 +168,57 @@ end;
 
 procedure TFreeViewport.FSetHorScrollbar(val: TScrollbar);
 begin
-  if FHorScrollbar <> nil then FHorScrollbar.OnChange := nil;
-  FHorScrollbar := Val;
+  if FHorScrollbar <> nil then FHorScrollbar.OnChange:=nil;
+  FHorScrollbar:=Val;
   if FHorScrollbar <> nil then begin
     FOriginalHorScrollbarChange:=val.OnChange;
-    FHorScrollbar.OnChange := FHorScrollbarChange;
-    FHorScrollbar.Min := -180;
-    FHorScrollbar.Max := 180;
+    FHorScrollbar.OnChange:=FHorScrollbarChange;
+    FHorScrollbar.Min:=-180;
+    FHorScrollbar.Max:=180;
     if FHorScrollbar.Position <> round(angle) then
-       FHorScrollbar.Position := Round(Angle);
-    FHorScrollbar.Visible := false; // ViewType = fvPerspective; ///+++
+       FHorScrollbar.Position:=Round(Angle);
+    FHorScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
   end;
 end;
 
 procedure TFreeViewport.SetSelectionFrameRect(Rect: TRect);
-begin FSelectionFrameRect := Rect;
+begin FSelectionFrameRect:=Rect;
    if FSelectionFrameActive then refresh;
 end;
 
 procedure TFreeViewport.SetSelectionFrameActive(Val: boolean);
-begin FSelectionFrameActive := Val;
+begin FSelectionFrameActive:=Val;
    if FSelectionFrameActive then refresh;
 end;
 
 procedure TFreeViewport.DrawSelectionFrame;
 begin
   if not FSelectionFrameActive then exit; // draw it last
-  FDrawingcanvas.Pen.Style :=  psDash;    // psInsideframe;
-  FDrawingcanvas.Pen.Color := clOlive; // clYellow; // clWhite;
+  FDrawingcanvas.Pen.Style:= psDash;    // psInsideframe;
+  FDrawingcanvas.Pen.Color:=clOlive; // clYellow; // clWhite;
   FDrawingcanvas.Frame(FSelectionFrameRect);
 end;
 
 procedure TFreeViewport.FSetVertScrollbar(val: TScrollbar);
 begin
-  if FVertScrollbar <> nil then FVertScrollbar.OnChange := nil;
-  FVertScrollbar := Val;
+  if FVertScrollbar <> nil then FVertScrollbar.OnChange:=nil;
+  FVertScrollbar:=Val;
   if FVertScrollbar <> nil then begin
-    FOriginalVertScrollbarChange := val.OnChange;
-    FVertScrollbar.OnChange := FVertScrollbarChange;
-    FVertScrollbar.Min := -180;
-    FVertScrollbar.Max := 180;
+    FOriginalVertScrollbarChange:=val.OnChange;
+    FVertScrollbar.OnChange:=FVertScrollbarChange;
+    FVertScrollbar.Min:=-180;
+    FVertScrollbar.Max:=180;
     if FVertScrollbar.Position <> round(Elevation) then
-       FVertScrollbar.Position := Round(Elevation);
-    FVertScrollbar.Visible := false; // ViewType = fvPerspective; ///+++
+       FVertScrollbar.Position:=Round(Elevation);
+    FVertScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
   end;
 end;
 
 procedure TFreeViewport.FSetMargin(Val: TFloatType);
 begin
-  if Val < 0 then Val := 0;
+  if Val < 0 then Val:=0;
   if Val <> FMargin then begin
-    FMargin := Val;
+    FMargin:=Val;
     if not (csDesigning in ComponentState) then begin
        if Zoom <> 1.0 then Refresh else ZoomExtents;
     end;
@@ -226,38 +226,38 @@ begin
 end;
 
 procedure TFreeViewport.FSetPenStyle(Val: TPenStyle);
-begin if FDrawingcanvas.Pen.Style <> val then FDrawingcanvas.Pen.Style := Val;
+begin if FDrawingcanvas.Pen.Style <> val then FDrawingcanvas.Pen.Style:=Val;
 end;
 
 procedure TFreeViewport.FSetPenWidth(Val: integer);
-begin if FDrawingcanvas.Pen.Width <> val then FDrawingcanvas.Pen.Width := Val;
+begin if FDrawingcanvas.Pen.Width <> val then FDrawingcanvas.Pen.Width:=Val;
 end;
 
 function TFreeViewport.FGetPrintScaleFactor: TFloatType;
-begin Result := FPrintScaleFactor; end;
+begin Result:=FPrintScaleFactor; end;
 
 procedure TFreeViewport.FSetViewType(Val: TFreeViewType);
 begin
   if Val <> FViewType then begin
-    FViewType := Val;
-    FZoom := 1.0;
-    FPan.X := 0;
-    FPan.Y := 0;
+    FViewType:=Val;
+    FZoom:=1.0;
+    FPan.X:=0;
+    FPan.Y:=0;
     case FViewtype of
-      fvBodyplan:    begin FAngle := 0;  FElevation := 0;  end;
-      fvProfile:     begin FAngle := 90; FElevation := 0;  end;
-      fvPlan:        begin FAngle := 90; FElevation := 90; end;
-      fvPerspective: begin FAngle := 20; FElevation := 20; end;
+      fvBodyplan:    begin FAngle:=0;  FElevation:=0;  end;
+      fvProfile:     begin FAngle:=90; FElevation:=0;  end;
+      fvPlan:        begin FAngle:=90; FElevation:=90; end;
+      fvPerspective: begin FAngle:=20; FElevation:=20; end;
     end;
     if FHorScrollbar <> nil then begin
-      FHorScrollbar.Position := round(Angle);
-      FHorScrollbar.Visible := false; // ViewType = fvPerspective; ///+++
-      if FHorScrollbar.Position <> round(angle) then FHorScrollbar.Position := Round(Angle);
+      FHorScrollbar.Position:=round(Angle);
+      FHorScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
+      if FHorScrollbar.Position <> round(angle) then FHorScrollbar.Position:=Round(Angle);
     end;
     if FVertScrollbar <> nil then begin
-      FVertScrollbar.Position := round(Elevation);
-      FVertScrollbar.Visible := false; // ViewType = fvPerspective; ///+++
-      if FVertScrollbar.Position <> round(Elevation) then FVertScrollbar.Position := Round(Elevation);
+      FVertScrollbar.Position:=round(Elevation);
+      FVertScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
+      if FVertScrollbar.Position <> round(Elevation) then FVertScrollbar.Position:=Round(Elevation);
     end;
     if assigned(FOnRequestBackgroundImage) then FOnRequestBackgroundImage(self);
     if assigned(FOnRequestExtents) then FOnRequestExtents( self,FMin3D,FMax3D );
@@ -270,13 +270,13 @@ begin
 end;
 
 procedure TFreeViewport.FSetViewportMode(Val: TFreeViewportMode);
-begin if Val <> FViewportMode then begin FViewportmode := Val; Refresh; end;
+begin if Val <> FViewportMode then begin FViewportmode:=Val; Refresh; end;
 end;
 
 procedure TFreeViewport.FHorScrollbarChange(Sender: TObject);
 begin
   if FHorScrollbar <> nil then begin
-    if Round(Angle) <> FHorScrollbar.Position then Angle := FHorScrollbar.Position;
+    if Round(Angle) <> FHorScrollbar.Position then Angle:=FHorScrollbar.Position;
     if @FOriginalHorScrollbarChange <> nil then FOriginalHorScrollbarChange(Sender);
   end;
 end;
@@ -284,13 +284,13 @@ end;
 procedure TFreeViewport.FVertScrollbarChange(Sender: TObject);
 begin
   if FVertScrollbar <> nil then begin
-    if Round(Elevation) <> FVertScrollbar.Position then Elevation := FVertScrollbar.Position;
+    if Round(Elevation) <> FVertScrollbar.Position then Elevation:=FVertScrollbar.Position;
     if @FOriginalVertScrollbarChange <> nil then FOriginalVertScrollbarChange(Sender);
   end;
 end;
 
 procedure TFreeViewport.FSetZoom(val: TFloatType);
-begin if FZoom = val then exit; FZoom := val; end;
+begin if FZoom = val then exit; FZoom:=val; end;
 
 procedure TFreeViewport.WMMouseEnter(var Message: TMessage);
 begin
@@ -302,7 +302,7 @@ end;
 procedure TFreeViewport.WMMouseLeave(var Message: TMessage);
 begin
   inherited;
-  if self.Cursor <> crCross then Cursor := crCross;
+  if self.Cursor <> crCross then Cursor:=crCross;
   if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
 end;
 
@@ -311,101 +311,101 @@ var curRes:string;
 begin
   inherited Create( AOwner );
 
-  BevelOuter := bvNone;
-  BevelInner := bvNone;
-  BevelWidth := 1;
-  BorderStyle := bsSingle;
-  BorderWidth := 0;
-  FPrinting := False;
-  FBackgroundMode := emNormal;
-  FMargin := 0.0;
-  FPrintResolution := 1;
-  FPrintScaleFactor := 1.0;
-  FAngle := 20;
-  FElevation := 20;
-  FDistance := 1e4;
-  FZoom := 1.0;
-  FPan.X := 0;
-  FPan.Y := 0;
-  FOnRequestBackgroundImage := nil;
-  FCameraType := ftStandard; // Standard 50mm. lens, field of view= 35/50 =35 degrees.
-  FFieldOfView := RadToDeg(ArcTan(35 / 50));
-  FViewType := fvPerspective;
-  FDoubleBuffer := True;
-  FBackgroundImage := TFreeBackgroundImage.Create( Self );
-  FHorScrollbar := nil;
-  FVertScrollbar := nil;
+  BevelOuter:=bvNone;
+  BevelInner:=bvNone;
+  BevelWidth:=1;
+  BorderStyle:=bsSingle;
+  BorderWidth:=0;
+  FPrinting:=False;
+  FBackgroundMode:=emNormal;
+  FMargin:=0.0;
+  FPrintResolution:=1;
+  FPrintScaleFactor:=1.0;
+  FAngle:=20;
+  FElevation:=20;
+  FDistance:=1e4;
+  FZoom:=1.0;
+  FPan.X:=0;
+  FPan.Y:=0;
+  FOnRequestBackgroundImage:=nil;
+  FCameraType:=ftStandard; // Standard 50mm. lens, field of view= 35/50 =35 degrees.
+  FFieldOfView:=RadToDeg(ArcTan(35 / 50));
+  FViewType:=fvPerspective;
+  FDoubleBuffer:=True;
+  FBackgroundImage:=TFreeBackgroundImage.Create( Self );
+  FHorScrollbar:=nil;
+  FVertScrollbar:=nil;
 
   // Inherited create(AOwner);
-  FDrawingBuffer := TBitmap.Create;
-  // FDrawingBuffer.PixelFormat := pf24bit; // Use 24 bit for faster pixel-access when shading
+  FDrawingBuffer:=TBitmap.Create;
+  // FDrawingBuffer.PixelFormat:=pf24bit; // Use 24 bit for faster pixel-access when shading
   // We cannot use incompatible format in X11. It will cause desynchronization of RawImage with Canvas,
   // so Canvas operations will cause to "forget" previous RawImage changes.
   // We will create native buffer Bitmap and convert ScanLine pixels to/from TRGBTriple using TFreeBitmapFormatHelper
   // NO. It does not work. Currently all works via Canvas.Pixels[x,y]. Quite good.
   // NO2. It does work. Currently Canvas.Pixels[x,y] causes severe memory leak SetPixel creates Pen each call.
   //      TFreeBitmapFormatHelper works Quite good though requires native 24/32-bit formats RGB or BGR.
-  FDrawingBuffer.Width := 10;
-  FDrawingBuffer.Height := 10;
+  FDrawingBuffer.Width:=10;
+  FDrawingBuffer.Height:=10;
   // Canvas.Pen.Color:=clBlack;
   // Canvas.Brush.Color:=clWhite;
   // FDrawingBuffer.Canvas.FillRect(0,0,10,10); // to init handles
-  FBitmapFormatHelper := TFreeBitmapFormatHelper.Create(FDrawingBuffer);        // Logger.Debug('FBitmapFormatHelper:' + FBitmapFormatHelper.AsString);
-  FDrawingCanvas := Canvas;
-  FZBuffer := TFreeZBuffer.Create;
-  FZBuffer.FViewport := self;
-  FAlphaBuffer := TFreeAlphaBuffer.Create;
-  FAlphaBuffer.FViewport := Self;
+  FBitmapFormatHelper:=TFreeBitmapFormatHelper.Create(FDrawingBuffer);        // Logger.Debug('FBitmapFormatHelper:' + FBitmapFormatHelper.AsString);
+  FDrawingCanvas:=Canvas;
+  FZBuffer:=TFreeZBuffer.Create;
+  FZBuffer.FViewport:=self;
+  FAlphaBuffer:=TFreeAlphaBuffer.Create;
+  FAlphaBuffer.FViewport:=Self;
 
-  FLight.Position.X := 50;
-  FLight.Position.Y := 20;
-  FLight.Position.Z := 50;
-  FLight.Ambient    := 64;
-  FLight.Intensity  := 192;
+  FLight.Position.X:=50;
+  FLight.Position.Y:=20;
+  FLight.Position.Z:=50;
+  FLight.Ambient   :=64;
+  FLight.Intensity :=192;
 
-  FViewportmode := vmWireFrame;
+  FViewportmode:=vmWireFrame;
 
   // Load cursors from resource file
 
   if Forms.Screen.PixelsPerInch >= 144 then curRes:='48' else curRes:='32';
-  Screen.Cursors[crRotate]    := LoadCursor(hInstance, pchar('ROTATE_'+curRes));
-  Screen.Cursors[crSetOrigin] := LoadCursor(hInstance, pchar('SETORIGIN_'+curRes));
-  Screen.Cursors[crSetScale]  := LoadCursor(hInstance, pchar('SETSCALE_'+curRes));
-  Screen.Cursors[crTranspCol] := LoadCursor(hInstance, pchar('COLORPICKER_'+curRes));
-  Screen.Cursors[crSetPoint]  := LoadCursor(hInstance, pchar('SETPOINT_'+curRes));
-  Screen.Cursors[crSetLine]   := LoadCursor(hInstance, pchar('SETLINE_'+curRes));
-  Screen.Cursors[crSetSpline] := LoadCursor(hInstance, pchar('SETSPLINE_'+curRes));
-//Screen.Cursors[crPan]       := LoadCursor(hInstance, 'PANVIEWPORT');
-  FontName := 'Consolas'; //'Times New Roman'; // 'Courier';
-  FontSize := 8;
-  FontColor := clNavy; //clOlive; //clWhite;
+  Screen.Cursors[crRotate]   :=LoadCursor(hInstance, pchar('ROTATE_'+curRes));
+  Screen.Cursors[crSetOrigin]:=LoadCursor(hInstance, pchar('SETORIGIN_'+curRes));
+  Screen.Cursors[crSetScale] :=LoadCursor(hInstance, pchar('SETSCALE_'+curRes));
+  Screen.Cursors[crTranspCol]:=LoadCursor(hInstance, pchar('COLORPICKER_'+curRes));
+  Screen.Cursors[crSetPoint] :=LoadCursor(hInstance, pchar('SETPOINT_'+curRes));
+  Screen.Cursors[crSetLine]  :=LoadCursor(hInstance, pchar('SETLINE_'+curRes));
+  Screen.Cursors[crSetSpline]:=LoadCursor(hInstance, pchar('SETSPLINE_'+curRes));
+//Screen.Cursors[crPan]      :=LoadCursor(hInstance, 'PANVIEWPORT');
+  FontName:='Consolas'; //'Times New Roman'; // 'Courier';
+  FontSize:=8;
+  FontColor:=clNavy; //clOlive; //clWhite;
 end;
 
 procedure TFreeViewport.DetachEventHandlers;
 begin
-  FOnChangeBackgroundImage := nil;
-  FOnMouseDown := nil;
-  FOnMouseUp := nil;
-  FOnMouseEnter := nil;
-  FOnMouseMove := nil;
-  FOnMouseLeave := nil;
-  FOnRedraw := nil;
-  FOnChangeViewType := nil;
-  FOnRequestBackgroundImage := nil;
-  FOnRequestExtents := nil;
+  FOnChangeBackgroundImage:=nil;
+  FOnMouseDown:=nil;
+  FOnMouseUp:=nil;
+  FOnMouseEnter:=nil;
+  FOnMouseMove:=nil;
+  FOnMouseLeave:=nil;
+  FOnRedraw:=nil;
+  FOnChangeViewType:=nil;
+  FOnRequestBackgroundImage:=nil;
+  FOnRequestExtents:=nil;
 end;
 
 destructor TFreeViewport.Destroy;
 begin
   DetachEventHandlers;
   if Assigned(FDrawingBuffer) then FreeAndNil(FDrawingBuffer);
-  FDrawingBuffer := nil;
+  FDrawingBuffer:=nil;
   if Assigned(FZBuffer) then FreeAndNil(FZBuffer);
-                                        FZBuffer := nil;
+                                        FZBuffer:=nil;
   if Assigned(FAlphaBuffer) then FreeAndNil(FAlphaBuffer);
-                                            FAlphaBuffer := nil;
+                                            FAlphaBuffer:=nil;
   if Assigned(FBackgroundImage) then FreeAndNil(FBackgroundImage);
-                                                FBackgroundImage := nil;
+                                                FBackgroundImage:=nil;
   if Assigned(FBitmapFormatHelper) then FreeAndNil(FBitmapFormatHelper);
   inherited Destroy;
 end;
@@ -413,12 +413,12 @@ end;
 procedure TFreeViewport.BeginUpdate;
 begin
   if not FUpdating then
-  begin FDrawingBuffer.BeginUpdate(False); FUpdating := True; end;
+  begin FDrawingBuffer.BeginUpdate(False); FUpdating:=True; end;
 end;
 
 procedure TFreeViewport.EndUpdate;
 begin
-  if FUpdating then begin FDrawingBuffer.EndUpdate; FUpdating := False; end;
+  if FUpdating then begin FDrawingBuffer.EndUpdate; FUpdating:=False; end;
 end;
 
 procedure TFreeViewport.GetPixel( X,Y: integer; out R,G,B: byte );
@@ -433,9 +433,9 @@ begin
   //Row:=FDrawingBuffer.Scanline[P1.Y];
 
   // My method via FBitmapFormatHelper
-   {pRow := FDrawingBuffer.RawImage.GetLineStart(Y);
-   pPixel := pRow + FBitmapFormatHelper.BytesPerPixel * X;
-   Pixel := FBitmapFormatHelper.ToTRGBTriple(pPixel);
+   {pRow:=FDrawingBuffer.RawImage.GetLineStart(Y);
+   pPixel:=pRow + FBitmapFormatHelper.BytesPerPixel * X;
+   Pixel:=FBitmapFormatHelper.ToTRGBTriple(pPixel);
    R:=Pixel.rgbtRed;
    G:=Pixel.rgbtGreen;
    B:=Pixel.rgbtBlue;}
@@ -481,30 +481,30 @@ var
   pRow, pPixel: pointer;
   Pixel: TRGBTriple;
 begin
-  P1 := self.ProjectToZBuffer( ZBufferScaleFactor,Point1 );
-  W := ClientWidth;
-  H := ClientHeight;
-  P2 := self.ProjectToZBuffer(ZBufferScaleFactor, Point2);
+  P1:=self.ProjectToZBuffer( ZBufferScaleFactor,Point1 );
+  W:=ClientWidth;
+  H:=ClientHeight;
+  P2:=self.ProjectToZBuffer(ZBufferScaleFactor, Point2);
 
   //BeginUpdate;  // do not do that here otherwise background jumps blask-and-gray on movements
   // do this outside cycle that draws lines
 
-  dx := P2.X - P1.X;
-  dy := P2.Y - P1.Y;
-  ax := Abs(dx) shl 1;
-  ay := Abs(dy) shl 1;
-  if dx >= 0 then sx := 1 else sx := -1;
-  if dy >= 0 then sy := 1 else sy := -1;
+  dx:=P2.X - P1.X;
+  dy:=P2.Y - P1.Y;
+  ax:=Abs(dx) shl 1;
+  ay:=Abs(dy) shl 1;
+  if dx >= 0 then sx:=1 else sx:=-1;
+  if dy >= 0 then sy:=1 else sy:=-1;
   if ax > ay then
   begin
-    if dx = 0 then dz := 0 else dz := (P2.Z - P1.Z) / abs(dx);
-    d := ay - ax shr 1;
+    if dx = 0 then dz:=0 else dz:=(P2.Z - P1.Z) / abs(dx);
+    d:=ay - ax shr 1;
     while P1.X <> P2.X do begin
       if (P1.Y > 0) and (P1.Y < H) then begin
         if (P1.Y > -1) and (P1.Y < H) and (P1.X > 0) and (P1.X < W) then begin
           if P1.Z >= FZBuffer.FBuffer[P1.Y][P1.X] then begin
             SetPixel(P1.X, P1.Y, R, G, B);
-            FZBuffer.FBuffer[P1.Y][P1.X] := P1.Z;
+            FZBuffer.FBuffer[P1.Y][P1.X]:=P1.Z;
           end;
         end;
       end;
@@ -512,20 +512,20 @@ begin
         Inc(P1.Y, sy);
         Dec(d, ax);
       end;
-      P1.Z := P1.Z + dZ;
+      P1.Z:=P1.Z + dZ;
       Inc(P1.X, sx);
       Inc(d, ay);
     end;
   end
   else begin
-    if dy = 0 then dZ := 0 else dz := (P2.Z - P1.Z) / abs(dy);
-    d := ax - ay shr 1;
+    if dy = 0 then dZ:=0 else dz:=(P2.Z - P1.Z) / abs(dy);
+    d:=ax - ay shr 1;
     while P1.Y <> P2.Y do begin
       if (P1.Y > 0) and (P1.Y < H) then begin
         if (P1.Y > -1) and (P1.Y < H) and (P1.X > 0) and (P1.X < W) then begin
           if P1.Z >= FZBuffer.FBuffer[P1.Y][P1.X] then begin
             SetPixel(P1.X, P1.Y, R, G, B);
-            FZBuffer.FBuffer[P1.Y][P1.X] := P1.Z;
+            FZBuffer.FBuffer[P1.Y][P1.X]:=P1.Z;
           end;
         end;
       end;
@@ -534,7 +534,7 @@ begin
         Dec(d, ay);
       end;
       Inc(P1.Y, sy);
-      P1.Z := P1.Z + dZ;
+      P1.Z:=P1.Z + dZ;
       Inc(d, ax);
     end;
   end;
@@ -560,93 +560,93 @@ var
   Diff:     T3DCoordinate;
 
   procedure MinMax( P: T2DCoordinate ); begin
-    if P.X < Min2D.X then Min2D.X := P.X;
-    if P.Y < Min2D.Y then Min2D.Y := P.Y;
-    if P.X > Max2D.X then Max2D.X := P.X;
-    if P.Y > Max2D.Y then Max2D.Y := P.Y;
+    if P.X < Min2D.X then Min2D.X:=P.X;
+    if P.Y < Min2D.Y then Min2D.Y:=P.Y;
+    if P.X > Max2D.X then Max2D.X:=P.X;
+    if P.Y > Max2D.Y then Max2D.Y:=P.Y;
   end;
 
 begin // Add margin
-  Diff := ScalePoint( 0.01*FMargin,Subtract( Max,Min ) );
-  FMin3D := Subtract( Min,  Diff );
-  Diff := ScalePoint( -1.0, Diff );
-  FMax3D := Subtract( Max,  Diff );
+  Diff:=ScalePoint( 0.01*FMargin,Subtract( Max,Min ) );
+  FMin3D:=Subtract( Min,  Diff );
+  Diff:=ScalePoint( -1.0, Diff );
+  FMax3D:=Subtract( Max,  Diff );
   // Calculate the midpoint of the boundingbox, which is used as the center of the model for rotating the model
-  FMidPoint := MidPoint( FMin3D, FMax3D );
+  FMidPoint:=MidPoint( FMin3D, FMax3D );
   // Calculate the distance of the camera to the center of the model, following from the field of view from the camera
-  Tmp := Sqrt( Sqr( FMax3D.Y-FMin3D.Y ) + Sqr( FMax3D.Z-FMin3D.Z ) );
-  if Tmp = 0 then Tmp := 1e-2;
+  Tmp:=Sqrt( Sqr( FMax3D.Y-FMin3D.Y ) + Sqr( FMax3D.Z-FMin3D.Z ) );
+  if Tmp = 0 then Tmp:=1e-2;
   if FViewtype = fvPerspective then begin
     if ArcTan( DegToRad( FFieldOfView ) ) <> 0 then begin
-      FDistance := 1.5 * Tmp / ArcTan( DegToRad( FFieldOfView ) );
-      if FDistance > 1e5 then FDistance := 1e5;
-    end else FDistance := 1e5;
-  end else FDistance := 1e8;
+      FDistance:=1.5 * Tmp / ArcTan( DegToRad( FFieldOfView ) );
+      if FDistance > 1e5 then FDistance:=1e5;
+    end else FDistance:=1e5;
+  end else FDistance:=1e8;
 
-  FCameraLocation.X := FMax3D.X + FDistance;
-  FCameraLocation.Y := FMidPoint.Y;
-  FCameraLocation.Z := FMidPoint.Z;
+  FCameraLocation.X:=FMax3D.X + FDistance;
+  FCameraLocation.Y:=FMidPoint.Y;
+  FCameraLocation.Z:=FMidPoint.Z;
 
-  FLightIntensity := FLight.Intensity / 256.0;
-  FAmbientIntencity := FLight.Ambient / 256.0;
+  FLightIntensity:=FLight.Intensity / 256.0;
+  FAmbientIntencity:=FLight.Ambient / 256.0;
 
-  FCosAngle := Cos( DegToRad(FAngle) );
-  FSinAngle := sin( DegToRad(FAngle) );
-  FCosElevation := Cos( DegToRad( FElevation ) );
-  FSinElevation := sin( DegToRad( FElevation ) );
+  FCosAngle:=Cos( DegToRad(FAngle) );
+  FSinAngle:=sin( DegToRad(FAngle) );
+  FCosElevation:=Cos( DegToRad( FElevation ) );
+  FSinElevation:=sin( DegToRad( FElevation ) );
 
   // now project all 8 cornerpoints of the bounding box to 2D
   // in order to determin the min. and max. 2D coordinates of the 2D viewport.
-  P[1].X := FMin3D.X;  P[1].Y := FMin3D.Y;  P[1].Z := FMin3D.Z;
-  P[2].X := FMax3D.X;  P[2].Y := FMin3D.Y;  P[2].Z := FMin3D.Z;
-  P[3].X := FMax3D.X;  P[3].Y := FMax3D.Y;  P[3].Z := FMin3D.Z;
-  P[4].X := FMin3D.X;  P[4].Y := FMax3D.Y;  P[4].Z := FMin3D.Z;
-  P[5].X := FMin3D.X;  P[5].Y := FMin3D.Y;  P[5].Z := FMax3D.Z;
-  P[6].X := FMax3D.X;  P[6].Y := FMin3D.Y;  P[6].Z := FMax3D.Z;
-  P[7].X := FMax3D.X;  P[7].Y := FMax3D.Y;  P[7].Z := FMax3D.Z;
-  P[8].X := FMin3D.X;  P[8].Y := FMax3D.Y;  P[8].Z := FMax3D.Z;
-  for I := 1 to 8 do begin
-    P3D := RotatedPoint( P[i] );               // apply perspective projection
-    Tmp := FCameralocation.X - P3D.X;          // apply perspective correction
-    Projected.X := FCameralocation.X * P3D.Y / Tmp;
-    Projected.Y := FCameralocation.X * P3D.Z / Tmp;
+  P[1].X:=FMin3D.X;  P[1].Y:=FMin3D.Y;  P[1].Z:=FMin3D.Z;
+  P[2].X:=FMax3D.X;  P[2].Y:=FMin3D.Y;  P[2].Z:=FMin3D.Z;
+  P[3].X:=FMax3D.X;  P[3].Y:=FMax3D.Y;  P[3].Z:=FMin3D.Z;
+  P[4].X:=FMin3D.X;  P[4].Y:=FMax3D.Y;  P[4].Z:=FMin3D.Z;
+  P[5].X:=FMin3D.X;  P[5].Y:=FMin3D.Y;  P[5].Z:=FMax3D.Z;
+  P[6].X:=FMax3D.X;  P[6].Y:=FMin3D.Y;  P[6].Z:=FMax3D.Z;
+  P[7].X:=FMax3D.X;  P[7].Y:=FMax3D.Y;  P[7].Z:=FMax3D.Z;
+  P[8].X:=FMin3D.X;  P[8].Y:=FMax3D.Y;  P[8].Z:=FMax3D.Z;
+  for I:=1 to 8 do begin
+    P3D:=RotatedPoint( P[i] );               // apply perspective projection
+    Tmp:=FCameralocation.X - P3D.X;          // apply perspective correction
+    Projected.X:=FCameralocation.X * P3D.Y / Tmp;
+    Projected.Y:=FCameralocation.X * P3D.Z / Tmp;
     if I = 1 then begin
-      Min2D := Projected;
-      Max2D := Projected;
+      Min2D:=Projected;
+      Max2D:=Projected;
     end;
     MinMax( Projected );
   end;
-  Width := Max2D.X - Min2D.X;
-  Height := Max2D.Y - Min2D.Y;
+  Width:=Max2D.X - Min2D.X;
+  Height:=Max2D.Y - Min2D.Y;
   if (abs( Width ) > 1e-7) and (abs(Height) > 1e-7) then begin
-    XScale := ClientWidth / Width;
-    YScale := ClientHeight / Height;
-    if XScale < YScale then FScale := XScale
-                       else FScale := YScale;
-  end else FScale := 1;
+    XScale:=ClientWidth / Width;
+    YScale:=ClientHeight / Height;
+    if XScale < YScale then FScale:=XScale
+                       else FScale:=YScale;
+  end else FScale:=1;
 
   // Decrease Scale with 1% to keep the model free from the edges
-  FScale := 0.9 * FScale;                         ///+++ 0.99
+  FScale:=0.9 * FScale;                         ///+++ 0.99
   if FViewtype = fvBodyplan then FScale *= 0.9;   ///+++
-  FScreencenter.X := ClientWidth div 2;
-  FScreencenter.Y := ClientHeight div 2;
+  FScreencenter.X:=ClientWidth div 2;
+  FScreencenter.Y:=ClientHeight div 2;
   // Calculate correction (pan vector) to make sure
   // that the ship appears in the middle of the viewport
-  Pt1.X := FScreencenter.X + Round( FScale * Min2D.X );
-  Pt1.Y := FScreencenter.Y - Round( FScale * Min2D.Y );
-  Pt2.X := FScreencenter.X + Round( FScale * Max2D.X );
-  Pt2.Y := FScreencenter.Y - Round( FScale * Max2D.Y );
-  HorCorr := (Pt1.X + Pt2.X) div 2 - ClientWidth div 2;
-  VertCorr := (Pt1.Y + Pt2.Y) div 2 - ClientHeight div 2;
-  FScreencenter.X := FScreencenter.X - HorCorr;
-  FScreencenter.Y := FScreencenter.Y - vertCorr; // Remember the min/max values
+  Pt1.X:=FScreencenter.X + Round( FScale * Min2D.X );
+  Pt1.Y:=FScreencenter.Y - Round( FScale * Min2D.Y );
+  Pt2.X:=FScreencenter.X + Round( FScale * Max2D.X );
+  Pt2.Y:=FScreencenter.Y - Round( FScale * Max2D.Y );
+  HorCorr:=(Pt1.X + Pt2.X) div 2 - ClientWidth div 2;
+  VertCorr:=(Pt1.Y + Pt2.Y) div 2 - ClientHeight div 2;
+  FScreencenter.X:=FScreencenter.X - HorCorr;
+  FScreencenter.Y:=FScreencenter.Y - vertCorr; // Remember the min/max values
   if FViewtype = fvPerspective then begin        ///+++
     FScreencenter.X += ClientWidth div 16;
 //  FScreencenter.Y += ClientHeight div 16;
     FScale *= 1.25;
   end;
-  FMin3D := Min;
-  FMax3D := Max;
+  FMin3D:=Min;
+  FMax3D:=Max;
   if assigned( BackgroundImage ) then BackgroundImage.Invalidate; // Now force a complete repaint
   Invalidate;
 end;
@@ -678,126 +678,126 @@ var
   Str: ansistring;
 
   procedure MinMax(P: T2DCoordinate); begin
-    if P.X < Min2D.X then Min2D.X := P.X;
-    if P.Y < Min2D.Y then Min2D.Y := P.Y;
-    if P.X > Max2D.X then Max2D.X := P.X;
-    if P.Y > Max2D.Y then Max2D.Y := P.Y;
+    if P.X < Min2D.X then Min2D.X:=P.X;
+    if P.Y < Min2D.Y then Min2D.Y:=P.Y;
+    if P.X > Max2D.X then Max2D.X:=P.X;
+    if P.Y > Max2D.Y then Max2D.Y:=P.Y;
   end;
 
 begin
   if Printer <> nil then begin                              // Backup settings;
-    OldScale := FScale;
-    OldPan := FPan;
-    OldCanvas := FDrawingCanvas;
-    OldCenter := FScreencenter;
-    OldZoom := FZoom;
+    OldScale:=FScale;
+    OldPan:=FPan;
+    OldCanvas:=FDrawingCanvas;
+    OldCenter:=FScreencenter;
+    OldZoom:=FZoom;
     try
-      CanvasWidth := Printer.PageWidth;
-      CanvasHeight := Printer.PageHeight;
-      Resolution := Printer.XDPI; // GetDeviceCaps(Printer.Handle, LogPixelsX);
-      FPrintResolution := Resolution;
-      FZoom := 1.0;
-      FScale := 1.0;
-      FPan.X := 0;
-      FPan.Y := 0;
-      FScreencenter.X := Canvaswidth div 2;
-      FScreencenter.Y := Canvasheight div 2;
+      CanvasWidth:=Printer.PageWidth;
+      CanvasHeight:=Printer.PageHeight;
+      Resolution:=Printer.XDPI; // GetDeviceCaps(Printer.Handle, LogPixelsX);
+      FPrintResolution:=Resolution;
+      FZoom:=1.0;
+      FScale:=1.0;
+      FPan.X:=0;
+      FPan.Y:=0;
+      FScreencenter.X:=Canvaswidth div 2;
+      FScreencenter.Y:=Canvasheight div 2;
       // project all 8 cornerpoints of the bounding box to 2D
       // in order to determin the min. and max. 2D coordinates of the 2D viewport.
-      P[1].X := FMin3D.X;      P[1].Y := FMin3D.Y;      P[1].Z := FMin3D.Z;
-      P[2].X := FMax3D.X;      P[2].Y := FMin3D.Y;      P[2].Z := FMin3D.Z;
-      P[3].X := FMax3D.X;      P[3].Y := FMax3D.Y;      P[3].Z := FMin3D.Z;
-      P[4].X := FMin3D.X;      P[4].Y := FMax3D.Y;      P[4].Z := FMin3D.Z;
-      P[5].X := FMin3D.X;      P[5].Y := FMin3D.Y;      P[5].Z := FMax3D.Z;
-      P[6].X := FMax3D.X;      P[6].Y := FMin3D.Y;      P[6].Z := FMax3D.Z;
-      P[7].X := FMax3D.X;      P[7].Y := FMax3D.Y;      P[7].Z := FMax3D.Z;
-      P[8].X := FMin3D.X;      P[8].Y := FMax3D.Y;      P[8].Z := FMax3D.Z;
-      for I := 1 to 8 do begin
-        P3D := RotatedPoint(P[i]);              // apply perspective projection
-        Tmp := FCameralocation.X - P3D.X;       // apply perspective correction
-        Projected.X := FScreenCenter.X + (FScale * FCameralocation.X * P3D.Y / Tmp);
-        Projected.Y := FScreenCenter.Y - (FScale * FCameralocation.X * P3D.Z / Tmp);
+      P[1].X:=FMin3D.X;      P[1].Y:=FMin3D.Y;      P[1].Z:=FMin3D.Z;
+      P[2].X:=FMax3D.X;      P[2].Y:=FMin3D.Y;      P[2].Z:=FMin3D.Z;
+      P[3].X:=FMax3D.X;      P[3].Y:=FMax3D.Y;      P[3].Z:=FMin3D.Z;
+      P[4].X:=FMin3D.X;      P[4].Y:=FMax3D.Y;      P[4].Z:=FMin3D.Z;
+      P[5].X:=FMin3D.X;      P[5].Y:=FMin3D.Y;      P[5].Z:=FMax3D.Z;
+      P[6].X:=FMax3D.X;      P[6].Y:=FMin3D.Y;      P[6].Z:=FMax3D.Z;
+      P[7].X:=FMax3D.X;      P[7].Y:=FMax3D.Y;      P[7].Z:=FMax3D.Z;
+      P[8].X:=FMin3D.X;      P[8].Y:=FMax3D.Y;      P[8].Z:=FMax3D.Z;
+      for I:=1 to 8 do begin
+        P3D:=RotatedPoint(P[i]);              // apply perspective projection
+        Tmp:=FCameralocation.X - P3D.X;       // apply perspective correction
+        Projected.X:=FScreenCenter.X + (FScale * FCameralocation.X * P3D.Y / Tmp);
+        Projected.Y:=FScreenCenter.Y - (FScale * FCameralocation.X * P3D.Z / Tmp);
         if I = 1 then begin
-          Min2D := Projected;
-          Max2D := Projected;
+          Min2D:=Projected;
+          Max2D:=Projected;
         end;
         MinMax(Projected);
       end;
-      Width := Max2D.X - Min2D.X;
-      Height := Max2D.Y - Min2D.Y;
+      Width:=Max2D.X - Min2D.X;
+      Height:=Max2D.Y - Min2D.Y;
       if (Width <> 0) and (Height <> 0) then begin
-        XScale := CanvasWidth / Width;
-        YScale := CanvasHeight / Height;
-        if XScale < YScale then Scale := XScale
-                           else Scale := YScale;
-      end else Scale := 1;
+        XScale:=CanvasWidth / Width;
+        YScale:=CanvasHeight / Height;
+        if XScale < YScale then Scale:=XScale
+                           else Scale:=YScale;
+      end else Scale:=1;
       // Set max. scale
       //         Scale:=0.99*Scale;
-      FScale := Scale;
+      FScale:=Scale;
 
       // Calculate the size at modelspace
-      ModelSize := Round(Width * FScale);  // Size in pixels
-      ModelSize := ModelSize / Resolution;    // size in inches
+      ModelSize:=Round(Width * FScale);  // Size in pixels
+      ModelSize:=ModelSize / Resolution;    // size in inches
       if Units = fuMetric then
-        ModelSize := ModelSize * 0.01 * 2.54 // size in meters
+        ModelSize:=ModelSize * 0.01 * 2.54 // size in meters
       else
-        ModelSize := ModelSize / 12;       // size in feet
-      PrintScale := Width / ModelSize;
+        ModelSize:=ModelSize / 12;       // size in feet
+      PrintScale:=Width / ModelSize;
       if AskPrintScale then begin
-        Str := IntToStr(Trunc(PrintScale) + 1);
+        Str:=IntToStr(Trunc(PrintScale) + 1);
         if InputQuery('Print scale ','Enter the printscale 1:',Str) then begin
-          NewPrintScale := GetFloat(Str);
+          NewPrintScale:=GetFloat(Str);
           if NewPrintScale < 0 then begin
-             NewPrintScale := 1;
-             AbortPrinting := True;
+             NewPrintScale:=1;
+             AbortPrinting:=True;
           end else
-             AbortPrinting := False;
+             AbortPrinting:=False;
         end else begin
-          AbortPrinting := True;
-          NewPrintScale := PrintScale;
+          AbortPrinting:=True;
+          NewPrintScale:=PrintScale;
         end;
       end else begin        // set the new scale
-        NewPrintScale := PrintScale;
-        AbortPrinting := False;
+        NewPrintScale:=PrintScale;
+        AbortPrinting:=False;
       end;
-      FScale := FScale * (PrintScale / NewPrintscale);
+      FScale:=FScale * (PrintScale / NewPrintscale);
 
       // check
-      for I := 1 to 8 do begin
-        Projected.X := Project(P[i]).X;
-        Projected.Y := Project(P[i]).Y;
+      for I:=1 to 8 do begin
+        Projected.X:=Project(P[i]).X;
+        Projected.Y:=Project(P[i]).Y;
         if I = 1 then begin
-          Min2D := Projected;
-          Max2D := Projected;
+          Min2D:=Projected;
+          Max2D:=Projected;
         end;
         MinMax(Projected);
       end;
-      ProjMidPoint.X := round(Min2D.X + Max2D.X) div 2;
-      ProjMidPoint.Y := round(Min2D.Y + Max2D.Y) div 2;
-      FPan.X := (Canvaswidth div 2) - ProjMidPoint.X;
-      FPan.Y := (CanvasHeight div 2) - ProjMidPoint.Y;
-      FDrawingCanvas := Printer.Canvas;
-      FPrinting := True;
-      FDestinationWidth := CanvasWidth;
+      ProjMidPoint.X:=round(Min2D.X + Max2D.X) div 2;
+      ProjMidPoint.Y:=round(Min2D.Y + Max2D.Y) div 2;
+      FPan.X:=(Canvaswidth div 2) - ProjMidPoint.X;
+      FPan.Y:=(CanvasHeight div 2) - ProjMidPoint.Y;
+      FDrawingCanvas:=Printer.Canvas;
+      FPrinting:=True;
+      FDestinationWidth:=CanvasWidth;
       if not AbortPrinting then begin  //  printscale factor on basis of resolutin and printsize
-        if Max2D.X - Min2D.X > Max2D.Y - Min2D.Y then Tmp := Max2D.X - Min2D.X
-                                                 else Tmp := Max2D.Y - Min2D.Y;
-        FPrintScalefactor := (PrintResolution / 200) * (Tmp / 4000);
-        FDestinationHeight := CanvasHeight;
-        Printer.Title := JobName;
+        if Max2D.X - Min2D.X > Max2D.Y - Min2D.Y then Tmp:=Max2D.X - Min2D.X
+                                                 else Tmp:=Max2D.Y - Min2D.Y;
+        FPrintScalefactor:=(PrintResolution / 200) * (Tmp / 4000);
+        FDestinationHeight:=CanvasHeight;
+        Printer.Title:=JobName;
         Printer.BeginDoc;
         refresh;
         Printer.EndDoc;
       end;
     finally                            // Restore settings;
-      FPrinting := False;
-      FPrintResolution := 1;
-      FPrintScaleFactor := 1.0;
-      FDrawingCanvas := OldCanvas;
-      FScale := OldScale;
-      FPan := OldPan;
-      FZoom := OldZoom;
-      FScreencenter := OldCenter;
+      FPrinting:=False;
+      FPrintResolution:=1;
+      FPrintScaleFactor:=1.0;
+      FDrawingCanvas:=OldCanvas;
+      FScale:=OldScale;
+      FPan:=OldPan;
+      FZoom:=OldZoom;
+      FScreencenter:=OldCenter;
       Refresh;
     end;
   end
@@ -811,18 +811,18 @@ var
   Dist: TFloatType;
   dX,dY:double;
 begin
-  P3D := RotatedPoint(P);
-  Dist := FCameralocation.X - P3D.X;            // apply perspective correction
-  P2D.X := FCameralocation.X * P3D.Y / Dist;
-  P2D.Y := FCameralocation.X * P3D.Z / Dist;
-  dX := FPan.X + FScreencenter.X + (FZoom * FScale * P2D.X);
-  dY := FPan.Y + FScreencenter.Y - (FZoom * FScale * P2D.Y);
-  if dX > MAXINT then dX := MAXINT;
-  if dX < -MAXINT-1 then dX := -MAXINT-1;
-  if dY > MAXINT then dY := MAXINT;
-  if dY < -MAXINT-1 then dY := -MAXINT-1;
-  Result.X := Round(dX);
-  Result.Y := Round(dY);
+  P3D:=RotatedPoint(P);
+  Dist:=FCameralocation.X - P3D.X;            // apply perspective correction
+  P2D.X:=FCameralocation.X * P3D.Y / Dist;
+  P2D.Y:=FCameralocation.X * P3D.Z / Dist;
+  dX:=FPan.X + FScreencenter.X + (FZoom * FScale * P2D.X);
+  dY:=FPan.Y + FScreencenter.Y - (FZoom * FScale * P2D.Y);
+  if dX > MAXINT then dX:=MAXINT;
+  if dX < -MAXINT-1 then dX:=-MAXINT-1;
+  if dY > MAXINT then dY:=MAXINT;
+  if dY < -MAXINT-1 then dY:=-MAXINT-1;
+  Result.X:=Round(dX);
+  Result.Y:=Round(dY);
 end;
 
 
@@ -835,21 +835,21 @@ var
   Dist: TFloatType;
 begin
   // convert from screencoordinate to 2D world coordinate
-  P2D.X := (P.X - FPan.X - FScreencenter.X) / (FZoom * FScale);
-  P2D.Y := (P.Y - FPan.Y - FScreencenter.Y) / -(FZoom * FScale);
+  P2D.X:=(P.X - FPan.X - FScreencenter.X) / (FZoom * FScale);
+  P2D.Y:=(P.Y - FPan.Y - FScreencenter.Y) / -(FZoom * FScale);
 
   // Now correct for perspective projection and create a 3D ray through the screen coordinate
-  P3D.X := FMin3D.X;
-  Dist := FCameralocation.X - P3D.X;
-  P3D.Y := P2D.X * Dist / FCameralocation.X;
-  P3D.Z := P2D.Y * Dist / FCameralocation.X;
-  Result.A := RotatedPointBack(P3D);
+  P3D.X:=FMin3D.X;
+  Dist:=FCameralocation.X - P3D.X;
+  P3D.Y:=P2D.X * Dist / FCameralocation.X;
+  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  Result.A:=RotatedPointBack(P3D);
 
-  P3D.X := FMax3D.X;
-  Dist := FCameralocation.X - P3D.X;
-  P3D.Y := P2D.X * Dist / FCameralocation.X;
-  P3D.Z := P2D.Y * Dist / FCameralocation.X;
-  Result.B := RotatedPointBack(P3D);
+  P3D.X:=FMax3D.X;
+  Dist:=FCameralocation.X - P3D.X;
+  P3D.Y:=P2D.X * Dist / FCameralocation.X;
+  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  Result.B:=RotatedPointBack(P3D);
 end;
 
 function TFreeViewport.ProjectBack(P: TPoint; Input: T3DCoordinate): T3DCoordinate;
@@ -863,33 +863,33 @@ var
   var
     t: TFloatType;
   begin
-    t := -((P1.X - P.X) * (P2.X - P1.X) + (P1.Y - P.Y) * (P2.Y - P1.Y) + (P2.Z - P.Z) * (P2.Z - P1.Z)) /
+    t:=-((P1.X - P.X) * (P2.X - P1.X) + (P1.Y - P.Y) * (P2.Y - P1.Y) + (P2.Z - P.Z) * (P2.Z - P1.Z)) /
       (sqr(P2.X - P1.X) + sqr(P2.Y - P1.Y) + sqr(P2.Z - P1.Z));
-    Result.X := P1.X + T * (P2.X - P1.X);
-    Result.Y := P1.Y + T * (P2.Y - P1.Y);
-    Result.Z := P1.Z + T * (P2.Z - P1.Z);
+    Result.X:=P1.X + T * (P2.X - P1.X);
+    Result.Y:=P1.Y + T * (P2.Y - P1.Y);
+    Result.Z:=P1.Z + T * (P2.Z - P1.Z);
   end;{Dist_PL_3D}
 
 begin
   // convert from screencoordinate to 2D world coordinate
-  P2D.X := (P.X - FPan.X - FScreencenter.X) / (FZoom * FScale);
-  P2D.Y := (P.Y - FPan.Y - FScreencenter.Y) / -(FZoom * FScale);
+  P2D.X:=(P.X - FPan.X - FScreencenter.X) / (FZoom * FScale);
+  P2D.Y:=(P.Y - FPan.Y - FScreencenter.Y) / -(FZoom * FScale);
 
   // Now correct for perspective projection and create a 3D ray through the screen coordinate
-  P3D.X := FMin3D.X;
-  Dist := FCameralocation.X - P3D.X;
-  P3D.Y := P2D.X * dist / FCameralocation.X;
-  P3D.Z := P2D.Y * Dist / FCameralocation.X;
-  P1 := RotatedPointBack(P3D);
+  P3D.X:=FMin3D.X;
+  Dist:=FCameralocation.X - P3D.X;
+  P3D.Y:=P2D.X * dist / FCameralocation.X;
+  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  P1:=RotatedPointBack(P3D);
 
-  P3D.X := FMax3D.X;
-  Dist := FCameralocation.X - P3D.X;
-  P3D.Y := P2D.X * dist / FCameralocation.X;
-  P3D.Z := P2D.Y * Dist / FCameralocation.X;
-  P2 := RotatedPointBack(P3D);
+  P3D.X:=FMax3D.X;
+  Dist:=FCameralocation.X - P3D.X;
+  P3D.Y:=P2D.X * dist / FCameralocation.X;
+  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  P2:=RotatedPointBack(P3D);
 
   // Finally project point Input on the ray through P1 and P2
-  Result := Dist_PL_3D(Input, P1, P2);
+  Result:=Dist_PL_3D(Input, P1, P2);
 end;
 
 function TFreeViewport.ProjectBackTo2D(P: TPoint): T2DCoordinate;
@@ -901,25 +901,25 @@ var
 
 begin
   // convert from screencoordinate to 2D world coordinate
-  P2D.X := (P.X - FPan.X - FScreencenter.X) / (FZoom * FScale);
-  P2D.Y := (P.Y - FPan.Y - FScreencenter.Y) / -(FZoom * FScale);
+  P2D.X:=(P.X - FPan.X - FScreencenter.X) / (FZoom * FScale);
+  P2D.Y:=(P.Y - FPan.Y - FScreencenter.Y) / -(FZoom * FScale);
   // convert from screencoordinate to 2D world coordinate
-  P3D.X := FMin3D.X;
-  Dist := FCameralocation.X - P3D.X;
-  P3D.Y := P2D.X * dist / FCameralocation.X;
-  P3D.Z := P2D.Y * Dist / FCameralocation.X;
-  P1 := RotatedPointBack(P3D);
-  P3D.X := FMax3D.X;
-  Dist := FCameralocation.X - P3D.X;
-  P3D.Y := P2D.X * dist / FCameralocation.X;
-  P3D.Z := P2D.Y * Dist / FCameralocation.X;
-  P2 := RotatedPointBack(P3D);
+  P3D.X:=FMin3D.X;
+  Dist:=FCameralocation.X - P3D.X;
+  P3D.Y:=P2D.X * dist / FCameralocation.X;
+  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  P1:=RotatedPointBack(P3D);
+  P3D.X:=FMax3D.X;
+  Dist:=FCameralocation.X - P3D.X;
+  P3D.Y:=P2D.X * dist / FCameralocation.X;
+  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  P2:=RotatedPointBack(P3D);
   case ViewType of
-    fvBodyplan:  begin P2D.X := P2.Y; P2D.Y := P2.Z; end;
-    fvPlan:      begin P2D.X := P2.X; P2D.Y := P2.Y; end;
-    fvProfile:   begin P2D.X := P2.X; P2D.Y := P2.Z; end;
+    fvBodyplan:  begin P2D.X:=P2.Y; P2D.Y:=P2.Z; end;
+    fvPlan:      begin P2D.X:=P2.X; P2D.Y:=P2.Y; end;
+    fvProfile:   begin P2D.X:=P2.X; P2D.Y:=P2.Z; end;
   end;
-  Result := P2D;
+  Result:=P2D;
 end;
 
 // Projects a 3D point to the screen and calculate it's Z-value for the Z-buffer
@@ -929,14 +929,14 @@ var
   P2D: T2DCoordinate;
   Dist: TFloatType;
 begin
-  P3D := RotatedPoint(P);
-  Dist := FCameralocation.X - P3D.X;
+  P3D:=RotatedPoint(P);
+  Dist:=FCameralocation.X - P3D.X;
   // apply perspective correction
-  P2D.X := FCameralocation.X * P3D.Y / Dist;
-  P2D.Y := FCameralocation.X * P3D.Z / Dist;
-  Result.X := FPan.X + FScreencenter.X + Round(FZoom * FScale * P2D.X);
-  Result.Y := FPan.Y + FScreencenter.Y - Round(FZoom * FScale * P2D.Y);
-  Result.Z := FCameralocation.X * P3D.X / Dist;
+  P2D.X:=FCameralocation.X * P3D.Y / Dist;
+  P2D.Y:=FCameralocation.X * P3D.Z / Dist;
+  Result.X:=FPan.X + FScreencenter.X + Round(FZoom * FScale * P2D.X);
+  Result.Y:=FPan.Y + FScreencenter.Y - Round(FZoom * FScale * P2D.Y);
+  Result.Z:=FCameralocation.X * P3D.X / Dist;
 end;
 
 // Projects a 3D point with a certain z-buffer offset to the screen, used for drawing lines on top of shaded surfaces
@@ -946,13 +946,13 @@ var
   P2D: T2DCoordinate;
   Dist: TFloatType;
 begin
-  P3D := RotatedPoint(P);
-  Dist := FCameralocation.X - P3D.X;            // apply perspective correction
-  P2D.X := FCameralocation.X * P3D.Y / (Dist);
-  P2D.Y := FCameralocation.X * P3D.Z / (Dist);
-  Result.X := FPan.X + FScreencenter.X + Round(FZoom * FScale * P2D.X);
-  Result.Y := FPan.Y + FScreencenter.Y - Round(FZoom * FScale * P2D.Y);
-  Result.Z := FCameralocation.X * Scale * P3D.X / Dist;
+  P3D:=RotatedPoint(P);
+  Dist:=FCameralocation.X - P3D.X;            // apply perspective correction
+  P2D.X:=FCameralocation.X * P3D.Y / (Dist);
+  P2D.Y:=FCameralocation.X * P3D.Z / (Dist);
+  Result.X:=FPan.X + FScreencenter.X + Round(FZoom * FScale * P2D.X);
+  Result.Y:=FPan.Y + FScreencenter.Y - Round(FZoom * FScale * P2D.Y);
+  Result.Z:=FCameralocation.X * Scale * P3D.X / Dist;
 end;
 
 {
@@ -966,16 +966,16 @@ var
   P0, PC, P1, P2, P3, XP, RelativeCameraLocation, S: T3DCoordinate;
   MidPlane: T3DPlane;
 begin
-  Result := ZERO;
-  Pt.X := X;
-  Pt.Y := Y;
-  RelativeCameraLocation := RotatedPointBack(FCameraLocation);
-  MidPlane := PlanePointNormal(RelativeCameraLocation, FMidpoint);
+  Result:=ZERO;
+  Pt.X:=X;
+  Pt.Y:=Y;
+  RelativeCameraLocation:=RotatedPointBack(FCameraLocation);
+  MidPlane:=PlanePointNormal(RelativeCameraLocation, FMidpoint);
 
   //ProjectPointOnPlane(P, MidPlane);
-  ray := ViewPort.ProjectBackAsLine(Pt);
+  ray:=ViewPort.ProjectBackAsLine(Pt);
 
-  intsn := RayIntersectTriangle(ray, p1,p2,p3, IntersectionCoord);
+  intsn:=RayIntersectTriangle(ray, p1,p2,p3, IntersectionCoord);
 
   PlanePointNormal(P, Normal: T3DCoordinate): T3DPlane;
 end;
@@ -986,17 +986,17 @@ begin
   // This function takes a point from worldspace and rotates it around the midpoint
   // of the scene as specified by the viewing-parameters (angle/elevation)
   // translate midpoint back to origin
-  P.X := P.X - FMidpoint.X;
-  P.Y := P.Y - FMidpoint.Y;
-  P.Z := P.Z - FMidpoint.Z;
+  P.X:=P.X - FMidpoint.X;
+  P.Y:=P.Y - FMidpoint.Y;
+  P.Z:=P.Z - FMidpoint.Z;
   // Rotate around the origin
-  Result.x := (P.x * FCosAngle - P.y * FSinAngle) * FCosElevation + P.z * FSinElevation;
-  Result.y := P.x * FSinAngle + P.y * FCosAngle;
-  Result.z := -(P.x * FCosAngle - P.y * FSinAngle) * FSinElevation + P.z * FCosElevation;
+  Result.x:=(P.x * FCosAngle - P.y * FSinAngle) * FCosElevation + P.z * FSinElevation;
+  Result.y:=P.x * FSinAngle + P.y * FCosAngle;
+  Result.z:=-(P.x * FCosAngle - P.y * FSinAngle) * FSinElevation + P.z * FCosElevation;
   // Translate origin back to midpoint
-  Result.X := Result.X + FMidPoint.X;
-  Result.Y := Result.Y + FMidPoint.Y;
-  Result.Z := Result.Z + FMidPoint.Z;
+  Result.X:=Result.X + FMidPoint.X;
+  Result.Y:=Result.Y + FMidPoint.Y;
+  Result.Z:=Result.Z + FMidPoint.Z;
 end;
 
 function TFreeViewport.RotatedPointBack(P: T3DCoordinate): T3DCoordinate;
@@ -1007,21 +1007,21 @@ begin
   // This function takes a point from worldspace and rotates it around the midpoint
   // of the scene as specified by the viewing-parameters (angle/elevation)
   // translate midpoint back to origin
-  CosAngle := cos(DegToRad(-FAngle));
-  SinAngle := sin(DegToRad(-FAngle));
-  CosElevation := cos(DegToRad(-FElevation));
-  SinElevation := sin(DegToRad(-FElevation));
-  P.X := P.X - FMidpoint.X;
-  P.Y := P.Y - FMidpoint.Y;
-  P.Z := P.Z - FMidpoint.Z;
+  CosAngle:=cos(DegToRad(-FAngle));
+  SinAngle:=sin(DegToRad(-FAngle));
+  CosElevation:=cos(DegToRad(-FElevation));
+  SinElevation:=sin(DegToRad(-FElevation));
+  P.X:=P.X - FMidpoint.X;
+  P.Y:=P.Y - FMidpoint.Y;
+  P.Z:=P.Z - FMidpoint.Z;
   // Rotate a point first around Y-axis then around the Z-axis
-  Result.x := (P.x * CosElevation + P.z * SinElevation) * CosAngle - P.y * SinAngle;
-  Result.y := (P.x * CosElevation + P.z * SinElevation) * SinAngle + P.y * CosAngle;
-  Result.z := (-P.x * SinElevation + P.z * CosElevation);
+  Result.x:=(P.x * CosElevation + P.z * SinElevation) * CosAngle - P.y * SinAngle;
+  Result.y:=(P.x * CosElevation + P.z * SinElevation) * SinAngle + P.y * CosAngle;
+  Result.z:=(-P.x * SinElevation + P.z * CosElevation);
   // Translate origin back to midpoint
-  Result.X := Result.X + FMidPoint.X;
-  Result.Y := Result.Y + FMidPoint.Y;
-  Result.Z := Result.Z + FMidPoint.Z;
+  Result.X:=Result.X + FMidPoint.X;
+  Result.Y:=Result.Y + FMidPoint.Y;
+  Result.Z:=Result.Z + FMidPoint.Z;
 end;
 
 procedure TFreeViewport.Paint;
@@ -1040,48 +1040,48 @@ begin
   begin                          // See if the contents is drawn to the printer
     if ViewportMode <> vmWireframe then
     begin
-      L := 7.5 * DistPP3D(FMin3D, FMax3D);
-      N := Normalize(FLight.Position);
-      N.X := N.X * L;
-      N.Y := N.Y * L;
-      N.Z := N.Z * L;
-      FLight.Position := N;
+      L:=7.5 * DistPP3D(FMin3D, FMax3D);
+      N:=Normalize(FLight.Position);
+      N.X:=N.X * L;
+      N.Y:=N.Y * L;
+      N.Z:=N.Z * L;
+      FLight.Position:=N;
     end;
-    if Printer = nil then DrawingToPrinter := False
+    if Printer = nil then DrawingToPrinter:=False
     else
-      DrawingToPrinter := (FPrinting) and (FDrawingCanvas = Printer.Canvas);
+      DrawingToPrinter:=(FPrinting) and (FDrawingCanvas = Printer.Canvas);
     if DrawingToPrinter then begin
-      FPrinting := True;
+      FPrinting:=True;
       if BackgroundImage.Bitmap <> nil then BackgroundImage.Draw;
       if Assigned(OnRedraw) then OnRedraw(Self);
     end
     else begin
-      OldCanvas := FDrawingCanvas;
+      OldCanvas:=FDrawingCanvas;
       if not FPrinting then begin
-        FDestinationWidth := ClientWidth;
-        FDestinationHeight := ClientHeight;
+        FDestinationWidth:=ClientWidth;
+        FDestinationHeight:=ClientHeight;
       end;
       if (FDoubleBuffer) or (ViewportMode <> vmWireframe) then begin
         if FDrawingBuffer.Width <> FDestinationWidth then
-          FDrawingBuffer.Width := FDestinationWidth;
+          FDrawingBuffer.Width:=FDestinationWidth;
         if FDrawingBuffer.Height <> FDestinationHeight then
-          FDrawingBuffer.Height := FDestinationHeight;
-        FDrawingCanvas := FDrawingBuffer.Canvas;
+          FDrawingBuffer.Height:=FDestinationHeight;
+        FDrawingCanvas:=FDrawingBuffer.Canvas;
       end
-      else FDrawingCanvas := OldCanvas;
+      else FDrawingCanvas:=OldCanvas;
 
       // Reset Pen
-      FDrawingCanvas.Pen.Color := Color;
-      FDrawingCanvas.Pen.Cosmetic := true;
-      FDrawingCanvas.Pen.EndCap := pecRound;
-      FDrawingCanvas.Pen.JoinStyle := pjsRound;
-      FDrawingCanvas.Pen.Mode := pmCopy;
-      FDrawingCanvas.Pen.Style := psSolid;
-      FDrawingCanvas.Pen.Width := 1;
+      FDrawingCanvas.Pen.Color:=Color;
+      FDrawingCanvas.Pen.Cosmetic:=true;
+      FDrawingCanvas.Pen.EndCap:=pecRound;
+      FDrawingCanvas.Pen.JoinStyle:=pjsRound;
+      FDrawingCanvas.Pen.Mode:=pmCopy;
+      FDrawingCanvas.Pen.Style:=psSolid;
+      FDrawingCanvas.Pen.Width:=1;
 
       // Reset Brush. Clear buffer
-      FDrawingCanvas.Brush.Color := Color;
-      FDrawingCanvas.Brush.Style := bsSolid;
+      FDrawingCanvas.Brush.Color:=Color;
+      FDrawingCanvas.Brush.Style:=bsSolid;
       FDrawingCanvas.FillRect(-1, -1, FDestinationWidth + 2, FDestinationHeight + 2);
 
       if BackgroundImage.Bitmap <> nil then
@@ -1107,18 +1107,18 @@ begin
         // Copy buffer to screen
         //Bitblt(OldCanvas.Handle,0,0,FDestinationWidth,FDestinationHeight,FDrawingBuffer.Canvas.Handle,0,0,SRCCOPY);
         OldCanvas.Draw(0, 0, FDrawingBuffer);
-        FDrawingCanvas := OldCanvas;
+        FDrawingCanvas:=OldCanvas;
       end;
     end;
 
     if FSelectionFrameActive then DrawSelectionFrame;
 
     {$ifdef DrawDebug}
-    FDrawingCanvas.Pen.Color := clYellow;
+    FDrawingCanvas.Pen.Color:=clYellow;
     FDrawingCanvas.Rectangle(FDebugPoint.X,FDebugPoint.Y,FDebugPoint.X,FDebugPoint.Y);
     FDrawingCanvas.Rectangle(FDebugPoint.X-3,FDebugPoint.Y-3,FDebugPoint.X+3,FDebugPoint.Y+3);
     P:=Project(FDebug3DPoint);
-    FDrawingCanvas.Pen.Color := clWhite;
+    FDrawingCanvas.Pen.Color:=clWhite;
     FDrawingCanvas.Rectangle(P.X,P.Y,P.X,P.Y);
     FDrawingCanvas.Rectangle(P.X-3,P.Y-3,P.X+3,P.Y+3);
     P0:=Project(ZERO);
@@ -1127,8 +1127,8 @@ begin
     if (FDebugCamera.X < 100000000) then begin
       PC:=Project(FDebugCamera);
       if (abs(PC.X) > 1000000) or (abs(PC.Y) > 1000000) then begin
-        PC.X := PC.X div 1000;
-        PC.Y := PC.Y div 1000;
+        PC.X:=PC.X div 1000;
+        PC.Y:=PC.Y div 1000;
       end;
       FDrawingCanvas.Ellipse(PC.X-5,PC.Y-5,PC.X+5,PC.Y+5);
       FDrawingCanvas.Ellipse(PC.X-3,PC.Y-3,PC.X+3,PC.Y+3);
@@ -1146,8 +1146,8 @@ begin
     FDrawingCanvas.Line(p3,p2);
     FDrawingCanvas.Line(p1,p3);
 
-    P0 := Project(FMidPoint);
-    FDrawingCanvas.Pen.Color := clRed;
+    P0:=Project(FMidPoint);
+    FDrawingCanvas.Pen.Color:=clRed;
     FDrawingCanvas.Ellipse(P0.X-1,P0.Y-1,P0.X+1,P0.Y+1);
     FDrawingCanvas.Ellipse(P0.X-3,P0.Y-3,P0.X+3,P0.Y+3);
     FDrawingCanvas.Ellipse(P0.X-5,P0.Y-5,P0.X+5,P0.Y+5);
@@ -1187,7 +1187,7 @@ procedure TFreeViewport.Polygon(const Points: array of TPoint);
    begin FDrawingCanvas.Polygon(points); end;
 
 function TFreeViewport.GetDrawingBuffer:TBitmap;
-begin result := FDrawingBuffer; end;
+begin result:=FDrawingBuffer; end;
 
 procedure TFreeViewport.SaveAsBitmap( Filename: string;
                                 const ShowDialog: boolean = True );
@@ -1207,41 +1207,41 @@ var
   TargetImage:TImage;
 begin
   if ShowDialog then begin
-    Dialog := TSaveImageDialog.Create( self );                                  // ShowTranslatedValues(Dialog);
+    Dialog:=TSaveImageDialog.Create( self );                                  // ShowTranslatedValues(Dialog);
     Dialog.SetImageSizes( ClientWidth,ClientHeight );
-    Dialog.Filename := Filename;
-    OK := Dialog.Execute;
+    Dialog.Filename:=Filename;
+    OK:=Dialog.Execute;
   end else begin
-    OK := True;
-    Dialog := nil;
+    OK:=True;
+    Dialog:=nil;
   end;
   if OK then begin // Backup settings;
-    OldScale := FScale;
-    OldPan := FPan;
-    OldCanvas := FDrawingCanvas;
-    OldCenter := FScreencenter;
+    OldScale:=FScale;
+    OldPan:=FPan;
+    OldCanvas:=FDrawingCanvas;
+    OldCenter:=FScreencenter;
     try
       if ShowDialog then begin
-        CanvasWidth := Dialog.ImageWidth;
-        CanvasHeight := Dialog.ImageHeight;
+        CanvasWidth:=Dialog.ImageWidth;
+        CanvasHeight:=Dialog.ImageHeight;
       end else begin
-        CanvasWidth := ClientWidth;
-        CanvasHeight := ClientHeight;
+        CanvasWidth:=ClientWidth;
+        CanvasHeight:=ClientHeight;
       end;
-      Bitmap := TBitmap.Create;
-      Bitmap.PixelFormat := pf24bit;
-      Bitmap.Width := CanvasWidth;
-      Bitmap.Height := CanvasHeight;
-      ///FDrawingCanvas := Bitmap.Canvas;
-      XScale := CanvasWidth / ClientWidth;
-      YScale := CanvasHeight / ClientHeight;
-      if XScale < YScale then Scale := XScale
-                         else Scale := YScale;
-      FScale := FScale * Scale;
-      FScreencenter.X := round(XScale * FScreencenter.X);
-      FScreencenter.Y := round(YScale * FScreencenter.Y); /// FPrinting := True;
-      FDestinationWidth := CanvasWidth;
-      FDestinationHeight := CanvasHeight;
+      Bitmap:=TBitmap.Create;
+      Bitmap.PixelFormat:=pf24bit;
+      Bitmap.Width:=CanvasWidth;
+      Bitmap.Height:=CanvasHeight;
+      ///FDrawingCanvas:=Bitmap.Canvas;
+      XScale:=CanvasWidth / ClientWidth;
+      YScale:=CanvasHeight / ClientHeight;
+      if XScale < YScale then Scale:=XScale
+                         else Scale:=YScale;
+      FScale:=FScale * Scale;
+      FScreencenter.X:=round(XScale * FScreencenter.X);
+      FScreencenter.Y:=round(YScale * FScreencenter.Y); /// FPrinting:=True;
+      FDestinationWidth:=CanvasWidth;
+      FDestinationHeight:=CanvasHeight;
       Refresh;
       //Bitmap.SaveToFile(ChangeFileExt(filename, '.bmp'));
       //Bitmap.SaveToFile(filename);
@@ -1255,11 +1255,11 @@ begin
       TargetImage.Picture.SaveToFile( Dialog.Filename );
       TargetImage.Free;
     finally // Restore settings;
-      FPrinting := False;
-      FDrawingCanvas := OldCanvas;
-      FScale := OldScale;
-      FPan := OldPan;
-      FScreencenter := OldCenter;
+      FPrinting:=False;
+      FDrawingCanvas:=OldCanvas;
+      FScale:=OldScale;
+      FPan:=OldPan;
+      FScreencenter:=OldCenter;
       Refresh;
     end;
   end;
@@ -1303,50 +1303,50 @@ var
   YVal: TFloatType;
   OK: boolean;
 begin
-  FMouseShift := Shift;
+  FMouseShift:=Shift;
   inherited;                                                                    //if(Shift <> []) then logger.Debug(format(#10'TFreeViewport.MouseDown: %d %d',[X,Y]));
-  FPreviousPosition.X := X;
-  FPreviousPosition.Y := Y;
+  FPreviousPosition.X:=X;
+  FPreviousPosition.Y:=Y;
   if (BackgroundMode <> emNormal) and (BackgroundMode <> emSetFrame)
-    and (ssRight in Shift) then begin BackgroundMode := emNormal; end
+    and (ssRight in Shift) then begin BackgroundMode:=emNormal; end
   else
   if (BackgroundMode = emSetOrigin) and (ssLeft in Shift) then begin
     // Start moving the background image
     // store current origin
-    FBackgroundOrigin := BackgroundImage.Origin;
+    FBackgroundOrigin:=BackgroundImage.Origin;
   end
   else if (BackgroundMode = emSetScale) and (ssLeft in Shift) then begin
-    Pt := Project(ZERO);
+    Pt:=Project(ZERO);
     if (Scale * Zoom * BackgroundImage.Scale) <> 0 then begin
-      Diff.X := round((Pt.X - X) / (Scale * Zoom * BackgroundImage.Scale));
-      Diff.Y := round((Pt.Y - Y) / (Scale * Zoom * BackgroundImage.Scale));
+      Diff.X:=round((Pt.X - X) / (Scale * Zoom * BackgroundImage.Scale));
+      Diff.Y:=round((Pt.Y - Y) / (Scale * Zoom * BackgroundImage.Scale));
     end else begin
-      Diff.X := Pt.X - X;
-      Diff.Y := Pt.Y - Y;
+      Diff.X:=Pt.X - X;
+      Diff.Y:=Pt.Y - Y;
     end;
     //TODO - change InputQuery to a dialog with TFloatSpinEdit fields
-    Str := FloatToDec(-BackgroundImage.Scale * Diff.X, 4) + ', ' + FloatToDec(
+    Str:=FloatToDec(-BackgroundImage.Scale * Diff.X, 4) + ', ' + FloatToDec(
       BackgroundImage.Scale * Diff.Y, 4);
     if InputQuery('Scale ', 'New coordinate: ', str) then begin
-      Ind := Pos(',', Str);
+      Ind:=Pos(',', Str);
       if Ind <> 0 then begin
-        OK := True;
-        Tmp := trim(Copy(Str, 1, Ind - 1));
+        OK:=True;
+        Tmp:=trim(Copy(Str, 1, Ind - 1));
         if Tmp <> '' then begin
           Val(Tmp, XVal, I);
-          if I <> 0 then OK := False;
-        end else XVal := 0;
-        Tmp := trim(Copy(Str, Ind + 1, Length(Str) - Ind));
+          if I <> 0 then OK:=False;
+        end else XVal:=0;
+        Tmp:=trim(Copy(Str, Ind + 1, Length(Str) - Ind));
         if Tmp <> '' then begin
           Val(Tmp, YVal, I);
-          if I <> 0 then OK := False;
-        end else YVal := 0;
+          if I <> 0 then OK:=False;
+        end else YVal:=0;
         if OK then  begin
           if abs(Diff.X) > abs(Diff.Y)
-            then BackgroundImage.FScale := XVal / -Diff.X
-            else BackgroundImage.FScale := YVal / Diff.Y;
+            then BackgroundImage.FScale:=XVal / -Diff.X
+            else BackgroundImage.FScale:=YVal / Diff.Y;
           Refresh;
-          BackgroundMode := emNormal;
+          BackgroundMode:=emNormal;
           if assigned(FOnChangeBackgroundImage) then
             FOnChangeBackgroundImage(Owner);
         end;  // else MessageDlg('Invalid coordinate!', mtError, [mbOK], 0);
@@ -1355,50 +1355,50 @@ begin
   end
   else if (BackgroundMode = emSetFrame) and (ssLeft in Shift) then
   begin
-    FBackgroundScale := BackgroundImage.FScale;
-    FBackgroundOrigin := BackgroundImage.Origin;
+    FBackgroundScale:=BackgroundImage.FScale;
+    FBackgroundOrigin:=BackgroundImage.Origin;
     Refresh;
     if assigned(FOnChangeBackgroundImage) then
       FOnChangeBackgroundImage(Owner);
   end
   else if (BackgroundMode = emSetFrame) and (ssRight in Shift) then
   begin
-    BackgroundMode := emUnsetFrame;
+    BackgroundMode:=emUnsetFrame;
     Refresh;
     if assigned(FOnChangeBackgroundImage) then
       FOnChangeBackgroundImage(Owner);
   end
   else if (BackgroundMode = emSetTransparentColor) and (ssLeft in Shift) then
   begin
-    Pt := Project(ZERO);
+    Pt:=Project(ZERO);
     if (Scale * Zoom * BackgroundImage.Scale) <> 0 then
     begin
-      Diff.X := round((Pt.X - X) / (Scale * Zoom * BackgroundImage.Scale));
-      Diff.Y := round((Pt.Y - Y) / (Scale * Zoom * BackgroundImage.Scale));
+      Diff.X:=round((Pt.X - X) / (Scale * Zoom * BackgroundImage.Scale));
+      Diff.Y:=round((Pt.Y - Y) / (Scale * Zoom * BackgroundImage.Scale));
     end
     else
     begin
-      Diff.X := Pt.X - X;
-      Diff.Y := Pt.Y - Y;
+      Diff.X:=Pt.X - X;
+      Diff.Y:=Pt.Y - Y;
     end;
-    Pt.X := BackgroundImage.FOrigin.X - Diff.X;
-    Pt.Y := BackgroundImage.FOrigin.Y - Diff.Y;
+    Pt.X:=BackgroundImage.FOrigin.X - Diff.X;
+    Pt.Y:=BackgroundImage.FOrigin.Y - Diff.Y;
     if (Pt.X >= 0) and (Pt.X < BackgroundImage.FBitmap.Width) and
       (Pt.Y >= 0) and (Pt.Y <= BackgroundImage.FBitmap.Height) then
     begin
-      BackgroundImage.Transparent := True;
+      BackgroundImage.Transparent:=True;
       BackGroundImage.TransparentColor :=
         BackgroundImage.FBitmap.Canvas.Pixels[Pt.X, Pt.Y];
       Refresh;
-      BackgroundMode := emNormal;
+      BackgroundMode:=emNormal;
       if assigned(FOnChangeBackgroundImage) then
         FOnChangeBackgroundImage(Owner);
     end
     else
     begin
-      BackgroundImage.Transparent := False;
+      BackgroundImage.Transparent:=False;
       Refresh;
-      BackgroundMode := emNormal;
+      BackgroundMode:=emNormal;
       if assigned(FOnChangeBackgroundImage) then
         FOnChangeBackgroundImage(Owner);
     end;
@@ -1408,7 +1408,7 @@ begin
     if Assigned( FOnMouseDown ) then OnMouseDown( Self,Button,Shift,X,Y );
     if not focused then SetFocus;
     if (ssLeft in shift) and (Viewtype = fvPerspective) then begin
-      //Cursor := crRotate;
+      //Cursor:=crRotate;
     end;
   end;
 end;
@@ -1424,17 +1424,17 @@ begin
   if FMouseShift <> Shift then exit; // Mouse Move came before Mouse Down
   inherited;                                                                    //if (Shift <> []) then logger.Debug(format('TFreeViewport.MouseMove: %d %d',[X,Y]));
   if (Shift = [ssLeft]) and (Backgroundmode = emSetOrigin) then begin // Background image moving procedure
-    Scl := 1.0;                                                       ///+++???
+    Scl:=1.0;                                                       ///+++???
     if Scl <> 0 then begin
-      Prev := BackgroundImage.ImageCoordinate(FPreviousPosition.X, FPreviousPosition.Y);
-      Pt := BackgroundImage.ImageCoordinate(X, Y);
-      Pt.X := -round((Pt.X - Prev.X) / Scl);
-      Pt.Y := -round((Pt.Y - Prev.Y) / Scl);
+      Prev:=BackgroundImage.ImageCoordinate(FPreviousPosition.X, FPreviousPosition.Y);
+      Pt:=BackgroundImage.ImageCoordinate(X, Y);
+      Pt.X:=-round((Pt.X - Prev.X) / Scl);
+      Pt.Y:=-round((Pt.Y - Prev.Y) / Scl);
       if (Pt.X <> 0) or (Pt.Y <> 0) then begin
-        BackgroundImage.FOrigin.X := BackgroundImage.FOrigin.X + Pt.X;
-        BackgroundImage.FOrigin.Y := BackgroundImage.FOrigin.Y + Pt.Y;
-        if Pt.X <> 0 then FPreviousPosition.X := X;
-        if Pt.Y <> 0 then FPreviousPosition.Y := Y;
+        BackgroundImage.FOrigin.X:=BackgroundImage.FOrigin.X + Pt.X;
+        BackgroundImage.FOrigin.Y:=BackgroundImage.FOrigin.Y + Pt.Y;
+        if Pt.X <> 0 then FPreviousPosition.X:=X;
+        if Pt.Y <> 0 then FPreviousPosition.Y:=Y;
         Refresh;
       end;
       exit;
@@ -1442,41 +1442,41 @@ begin
   end else
   if (Shift = [ssLeft]) and (Backgroundmode = emSetFrame)
   and (FBackgroundScaleIsMouseOnFrameSide in [fsW,fsE,fsN,fsS]) then begin // Background image scaling procedure
-    Pt := BackgroundImage.ImageCoordinate(X, Y);
-    Prev := BackgroundImage.ImageCoordinate(FPreviousPosition.X, FPreviousPosition.Y);
-    dX := Pt.X - Prev.X;
-    dY := Pt.Y - Prev.Y;
-    X0 := BackgroundImage.FOrigin.X;
-    Y0 := BackgroundImage.FOrigin.Y;
-    W := BackgroundImage.Bitmap.Width;
-    H := BackgroundImage.Bitmap.Height;
+    Pt:=BackgroundImage.ImageCoordinate(X, Y);
+    Prev:=BackgroundImage.ImageCoordinate(FPreviousPosition.X, FPreviousPosition.Y);
+    dX:=Pt.X - Prev.X;
+    dY:=Pt.Y - Prev.Y;
+    X0:=BackgroundImage.FOrigin.X;
+    Y0:=BackgroundImage.FOrigin.Y;
+    W:=BackgroundImage.Bitmap.Width;
+    H:=BackgroundImage.Bitmap.Height;
     if FBackgroundScaleIsMouseOnFrameSide = fsW then begin
-      X0 := BackgroundImage.FOrigin.X - dX;
-      Scl := BackgroundImage.FScale * (-dX + W) / W;
+      X0:=BackgroundImage.FOrigin.X - dX;
+      Scl:=BackgroundImage.FScale * (-dX + W) / W;
     end;
     if FBackgroundScaleIsMouseOnFrameSide = fsE then begin
-      Scl := BackgroundImage.FScale * (dX + W) / W;
+      Scl:=BackgroundImage.FScale * (dX + W) / W;
     end;
     if FBackgroundScaleIsMouseOnFrameSide = fsN then begin
-      Scl := BackgroundImage.FScale * (-dY + H) / H;
+      Scl:=BackgroundImage.FScale * (-dY + H) / H;
     end;
     if FBackgroundScaleIsMouseOnFrameSide = fsS then begin
-      Y0 := BackgroundImage.FOrigin.Y - dY;
-      Scl := BackgroundImage.FScale * (dY + H) / H;
+      Y0:=BackgroundImage.FOrigin.Y - dY;
+      Scl:=BackgroundImage.FScale * (dY + H) / H;
     end;
 
     if Scl > 0 then  begin
-      FPreviousPosition.X := X;
-      FPreviousPosition.Y := Y;
-      Pt := BackgroundImage.FOrigin;
-      S := BackgroundImage.FScale;
-      BackgroundImage.FOrigin.X := X0;
-      BackgroundImage.FOrigin.Y := Y0;
-      BackgroundImage.FScale := Scl;
-      bgiRect := BackgroundImage.TargetRect;
+      FPreviousPosition.X:=X;
+      FPreviousPosition.Y:=Y;
+      Pt:=BackgroundImage.FOrigin;
+      S:=BackgroundImage.FScale;
+      BackgroundImage.FOrigin.X:=X0;
+      BackgroundImage.FOrigin.Y:=Y0;
+      BackgroundImage.FScale:=Scl;
+      bgiRect:=BackgroundImage.TargetRect;
       if (bgiRect.Width < 16) or (bgiRect.Height < 16) then begin
-        BackgroundImage.FOrigin := Pt;
-        BackgroundImage.FScale := S;
+        BackgroundImage.FOrigin:=Pt;
+        BackgroundImage.FScale:=S;
       end;
     end;
 
@@ -1487,77 +1487,77 @@ begin
   else if (shift = []) and (Backgroundmode <> emNormal) then
   begin
     case Backgroundmode of
-      emSetOrigin: Desired := crsetOrigin;
-      emSetScale, emSetFrame: Desired := crSetScale;
-      emSetTransparentColor: Desired := crTranspCol;
-      else Desired := cursor;
+      emSetOrigin: Desired:=crsetOrigin;
+      emSetScale, emSetFrame: Desired:=crSetScale;
+      emSetTransparentColor: Desired:=crTranspCol;
+      else Desired:=cursor;
     end;
-    FBackgroundScaleIsMouseOnFrameSide := fsNone;
-    bgiRect := BackgroundImage.TargetRect;
+    FBackgroundScaleIsMouseOnFrameSide:=fsNone;
+    bgiRect:=BackgroundImage.TargetRect;
     if ((X >= bgiRect.Left-1) and (X <= bgiRect.Left+1)) then
     begin
-      Desired := crSizeWE;
-      FBackgroundScaleIsMouseOnFrameSide := fsW;
+      Desired:=crSizeWE;
+      FBackgroundScaleIsMouseOnFrameSide:=fsW;
     end;
     if ((X >= bgiRect.Right-1)and (X <= bgiRect.Right+1)) then
     begin
-      Desired := crSizeWE;
-      FBackgroundScaleIsMouseOnFrameSide := fsE;
+      Desired:=crSizeWE;
+      FBackgroundScaleIsMouseOnFrameSide:=fsE;
     end;
     if ((Y >= bgiRect.Top-1) and (Y <= bgiRect.Top+1)) then
     begin
-      Desired := crSizeNS;
-      FBackgroundScaleIsMouseOnFrameSide := fsN;
+      Desired:=crSizeNS;
+      FBackgroundScaleIsMouseOnFrameSide:=fsN;
     end;
     if ((Y >= bgiRect.Bottom-1) and (Y <= bgiRect.Bottom+1)) then
     begin
-      Desired := crSizeNS;
-      FBackgroundScaleIsMouseOnFrameSide := fsS;
+      Desired:=crSizeNS;
+      FBackgroundScaleIsMouseOnFrameSide:=fsS;
     end;
     if Cursor <> Desired then
-      Cursor := Desired;
+      Cursor:=Desired;
   end
   else if (Viewtype = fvPerspective)
        and (ssLeft in Shift) and not(ssCtrl in Shift) then
   begin
     // rotation using Left mousebutton
-    Cursor := crRotate;
-    FAngle := Self.FAngle + (X - FPreviousPosition.X) / 4;
-    while FAngle > 180 do FAngle := FAngle - 360;
-    while FAngle < -180 do FAngle := FAngle + 360;
-    FCosAngle := Cos(DegToRad(FAngle));
-    FSinAngle := sin(DegToRad(FAngle));
+    Cursor:=crRotate;
+    FAngle:=Self.FAngle + (X - FPreviousPosition.X) / 4;
+    while FAngle > 180 do FAngle:=FAngle - 360;
+    while FAngle < -180 do FAngle:=FAngle + 360;
+    FCosAngle:=Cos(DegToRad(FAngle));
+    FSinAngle:=sin(DegToRad(FAngle));
 
-    FElevation := FElevation + (Y - FPreviousPosition.Y) / 4;
+    FElevation:=FElevation + (Y - FPreviousPosition.Y) / 4;
     while FElevation > 180 do
-      FElevation := FElevation - 360;
+      FElevation:=FElevation - 360;
     while FElevation < -180 do
-      FElevation := FElevation + 360;
-    FCosElevation := Cos(DegToRad(FElevation));
-    FSinElevation := sin(DegToRad(FElevation));
+      FElevation:=FElevation + 360;
+    FCosElevation:=Cos(DegToRad(FElevation));
+    FSinElevation:=sin(DegToRad(FElevation));
     if FHorScrollbar <> nil then
       if FHorScrollbar.Position <> round(angle) then
-        FHorScrollbar.Position := Round(Angle);
+        FHorScrollbar.Position:=Round(Angle);
     if FVertScrollbar <> nil then
       if FVertScrollbar.Position <> round(Elevation) then
-        FVertScrollbar.Position := Round(Elevation);
+        FVertScrollbar.Position:=Round(Elevation);
     InitializeViewport(FMin3D, FMax3D);
-  end else if ssRight in shift then Cursor := crPan;
-  FPreviousPosition.X := X;
-  FPreviousPosition.Y := Y;
+  end else if ssRight in shift then Cursor:=crPan;
+  FPreviousPosition.X:=X;
+  FPreviousPosition.Y:=Y;
   if Assigned(FOnMouseMove) then OnMouseMove(Self, Shift, X, Y);
 end;
 
 procedure TFreeViewport.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
-  FMouseShift := Shift;
+  FMouseShift:=Shift;
   if (BackgroundMode <> emUnsetFrame) then
     inherited;
 //logger.Debug(format('TFreeViewport.MouseUp: %d %d'#10,[X,Y]));
   if BackgroundMode = emSetOrigin then
   begin
     // Finished moving the background image
-    BackgroundMode := emNormal;
+    BackgroundMode:=emNormal;
     // Check if origin has changed
     if (FBackgroundOrigin.X <> BackgroundImage.Origin.X) or
       (FBackgroundOrigin.Y <> BackgroundImage.Origin.Y) then
@@ -1570,7 +1570,7 @@ begin
   if BackgroundMode = emSetScale then
   begin
     // Finished scaling the background image
-    BackgroundMode := emNormal;
+    BackgroundMode:=emNormal;
     // Check if Scale has changed
     Refresh;
     if (FBackgroundScale <> BackgroundImage.Scale) then
@@ -1583,7 +1583,7 @@ begin
   if (BackgroundMode = emUnsetFrame) then
   begin
     // Finished framing the background image
-    BackgroundMode := emNormal;
+    BackgroundMode:=emNormal;
     Refresh;
   end
   else
@@ -1591,7 +1591,7 @@ begin
     if Assigned(FOnMouseUp) then
       OnMouseUp(Self, Button, Shift, X, Y);
     if Cursor <> crCross then
-      Cursor := crCross;
+      Cursor:=crCross;
   end;
   if not focused then
     SetFocus;
@@ -1606,9 +1606,9 @@ var
   mouseDX, mouseDY: LongInt;
 begin
 //SetFocus;
-  Result := inherited DoMousewheel(Shift, Wheeldelta, Mousepos);
+  Result:=inherited DoMousewheel(Shift, Wheeldelta, Mousepos);
 //  {$IFDEF WIN32}// We need to bring ScreenToClient in MDF mode, not a case for X11
-//    MousePos := self.ScreenToClient(MousePos);
+//    MousePos:=self.ScreenToClient(MousePos);
 //  {$ENDIF}
 
   if (MousePos.X >= 0) and (MousePos.Y >= 0) and (MousePos.X < Clientwidth) and
@@ -1621,28 +1621,28 @@ begin
 //  if WheelDelta < 0 then begin ZoomOut; ZoomOut; end;
 //  if WheelDelta > 0 then begin ZoomIn; ZoomIn; end;
     {$else}
-    Factor := 1.05;
-    Mid.X := ClientWidth div 2;
-    Mid.Y := ClientHeight div 2;
-    mouseDX := MousePos.X - Mid.X;
-    mouseDY := MousePos.Y - Mid.Y;
+    Factor:=1.05;
+    Mid.X:=ClientWidth div 2;
+    Mid.Y:=ClientHeight div 2;
+    mouseDX:=MousePos.X - Mid.X;
+    mouseDY:=MousePos.Y - Mid.Y;
 
     if WheelDelta > 0 then
     begin
-      FZoom := FZoom * Factor;
-      NewPan.X := round(Pan.X * Factor);
-      NewPan.Y := round(Pan.Y * Factor);
-      FPan.X := FPan.X - round((mouseDX*Factor - mouseDX) - (NewPan.X - Pan.X));
-      FPan.Y := FPan.Y - round((mouseDY*Factor - mouseDY) - (NewPan.Y - Pan.Y));
+      FZoom:=FZoom * Factor;
+      NewPan.X:=round(Pan.X * Factor);
+      NewPan.Y:=round(Pan.Y * Factor);
+      FPan.X:=FPan.X - round((mouseDX*Factor - mouseDX) - (NewPan.X - Pan.X));
+      FPan.Y:=FPan.Y - round((mouseDY*Factor - mouseDY) - (NewPan.Y - Pan.Y));
       Refresh;
     end
     else
     begin
-      FZoom := FZoom / Factor;
-      NewPan.X := round(Pan.X / Factor);
-      NewPan.Y := round(Pan.Y / Factor);
-      FPan.X := FPan.X - round((mouseDX/Factor - mouseDX) - (NewPan.X - Pan.X));
-      FPan.Y := FPan.Y - round((mouseDY/Factor - mouseDY) - (NewPan.Y - Pan.Y));
+      FZoom:=FZoom / Factor;
+      NewPan.X:=round(Pan.X / Factor);
+      NewPan.Y:=round(Pan.Y / Factor);
+      FPan.X:=FPan.X - round((mouseDX/Factor - mouseDX) - (NewPan.X - Pan.X));
+      FPan.Y:=FPan.Y - round((mouseDY/Factor - mouseDY) - (NewPan.Y - Pan.Y));
       Refresh;
     end;
   {$endif}
@@ -1658,7 +1658,7 @@ end;
 procedure TFreeViewport.SetPenWidth(Width: integer);
 begin
   if FDrawingCanvas.Pen.Width <> Width then
-    FDrawingCanvas.Pen.Width := Width;
+    FDrawingCanvas.Pen.Width:=Width;
 end;
 
 procedure TFreeViewport.ShadedColor(aIntensityRatio: single; R, G, B: byte; var ROut, GOut, BOut: byte);
@@ -1669,44 +1669,44 @@ var
   C,Ap,Tmp: single;
 begin
   if aIntensityRatio < 0.0 then
-    aIntensityRatio := -aIntensityRatio
+    aIntensityRatio:=-aIntensityRatio
   else if aIntensityRatio > 1.0 then
-    aIntensityRatio := 1.0;
+    aIntensityRatio:=1.0;
 
-  C := FLightIntensity * aIntensityRatio + FAmbientIntencity;
+  C:=FLightIntensity * aIntensityRatio + FAmbientIntencity;
   if C > 1.0 then C:=1.0;
 
-  ROut := Round(R * C);
-  GOut := Round(G * C);
-  BOut := Round(B * C);
+  ROut:=Round(R * C);
+  GOut:=Round(G * C);
+  BOut:=Round(B * C);
 
   {
   if aIntensityRatio >= 0.80 then
   begin
-    Tmp := 5.0 - 5.0 * aIntensityRatio;
+    Tmp:=5.0 - 5.0 * aIntensityRatio;
     if Tmp < 0 then
-      C := 0
+      C:=0
     else
-      C := Sqrt(Tmp);
-    ROut := Round(s255 - (s255 - aIntensityRatio * R) * C);
-    GOut := Round(s255 - (s255 - aIntensityRatio * G) * C);
-    BOut := Round(s255 - (s255 - aIntensityRatio * B) * C);
+      C:=Sqrt(Tmp);
+    ROut:=Round(s255 - (s255 - aIntensityRatio * R) * C);
+    GOut:=Round(s255 - (s255 - aIntensityRatio * G) * C);
+    BOut:=Round(s255 - (s255 - aIntensityRatio * B) * C);
   end
   else
   begin
-    AmbientStrength := self.FLight.Ambient / s255;
-    aIntensityRatio := aIntensityRatio - AmbientStrength;
+    AmbientStrength:=self.FLight.Ambient / s255;
+    aIntensityRatio:=aIntensityRatio - AmbientStrength;
     if aIntensityRatio < 0.0 then
-      aIntensityRatio := 0.0;
-    Ap := (0.8 - AmbientStrength);
+      aIntensityRatio:=0.0;
+    Ap:=(0.8 - AmbientStrength);
     if abs(Ap) < 1e-6 then Ap:=1e-6;
-    C := aIntensityRatio / Ap;
-    C := AmbientStrength + Ap * C * C;
+    C:=aIntensityRatio / Ap;
+    C:=AmbientStrength + Ap * C * C;
 
-    C := Sqrt(aIntensityRatio * AmbientStrength);
-    ROut := Round(s255 - (s255 - aIntensityRatio * R) * C);
-    GOut := Round(s255 - (s255 - aIntensityRatio * G) * C);
-    BOut := Round(s255 - (s255 - aIntensityRatio * B) * C);
+    C:=Sqrt(aIntensityRatio * AmbientStrength);
+    ROut:=Round(s255 - (s255 - aIntensityRatio * R) * C);
+    GOut:=Round(s255 - (s255 - aIntensityRatio * G) * C);
+    BOut:=Round(s255 - (s255 - aIntensityRatio * B) * C);
   end;
   }
 
@@ -1737,9 +1737,9 @@ var
   var
     X: integer;
   begin
-    X := A;
-    A := B;
-    B := X;
+    X:=A;
+    A:=B;
+    B:=X;
   end;
   {Swap}
     {$endif}
@@ -1754,33 +1754,33 @@ var
   begin
     if (Y < 0) or (Y > FDestinationHeight - 1) then
       exit;
-    X1 := X1 div 256;
-    X2 := X2 div 256;
+    X1:=X1 div 256;
+    X2:=X2 div 256;
     if X1 > X2 then
     begin
       Swap(X1, X2);
-      T := Z1;
-      Z1 := Z2;
-      Z2 := T;
+      T:=Z1;
+      Z1:=Z2;
+      Z2:=T;
     end;
     if X1 <> X2 then
-      IncZ := (Z2 - Z1) / (X2 - X1)
+      IncZ:=(Z2 - Z1) / (X2 - X1)
     else
-      IncZ := 0;
+      IncZ:=0;
     if (X1 > FDestinationWidth - 1) or (X2 < 0) then
       exit;
     if (X1 < 0) then
     begin
-      Z1 := Z1 + abs(X1) * IncZ;
-      X1 := 0;
+      Z1:=Z1 + abs(X1) * IncZ;
+      X1:=0;
     end;
     if X2 > FDestinationWidth - 1 then
-      X2 := FDestinationWidth - 1;
+      X2:=FDestinationWidth - 1;
     if X1 >= 0 then
     begin
       // Use scanline property for faster pixel access
       //Row:=FDrawingBuffer.Scanline[y];
-      pRow := FDrawingBuffer.RawImage.GetLineStart(Y);
+      pRow:=FDrawingBuffer.RawImage.GetLineStart(Y);
       while (X1 <= X2) do
       begin
         if Z1 > FZBuffer.FBuffer[Y][X1] then
@@ -1793,12 +1793,12 @@ var
             SetPixel(X1, Y, R, G, B);
             ///FBitmapFormatHelper.SetPixelInLine(pRow, X1, R, G, B, Alpha);
 
-            FZBuffer.FBuffer[Y][X1] := Z1;
+            FZBuffer.FBuffer[Y][X1]:=Z1;
           end
           else
             AlphaBuffer.AddPixelData(X1, Y, R, G, B, Alpha, Z1);
         end;
-        Z1 := Z1 + IncZ;
+        Z1:=Z1 + IncZ;
         Inc(X1);
       end;
     end;
@@ -1806,23 +1806,23 @@ var
 
 begin
   // Calculate data for the points
-  Pt1 := ProjectToZBuffer(P_1);
-  Pt2 := ProjectToZBuffer(P_2);
-  Pt3 := ProjectToZBuffer(P_3);
-  P_1 := RotatedPoint(P_1);
-  P_2 := RotatedPoint(P_2);
-  P_3 := RotatedPoint(P_3);
+  Pt1:=ProjectToZBuffer(P_1);
+  Pt2:=ProjectToZBuffer(P_2);
+  Pt3:=ProjectToZBuffer(P_3);
+  P_1:=RotatedPoint(P_1);
+  P_2:=RotatedPoint(P_2);
+  P_3:=RotatedPoint(P_3);
   // Calculate triangle normal and center
-  Normal := UnifiedNormal(P_1, P_2, P_3);
-  Center.X := (P_1.X + P_2.X + P_3.X) / 3;
-  Center.Y := (P_1.Y + P_2.Y + P_3.Y) / 3;
-  Center.Z := (P_1.Z + P_2.Z + P_3.Z) / 3;
+  Normal:=UnifiedNormal(P_1, P_2, P_3);
+  Center.X:=(P_1.X + P_2.X + P_3.X) / 3;
+  Center.Y:=(P_1.Y + P_2.Y + P_3.Y) / 3;
+  Center.Z:=(P_1.Z + P_2.Z + P_3.Z) / 3;
   // Calculate light vector
-  LSourceDirection.X := Center.X - FLight.Position.X;
-  LSourceDirection.Y := Center.Y - FLight.Position.Y;
-  LSourceDirection.Z := Center.Z - FLight.Position.Z;
-  LSourceDirection := Normalize(LSourceDirection);
-  LIntensityRatio := DotProduct(Normal, LSourceDirection);
+  LSourceDirection.X:=Center.X - FLight.Position.X;
+  LSourceDirection.Y:=Center.Y - FLight.Position.Y;
+  LSourceDirection.Z:=Center.Z - FLight.Position.Z;
+  LSourceDirection:=Normalize(LSourceDirection);
+  LIntensityRatio:=DotProduct(Normal, LSourceDirection);
 
   ShadedColor(LIntensityRatio, R, G, B, R, G, B);
   Pt1.R:=R;   Pt1.G:=G;   Pt1.B:=B;
@@ -1832,20 +1832,20 @@ begin
   // Sort points according to Y-value
   if Pt2.Y < Pt1.Y then
   begin
-    T := Pt1;
-    Pt1 := Pt2;
-    Pt2 := T;
+    T:=Pt1;
+    Pt1:=Pt2;
+    Pt2:=T;
   end;
   if Pt3.Y < Pt2.Y then
   begin
-    T := Pt2;
-    Pt2 := Pt3;
-    Pt3 := T;
+    T:=Pt2;
+    Pt2:=Pt3;
+    Pt3:=T;
     if Pt2.Y < Pt1.Y then
     begin
-      T := Pt1;
-      Pt1 := Pt2;
-      Pt2 := T;
+      T:=Pt1;
+      Pt1:=Pt2;
+      Pt2:=T;
     end;
   end;
   // check if min/max values are outside window
@@ -1854,9 +1854,9 @@ begin
     ((Pt1.X > FDestinationWidth) and (Pt2.X > FDestinationWidth) and
     (Pt3.X > FDestinationWidth)) then
     exit;
-  Pt1.X := Pt1.X shl 8;
-  Pt2.X := Pt2.X shl 8;
-  Pt3.X := Pt3.X shl 8;
+  Pt1.X:=Pt1.X shl 8;
+  Pt2.X:=Pt2.X shl 8;
+  Pt3.X:=Pt3.X shl 8;
 
   if Pt3.Y = Pt1.Y then
   begin
@@ -1870,31 +1870,31 @@ begin
       ShadeLine(Pt3.X, Pt2.X, Pt3.Y, Pt3.Z, Pt2.Z);
     Exit;
   end;
-  XLeft := Pt1.X;
-  ZLeft := Pt1.Z;
+  XLeft:=Pt1.X;
+  ZLeft:=Pt1.Z;
   if Pt3.Y <> Pt1.Y then
   begin
-    dZLeft := (Pt3.Z - Pt1.Z) / (Pt3.Y - Pt1.Y);
-    dXLeft := (Pt3.X - Pt1.X) div (Pt3.Y - Pt1.Y);
+    dZLeft:=(Pt3.Z - Pt1.Z) / (Pt3.Y - Pt1.Y);
+    dXLeft:=(Pt3.X - Pt1.X) div (Pt3.Y - Pt1.Y);
   end
   else
   begin
-    dZLeft := 0;
-    dXLeft := 0;
+    dZLeft:=0;
+    dXLeft:=0;
   end;
-  XRight := Pt1.X;
-  ZRight := Pt1.Z;
+  XRight:=Pt1.X;
+  ZRight:=Pt1.Z;
   if Pt2.Y <> Pt1.Y then
   begin
-    dZRight := (Pt2.Z - Pt1.Z) / (Pt2.Y - Pt1.Y);
-    dXRight := (Pt2.X - Pt1.X) div (Pt2.Y - Pt1.Y);
+    dZRight:=(Pt2.Z - Pt1.Z) / (Pt2.Y - Pt1.Y);
+    dXRight:=(Pt2.X - Pt1.X) div (Pt2.Y - Pt1.Y);
   end
   else
   begin
-    dZRight := 0;
-    dXRight := 0;
+    dZRight:=0;
+    dXRight:=0;
   end;
-  Y := Pt1.Y;
+  Y:=Pt1.Y;
   while Y < Pt2.Y do
   begin
     if XRight >= XLeft then
@@ -1904,29 +1904,29 @@ begin
     if Y < Pt2.Y then
     begin
       Inc(XLeft, dXLeft);
-      ZLeft := ZLeft + dZLeft;
+      ZLeft:=ZLeft + dZLeft;
       Inc(XRight, dXRight);
-      ZRight := ZRight + dZRight;
+      ZRight:=ZRight + dZRight;
     end;
     Inc(Y);
   end;
   if Pt2.Y = Pt3.Y then
     Exit;
-  XRight := Pt2.X;
-  ZRight := Pt2.Z;
+  XRight:=Pt2.X;
+  ZRight:=Pt2.Z;
   if Pt3.Y <> Pt2.Y then
   begin
-    dZRight := (Pt3.Z - Pt2.Z) / (Pt3.Y - Pt2.Y);
-    dXRight := (Pt3.X - Pt2.X) div (Pt3.Y - Pt2.Y);
+    dZRight:=(Pt3.Z - Pt2.Z) / (Pt3.Y - Pt2.Y);
+    dXRight:=(Pt3.X - Pt2.X) div (Pt3.Y - Pt2.Y);
   end;
-  for Y := Pt2.Y to Pt3.Y do
+  for Y:=Pt2.Y to Pt3.Y do
   begin
     if XRight >= XLeft then ShadeLine(XLeft, XRight, Y, ZLeft, ZRight)
                        else ShadeLine(XRight, XLeft, Y, ZRight, ZLeft);
     Inc(XLeft, dXLeft);
-    ZLeft := ZLeft + dZLeft;
+    ZLeft:=ZLeft + dZLeft;
     Inc(XRight, dXRight);
-    ZRight := ZRight + dZRight;
+    ZRight:=ZRight + dZRight;
   end;
 end;
 
@@ -1947,9 +1947,9 @@ var
   // Set the color of each vertex based on it's curvature and triangle normal
   begin
     ShadedColor(LIntensityRatio, R, G, B, R, G, B);
-    P.R := R shl 8;
-    P.G := G shl 8;
-    P.B := B shl 8;
+    P.R:=R shl 8;
+    P.G:=G shl 8;
+    P.B:=B shl 8;
   end;{SetColor}
 
   procedure ShadeLine(Left, Right: TShadePoint; Y: integer);
@@ -1961,57 +1961,57 @@ var
     Pixel: TRGBTriple;
   begin
     //      if (Y<0) or (Y>H-1) then exit;
-    Left.X := Left.X div 256;
-    Right.X := Right.X div 256;
+    Left.X:=Left.X div 256;
+    Right.X:=Right.X div 256;
     if Left.X > Right.X then
     begin
-      Tmp := Left;
-      Left := Right;
-      Right := Tmp;
+      Tmp:=Left;
+      Left:=Right;
+      Right:=Tmp;
     end;
     if (Left.X > ClientWidth - 1) or (Right.X < 0) or (Y < 0) or (Y > ClientHeight - 1) then
       exit;
 
-    d := Right.X - Left.X;
+    d:=Right.X - Left.X;
     if d <> 0 then
     begin
-      Delta.Z := (Right.Z - Left.Z) / d;
-      Delta.R := (Right.R - Left.R) div d;
-      Delta.G := (Right.G - Left.G) div d;
-      Delta.B := (Right.B - Left.B) div d;
+      Delta.Z:=(Right.Z - Left.Z) / d;
+      Delta.R:=(Right.R - Left.R) div d;
+      Delta.G:=(Right.G - Left.G) div d;
+      Delta.B:=(Right.B - Left.B) div d;
     end
     else
     begin
-      Delta.Z := 0;
-      Delta.R := 0;
-      Delta.G := 0;
-      Delta.B := 0;
+      Delta.Z:=0;
+      Delta.R:=0;
+      Delta.G:=0;
+      Delta.B:=0;
     end;
 
     //      if (Left.X>W) or (Right.X<0) then exit;
     if (Left.X < 0) then
     begin
-      Left.Z := Left.Z + -Left.X * Delta.Z;
+      Left.Z:=Left.Z + -Left.X * Delta.Z;
       Inc(Left.R, -Left.X * Delta.R);
       Inc(Left.G, -Left.X * Delta.G);
       Inc(Left.B, -Left.X * Delta.B);
-      Left.X := 0;
+      Left.X:=0;
     end;
 
     if Right.X > ClientWidth - 1 then
-      Right.X := ClientWidth - 1;
+      Right.X:=ClientWidth - 1;
     if Left.X >= 0 then
     begin
       //Row:=FDrawingBuffer.Scanline[y];
-      //pRow := FDrawingBuffer.RawImage.GetLineStart(Y); // this is slow!
+      //pRow:=FDrawingBuffer.RawImage.GetLineStart(Y); // this is slow!
 
       while Left.X <= Right.X do
       begin
         if Left.Z > FZBuffer.FBuffer[Y][Left.X] then
         begin
-          FZBuffer.FBuffer[Y][Left.X] := Left.Z;
+          FZBuffer.FBuffer[Y][Left.X]:=Left.Z;
 
-               {pPixel := pRow + FBitmapFormatHelper.BytesPerPixel * Left.X;
+               {pPixel:=pRow + FBitmapFormatHelper.BytesPerPixel * Left.X;
                Pixel.rgbtRed:=Left.R shr 8;
                Pixel.rgbtGreen:=Left.G shr 8;
                Pixel.rgbtBlue:=Left.B shr 8;
@@ -2021,7 +2021,7 @@ var
           //FDrawingBuffer.Canvas.Pixels[Left.X,Y]:=RGBtoColor(Left.R shr 8, Left.G shr 8, Left.B shr 8);
           SetPixel(Left.X, Y, Left.R shr 8, Left.G shr 8, Left.B shr 8);
         end;
-        Left.Z := Left.Z + Delta.Z;
+        Left.Z:=Left.Z + Delta.Z;
         Inc(Left.R, Delta.R);
         Inc(Left.G, Delta.G);
         Inc(Left.B, Delta.B);
@@ -2032,48 +2032,48 @@ var
 
 begin
   // Calculate data for the points
-  V1 := ProjectToZBuffer(P_1);
-  V2 := ProjectToZBuffer(P_2);
-  V3 := ProjectToZBuffer(P_3);
-  P_1 := RotatedPoint(P_1);
-  P_2 := RotatedPoint(P_2);
-  P_3 := RotatedPoint(P_3);
+  V1:=ProjectToZBuffer(P_1);
+  V2:=ProjectToZBuffer(P_2);
+  V3:=ProjectToZBuffer(P_3);
+  P_1:=RotatedPoint(P_1);
+  P_2:=RotatedPoint(P_2);
+  P_3:=RotatedPoint(P_3);
   // Calculate triangle normal and center
-  Normal := UnifiedNormal(P_1, P_2, P_3);
-  Center.X := (P_1.X + P_2.X + P_3.X) / 3;
-  Center.Y := (P_1.Y + P_2.Y + P_3.Y) / 3;
-  Center.Z := (P_1.Z + P_2.Z + P_3.Z) / 3;
+  Normal:=UnifiedNormal(P_1, P_2, P_3);
+  Center.X:=(P_1.X + P_2.X + P_3.X) / 3;
+  Center.Y:=(P_1.Y + P_2.Y + P_3.Y) / 3;
+  Center.Z:=(P_1.Z + P_2.Z + P_3.Z) / 3;
   // Calculate light vector
-  LSourceDirection.X := Center.X - FLight.Position.X;
-  LSourceDirection.Y := Center.Y - FLight.Position.Y;
-  LSourceDirection.Z := Center.Z - FLight.Position.Z;
-  LSourceDirection := Normalize(LSourceDirection);
-  LIntensityRatio := Dotproduct(Normal, LSourceDirection);
+  LSourceDirection.X:=Center.X - FLight.Position.X;
+  LSourceDirection.Y:=Center.Y - FLight.Position.Y;
+  LSourceDirection.Z:=Center.Z - FLight.Position.Z;
+  LSourceDirection:=Normalize(LSourceDirection);
+  LIntensityRatio:=Dotproduct(Normal, LSourceDirection);
   SetColor(V1, R1, G1, B1);
   SetColor(V2, R2, G2, B2);
   SetColor(V3, R3, G3, B3);
 
   if V2.Y < V1.Y then
   begin
-    Tmp := V1;
-    V1 := V2;
-    V2 := Tmp;
+    Tmp:=V1;
+    V1:=V2;
+    V2:=Tmp;
   end;
   if V3.Y < V2.Y then
   begin
-    Tmp := V2;
-    V2 := V3;
-    V3 := Tmp;
+    Tmp:=V2;
+    V2:=V3;
+    V3:=Tmp;
     if V2.Y < V1.Y then
     begin
-      Tmp := V1;
-      V1 := V2;
-      V2 := Tmp;
+      Tmp:=V1;
+      V1:=V2;
+      V2:=Tmp;
     end;
   end;
-  V1.X := V1.X shl 8;
-  V2.X := V2.X shl 8;
-  V3.X := V3.X shl 8;
+  V1.X:=V1.X shl 8;
+  V2.X:=V2.X shl 8;
+  V3.X:=V3.X shl 8;
   if V3.Y = V1.Y then
   begin
     if V2.X >= V1.X then
@@ -2087,43 +2087,43 @@ begin
     Exit;
   end;
 
-  Left := V1;
-  d := (V3.Y - V1.Y);
+  Left:=V1;
+  d:=(V3.Y - V1.Y);
   if d <> 0 then
   begin
-    dLeft.Z := (V3.Z - V1.Z) / d;
-    dLeft.X := (V3.X - V1.X) div d;
-    dLeft.R := (V3.R - V1.R) div d;
-    dLeft.G := (V3.G - V1.G) div d;
-    dLeft.B := (V3.B - V1.B) div d;
+    dLeft.Z:=(V3.Z - V1.Z) / d;
+    dLeft.X:=(V3.X - V1.X) div d;
+    dLeft.R:=(V3.R - V1.R) div d;
+    dLeft.G:=(V3.G - V1.G) div d;
+    dLeft.B:=(V3.B - V1.B) div d;
   end;
 
-  Right := V1;
-  d := (V2.Y - V1.Y);
+  Right:=V1;
+  d:=(V2.Y - V1.Y);
   if d <> 0 then
   begin
-    dRight.Z := (V2.Z - V1.Z) / d;
-    dRight.X := (V2.X - V1.X) div d;
-    dRight.R := (V2.R - V1.R) div d;
-    dRight.G := (V2.G - V1.G) div d;
-    dRight.B := (V2.B - V1.B) div d;
+    dRight.Z:=(V2.Z - V1.Z) / d;
+    dRight.X:=(V2.X - V1.X) div d;
+    dRight.R:=(V2.R - V1.R) div d;
+    dRight.G:=(V2.G - V1.G) div d;
+    dRight.B:=(V2.B - V1.B) div d;
   end;
 
-  Y := V1.Y;
+  Y:=V1.Y;
   if (Y < 0) and (V2.Y > 0) then
   begin
     Inc(Left.X, -Y * dLeft.X);
-    Left.Z := Left.Z + -Y * dLeft.Z;
+    Left.Z:=Left.Z + -Y * dLeft.Z;
     Inc(Left.R, -Y * dLeft.R);
     Inc(Left.G, -Y * dLeft.G);
     Inc(Left.B, -Y * dLeft.B);
 
     Inc(Right.X, -Y * dRight.X);
-    Right.Z := Right.Z + -Y * dRight.Z;
+    Right.Z:=Right.Z + -Y * dRight.Z;
     Inc(Right.R, -Y * dRight.R);
     Inc(Right.G, -Y * dRight.G);
     Inc(Right.B, -Y * dRight.B);
-    Y := 0;
+    Y:=0;
   end;
 
   while Y < V2.Y do
@@ -2135,13 +2135,13 @@ begin
     if Y < V2.Y then
     begin
       Inc(Left.X, dLeft.X);
-      Left.Z := Left.Z + dLeft.Z;
+      Left.Z:=Left.Z + dLeft.Z;
       Inc(Left.R, dLeft.R);
       Inc(Left.G, dLeft.G);
       Inc(Left.B, dLeft.B);
 
       Inc(Right.X, dRight.X);
-      Right.Z := Right.Z + dRight.Z;
+      Right.Z:=Right.Z + dRight.Z;
       Inc(Right.R, dRight.R);
       Inc(Right.G, dRight.G);
       Inc(Right.B, dRight.B);
@@ -2151,34 +2151,34 @@ begin
   if V2.Y = V3.Y then
     Exit;
 
-  Right := V2;
-  d := V3.Y - V2.Y;
+  Right:=V2;
+  d:=V3.Y - V2.Y;
   if d <> 0 then
   begin
-    dRight.Z := (V3.Z - V2.Z) / d;
-    dRight.X := (V3.X - V2.X) div d;
-    dRight.R := (V3.R - V2.R) div d;
-    dRight.G := (V3.G - V2.G) div d;
-    dRight.B := (V3.B - V2.B) div d;
+    dRight.Z:=(V3.Z - V2.Z) / d;
+    dRight.X:=(V3.X - V2.X) div d;
+    dRight.R:=(V3.R - V2.R) div d;
+    dRight.G:=(V3.G - V2.G) div d;
+    dRight.B:=(V3.B - V2.B) div d;
   end
   else
     Fillchar(dRight, SizeOf(dRight), 0);
 
-  Y := V2.Y;
+  Y:=V2.Y;
   if (Y < 0) and (V3.Y > 0) then
   begin
     Inc(Left.X, -Y * dLeft.X);
-    Left.Z := Left.Z + -Y * dLeft.Z;
+    Left.Z:=Left.Z + -Y * dLeft.Z;
     Inc(Left.R, -Y * dLeft.R);
     Inc(Left.G, -Y * dLeft.G);
     Inc(Left.B, -Y * dLeft.B);
 
     Inc(Right.X, -Y * dRight.X);
-    Right.Z := Right.Z + -Y * dRight.Z;
+    Right.Z:=Right.Z + -Y * dRight.Z;
     Inc(Right.R, -Y * dRight.R);
     Inc(Right.G, -Y * dRight.G);
     Inc(Right.B, -Y * dRight.B);
-    Y := 0;
+    Y:=0;
   end;
   while Y <= V3.Y do
   begin
@@ -2189,13 +2189,13 @@ begin
     if Y <= V3.Y then
     begin
       Inc(Left.X, dLeft.X);
-      Left.Z := Left.Z + dLeft.Z;
+      Left.Z:=Left.Z + dLeft.Z;
       Inc(Left.R, dLeft.R);
       Inc(Left.G, dLeft.G);
       Inc(Left.B, dLeft.B);
 
       Inc(Right.X, dRight.X);
-      Right.Z := Right.Z + dRight.Z;
+      Right.Z:=Right.Z + dRight.Z;
       Inc(Right.R, dRight.R);
       Inc(Right.G, dRight.G);
       Inc(Right.B, dRight.B);
@@ -2225,9 +2225,9 @@ var
       ShadedColor(LIntensityRatio, 0, 255, 0, R, G, B)
     else
       ShadedColor(LIntensityRatio, 255, 0, 0, R, G, B);
-    P.R := R shl 8;
-    P.G := G shl 8;
-    P.B := B shl 8;
+    P.R:=R shl 8;
+    P.G:=G shl 8;
+    P.B:=B shl 8;
   end;{SetColor}
 
   procedure ShadeLine(Left, Right: TShadePoint; Y: integer);
@@ -2239,56 +2239,56 @@ var
     Pixel: TRGBTriple;
   begin
     //      if (Y<0) or (Y>H-1) then exit;
-    Left.X := Left.X div 256;
-    Right.X := Right.X div 256;
+    Left.X:=Left.X div 256;
+    Right.X:=Right.X div 256;
     if Left.X > Right.X then
     begin
-      Tmp := Left;
-      Left := Right;
-      Right := Tmp;
+      Tmp:=Left;
+      Left:=Right;
+      Right:=Tmp;
     end;
     if (Left.X > ClientWidth - 1) or (Right.X < 0) or (Y < 0) or (Y > ClientHeight - 1) then
       exit;
 
-    d := Right.X - Left.X;
+    d:=Right.X - Left.X;
     if d <> 0 then
     begin
-      Delta.Z := (Right.Z - Left.Z) / d;
-      Delta.R := (Right.R - Left.R) div d;
-      Delta.G := (Right.G - Left.G) div d;
-      Delta.B := (Right.B - Left.B) div d;
+      Delta.Z:=(Right.Z - Left.Z) / d;
+      Delta.R:=(Right.R - Left.R) div d;
+      Delta.G:=(Right.G - Left.G) div d;
+      Delta.B:=(Right.B - Left.B) div d;
     end
     else
     begin
-      Delta.Z := 0;
-      Delta.R := 0;
-      Delta.G := 0;
-      Delta.B := 0;
+      Delta.Z:=0;
+      Delta.R:=0;
+      Delta.G:=0;
+      Delta.B:=0;
     end;
 
     //      if (Left.X>W) or (Right.X<0) then exit;
     if (Left.X < 0) then
     begin
-      Left.Z := Left.Z + -Left.X * Delta.Z;
+      Left.Z:=Left.Z + -Left.X * Delta.Z;
       Inc(Left.R, -Left.X * Delta.R);
       Inc(Left.G, -Left.X * Delta.G);
       Inc(Left.B, -Left.X * Delta.B);
-      Left.X := 0;
+      Left.X:=0;
     end;
 
     if Right.X > ClientWidth - 1 then
-      Right.X := ClientWidth - 1;
+      Right.X:=ClientWidth - 1;
     if Left.X >= 0 then
     begin
       //Row:=FDrawingBuffer.Scanline[y];
-      ///pRow := FDrawingBuffer.RawImage.GetLineStart(Y);
+      ///pRow:=FDrawingBuffer.RawImage.GetLineStart(Y);
 
       while Left.X <= Right.X do
       begin
         if Left.Z > FZBuffer.FBuffer[Y][Left.X] then
         begin
-          FZBuffer.FBuffer[Y][Left.X] := Left.Z;
-               {pPixel := pRow + FBitmapFormatHelper.BytesPerPixel * Left.X;
+          FZBuffer.FBuffer[Y][Left.X]:=Left.Z;
+               {pPixel:=pRow + FBitmapFormatHelper.BytesPerPixel * Left.X;
                Pixel.rgbtRed:=Left.R shr 8;
                Pixel.rgbtGreen:=Left.G shr 8;
                Pixel.rgbtBlue:=Left.B shr 8;
@@ -2299,7 +2299,7 @@ var
 
           SetPixel(Left.X, Y, Left.R shr 8, Left.G shr 8, Left.B shr 8);
         end;
-        Left.Z := Left.Z + Delta.Z;
+        Left.Z:=Left.Z + Delta.Z;
         Inc(Left.R, Delta.R);
         Inc(Left.G, Delta.G);
         Inc(Left.B, Delta.B);
@@ -2310,45 +2310,45 @@ var
 
 begin
   // Calculate data for the points
-  V1 := ProjectToZBuffer(P_1);
-  V2 := ProjectToZBuffer(P_2);
-  V3 := ProjectToZBuffer(P_3);
-  P_1 := RotatedPoint(P_1);
-  P_2 := RotatedPoint(P_2);
-  P_3 := RotatedPoint(P_3);
+  V1:=ProjectToZBuffer(P_1);
+  V2:=ProjectToZBuffer(P_2);
+  V3:=ProjectToZBuffer(P_3);
+  P_1:=RotatedPoint(P_1);
+  P_2:=RotatedPoint(P_2);
+  P_3:=RotatedPoint(P_3);
   // Calculate triangle normal and center
-  Normal := UnifiedNormal(P_1, P_2, P_3);
-  Center.X := (P_1.X + P_2.X + P_3.X) / 3;
-  Center.Y := (P_1.Y + P_2.Y + P_3.Y) / 3;
-  Center.Z := (P_1.Z + P_2.Z + P_3.Z) / 3;
+  Normal:=UnifiedNormal(P_1, P_2, P_3);
+  Center.X:=(P_1.X + P_2.X + P_3.X) / 3;
+  Center.Y:=(P_1.Y + P_2.Y + P_3.Y) / 3;
+  Center.Z:=(P_1.Z + P_2.Z + P_3.Z) / 3;
   // Calculate light vector
-  LSourceDirection.X := Center.X - FLight.Position.X;
-  LSourceDirection.Y := Center.Y - FLight.Position.Y;
-  LSourceDirection.Z := Center.Z - FLight.Position.Z;
-  LSourceDirection := Normalize(LSourceDirection);
-  LIntensityRatio := Dotproduct(Normal, LSourceDirection);
+  LSourceDirection.X:=Center.X - FLight.Position.X;
+  LSourceDirection.Y:=Center.Y - FLight.Position.Y;
+  LSourceDirection.Z:=Center.Z - FLight.Position.Z;
+  LSourceDirection:=Normalize(LSourceDirection);
+  LIntensityRatio:=Dotproduct(Normal, LSourceDirection);
   SetColor(V1, C1);
   SetColor(V2, C2);
   SetColor(V3, C3);
 
   if V2.Y < V1.Y then begin
-    Tmp := V1;
-    V1 := V2;
-    V2 := Tmp;
+    Tmp:=V1;
+    V1:=V2;
+    V2:=Tmp;
   end;
   if V3.Y < V2.Y then begin
-    Tmp := V2;
-    V2 := V3;
-    V3 := Tmp;
+    Tmp:=V2;
+    V2:=V3;
+    V3:=Tmp;
     if V2.Y < V1.Y then begin
-      Tmp := V1;
-      V1 := V2;
-      V2 := Tmp;
+      Tmp:=V1;
+      V1:=V2;
+      V2:=Tmp;
     end;
   end;
-  V1.X := V1.X shl 8;
-  V2.X := V2.X shl 8;
-  V3.X := V3.X shl 8;
+  V1.X:=V1.X shl 8;
+  V2.X:=V2.X shl 8;
+  V3.X:=V3.X shl 8;
   if V3.Y = V1.Y then begin
     if V2.X >= V1.X then ShadeLine(V1, V2, V1.Y)
                     else ShadeLine(V2, V1, V1.Y);
@@ -2357,40 +2357,40 @@ begin
     Exit;
   end;
 
-  Left := V1;
-  d := (V3.Y - V1.Y);
+  Left:=V1;
+  d:=(V3.Y - V1.Y);
   if d <> 0 then begin
-    dLeft.Z := (V3.Z - V1.Z) / d;
-    dLeft.X := (V3.X - V1.X) div d;
-    dLeft.R := (V3.R - V1.R) div d;
-    dLeft.G := (V3.G - V1.G) div d;
-    dLeft.B := (V3.B - V1.B) div d;
+    dLeft.Z:=(V3.Z - V1.Z) / d;
+    dLeft.X:=(V3.X - V1.X) div d;
+    dLeft.R:=(V3.R - V1.R) div d;
+    dLeft.G:=(V3.G - V1.G) div d;
+    dLeft.B:=(V3.B - V1.B) div d;
   end;
 
-  Right := V1;
-  d := (V2.Y - V1.Y);
+  Right:=V1;
+  d:=(V2.Y - V1.Y);
   if d <> 0 then begin
-    dRight.Z := (V2.Z - V1.Z) / d;
-    dRight.X := (V2.X - V1.X) div d;
-    dRight.R := (V2.R - V1.R) div d;
-    dRight.G := (V2.G - V1.G) div d;
-    dRight.B := (V2.B - V1.B) div d;
+    dRight.Z:=(V2.Z - V1.Z) / d;
+    dRight.X:=(V2.X - V1.X) div d;
+    dRight.R:=(V2.R - V1.R) div d;
+    dRight.G:=(V2.G - V1.G) div d;
+    dRight.B:=(V2.B - V1.B) div d;
   end;
 
-  Y := V1.Y;
+  Y:=V1.Y;
   if (Y < 0) and (V2.Y > 0) then begin
     Inc(Left.X, -Y * dLeft.X);
-    Left.Z := Left.Z + -Y * dLeft.Z;
+    Left.Z:=Left.Z + -Y * dLeft.Z;
     Inc(Left.R, -Y * dLeft.R);
     Inc(Left.G, -Y * dLeft.G);
     Inc(Left.B, -Y * dLeft.B);
 
     Inc(Right.X, -Y * dRight.X);
-    Right.Z := Right.Z + -Y * dRight.Z;
+    Right.Z:=Right.Z + -Y * dRight.Z;
     Inc(Right.R, -Y * dRight.R);
     Inc(Right.G, -Y * dRight.G);
     Inc(Right.B, -Y * dRight.B);
-    Y := 0;
+    Y:=0;
   end;
 
   while Y < V2.Y do begin
@@ -2398,13 +2398,13 @@ begin
                          else ShadeLine(Right, Left, Y);
     if Y < V2.Y then begin
       Inc(Left.X, dLeft.X);
-      Left.Z := Left.Z + dLeft.Z;
+      Left.Z:=Left.Z + dLeft.Z;
       Inc(Left.R, dLeft.R);
       Inc(Left.G, dLeft.G);
       Inc(Left.B, dLeft.B);
 
       Inc(Right.X, dRight.X);
-      Right.Z := Right.Z + dRight.Z;
+      Right.Z:=Right.Z + dRight.Z;
       Inc(Right.R, dRight.R);
       Inc(Right.G, dRight.G);
       Inc(Right.B, dRight.B);
@@ -2412,43 +2412,43 @@ begin
     Inc(Y);
   end;if V2.Y = V3.Y then Exit;
 
-  Right := V2;
-  d := V3.Y - V2.Y;
+  Right:=V2;
+  d:=V3.Y - V2.Y;
   if d <> 0 then begin
-    dRight.Z := (V3.Z - V2.Z) / d;
-    dRight.X := (V3.X - V2.X) div d;
-    dRight.R := (V3.R - V2.R) div d;
-    dRight.G := (V3.G - V2.G) div d;
-    dRight.B := (V3.B - V2.B) div d;
+    dRight.Z:=(V3.Z - V2.Z) / d;
+    dRight.X:=(V3.X - V2.X) div d;
+    dRight.R:=(V3.R - V2.R) div d;
+    dRight.G:=(V3.G - V2.G) div d;
+    dRight.B:=(V3.B - V2.B) div d;
   end else Fillchar(dRight, SizeOf(dRight), 0);
 
-  Y := V2.Y;
+  Y:=V2.Y;
   if (Y < 0) and (V3.Y > 0) then begin
     Inc(Left.X, -Y * dLeft.X);
-    Left.Z := Left.Z + -Y * dLeft.Z;
+    Left.Z:=Left.Z + -Y * dLeft.Z;
     Inc(Left.R, -Y * dLeft.R);
     Inc(Left.G, -Y * dLeft.G);
     Inc(Left.B, -Y * dLeft.B);
 
     Inc(Right.X, -Y * dRight.X);
-    Right.Z := Right.Z + -Y * dRight.Z;
+    Right.Z:=Right.Z + -Y * dRight.Z;
     Inc(Right.R, -Y * dRight.R);
     Inc(Right.G, -Y * dRight.G);
     Inc(Right.B, -Y * dRight.B);
-    Y := 0;
+    Y:=0;
   end;
   while Y <= V3.Y do begin
     if Right.X >= Left.X then ShadeLine(Left, Right, Y)
                          else ShadeLine(Right, Left, Y);
     if Y <= V3.Y then begin
       Inc(Left.X, dLeft.X);
-      Left.Z := Left.Z + dLeft.Z;
+      Left.Z:=Left.Z + dLeft.Z;
       Inc(Left.R, dLeft.R);
       Inc(Left.G, dLeft.G);
       Inc(Left.B, dLeft.B);
 
       Inc(Right.X, dRight.X);
-      Right.Z := Right.Z + dRight.Z;
+      Right.Z:=Right.Z + dRight.Z;
       Inc(Right.R, dRight.R);
       Inc(Right.G, dRight.G);
       Inc(Right.B, dRight.B);
@@ -2462,30 +2462,30 @@ var
   Min,Max: T3DCoordinate;
 begin
   if Assigned( FOnRequestExtents ) then begin
-    Min := ZERO;
-    Max := ZERO;
+    Min:=ZERO;
+    Max:=ZERO;
     FOnRequestExtents( self,Min,Max );
-    FZoom := 1.0;
-    FPan.X := 0;
-    FPan.Y := 0;
+    FZoom:=1.0;
+    FPan.X:=0;
+    FPan.Y:=0;
     InitializeViewport( Min,Max );
   end;
 end;
 
 procedure TFreeViewport.ZoomIn;
 begin
-  FZoom := FZoom * Zoomfactor;
-  FPan.X := round(Zoomfactor * FPan.X);
-  FPan.Y := round(Zoomfactor * FPan.Y);
+  FZoom:=FZoom * Zoomfactor;
+  FPan.X:=round(Zoomfactor * FPan.X);
+  FPan.Y:=round(Zoomfactor * FPan.Y);
   BackgroundImage.invalidate;
   Refresh;
 end;
 
 procedure TFreeViewport.ZoomOut;
 begin
-  FZoom := FZoom / Zoomfactor;
-  FPan.X := round(FPan.X / Zoomfactor);
-  FPan.Y := round(FPan.Y / Zoomfactor);
+  FZoom:=FZoom / Zoomfactor;
+  FPan.X:=round(FPan.X / Zoomfactor);
+  FPan.Y:=round(FPan.Y / Zoomfactor);
   BackgroundImage.invalidate;
   Refresh;
 end;

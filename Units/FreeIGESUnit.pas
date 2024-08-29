@@ -346,7 +346,7 @@ var Str     : AnsiString;
        Result:=IntToStr(length(Result))+'H'+Result;
     end;{CreateTimeStamp}
 begin
-// DefaultFormatSettings.DecimalSeparator := '.';   // Create time string
+// DefaultFormatSettings.DecimalSeparator:='.';   // Create time string
    TimeStr:=CreateTimeStamp;                        // Create the start section
    FStartSection.Clear;
    FStartSection.Add(CheckString('FREE!ship IGES file. (www.freeship.org)',LastColumn,'S',1));

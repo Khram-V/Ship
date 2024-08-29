@@ -63,16 +63,16 @@ implementation
 
 function TFreeIntersectLayerDialog.FGetLayer1: TFreeSubdivisionLayer;
 begin
-  Result := nil;
+  Result:=nil;
   if ComboBox1.ItemIndex <> -1 then
-    Result := ComboBox1.Items.Objects[ComboBox1.ItemIndex] as TFreeSubdivisionLayer;
+    Result:=ComboBox1.Items.Objects[ComboBox1.ItemIndex] as TFreeSubdivisionLayer;
 end;
 
 function TFreeIntersectLayerDialog.FGetLayer2: TFreeSubdivisionLayer;
 begin
-  Result := nil;
+  Result:=nil;
   if ComboBox2.ItemIndex <> -1 then
-    Result := ComboBox2.Items.Objects[ComboBox2.ItemIndex] as TFreeSubdivisionLayer;
+    Result:=ComboBox2.Items.Objects[ComboBox2.ItemIndex] as TFreeSubdivisionLayer;
 end;
 
 procedure TFreeIntersectLayerDialog.UpdateBox2;
@@ -80,22 +80,22 @@ var
   I, Ind: integer;
   Layer: TFreeSubdivisionLayer;
 begin
-  Ind := ComboBox2.ItemIndex;
+  Ind:=ComboBox2.ItemIndex;
   ComboBox2.Items.BeginUpdate;
   ComboBox2.Clear;
   try
-    for I := 1 to ComboBox1.Items.Count do
+    for I:=1 to ComboBox1.Items.Count do
     begin
-      Layer := ComboBox1.Items.Objects[I - 1] as TFreeSubdivisionLayer;
+      Layer:=ComboBox1.Items.Objects[I - 1] as TFreeSubdivisionLayer;
       if I - 1 <> ComboBox1.ItemIndex then
         ComboBox2.Items.AddObject(Layer.Name, Layer);
     end;
   finally
     ComboBox2.Items.EndUpdate;
     if Ind <> -1 then
-      ComboBox2.ItemIndex := Ind
+      ComboBox2.ItemIndex:=Ind
     else
-      ComboBox2.ItemIndex := 0;
+      ComboBox2.ItemIndex:=0;
   end;
 end;
 
@@ -108,26 +108,26 @@ begin
   ComboBox1.Items.BeginUpdate;
   ComboBox1.Clear;
   try
-    for I := 1 to Layers.Count do
+    for I:=1 to Layers.Count do
     begin
-      Layer := Layers[I - 1];
+      Layer:=Layers[I - 1];
       ComboBox1.Items.AddObject(Layer.Name, Layer);
     end;
   finally
     ComboBox1.Items.EndUpdate;
     if Combobox1.Items.Count > 0 then
-      ComboBox1.ItemIndex := 0;
+      ComboBox1.ItemIndex:=0;
     UpdateBox2;
   end;                                                                          //ShowTranslatedValues(Self);
   ShowModal;
-  Result := modalResult = mrOk;
+  Result:=modalResult = mrOk;
 end;
 
 procedure TFreeIntersectLayerDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TFreeIntersectLayerDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 procedure TFreeIntersectLayerDialog.ComboBox1Change(Sender: TObject);
 begin UpdateBox2; end;

@@ -240,51 +240,51 @@ procedure TFreePreferencesDialog.Updatedata;
 var
   i: integer;
 begin
-  Panel4.Color := FFreeship.Preferences.ViewportColor;
-  Panel2.Color := FFreeship.Preferences.LayerColor;
-  Panel5.Color := FFreeship.Preferences.UnderWaterColor;
-  seSubmergedSurfaceOpacity.Value := FFreeship.Preferences.UnderWaterColorAlpha * 100 div 255;
-  Panel6.Color := FFreeship.Preferences.EdgeColor;
-  Panel7.Color := FFreeship.Preferences.CreaseEdgeColor;
-  Panel8.Color := FFreeship.Preferences.CreaseColor;
-  Panel9.Color := FFreeship.Preferences.RegularPointColor;
-  Panel10.Color := FFreeship.Preferences.CreasePointColor;
-  Panel11.Color := FFreeship.Preferences.CornerPointColor;
-  Panel12.Color := FFreeship.Preferences.DartPointColor;
-  Panel13.Color := FFreeship.Preferences.SelectColor;
-  Panel14.Color := FFreeship.Preferences.GridColor;
-  Panel15.Color := FFreeship.Preferences.GridFontColor;
-  Panel16.Color := FFreeship.Preferences.StationColor;
-  Panel17.Color := FFreeship.Preferences.ButtockColor;
-  Panel18.Color := FFreeship.Preferences.WaterlineColor;
-  Panel19.Color := FFreeship.Preferences.NormalColor;
-  Panel20.Color := FFreeship.Preferences.DiagonalColor;
-  Panel21.Color := FFreeship.Preferences.LeakPointColor;
-  Panel22.Color := FFreeship.Preferences.MarkerColor;
-  Panel23.Color := FFreeship.Preferences.CurvaturePlotColor;
-  Panel24.Color := FFreeship.Preferences.ControlCurveColor;
-  Panel25.Color := FFreeship.Preferences.HydrostaticsFontColor;
-  Panel26.Color := FFreeship.Preferences.ZebraStripeColor;
-  SpinEdit1.Value := FFreeship.Preferences.PointSize;
-  seFontSize.Value := FFreeship.Preferences.FontSize;
+  Panel4.Color:=FFreeship.Preferences.ViewportColor;
+  Panel2.Color:=FFreeship.Preferences.LayerColor;
+  Panel5.Color:=FFreeship.Preferences.UnderWaterColor;
+  seSubmergedSurfaceOpacity.Value:=FFreeship.Preferences.UnderWaterColorAlpha * 100 div 255;
+  Panel6.Color:=FFreeship.Preferences.EdgeColor;
+  Panel7.Color:=FFreeship.Preferences.CreaseEdgeColor;
+  Panel8.Color:=FFreeship.Preferences.CreaseColor;
+  Panel9.Color:=FFreeship.Preferences.RegularPointColor;
+  Panel10.Color:=FFreeship.Preferences.CreasePointColor;
+  Panel11.Color:=FFreeship.Preferences.CornerPointColor;
+  Panel12.Color:=FFreeship.Preferences.DartPointColor;
+  Panel13.Color:=FFreeship.Preferences.SelectColor;
+  Panel14.Color:=FFreeship.Preferences.GridColor;
+  Panel15.Color:=FFreeship.Preferences.GridFontColor;
+  Panel16.Color:=FFreeship.Preferences.StationColor;
+  Panel17.Color:=FFreeship.Preferences.ButtockColor;
+  Panel18.Color:=FFreeship.Preferences.WaterlineColor;
+  Panel19.Color:=FFreeship.Preferences.NormalColor;
+  Panel20.Color:=FFreeship.Preferences.DiagonalColor;
+  Panel21.Color:=FFreeship.Preferences.LeakPointColor;
+  Panel22.Color:=FFreeship.Preferences.MarkerColor;
+  Panel23.Color:=FFreeship.Preferences.CurvaturePlotColor;
+  Panel24.Color:=FFreeship.Preferences.ControlCurveColor;
+  Panel25.Color:=FFreeship.Preferences.HydrostaticsFontColor;
+  Panel26.Color:=FFreeship.Preferences.ZebraStripeColor;
+  SpinEdit1.Value:=FFreeship.Preferences.PointSize;
+  seFontSize.Value:=FFreeship.Preferences.FontSize;
   if FFreeship.Preferences.MaxUndoMemory < 1 
-     then FreeNumInput1.Value := 1
-     else FreeNumInput1.Value := FFreeship.Preferences.MaxUndoMemory;
+     then FreeNumInput1.Value:=1
+     else FreeNumInput1.Value:=FFreeship.Preferences.MaxUndoMemory;
 
-  EditLanguagesDir.Text := FFreeship.Preferences.LanguagesDirectory;
-  EditManualsDir.Text := FFreeship.Preferences.ManualsDirectory;
-  EditOpenDir.Text := FFreeship.Preferences.OpenDirectory;
-  EditSaveDir.Text := FFreeship.Preferences.SaveDirectory;
-  EditImportDir.Text := FFreeship.Preferences.ImportDirectory;
-  EditExportDir.Text := FFreeship.Preferences.ExportDirectory;
+  EditLanguagesDir.Text:=FFreeship.Preferences.LanguagesDirectory;
+  EditManualsDir.Text:=FFreeship.Preferences.ManualsDirectory;
+  EditOpenDir.Text:=FFreeship.Preferences.OpenDirectory;
+  EditSaveDir.Text:=FFreeship.Preferences.SaveDirectory;
+  EditImportDir.Text:=FFreeship.Preferences.ImportDirectory;
+  EditExportDir.Text:=FFreeship.Preferences.ExportDirectory;
 
   ComboBoxEncodingFillItems;
-  for i := 0 to ComboBoxEncoding.Items.Count - 1 do
+  for i:=0 to ComboBoxEncoding.Items.Count - 1 do
     if string(ComboBoxEncoding.Items.Objects[i]) =
       FFreeship.Preferences.FbmEncoding then
       break;
   if i > ComboBoxEncoding.Items.Count then i:=-1;
-  ComboBoxEncoding.ItemIndex := i;
+  ComboBoxEncoding.ItemIndex:=i;
 end;
 
 function TFreePreferencesDialog.Execute(Freeship: TFreeShip): boolean;
@@ -293,7 +293,7 @@ begin
   Updatedata;
   FConfigChanged:=False;
   Showmodal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TFreePreferencesDialog.ColorPanelClick(Sender: TObject);
@@ -302,12 +302,12 @@ var
 begin
   if (Sender.ClassType <> TPanel) then
     exit;
-  Panel := TPanel(Sender);
-  ColorDialog.Color := Panel.Color;
+  Panel:=TPanel(Sender);
+  ColorDialog.Color:=Panel.Color;
   if ColorDialog.Execute then
     if ColorDialog.Color <> Panel.Color then
     begin
-      Panel.Color := ColorDialog.Color;
+      Panel.Color:=ColorDialog.Color;
       FConfigChanged:=true;
     end;
 end;
@@ -328,17 +328,17 @@ begin sz:=getPreferredSize; end;
 
 
 procedure TFreePreferencesDialog.OkButtonClick(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TFreePreferencesDialog.CancelButtonClick(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 procedure TFreePreferencesDialog.Panel1Paint(Sender: TObject);
 begin
   {$IFDEF ZWindows}
-  Panel53.Color := Tabsheet1.ActualColor;
-  Panel51.Color := Tabsheet1.ActualColor;
-  Panel.Color := Tabsheet1.ActualColor;
+  Panel53.Color:=Tabsheet1.ActualColor;
+  Panel51.Color:=Tabsheet1.ActualColor;
+  Panel.Color:=Tabsheet1.ActualColor;
   {$ENDIF}
 end;
 (*
@@ -346,14 +346,14 @@ procedure TFreePreferencesDialog.ComboBoxThemesChange(Sender: TObject);
 begin
   if Sender=ComboBoxThemes then begin
     FFreeship.Preferences.LoadTheme( ComboBoxThemes.Text );
-    FThemeChanged := False;
+    FThemeChanged:=False;
     UpdateData;
   end;
-  FConfigChanged := True;
+  FConfigChanged:=True;
 end;
 *)
 procedure TFreePreferencesDialog.EditDirChange(Sender: TObject);
-begin FConfigChanged := True; end;
+begin FConfigChanged:=True; end;
 
 procedure TFreePreferencesDialog.PageControl1Change(Sender: TObject);
 begin FormActivate(Sender); end;
@@ -368,10 +368,10 @@ var
 begin
   Invalidate;
   Application.ProcessMessages;
-  ScreenPoint := ButtonPanel.ClientToScreen(Point(0, 0));
-  HdrHeight := ScreenPoint.Y - self.Top;
-  BrdWidth := ScreenPoint.X - self.Left;
-  HdrHeight := HdrHeight - BrdWidth;
+  ScreenPoint:=ButtonPanel.ClientToScreen(Point(0, 0));
+  HdrHeight:=ScreenPoint.Y - self.Top;
+  BrdWidth:=ScreenPoint.X - self.Left;
+  HdrHeight:=HdrHeight - BrdWidth;
   {Tabsheet1.AdjustSize;
   Tabsheet1.Repaint;
   //Tabsheet1.Invalidate;
@@ -383,24 +383,24 @@ begin
   self.AdjustSize;
   Application.ProcessMessages;}
 
-  TbT := TabSheet2.ClientToParent(Point(0, 0), self).Y;
-  PgT := PageControl1.ClientToParent(Point(0, 0), self).Y;
-  PnT := Panel1.ClientToParent(Point(0, 0), self).Y;
-//TbH := PgT - PnT - Panel1.BorderWidth - Panel1.BorderSpacing.InnerBorder;
+  TbT:=TabSheet2.ClientToParent(Point(0, 0), self).Y;
+  PgT:=PageControl1.ClientToParent(Point(0, 0), self).Y;
+  PnT:=Panel1.ClientToParent(Point(0, 0), self).Y;
+//TbH:=PgT - PnT - Panel1.BorderWidth - Panel1.BorderSpacing.InnerBorder;
   PGIB :={EditImportDir}Panel42.Height * 10 + TabSheet2.ChildSizing.VerticalSpacing * 9;
-//PGIB := PanelGlobalImportDir.Height * 10 + TabSheet2.ChildSizing.VerticalSpacing * 9;
-  TxH := PGIB + TabSheet2.ChildSizing.TopBottomSpacing * 2 + //TbH +
+//PGIB:=PanelGlobalImportDir.Height * 10 + TabSheet2.ChildSizing.VerticalSpacing * 9;
+  TxH:=PGIB + TabSheet2.ChildSizing.TopBottomSpacing * 2 + //TbH +
     Panel1.BorderWidth * 2 + Panel1.BorderSpacing.InnerBorder * 2 +
     ButtonPanel.Height + HdrHeight + BrdWidth * 2;
-  {if self.Constraints.MinHeight < TxH then self.Constraints.MinHeight := TxH;}
-  result := Rect(0,0, Width, BitBtnResetDirs.Top + BitBtnResetDirs.Height + 16);
+  {if self.Constraints.MinHeight < TxH then self.Constraints.MinHeight:=TxH;}
+  result:=Rect(0,0, Width, BitBtnResetDirs.Top + BitBtnResetDirs.Height + 16);
 end;
 
 procedure TFreePreferencesDialog.SpinEdit1Change(Sender: TObject);
-begin FConfigChanged := True; end;
+begin FConfigChanged:=True; end;
 
 procedure TFreePreferencesDialog.seSubmergedSurfaceOpacityChange(Sender: TObject);
-begin FConfigChanged := True; end;
+begin FConfigChanged:=True; end;
 
 procedure TFreePreferencesDialog.ResetDirsButtonClick(Sender: TObject);
 begin
@@ -411,70 +411,70 @@ end;
 
 procedure TFreePreferencesDialog.SpeedButtonLanguagesDirClick(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditLanguagesDir.Text;
+  SelectDirectoryDialog1.FileName:=EditLanguagesDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditLanguagesDir.Text := SelectDirectoryDialog1.FileName;
+    EditLanguagesDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 
 procedure TFreePreferencesDialog.SpeedButton9Click(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditManualsDir.Text;
+  SelectDirectoryDialog1.FileName:=EditManualsDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditManualsDir.Text := SelectDirectoryDialog1.FileName;
+    EditManualsDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 (*
 procedure TFreePreferencesDialog.SpeedButton12Click(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditExecDir.Text;
+  SelectDirectoryDialog1.FileName:=EditExecDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditExecDir.Text := SelectDirectoryDialog1.FileName;
+    EditExecDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 procedure TFreePreferencesDialog.SpeedButton13Click(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditTempDir.Text;
+  SelectDirectoryDialog1.FileName:=EditTempDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditTempDir.Text := SelectDirectoryDialog1.FileName;
+    EditTempDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 *)
 procedure TFreePreferencesDialog.SpeedButton14Click(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditOpenDir.Text;
+  SelectDirectoryDialog1.FileName:=EditOpenDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditOpenDir.Text := SelectDirectoryDialog1.FileName;
+    EditOpenDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 
 procedure TFreePreferencesDialog.SpeedButton15Click(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditSaveDir.Text;
+  SelectDirectoryDialog1.FileName:=EditSaveDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditSaveDir.Text := SelectDirectoryDialog1.FileName;
+    EditSaveDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 
 procedure TFreePreferencesDialog.SpeedButton16Click(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditImportDir.Text;
+  SelectDirectoryDialog1.FileName:=EditImportDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditImportDir.Text := SelectDirectoryDialog1.FileName;
+    EditImportDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 
 procedure TFreePreferencesDialog.SpeedButton17Click(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditExportDir.Text;
+  SelectDirectoryDialog1.FileName:=EditExportDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditExportDir.Text := SelectDirectoryDialog1.FileName;
+    EditExportDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 (*
 procedure TFreePreferencesDialog.SpeedButton18Click(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditGlobalOpenDir.Text;
+  SelectDirectoryDialog1.FileName:=EditGlobalOpenDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditGlobalOpenDir.Text := SelectDirectoryDialog1.FileName;
+    EditGlobalOpenDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 procedure TFreePreferencesDialog.SpeedButton19Click(Sender: TObject);
 begin
-  SelectDirectoryDialog1.FileName := EditGlobalImportDir.Text;
+  SelectDirectoryDialog1.FileName:=EditGlobalImportDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditGlobalImportDir.Text := SelectDirectoryDialog1.FileName;
+    EditGlobalImportDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 *)
 procedure TFreePreferencesDialog.ComboBoxEncodingFillItems;

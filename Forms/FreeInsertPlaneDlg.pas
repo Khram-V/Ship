@@ -86,43 +86,43 @@ implementation
 {$ENDIF}
 
 function TFreeInsertPlaneDialog.FGetCreateControlcurve: boolean;
-begin Result := Checkbox1.Checked; end;
+begin Result:=Checkbox1.Checked; end;
 
 function TFreeInsertPlaneDialog.FGetPlane: T3DPlane;
 begin
   Fillchar(Result, SizeOf(Result), 0);
   if RadioButton1.Checked then
-    Result.a := 1.0;
+    Result.a:=1.0;
   if RadioButton2.Checked then
-    Result.c := 1.0;
+    Result.c:=1.0;
   if RadioButton3.Checked then
-    Result.b := 1.0;
-  //Result.d := -StrToFloat(Edit1.Text);
-  Result.d := -FloatSpinEdit1.Value;
+    Result.b:=1.0;
+  //Result.d:=-StrToFloat(Edit1.Text);
+  Result.d:=-FloatSpinEdit1.Value;
 end;
 
 procedure TFreeInsertPlaneDialog.FUpdate;
 var MinV,MaxV:TFloatType;
 begin
   if RadioButton1.Checked then begin
-    MinV := Min.X;
-    MaxV := Max.X; end;
+    MinV:=Min.X;
+    MaxV:=Max.X; end;
   if RadioButton2.Checked then begin
-    MinV := Min.Z;
-    MaxV := Max.Z; end;
+    MinV:=Min.Z;
+    MaxV:=Max.Z; end;
   if RadioButton3.Checked then begin
-    MinV := Min.Y;
-    MaxV := Max.Y; end;
-  MinV := MinV + 1e-4;
-  MaxV := MaxV - 1e-4;
+    MinV:=Min.Y;
+    MaxV:=Max.Y; end;
+  MinV:=MinV + 1e-4;
+  MaxV:=MaxV - 1e-4;
   FloatSpinEdit1.MinValue:=MinV;
   FloatSpinEdit1.MaxValue:=MaxV;
-  Edit1.Caption := FloatToStrF(MinV, ffFixed, 7, 4);
-  Edit2.Caption := FloatToStrF(MaxV, ffFixed, 7, 4);
+  Edit1.Caption:=FloatToStrF(MinV, ffFixed, 7, 4);
+  Edit2.Caption:=FloatToStrF(MaxV, ffFixed, 7, 4);
 end;
 
 function TFreeInsertPlaneDialog.Execute: boolean;
-begin FUpdate; ShowModal; Result := ModalResult = mrOk; end;                    //ShowTranslatedValues(Self);
+begin FUpdate; ShowModal; Result:=ModalResult = mrOk; end;                    //ShowTranslatedValues(Self);
 
 procedure TFreeInsertPlaneDialog.RadioButton1Click(Sender: TObject);
 begin FUpdate; end;
@@ -134,9 +134,9 @@ procedure TFreeInsertPlaneDialog.RadioButton3Click(Sender: TObject);
 begin FUpdate; end;
 
 procedure TFreeInsertPlaneDialog.BitBtn1Click(Sender: TObject);
-begin Modalresult := mrOk; end;
+begin Modalresult:=mrOk; end;
 
 procedure TFreeInsertPlaneDialog.BitBtn2Click(Sender: TObject);
-begin Modalresult := mrCancel; end;
+begin Modalresult:=mrCancel; end;
 
 end.

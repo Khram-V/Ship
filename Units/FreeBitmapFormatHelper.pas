@@ -161,9 +161,9 @@ end;
 procedure TFreeBitmapFormatHelper.DetectBitMapDataFormat(ABitmap:TBitmap);
 var Desc : TRawImageDescription;
 begin
-  FBitMapDataFormat := bmdf_BPP24_B8G8R8; //default Windows
-  Desc := ABitmap.RawImage.Description;
-  FBytesPerPixel := Desc.BitsPerPixel div 8;
+  FBitMapDataFormat:=bmdf_BPP24_B8G8R8; //default Windows
+  Desc:=ABitmap.RawImage.Description;
+  FBytesPerPixel:=Desc.BitsPerPixel div 8;
 
   With Desc do
   begin
@@ -181,7 +181,7 @@ begin
       and (BlueShift=11)
       and (AlphaPrec=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat := bmdf_BPP16_R5G6B5
+    then FBitMapDataFormat:=bmdf_BPP16_R5G6B5
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 16) // used bits per pixel
@@ -196,7 +196,7 @@ begin
       and (BlueShift=0)
       and (AlphaPrec=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat := bmdf_BPP16_B5G6R5
+    then FBitMapDataFormat:=bmdf_BPP16_B5G6R5
     //  24
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
@@ -213,7 +213,7 @@ begin
       and (AlphaPrec=0)
       and (AlphaShift=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat := bmdf_BPP24_B8G8R8
+    then FBitMapDataFormat:=bmdf_BPP24_B8G8R8
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 24) // used bits per pixel
@@ -228,7 +228,7 @@ begin
       and (BlueShift=16)
       and (AlphaPrec=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat := bmdf_BPP24_R8G8B8
+    then FBitMapDataFormat:=bmdf_BPP24_R8G8B8
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 24) // used bits per pixel
@@ -243,7 +243,7 @@ begin
       and (BlueShift=0)
       and (AlphaPrec=0)
       //and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat := bmdf_BPP24_B8G8R8      // not sure what reverce bit order means here
+    then FBitMapDataFormat:=bmdf_BPP24_B8G8R8      // not sure what reverce bit order means here
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 24) // used bits per pixel
@@ -258,7 +258,7 @@ begin
       and (BlueShift=16)
       and (AlphaPrec=0)
       //and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat := bmdf_BPP32_R8G8B8
+    then FBitMapDataFormat:=bmdf_BPP32_R8G8B8
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 24) // used bits per pixel
@@ -273,7 +273,7 @@ begin
       and (BlueShift=0)
       and (AlphaPrec=0)
       //and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat := bmdf_BPP32_B8G8R8      // not sure what reverce bit order means here
+    then FBitMapDataFormat:=bmdf_BPP32_B8G8R8      // not sure what reverce bit order means here
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 24) // used bits per pixel
@@ -289,7 +289,7 @@ begin
       and (AlphaPrec=0)
       and (AlphaShift=0)
       //and (MaskBitsPerPixel=0) // Ignore mask, we do not need it for our purposes
-    then FBitMapDataFormat := bmdf_BPP32_B8G8R8
+    then FBitMapDataFormat:=bmdf_BPP32_B8G8R8
     // 32
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
@@ -306,7 +306,7 @@ begin
       and (AlphaPrec=8)
       and (AlphaShift=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat := bmdf_BPP32_A8R8G8B8
+    then FBitMapDataFormat:=bmdf_BPP32_A8R8G8B8
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 32) // used bits per pixel
@@ -322,7 +322,7 @@ begin
       and (AlphaPrec=8)
       and (AlphaShift=24)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat := bmdf_BPP32_R8G8B8A8
+    then FBitMapDataFormat:=bmdf_BPP32_R8G8B8A8
     else if
       (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 32) // used bits per pixel
@@ -340,37 +340,37 @@ begin
     then
       begin;
       if (BitOrder = riboBitsInOrder) then
-        FBitMapDataFormat := bmdf_BPP32_B8G8R8A8
+        FBitMapDataFormat:=bmdf_BPP32_B8G8R8A8
         else
-          FBitMapDataFormat := bmdf_BPP32_B8G8R8A8_r;
+          FBitMapDataFormat:=bmdf_BPP32_B8G8R8A8_r;
       end;
 //  else raise Exception.Create('Unsupported bitmap format:'+Desc.AsString);
   end;
 
   case FBitMapDataFormat of
-    bmdf_BPP16_R5G6B5:   FSetPixelProc := SetPixel_BPP16_R5G6B5;
-    bmdf_BPP16_B5G6R5:   FSetPixelProc := SetPixel_BPP16_B5G6R5;
-    bmdf_BPP24_R8G8B8:   FSetPixelProc := SetPixel_BPP24_R8G8B8;
-    bmdf_BPP32_A8R8G8B8: FSetPixelProc := SetPixel_BPP32_A8R8G8B8;
-    bmdf_BPP32_R8G8B8A8: FSetPixelProc := SetPixel_BPP32_R8G8B8A8;
-    bmdf_BPP24_B8G8R8:   FSetPixelProc := SetPixel_BPP24_B8G8R8;
-    bmdf_BPP32_B8G8R8:   FSetPixelProc := SetPixel_BPP32_B8G8R8;
-    bmdf_BPP32_R8G8B8:   FSetPixelProc := SetPixel_BPP32_R8G8B8;
-    bmdf_BPP32_B8G8R8A8: FSetPixelProc := SetPixel_BPP32_B8G8R8A8;
-    bmdf_BPP32_B8G8R8A8_R: FSetPixelProc := SetPixel_BPP32_B8G8R8A8;
+    bmdf_BPP16_R5G6B5:   FSetPixelProc:=SetPixel_BPP16_R5G6B5;
+    bmdf_BPP16_B5G6R5:   FSetPixelProc:=SetPixel_BPP16_B5G6R5;
+    bmdf_BPP24_R8G8B8:   FSetPixelProc:=SetPixel_BPP24_R8G8B8;
+    bmdf_BPP32_A8R8G8B8: FSetPixelProc:=SetPixel_BPP32_A8R8G8B8;
+    bmdf_BPP32_R8G8B8A8: FSetPixelProc:=SetPixel_BPP32_R8G8B8A8;
+    bmdf_BPP24_B8G8R8:   FSetPixelProc:=SetPixel_BPP24_B8G8R8;
+    bmdf_BPP32_B8G8R8:   FSetPixelProc:=SetPixel_BPP32_B8G8R8;
+    bmdf_BPP32_R8G8B8:   FSetPixelProc:=SetPixel_BPP32_R8G8B8;
+    bmdf_BPP32_B8G8R8A8: FSetPixelProc:=SetPixel_BPP32_B8G8R8A8;
+    bmdf_BPP32_B8G8R8A8_R: FSetPixelProc:=SetPixel_BPP32_B8G8R8A8;
   end;
 
   case FBitMapDataFormat of
-    bmdf_BPP16_R5G6B5:   FGetPixelProc := GetPixel_BPP16_R5G6B5;
-    bmdf_BPP16_B5G6R5:   FGetPixelProc := GetPixel_BPP16_B5G6R5;
-    bmdf_BPP24_R8G8B8:   FGetPixelProc := GetPixel_BPP24_R8G8B8;
-    bmdf_BPP32_A8R8G8B8: FGetPixelProc := GetPixel_BPP32_A8R8G8B8;
-    bmdf_BPP32_R8G8B8A8: FGetPixelProc := GetPixel_BPP32_R8G8B8A8;
-    bmdf_BPP24_B8G8R8:   FGetPixelProc := GetPixel_BPP24_B8G8R8;
-    bmdf_BPP32_B8G8R8:   FGetPixelProc := GetPixel_BPP32_B8G8R8;
-    bmdf_BPP32_R8G8B8:   FGetPixelProc := GetPixel_BPP32_R8G8B8;
-    bmdf_BPP32_B8G8R8A8: FGetPixelProc := GetPixel_BPP32_B8G8R8A8;
-    bmdf_BPP32_B8G8R8A8_R: FGetPixelProc := GetPixel_BPP32_B8G8R8A8;
+    bmdf_BPP16_R5G6B5:   FGetPixelProc:=GetPixel_BPP16_R5G6B5;
+    bmdf_BPP16_B5G6R5:   FGetPixelProc:=GetPixel_BPP16_B5G6R5;
+    bmdf_BPP24_R8G8B8:   FGetPixelProc:=GetPixel_BPP24_R8G8B8;
+    bmdf_BPP32_A8R8G8B8: FGetPixelProc:=GetPixel_BPP32_A8R8G8B8;
+    bmdf_BPP32_R8G8B8A8: FGetPixelProc:=GetPixel_BPP32_R8G8B8A8;
+    bmdf_BPP24_B8G8R8:   FGetPixelProc:=GetPixel_BPP24_B8G8R8;
+    bmdf_BPP32_B8G8R8:   FGetPixelProc:=GetPixel_BPP32_B8G8R8;
+    bmdf_BPP32_R8G8B8:   FGetPixelProc:=GetPixel_BPP32_R8G8B8;
+    bmdf_BPP32_B8G8R8A8: FGetPixelProc:=GetPixel_BPP32_B8G8R8A8;
+    bmdf_BPP32_B8G8R8A8_R: FGetPixelProc:=GetPixel_BPP32_B8G8R8A8;
   end;
 
 end;
@@ -396,15 +396,15 @@ end;
 procedure TFreeBitmapFormatHelper.SetPixel(const BM:TBitmap; X,Y: integer; R, G, B, A: byte);
 var pRow, pPixel : pointer;
 begin
-  pRow := BM.RawImage.GetLineStart(Y);
-  pPixel := pRow + Self.BytesPerPixel * X;
+  pRow:=BM.RawImage.GetLineStart(Y);
+  pPixel:=pRow + Self.BytesPerPixel * X;
   FSetPixelProc(pPixel, R, G, B, A);
 end;
 
 procedure TFreeBitmapFormatHelper.SetPixelInLine(pLineStart:pByte; X: integer; R, G, B, A: byte);
 var pPixel : pointer;
 begin
-  pPixel := pLineStart + Self.BytesPerPixel * X;
+  pPixel:=pLineStart + Self.BytesPerPixel * X;
   FSetPixelProc(pPixel, R, G, B, A);
 end;
 
@@ -412,31 +412,31 @@ end;
 procedure TFreeBitmapFormatHelper.GetPixel(const BM:TBitmap; X,Y: integer; out R, G, B, A: byte);
 var pRow, pPixel : pointer;
 begin
-  pRow := BM.RawImage.GetLineStart(Y);
-  pPixel := pRow + Self.BytesPerPixel * X;
+  pRow:=BM.RawImage.GetLineStart(Y);
+  pPixel:=pRow + Self.BytesPerPixel * X;
   FGetPixelProc(pPixel, R, G, B, A);
 end;
 
 procedure TFreeBitmapFormatHelper.GetPixelInLine(pLineStart:pByte; X: integer; out R, G, B, A: byte);
 var pPixel : pointer;
 begin
-  pPixel := pLineStart + Self.BytesPerPixel * X;
+  pPixel:=pLineStart + Self.BytesPerPixel * X;
   FGetPixelProc(pPixel, R, G, B, A);
 end;
 
 function TFreeBitmapFormatHelper.ToTRGBTriple(p:pointer):TRGBTriple;
 begin
   case FBitMapDataFormat of
-    bmdf_BPP16_R5G6B5:   result := BPP16_R5G6B5_to_TRGBTriple(TColor(p^));
-    bmdf_BPP16_B5G6R5:   result := BPP16_B5G6R5_to_TRGBTriple(TColor(p^));
-    bmdf_BPP24_R8G8B8:   result := BPP24_R8G8B8_to_TRGBTriple(TRGB(p^));
-    bmdf_BPP32_A8R8G8B8: result := BPP32_A8R8G8B8_to_TRGBTriple(TARGB(p^));
-    bmdf_BPP32_R8G8B8A8: result := BPP32_R8G8B8A8_to_TRGBTriple(TRGBA(p^));
-    bmdf_BPP24_B8G8R8:   result := BPP24_B8G8R8_to_TRGBTriple(TBGR(p^));
-    bmdf_BPP32_B8G8R8:   result := BPP32_B8G8R8_to_TRGBTriple(TBGRA(p^));
-    bmdf_BPP32_R8G8B8:   result := BPP32_R8G8B8_to_TRGBTriple(TRGBA(p^));
-    bmdf_BPP32_B8G8R8A8: result := BPP32_B8G8R8A8_to_TRGBTriple(TBGRA(p^));
-    bmdf_BPP32_B8G8R8A8_r: result := BPP32_B8G8R8A8_to_TRGBTriple(TBGRA(p^))
+    bmdf_BPP16_R5G6B5:   result:=BPP16_R5G6B5_to_TRGBTriple(TColor(p^));
+    bmdf_BPP16_B5G6R5:   result:=BPP16_B5G6R5_to_TRGBTriple(TColor(p^));
+    bmdf_BPP24_R8G8B8:   result:=BPP24_R8G8B8_to_TRGBTriple(TRGB(p^));
+    bmdf_BPP32_A8R8G8B8: result:=BPP32_A8R8G8B8_to_TRGBTriple(TARGB(p^));
+    bmdf_BPP32_R8G8B8A8: result:=BPP32_R8G8B8A8_to_TRGBTriple(TRGBA(p^));
+    bmdf_BPP24_B8G8R8:   result:=BPP24_B8G8R8_to_TRGBTriple(TBGR(p^));
+    bmdf_BPP32_B8G8R8:   result:=BPP32_B8G8R8_to_TRGBTriple(TBGRA(p^));
+    bmdf_BPP32_R8G8B8:   result:=BPP32_R8G8B8_to_TRGBTriple(TRGBA(p^));
+    bmdf_BPP32_B8G8R8A8: result:=BPP32_B8G8R8A8_to_TRGBTriple(TBGRA(p^));
+    bmdf_BPP32_B8G8R8A8_r: result:=BPP32_B8G8R8A8_to_TRGBTriple(TBGRA(p^))
   end;
 end;
 
@@ -458,128 +458,128 @@ end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP16_R5G6B5(C:TRGBTriple; var p:TColor);
 begin
-  p := RGBToColor(C.rgbtRed, C.rgbtGreen, C.rgbtBlue);
+  p:=RGBToColor(C.rgbtRed, C.rgbtGreen, C.rgbtBlue);
 end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP16_B5G6R5(C:TRGBTriple; var p:TColor);
 begin
-  p := RGBToColor(C.rgbtBlue, C.rgbtGreen, C.rgbtRed);
+  p:=RGBToColor(C.rgbtBlue, C.rgbtGreen, C.rgbtRed);
 end;
 
 // Formats in RGB order
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP24_R8G8B8(C:TRGBTriple; var p:TRGB);
 begin
-  p.rgbRed   := C.rgbtRed;
-  p.rgbGreen := C.rgbtGreen;
-  p.rgbBlue  := C.rgbtBlue;
+  p.rgbRed  :=C.rgbtRed;
+  p.rgbGreen:=C.rgbtGreen;
+  p.rgbBlue :=C.rgbtBlue;
 end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_R8G8B8(C:TRGBTriple; var p:TRGBA);
 begin
-  p.rgbaRed   := C.rgbtRed;
-  p.rgbaGreen := C.rgbtGreen;
-  p.rgbaBlue  := C.rgbtBlue;
+  p.rgbaRed  :=C.rgbtRed;
+  p.rgbaGreen:=C.rgbtGreen;
+  p.rgbaBlue :=C.rgbtBlue;
   p.rgbaAlpha:= 0;
 end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_A8R8G8B8(C:TRGBTriple; var p:TARGB);
 begin
-  p.argbRed   := C.rgbtRed;
-  p.argbGreen := C.rgbtGreen;
-  p.argbBlue  := C.rgbtBlue;
+  p.argbRed  :=C.rgbtRed;
+  p.argbGreen:=C.rgbtGreen;
+  p.argbBlue :=C.rgbtBlue;
   p.argbAlpha:= 0;
 end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_R8G8B8A8(C:TRGBTriple; var p:TRGBA);
 begin
-  p.rgbaRed   := C.rgbtRed;
-  p.rgbaGreen := C.rgbtGreen;
-  p.rgbaBlue  := C.rgbtBlue;
+  p.rgbaRed  :=C.rgbtRed;
+  p.rgbaGreen:=C.rgbtGreen;
+  p.rgbaBlue :=C.rgbtBlue;
   p.rgbaAlpha:= 0;
 end;
 
 // Formats in Windows pixels order: BGR
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple; var p:TBGR); // yes, it is opposite in WIndows, RGB is BGR :)
 begin
-  p.bgrBlue  := C.rgbtBlue;
-  p.bgrGreen := C.rgbtGreen;
-  p.bgrRed   := C.rgbtRed;
+  p.bgrBlue :=C.rgbtBlue;
+  p.bgrGreen:=C.rgbtGreen;
+  p.bgrRed  :=C.rgbtRed;
 end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_B8G8R8(C:TRGBTriple; var p:TBGRA);
 begin
-  p.bgraBlue  := C.rgbtBlue;
-  p.bgraGreen := C.rgbtGreen;
-  p.bgraRed   := C.rgbtRed;
-  p.bgraAlpha := 0;
+  p.bgraBlue :=C.rgbtBlue;
+  p.bgraGreen:=C.rgbtGreen;
+  p.bgraRed  :=C.rgbtRed;
+  p.bgraAlpha:=0;
 end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_B8G8R8A8(C:TRGBTriple; var p:TBGRA);
 begin
-  p.bgraBlue  := C.rgbtBlue;
-  p.bgraGreen := C.rgbtGreen;
-  p.bgraRed   := C.rgbtRed;
-  p.bgraAlpha := 0;
+  p.bgraBlue :=C.rgbtBlue;
+  p.bgraGreen:=C.rgbtGreen;
+  p.bgraRed  :=C.rgbtRed;
+  p.bgraAlpha:=0;
 end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_B8G8R8A8_r(C:TRGBTriple; var p:TBGRA);
 begin
-  p.bgraBlue  := C.rgbtBlue;
-  p.bgraGreen := C.rgbtGreen;
-  p.bgraRed   := C.rgbtRed;
-  p.bgraAlpha := 255;
+  p.bgraBlue :=C.rgbtBlue;
+  p.bgraGreen:=C.rgbtGreen;
+  p.bgraRed  :=C.rgbtRed;
+  p.bgraAlpha:=255;
 end;
 
 
 {
 function TFreeBitmapFormatHelper.TRGBTriple_to_BPP16_R5G6B5(C:TRGBTriple):TColor;
 begin
-  result := RGBToColor(C.rgbtRed, C.rgbtGreen, C.rgbtBlue);
+  result:=RGBToColor(C.rgbtRed, C.rgbtGreen, C.rgbtBlue);
 end;
  // Formats in RGB order
 function TFreeBitmapFormatHelper.TRGBTriple_to_BPP24_R8G8B8(C:TRGBTriple):TRGB;
 begin
-  result.rgbRed   := C.rgbtRed;
-  result.rgbGreen := C.rgbtGreen;
-  result.rgbBlue  := C.rgbtBlue;
+  result.rgbRed  :=C.rgbtRed;
+  result.rgbGreen:=C.rgbtGreen;
+  result.rgbBlue :=C.rgbtBlue;
 end;
 
 function TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_R8G8B8(C:TRGBTriple):TRGBA;
 begin
-  result.rgbaRed   := C.rgbtRed;
-  result.rgbaGreen := C.rgbtGreen;
-  result.rgbaBlue  := C.rgbtBlue;
+  result.rgbaRed  :=C.rgbtRed;
+  result.rgbaGreen:=C.rgbtGreen;
+  result.rgbaBlue :=C.rgbtBlue;
   result.rgbaAlpha:= 0;
 end;
 
 function TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_A8R8G8B8(C:TRGBTriple):TARGB;
 begin
-  result.argbRed   := C.rgbtRed;
-  result.argbGreen := C.rgbtGreen;
-  result.argbBlue  := C.rgbtBlue;
+  result.argbRed  :=C.rgbtRed;
+  result.argbGreen:=C.rgbtGreen;
+  result.argbBlue :=C.rgbtBlue;
   result.argbAlpha:= 0;
 end;
 
 function TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_R8G8B8A8(C:TRGBTriple):TRGBA;
 begin
-  result.rgbaRed   := C.rgbtRed;
-  result.rgbaGreen := C.rgbtGreen;
-  result.rgbaBlue  := C.rgbtBlue;
+  result.rgbaRed  :=C.rgbtRed;
+  result.rgbaGreen:=C.rgbtGreen;
+  result.rgbaBlue :=C.rgbtBlue;
   result.rgbaAlpha:= 0;
 end;
  // Formats in Windows pixels order: BGR
 function TFreeBitmapFormatHelper.TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple):TBGR; // yes, it is opposite in WIndows, RGB is BGR :)
 begin
-  result.bgrBlue  := C.rgbtBlue;
-  result.bgrGreen := C.rgbtGreen;
-  result.bgrRed   := C.rgbtRed;
+  result.bgrBlue :=C.rgbtBlue;
+  result.bgrGreen:=C.rgbtGreen;
+  result.bgrRed  :=C.rgbtRed;
 end;
 
 function TFreeBitmapFormatHelper.TRGBTriple_to_BPP32_B8G8R8A8(C:TRGBTriple):TBGRA;
 begin
-  result.bgraRed   := C.rgbtRed;
-  result.bgraGreen := C.rgbtGreen;
-  result.bgraBlue  := C.rgbtBlue;
+  result.bgraRed  :=C.rgbtRed;
+  result.bgraGreen:=C.rgbtGreen;
+  result.bgraBlue :=C.rgbtBlue;
 end;
 }
 
@@ -629,9 +629,9 @@ end;
 // Formats in Windows pixels order: BGR
 function TFreeBitmapFormatHelper.BPP24_B8G8R8_to_TRGBTriple(C:TBGR):TRGBTriple; // yes, it is opposite in WIndows, RGB is BGR :)
 begin
-  result.rgbtBlue := C.bgrBlue;
+  result.rgbtBlue:=C.bgrBlue;
   result.rgbtGreen:= C.bgrGreen;
-  result.rgbtRed  := C.bgrRed;
+  result.rgbtRed :=C.bgrRed;
 end;
 
 function TFreeBitmapFormatHelper.BPP32_B8G8R8_to_TRGBTriple(C:TBGRA):TRGBTriple;
@@ -731,69 +731,69 @@ end;
 
 procedure TFreeBitmapFormatHelper.SetPixel_BPP16_R5G6B5(P:Pointer; R,G,B,A: byte);
 begin
-  TColor(P^) := RGBToColor(R, G, B);
+  TColor(P^):=RGBToColor(R, G, B);
 end;
 
 procedure TFreeBitmapFormatHelper.SetPixel_BPP16_B5G6R5(P:Pointer; R,G,B,A: byte);
 begin
-  TColor(P^) := RGBToColor(B, G, R);
+  TColor(P^):=RGBToColor(B, G, R);
 end;
 
 // Formats in RGB order
 procedure TFreeBitmapFormatHelper.SetPixel_BPP24_R8G8B8(P:Pointer; R,G,B,A: byte);
 begin
-  PRGB(P).rgbRed := R;
-  PRGB(P).rgbGreen := G;
-  PRGB(P).rgbBlue := B;
+  PRGB(P).rgbRed:=R;
+  PRGB(P).rgbGreen:=G;
+  PRGB(P).rgbBlue:=B;
 end;
 
 procedure TFreeBitmapFormatHelper.SetPixel_BPP32_R8G8B8(P:Pointer; R,G,B,A: byte);
 begin
-  PRGBA(P).rgbaRed := R;
-  PRGBA(P).rgbaGreen := G;
-  PRGBA(P).rgbaBlue := B;
-  PRGBA(P).rgbaAlpha := 255;
+  PRGBA(P).rgbaRed:=R;
+  PRGBA(P).rgbaGreen:=G;
+  PRGBA(P).rgbaBlue:=B;
+  PRGBA(P).rgbaAlpha:=255;
 end;
 
 procedure TFreeBitmapFormatHelper.SetPixel_BPP32_A8R8G8B8(P:Pointer; R,G,B,A: byte);
 begin
-  PARGB(P).argbAlpha := A;
-  PARGB(P).argbRed := R;
-  PARGB(P).argbGreen := G;
-  PARGB(P).argbBlue := B;
+  PARGB(P).argbAlpha:=A;
+  PARGB(P).argbRed:=R;
+  PARGB(P).argbGreen:=G;
+  PARGB(P).argbBlue:=B;
 end;
 
 procedure TFreeBitmapFormatHelper.SetPixel_BPP32_R8G8B8A8(P:Pointer; R,G,B,A: byte);
 begin
-  PRGBA(P).rgbaRed := R;
-  PRGBA(P).rgbaGreen := G;
-  PRGBA(P).rgbaBlue := B;
-  PRGBA(P).rgbaAlpha := A;
+  PRGBA(P).rgbaRed:=R;
+  PRGBA(P).rgbaGreen:=G;
+  PRGBA(P).rgbaBlue:=B;
+  PRGBA(P).rgbaAlpha:=A;
 end;
 
 // Formats in Windows pixels order: BGR
 procedure TFreeBitmapFormatHelper.SetPixel_BPP24_B8G8R8(P:Pointer; R,G,B,A: byte);
 // yes, it is opposite in WIndows, RGB is BGR :)
 begin
-  PBGR(P).bgrBlue := B;
-  PBGR(P).bgrGreen := G;
-  PBGR(P).bgrRed := R;
+  PBGR(P).bgrBlue:=B;
+  PBGR(P).bgrGreen:=G;
+  PBGR(P).bgrRed:=R;
 end;
 
 procedure TFreeBitmapFormatHelper.SetPixel_BPP32_B8G8R8(P:Pointer; R,G,B,A: byte);
 begin
-  PBGRA(P).bgraBlue := B;
-  PBGRA(P).bgraGreen := G;
-  PBGRA(P).bgraRed := R;
-  PBGRA(P).bgraAlpha := 255;
+  PBGRA(P).bgraBlue:=B;
+  PBGRA(P).bgraGreen:=G;
+  PBGRA(P).bgraRed:=R;
+  PBGRA(P).bgraAlpha:=255;
 end;
 
 procedure TFreeBitmapFormatHelper.SetPixel_BPP32_B8G8R8A8(P:Pointer; R,G,B,A: byte);
 begin
-  PBGRA(P).bgraBlue := B;
-  PBGRA(P).bgraGreen := G;
-  PBGRA(P).bgraRed := R;
-  PBGRA(P).bgraAlpha := A;
+  PBGRA(P).bgraBlue:=B;
+  PBGRA(P).bgraGreen:=G;
+  PBGRA(P).bgraRed:=R;
+  PBGRA(P).bgraAlpha:=A;
 end;
 
 end.

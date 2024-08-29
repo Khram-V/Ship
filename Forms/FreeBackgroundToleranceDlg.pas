@@ -44,20 +44,20 @@ implementation
 
 function TFreeBackgroundToleranceDialog.Execute(Viewport: TFreeViewport): boolean;
 begin
-  FViewport := Viewport;
-  SpinEdit1.Value := FViewport.BackgroundImage.Tolerance;                       //ShowTranslatedValues(Self);
+  FViewport:=Viewport;
+  SpinEdit1.Value:=FViewport.BackgroundImage.Tolerance;                       //ShowTranslatedValues(Self);
   Showmodal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TFreeBackgroundToleranceDialog.SpinEdit1Change(Sender: TObject);
-begin FViewport.BackgroundImage.Tolerance := SpinEdit1.Value; end;
+begin FViewport.BackgroundImage.Tolerance:=SpinEdit1.Value; end;
 
 procedure TFreeBackgroundToleranceDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TFreeBackgroundToleranceDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 end.
 

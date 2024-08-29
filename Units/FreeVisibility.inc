@@ -17,9 +17,9 @@ end;
 
 procedure TFreeVisibility.FSetCursorIncrement(val: TFloatType);
 begin
-  if Val < 1e-7 then Val := 1e-7;
-  if FCursorIncrement <> val then FreeShip.FileChanged := True;
-  FCursorIncrement := val;
+  if Val < 1e-7 then Val:=1e-7;
+  if FCursorIncrement <> val then FreeShip.FileChanged:=True;
+  FCursorIncrement:=val;
   if assigned(FreeShip.FOnChangeCursorIncrement) then
     FreeShip.FOnChangeCursorIncrement(self);
 end;
@@ -27,8 +27,8 @@ end;
 procedure TFreeVisibility.FSetModelView(Val: TFreeModelView);
 begin
   if Val <> FModelView then begin
-    FModelView := Val;
-    FreeShip.FileChanged := True;
+    FModelView:=Val;
+    FreeShip.FileChanged:=True;
     FreeShip.Draw;
   end;
 end;
@@ -38,11 +38,11 @@ var
   I: integer;
 begin
   if Val <> FShowInteriorEdges then begin
-    FShowInteriorEdges := val;
+    FShowInteriorEdges:=val;
     if not val then
-      for I := FreeShip.NumberOfSelectedControlFaces downto 1 do
-        FreeShip.SelectedControlFace[I - 1].Selected := False;
-    FreeShip.FileChanged := True;
+      for I:=FreeShip.NumberOfSelectedControlFaces downto 1 do
+        FreeShip.SelectedControlFace[I - 1].Selected:=False;
+    FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -50,7 +50,7 @@ end;
 procedure TFreeVisibility.FSetShowBothSides(Val: boolean);
 begin
   if val = FShowBothSides then exit;
-  FreeShip.FileChanged := True;
+  FreeShip.FileChanged:=True;
   FreeShip.Redraw;
 end;
 
@@ -59,14 +59,14 @@ var
   I: integer;
 begin
   if Val <> FShowControlNet then begin
-    FShowControlNet := val;
+    FShowControlNet:=val;
     if not FShowControlNet then begin
-      for I := FreeShip.NumberOfSelectedControlEdges downto 1 do
-        FreeShip.SelectedControlEdge[I - 1].Selected := False;
-      for I := FreeShip.NumberOfSelectedControlPoints downto 1 do
-        FreeShip.SelectedControlPoint[I - 1].Selected := False;
+      for I:=FreeShip.NumberOfSelectedControlEdges downto 1 do
+        FreeShip.SelectedControlEdge[I - 1].Selected:=False;
+      for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do
+        FreeShip.SelectedControlPoint[I - 1].Selected:=False;
     end;
-    FreeShip.FileChanged := True;
+    FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -75,8 +75,8 @@ procedure TFreeVisibility.FSetShowCurvature(Val: boolean);
 begin
   if Val <> FShowCurvature then
   begin
-    FShowCurvature := val;
-    FreeShip.FileChanged := True;
+    FShowCurvature:=val;
+    FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -85,8 +85,8 @@ procedure TFreeVisibility.FSetShowGrid(Val: boolean);
 begin
   if Val <> FShowGrid then
   begin
-    FShowGrid := val;
-    FreeShip.FileChanged := True;
+    FShowGrid:=val;
+    FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -96,8 +96,8 @@ var
   I: integer;
 begin
   if Val <> FShowMarkers then begin
-    FShowMarkers := val;
-    FreeShip.FileChanged := True;
+    FShowMarkers:=val;
+    FreeShip.FileChanged:=True;
     if FreeShip.NumberofMarkers > 0 then
 //  if FreeShip.NumberOfViewports > 0 then
     for I:=1 to FreeShip.NumberOfViewports do
@@ -129,8 +129,8 @@ procedure TFreeVisibility.FSetShowButtocks(Val: boolean);
 begin
   if Val <> FShowButtocks then
   begin
-    FShowButtocks := val;
-    FreeShip.FileChanged := True;
+    FShowButtocks:=val;
+    FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -139,8 +139,8 @@ procedure TFreeVisibility.FSetShowDiagonals(Val: boolean);
 begin
   if Val <> FShowDiagonals then
   begin
-    FShowDiagonals := val;
-    FreeShip.FileChanged := True;
+    FShowDiagonals:=val;
+    FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -148,9 +148,9 @@ end;
 procedure TFreeVisibility.FSetShowFlowlines(Val: boolean);
 begin
   if Val <> FShowFlowlines then begin
-    FShowFlowlines := val;
+    FShowFlowlines:=val;
     if not FShowFlowlines then FreeShip.FSelectedFlowlines.Clear;
-    FreeShip.FileChanged := True;
+    FreeShip.FileChanged:=True;
     if FreeShip.NumberOfFlowLines > 0 then
       FreeShip.Redraw;
   end;
@@ -159,8 +159,8 @@ end;
 procedure TFreeVisibility.FSetShowFreeObjects(Val: boolean);
 begin
   if Val <> ShowFreeObjects then begin
-    FShowFreeObjects := val;
-    //FreeShip.FileChanged := True;
+    FShowFreeObjects:=val;
+    //FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -168,8 +168,8 @@ end;
 procedure TFreeVisibility.FSetShowWaterlines(Val: boolean);
 begin
   if Val <> FShowWaterlines then begin
-    FShowWaterlines := val;
-    FreeShip.FileChanged := True;
+    FShowWaterlines:=val;
+    FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -179,21 +179,21 @@ var
   I: integer;
 begin
   if val <> FShowControlCurves then begin
-    FShowControlCurves := Val;
+    FShowControlCurves:=Val;
     if not val then
-      for I := FreeShip.Surface.NumberOfControlCurves downto 1 do
-        FreeShip.Surface.ControlCurve[I - 1].Selected := False;
+      for I:=FreeShip.Surface.NumberOfControlCurves downto 1 do
+        FreeShip.Surface.ControlCurve[I - 1].Selected:=False;
     if FreeShip.Surface.NumberOfControlCurves > 0 then
       FreeShip.Redraw;
-    FreeShip.Filechanged := True;
+    FreeShip.Filechanged:=True;
   end;
 end;
 
 procedure TFreeVisibility.FSetShowHydrostaticData(Val: boolean);
 begin
   if val <> FShowHydrostaticData then begin
-    FShowHydrostaticData := Val;
-    FreeShip.Filechanged := True;
+    FShowHydrostaticData:=Val;
+    FreeShip.Filechanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -201,46 +201,46 @@ end;
 constructor TFreeVisibility.Create(Owner: TFreeShip);
 begin
   inherited Create;
-  FFreeShip := Owner;
+  FFreeShip:=Owner;
   Clear;
 end;
 
 procedure TFreeVisibility.Clear;
 begin
-  FModelView := mvPort;
-  FShowInteriorEdges := False;
-  FShowControlNet := True;
-  FShowFreeObjects := True;
-  FShowGrid := True;
-  FShowNormals := True;
-  FShowStations := True;
-  FShowbuttocks := True;
-  FShowWaterlines := True;
-  FShowDiagonals := True;
-  FShowMarkers := True;
-  FShowCurvature := True;
-  FShowControlCurves := True;
-  FCurvatureScale := 1.0;
-  FCursorIncrement := 0.1;
-  FShowHydrostaticData := True;
-  FShowHydrostDisplacement := True;
-  FShowHydrostLateralArea := True;
-  FShowHydrostSectionalAreas := True;
-  FShowHydrostMetacentricHeight := True;
-  FShowHydrostLCF := True;
-  FShowFlowlines := True;
+  FModelView:=mvPort;
+  FShowInteriorEdges:=False;
+  FShowControlNet:=True;
+  FShowFreeObjects:=True;
+  FShowGrid:=True;
+  FShowNormals:=True;
+  FShowStations:=True;
+  FShowbuttocks:=True;
+  FShowWaterlines:=True;
+  FShowDiagonals:=True;
+  FShowMarkers:=True;
+  FShowCurvature:=True;
+  FShowControlCurves:=True;
+  FCurvatureScale:=1.0;
+  FCursorIncrement:=0.1;
+  FShowHydrostaticData:=True;
+  FShowHydrostDisplacement:=True;
+  FShowHydrostLateralArea:=True;
+  FShowHydrostSectionalAreas:=True;
+  FShowHydrostMetacentricHeight:=True;
+  FShowHydrostLCF:=True;
+  FShowFlowlines:=True;
   if assigned(FreeShip.FOnChangeCursorIncrement) then
     FreeShip.FOnChangeCursorIncrement(self);
 end;
 
 procedure TFreeVisibility.DecreaseCurvatureScale;
 begin
-  CurvatureScale := CurvatureScale / 1.1;
+  CurvatureScale:=CurvatureScale / 1.1;
 end;
 
 procedure TFreeVisibility.IncreaseCurvatureScale;
 begin
-  CurvatureScale := CurvatureScale * 1.1;
+  CurvatureScale:=CurvatureScale * 1.1;
 end;
 
 procedure TFreeVisibility.LoadBinary(Source: TFreeFilebuffer);
@@ -249,7 +249,7 @@ var
 begin
   Clear;
   Source.LoadInteger( I );
-  FModelView := TFreeModelView( I );
+  FModelView:=TFreeModelView( I );
   Source.LoadBoolean(FShowControlNet);
   Source.LoadBoolean(FShowInteriorEdges);
   Source.LoadBoolean(FShowStations);
@@ -265,7 +265,7 @@ begin
     Source.LoadBoolean(FShowControlCurves);
     if FreeShip.FileVersion >= fv210 then begin
       Source.LoadTFloatType(FCursorIncrement);
-      if abs(FCursorIncrement) < 1e-7 then FCursorIncrement := 0.1;
+      if abs(FCursorIncrement) < 1e-7 then FCursorIncrement:=0.1;
       if assigned(FreeShip.FOnChangeCursorIncrement) then FreeShip.FOnChangeCursorIncrement(self);
       if FreeShip.FileVersion >= fv220 then begin
         Source.LoadBoolean(FShowHydrostaticData);

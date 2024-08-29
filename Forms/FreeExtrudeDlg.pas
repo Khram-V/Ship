@@ -160,25 +160,25 @@ end;
 procedure TFreeExtrudeDialog.Edit2KeyPress(Sender: TObject; var Key: char);
 begin
   if not (Key in [#8,'1'..'9','0','.','-',#13]) then key:=#0;
-//if (Key in [#8, '1'..'9', '0', '-', #13]) or (Key = FormatSettings.DecimalSeparator) then else key := #0;
+//if (Key in [#8, '1'..'9', '0', '-', #13]) or (Key = FormatSettings.DecimalSeparator) then else key:=#0;
   if Key = #13 then Edit2Exit(self);
 end;
 
 procedure TFreeExtrudeDialog.Edit3KeyPress(Sender: TObject; var Key: char);
 begin
   if not (Key in [#8,'1'..'9','0','.','-',#13]) then key:=#0;
-//if (Key in [#8, '1'..'9', '0', '-', #13]) or (Key = FormatSettings.DecimalSeparator) then else key := #0;
+//if (Key in [#8, '1'..'9', '0', '-', #13]) or (Key = FormatSettings.DecimalSeparator) then else key:=#0;
   if Key = #13 then Edit3Exit(self);
 end;
 
 procedure TFreeExtrudeDialog.BitBtn1Click(Sender: TObject);
 begin
-  ModalResult := mrOk;
+  ModalResult:=mrOk;
 end;
 
 procedure TFreeExtrudeDialog.BitBtn2Click(Sender: TObject);
 begin
-  ModalResult := mrCancel;
+  ModalResult:=mrCancel;
 end;
 
 end.

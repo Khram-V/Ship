@@ -54,7 +54,7 @@ procedure TFreePointGroupForm.SpeedButtonAddClick(Sender: TObject);
 var G:TFreeSubdivisionControlPointGroup;
 begin
   G:=TFreeSubdivisionControlPointGroup.create(FFreeShip.Surface);
-  G.Name := (EditNewGroupName.Text);
+  G.Name:=(EditNewGroupName.Text);
   CheckListBoxGroups.AddItem(G.Name, G);
   CheckListBoxGroups.Sorted:=true;
 end;
@@ -81,7 +81,7 @@ begin
       found:=false;
       for j:=0 to CheckListBoxGroups.Items.Count-1 do
           if CheckListBoxGroups.Items.Objects[j] = FFreeShip.Surface.ControlPointGroups[i]
-          then found := true;
+          then found:=true;
       if not found then
         FFreeShip.Surface.ControlPointGroups[i].Delete;
     end;

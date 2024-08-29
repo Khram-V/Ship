@@ -59,7 +59,7 @@ constructor TFreeLinesplanForm.Create(Owner: TComponent);
 begin
   inherited Create(Owner);
   Viewport:=LinesplanFrame.Viewport;
-  LinesplanFrame.FontSize := 7;
+  LinesplanFrame.FontSize:=7;
   LinesplanFrame.SpinEdit1.Value:=7;
 end;
 

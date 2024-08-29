@@ -8,37 +8,37 @@ function TFreeShip.FGetNumberOfViewports: integer;
 begin Result:=Viewports.Count; end;
 
 function TFreeShip.FGetOnChangeActiveLayer: TChangeActiveLayerEvent;
-begin Result := Surface.OnChangeActiveLayer; end;
+begin Result:=Surface.OnChangeActiveLayer; end;
 
 function TFreeShip.FGetOnChangeLayerData: TNotifyEvent;
-begin Result := Surface.OnChangeLayerData; end;
+begin Result:=Surface.OnChangeLayerData; end;
 {
 function TFreeShip.FGetOnSelectItem: TNotifyEvent;
-begin Result := Surface.OnSelectItem; end;
+begin Result:=Surface.OnSelectItem; end;
 }
 function TFreeShip.FGetSelectedControlCurve(Index: integer): TFreeSubdivisionControlCurve;
-begin Result := Surface.SelectedControlCurve[index]; end;
+begin Result:=Surface.SelectedControlCurve[index]; end;
 
 function TFreeShip.FGetControlCurve(Index: integer): TFreeSubdivisionControlCurve;
-begin Result := Surface.ControlCurve[index]; end;
+begin Result:=Surface.ControlCurve[index]; end;
 
 function TFreeShip.FGetSelectedControlEdge(Index: integer): TFreeSubdivisionControlEdge;
-begin Result := Surface.SelectedControlEdge[index]; end;
+begin Result:=Surface.SelectedControlEdge[index]; end;
 
 function TFreeShip.FGetSelectedControlPoint(Index: integer): TFreeSubdivisionControlPoint;
-begin Result := Surface.SelectedControlPoint[index]; end;
+begin Result:=Surface.SelectedControlPoint[index]; end;
 
 function TFreeShip.FGetSelectedControlPointGroup(Index: integer): TFreeSubdivisionControlPointGroup;
-begin Result := Surface.SelectedControlPointGroup[index]; end;
+begin Result:=Surface.SelectedControlPointGroup[index]; end;
 
 function TFreeShip.FGetSelectedControlFace(Index: integer): TFreeSubdivisionControlFace;
-begin Result := Surface.SelectedControlFace[index]; end;
+begin Result:=Surface.SelectedControlFace[index]; end;
 
 function TFreeShip.FGetSelectedFlowline(index: integer): TFreeFlowline;
-begin Result := FSelectedFlowlines[index]; end;
+begin Result:=FSelectedFlowlines[index]; end;
 
 function TFreeShip.FGetSelectedMarker(index: integer): TFreeMarker;
-begin Result := FSelectedMarkers[index]; end;
+begin Result:=FSelectedMarkers[index]; end;
 
 function TFreeShip.IsObjectSelected(aObject:TFreeNamedObject): boolean;
 begin
@@ -47,9 +47,9 @@ begin
     or (aObject is TFreeSubdivisionControlFace)
     or (aObject is TFreeSubdivisionControlEdge)
     or (aObject is TFreeSubdivisionControlCurve)
-  then Result := Surface.IsObjectSelected(aObject);
-  if (aObject is TFreeMarker) then Result := (aObject as TFreeMarker).Selected;
-  if (aObject is TFreeFlowLine) then Result := (aObject as TFreeFlowLine).Selected;
+  then Result:=Surface.IsObjectSelected(aObject);
+  if (aObject is TFreeMarker) then Result:=(aObject as TFreeMarker).Selected;
+  if (aObject is TFreeFlowLine) then Result:=(aObject as TFreeFlowLine).Selected;
 end;
 
 procedure TFreeShip.SetObjectSelected(aObject:TFreeNamedObject; aSelected: boolean);
@@ -68,21 +68,21 @@ function TFreeShip.FGetStation(Index: integer): TFreeIntersection;
 begin
    if Index<0 then Index:=0 else
    if Index>=Fstations.Count then Index:=Fstations.Count-1;
-   Result := FStations[ index]
+   Result:=FStations[ index]
 end;
 
 function TFreeShip.FGetMarker(Index: integer): TFreeMarker;
 begin
   if Index<0 then Index:=0 else
   if Index>=FMarkers.Count then Index:=FMarkers.Count-1;
-  Result := FMarkers[index]
+  Result:=FMarkers[index]
 end;
 
 function TFreeShip.FGetNumberofBackgroundImages: integer;
-begin Result := FBackgroundImages.Count; end;
+begin Result:=FBackgroundImages.Count; end;
 
 function TFreeShip.FGetUndoCount: integer;
-begin Result := FUndoObjects.Count; end;
+begin Result:=FUndoObjects.Count; end;
 
 function TFreeShip.FGetUndoMemory: integer;
   var I: integer;
@@ -91,30 +91,30 @@ begin Result:=0;
 end;
 
 function TFreeShip.FGetUndoObject(Index: integer): TFreeUndoObject;
-begin Result := FUndoObjects[Index]; end;
+begin Result:=FUndoObjects[Index]; end;
 
 function TFreeShip.FGetButtock(Index: integer): TFreeIntersection;
 begin
   if Index<0 then Index:=0 else
   if Index>=FButtocks.Count then Index:=FButtocks.Count-1;
-  Result := FButtocks[index]
+  Result:=FButtocks[index]
 end;
 
 function TFreeShip.FGetDiagonal(Index: integer): TFreeIntersection;
 begin
   if Index<0 then Index:=0 else
   if Index>=FDiagonals.Count then Index:=FDiagonals.Count-1;
-  Result := FDiagonals[index]
+  Result:=FDiagonals[index]
 end;
 
 function TFreeShip.FGetFlowline(Index: integer): TFreeFlowline;
-begin Result := FFlowlines[index]; end;
+begin Result:=FFlowlines[index]; end;
 
 function TFreeShip.FGetWaterline(Index: integer): TFreeIntersection;
 begin
   if Index<0 then Index:=0 else
   if Index>=FWaterlines.Count then Index:=FWaterlines.Count-1;
-  Result := FWaterlines[index]
+  Result:=FWaterlines[index]
 end;
 
 // Assembles all stations and builds a 2D bodyplan for export to other calculating programs
@@ -127,13 +127,13 @@ var
   P: T3DCoordinate;
   TmpList: TFasterListTFreeSpline;
 begin
-  Min := 0.0;
-  for I := 1 to NumberOfStations do begin
-    Intersection := Station[I-1];
+  Min:=0.0;
+  for I:=1 to NumberOfStations do begin
+    Intersection:=Station[I-1];
     if not Intersection.Built then Intersection.Rebuild;
-    TmpList := TFasterListTFreeSpline.Create;
-    for J := 1 to Intersection.Count do begin
-      Spline := TFreeSpline.Create(Surface);
+    TmpList:=TFasterListTFreeSpline.Create;
+    for J:=1 to Intersection.Count do begin
+      Spline:=TFreeSpline.Create(Surface);
       Spline.Assign(Intersection.Items[J - 1]);
       // Quick check to determine if the frame runs from bottom to top
       if Spline.Value(0.0).Z > Spline.Value(1.0).Z then
@@ -142,32 +142,32 @@ begin
     end;
     // Take all segments and join into one
     if TmpList.Count > 1 then JoinSplineSegments(0.01, True, TmpList);
-    for J := 1 to TmpList.Count do begin
-      Spline := TmpList[J - 1];
+    for J:=1 to TmpList.Count do begin
+      Spline:=TmpList[J - 1];
       if CloseAtDeck then
         if Spline.Point[Spline.NumberOfPoints - 1].Y <> 0.0 then begin
-          P := Spline.Point[Spline.NumberOfPoints - 1];
-          P.Y := 0.0;
+          P:=Spline.Point[Spline.NumberOfPoints - 1];
+          P.Y:=0.0;
           Spline.Add(P);
-          Spline.Knuckle[Spline.NumberOfPoints - 2] := True;
+          Spline.Knuckle[Spline.NumberOfPoints - 2]:=True;
         end;
       Destination.Add(Spline);
-      if I = 1 then Min := Spline.Min.Z else
-      if Spline.Min.Z < Min then Min := Spline.Min.Z;
+      if I = 1 then Min:=Spline.Min.Z else
+      if Spline.Min.Z < Min then Min:=Spline.Min.Z;
     end;
     FreeAndNil(Tmplist);
   end;
   // Now shift all stations up or down so that the lowest point
   // of all stations is on the baseline z=0.0
   if Min <> 0.0 then
-    for I := 1 to Destination.Count do
+    for I:=1 to Destination.Count do
     begin
-      Spline := Destination[I - 1];
-      for J := 1 to Spline.NumberOfPoints do
+      Spline:=Destination[I - 1];
+      for J:=1 to Spline.NumberOfPoints do
       begin
-        P := Spline.Point[J - 1];
-        P.Z := P.Z - Min;
-        Spline.Point[J - 1] := P;
+        P:=Spline.Point[J - 1];
+        P.Z:=P.Z - Min;
+        Spline.Point[J - 1]:=P;
       end;
     end;
 end;
@@ -175,25 +175,25 @@ end;
 function TFreeShip.FindByName(aName:String):TFreeNamedObject;
 var i:integer;
 begin
-  result := nil;
+  result:=nil;
   for i:=0 to Surface.NumberOfControlPoints-1 do
     if Surface.ControlPoint[i].Name = aName then
       begin
-        result := Surface.ControlPoint[i];
+        result:=Surface.ControlPoint[i];
         break;
       end;
   if result = nil then
   for i:=0 to Surface.NumberOfControlEdges-1 do
     if Surface.ControlEdge[i].Name = aName then
       begin
-        result := Surface.ControlEdge[i];
+        result:=Surface.ControlEdge[i];
         break;
       end;
   if result = nil then
   for i:=0 to Surface.NumberOfControlFaces-1 do
     if Surface.ControlFace[i].Name = aName then
       begin
-        result := Surface.ControlFace[i];
+        result:=Surface.ControlFace[i];
         break;
       end;
 end;
@@ -201,142 +201,142 @@ end;
 function TFreeShip.GetAllNamedPoints:TStringList;
 var i:integer;
 begin
-  result := TStringList.Create;
+  result:=TStringList.Create;
   for i:=0 to Surface.NumberOfControlPoints-1 do
     if Surface.ControlPoint[i].Name <> '' then
       result.AddObject(Surface.ControlPoint[i].Name, Surface.ControlPoint[i]);
 end;
 
 function TFreeShip.FGetActiveLayer: TFreeSubdivisionlayer;
-begin Result := Surface.ActiveLayer; end;
+begin Result:=Surface.ActiveLayer; end;
 
 function TFreeShip.GetActiveControlCurve: TFreeSubdivisionControlCurve;
-begin Result := Surface.ActiveControlCurve; end;
+begin Result:=Surface.ActiveControlCurve; end;
 
 function TFreeShip.GetActiveControlEdge: TFreeSubdivisionControlEdge;
-begin Result := Surface.ActiveControlEdge; end;
+begin Result:=Surface.ActiveControlEdge; end;
 
 function TFreeShip.GetActiveControlFace: TFreeSubdivisionControlFace;
-begin Result := Surface.ActiveControlFace; end;
+begin Result:=Surface.ActiveControlFace; end;
 
 function TFreeShip.GetActiveControlPoint: TFreeSubdivisionControlPoint;
-begin Result := Surface.ActiveControlPoint; end;
+begin Result:=Surface.ActiveControlPoint; end;
 
 procedure TFreeShip.SetActiveControlCurve(AValue: TFreeSubdivisionControlCurve);
-begin Surface.ActiveControlCurve := AValue; end;
+begin Surface.ActiveControlCurve:=AValue; end;
 
 procedure TFreeShip.SetActiveControlEdge(AValue: TFreeSubdivisionControlEdge);
-begin Surface.ActiveControlEdge := aValue; end;
+begin Surface.ActiveControlEdge:=aValue; end;
 
 procedure TFreeShip.SetActiveControlFace(AValue: TFreeSubdivisionControlFace);
-begin Surface.ActiveControlFace := aValue; end;
+begin Surface.ActiveControlFace:=aValue; end;
 {
 function TFreeShip.GetOnChangeActiveControlPoint: TNotifyEvent;
-begin result := Surface.OnChangeActiveControlPoint; end;
+begin result:=Surface.OnChangeActiveControlPoint; end;
 }
 procedure TFreeShip.SetActiveControlPoint(aControlPoint: TFreeSubdivisionControlPoint);
-begin Surface.ActiveControlPoint := aControlPoint; end;
+begin Surface.ActiveControlPoint:=aControlPoint; end;
 
 function TFreeShip.FGetBackgroundImage(Index: integer): TFreeBackgroundImageData;
-begin Result := FBackgroundImages[index]; end;
+begin Result:=FBackgroundImages[index]; end;
 
 function TFreeShip.FGetBuilt: boolean;
-begin Result := Surface.Built; end;
+begin Result:=Surface.Built; end;
 
 function TFreeShip.FGetFilename: string;
 var Ext: string;
 begin
-  if FFilename = '' then FFilename := 'New model';
-  Ext := ExtractFileExt( FFilename );
-  if (Ext = '.ftm') or (Ext = '.fbm') then Result := FFilename
-    else Result := ChangeFileExt( FFilename,FreeShipExtention );
+  if FFilename = '' then FFilename:='New model';
+  Ext:=ExtractFileExt( FFilename );
+  if (Ext = '.ftm') or (Ext = '.fbm') then Result:=FFilename
+    else Result:=ChangeFileExt( FFilename,FreeShipExtention );
 end;
 
 function TFreeShip.FGetHydrostaticCalculation(Index: integer): TFreeHydrostaticCalc;
-begin Result := FHydrostaticCalculations[index]; end;
+begin Result:=FHydrostaticCalculations[index]; end;
 
 function TFreeShip.FGetLayer(Index: integer): TFreeSubdivisionLayer;
-begin Result := Surface.Layer[index]; end;
+begin Result:=Surface.Layer[index]; end;
 
 function TFreeShip.FGetNumberOfMarkers: integer;
-begin Result := FMarkers.Count; end;
+begin Result:=FMarkers.Count; end;
 
 function TFreeShip.FGetNumberOfStations: integer;
-begin Result := FStations.Count; end;
+begin Result:=FStations.Count; end;
 
 function TFreeShip.FGetNumberOfWaterlines: integer;
-begin Result := FWaterlines.Count; end;
+begin Result:=FWaterlines.Count; end;
 
 function TFreeShip.FGetNumberOfButtocks: integer;
-begin Result := FButtocks.Count; end;
+begin Result:=FButtocks.Count; end;
 
 function TFreeShip.FGetNumberOfDiagonals: integer;
-begin Result := FDiagonals.Count; end;
+begin Result:=FDiagonals.Count; end;
 
 function TFreeShip.FGetNumberOfFlowLines: integer;
-begin Result := FFlowlines.Count; end;
+begin Result:=FFlowlines.Count; end;
 
 function TFreeShip.FGetNumberOfHydrostaticCalculations: integer;
-begin Result := FHydrostaticCalculations.Count; end;
+begin Result:=FHydrostaticCalculations.Count; end;
 
 function TFreeShip.FGetNumberOfLockedPoints: integer;
-begin Result := Surface.NumberOfLockedPoints; end;
+begin Result:=Surface.NumberOfLockedPoints; end;
 
 function TFreeShip.FGetNumberOfLayers: integer;
-begin Result := Surface.NumberOfLayers; end;
+begin Result:=Surface.NumberOfLayers; end;
 
 function TFreeShip.FGetViewport(Index: integer): TFreeViewport;
 begin
     if Index<0 then Index:=0 else
     if Index>=NumberOfViewports then Index:=NumberOfViewports-1;
 //  if (Index >= 0) and (Index < NumberOfViewports) then
-    Result := FViewports[index]
+    Result:=FViewports[index]
 //else raise Exception.Create('Invalid viewport index!');
 end;
 
 procedure TFreeShip.FSetActiveControlPoint(Val: TFreeSubdivisionControlPoint);
 begin
   if Val <> FActiveControlPoint then begin
-    FActiveControlPoint := Val;
-    FControlpointForm.ActiveControlPoint := FActiveControlPoint;
+    FActiveControlPoint:=Val;
+    FControlpointForm.ActiveControlPoint:=FActiveControlPoint;
     if FActiveControlPoint = nil then begin                                     //    ShowTranslatedValues(FControlpointForm);
-      if FControlpointForm.Visible then FControlpointForm.Visible := False;
+      if FControlpointForm.Visible then FControlpointForm.Visible:=False;
     end else begin
       // The first line makes sure that the activecontrolpoint form does NOT recieve focus.
       // because the mousewheel zoom in/out doesn't work anymore in that case
       if not FControlpointForm.Visible then begin                               //      ShowTranslatedValues(FControlpointForm);
         ShowWindow(FControlpointForm.Handle, SW_SHOWNOACTIVATE);
       end;
-      if not FControlpointForm.Visible then FControlpointForm.Visible := True;
+      if not FControlpointForm.Visible then FControlpointForm.Visible:=True;
       MainForm.SetFocus;
     end;
-    FCurrentlyMoving := False;
-    FPointHasBeenMoved := False;
+    FCurrentlyMoving:=False;
+    FPointHasBeenMoved:=False;
   end
   else if FActiveControlPoint <> nil then    // Update controlpoint information
     FControlpointForm.ActiveControlPoint:=FActiveControlPoint;
 end;
 
 procedure TFreeShip.FSetActiveLayer(Val: TFreeSubdivisionLayer);
-begin Surface.ActiveLayer := Val; end;
+begin Surface.ActiveLayer:=Val; end;
 
 procedure TFreeShip.FSetBuilt(Val: boolean);
 var I: integer;
 begin
   if not Val and not Surface.RebuildRequested then begin
     Application.QueueAsyncCall(@RebuildAsync, 0);
-    Surface.RebuildRequested := true;
+    Surface.RebuildRequested:=true;
   end;
   if Built = Val then exit;
-  Surface.Built := Val;
+  Surface.Built:=Val;
   if not Built then begin
-    for I:=1 to NumberOfStations   do Station[I-1].Built   := False;
-    for I:=1 to NumberOfButtocks   do Buttock[I-1].Built   := False;
-    for I:=1 to NumberOfWaterlines do Waterline[I-1].Built := False;
-    for I:=1 to NumberOfDiagonals  do Diagonal[I-1].Built  := False;
+    for I:=1 to NumberOfStations   do Station[I-1].Built  :=False;
+    for I:=1 to NumberOfButtocks   do Buttock[I-1].Built  :=False;
+    for I:=1 to NumberOfWaterlines do Waterline[I-1].Built:=False;
+    for I:=1 to NumberOfDiagonals  do Diagonal[I-1].Built :=False;
     for I:=1 to NumberOfHydrostaticCalculations do
-                    HydrostaticCalculation[I-1].Calculated := False;
-    for I := 1 to NumberOfFlowlines do Flowline[I-1].Build := False;
+                    HydrostaticCalculation[I-1].Calculated:=False;
+    for I:=1 to NumberOfFlowlines do Flowline[I-1].Build:=False;
   end;
 end;
 
@@ -344,7 +344,7 @@ procedure TFreeShip.FSetEditMode(Val: TFreeEditMode);
 var i:integer;
 begin
   if Val <> FEditMode then begin
-    FEditMode := Val;
+    FEditMode:=Val;
     case EditMode of
       emSelectItems: for i:=0 to Viewports.Count-1 do
         if Viewports[i].ViewType<>fvPerspective then Viewports[i].Cursor:=crCross;
@@ -358,7 +358,7 @@ end;
 procedure TFreeShip.FSetFileChanged(Val: boolean);
 begin
   if Val <> FFileChanged then begin
-    FFileChanged := Val;
+    FFileChanged:=Val;
     if assigned(FOnFileChanged) then FOnFileChanged(self);
   end;
 end;
@@ -366,9 +366,9 @@ end;
 procedure TFreeShip.FSetFileName(Val: string);
 var Tmp: string;
 begin
-    if val = '' then val := 'New model';
-    Tmp := ChangeFileExt( Val,FreeShipExtention );
-    if FFilename <> val then FFilename := Val;
+    if val = '' then val:='New model';
+    Tmp:=ChangeFileExt( Val,FreeShipExtention );
+    if FFilename <> val then FFilename:=Val;
 end;
 
 procedure TFreeShip.FSetFileVersion( Val: TFreeFileVersion );
@@ -376,54 +376,54 @@ begin if Val<>FFileVersion then begin FFileVersion:=Val; FileChanged:=True; end;
 end;
 
 function TFreeShip.FGetNumberOfSelectedControlEdges: integer;
-begin Result := Surface.NumberOfSelectedControlEdges; end;
+begin Result:=Surface.NumberOfSelectedControlEdges; end;
 
 function TFreeShip.FGetNumberOfSelectedControlCurves: integer;
-begin Result := Surface.NumberOfSelectedControlCurves; end;
+begin Result:=Surface.NumberOfSelectedControlCurves; end;
 
 function TFreeShip.FGetNumberOfControlCurves: integer;
-begin Result := Surface.NumberOfControlCurves; end;
+begin Result:=Surface.NumberOfControlCurves; end;
 
 function TFreeShip.FGetNumberOfSelectedControlFaces: integer;
-begin Result := Surface.NumberOfSelectedControlFaces; end;
+begin Result:=Surface.NumberOfSelectedControlFaces; end;
 
 function TFreeShip.FGetNumberOfSelectedControlPoints: integer;
-begin Result := Surface.NumberOfSelectedControlPoints; end;
+begin Result:=Surface.NumberOfSelectedControlPoints; end;
 
 function TFreeShip.FGetNumberOfSelectedControlPointGroups: integer;
-begin Result := Surface.NumberOfSelectedControlPointGroups; end;
+begin Result:=Surface.NumberOfSelectedControlPointGroups; end;
 
 function TFreeShip.FGetNumberOfselectedFlowlines: integer;
-begin Result := FselectedFlowlines.Count; end;
+begin Result:=FselectedFlowlines.Count; end;
 
 function TFreeShip.FGetNumberOfselectedMarkers: integer;
-begin Result := FselectedMarkers.Count; end;
+begin Result:=FselectedMarkers.Count; end;
 
 function TFreeShip.FGetNumberOfSelectedLockedPoints: integer;
-begin Result := Surface.NumberOfSelectedLockedPoints;
+begin Result:=Surface.NumberOfSelectedLockedPoints;
 end;
 
 procedure TFreeShip.FSetOnChangeActiveLayer(val: TChangeActiveLayerEvent);
-begin Surface.OnChangeActiveLayer := val; end;
+begin Surface.OnChangeActiveLayer:=val; end;
 
 procedure TFreeShip.FSetOnChangeLayerData(Val: TNotifyEvent);
-begin Surface.OnChangeLayerData := Val;
+begin Surface.OnChangeLayerData:=Val;
   // if Assigned(OnChangeLayerData) then OnChangeLayerData(Self);
   // if Assigned(OnChangeLayerData) then OnChangeLayerData;
 end;
 {
 procedure TFreeShip.FSetOnSelectItem(Val: TNotifyEvent);
 begin
-  Surface.OnSelectItem := Val;
+  Surface.OnSelectItem:=Val;
 end;
 }
 procedure TFreeShip.FSetPrecision(Val: TFreePrecisionType);
 begin
   if Val <> FPrecision then begin
-    FPrecision := Val;
-    Surface.DesiredSubdivisionLevel := Ord(Precision) + 1;
-    FileChanged := True;
-    Built := False;
+    FPrecision:=Val;
+    Surface.DesiredSubdivisionLevel:=Ord(Precision) + 1;
+    FileChanged:=True;
+    Built:=False;
     Redraw;
   end;
 end;
@@ -445,9 +445,9 @@ begin
 //     Pic.PixelFormat:=pf24bit;
        Pic:=Frm.ViewPort.GetDrawingBuffer;
        if Pic <> nil then begin
-          Result := TJPEGImage.Create;
+          Result:=TJPEGImage.Create;
           Result.Assign( Pic );
-          Result.CompressionQuality := 50;                        ///+++ 90%%
+          Result.CompressionQuality:=50;                        ///+++ 90%%
 //        Result.SaveToFile( 'Pic_screenshot.jpg ');
        end;
 //     FreeAndNil( Pic );
@@ -457,15 +457,15 @@ end;
 
 {
 procedure TFreeShip.SetOnChangeActiveControlPoint(AValue: TNotifyEvent);
-begin Surface.OnChangeActiveControlPoint := AValue; end;
+begin Surface.OnChangeActiveControlPoint:=AValue; end;
 }
 procedure TFreeShip.AddViewport(Viewport: TFreeViewport);
 // Add a viewport to the list of viewports connected to the model
 begin
   if FViewports.IndexOf(Viewport) = -1 then begin
-    Viewport.Color := Preferences.ViewportColor;
+    Viewport.Color:=Preferences.ViewportColor;
     FViewports.Add(Viewport);
-    Viewport.OnRequestExtents := @ViewportRequestExtents;
+    Viewport.OnRequestExtents:=@ViewportRequestExtents;
     Viewport.ZoomExtents;
   end;
 end;
@@ -486,41 +486,41 @@ constructor TFreeShip.Create(AOwner: TComponent);
 var FreeShip: TFreeShip;
 begin
   inherited Create(AOwner);
-  if AOwner is TMainForm then FMainForm := TForm(AOwner);
+  if AOwner is TMainForm then FMainForm:=TForm(AOwner);
 
   if not (csDesigning in ComponentState) then
-    FIntersectionDialog := TFreeIntersectionDialog.Create(self);
+    FIntersectionDialog:=TFreeIntersectionDialog.Create(self);
 
-  FEdit := TFreeEdit.Create(Self);
-  FPreferences := TFreePreferences.Create(self);
-  FPreferences.MainForm := FMainForm;
+  FEdit:=TFreeEdit.Create(Self);
+  FPreferences:=TFreePreferences.Create(self);
+  FPreferences.MainForm:=FMainForm;
   if Assigned(FMainForm) // load preferences only for main FreeShip instance, not for preview ones
      then FPreferences.Load;
-  FProjectSettings := TFreeProjectSettings.Create(self);
-  FFileVersion := CurrentVersion;
-  FActiveControlPoint := nil;
-  FSurface := TFreeSubdivisionSurface.Create(nil);
+  FProjectSettings:=TFreeProjectSettings.Create(self);
+  FFileVersion:=CurrentVersion;
+  FActiveControlPoint:=nil;
+  FSurface:=TFreeSubdivisionSurface.Create(nil);
   FSurface.FreeShip:= Self;
-  FSurface.LayerColor := FPreferences.LayerColor;
-  FViewports := TFasterListTFreeViewPort.Create;
-  FMarkers := TFasterListTFreeMarker.Create;
-  FVisibility := TFreeVisibility.Create(self);
-  FStations := TFasterListTFreeIntersection.Create;
-  FButtocks := TFasterListTFreeIntersection.Create;
-  FWaterlines := TFasterListTFreeIntersection.Create;
-  FDiagonals := TFasterListTFreeIntersection.Create;
-  FHydrostaticCalculations := TFasterListTFreeHydrostaticCalc.Create;
-  FUndoObjects := TFasterListTFreeUndoObject.Create;
-  FBackgroundImages := TFasterListTFreebackgroundImagedata.Create;
-  FFlowLines := TFasterListTFreeFlowLine.Create;
-  FSelectedFlowlines := TFasterListTFreeFlowLine.Create;
-  FSelectedMarkers := TFasterListTFreeMarker.Create;
-  FDesignHydrostatics := TFreeHydrostaticCalc.Create(self);
+  FSurface.LayerColor:=FPreferences.LayerColor;
+  FViewports:=TFasterListTFreeViewPort.Create;
+  FMarkers:=TFasterListTFreeMarker.Create;
+  FVisibility:=TFreeVisibility.Create(self);
+  FStations:=TFasterListTFreeIntersection.Create;
+  FButtocks:=TFasterListTFreeIntersection.Create;
+  FWaterlines:=TFasterListTFreeIntersection.Create;
+  FDiagonals:=TFasterListTFreeIntersection.Create;
+  FHydrostaticCalculations:=TFasterListTFreeHydrostaticCalc.Create;
+  FUndoObjects:=TFasterListTFreeUndoObject.Create;
+  FBackgroundImages:=TFasterListTFreebackgroundImagedata.Create;
+  FFlowLines:=TFasterListTFreeFlowLine.Create;
+  FSelectedFlowlines:=TFasterListTFreeFlowLine.Create;
+  FSelectedMarkers:=TFasterListTFreeMarker.Create;
+  FDesignHydrostatics:=TFreeHydrostaticCalc.Create(self);
   ClearUndo;
   Clear;
   if not (csDesigning in ComponentState) then begin
-    FControlpointForm := TFreeControlPointForm.Create(Self);
-    FControlpointForm.FreeShip := self;
+    FControlpointForm:=TFreeControlPointForm.Create(Self);
+    FControlpointForm.FreeShip:=self;
   end;
 end; {TFreeShip.Create}
 
@@ -582,33 +582,33 @@ var
   I: integer;
   Pt: TPoint;
 begin                                                    // Initialize all data
-  FPrecision := fpLow;
-  FFileVersion := CurrentVersion;
-  FFileChanged := False;
-  FModelIsLoaded := False;
-  FFileIsReadOnly := False;
+  FPrecision:=fpLow;
+  FFileVersion:=CurrentVersion;
+  FFileChanged:=False;
+  FModelIsLoaded:=False;
+  FFileIsReadOnly:=False;
   FSurface.Clear;
-  FFilename := Userstring(179);
+  FFilename:=Userstring(179);
   FVisibility.Clear;
-  FEditMode := emSelectItems; // Set editmode to select items
-                              //FFontSize := 8; // use Preferences
-  ActiveControlPoint := nil;
+  FEditMode:=emSelectItems; // Set editmode to select items
+                              //FFontSize:=8; // use Preferences
+  ActiveControlPoint:=nil;
                               // delete Markers
   for I:=1 to NumberOfMarkers do Marker[I-1].Destroy;
           FMarkers.Clear;
   FSelectedMarkers.Clear;        // delete stations
-  for I := 1 to NumberOfStations do Station[I - 1].Destroy;
+  for I:=1 to NumberOfStations do Station[I - 1].Destroy;
   FStations.Clear;               // delete Buttocks
-  for I := 1 to NumberOfButtocks do Buttock[I - 1].Destroy;
+  for I:=1 to NumberOfButtocks do Buttock[I - 1].Destroy;
   FButtocks.Clear;               // delete Waterlines
-  for I := 1 to NumberOfWaterlines do Waterline[I - 1].Destroy;
+  for I:=1 to NumberOfWaterlines do Waterline[I - 1].Destroy;
   FWaterlines.Clear;             // delete Diagonals
   for I:=1 to NumberOfDiagonals do Diagonal[I-1].Destroy;
   for I:=1 to NumberOfHydrostaticCalculations do HydrostaticCalculation[I-1].Calculated:=False;
   FDiagonals.Clear;
   FProjectSettings.Clear;
-  FFilenameSet := False;
-  FStopAskingForFileVersion := False;
+  FFilenameSet:=False;
+  FStopAskingForFileVersion:=False;
   Fillchar(FResistanceDelftData, SizeOf(FResistanceDelftData), 0);
   Fillchar(FResistanceKaperData, SizeOf(TFreeKAPERResistanceData), 0);
 
@@ -633,10 +633,10 @@ end;
 procedure TFreeShip.ClearUndo;
 var I: integer;
 begin // clear undo
-  for I := 1 to UndoCount do UndoObject[I - 1].Destroy;
+  for I:=1 to UndoCount do UndoObject[I - 1].Destroy;
   FUndoObjects.Clear;
-  FUndoPosition := 0;
-  FPreviousUndoPosition := FUndoPosition - 1;
+  FUndoPosition:=0;
+  FPreviousUndoPosition:=FUndoPosition - 1;
   if not (csdestroying in componentstate) then
     if Assigned(FOnUpdateUndoData) then FOnUpdateUndoData(self);
 end;
@@ -758,26 +758,26 @@ var
   begin
     if CompensateHeight then P.Z:=P.Z+FDesignHydrostatics.FData.ModelMin.Z;
     Pt:=Viewport.Project(P);
-    Viewport.FontName := 'Arial';
-    Viewport.FontColor := Preferences.HydrostaticsFontColor;
+    Viewport.FontName:='Arial';
+    Viewport.FontColor:=Preferences.HydrostaticsFontColor;
     //size:=Round(Sqrt(Viewport.Zoom)*7);
     //if size<2 then size:=2;
-    Viewport.FontSize := FPreferences.FontSize;
-    Size := Round(Sqrt(Viewport.Zoom) * (Preferences.PointSize + 1));
-    if size < 1 then size := 1;
-    Viewport.BrushStyle := bsClear;
+    Viewport.FontSize:=FPreferences.FontSize;
+    Size:=Round(Sqrt(Viewport.Zoom) * (Preferences.PointSize + 1));
+    if size < 1 then size:=1;
+    Viewport.BrushStyle:=bsClear;
     if Viewport.Printing then Size:=round(Size*Viewport.PrintResolution/150);
-    Viewport.PenColor := clDkGray;            // Black;
-    Viewport.BrushColor := clOlive;           // clWhite;
-    Viewport.BrushStyle := bsSolid;           // Draw entire circle in white;
+    Viewport.PenColor:=clDkGray;            // Black;
+    Viewport.BrushColor:=clOlive;           // clWhite;
+    Viewport.BrushStyle:=bsSolid;           // Draw entire circle in white;
     Viewport.Ellipse( Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size );
-    Viewport.BrushColor := clBlack;           // Draw upper left part in black
+    Viewport.BrushColor:=clBlack;           // Draw upper left part in black
     Viewport.Pie( Pt.X-Size,Pt.Y-Size,Pt.X+Size,
                   Pt.Y+Size,Pt.X-1,Pt.Y-Size,Pt.X-Size,Pt.Y-1);
                                              // Draw lower right part in black
     Viewport.Pie( Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size,Pt.X-1,
                   Pt.Y+Size,Pt.X+Size,Pt.Y-1);
-    Viewport.BrushStyle := bsClear;
+    Viewport.BrushStyle:=bsClear;
     Viewport.TextOut(Pt.X + 2 * size, Pt.Y, Text);
   end;{DrawPoint}
 
@@ -804,10 +804,10 @@ var
       CurrentHeight: integer;
     begin
       // Sets the fontheight to a height in modelspace
-      Height := round(DesiredHeight * Viewport.Scale * Viewport.Zoom);
-      CurrentHeight := Viewport.FontHeight;
+      Height:=round(DesiredHeight * Viewport.Scale * Viewport.Zoom);
+      CurrentHeight:=Viewport.FontHeight;
       if CurrentHeight <> Height then
-        Viewport.FontHeight := Height;
+        Viewport.FontHeight:=Height;
 
       // below code causes loop redraw and 100% CPU.
       // Changed to above code with direct set of required Font.Height
@@ -823,43 +823,43 @@ var
     end;{SetFontHeight}
 
   begin
-    DrawStations   := Viewport.ViewType <> fvBodyplan;
-    DrawButtocks   := Viewport.ViewType <> fvProfile;
-    DrawWaterlines := Viewport.ViewType <> fvPlan;
-    DrawDiagonals  := Viewport.ViewType = fvBodyplan;
+    DrawStations  :=Viewport.ViewType <> fvBodyplan;
+    DrawButtocks  :=Viewport.ViewType <> fvProfile;
+    DrawWaterlines:=Viewport.ViewType <> fvPlan;
+    DrawDiagonals :=Viewport.ViewType = fvBodyplan;
     // Blowup the boundary box by 3%
-    Diff := ScalePoint(0.03, Subtract(Viewport.Max3D, Viewport.Min3D));
-    Min := Subtract(Viewport.Min3D, Diff);
-    Diff := ScalePoint(-1.0, Diff);
-    Max := Subtract(Viewport.Max3D, diff);
+    Diff:=ScalePoint(0.03, Subtract(Viewport.Max3D, Viewport.Min3D));
+    Min:=Subtract(Viewport.Min3D, Diff);
+    Diff:=ScalePoint(-1.0, Diff);
+    Max:=Subtract(Viewport.Max3D, diff);
     if DrawStations or DrawButtocks or DrawWaterlines or DrawDiagonals then
     begin
-      Viewport.PenColor := Preferences.GridColor;
-      Viewport.FontName := 'Arial';
-      Viewport.FontColor := Preferences.GridFontColor;
+      Viewport.PenColor:=Preferences.GridColor;
+      Viewport.FontName:='Arial';
+      Viewport.FontColor:=Preferences.GridFontColor;
       // calculate and set fontheight
       //SetFontHeight(DistPP3D(Min,Max)/FontheightFactor * FFontScale);
 
       // just set font size
-      Viewport.FontSize := Preferences.FontSize;
+      Viewport.FontSize:=Preferences.FontSize;
 
-      Height := Viewport.TextHeight('Йly');
-      Viewport.BrushStyle := bsClear;
-      Viewport.PenWidth := 1;
-      Viewport.PenStyle := psSolid;
-      Viewport.PenColor := Preferences.GridColor;
-      Viewport.FontColor := Preferences.GridFontColor;
+      Height:=Viewport.TextHeight('Йly');
+      Viewport.BrushStyle:=bsClear;
+      Viewport.PenWidth:=1;
+      Viewport.PenStyle:=psSolid;
+      Viewport.PenColor:=Preferences.GridColor;
+      Viewport.FontColor:=Preferences.GridFontColor;
 
       if DrawStations then begin
-        P1 := Min;
-        P2 := Max;
-        for I := 1 to self.NumberofStations do begin
-          Position := -Station[I - 1].Plane.d;
-          Str := ConvertDimension(Position, ProjectSettings.ProjectUnits);
-          P1.X := Position;
-          P2.X := P1.X;
-          Pt1 := Viewport.Project(P1);
-          Pt2 := Viewport.Project(P2);
+        P1:=Min;
+        P2:=Max;
+        for I:=1 to self.NumberofStations do begin
+          Position:=-Station[I - 1].Plane.d;
+          Str:=ConvertDimension(Position, ProjectSettings.ProjectUnits);
+          P1.X:=Position;
+          P2.X:=P1.X;
+          Pt1:=Viewport.Project(P1);
+          Pt2:=Viewport.Project(P2);
           Viewport.MoveTo(Pt1.X, Pt1.Y);
           Viewport.LineTo(Pt2.X, Pt2.Y);
           Viewport.TextOut(Pt1.X, Pt1.Y, Str);
@@ -868,21 +868,21 @@ var
       end;
       if DrawDiagonals then begin
         Setlength(Pts, 101);
-        Viewport.PenWidth := 1;
-        for I := 1 to NumberOfDiagonals do begin
+        Viewport.PenWidth:=1;
+        for I:=1 to NumberOfDiagonals do begin
           if not Diagonal[I - 1].Built then Diagonal[I - 1].Rebuild;
-          for J := 1 to Diagonal[I - 1].Count do begin
-            for N := 0 to 100 do begin
-              P1 := Diagonal[I - 1].Items[J - 1].Value(N / 100);
-              Pts[N] := Viewport.Project(P1);
+          for J:=1 to Diagonal[I - 1].Count do begin
+            for N:=0 to 100 do begin
+              P1:=Diagonal[I - 1].Items[J - 1].Value(N / 100);
+              Pts[N]:=Viewport.Project(P1);
             end;
             Viewport.Polyline(Pts);
             if (Visibility.ModelView = mvBoth) or
               (Viewport.ViewType = fvBodyplan) then begin
-              for N := 0 to 100 do begin
-                P1 := Diagonal[I - 1].Items[J - 1].Value(N / 100);
-                P1.Y := -P1.Y;
-                Pts[N] := Viewport.Project(P1);
+              for N:=0 to 100 do begin
+                P1:=Diagonal[I - 1].Items[J - 1].Value(N / 100);
+                P1.Y:=-P1.Y;
+                Pts[N]:=Viewport.Project(P1);
               end;
               Viewport.Polyline(Pts);
             end;
@@ -890,15 +890,15 @@ var
         end;
       end;
       if DrawButtocks then begin
-        P1 := Min;
-        P2 := Max;
-        for I := 1 to self.NumberofButtocks do begin
-          Position := -Buttock[I - 1].Plane.d;
-          Str := ConvertDimension(Position, ProjectSettings.ProjectUnits);
-          P1.Y := Position;
-          P2.Y := P1.Y;
-          Pt1 := Viewport.Project(P1);
-          Pt2 := Viewport.Project(P2);
+        P1:=Min;
+        P2:=Max;
+        for I:=1 to self.NumberofButtocks do begin
+          Position:=-Buttock[I - 1].Plane.d;
+          Str:=ConvertDimension(Position, ProjectSettings.ProjectUnits);
+          P1.Y:=Position;
+          P2.Y:=P1.Y;
+          Pt1:=Viewport.Project(P1);
+          Pt2:=Viewport.Project(P2);
           Viewport.MoveTo(Pt1.X, Pt1.Y);
           Viewport.LineTo(Pt2.X, Pt2.Y);
           if Viewport.ViewType = fvBodyplan then Width:=0
@@ -912,12 +912,12 @@ var
           end;
           if (Visibility.ModelView = mvBoth) or (Viewport.ViewType = fvBodyplan)
           then begin
-            P1.Y := -Position;
-            P2.Y := P1.Y;
-            Str := ConvertDimension(-Position, ProjectSettings.ProjectUnits);
-            Width := Viewport.TextWidth(Str);
-            Pt1 := Viewport.Project(P1);
-            Pt2 := Viewport.Project(P2);
+            P1.Y:=-Position;
+            P2.Y:=P1.Y;
+            Str:=ConvertDimension(-Position, ProjectSettings.ProjectUnits);
+            Width:=Viewport.TextWidth(Str);
+            Pt1:=Viewport.Project(P1);
+            Pt2:=Viewport.Project(P2);
             Viewport.MoveTo(Pt1.X, Pt1.Y);
             Viewport.LineTo(Pt2.X, Pt2.Y);
             if Viewport.ViewType = fvBodyplan then begin
@@ -932,19 +932,19 @@ var
       end;
       if DrawWaterlines then
       begin
-        P1 := Min;
-        P2 := Max;
-        for I := 1 to self.NumberofWaterlines do
+        P1:=Min;
+        P2:=Max;
+        for I:=1 to self.NumberofWaterlines do
         begin
-          Position := -Waterline[I - 1].Plane.d;
-          Str := ConvertDimension(Position, ProjectSettings.ProjectUnits);
-          P1.Z := Position;
-          P2.Z := P1.Z;
-          Pt1 := Viewport.Project(P1);
-          Pt2 := Viewport.Project(P2);
+          Position:=-Waterline[I - 1].Plane.d;
+          Str:=ConvertDimension(Position, ProjectSettings.ProjectUnits);
+          P1.Z:=Position;
+          P2.Z:=P1.Z;
+          Pt1:=Viewport.Project(P1);
+          Pt2:=Viewport.Project(P2);
           Viewport.MoveTo(Pt1.X, Pt1.Y);
           Viewport.LineTo(Pt2.X, Pt2.Y);
-          Width := Viewport.TextWidth(Str);
+          Width:=Viewport.TextWidth(Str);
           Viewport.TextOut(Pt1.X, Pt1.Y - Height, Str);
           Viewport.TextOut(Pt2.X - Width, Pt2.Y - Height, str);
         end;
@@ -952,19 +952,19 @@ var
 
       // draw centerline
       if Viewport.ViewType <> fvProfile then begin
-        Viewport.FontColor := clBlue;
-        Viewport.PenColor := clBlue;
-        Viewport.PenWidth := 2;
-        P1 := Min;
-        P2 := Max;
-        Str := Userstring(183);
-        P1.Y := 0.0;
-        P2.Y := P1.Y;
-        Pt1 := Viewport.Project(P1);
-        Pt2 := Viewport.Project(P2);
+        Viewport.FontColor:=clBlue;
+        Viewport.PenColor:=clBlue;
+        Viewport.PenWidth:=2;
+        P1:=Min;
+        P2:=Max;
+        Str:=Userstring(183);
+        P1.Y:=0.0;
+        P2.Y:=P1.Y;
+        Pt1:=Viewport.Project(P1);
+        Pt2:=Viewport.Project(P2);
         Viewport.MoveTo(Pt1.X, Pt1.Y);
         Viewport.LineTo(Pt2.X, Pt2.Y);
-        Width := Viewport.TextWidth(Str);
+        Width:=Viewport.TextWidth(Str);
         if Viewport.ViewType = fvBodyplan then begin
           Viewport.TextOut(Pt1.X - Width div 2, Pt1.Y, str);
           Viewport.TextOut(Pt2.X - Width div 2, Pt2.Y - Height, Str);
@@ -972,26 +972,26 @@ var
           Viewport.TextOut(Pt1.X - Width, Pt1.Y - Height, str);
           Viewport.TextOut(Pt2.X, Pt2.Y - Height, Str);
         end;
-        Viewport.PenWidth := 1;
-        Viewport.FontColor := Preferences.GridFontColor;
+        Viewport.PenWidth:=1;
+        Viewport.FontColor:=Preferences.GridFontColor;
       end;
       if Viewport.Viewtype <> fvPlan then begin
         // Draw baseline
-        Viewport.FontColor := clBlue;
-        Viewport.PenColor := clBlue;
-        Viewport.PenWidth := 2;
-        P1 := Min;
-        P2 := Max;
-        Position := Surface.Min.Z;
-        Str := Userstring(184) + #32 + ConvertDimension(
+        Viewport.FontColor:=clBlue;
+        Viewport.PenColor:=clBlue;
+        Viewport.PenWidth:=2;
+        P1:=Min;
+        P2:=Max;
+        Position:=Surface.Min.Z;
+        Str:=Userstring(184) + #32 + ConvertDimension(
           Position, ProjectSettings.ProjectUnits);
-        P1.Z := Position;
-        P2.Z := P1.Z;
-        Pt1 := Viewport.Project(P1);
-        Pt2 := Viewport.Project(P2);
+        P1.Z:=Position;
+        P2.Z:=P1.Z;
+        Pt1:=Viewport.Project(P1);
+        Pt2:=Viewport.Project(P2);
         Viewport.MoveTo(Pt1.X, Pt1.Y);
         Viewport.LineTo(Pt2.X, Pt2.Y);
-        Width := Viewport.TextWidth(Str);
+        Width:=Viewport.TextWidth(Str);
         Viewport.TextOut(Pt1.X, Pt1.Y - Height, Str);
         Viewport.TextOut(Pt2.X - Width, Pt2.Y - Height, str);
 
@@ -1001,25 +1001,25 @@ var
           //Viewport.FontColor:=clBlue;
           //Viewport.PenColor:=clBlue;
           //Viewport.PenWidth:=2;
-          P1 := Min;
-          P2 := Max;
-          Position := Surface.Min.Z + ProjectSettings.FProjectDraft;
-          Str := Userstring(185) + #32 + ConvertDimension(
+          P1:=Min;
+          P2:=Max;
+          Position:=Surface.Min.Z + ProjectSettings.FProjectDraft;
+          Str:=Userstring(185) + #32 + ConvertDimension(
             Position, ProjectSettings.ProjectUnits);
-          P1.Z := Position;
-          P2.Z := P1.Z;
-          Pt1 := Viewport.Project(P1);
-          Pt2 := Viewport.Project(P2);
+          P1.Z:=Position;
+          P2.Z:=P1.Z;
+          Pt1:=Viewport.Project(P1);
+          Pt2:=Viewport.Project(P2);
 
-          Viewport.PenColor := clGreen;
+          Viewport.PenColor:=clGreen;
           //I do not know why, but without changing color PenWith becomes 1
-          Viewport.PenColor := clBlue;
-          Viewport.PenStyle := psSolid;
-          Viewport.PenWidth := 2;
+          Viewport.PenColor:=clBlue;
+          Viewport.PenStyle:=psSolid;
+          Viewport.PenWidth:=2;
           Viewport.MoveTo(Pt1.X, Pt1.Y);
           Viewport.LineTo(Pt2.X, Pt2.Y);
 
-          Width := Viewport.TextWidth(Str);
+          Width:=Viewport.TextWidth(Str);
           Viewport.TextOut(Pt1.X - Width div 2, Pt1.Y - Height, Str);
           Viewport.TextOut(Pt2.X - Width div 2, Pt2.Y - Height, str);
         end;
@@ -1027,18 +1027,18 @@ var
 
       // Draw Split Section (formerly Mainframe)
       if not (Viewport.Viewtype in [fvBodyplan,fvPerspective]) then begin
-        Viewport.FontColor := clBlue;
-        Viewport.PenColor := clBlue;
-        Viewport.PenWidth := 1;
-        P1 := Point3D(Surface.SplitSectionLocation, Min.Y, Min.Z);
-        P2 := Point3D(Surface.SplitSectionLocation, Max.Y, Max.Z);;
-        Position := Surface.SplitSectionLocation;
-        Str := rsSplitSection +':' + ConvertDimension(Position, ProjectSettings.ProjectUnits);
-        Pt1 := Viewport.Project( P1 );
-        Pt2 := Viewport.Project( P2 );
+        Viewport.FontColor:=clBlue;
+        Viewport.PenColor:=clBlue;
+        Viewport.PenWidth:=1;
+        P1:=Point3D(Surface.SplitSectionLocation, Min.Y, Min.Z);
+        P2:=Point3D(Surface.SplitSectionLocation, Max.Y, Max.Z);;
+        Position:=Surface.SplitSectionLocation;
+        Str:=rsSplitSection +':' + ConvertDimension(Position, ProjectSettings.ProjectUnits);
+        Pt1:=Viewport.Project( P1 );
+        Pt2:=Viewport.Project( P2 );
         Viewport.MoveTo(Pt1.X, Pt1.Y+30);
         Viewport.LineTo(Pt2.X, Pt2.Y-20);
-        Width := Viewport.TextWidth(Str);
+        Width:=Viewport.TextWidth(Str);
         Viewport.TextOut(Pt1.X, Pt1.Y - Height+30, Str);
         Viewport.TextOut(Pt2.X - Width, Pt2.Y - Height-20, str);
       end;
@@ -1056,90 +1056,90 @@ begin
   // so that the controlnet appears on top
   // But the intersections that should be drawn last depends on the view
 
-  Surface.SplitSectionLocation := Projectsettings.ProjectSplitSectionLocation;
-  Viewport.FontSize := Preferences.FontSize;
+  Surface.SplitSectionLocation:=Projectsettings.ProjectSplitSectionLocation;
+  Viewport.FontSize:=Preferences.FontSize;
 
   if Viewport.Viewtype <> fvPerspective then begin
     if Visibility.ShowGrid then Drawgrid  // Draws a rectangular grid with measurements, bigger then the hull
     else begin                            // draws the actual splines as a dashed line
       if Viewport.ViewType <> fvBodyplan then
         if Visibility.ShowStations then
-          for I := 1 to NumberOfStations do Station[I - 1].Draw(Viewport);
+          for I:=1 to NumberOfStations do Station[I - 1].Draw(Viewport);
       if Viewport.ViewType <> fvProfile then
         if Visibility.ShowButtocks then
-          for I := 1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
+          for I:=1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
       if Viewport.ViewType <> fvPlan then
         if Visibility.ShowWaterlines then
-          for I := 1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
+          for I:=1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
       if Visibility.ShowDiagonals then
-        for I := 1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
+        for I:=1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
     end;
     if (Viewport.ViewType = fvBodyplan) and (Visibility.ShowStations) then
-       for I := 1 to NumberOfStations do Station[I - 1].Draw(Viewport);
+       for I:=1 to NumberOfStations do Station[I - 1].Draw(Viewport);
     if (Viewport.ViewType = fvProfile) and (Visibility.ShowButtocks) then
-       for I := 1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
+       for I:=1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
     if (Viewport.ViewType = fvPlan) and (Visibility.ShowWaterlines) then
-       for I := 1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
+       for I:=1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
     if (Viewport.ViewType <> fvBodyplan) and (Visibility.ShowDiagonals) then
-       for I := 1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
+       for I:=1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
   end
   else  // Viewport.Viewtype = fvPerspective
   begin
     if Visibility.ShowStations then
-      for I := 1 to NumberOfStations do Station[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfStations do Station[I - 1].Draw(Viewport);
     if Visibility.ShowButtocks then
-      for I := 1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
     if Visibility.ShowWaterlines then
-      for I := 1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
     if Visibility.ShowDiagonals then
-      for I := 1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
   end;
 
   if (Visibility.ShowMarkers) and (Viewport.ViewportMode = vmWireframe) then
-    for I := 1 to NumberOfMarkers do Marker[I - 1].Draw(Viewport);
-  Surface.Color := clDkGray;
-  Surface.ShowControlNet := Visibility.ShowControlNet;
-  Surface.ShowFreeObjects := Visibility.ShowFreeObjects;
-  Surface.ShowInteriorEdges := Visibility.ShowInteriorEdges;
-  Surface.DrawMirror := Visibility.ModelView = mvBoth;
-  Surface.ShowNormals := Visibility.ShowNormals;
-  Surface.ControlPointSize := Preferences.PointSize;
-  Surface.CreaseColor := Preferences.CreaseColor;
-  Surface.CreaseEdgeColor := Preferences.CreaseEdgeColor;
-  Surface.EdgeColor := Preferences.EdgeColor;
-  Surface.CreasePointColor := Preferences.CreasePointColor;
-  Surface.RegularPointColor := Preferences.RegularPointColor;
-  Surface.CornerPointColor := Preferences.CornerPointColor;
-  Surface.DartPointColor := Preferences.DartPointColor;
-  Surface.Selectedcolor := Preferences.SelectColor;
-  Surface.LayerColor := Preferences.LayerColor;
-  Surface.NormalColor := Preferences.NormalColor;
-  Surface.LeakColor := Preferences.LeakPointColor;
-  Surface.CurvatureColor := Preferences.CurvaturePlotColor;
-  Surface.ShowCurvature := Visibility.ShowCurvature;
-  Surface.CurvatureScale := Visibility.CurvatureScale;
-  Surface.ShowControlCurves := Visibility.ShowControlCurves;
-  Surface.ControlCurveColor := Preferences.ControlCurveColor;
-  Surface.ZebraColor := Preferences.ZebraStripeColor;
-  Surface.ControlEdgeLineWidth := Preferences.FControlEdgeLineWidth;
-  Surface.InternalEdgeLineWidth := Preferences.FInteriorEdgeLineWidth;
+    for I:=1 to NumberOfMarkers do Marker[I - 1].Draw(Viewport);
+  Surface.Color:=clDkGray;
+  Surface.ShowControlNet:=Visibility.ShowControlNet;
+  Surface.ShowFreeObjects:=Visibility.ShowFreeObjects;
+  Surface.ShowInteriorEdges:=Visibility.ShowInteriorEdges;
+  Surface.DrawMirror:=Visibility.ModelView = mvBoth;
+  Surface.ShowNormals:=Visibility.ShowNormals;
+  Surface.ControlPointSize:=Preferences.PointSize;
+  Surface.CreaseColor:=Preferences.CreaseColor;
+  Surface.CreaseEdgeColor:=Preferences.CreaseEdgeColor;
+  Surface.EdgeColor:=Preferences.EdgeColor;
+  Surface.CreasePointColor:=Preferences.CreasePointColor;
+  Surface.RegularPointColor:=Preferences.RegularPointColor;
+  Surface.CornerPointColor:=Preferences.CornerPointColor;
+  Surface.DartPointColor:=Preferences.DartPointColor;
+  Surface.Selectedcolor:=Preferences.SelectColor;
+  Surface.LayerColor:=Preferences.LayerColor;
+  Surface.NormalColor:=Preferences.NormalColor;
+  Surface.LeakColor:=Preferences.LeakPointColor;
+  Surface.CurvatureColor:=Preferences.CurvaturePlotColor;
+  Surface.ShowCurvature:=Visibility.ShowCurvature;
+  Surface.CurvatureScale:=Visibility.CurvatureScale;
+  Surface.ShowControlCurves:=Visibility.ShowControlCurves;
+  Surface.ControlCurveColor:=Preferences.ControlCurveColor;
+  Surface.ZebraColor:=Preferences.ZebraStripeColor;
+  Surface.ControlEdgeLineWidth:=Preferences.FControlEdgeLineWidth;
+  Surface.InternalEdgeLineWidth:=Preferences.FInteriorEdgeLineWidth;
 
   if ProjectSettings.ProjectShadeUnderwaterShip then
   begin
-    Plane.a := 0.0;
-    Plane.b := 0.0;
-    Plane.c := 1.0;
-    Plane.d := -(FindLowestHydrostaticsPoint + ProjectSettings.ProjectDraft);
-    Surface.WaterlinePlane := Plane;
-    R := GetRValue(ProjectSettings.ProjectUnderWaterColor);
-    G := GetGValue(ProjectSettings.ProjectUnderWaterColor);
-    B := GetBValue(ProjectSettings.ProjectUnderWaterColor);
-    Surface.UnderWaterColor := ProjectSettings.ProjectUnderWaterColor;
+    Plane.a:=0.0;
+    Plane.b:=0.0;
+    Plane.c:=1.0;
+    Plane.d:=-(FindLowestHydrostaticsPoint + ProjectSettings.ProjectDraft);
+    Surface.WaterlinePlane:=Plane;
+    R:=GetRValue(ProjectSettings.ProjectUnderWaterColor);
+    G:=GetGValue(ProjectSettings.ProjectUnderWaterColor);
+    B:=GetBValue(ProjectSettings.ProjectUnderWaterColor);
+    Surface.UnderWaterColor:=ProjectSettings.ProjectUnderWaterColor;
     Surface.UnderWaterColorAlpha:=ProjectSettings.ProjectUnderWaterColorAlpha;
-    Surface.ShadeUnderWater := True;
+    Surface.ShadeUnderWater:=True;
   end
   else
-    Surface.ShadeUnderWater := False;
+    Surface.ShadeUnderWater:=False;
 
   Surface.Draw( Viewport );  // Main Draw
 
@@ -1149,19 +1149,19 @@ begin
   and (Viewport.ViewportMode <> vmWireframe)
   and (Visibility.ShowGrid) then begin // Shaded viewport is a special case when visibility.drawgrid has been set to tru
     if Visibility.ShowStations then
-      for I := 1 to NumberOfStations do Station[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfStations do Station[I - 1].Draw(Viewport);
     if Visibility.ShowButtocks then
-      for I := 1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
     if Visibility.ShowWaterlines then
-      for I := 1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
     if Visibility.ShowDiagonals then
-      for I := 1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
   end;
   if (Viewport.ViewportMode = vmWireframe) and (Visibility.ShowHydrostaticData) then
   begin
     // Draw hydrostatic data
     if FDesignHydrostatics.Draft <> ProjectSettings.ProjectDraft then
-      FDesignHydrostatics.Draft := ProjectSettings.ProjectDraft;
+      FDesignHydrostatics.Draft:=ProjectSettings.ProjectDraft;
 
     if not FDesignHydrostatics.Calculated then
     begin
@@ -1204,36 +1204,36 @@ begin
         (Visibility.FShowHydrostSectionalAreas) then
       begin
         // draw sectionalarea curve
-        Curve := TFreespline.Create(Surface);
-        for I := 1 to length(FDesignHydrostatics.FData.SAC) do
+        Curve:=TFreespline.Create(Surface);
+        for I:=1 to length(FDesignHydrostatics.FData.SAC) do
         begin
-          P.X := FDesignHydrostatics.FData.SAC[I - 1].X;
-          P.Y := 0;
+          P.X:=FDesignHydrostatics.FData.SAC[I - 1].X;
+          P.Y:=0;
           if (FDesignHydrostatics.FData.BeamWaterline
             * FDesignHydrostatics.Draft) <> 0 then
-            P.Z := 2 * (FDesignHydrostatics.FData.ModelMax.Z -
+            P.Z:=2 * (FDesignHydrostatics.FData.ModelMax.Z -
             FDesignHydrostatics.FData.ModelMin.Z) * FDesignHydrostatics.FData.SAC[I-1].Y
             / (FDesignHydrostatics.FData.BeamWaterline * FDesignHydrostatics.Draft)
           else
-          P.Z := FDesignHydrostatics.FData.SAC[I - 1].Y;
-          P.Z := P.Z + FDesignHydrostatics.FData.ModelMin.Z;
+          P.Z:=FDesignHydrostatics.FData.SAC[I - 1].Y;
+          P.Z:=P.Z + FDesignHydrostatics.FData.ModelMin.Z;
           Curve.Add(P);
         end;
-        Curve.Color := Preferences.HydrostaticsFontColor;
-        Curve.PenWidth := Preferences.FHydrostaticLineWidth;
-        if Curve.ShowCurvature then Curve.Fragments := 800
-                                else Curve.Fragments := 600;
+        Curve.Color:=Preferences.HydrostaticsFontColor;
+        Curve.PenWidth:=Preferences.FHydrostaticLineWidth;
+        if Curve.ShowCurvature then Curve.Fragments:=800
+                                else Curve.Fragments:=600;
         Curve.Draw(Viewport);
-        for I := 1 to Curve.NumberOfPoints do begin
-          P := Curve.Point[I - 1];
-          Pt := Viewport.Project(P);
-          Size := round(Sqrt(Viewport.Zoom) * 3);
-          if Size < 1 then Size := 1;
+        for I:=1 to Curve.NumberOfPoints do begin
+          P:=Curve.Point[I - 1];
+          Pt:=Viewport.Project(P);
+          Size:=round(Sqrt(Viewport.Zoom) * 3);
+          if Size < 1 then Size:=1;
           Viewport.MoveTo(Pt.X, Pt.Y - Size);
           Viewport.LineTo(Pt.X, Pt.Y + Size);
           Viewport.MoveTo(Pt.X - Size, Pt.Y);
           Viewport.LineTo(Pt.X + Size, Pt.Y);
-          Str := FloatToStrF(FDesignHydrostatics.FData.SAC[I - 1].Y, ffFixed, 7, 2);
+          Str:=FloatToStrF(FDesignHydrostatics.FData.SAC[I - 1].Y, ffFixed, 7, 2);
           if P.X < FProjectsettings.ProjectSplitSectionLocation then
             Viewport.TextOut(Pt.X - Viewport.TextWidth(str), Pt.Y -
               Viewport.TextHeight(str), Str)
@@ -1245,56 +1245,56 @@ begin
   end;
   // Drawflowlines
   if Visibility.ShowFlowlines then
-    for I := 1 to NumberOfFlowlines do Flowline[I - 1].Draw(Viewport);
+    for I:=1 to NumberOfFlowlines do Flowline[I - 1].Draw(Viewport);
 
   if (Viewport.ViewportMode = vmShadeGauss) and (Surface.NumberOfControlFaces > 0) and
     (Surface.MaxGaussCurvature - Surface.MinGaussCurvature > 1e-7) then
   begin
     // Draw Legend with Gaussian curvature values
-    NRect := 21;
-    LegendHeight := round(0.5 * Viewport.ClientHeight);
-    if LegendHeight < 100 then LegendHeight := 100;
+    NRect:=21;
+    LegendHeight:=round(0.5 * Viewport.ClientHeight);
+    if LegendHeight < 100 then LegendHeight:=100;
     if LegendHeight > 0.9 * Viewport.ClientHeight then
-      LegendHeight := round(0.9 * Viewport.ClientHeight);
-    if LegendHeight > 250 then LegendHeight := 250;
-    RectHeight := round(LegendHeight / NRect);
-    LegendHeight := NRect * RectHeight;
-    LegendWidth := 20;
-    Viewport.PenColor := Viewport.Color;
-    Viewport.PenStyle := psClear;
-    Viewport.PenWidth := 1;
-    Rect.Left := 5;
-    Rect.Top := 5;
-    Rect.Bottom := Rect.Top + LegendHeight;
-    Rect.Right := Rect.Left + LegendWidth;
+      LegendHeight:=round(0.9 * Viewport.ClientHeight);
+    if LegendHeight > 250 then LegendHeight:=250;
+    RectHeight:=round(LegendHeight / NRect);
+    LegendHeight:=NRect * RectHeight;
+    LegendWidth:=20;
+    Viewport.PenColor:=Viewport.Color;
+    Viewport.PenStyle:=psClear;
+    Viewport.PenWidth:=1;
+    Rect.Left:=5;
+    Rect.Top:=5;
+    Rect.Bottom:=Rect.Top + LegendHeight;
+    Rect.Right:=Rect.Left + LegendWidth;
     Viewport.Rectangle(Rect);
-    //Viewport.FontName := 'Arial';
-    //Viewport.FontSize := 8;
-    Viewport.FontColor := Preferences.GridFontColor;
-    NDecimal := 3;
+    //Viewport.FontName:='Arial';
+    //Viewport.FontSize:=8;
+    Viewport.FontColor:=Preferences.GridFontColor;
+    NDecimal:=3;
 
-    for I := 1 to NRect do
+    for I:=1 to NRect do
     begin
-      Rect.Bottom := Rect.Top + RectHeight;
+      Rect.Bottom:=Rect.Top + RectHeight;
       FillColor(I / Nrect, R, G, B);
-      Viewport.BrushColor := RGB(R, G, B);
-      Viewport.BrushStyle := bsSolid;
+      Viewport.BrushColor:=RGB(R, G, B);
+      Viewport.BrushStyle:=bsSolid;
       Viewport.Rectangle(Rect);
-      Viewport.BrushStyle := bsClear;
+      Viewport.BrushStyle:=bsClear;
       if odd(I) then begin
-        Tmp := (I - 1) / (NRect - 1);
+        Tmp:=(I - 1) / (NRect - 1);
         if Tmp >= 0.5 then begin
-          Tmp := 2 * (Tmp - 0.5);
-          Str := FloatToStrF(Surface.MinGaussCurvature * Tmp, ffFixed, 7, NDecimal);
+          Tmp:=2 * (Tmp - 0.5);
+          Str:=FloatToStrF(Surface.MinGaussCurvature * Tmp, ffFixed, 7, NDecimal);
         end
         else if Tmp < 0.5 then begin
-          Tmp := 2 * (0.5 - Tmp);
-          Str := FloatToStrF(Surface.MaxGaussCurvature * Tmp, ffFixed, 7, NDecimal);
-        end else Str := '0.0';
+          Tmp:=2 * (0.5 - Tmp);
+          Str:=FloatToStrF(Surface.MaxGaussCurvature * Tmp, ffFixed, 7, NDecimal);
+        end else Str:='0.0';
         Viewport.TextOut(Rect.Right + 5,
           (Rect.Top + Rect.Bottom - Viewport.TextHeight(str)) div 2, Str);
       end;
-      Rect.Top := Rect.Top + RectHeight;
+      Rect.Top:=Rect.Top + RectHeight;
     end;
   end;
 end;
@@ -1305,30 +1305,30 @@ var
   I: integer;
 begin
   if Surface.NumberOfControlFaces > 0 then begin
-    Surface.DrawMirror := Visibility.ModelView = mvBoth;
-    Min.X := 1e6;
-    Min.Y := 1e6;
-    Min.Z := 1e6;
-    Max.X := -1e6;
-    Max.Y := -1e6;
-    Max.Z := -1e6;
+    Surface.DrawMirror:=Visibility.ModelView = mvBoth;
+    Min.X:=1e6;
+    Min.Y:=1e6;
+    Min.Z:=1e6;
+    Max.X:=-1e6;
+    Max.Y:=-1e6;
+    Max.Z:=-1e6;
     Surface.Extents(Min, Max);
     if Visibility.ShowMarkers then
-      for I := 1 to NumberOfMarkers do
+      for I:=1 to NumberOfMarkers do
         Marker[I - 1].Extents(Min, Max);
   end else
   if Surface.NumberOfControlPoints > 1 then begin
-    for I := 1 to Surface.NumberOfControlPoints do if I=1 then begin
-        Min := Surface.ControlPoint[I - 1].Coordinate;
-        Max := Min;
+    for I:=1 to Surface.NumberOfControlPoints do if I=1 then begin
+        Min:=Surface.ControlPoint[I - 1].Coordinate;
+        Max:=Min;
     end else MinmAx( Surface.ControlPoint[I-1].Coordinate, Min,Max );
   end else begin
-    Min.X := -1;
-    Min.Y := Min.X;
-    Min.Z := Min.X;
-    Max.X := -Min.X;
-    Max.Y := Max.X;
-    Max.Z := Max.X;
+    Min.X:=-1;
+    Min.Y:=Min.X;
+    Min.Z:=Min.X;
+    Max.X:=-Min.X;
+    Max.Y:=Max.X;
+    Max.Z:=Max.X;
   end;
 end;
 
@@ -1338,18 +1338,18 @@ var
   First: boolean;
   vLayer: TFreeSubdivisionLayer;
 begin
-  Result := Surface.Min.Z;
-  First := True;
-  for I := 1 to NumberOfLayers do begin
-    vLayer := Surface.Layer[I - 1];
+  Result:=Surface.Min.Z;
+  First:=True;
+  for I:=1 to NumberOfLayers do begin
+    vLayer:=Surface.Layer[I - 1];
     if vLayer.UseInHydrostatics then
-      for J := 1 to vLayer.Count do
+      for J:=1 to vLayer.Count do
         if First then begin
-          Result := vLayer.Items[J - 1].Min.Z;
-          First := False;
+          Result:=vLayer.Items[J - 1].Min.Z;
+          First:=False;
         end else
         if vLayer.Items[J - 1].Min.Z < Result then
-          Result := vLayer.Items[J - 1].Min.Z;
+          Result:=vLayer.Items[J - 1].Min.Z;
   end;
 end;
 
@@ -1374,105 +1374,105 @@ var
   Curve: TFreeSubdivisionControlCurve;
 begin
   try
-    for I := 1 to Chines.Count - 1 do begin
-      if I <= Surface.NumberOfLayers then vLayer := Surface.Layer[I - 1]
-                                      else vLayer := Surface.AddNewLayer;
-      vLayer.Name := Userstring(186) + #32 + IntToStr(I);
-      vLayer.Developable := True;
+    for I:=1 to Chines.Count - 1 do begin
+      if I <= Surface.NumberOfLayers then vLayer:=Surface.Layer[I - 1]
+                                      else vLayer:=Surface.AddNewLayer;
+      vLayer.Name:=Userstring(186) + #32 + IntToStr(I);
+      vLayer.Developable:=True;
     end;
     // add special layer to close the hull at centerline
-    vLayer := Surface.AddNewLayer;
-    vLayer.Name := Userstring(187);
+    vLayer:=Surface.AddNewLayer;
+    vLayer.Name:=Userstring(187);
     Setlength(Points, Np);
 
     // Prepare matrices
-    Matrix := TFreeMatrix.Create;
+    Matrix:=TFreeMatrix.Create;
     Matrix.SetSize(Np, Np);
     Matrix.Fill(0.0);
-    Matrix.Value[0, 0] := 1.0;
-    for I := 2 to Np - 1 do begin
-      Matrix.Value[I - 1, I - 2] := 1 / 6;
-      Matrix.Value[I - 1, I - 1] := 2 / 3;
-      Matrix.Value[I - 1, I] := 1 / 6;
+    Matrix.Value[0, 0]:=1.0;
+    for I:=2 to Np - 1 do begin
+      Matrix.Value[I - 1, I - 2]:=1 / 6;
+      Matrix.Value[I - 1, I - 1]:=2 / 3;
+      Matrix.Value[I - 1, I]:=1 / 6;
     end;
-    Matrix.Value[Np - 1, Np - 1] := 1.0;                 // Invert matrix
-    Inv := Matrix.Invert;
+    Matrix.Value[Np - 1, Np - 1]:=1.0;                 // Invert matrix
+    Inv:=Matrix.Invert;
     FreeAndNil(Matrix);
 
-    OrgPts := TFreeMatrix.Create;
+    OrgPts:=TFreeMatrix.Create;
     OrgPts.SetSize(3, Np);
 
-    for I := 1 to Np do Setlength(Points[I - 1], Chines.Count);
-    for I := 1 to Chines.Count do begin
-      Spline := Chines[I - 1];
+    for I:=1 to Np do Setlength(Points[I - 1], Chines.Count);
+    for I:=1 to Chines.Count do begin
+      Spline:=Chines[I - 1];
       OrgPts.Fill(0.0);
-      for J := 1 to Np do begin
-        P := Spline.Value((J - 1) / (Np - 1));
-        OrgPts.Value[J - 1, 0] := P.X;
-        OrgPts.Value[J - 1, 1] := P.Y;
-        OrgPts.Value[J - 1, 2] := P.Z;
+      for J:=1 to Np do begin
+        P:=Spline.Value((J - 1) / (Np - 1));
+        OrgPts.Value[J - 1, 0]:=P.X;
+        OrgPts.Value[J - 1, 1]:=P.Y;
+        OrgPts.Value[J - 1, 2]:=P.Z;
       end;
       // calculate new points
-      NewPts := Inv.Multiply(OrgPts);
-      for J := 1 to Np do begin
-        P.X := NewPts.Value[J - 1, 0];
-        P.Y := NewPts.Value[J - 1, 1];
-        if P.Y < 0 then P.Y := 0;
-        P.Z := NewPts.Value[J - 1, 2];
+      NewPts:=Inv.Multiply(OrgPts);
+      for J:=1 to Np do begin
+        P.X:=NewPts.Value[J - 1, 0];
+        P.Y:=NewPts.Value[J - 1, 1];
+        if P.Y < 0 then P.Y:=0;
+        P.Z:=NewPts.Value[J - 1, 2];
         if (I = 1) and (J = 1) then begin
-          Min := P;
-          Max := Min;
+          Min:=P;
+          Max:=Min;
         end
         else MinMax(P, Min, Max);
-        Points[J - 1][I - 1] := Surface.AddControlPoint(P);
+        Points[J - 1][I - 1]:=Surface.AddControlPoint(P);
       end;
       FreeAndNil(NewPts);
     end;
     FreeAndNil(OrgPts);    // Delete inverted matrix
     FreeAndNil(Inv);       // Add chines as markers
-    for I := 1 to Chines.Count do begin
-      Spline := Chines[I - 1];
-      vMarker := TFreeMarker.Create(Surface);
-      vMarker.FOwner := self;
+    for I:=1 to Chines.Count do begin
+      Spline:=Chines[I - 1];
+      vMarker:=TFreeMarker.Create(Surface);
+      vMarker.FOwner:=self;
       Edit.Marker_Add(vMarker);
-      for J := 1 to Spline.NumberOfPoints do begin
+      for J:=1 to Spline.NumberOfPoints do begin
         vMarker.Add(Spline.Point[J - 1]);
-        vMarker.Knuckle[J - 1] := Spline.Knuckle[J - 1];
+        vMarker.Knuckle[J - 1]:=Spline.Knuckle[J - 1];
       end;
     end;                    // Setup controlfaces
-    Pts := TFasterListTFreeSubdivisionControlPoint.Create;
-    for I := 2 to Np do
-      for J := 2 to Chines.Count do begin
+    Pts:=TFasterListTFreeSubdivisionControlPoint.Create;
+    for I:=2 to Np do
+      for J:=2 to Chines.Count do begin
         Pts.Clear;
-        Point := Points[I - 1][J - 1];
+        Point:=Points[I - 1][J - 1];
         if Pts.IndexOf(Point) = -1 then Pts.Add(Point);
-        Point := Points[I - 2][J - 1];
+        Point:=Points[I - 2][J - 1];
         if Pts.IndexOf(Point) = -1 then Pts.Add(Point);
-        Point := Points[I - 2][J - 2];
+        Point:=Points[I - 2][J - 2];
         if Pts.IndexOf(Point) = -1 then Pts.Add(Point);
-        Point := Points[I - 1][J - 2];
+        Point:=Points[I - 1][J - 2];
         if Pts.IndexOf(Point) = -1 then Pts.Add(Point);
         if Pts.Count > 2 then
           Surface.AddControlFace(Pts, True, Surface.Layer[J - 2]);
       end;
 
-    for I := 2 to Np do
-      for J := 1 to Chines.Count do begin
-        Edge := Surface.EdgeExists(Points[I - 2][J - 1], Points[I - 1][J - 1])
+    for I:=2 to Np do
+      for J:=1 to Chines.Count do begin
+        Edge:=Surface.EdgeExists(Points[I - 2][J - 1], Points[I - 1][J - 1])
                 as TFreeSubdivisionControlEdge;
-        if Edge <> nil then Edge.Crease := True;
+        if Edge <> nil then Edge.Crease:=True;
       end;
 
     // Add controlcurves
-    for J := 1 to Chines.Count do begin
-      Curve := TFreeSubdivisionControlCurve.Create(Surface);
+    for J:=1 to Chines.Count do begin
+      Curve:=TFreeSubdivisionControlCurve.Create(Surface);
       Surface.AddControlCurve(Curve);
-      for I := 1 to Np do begin
+      for I:=1 to Np do begin
         Curve.AddPoint(Points[I - 1][J - 1]);
         if I > 1 then begin
-          Edge := Surface.EdgeExists(Points[I - 2][J - 1], Points[I - 1][J - 1]) as
+          Edge:=Surface.EdgeExists(Points[I - 2][J - 1], Points[I - 1][J - 1]) as
             TFreeSubdivisionControlEdge;
-          if Edge <> nil then Edge.Curve := Curve;
+          if Edge <> nil then Edge.Curve:=Curve;
         end;
       end;
     end;
@@ -1480,24 +1480,24 @@ begin
     // Check for stem, keel and stern points to be closed
     Pts.Clear;
     // first stern
-    for I := Chines.Count downto 2 do Pts.Add(Points[Np - 1][I - 1]);
+    for I:=Chines.Count downto 2 do Pts.Add(Points[Np - 1][I - 1]);
     // then keel
-    for I := Np downto 1 do Pts.Add(Points[I - 1][0]);
+    for I:=Np downto 1 do Pts.Add(Points[I - 1][0]);
     // and finally stem
-    for I := 2 to Chines.Count do Pts.Add(Points[0][I - 1]);
-    Pts2 := TFasterListTFreeSubdivisionControlPoint.Create;
-    for I := 1 to Pts.Count do begin
-      Point := Pts[I - 1];
-      P := Point.Coordinate;
+    for I:=2 to Chines.Count do Pts.Add(Points[0][I - 1]);
+    Pts2:=TFasterListTFreeSubdivisionControlPoint.Create;
+    for I:=1 to Pts.Count do begin
+      Point:=Pts[I - 1];
+      P:=Point.Coordinate;
       if P.Y <> 0.0 then begin
-        P.Y := 0;
-        Point := Surface.AddControlPoint(P);
-        if Point.Coordinate.Y <> 0.0 then Point.Coordinate := P;
+        P.Y:=0;
+        Point:=Surface.AddControlPoint(P);
+        if Point.Coordinate.Y <> 0.0 then Point.Coordinate:=P;
         Pts2.Add(Point);
       end else Pts2.Add(Point);
     end;
-    Tmp := TFasterListTFreeSubdivisionControlPoint.Create;
-    for I := 2 to Pts.Count do begin
+    Tmp:=TFasterListTFreeSubdivisionControlPoint.Create;
+    for I:=2 to Pts.Count do begin
       Tmp.Clear;
       if Tmp.IndexOf(Pts2[I - 1]) = -1 then Tmp.Add(Pts2[I - 1]);
       if Tmp.IndexOf(Pts2[I - 2]) = -1 then Tmp.Add(Pts2[I - 2]);
@@ -1524,10 +1524,10 @@ begin
       end;
     }
     // set transom as knuckle
-    for J := 2 to Chines.Count do begin
-      Edge := Surface.EdgeExists(Points[Np - 1][J - 2], Points[Np - 1][J - 1]) as
+    for J:=2 to Chines.Count do begin
+      Edge:=Surface.EdgeExists(Points[Np - 1][J - 2], Points[Np - 1][J - 1]) as
         TFreeSubdivisionControlEdge;
-      if Edge <> nil then Edge.Crease := True;
+      if Edge <> nil then Edge.Crease:=True;
     end;
     // Delete unused layers;
     Edit.Layer_DeleteEmpty(True);
@@ -1541,15 +1541,15 @@ begin
   finally
     Extents(Min, Max);
     //ProjectSettings.ProjectWaterDensity:=1.0;
-    ProjectSettings.ProjectBeam := 2 * Max.Y;
-    ProjectSettings.ProjectLength := Max.X - Min.X;
-    ProjectSettings.ProjectDraft := 1.0;
-    Built := False;
-    Precision := fpHigh;
+    ProjectSettings.ProjectBeam:=2 * Max.Y;
+    ProjectSettings.ProjectLength:=Max.X - Min.X;
+    ProjectSettings.ProjectDraft:=1.0;
+    Built:=False;
+    Precision:=fpHigh;
     Draw;
-    FileChanged := True;
-    for I := 1 to Chines.Count do begin
-      Spline := Chines[I - 1];
+    FileChanged:=True;
+    for I:=1 to Chines.Count do begin
+      Spline:=Chines[I - 1];
       FreeAndNil(Spline);
     end;
   end;
@@ -1569,64 +1569,64 @@ var
 const WN: array[0..3] of Integer = ( 3,1,0,2 );
 begin
   // Remember the filename because it will be erased by the clear method
-  Str := FFilename;
+  Str:=FFilename;
   Clear;
-  FFilename := Str;
-  PrevCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  FFilename:=Str;
+  PrevCursor:=Screen.Cursor;
+  Screen.Cursor:=crHourGlass;
   try               // finally
 //  try             // except
     Source.Reset;
-    Source.Encoding := Preferences.FbmEncoding;
+    Source.Encoding:=Preferences.FbmEncoding;
     Source.LoadString( Str );
     if Str = 'FREE!ship' then begin
       Source.LoadTFreeFileVersion( FFileVersion );
-      Source.Version := FFileVersion;
+      Source.Version:=FFileVersion;
 //    if (FFileVersion <= CurrentVersion)
 //    or (FFileVersion <= High(FFileVersion) ) then    // !! без ограничений...
       begin
         WriteLN( 'File.Version = ',FFileVersion,' : [',low(TFreeFileVersion),'..',high(TFreeFileVersion),'].' );
         Source.LoadInteger( I );
-        FPrecision := TFreePrecisionType( I );
+        FPrecision:=TFreePrecisionType( I );
         Visibility.LoadBinary( Source );
         ProjectSettings.LoadBinary( Source,nil ); // Load actual subdivision-surface data.
         Surface.LoadBinary( Source );
 //      if Surface.NumberOfControlFaces>0 then CF0:=Surface.ControlFace[0];
         Source.LoadInteger(N);                    // Load stations
-        FStations.Capacity := N;
-        for I := 1 to N do begin
-          Intersection := TFreeIntersection.Create(self);
+        FStations.Capacity:=N;
+        for I:=1 to N do begin
+          Intersection:=TFreeIntersection.Create(self);
           FStations.Add(Intersection);
           Intersection.LoadBinary(Source);
         end;
         Source.LoadInteger(N);                    // Load Buttocks
-        FButtocks.Capacity := N;
-        for I := 1 to N do begin
-          Intersection := TFreeIntersection.Create(self);
+        FButtocks.Capacity:=N;
+        for I:=1 to N do begin
+          Intersection:=TFreeIntersection.Create(self);
           FButtocks.Add(Intersection);
           Intersection.LoadBinary(Source);
         end;
         Source.LoadInteger(N);                    // Load Waterlines
-        FWaterlines.Capacity := N;
-        for I := 1 to N do begin
-          Intersection := TFreeIntersection.Create(self);
+        FWaterlines.Capacity:=N;
+        for I:=1 to N do begin
+          Intersection:=TFreeIntersection.Create(self);
           FWaterlines.Add(Intersection);
           Intersection.LoadBinary(Source);
         end;
         if FileVersion >= fv180 then begin        // Load Diagonals
           Source.LoadInteger(N);
-          FDiagonals.Capacity := N;
-          for I := 1 to N do begin
-            Intersection := TFreeIntersection.Create(self);
+          FDiagonals.Capacity:=N;
+          for I:=1 to N do begin
+            Intersection:=TFreeIntersection.Create(self);
             FDiagonals.Add(Intersection);
             Intersection.LoadBinary(Source);
           end;
           if FileVersion >= fv191 then begin      // Load markers
             Source.LoadInteger(N);
-            FMarkers.Capacity := N;
-            for I := 1 to N do begin
-              vMarker := TFreeMarker.Create(Surface);
-              vMarker.FOwner := Self;
+            FMarkers.Capacity:=N;
+            for I:=1 to N do begin
+              vMarker:=TFreeMarker.Create(Surface);
+              vMarker.FOwner:=Self;
               Edit.Marker_Add(vMarker);
               vMarker.LoadBinary(Source);
             end;
@@ -1637,15 +1637,15 @@ begin
               Source.LoadTFreeKAPERResistanceData(FResistanceKaperData);
               if FileVersion >= fv250 then begin
                 Source.LoadInteger(N);                      // BackgroundImages
-                for I := 1 to N do begin
-                  Data := TFreeBackgroundImageData.Create(self);
+                for I:=1 to N do begin
+                  Data:=TFreeBackgroundImageData.Create(self);
                   FBackgroundImages.Add(Data);
                   Data.LoadBinary(Source);
                 end;
                 Source.LoadInteger(N);                         // TFreeFlowline
-                FFlowlines.Capacity := N;
-                for I := 1 to N do begin
-                  vFlowline := TFreeFlowline.Create(self);
+                FFlowlines.Capacity:=N;
+                for I:=1 to N do begin
+                  vFlowline:=TFreeFlowline.Create(self);
                   FFlowlines.Add(vFlowline);
                   vFlowline.LoadBinary(Source);
                 end;
@@ -1663,21 +1663,21 @@ begin
     end // 'FREE!ship'
     else MessageDlg( 'Not a FREE!ship file!',mtError,[mbOK],0 ); //=Userstring(189)
 
-    Surface.UnderWaterColor := ProjectSettings.ProjectUnderWaterColor;
-    Surface.ShadeUnderWater := ProjectSettings.ProjectShadeUnderwaterShip;
+    Surface.UnderWaterColor:=ProjectSettings.ProjectUnderWaterColor;
+    Surface.ShadeUnderWater:=ProjectSettings.ProjectShadeUnderwaterShip;
 
-    FileChanged := False;
-    ModelIsLoaded := True;
+    FileChanged:=False;
+    ModelIsLoaded:=True;
 //  except
 //    Surface.Clear; raise;
 //  end;
   finally
-    Surface.DesiredSubdivisionLevel := Ord(Precision) + 1;
+    Surface.DesiredSubdivisionLevel:=Ord(Precision) + 1;
 //    MessageDlg( '///begin???',mtError,[mbOK],0 );
 //    CF0:=Surface.ControlFace[0];
 //    MessageDlg( '...begin???',mtError,[mbOK],0 );
 //  Surface.Rebuild;                             // it will be rebuilt in Draw
-    Screen.Cursor := PrevCursor;
+    Screen.Cursor:=PrevCursor;
 //  for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;  ///!!! -->> File_Load(Name)
     if Assigned( OnUpdateGeometryInfo ) then OnUpdateGeometryInfo( self );
   end;
@@ -1689,7 +1689,7 @@ procedure TFreeShip.LoadControlPointNames(Source:TFreeFileBuffer);
 var I,N:integer; NameData:TNameData;
 begin
   Source.LoadInteger(N);                                                        //Logger.Debug('ControlPoint Names:' + IntToStr(N) + ' pos:' + IntToStr(Source.Position));
-  for I := 1 to N do begin
+  for I:=1 to N do begin
     Source.LoadTNameData(NameData);
     Surface.ControlPoint[NameData.N].Name:=NameData.Name;
   end;
@@ -1698,7 +1698,7 @@ procedure TFreeShip.LoadControlEdgeNames(Source:TFreeFileBuffer);
 var I,N:integer; NameData:TNameData;
 begin
   Source.LoadInteger(N);                                                        //Logger.Debug('ControlEdge Names:' + IntToStr(N) + ' pos:' + IntToStr(Source.Position));
-  for I := 1 to N do begin
+  for I:=1 to N do begin
     Source.LoadTNameData(NameData);
     Surface.ControlEdge[NameData.N].Name:=NameData.Name;
   end;
@@ -1707,7 +1707,7 @@ procedure TFreeShip.LoadControlFaceNames(Source:TFreeFileBuffer);
 var I,N:integer; NameData:TNameData;
 begin
   Source.LoadInteger(N);                                                        //Logger.Debug('ControlFace Names:' + IntToStr(N) + ' pos:' + IntToStr(Source.Position));
-  for I := 1 to N do begin
+  for I:=1 to N do begin
     Source.LoadTNameData(NameData);
     Surface.ControlFace[NameData.N].Name:=NameData.Name;
   end;
@@ -1716,7 +1716,7 @@ procedure TFreeShip.LoadControlCurveNames(Source:TFreeFileBuffer);
 var I,N:integer; NameData:TNameData;
 begin
   Source.LoadInteger(N);                                                        //Logger.Debug('ControlCurve Names:' + IntToStr(N) + ' pos:' + IntToStr(Source.Position));
-  for I := 1 to N do begin
+  for I:=1 to N do begin
     Source.LoadTNameData(NameData);
     Surface.ControlCurve[NameData.N].Name:=NameData.Name;
   end;
@@ -1725,7 +1725,7 @@ procedure TFreeShip.LoadControlPointLinearConstraints(Source:TFreeFileBuffer);
 var I,N:integer; LCData:TLinearConstraintData;
 begin
   Source.LoadInteger(N);                                                        //Logger.Debug('ControlPoint Linear Constraints:' + IntToStr(N) + ' pos:' + IntToStr(Source.Position));
-  for I := 1 to N do begin
+  for I:=1 to N do begin
     Source.LoadTLinearConstraintData(LCData);
     if (LCData.LinearConstraintPointA > -1)
       and (LCData.LinearConstraintPointB > -1) then
@@ -1741,7 +1741,7 @@ procedure TFreeShip.LoadControlPointGroups(Source:TFreeFileBuffer);
 var I,N:integer; G:TFreeSubdivisionControlPointGroup;
 begin
   Source.LoadInteger(N);                                                        //Logger.Debug('ControlPointGroups:' + IntToStr(N) + ' pos:' + IntToStr(Source.Position));
-  for I := 1 to N do begin
+  for I:=1 to N do begin
     G:=TFreeSubdivisionControlPointGroup.Create(Surface);
     G.LoadBinary(Source);
     Surface.ControlPointGroups.Add(G);
@@ -1755,11 +1755,11 @@ var I,N:integer; AnchorData:TAnchorData;
   Point,AnchorPoint:TFreeSubdivisionControlPoint;
 begin
   Source.LoadInteger( N );                                                        //Logger.Debug('Anchors:' + IntToStr(N) + ' pos:' + IntToStr(Source.Position));
-  for I := 1 to N do begin
+  for I:=1 to N do begin
     Source.LoadTAnchorData( AnchorData );
     if (AnchorData.AnchorPoint > -1) then begin
-       Point := Surface.ControlPoint[AnchorData.N];
-       AnchorPoint := Surface.ControlPoint[AnchorData.AnchorPoint];
+       Point:=Surface.ControlPoint[AnchorData.N];
+       AnchorPoint:=Surface.ControlPoint[AnchorData.AnchorPoint];
        Point.SetAnchorPoint(AnchorPoint);
        Point.IsAnchorHard:=AnchorData.IsAnchorHard;
     end;
@@ -1774,20 +1774,20 @@ var
   I: integer;
   Str, Ext: string;
 begin
-  Ext := LowerCase(ExtractFileExt(FileName));
-  if Ext = '.fbm' then Source := TFreeFileBuffer.Create else
-  if Ext = '.ftm' then Source := TFreeTextBuffer.Create else exit;
+  Ext:=LowerCase(ExtractFileExt(FileName));
+  if Ext = '.fbm' then Source:=TFreeFileBuffer.Create else
+  if Ext = '.ftm' then Source:=TFreeTextBuffer.Create else exit;
 //try
     Source.LoadFromFile(FileName);                // Load everything into memory
     Source.Reset;
-    Source.Encoding := Preferences.FbmEncoding;
+    Source.Encoding:=Preferences.FbmEncoding;
     Source.LoadString(Str);
     if Str = 'FREE!ship' then begin
       Source.LoadTFreeFileVersion(FFileVersion);
-      Source.Version := FFileVersion;
+      Source.Version:=FFileVersion;
       if FFileVersion >= fv210 then begin
         Source.LoadInteger(I);
-        FPrecision := TFreePrecisionType( I );
+        FPrecision:=TFreePrecisionType( I );
         Visibility.LoadBinary( Source );
         ProjectSettings.LoadBinary( Source,Image );
       end;
@@ -1807,16 +1807,16 @@ procedure TFreeShip.RebuildModel;
 var
   PrevCursor: TCursor;
 begin
-  PrevCursor := Screen.Cursor;
+  PrevCursor:=Screen.Cursor;
   if Screen.Cursor <> crHourglass then
-    Screen.Cursor := crHourglass;
+    Screen.Cursor:=crHourglass;
 //try
-    Surface.DesiredSubdivisionLevel := Ord( Precision ) + 1;
+    Surface.DesiredSubdivisionLevel:=Ord( Precision ) + 1;
     Surface.Rebuild;
     InvalidateIntersections;
     Draw;
 //finally
-    if Screen.Cursor<>PrevCursor then Screen.Cursor := PrevCursor;
+    if Screen.Cursor<>PrevCursor then Screen.Cursor:=PrevCursor;
 //end;
 end;
 
@@ -1827,49 +1827,49 @@ begin if not Built then RebuildModel; end;
 
 function TFreeShip.DetectMinFileVersion:TFreeFileVersion;
 var I: integer;
-begin result := fv210;            // s картинкой
-//if NumberOfDiagonals > 0 then result := fv180;
-//if NumberOfMarkers > 0   then result := fv191;
+begin result:=fv210;            // s картинкой
+//if NumberOfDiagonals > 0 then result:=fv180;
+//if NumberOfMarkers > 0   then result:=fv191;
 //if (FResistanceDelftData.EndSpeed>0)
-//or (FResistanceKaperData.Draft>0) then result := fv210;
+//or (FResistanceKaperData.Draft>0) then result:=fv210;
 
 //ProjectSettings.FSavePreview:=true;  // fv210
 
   if (NumberOfbackgroundImages>0)
-  or (NumberOfFlowlines>0) then result := fv250;
+  or (NumberOfFlowlines>0) then result:=fv250;
 
   for i:=0 to Surface.NumberOfLayers-1 do
-    if Surface.Layer[i].AlphaBlend < 255 then result := fv261;
+    if Surface.Layer[i].AlphaBlend < 255 then result:=fv261;
 (*
   if (FResistanceHoltrData.EndSpeed>0) or (FPropellerTask1Data.Dat2>0)
   or (FPropellerTask2Data.Dat2>0)      or (FPropellerTask3Data.Dat2>0)
-  or (FResistanceOSTData.EndSpeed>0)     then result := fv270;
-  if not isEmpty(FResistancePlaningData) then result := fv280;
-  if not isEmpty(FPropellerRvrsData)     then result := fv290;
-  if not isEmpty(FResistanceHollenData)  then result := fv295;
-  if not isEmpty(FPropellerTask4Data)    then result := fv296;
-  if not isEmpty(FPropellerTask5Data)    then result := fv302;
-  if not isEmpty(FResistanceOortmerData) then result := fv309;
-  if not isEmpty(FResistanceFungData)    then result := fv313;
-  if not isEmpty(FHydrodynManeuvData)    then result := fv327;
-  if not isEmpty(FHydrodynTask1Data)     then result := fv327;
-  if not isEmpty(FResistanceRBHSData)    then result := fv335;
-  if not isEmpty(FResistanceMHData)      then result := fv335;
+  or (FResistanceOSTData.EndSpeed>0)     then result:=fv270;
+  if not isEmpty(FResistancePlaningData) then result:=fv280;
+  if not isEmpty(FPropellerRvrsData)     then result:=fv290;
+  if not isEmpty(FResistanceHollenData)  then result:=fv295;
+  if not isEmpty(FPropellerTask4Data)    then result:=fv296;
+  if not isEmpty(FPropellerTask5Data)    then result:=fv302;
+  if not isEmpty(FResistanceOortmerData) then result:=fv309;
+  if not isEmpty(FResistanceFungData)    then result:=fv313;
+  if not isEmpty(FHydrodynManeuvData)    then result:=fv327;
+  if not isEmpty(FHydrodynTask1Data)     then result:=fv327;
+  if not isEmpty(FResistanceRBHSData)    then result:=fv335;
+  if not isEmpty(FResistanceMHData)      then result:=fv335;
   for i:=0 to Surface.ControlPoints.Count-1 do
-    if Surface.ControlPoints[i].Name<>'' then begin result := fv421; break; end;
+    if Surface.ControlPoints[i].Name<>'' then begin result:=fv421; break; end;
   for i:=0 to Surface.ControlEdges.Count-1 do
-    if Surface.ControlEdges[i].Name<>'' then begin result := fv421; break; end;
+    if Surface.ControlEdges[i].Name<>'' then begin result:=fv421; break; end;
   for i:=0 to Surface.ControlFaces.Count-1 do
-    if Surface.ControlFaces[i].Name<>'' then begin result := fv421; break; end;
+    if Surface.ControlFaces[i].Name<>'' then begin result:=fv421; break; end;
   for i:=0 to Surface.ControlCurves.Count-1 do
-    if Surface.ControlCurves[i].Name<>'' then begin result := fv421; break; end;
+    if Surface.ControlCurves[i].Name<>'' then begin result:=fv421; break; end;
   for i:=0 to Surface.ControlPoints.Count-1 do
     if (Surface.ControlPoints[i].LinearConstraintPointA<>nil)
-    or (Surface.ControlPoints[i].LinearConstraintPointB<>nil) then begin result := fv421; break; end;
-  if Surface.ControlPointGroups.Count>0 then result := fv430;
+    or (Surface.ControlPoints[i].LinearConstraintPointB<>nil) then begin result:=fv421; break; end;
+  if Surface.ControlPointGroups.Count>0 then result:=fv430;
   for i:=0 to Surface.ControlPoints.Count-1 do
     if Surface.ControlPoints[i].AnchorPoint<>nil then begin result:=fv462; break; end;
-  if ProjectSettings.ProjectUnderWaterColorAlpha < 255 then result := fv500;
+  if ProjectSettings.ProjectUnderWaterColorAlpha < 255 then result:=fv500;
 *)
 end;
 
@@ -1878,8 +1878,8 @@ var
   PrevCursor: TCursor;
   I,N: integer;
 begin
-  //PrevCursor := Screen.Cursor;
-  //Screen.Cursor := crHourGlass;
+  //PrevCursor:=Screen.Cursor;
+  //Screen.Cursor:=crHourGlass;
   //try
     FileVersion:=DetectMinFileVersion;
     Destination.Encoding:=Preferences.FbmEncoding;
@@ -1890,17 +1890,17 @@ begin
     ProjectSettings.SaveBinary(Destination);    // Save actual subdivision-surface data.
     Surface.SaveBinary(Destination);            // Save stations
     Destination.Add(NumberOfStations);
-    for I := 1 to NumberOfStations do Station[I - 1].SaveBinary(Destination);    // Save Buttocks
+    for I:=1 to NumberOfStations do Station[I - 1].SaveBinary(Destination);    // Save Buttocks
     Destination.Add(NumberOfButtocks);
-    for I := 1 to NumberOfButtocks do Buttock[I - 1].SaveBinary(Destination);    // Save Waterlines
+    for I:=1 to NumberOfButtocks do Buttock[I - 1].SaveBinary(Destination);    // Save Waterlines
     Destination.Add(NumberOfWaterlines);
-    for I := 1 to NumberOfWaterlines do Waterline[I - 1].SaveBinary(Destination);
+    for I:=1 to NumberOfWaterlines do Waterline[I - 1].SaveBinary(Destination);
     if FileVersion >= fv180 then begin          // Save Diagonals
       Destination.Add(NumberOfDiagonals);
       for I:=1 to NumberOfDiagonals do Diagonal[I-1].SaveBinary(Destination);
       if FileVersion >= fv191 then begin        // Save markers
         Destination.Add(NumberOfMarkers);
-        for I := 1 to NumberOfMarkers do Marker[I - 1].SaveBinary(Destination);
+        for I:=1 to NumberOfMarkers do Marker[I - 1].SaveBinary(Destination);
         if FileVersion >= fv210 then begin
           Destination.Add(FResistanceDelftData);
           Destination.Add(FResistanceKaperData);
@@ -1916,8 +1916,8 @@ begin
       end;
     end;
 //finally
-    FileChanged := False;
-    //Screen.Cursor := PrevCursor;
+    FileChanged:=False;
+    //Screen.Cursor:=PrevCursor;
 //end;
 end;
 
@@ -2046,9 +2046,9 @@ begin
     if Surface.ControlPoint[i].AnchorPoint <> nil then
     begin
       AnchorData.N:=i;
-      Point := Surface.ControlPoint[i];
-      AnchorData.AnchorPoint := Surface.ControlPoints.IndexOf(Point.AnchorPoint);
-      AnchorData.IsAnchorHard := Point.IsAnchorHard;
+      Point:=Surface.ControlPoint[i];
+      AnchorData.AnchorPoint:=Surface.ControlPoints.IndexOf(Point.AnchorPoint);
+      AnchorData.IsAnchorHard:=Point.IsAnchorHard;
       Destination.Add(AnchorData);
     end;
 end;
@@ -2072,57 +2072,57 @@ var
   vSurface: TFreeSubdivisionSurface;
   AddCurve: boolean;
 begin
-  vSurface := nil;
+  vSurface:=nil;
   if Faces.Count > 0 then begin
-    Face := Faces[0];
-    vSurface := Face.Surface;
+    Face:=Faces[0];
+    vSurface:=Face.Surface;
   end;
   if vSurface = nil then exit;
-  SaveDialog := TSaveDialog.Create(Owner);
-  SaveDialog.InitialDir := Preferences.ExportDirectory;
-  SaveDialog.FileName := ChangeFileExt(ExtractFilename(FileName), '.part');
-  SaveDialog.Filter := createDialogFilter(rsFREEShipGeometryPart,['part']);
-  Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
+  SaveDialog:=TSaveDialog.Create(Owner);
+  SaveDialog.InitialDir:=Preferences.ExportDirectory;
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FileName), '.part');
+  SaveDialog.Filter:=createDialogFilter(rsFREEShipGeometryPart,['part']);
+  Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
-    Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
+    Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
     // Extract controlPoints and control edges
-    Layers := TFasterListTFreeSubdivisionLayer.Create;
-    Points := TFasterListTFreeSubdivisionControlPoint.Create;
-    Edges := TFasterListTFreeSubdivisionControlEdge.Create;
-    Curves := TFasterListTFreeSubdivisionControlCurve.Create;
-    for I := 1 to Faces.Count do begin WestPoint;
-      Face := Faces[I - 1];
+    Layers:=TFasterListTFreeSubdivisionLayer.Create;
+    Points:=TFasterListTFreeSubdivisionControlPoint.Create;
+    Edges:=TFasterListTFreeSubdivisionControlEdge.Create;
+    Curves:=TFasterListTFreeSubdivisionControlCurve.Create;
+    for I:=1 to Faces.Count do begin WestPoint;
+      Face:=Faces[I - 1];
       if Layers.SortedIndexOf(Face.Layer) = -1 then
          Layers.AddSorted(Face.Layer);
-      P1 := Face.Point[Face.NumberOfPoints - 1] as TFreeSubdivisionControlPoint;
-      for J := 1 to face.NumberOfpoints do begin
-        P2 := Face.Point[J - 1] as TFreeSubdivisionControlPoint;
+      P1:=Face.Point[Face.NumberOfPoints - 1] as TFreeSubdivisionControlPoint;
+      for J:=1 to face.NumberOfpoints do begin
+        P2:=Face.Point[J - 1] as TFreeSubdivisionControlPoint;
         if Points.SortedIndexOf(P2) = -1 then Points.AddSorted(P2);
-        Edge := P1.Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
+        Edge:=P1.Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
         if Edge <> nil then
           if Edges.SortedIndexOf(Edge) = -1 then Edges.AddSorted(Edge);
-        P1 := P2;
+        P1:=P2;
       end;
     end;
 
     // process control curves
-    for I := 1 to Surface.NumberOfControlCurves do
+    for I:=1 to Surface.NumberOfControlCurves do
     begin
-      Curve := Surface.ControlCurve[I - 1];
+      Curve:=Surface.ControlCurve[I - 1];
       // In order to export this curve, all associated controledges must be in the edges list
-      AddCurve := True and (Curve.NumberOfControlPoints > 1);
-      for J := 2 to Curve.NumberOfControlPoints do
+      AddCurve:=True and (Curve.NumberOfControlPoints > 1);
+      for J:=2 to Curve.NumberOfControlPoints do
       begin
-        P1 := Curve.ControlPoint[J - 2];
-        P2 := Curve.ControlPoint[J - 1];
-        Edge := Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
+        P1:=Curve.ControlPoint[J - 2];
+        P2:=Curve.ControlPoint[J - 1];
+        Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
         if Edge <> nil then
         begin
           if Edges.SortedIndexOf(Edge) = -1 then
-            AddCurve := False;
+            AddCurve:=False;
         end
         else
-          AddCurve := False;
+          AddCurve:=False;
       end;
       if AddCurve then
         Curves.Add(Curve);
@@ -2131,66 +2131,66 @@ begin
     Curves.Sort;
     Layers.Sort;
 
-    PartFile := TFreeFileBuffer.Create;
-    PartFile.Version := CurrentVersion;
-    PartFile.Encoding := Preferences.FbmEncoding;
+    PartFile:=TFreeFileBuffer.Create;
+    PartFile.Version:=CurrentVersion;
+    PartFile.Encoding:=Preferences.FbmEncoding;
 
-    PrevCursor := Screen.Cursor;
-    Screen.Cursor := crHourGlass;
+    PrevCursor:=Screen.Cursor;
+    Screen.Cursor:=crHourGlass;
 //  try
       Partfile.Add('FREE!ship partfile');
       Partfile.Add(Ord(21));
       //ord(CurrentVersion));                         // File version
-      I := Ord(ProjectSettings.ProjectUnits);
+      I:=Ord(ProjectSettings.ProjectUnits);
       Partfile.Add(I);
       // Write units type used (imperial or metric);
       Partfile.Add(Layers.Count);
       // Number of layers in the file
-      for I := 1 to Layers.Count do begin          // Save layer info
-        vLayer := Layers[I - 1];
+      for I:=1 to Layers.Count do begin          // Save layer info
+        vLayer:=Layers[I - 1];
         vLayer.SaveBinary(Partfile);
       end;
       // Save controlpoints
       Partfile.Add(Points.Count);
-      for I := 1 to Points.Count do begin
-        P2 := Points[I - 1];
+      for I:=1 to Points.Count do begin
+        P2:=Points[I - 1];
         P2.SaveBinary(PartFile);
       end;                                          // Save control edges
       Partfile.Add(Edges.Count);
-      for I := 1 to Edges.Count do begin
-        Edge := Edges[I - 1];
-        Index := Points.SortedIndexOf(Edge.StartPoint);
+      for I:=1 to Edges.Count do begin
+        Edge:=Edges[I - 1];
+        Index:=Points.SortedIndexOf(Edge.StartPoint);
         Partfile.Add(Index);
-        Index := Points.SortedIndexOf(Edge.EndPoint);
+        Index:=Points.SortedIndexOf(Edge.EndPoint);
         Partfile.Add(Index);
         Partfile.Add(Edge.Crease);
       end;
       // save controlfaces
       Partfile.Add(Faces.Count);
-      for I := 1 to Faces.Count do begin
-        Face := Faces[I - 1];
+      for I:=1 to Faces.Count do begin
+        Face:=Faces[I - 1];
         Partfile.Add(Face.NumberOfpoints);
-        for J := 1 to Face.NumberOfPoints do begin
-          Index := Points.SortedIndexOf(Face.Point[J - 1]);
+        for J:=1 to Face.NumberOfPoints do begin
+          Index:=Points.SortedIndexOf(Face.Point[J - 1]);
           Partfile.Add(Index);
         end;
-        Index := Layers.SortedIndexOf(Face.Layer);
+        Index:=Layers.SortedIndexOf(Face.Layer);
         Partfile.Add(Index);
       end;
       // Save controlcurves
       Partfile.Add(Curves.Count);
-      for I := 1 to Curves.Count do begin
-        Curve := Curves[I - 1];
+      for I:=1 to Curves.Count do begin
+        Curve:=Curves[I - 1];
         Partfile.Add(Curve.NumberOfControlPoints);
-        for J := 1 to Curve.NumberOfControlPoints do begin
-          P2 := Curve.ControlPoint[j - 1];
-          Index := points.SortedIndexOf(P2);
+        for J:=1 to Curve.NumberOfControlPoints do begin
+          P2:=Curve.ControlPoint[j - 1];
+          Index:=points.SortedIndexOf(P2);
           Partfile.Add(Index);
         end;
       end;
       Partfile.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.part'));
 //  finally
-      Screen.Cursor := PrevCursor;
+      Screen.Cursor:=PrevCursor;
 //  end;
     FreeAndNil(Partfile);
     FreeAndNil(Points);
@@ -2211,46 +2211,46 @@ var
   P1, P2, P: T3DCoordinate;
   s1, s2, T: TFloatType;
 begin
-  FirstPoint := True;
-  for I := 1 to NumberOfLayers do
+  FirstPoint:=True;
+  for I:=1 to NumberOfLayers do
   begin
-    vLayer := Surface.Layer[I - 1];
+    vLayer:=Surface.Layer[I - 1];
     if vLayer.UseInHydrostatics then
-      for J := 1 to vLayer.Count do
+      for J:=1 to vLayer.Count do
       begin
-        Face := vLayer.Items[J - 1];
-        for K := 1 to Face.ChildCount do
+        Face:=vLayer.Items[J - 1];
+        for K:=1 to Face.ChildCount do
         begin
-          Child := Face.Child[K - 1];
-          P1 := Child.Point[Child.NumberOfPoints - 1].Coordinate;
-          s1 := WlPlane.a * P1.x + WlPlane.b * P1.y + WlPlane.c * P1.z + WlPlane.d;
-          for L := 1 to Child.NumberOfpoints do
+          Child:=Face.Child[K - 1];
+          P1:=Child.Point[Child.NumberOfPoints - 1].Coordinate;
+          s1:=WlPlane.a * P1.x + WlPlane.b * P1.y + WlPlane.c * P1.z + WlPlane.d;
+          for L:=1 to Child.NumberOfpoints do
           begin
-            P2 := Child.Point[L - 1].Coordinate;
-            s2 := WlPlane.a * P2.x + WlPlane.b * P2.y + WlPlane.c * P2.z + WlPlane.d;
+            P2:=Child.Point[L - 1].Coordinate;
+            s2:=WlPlane.a * P2.x + WlPlane.b * P2.y + WlPlane.c * P2.z + WlPlane.d;
 
 
             if ((S1 < 0) and (S2 > 0)) or ((S1 > 0) and (S2 < 0)) then
             begin
               // intersection
               if S1 = S2 then
-                T := 0.5
+                T:=0.5
               else
-                T := -s1 / (s2 - s1);
-              P.X := P1.X + T * (P2.X - P1.X);
-              P.Y := P1.Y + T * (P2.Y - P1.Y);
-              P.Z := P1.Z + T * (P2.Z - P1.Z);
+                T:=-s1 / (s2 - s1);
+              P.X:=P1.X + T * (P2.X - P1.X);
+              P.Y:=P1.Y + T * (P2.Y - P1.Y);
+              P.Z:=P1.Z + T * (P2.Z - P1.Z);
               if FirstPoint then
               begin
-                Min := P;
-                Max := P;
-                FirstPoint := False;
+                Min:=P;
+                Max:=P;
+                FirstPoint:=False;
               end
               else
                 MinMax(P, Min, Max);
               if vLayer.Symmetric then
               begin
-                P.Y := -P.Y;
+                P.Y:=-P.Y;
                 MinMax(P, Min, Max);
               end;
             end;
@@ -2258,20 +2258,20 @@ begin
             begin
               if FirstPoint then
               begin
-                Min := P2;
-                Max := P2;
-                FirstPoint := False;
+                Min:=P2;
+                Max:=P2;
+                FirstPoint:=False;
               end
               else
                 MinMax(P2, Min, Max);
               if vLayer.Symmetric then
               begin
-                P2.Y := -P2.Y;
+                P2.Y:=-P2.Y;
                 MinMax(P2, Min, Max);
               end;
             end;
-            P1 := P2;
-            S1 := S2;
+            P1:=P2;
+            S1:=S2;
           end;
         end;
       end;
@@ -2279,10 +2279,10 @@ begin
   if FirstPoint then
   begin
     // no valid points found
-    Min := ZERO;
-    Max.X := 1;
-    Max.Y := 1;
-    Max.Z := 1;
+    Min:=ZERO;
+    Max.X:=1;
+    Max.Y:=1;
+    Max.Z:=1;
   end;
 end;
 
@@ -2298,56 +2298,56 @@ var
   P: T3DCoordinate;
 begin
   if Sender is TFreeViewport then
-     vViewport := Sender as TFreeViewport;
+     vViewport:=Sender as TFreeViewport;
   if Sender is TFreeHullWindow then
-     vViewport := (Sender as TFreeHullWindow).Viewport;
+     vViewport:=(Sender as TFreeHullWindow).Viewport;
   if (Key in [Left..Down])
     and (vViewport.ViewType <> fvPerspective)
     and (ActiveControlPoint <> nil) then begin
     Edit.CreateUndoObject(Userstring(190), True);
-    Point := ActiveControlPoint;
-    FileChanged := True;
-    Built := False;
-    P := Point.Coordinate;
+    Point:=ActiveControlPoint;
+    FileChanged:=True;
+    Built:=False;
+    P:=Point.Coordinate;
     case vViewport.Viewtype of
       fvProfile: case Key of
-          Left: P.X := P.X - Visibility.CursorIncrement;
-          Up: P.Z := P.Z + Visibility.CursorIncrement;
-          Right: P.X := P.X + Visibility.CursorIncrement;
-          Down: P.Z := P.Z - Visibility.CursorIncrement;
+          Left: P.X:=P.X - Visibility.CursorIncrement;
+          Up: P.Z:=P.Z + Visibility.CursorIncrement;
+          Right: P.X:=P.X + Visibility.CursorIncrement;
+          Down: P.Z:=P.Z - Visibility.CursorIncrement;
         end;
       fvPlan: case Key of
-          Left: P.X := P.X - Visibility.CursorIncrement;
-          Up: P.Y := P.Y + Visibility.CursorIncrement;
-          Right: P.X := P.X + Visibility.CursorIncrement;
-          Down: P.Y := P.Y - Visibility.CursorIncrement;
+          Left: P.X:=P.X - Visibility.CursorIncrement;
+          Up: P.Y:=P.Y + Visibility.CursorIncrement;
+          Right: P.X:=P.X + Visibility.CursorIncrement;
+          Down: P.Y:=P.Y - Visibility.CursorIncrement;
         end;
       fvBodyplan: case Key of
           Left:
             if P.X <= self.ProjectSettings.ProjectSplitSectionLocation then
-              P.Y := P.Y + Visibility.CursorIncrement
+              P.Y:=P.Y + Visibility.CursorIncrement
             else
-              P.Y := P.Y - Visibility.CursorIncrement;
-          Up: P.Z := P.Z + Visibility.CursorIncrement;
+              P.Y:=P.Y - Visibility.CursorIncrement;
+          Up: P.Z:=P.Z + Visibility.CursorIncrement;
           Right:
             if P.X <= self.ProjectSettings.ProjectSplitSectionLocation then
-              P.Y := P.Y - Visibility.CursorIncrement
+              P.Y:=P.Y - Visibility.CursorIncrement
             else
-              P.Y := P.Y + Visibility.CursorIncrement;
-          Down: P.Z := P.Z - Visibility.CursorIncrement;
+              P.Y:=P.Y + Visibility.CursorIncrement;
+          Down: P.Z:=P.Z - Visibility.CursorIncrement;
         end;
     end;
-    Point.Coordinate := P;
-    //ActiveControlPoint := Point;
+    Point.Coordinate:=P;
+    //ActiveControlPoint:=Point;
     if ControlpointForm.Visible then
     begin
       // This lines updates the coordinate information in the controlpoint form
-      ControlPointform.ActiveControlPoint := Point;
+      ControlPointform.ActiveControlPoint:=Point;
       // and forces a repaint of the form
       if not vViewport.Focused then vViewport.SetFocus;
       application.ProcessMessages;
     end;
-    Built := False;
+    Built:=False;
     RebuildModel;
     Redraw;
     Key:=0;  //disable further processing
@@ -2362,13 +2362,13 @@ var
   I,R,D,N,E:UInt64; S,M,P:integer;
 begin
   if not (Sender is TFreeHullWindow) then exit;
-  vViewport := (Sender as TFreeHullWindow).Viewport;
+  vViewport:=(Sender as TFreeHullWindow).Viewport;
   if (vViewport.ViewType = fvPerspective) then exit;
 
   if (Key = VK_SUBTRACT)
-    or ((Key = VK_OEM_MINUS) and not(ssShift in Shift)) then S := -1 else
+    or ((Key = VK_OEM_MINUS) and not(ssShift in Shift)) then S:=-1 else
   if (Key = VK_ADD)
-    or ((Key = VK_OEM_PLUS) and (ssShift in Shift)) then S := 1
+    or ((Key = VK_OEM_PLUS) and (ssShift in Shift)) then S:=1
   else exit;
 
  // use integers to eliminate issues with dirt at the end of floats
@@ -2377,20 +2377,20 @@ begin
  N:=I;
  D:=0; E:=1;
  for P:=0 to 10 do begin
-   if (I >= E)and(I < E*10) then D := E; E:=E*10;
+   if (I >= E)and(I < E*10) then D:=E; E:=E*10;
  end;
  if (S<0) then
    if (I < 1000000000) then
-     if (I > D) then N := N - D
-                else N := N - D div 10
-   else N := N - 100000000
+     if (I > D) then N:=N - D
+                else N:=N - D div 10
+   else N:=N - 100000000
  else
-   if (I >= 1) then N := N + D
-               else N := N + 1;
+   if (I >= 1) then N:=N + D
+               else N:=N + 1;
 
  if N > 1000000000 then N:=1000000000;
- if N>0 then Visibility.CursorIncrement := N / 1000000
-        else Visibility.CursorIncrement := 1e-6;
+ if N>0 then Visibility.CursorIncrement:=N / 1000000
+        else Visibility.CursorIncrement:=1e-6;
 end;{TFreeShip.KeyUp}
 
 procedure TFreeShip.SelectPointsInFrame(Viewport: TfreeViewport; rect: TRect);
@@ -2406,15 +2406,15 @@ begin
       if rect.Top>rect.Bottom then begin
          I:=rect.Top; rect.Top:=rect.Bottom; rect.Bottom:=I;
       end;
-      I := 0;
+      I:=0;
       while I < Surface.NumberOfControlPoints do begin
         if Surface.ControlPoint[I].Visible then begin
-          Point := Surface.ControlPoint[I];
-          P2D := Viewport.Project(Point.Coordinate);
+          Point:=Surface.ControlPoint[I];
+          P2D:=Viewport.Project(Point.Coordinate);
           if (P2D.x >= rect.Left) and (P2D.x <= rect.Right)
              and (P2D.y >= rect.Top) and (P2D.y <= rect.Bottom)
           then self.Surface.Selection_Add(Point);
-            //ItemSelected := True;
+            //ItemSelected:=True;
             // Draw the selected point to all viewports
             for J:=1 to NumberOfViewports do
               if self.Viewport[J-1].ViewportMode=vmWireframe
@@ -2441,18 +2441,18 @@ var
   Entity: TFreeSubdivisionBase;
   Dist,MinDistance:TFloatType;
 begin
-  Entity := nil;
+  Entity:=nil;
 
   // First check the selected vertices
-  for i := Surface.NumberOfSelectedControlPoints - 1 downto 0 do
+  for i:=Surface.NumberOfSelectedControlPoints - 1 downto 0 do
     begin
-      Point := Surface.SelectedControlPoint[i];
+      Point:=Surface.SelectedControlPoint[i];
       if not Point.Visible then continue;
-      Tmp := Point.DistanceToCursor(X, Y, Viewport);
+      Tmp:=Point.DistanceToCursor(X, Y, Viewport);
       if Tmp <= SelectDistance then
       begin
-        Entity := Point;
-        ItemSelected := True;
+        Entity:=Point;
+        ItemSelected:=True;
         // Draw the selected point to all viewports
         for J:=0 to NumberOfViewports-1 do
           if self.Viewport[J].ViewportMode=vmWireframe
@@ -2462,21 +2462,21 @@ begin
     end;
 
   // Second check the vertices
-  I := 1;
+  I:=1;
   if Entity = nil then
   while I <= Surface.NumberOfControlPoints do
   begin
     if Surface.ControlPoint[I - 1].Visible then
     begin
-      Point := Surface.ControlPoint[I - 1];
-      Tmp := Point.DistanceToCursor(X, Y, Viewport);
+      Point:=Surface.ControlPoint[I - 1];
+      Tmp:=Point.DistanceToCursor(X, Y, Viewport);
       if Tmp <= SelectDistance then
       begin
-        Entity := Point;
+        Entity:=Point;
         //Point.Selected:=not Point.Selected;
-        ItemSelected := True;
+        ItemSelected:=True;
         // Draw the selected point to all viewports
-        for J := 1 to NumberOfViewports do
+        for J:=1 to NumberOfViewports do
           if self.Viewport[J - 1].ViewportMode = vmWireframe then
             Point.Draw(self.Viewport[J - 1]);
         break;
@@ -2487,24 +2487,24 @@ begin
   if Entity = nil then
   begin
     // No points found, search for nearest controlEdge
-    I := 1;
+    I:=1;
     while I <= Surface.NumberOfControlEdges do
     begin
       if Surface.ControlEdge[I - 1].Visible then
       begin
-        Edge := Surface.ControlEdge[I - 1];
-        Tmp := Edge.DistanceToCursor(X, Y, P3D, Viewport);
+        Edge:=Surface.ControlEdge[I - 1];
+        Tmp:=Edge.DistanceToCursor(X, Y, P3D, Viewport);
         if Tmp <= SelectDistance then
         begin
-          Entity := Edge;
-          Edge.Selected := not Edge.Selected;
+          Entity:=Edge;
+          Edge.Selected:=not Edge.Selected;
           // If CTRL key is pressed, select multiple edges in one pass
           // by tracing regular edges to a boundary or irregular points
           if (ssCtrl in shift) then
             Edge.Trace;
-          ItemSelected := True;
+          ItemSelected:=True;
           // Draw the selected edge to all viewports
-          for J := 1 to NumberOfViewports do
+          for J:=1 to NumberOfViewports do
             Self.Viewport[J - 1].Refresh;
           break;
         end;
@@ -2514,27 +2514,27 @@ begin
   end;
   if (Entity = nil) and (Visibility.ShowInteriorEdges) then
   begin
-    Surface.ShowInteriorEdges := True;
+    Surface.ShowInteriorEdges:=True;
     // No edges found, search for nearest control-face
-    I := 1;
+    I:=1;
     while I <= Surface.NumberOfControlFaces do
     begin
       if Surface.ControlFace[I - 1].Visible then
       begin
-        Face := Surface.ControlFace[I - 1];
-        Tmp := Face.DistanceToCursor(X, Y, P3D, Viewport);
+        Face:=Surface.ControlFace[I - 1];
+        Tmp:=Face.DistanceToCursor(X, Y, P3D, Viewport);
         if Tmp <= SelectDistance then
         begin
-          Entity := Face;
-          Face.Selected := not Face.Selected;
+          Entity:=Face;
+          Face.Selected:=not Face.Selected;
           // If CTRL key is pressed, select all connected controlfaces that
           // belong to the same layer and are not separated by a crease edge
           // and have the same selected state
           if (ssCtrl in shift) then
             Face.Trace;
-          ItemSelected := True;
+          ItemSelected:=True;
           // Draw the selected faces to all viewports
-          for J := 1 to NumberOfViewports do
+          for J:=1 to NumberOfViewports do
             Self.Viewport[J - 1].Refresh;
           break;
         end;
@@ -2545,20 +2545,20 @@ begin
 
   if (Entity = nil) then
   begin
-    I := 1;
+    I:=1;
     while I <= Surface.NumberOfControlCurves do
     begin
       if Surface.ControlCurve[I - 1].Visible then
       begin
-        Curve := Surface.ControlCurve[I - 1];
-        Tmp := Curve.DistanceToCursor(X, Y, Viewport);
+        Curve:=Surface.ControlCurve[I - 1];
+        Tmp:=Curve.DistanceToCursor(X, Y, Viewport);
         if Tmp <= SelectDistance then
         begin
-          Entity := Curve;
-          Curve.Selected := not Curve.Selected;
-          ItemSelected := True;
+          Entity:=Curve;
+          Curve.Selected:=not Curve.Selected;
+          ItemSelected:=True;
           // Draw the selected edge to all viewports
-          for J := 1 to NumberOfViewports do
+          for J:=1 to NumberOfViewports do
             if self.Viewport[J - 1].ViewportMode = vmWireframe then
               Curve.Draw(self.Viewport[J - 1]);
           break;
@@ -2571,14 +2571,14 @@ begin
   // check flowlines
   if (Entity = nil) and (not ItemSelected) and (Visibility.ShowFlowlines) then
   begin
-    I := 1;
+    I:=1;
     while I <= NumberOfFlowlines do begin
-      Tmp := Flowline[I - 1].DistanceToCursor(X, Y, Viewport);
+      Tmp:=Flowline[I - 1].DistanceToCursor(X, Y, Viewport);
       if Tmp <= SelectDistance then begin
-        Flowline[I - 1].Selected := not Flowline[I - 1].Selected;
-        ItemSelected := True;
+        Flowline[I - 1].Selected:=not Flowline[I - 1].Selected;
+        ItemSelected:=True;
         // Draw the selected flowline to all viewports
-        for J := 1 to NumberOfViewports do
+        for J:=1 to NumberOfViewports do
           if self.Viewport[J - 1].ViewportMode = vmWireframe then
             Flowline[I - 1].Draw(self.Viewport[J - 1]);
         break;
@@ -2590,16 +2590,16 @@ begin
   // check Markers
   if (Entity = nil) and (not ItemSelected) and (Visibility.ShowMarkers) then
   begin
-    I := 1;
+    I:=1;
     while I <= NumberOfMarkers do
     begin
-      Tmp := Marker[I - 1].DistanceToCursor(X, Y, Viewport);
+      Tmp:=Marker[I - 1].DistanceToCursor(X, Y, Viewport);
       if Tmp <= SelectDistance then
       begin
-        Marker[I - 1].Selected := not Marker[I - 1].Selected;
-        ItemSelected := True;
+        Marker[I - 1].Selected:=not Marker[I - 1].Selected;
+        ItemSelected:=True;
         // Draw the selected Marker to all viewports
-        for J := 1 to NumberOfViewports do
+        for J:=1 to NumberOfViewports do
           if self.Viewport[J - 1].ViewportMode = vmWireframe then
             Marker[I - 1].Draw(self.Viewport[J - 1]);
         break;
@@ -2611,7 +2611,7 @@ begin
   // search by surface
   if (Entity = nil) and (Viewport.ViewPortMode <> vmWireFrame ) then
   begin
-    MinDistance := 10e18;
+    MinDistance:=10e18;
 
     P.x:=X; P.y:=Y;
     p3d:=ViewPort.ProjectBack(P, ZERO);
@@ -2625,29 +2625,29 @@ begin
     begin
       if Surface.ControlFace[I].Visible then
       begin
-        Face := Surface.ControlFace[I];
+        Face:=Surface.ControlFace[I];
         if Face.PointInFace(X, Y, P3D, Dist, Viewport) then
         begin
           if Dist < MinDistance then
           begin
-            MinDistance := Dist;
-            Entity := Face;
+            MinDistance:=Dist;
+            Entity:=Face;
           end;
         end;
       end;
     end;
     if Entity <> nil then
     begin
-      Face := TFreeSubdivisionControlFace(Entity);
-      Face.Selected := not Face.Selected;
+      Face:=TFreeSubdivisionControlFace(Entity);
+      Face.Selected:=not Face.Selected;
       // If CTRL key is pressed, select all connected controlfaces that
       // belong to the same layer and are not separated by a crease edge
       // and have the same selected state
       if (ssCtrl in shift) then
         Face.Trace;
-      ItemSelected := True;
+      ItemSelected:=True;
       // Draw the selected faces to all viewports
-      for J := 0 to NumberOfViewports-1 do
+      for J:=0 to NumberOfViewports-1 do
         Self.Viewport[J].Refresh;
     end;
   end;
@@ -2657,57 +2657,57 @@ begin
     begin
       // If CTRL key is pressed, selection of multiple controlpoints is allowed,
       // otherwise select only ONE controlpoint
-      Point := Entity as TFreeSubdivisionControlPoint;
+      Point:=Entity as TFreeSubdivisionControlPoint;
       if not (ssCtrl in shift) then
       begin
         if NumberOfSelectedControlPoints > 0 then
           begin
-          for I := NumberOfSelectedControlPoints downto 1 do
-            SelectedControlPoint[I - 1].Selected := False;
+          for I:=NumberOfSelectedControlPoints downto 1 do
+            SelectedControlPoint[I - 1].Selected:=False;
           for i:=0 to NumberOfSelectedControlPointGroups-1 do
-            SelectedControlPointGroup[i].Selected := False;
+            SelectedControlPointGroup[i].Selected:=False;
           end;
 
-        ActiveControlPoint := Point;
-        Point.Selected := True;
+        ActiveControlPoint:=Point;
+        Point.Selected:=True;
 
         // select all points in a group if there
         for I:=0 to Surface.ControlPointGroups.Count-1 do
           if Surface.ControlPointGroups[i].ControlPoints.IndexOf(Point)>=0 then
              Surface.ControlPointGroups[i].Selected:=true;
 
-        for J := 1 to NumberOfViewports do
+        for J:=1 to NumberOfViewports do
           self.Viewport[J - 1].Refresh;
       end
       else
       begin
-        Point.Selected := not Point.Selected;
+        Point.Selected:=not Point.Selected;
         if not Point.Selected then
-          Point := SelectedControlPoint[NumberOfSelectedControlPoints - 1];
-        for J := 1 to NumberOfViewports do
+          Point:=SelectedControlPoint[NumberOfSelectedControlPoints - 1];
+        for J:=1 to NumberOfViewports do
           self.Viewport[J - 1].Refresh;
       end;
       if ActiveControlPoint <> point then
-        ActiveControlPoint := Point;
-      FCurrentlyMoving := True;
-      FPointHasBeenMoved := False;
-      FPrevCursorPosition.X := X;
-      FPrevCursorPosition.Y := Y;
+        ActiveControlPoint:=Point;
+      FCurrentlyMoving:=True;
+      FPointHasBeenMoved:=False;
+      FPrevCursorPosition.X:=X;
+      FPrevCursorPosition.Y:=Y;
     end
     else if Entity is TFreeSubdivisionControlEdge then
     begin
-      ActiveControlEdge := Entity as TFreeSubdivisionControlEdge;
+      ActiveControlEdge:=Entity as TFreeSubdivisionControlEdge;
     end
     else if Entity is TFreeSubdivisionControlFace then
     begin
-      ActiveControlFace := Entity as TFreeSubdivisionControlFace;
+      ActiveControlFace:=Entity as TFreeSubdivisionControlFace;
     end
     else if Entity is TFreeSubdivisionControlCurve then
       begin
-      for J := 1 to NumberOfViewports do
+      for J:=1 to NumberOfViewports do
         if self.Viewport[J - 1].ViewportMode = vmWireframe then
           self.Viewport[J - 1].Refresh;
-      ActiveControlCurve := Entity as TFreeSubdivisionControlCurve;
+      ActiveControlCurve:=Entity as TFreeSubdivisionControlCurve;
       end;
 end;
 
@@ -2719,7 +2719,7 @@ var Select  : Boolean = False;
   P2D:T2DCoordinate;
   P3D:T3DCoordinate;
 begin
-  P.X := X; P.Y := Y;
+  P.X:=X; P.Y:=Y;
   P2D:=Viewport.ProjectBackTo2D(P);
   if (Visibility.ModelView=mvBoth) and (Viewport.ViewType=fvBodyplan)
      then P2D.X:=abs(P2D.X);
@@ -2730,8 +2730,8 @@ begin
   if Viewport.ViewType=fvPlan then
   begin P3D.X:=P2D.X; P3D.Y:=P2D.Y; P3D.Z:=0; end;
   Edit.Point_New(P3D);
-  EditMode := emSelectItems;
-  ItemSelected := true;
+  EditMode:=emSelectItems;
+  ItemSelected:=true;
 end;
 
 procedure TFreeShip.DoAddFlowLine(const Viewport: TFreeViewport; const X, Y: integer;
@@ -2747,7 +2747,7 @@ begin
      if (Visibility.ModelView=mvBoth) and (Viewport.ViewType=fvBodyplan)
         then P2D.X:=abs(P2D.X);
      Edit.Flowline_Add(P2D,Viewport.Viewtype);
-     ItemSelected := true;
+     ItemSelected:=true;
      if assigned(MainForm) then TMainForm(MainForm).UpdateMenu;
   end;
 end;
@@ -2755,7 +2755,7 @@ end;
 procedure TFreeShip.MouseDown(Viewport: TFreeViewport; Button: TMouseButton;
   Shift: TShiftState; X, Y: integer; var ItemSelected: boolean);
 begin                                                                           //if (Shift<>[]) then logger.Debug(format('TFreeShip.ViewportMouseDown: %d %d',[X,Y]));
-  ItemSelected := False;
+  ItemSelected:=False;
   if Button = mbLeft then
   begin
     case EditMode of
@@ -2767,7 +2767,7 @@ begin                                                                           
         DoAddFlowLine(ViewPort, X, Y, Button, Shift, ItemSelected);
     end;
   end
-  else if Button = mbRight then EditMode := emSelectItems;
+  else if Button = mbRight then EditMode:=emSelectItems;
 //if not Viewport.Focused then Viewport.SetFocus;
 end;
 
@@ -2798,30 +2798,30 @@ begin                                                                           
             end;                                                                // Logger.Debug('Point Move. CreateUndoObject');
             Edit.CreateUndoObject(Userstring(190), True);
           end;
-          Point := ActiveControlPoint;
-          FileChanged := True;
-          Built := False;
-          FPointHasBeenMoved := True;
-          Pt.X := X;
-          Pt.Y := Y;
-          P2D := Viewport.ProjectBackTo2D(Pt);
-          P := Point.Coordinate;
+          Point:=ActiveControlPoint;
+          FileChanged:=True;
+          Built:=False;
+          FPointHasBeenMoved:=True;
+          Pt.X:=X;
+          Pt.Y:=Y;
+          P2D:=Viewport.ProjectBackTo2D(Pt);
+          P:=Point.Coordinate;
           case Viewport.Viewtype of
             fvProfile: begin
-              P.X := P2D.X;
-              P.Z := P2D.Y; end;
+              P.X:=P2D.X;
+              P.Z:=P2D.Y; end;
             fvPlan: begin
-              P.X := P2D.X;
-              P.Y := P2D.Y; end;
+              P.X:=P2D.X;
+              P.Y:=P2D.Y; end;
             fvBodyplan: begin
               if P.X <= ProjectSettings.ProjectSplitSectionLocation
-              then P.Y := -P2D.X
-              else P.Y := P2D.X;
-              P.Z := P2D.Y;
+              then P.Y:=-P2D.X
+              else P.Y:=P2D.X;
+              P.Z:=P2D.Y;
             end;
           end;
 
-          oP := Point.Coordinate;
+          oP:=Point.Coordinate;
 
           Point.SetCoordinate(ViewPort, P, nil);
 
@@ -2842,10 +2842,10 @@ begin                                                                           
               end;
           }
 
-          ActiveControlPoint := Point;
-          Built := False;
+          ActiveControlPoint:=Point;
+          Built:=False;
           if ControlpointForm.Visible then begin // This lines updates the coordinate information in the controlpoint form
-            ControlPointform.ActiveControlPoint := Point;   // and forces a repaint of the form
+            ControlPointform.ActiveControlPoint:=Point;   // and forces a repaint of the form
             if not Viewport.Focused then Viewport.SetFocus; // Application.ProcessMessages;
             TControl(Viewport.Owner).BringToFront;
           end;
@@ -2872,10 +2872,10 @@ end;
 procedure TFreeShip.InvalidateIntersections;
 var i:integer;
 begin
-    for I := 0 to NumberOfStations-1 do Station[I].Built := false;
-    for I := 0 to NumberOfButtocks-1 do Buttock[I].Built := false;
-    for I := 0 to NumberOfWaterlines-1 do Waterline[I].Built := false;
-    for I := 0 to NumberOfDiagonals-1 do Diagonal[I].Built := false;
+    for I:=0 to NumberOfStations-1 do Station[I].Built:=false;
+    for I:=0 to NumberOfButtocks-1 do Buttock[I].Built:=false;
+    for I:=0 to NumberOfWaterlines-1 do Waterline[I].Built:=false;
+    for I:=0 to NumberOfDiagonals-1 do Diagonal[I].Built:=false;
 end;
 
 procedure TFreeShip.MouseUp(Viewport: TFreeViewport; Shift: TShiftState; X, Y: integer);
@@ -2886,7 +2886,7 @@ begin                                                                           
      FileChanged:=True;
      Redraw;
      end;
-  FCurrentlyMoving := False;
+  FCurrentlyMoving:=False;
   ///if not Viewport.Focused then
   ///  Viewport.SetFocus;
 end;{TFreeShip.MouseUp}
@@ -2899,7 +2899,7 @@ begin
   Self.Extents(Min, Max);
   if assigned(Sender) and (Sender is TFreeViewPort)
   and (TFreeViewPort(Sender).ViewType = fvBodyPlan)
-  then if -Min.Y > Max.Y then Max.Y := -Min.Y
-                         else Min.Y := -Max.Y;
+  then if -Min.Y > Max.Y then Max.Y:=-Min.Y
+                         else Min.Y:=-Max.Y;
 end;
 

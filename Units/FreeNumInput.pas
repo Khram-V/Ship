@@ -307,10 +307,10 @@ end;{TFreeNumInput.Valid}
 function MessageBeep(uType: UINT): BOOL;
 begin
 {$IFDEF MSWINDOWS}
-  Result := Windows.MessageBeep(uType);
+  Result:=Windows.MessageBeep(uType);
 {$ELSE}
   Beep; //Most calls pass 0 as uType (MB_OK), which is system default sound}
-  Result := true;
+  Result:=true;
 {$ENDIF}
 end;
 
@@ -320,9 +320,9 @@ begin
    FIsEditing:=true;
    Ch:=Chr(Key);
    if (key=VK_UP) then //PostMessage(GetparentForm(Self).Handle, WM_NEXTDLGCTL ,1,0);
-     Value := Value + 1;
+     Value:=Value + 1;
    if (Key=VK_DOWN) then //PostMessage(GetparentForm(Self).Handle, WM_NEXTDLGCTL ,0,0);
-      Value := Value - 1;
+      Value:=Value - 1;
    if (Key=VK_DELETE) then Keypress(Ch);
    inherited KeyDown(Key, Shift);
    FIsEditing:=false;
@@ -360,7 +360,7 @@ begin
    // Restore last entry if ESC
    if (key=#27) then begin
       //SendMessage(Self.Handle, WM_UNDO,0,0);
-      Value := FInitialValue;
+      Value:=FInitialValue;
       SelectAll;
       Key:=#0;
       exit;
@@ -381,7 +381,7 @@ begin
          begin Text:=OldText; MessageBeep(0); end;
       except
          //SendMessage(Self.Handle, WM_UNDO ,0,0);
-         Text := OldText;
+         Text:=OldText;
          MessageBeep(0);
       end;
       Key:=#0;
@@ -584,8 +584,8 @@ end;
 
 procedure TFreeNumInput.setBorderColor(aColor : TColor);
 begin
- if aColor = clDefault then FBorderColor := clBtnShadow
-                       else FBorderColor := aColor;
+ if aColor = clDefault then FBorderColor:=clBtnShadow
+                       else FBorderColor:=aColor;
  invalidate;
 end;
 
@@ -617,9 +617,9 @@ begin
     with FCanvas do begin
       R:=ClientRect;
       if BorderStyle <> bsNone then begin
-          Pen.Color := FBorderColor;
-          Pen.Style := psSolid;
-          Pen.Width := BorderWidth;
+          Pen.Color:=FBorderColor;
+          Pen.Style:=psSolid;
+          Pen.Width:=BorderWidth;
           FCanvas.Rectangle(R);
       end;
       if Enabled then Brush.Color:=Color
@@ -628,7 +628,7 @@ begin
       S:=Text;
       Width_:=TextWidth(S);
       Height_:=TextHeight(S);
-      FTextMargin := Height_ div 4;
+      FTextMargin:=Height_ div 4;
       if BorderStyle=bsNone then Indent_:=0
                             else Indent_:=FTextMargin;
       if FAlignment=taRightJustify then

@@ -1,36 +1,8 @@
-unit FreePrinter;
-
-{$IFDEF FPC}
-{$mode delphi}
-{$ENDIF}
-
+unit FreePrinter;                    // ...недоразумение какое-то
 interface
-uses
-{$IFDEF FPC}
-  LCLIntf,
-  LCLType,
-  //LMessages,
-  LResources,
-  //PrintersDlgs,
-  Printer4Lazarus,
-{$ENDIF}
-Classes,
-SysUtils,
-Printers;
-
-{$ifdef FPC}
-procedure AssignPrn( var f:TextFile);
-{$endif}
-
+uses LResources,Printers;
+     procedure AssignPrn( var f:TextFile );
 implementation
-
-{$ifdef FPC}
-procedure AssignPrn( var f:TextFile);
-begin
-   Assign(f, Printer.FileName );
-end;
-{$endif}
-
-
+     procedure AssignPrn( var f:TextFile ); begin Assign( f,Printer.FileName ); end;
 end.
 

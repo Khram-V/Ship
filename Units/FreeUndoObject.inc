@@ -9,7 +9,7 @@
 // calculates the amount of bytes used for each undo object
 function TFreeUndoObject.FGetMemory: integer;
 begin
-  Result := 4 +              // pointer to self
+  Result:=4 +              // pointer to self
     4 +                      // pointer to owner
     length( Undotext ) +     // length of string
     length( FFilename ) +    // length of filename string
@@ -17,10 +17,10 @@ begin
 end;
 
 function TFreeUndoObject.FGetTime: string;
-begin Result := TimeToStr(FTime); end;
+begin Result:=TimeToStr(FTime); end;
 
 function TFreeUndoObject.FGetUndoText: string;
-begin Result := FUndoText; end;
+begin Result:=FUndoText; end;
 
 procedure TFreeUndoObject.Accept;
 var I: integer; Obj: TFreeUndoObject;
@@ -31,14 +31,14 @@ begin
       if Owner.UndoObject[Owner.UndoCount - 1].FIsTempRedoObject then
         Owner.UndoObject[Owner.UndoCount - 1].Delete;
     // delete all undo objects after the current one
-    for I := FOwner.FUndoObjects.Count downto Owner.FUndoPosition + 1 do
+    for I:=FOwner.FUndoObjects.Count downto Owner.FUndoPosition + 1 do
       Owner.UndoObject[I - 1].Delete;
     Owner.FUndoObjects.Add(self);
-    Owner.FUndoPosition := Owner.FUndoObjects.Count;
+    Owner.FUndoPosition:=Owner.FUndoObjects.Count;
     while (FOwner.UndoMemory / (1024 * 1024) > Owner.Preferences.MaxUndoMemory)
       and (Owner.FUndoObjects.Count > 2)
     do begin
-      Obj := TFreeUndoObject(FOwner.FUndoObjects[0]);
+      Obj:=TFreeUndoObject(FOwner.FUndoObjects[0]);
       FreeAndNil(Obj);
       FOwner.FUndoObjects.Delete(0);
       Dec(Owner.FUndoPosition);
@@ -52,12 +52,12 @@ end;
 constructor TFreeUndoObject.Create(Owner: TFreeShip);
 begin
   inherited Create;
-  FTime := Now;
-  FOwner := Owner;
-  FUndoText := '';
-  FFilename := '';
-  FUndoData := TFreeFileBuffer.Create;
-  FIsTempRedoObject := False;
+  FTime:=Now;
+  FOwner:=Owner;
+  FUndoText:='';
+  FFilename:='';
+  FUndoData:=TFreeFileBuffer.Create;
+  FIsTempRedoObject:=False;
 end;
 
 // deletes an undo object from the list
@@ -65,7 +65,7 @@ procedure TFreeUndoObject.Delete;
 var
   Index: integer;
 begin
-  Index := FOwner.FUndoObjects.IndexOf(self);
+  Index:=FOwner.FUndoObjects.IndexOf(self);
   if Index <> -1 then
     Owner.FUndoObjects.Delete(Index);
   if Assigned(Owner.FOnUpdateUndoData) then
@@ -83,10 +83,10 @@ procedure TFreeUndoObject.Restore;
 begin
 //try
     Owner.LoadProject( FUndoData );
-    Owner.FFileChanged := FFileChanged;
-    Owner.FFilename    := FFilename;
-    Owner.FEditMode    := FEditMode;
-    Owner.FFilenameSet := FFilenameSet;
+    Owner.FFileChanged:=FFileChanged;
+    Owner.FFilename   :=FFilename;
+    Owner.FEditMode   :=FEditMode;
+    Owner.FFilenameSet:=FFilenameSet;
 //finally
     Owner.Redraw;
 //end;

@@ -13,13 +13,13 @@ begin
     Setlength(FDerivatives, 0);
     Setlength(FParameters, 0);
     // Clear extents
-    FMin.X := 0;
-    FMin.Y := 0;
-    FMin.Z := 0;
-    FMax.X := 1;
-    FMax.Y := 1;
-    Fmax.Z := 1;
-    FTotalLength := 0.0;
+    FMin.X:=0;
+    FMin.Y:=0;
+    FMin.Z:=0;
+    FMax.X:=1;
+    FMax.Y:=1;
+    Fmax.Z:=1;
+    FTotalLength:=0.0;
   end;
   inherited SetBuilt(Val);
 end;
@@ -28,7 +28,7 @@ procedure TFreeSpline.FSetCapacity(Val: integer);
 begin
   if Val <> FCapacity then
   begin
-    FCapacity := Val;
+    FCapacity:=Val;
     Setlength(FPoints, FCapacity);
     Setlength(FKnuckles, FCapacity);
       { // MM: this logic may cause Built not set in case of decrease of Capacity.
@@ -46,8 +46,8 @@ procedure TFreeSpline.FSetFragments(Val: integer);
 begin
   if Val <> FFragments then
   begin
-    FFragments := val;
-    Built := False;
+    FFragments:=val;
+    Built:=False;
   end;
 end;
 
@@ -55,32 +55,32 @@ function TFreeSpline.FGetFragments: integer;
 begin
   if not Built then
     Rebuild;
-  Result := FFragments;
+  Result:=FFragments;
 end;
 
 function TFreeSpline.FGetKnuckle(Index: integer): boolean;
 begin
-  Result := FKnuckles[Index];
+  Result:=FKnuckles[Index];
 { // will capture with debugger
-  if (Index >= 0) and (Index < FNoPoints) then Result := FKnuckles[Index]
+  if (Index >= 0) and (Index < FNoPoints) then Result:=FKnuckles[Index]
   else raise Exception.Create('List index out of bounds in ' + ClassName + '.FGetKnuckle. (' + IntToStr(Index) + ').');
 }
 end;
 
 procedure TFreeSpline.FSetKnuckle(Index: integer; Value: boolean);
 begin
-  FKnuckles[Index] := Value;
-  Built := False;
-{ if (Index >= 0) and (Index < FNoPoints) then begin FKnuckles[Index] := Value; Built := False; end
+  FKnuckles[Index]:=Value;
+  Built:=False;
+{ if (Index >= 0) and (Index < FNoPoints) then begin FKnuckles[Index]:=Value; Built:=False; end
   else raise Exception.Create('List index out of bounds in ' + ClassName + '.FSetKnuckle. (' + IntToStr(Index) + ').');
 }
 end;
 
 procedure TFreeSpline.FSetPoint(Index: integer; P: T3DCoordinate);
 begin
-  FPoints[index] := P;
-  Built := False;
-{ if (Index >= 0) and (Index < NumberOfPoints) then begin FPoints[index] := P; Built := False; end
+  FPoints[index]:=P;
+  Built:=False;
+{ if (Index >= 0) and (Index < NumberOfPoints) then begin FPoints[index]:=P; Built:=False; end
   else raise Exception.Create('Point index out of bounds!');
 }
 end;
@@ -88,9 +88,9 @@ end;
 function TFreeSpline.FGetParameter(Index: integer): TFloatType;
 begin
   if not Built then rebuild;
-  Result := FParameters[Index];
+  Result:=FParameters[Index];
 { if (Index >= 0) and (Index < FNoPoints) then begin
-    if not Built then rebuild; Result := FParameters[Index];
+    if not Built then rebuild; Result:=FParameters[Index];
   end
   else raise Exception.Create('List index out of bounds in ' + ClassName + '.FGetParameter. (' + IntToStr(Index) + ').');
 }
@@ -98,8 +98,8 @@ end;
 
 function TFreeSpline.FGetPoint(Index: integer): T3DCoordinate;
 begin
-  Result := FPoints[index];
-{ if (Index >= 0) and (Index < NumberOfPoints) then Result := FPoints[index]
+  Result:=FPoints[index];
+{ if (Index >= 0) and (Index < NumberOfPoints) then Result:=FPoints[index]
   else raise Exception.Create('Point index out of bounds!'); }
 end;
 
@@ -113,16 +113,16 @@ var
   DPar1, DPar2, DPar3: single;
 begin
   if FIsBuilding then exit;
-  FIsBuilding := true;
-  Built := False;
+  FIsBuilding:=true;
+  Built:=False;
 
   // First attempt to eliminate double points
-  I := 2;
-  FTotalLength := 0;
+  I:=2;
+  FTotalLength:=0;
   while I <= FNoPoints do
   begin
-    Len := {Sqrt}(DistPP3D(FPoints[I - 2], FPoints[I - 1]));
-    FTotalLength := FTotalLength + Len;
+    Len:={Sqrt}(DistPP3D(FPoints[I - 2], FPoints[I - 1]));
+    FTotalLength:=FTotalLength + Len;
     Inc(I);
   end;
 
@@ -132,71 +132,71 @@ begin
     SetLength(FParameters, FNoPoints);
     SetLength(U, FNoPoints);
 
-    Len := 0;
+    Len:=0;
     if abs(FTotalLength) < 1e-5 then
     begin
       // zero arclength, use uniform parameterisation
-      for I := 0 to FNoPoints - 1 do
-        FParameters[I] := I / (FNoPoints - 1);
+      for I:=0 to FNoPoints - 1 do
+        FParameters[I]:=I / (FNoPoints - 1);
     end
     else
     begin
-      FParameters[0] := 0.0;
-      for I := 2 to FNoPoints - 1 do
+      FParameters[0]:=0.0;
+      for I:=2 to FNoPoints - 1 do
       begin
-        Len := Len + {Sqrt}(DistPP3D(FPoints[I - 2], FPoints[I - 1]));
-        FParameters[I - 1] := Len / FTotalLength;
+        Len:=Len + {Sqrt}(DistPP3D(FPoints[I - 2], FPoints[I - 1]));
+        FParameters[I - 1]:=Len / FTotalLength;
       end;
-      FParameters[FNoPoints - 1] := 1.0;
+      FParameters[FNoPoints - 1]:=1.0;
     end;
 
-    FDerivatives[0] := ZERO;
-    U[0] := FDerivatives[0];
+    FDerivatives[0]:=ZERO;
+    U[0]:=FDerivatives[0];
 
-    for I := 2 to FNoPoints - 1 do
+    for I:=2 to FNoPoints - 1 do
     begin
-      I1 := I - 1;
-      I2 := I - 2;
+      I1:=I - 1;
+      I2:=I - 2;
       if Knuckle[I1] then
       begin
-        U[I1] := ZERO;
-        FDerivatives[I1] := ZERO;
+        U[I1]:=ZERO;
+        FDerivatives[I1]:=ZERO;
       end
       else
       begin
-        DPar1 := FParameters[I] - FParameters[I2];
-        DPar2 := FParameters[I1] - FParameters[I2];
-        DPar3 := FParameters[I] - FParameters[I1];
+        DPar1:=FParameters[I] - FParameters[I2];
+        DPar2:=FParameters[I1] - FParameters[I2];
+        DPar3:=FParameters[I] - FParameters[I1];
         if (abs(DPar1) < 1e-5) or (abs(DPar2) < 1e-5) or (abs(DPar3) < 1e-5) then
         begin
-          FDerivatives[I1] := ZERO;
+          FDerivatives[I1]:=ZERO;
         end
         else
         begin
-          Sig := DPar2 / DPar1;
+          Sig:=DPar2 / DPar1;
           // first x-value
-          P := Sig * FDerivatives[I2].X + 2.0;
-          FDerivatives[I1].X := (Sig - 1.0) / P;
-          U[I1].X := (6.0 * ((FPoints[I].X - FPoints[I1].X) / DPar3 -
+          P:=Sig * FDerivatives[I2].X + 2.0;
+          FDerivatives[I1].X:=(Sig - 1.0) / P;
+          U[I1].X:=(6.0 * ((FPoints[I].X - FPoints[I1].X) / DPar3 -
             (FPoints[I1].X - FPoints[I2].X) / DPar2) / DPar1 - sig * U[I2].X) / p;
           // then y-value
-          P := Sig * FDerivatives[I2].Y + 2.0;
-          FDerivatives[I1].Y := (Sig - 1.0) / P;
-          U[I1].Y := (6.0 * ((FPoints[I].Y - FPoints[I1].Y) / DPar3 -
+          P:=Sig * FDerivatives[I2].Y + 2.0;
+          FDerivatives[I1].Y:=(Sig - 1.0) / P;
+          U[I1].Y:=(6.0 * ((FPoints[I].Y - FPoints[I1].Y) / DPar3 -
             (FPoints[I1].Y - FPoints[I2].Y) / DPar2) / DPar1 - sig * U[I2].Y) / p;
           // then Z-value
-          P := Sig * FDerivatives[I2].Z + 2.0;
-          FDerivatives[I1].Z := (Sig - 1.0) / P;
-          U[I1].Z := (6.0 * ((FPoints[I].Z - FPoints[I1].Z) / DPar3 -
+          P:=Sig * FDerivatives[I2].Z + 2.0;
+          FDerivatives[I1].Z:=(Sig - 1.0) / P;
+          U[I1].Z:=(6.0 * ((FPoints[I].Z - FPoints[I1].Z) / DPar3 -
             (FPoints[I1].Z - FPoints[I2].Z) / DPar2) / DPar1 - sig * U[I2].Z) / p;
         end;
       end;
     end;
 
-    Qn.X := 0.0;
-    Qn.Y := 0.0;
-    Qn.Z := 0.0;
-    Un := Qn;
+    Qn.X:=0.0;
+    Qn.Y:=0.0;
+    Qn.Z:=0.0;
+    Un:=Qn;
 
     FDerivatives[FNoPoints - 1].X :=
       (Un.X - Qn.X * U[FNoPoints - 2].X) / (Qn.X * FDerivatives[FNoPoints - 2].X + 1.0);
@@ -206,15 +206,15 @@ begin
       (Un.Z - Qn.Z * U[FNoPoints - 2].Z) / (Qn.Z * FDerivatives[FNoPoints - 2].Z + 1.0);
 
     // Back substitution
-    for K := FNoPoints - 1 downto 1 do
+    for K:=FNoPoints - 1 downto 1 do
     begin
-      K1 := K - 1;
+      K1:=K - 1;
       if Knuckle[K1] then FDerivatives[K1]:=ZERO
       else
         begin
-        FDerivatives[K1].X := FDerivatives[K1].X * FDerivatives[K].X + U[K1].X;
-        FDerivatives[K1].Y := FDerivatives[K1].Y * FDerivatives[K].Y + U[K1].Y;
-        FDerivatives[K1].Z := FDerivatives[K1].Z * FDerivatives[K].Z + U[K1].Z;
+        FDerivatives[K1].X:=FDerivatives[K1].X * FDerivatives[K].X + U[K1].X;
+        FDerivatives[K1].Y:=FDerivatives[K1].Y * FDerivatives[K].Y + U[K1].Y;
+        FDerivatives[K1].Z:=FDerivatives[K1].Z * FDerivatives[K].Z + U[K1].Z;
         end;
     end;
   end;
@@ -225,20 +225,20 @@ begin
   // Determine min/max values
   if FNoPoints > 0 then
   begin
-    for I := 1 to FNoPoints do
+    for I:=1 to FNoPoints do
     begin
       if I = 1 then
       begin
-        FMin := FPoints[I - 1];
-        FMax := FMin;
+        FMin:=FPoints[I - 1];
+        FMax:=FMin;
       end
       else
         MinMax(FPoints[I - 1], FMin, FMax);
     end;
   end;
-  //FFragments := FNoPoints * 1; //MM: just set. Causes wrong drawing
+  //FFragments:=FNoPoints * 1; //MM: just set. Causes wrong drawing
   inherited Rebuild;
-  FIsBuilding := false;
+  FIsBuilding:=false;
 end;
 
 function TFreeSpline.SecondDerive(Parameter: TFloatType): T3DCoordinate;
@@ -246,35 +246,35 @@ var
   Lo, Hi, K: integer;
   Frac: TFloatType;
 begin
-  Result.X := 0;
-  Result.Y := 0;
-  Result.Z := 0;
+  Result.X:=0;
+  Result.Y:=0;
+  Result.Z:=0;
   if FNoPoints < 2 then exit;
   if not FBuilt then Rebuild;
   if FNoPoints < 2 then exit;
   if FNoPoints = 2 then begin
-    Lo := 0;
-    Hi := 1;
+    Lo:=0;
+    Hi:=1;
   end else begin
-    Lo := 0;
-    Hi := FNoPoints - 1;
+    Lo:=0;
+    Hi:=FNoPoints - 1;
     repeat
-      K := (Lo + Hi) div 2;
+      K:=(Lo + Hi) div 2;
       try
-        if FParameters[K] < Parameter then Lo := K
-                                      else Hi := K;
+        if FParameters[K] < Parameter then Lo:=K
+                                      else Hi:=K;
       except
-        FParameters[K] := FParameters[K] - 1 + 1;
+        FParameters[K]:=FParameters[K] - 1 + 1;
       end;
     until Hi - Lo <= 1;
   end;
   if FParameters[Hi] - FParameters[Lo] <= 0.0 then
-    Frac := 0.5
+    Frac:=0.5
   else
-    Frac := (Parameter - FParameters[Lo]) / (FParameters[Hi] - FParameters[Lo]);
-  Result.X := FDerivatives[Lo].X + Frac * (FDerivatives[Hi].X - FDerivatives[Lo].X);
-  Result.Y := FDerivatives[Lo].Y + Frac * (FDerivatives[Hi].Y - FDerivatives[Lo].Y);
-  Result.Z := FDerivatives[Lo].Z + Frac * (FDerivatives[Hi].Z - FDerivatives[Lo].Z);
+    Frac:=(Parameter - FParameters[Lo]) / (FParameters[Hi] - FParameters[Lo]);
+  Result.X:=FDerivatives[Lo].X + Frac * (FDerivatives[Hi].X - FDerivatives[Lo].X);
+  Result.Y:=FDerivatives[Lo].Y + Frac * (FDerivatives[Hi].Y - FDerivatives[Lo].Y);
+  Result.Z:=FDerivatives[Lo].Z + Frac * (FDerivatives[Hi].Z - FDerivatives[Lo].Z);
 end;
 
 // Remove points that do not contribute significantly to the shape
@@ -292,30 +292,30 @@ var
     Dist: TFloatType;
   begin
     if (Index = 0) or (Index = NumberOfPoints - 1) or (Knuckle[Index]) then
-      Result := 1e10
+      Result:=1e10
     else
     begin
-      P1 := Point[Index - 1];
-      P2 := Point[Index];
-      P3 := Point[Index + 1];
-      Length := Sqrt((P3.X - P1.X) * (P3.X - P1.X) + (P3.Y - P1.Y) * (P3.Y - P1.Y) +
+      P1:=Point[Index - 1];
+      P2:=Point[Index];
+      P3:=Point[Index + 1];
+      Length:=Sqrt((P3.X - P1.X) * (P3.X - P1.X) + (P3.Y - P1.Y) * (P3.Y - P1.Y) +
         (P3.Z - P1.Z) * (P3.Z - P1.Z));
       if Length < 1e-5 then
       begin
-        Result := 0.0;
+        Result:=0.0;
       end
       else
       begin
-        Dist := DistancepointToLine(P2, P1, P3);
+        Dist:=DistancepointToLine(P2, P1, P3);
         if Dist < 1e-2 then
         begin
           if Length * Length / TotalLength > 0.01 then
-            Result := 1e10
+            Result:=1e10
           else
-            Result := 1e8 * Dist * Dist * Length;
+            Result:=1e8 * Dist * Dist * Length;
         end
         else
-          Result := 1e8 * Dist * Dist * Length;
+          Result:=1e8 * Dist * Dist * Length;
       end;
     end;
   end;{Weight}
@@ -325,45 +325,45 @@ var
     MinVal: TFloatType;
     I: integer;
   begin
-    Result := -1;
+    Result:=-1;
     if NumberOfPoints < 3 then
       exit;
-    MinVal := Weights[1];
-    Result := 1;
-    I := 2;
+    MinVal:=Weights[1];
+    Result:=1;
+    I:=2;
     while (I < NumberOfPoints) and (MinVal > 0) do
     begin
       if Weights[I - 1] < MinVal then
       begin
-        MinVal := Weights[I - 1];
-        Result := I - 1;
+        MinVal:=Weights[I - 1];
+        Result:=I - 1;
       end;
       Inc(I);
     end;
   end;{FindNextPoint}
 
 begin
-  Result := False;
+  Result:=False;
   if NumberOfPoints < 3 then
   begin
-    Result := True;
+    Result:=True;
     exit;
   end;
 
-  N1 := 0;
-  N2 := 0;
-  for I := 1 to numberofpoints do if Knuckle[I - 1] then Inc(N1);
+  N1:=0;
+  N2:=0;
+  for I:=1 to numberofpoints do if Knuckle[I - 1] then Inc(N1);
 
-  TotalLength := FTotalLength * FTotalLength;
+  TotalLength:=FTotalLength * FTotalLength;
   if TotalLength = 0 then exit;
   SetLength(Weights, NumberOfPoints);
   for I:=1 to NumberOfPoints do Weights[I-1]:=Weight(I-1) / TotalLength;
   try
     repeat
-      Index := FindNextPoint;
+      Index:=FindNextPoint;
       if Index <> -1 then begin
         if (Index = 0) or (Index = FNoPoints - 1) or (FNoPoints < 3) then begin
-          Index := -1;
+          Index:=-1;
         end else begin
           if Weights[Index] < Criterium then begin
             Move(Weights[Index + 1], Weights[Index],
@@ -373,73 +373,73 @@ begin
             Move(FKnuckles[Index + 1], FKnuckles[Index], (FNoPoints - Index - 1));
             Dec(FNoPoints);
             if (Index - 1 >= 0) and (Index - 1 < FNoPoints) then
-              Weights[Index - 1] := Weight(Index - 1) / TotalLength;
+              Weights[Index - 1]:=Weight(Index - 1) / TotalLength;
             if (Index >= 0) and (Index < FNoPoints) then
-              Weights[Index] := Weight(Index) / TotalLength;
+              Weights[Index]:=Weight(Index) / TotalLength;
             if (Index + 1 >= 0) and (Index + 1 < FNoPoints) then
-              Weights[Index + 1] := Weight(Index + 1) / TotalLength;
+              Weights[Index + 1]:=Weight(Index + 1) / TotalLength;
           end
           else
-            Index := -1;
+            Index:=-1;
         end;
       end;
     until index = -1;
-    Result := True;
+    Result:=True;
   except
-    Result := False;
+    Result:=False;
   end;
 
   for I:=1 to numberofpoints do if Knuckle[I-1] then inc(N2);
   if N1<>N2 then Built:=false;
 
-  Capacity := NumberOfPoints;
-  ///Fragments := NumberOfPoints - 1;
-  Built := False;
+  Capacity:=NumberOfPoints;
+  ///Fragments:=NumberOfPoints - 1;
+  Built:=False;
 end;
 
 procedure TFreeSpline.Add(P: T3DCoordinate);
 begin
   if NumberOfPoints = Capacity then begin
     // Make sure that the allocated memory is sufficient
-    Capacity := capacity + IncrementSize;
+    Capacity:=capacity + IncrementSize;
   end;
-  FPoints[FNoPoints] := P;
-  FKnuckles[FNoPoints] := False;
+  FPoints[FNoPoints]:=P;
+  FKnuckles[FNoPoints]:=False;
   Inc(FNoPoints);
   if FFragments < FNoPoints - 1 then
-     FFragments := FNoPoints - 1;
-  Built := False;  // Curve needs to be rebuild
+     FFragments:=FNoPoints - 1;
+  Built:=False;  // Curve needs to be rebuild
 end;
 
 procedure TFreeSpline.AddKnuckle(P: T3DCoordinate);
 begin
   Add(P);
-  Knuckle[NumberOfPoints - 1] := True;
+  Knuckle[NumberOfPoints - 1]:=True;
 end;
 
 // Copy all data from another spline
 procedure TFreeSpline.Assign(Spline: TFreeSpline);
 begin
-  FMin := Spline.FMin;
-  FMax := Spline.FMax;
-  FPenWidth := Spline.FPenwidth;
-  FColor := Spline.FColor;
-  FPenstyle := Spline.FPenStyle;
-  Capacity := Spline.NumberOfPoints;
+  FMin:=Spline.FMin;
+  FMax:=Spline.FMax;
+  FPenWidth:=Spline.FPenwidth;
+  FColor:=Spline.FColor;
+  FPenstyle:=Spline.FPenStyle;
+  Capacity:=Spline.NumberOfPoints;
   // Copy controlpoints
   Move(Spline.FPoints[0], FPoints[0], Spline.NumberOfPoints * SizeOf(T3DCoordinate));
   // copy knuckles
   Move(Spline.FKnuckles[0], FKnuckles[0], Spline.NumberOfPoints * SizeOf(boolean));
-  FNoPoints := Spline.NumberOfPoints;
+  FNoPoints:=Spline.NumberOfPoints;
 
-  //FFragments := FNoPoints - 1;
-  FFragments := Spline.Fragments;
-  if FFragments < FNoPoints - 1 then FFragments := FNoPoints - 1;
+  //FFragments:=FNoPoints - 1;
+  FFragments:=Spline.Fragments;
+  if FFragments < FNoPoints - 1 then FFragments:=FNoPoints - 1;
 
-  FShowCurvature := Spline.ShowCurvature;
-  FCurvatureScale := Spline.FCurvatureScale;
-  FCurvatureColor := Spline.FCurvatureColor;
-  Built := False;
+  FShowCurvature:=Spline.ShowCurvature;
+  FCurvatureScale:=Spline.FCurvatureScale;
+  FCurvatureColor:=Spline.FCurvatureColor;
+  Built:=False;
 end;
 
 function TFreeSpline.CoordLength(T1, T2: TFloatType): TFloatType;
@@ -448,18 +448,18 @@ var
   T: TFloatType;
   P1, P2: T3DCoordinate;
 begin
-  Result := 0.0;
-  P1.X := 0;
-  P1.Y := 0;
-  P1.Z := 0;
+  Result:=0.0;
+  P1.X:=0;
+  P1.Y:=0;
+  P1.Z:=0;
   if not Built then Rebuild;
   if not Built then exit;
-  for I := 0 to Fragments do begin
-    T := T1 + (I / Fragments) * (T2 - T1);
-    P2 := Value(T);
+  for I:=0 to Fragments do begin
+    T:=T1 + (I / Fragments) * (T2 - T1);
+    P2:=Value(T);
     if I > 0 then
-      Result := Result + Sqrt(Sqr(P2.X - P1.X) + Sqr(P2.Y - P1.Y) + Sqr(P2.Z - P1.Z));
-    P1 := P2;
+      Result:=Result + Sqrt(Sqr(P2.X - P1.X) + Sqr(P2.Y - P1.Y) + Sqr(P2.Z - P1.Z));
+    P1:=P2;
   end;
 end;
 
@@ -473,38 +473,38 @@ var
   L1, L2: TFloatType;
   Counter: integer;
 begin
-  T1 := 0;
-  T2 := 1;
-  Parameter := 1.0;
-  Counter := 0;
-  L1 := 0;
-  L2 := 0;
-  DesiredLength := 0;
-  if Percentage < 0.0 then Result := 0.0 else
-  if Percentage > 1.0 then Result := 1.0 else begin
+  T1:=0;
+  T2:=1;
+  Parameter:=1.0;
+  Counter:=0;
+  L1:=0;
+  L2:=0;
+  DesiredLength:=0;
+  if Percentage < 0.0 then Result:=0.0 else
+  if Percentage > 1.0 then Result:=1.0 else begin
     repeat
-      Length := CoordLength(0, Parameter);
+      Length:=CoordLength(0, Parameter);
       if counter = 0 then begin
-        L1 := 0;
-        L2 := Length;
-        TotalLength := Length;
-        DesiredLength := Percentage * Totallength;
-        Parameter := Percentage;
+        L1:=0;
+        L2:=Length;
+        TotalLength:=Length;
+        DesiredLength:=Percentage * Totallength;
+        Parameter:=Percentage;
       end else begin
         if Length > Desiredlength then begin
-          T2 := Parameter;
-          L2 := Length;
+          T2:=Parameter;
+          L2:=Length;
         end else begin
-          T1 := Parameter;
-          L1 := Length;
+          T1:=Parameter;
+          L1:=Length;
         end;
-        Parameter := T1 + ((DesiredLength - L1) / (L2 - L1)) * (T2 - T1);
-        if Parameter < 0 then Parameter := 0;
-        if Parameter > 1 then Parameter := 1;
+        Parameter:=T1 + ((DesiredLength - L1) / (L2 - L1)) * (T2 - T1);
+        if Parameter < 0 then Parameter:=0;
+        if Parameter > 1 then Parameter:=1;
       end;
       Inc(Counter);
     until (Counter > 75) or (abs(Length - DesiredLength) < 1e-3);
-    Result := Parameter;
+    Result:=Parameter;
   end;
 end;
 
@@ -515,8 +515,8 @@ begin
   Setlength(FDerivatives, 0);
   Setlength(FParameters, 0);
   Setlength(FKnuckles, 0);
-  FCapacity := 0;
-  FNoPoints := 0;
+  FCapacity:=0;
+  FNoPoints:=0;
 end;
 
 function TFreeSpline.Curvature(Parameter: TFloatType;
@@ -527,28 +527,28 @@ var
   L, Denom: TFloatType;
   VdotA, VdotV: TFloatType;
 begin
-  Value := self.Value(Parameter);
-  Vel1 := FirstDerive(Parameter);
-  Acc := SecondDerive(Parameter);
+  Value:=self.Value(Parameter);
+  Vel1:=FirstDerive(Parameter);
+  Acc:=SecondDerive(Parameter);
   // Crossproduct of first and second derive
-  CrossProduct.X := (Acc.Y * (Vel1.Z) - (Acc.Z) * Vel1.Y);
-  CrossProduct.Y := -(Acc.X * (Vel1.Z) - (Acc.Z) * Vel1.X);
-  CrossProduct.Z := (Acc.X * Vel1.Y - Acc.Y * Vel1.X);
-  L := Sqrt((CrossProduct.X * CrossProduct.X) + (CrossProduct.Y * CrossProduct.Y) +
+  CrossProduct.X:=(Acc.Y * (Vel1.Z) - (Acc.Z) * Vel1.Y);
+  CrossProduct.Y:=-(Acc.X * (Vel1.Z) - (Acc.Z) * Vel1.X);
+  CrossProduct.Z:=(Acc.X * Vel1.Y - Acc.Y * Vel1.X);
+  L:=Sqrt((CrossProduct.X * CrossProduct.X) + (CrossProduct.Y * CrossProduct.Y) +
     (CrossProduct.Z * CrossProduct.Z));
   if L = 0 then
-    L := 0.00001;
-  VdotA := (Vel1.X * Acc.X) + (Vel1.Y * Acc.Y) + (Vel1.Z * Acc.Z);
-  VdotV := (Vel1.X * Vel1.X) + (Vel1.Y * Vel1.Y) + (Vel1.Z * Vel1.Z);
-  Denom := Power(VdotV, 1.5);
+    L:=0.00001;
+  VdotA:=(Vel1.X * Acc.X) + (Vel1.Y * Acc.Y) + (Vel1.Z * Acc.Z);
+  VdotV:=(Vel1.X * Vel1.X) + (Vel1.Y * Vel1.Y) + (Vel1.Z * Vel1.Z);
+  Denom:=Power(VdotV, 1.5);
   if Denom > 0 then
-    Result := L / Denom
+    Result:=L / Denom
   else
-    Result := 0;
-  Normal.X := vdotv * acc.X - vdota * vel1.X;
-  Normal.Y := vdotv * acc.Y - vdota * vel1.Y;
-  Normal.Z := vdotv * acc.Z - vdota * vel1.Z;
-  Normal := Normalize(Normal);
+    Result:=0;
+  Normal.X:=vdotv * acc.X - vdota * vel1.X;
+  Normal.Y:=vdotv * acc.Y - vdota * vel1.Y;
+  Normal.Z:=vdotv * acc.Z - vdota * vel1.Z;
+  Normal:=Normalize(Normal);
 end;
 
 procedure TFreeSpline.DeletePoint(Index: integer);
@@ -558,13 +558,13 @@ begin
   if NumberOfPoints > 0 then
   begin
     Dec(FNoPoints);
-    //FFragments := FNoPoints - 1;
-    if FFragments < FNoPoints - 1 then FFragments := FNoPoints - 1;
-    for I := Index to NumberOfPoints - 1 do begin
-      FPoints[I] := FPoints[I + 1];
-      FKnuckles[I] := FKnuckles[I + 1];
+    //FFragments:=FNoPoints - 1;
+    if FFragments < FNoPoints - 1 then FFragments:=FNoPoints - 1;
+    for I:=Index to NumberOfPoints - 1 do begin
+      FPoints[I]:=FPoints[I + 1];
+      FKnuckles[I]:=FKnuckles[I + 1];
     end;
-    Built := False;
+    Built:=False;
   end;
 end;
 
@@ -575,28 +575,28 @@ var
   V1, V2, P: T3DCoordinate;
   Param: TFloatType;
 begin
-  Result := 1000000;
+  Result:=1000000;
   // Check if cursor position lies within the boundaries
-  Pt.X := X;
-  Pt.Y := Y;
+  Pt.X:=X;
+  Pt.Y:=Y;
   if (Pt.X >= 0) and (Pt.X <= Viewport.Width) and (Pt.Y >= 0) and (Pt.Y <= Viewport.Height) then
   begin
-    P1 := Viewport.Project(Value(0.0));
-    P := Value(0);
-    V1 := P;
+    P1:=Viewport.Project(Value(0.0));
+    P:=Value(0);
+    V1:=P;
     //We could analyze it with knuckles but we do not need this precision here
-    for I := 1 to Fragments do
+    for I:=1 to Fragments do
     begin
-      V2 := Value((I - 1) / (Fragments - 1));
-      P2 := Viewport.Project(V2);
-      Tmp := Round(DistanceToLine(P1, P2, X, Y, Param));
+      V2:=Value((I - 1) / (Fragments - 1));
+      P2:=Viewport.Project(V2);
+      Tmp:=Round(DistanceToLine(P1, P2, X, Y, Param));
       if Tmp < Result then
       begin
-        Result := Tmp;
-        P := Interpolate(V1, V2, Param);
+        Result:=Tmp;
+        P:=Interpolate(V1, V2, Param);
       end;
-      P1 := P2;
-      V1 := V2;
+      P1:=P2;
+      V1:=V2;
     end;
   end;
 end;
@@ -606,15 +606,15 @@ var
   P1, P2: T3DCoordinate;
   T1, T2: TFloatType;
 begin
-  T1 := Parameter - 1e-3;
-  T2 := Parameter + 1e-3;
-  if T1 < 0.0 then T1 := 0.0;
-  if T2 > 1.0 then T2 := 1.0;
-  P1 := Value(T1);
-  P2 := Value(T2);
-  Result.X := (P2.X - P1.X) / (T2 - T1);
-  Result.Y := (P2.Y - P1.Y) / (T2 - T1);
-  Result.Z := (P2.Z - P1.Z) / (T2 - T1);
+  T1:=Parameter - 1e-3;
+  T2:=Parameter + 1e-3;
+  if T1 < 0.0 then T1:=0.0;
+  if T2 > 1.0 then T2:=1.0;
+  P1:=Value(T1);
+  P2:=Value(T2);
+  Result.X:=(P2.X - P1.X) / (T2 - T1);
+  Result.Y:=(P2.Y - P1.Y) / (T2 - T1);
+  Result.Z:=(P2.Z - P1.Z) / (T2 - T1);
 end;
 
 procedure TFreeSpline.Insert(Index: integer; P: T3DCoordinate);
@@ -623,17 +623,17 @@ var
 begin
   if (Index >= 0) and (Index < NumberOfPoints) then begin
     if NumberOfPoints = Capacity then
-      Capacity := Capacity + IncrementSize;
-    for I := NumberOfPoints - 1 downto Index do begin
-      FPoints[I + 1] := FPoints[I];
-      FKnuckles[I + 1] := FKnuckles[I];
+      Capacity:=Capacity + IncrementSize;
+    for I:=NumberOfPoints - 1 downto Index do begin
+      FPoints[I + 1]:=FPoints[I];
+      FKnuckles[I + 1]:=FKnuckles[I];
     end;
-    FPoints[Index] := P;
-    FKnuckles[Index] := False;
+    FPoints[Index]:=P;
+    FKnuckles[Index]:=False;
     Inc(FNoPoints);
-    //FFragments := FNoPoints - 1;
-    if FFragments < FNoPoints - 1 then FFragments := FNoPoints - 1;
-    Built := False;
+    //FFragments:=FNoPoints - 1;
+    if FFragments < FNoPoints - 1 then FFragments:=FNoPoints - 1;
+    Built:=False;
   end;
 //  else
 //  raise Exception.Create('Index out of range' + EOL + IntToStr(Index) + #32 + IntToStr(FNoPoints));
@@ -645,19 +645,19 @@ var I,J: integer;
   P1, P2, Pkn: T3DCoordinate;
   Pn, Pn1,Pn2: integer;
 begin
-  Result := [];
+  Result:=[];
   SetLength(Result, FFragments + FNoPoints);
   J:=0; Pn:=0;
-  for I := 0 to Fragments-1 do
+  for I:=0 to Fragments-1 do
   begin
-    P1 := Value(I / (FFragments-1), Pn1,Pn2);
+    P1:=Value(I / (FFragments-1), Pn1,Pn2);
     if (Pn<>Pn1) and Knuckle[Pn1] then // add knuckle
     begin
       Pn:=Pn1;
-      Result[J] := self.Point[Pn1];
+      Result[J]:=self.Point[Pn1];
       inc(J);
     end;
-    Result[J] := P1;
+    Result[J]:=P1;
     inc(J);
   end;
   SetLength(Result, J);
@@ -670,19 +670,19 @@ var I,J: integer;
   P:TPoint;
   Pn, Pn1,Pn2: integer;
 begin
-  Result := [];
+  Result:=[];
   SetLength(Result, FFragments + FNoPoints);
   J:=0; Pn:=0;
-  for I := 0 to Fragments-1 do
+  for I:=0 to Fragments-1 do
   begin
-    P1 := Value(I / (FFragments-1), Pn1,Pn2);
+    P1:=Value(I / (FFragments-1), Pn1,Pn2);
     if (Pn<>Pn1) and Knuckle[Pn1] then // add knuckle
     begin
       Pn:=Pn1;
-      Result[J] := Viewport.Project(self.Point[Pn1]);
+      Result[J]:=Viewport.Project(self.Point[Pn1]);
       inc(J);
     end;
-    Result[J] := Viewport.Project(P1);
+    Result[J]:=Viewport.Project(P1);
     inc(J);
   end;
   SetLength(Result, J);
@@ -710,30 +710,30 @@ begin
       SetLength(PArray1, Fragments + self.NumberOfPoints);
       SetLength(PArray2, Fragments + self.NumberOfPoints);
       J:=0; Pn:=0;
-      for I := 0 to Fragments - 1 do
+      for I:=0 to Fragments - 1 do
       begin
-        C := Curvature( I / (Fragments - 1), P1, Normal);
-        Pkn := Value( I / (Fragments - 1), Pn1, Pn2); // to get Pn1
+        C:=Curvature( I / (Fragments - 1), P1, Normal);
+        Pkn:=Value( I / (Fragments - 1), Pn1, Pn2); // to get Pn1
         if (Pn<>Pn1) and Knuckle[Pn1] then // add knuckle
         begin
           Pn:=Pn1;
           Pkn:=self.Point[Pn1];
-          PArray1[J] := Viewport.Project(Pkn);
-          PArray2[J] := Viewport.Project(Pkn);
+          PArray1[J]:=Viewport.Project(Pkn);
+          PArray2[J]:=Viewport.Project(Pkn);
           inc(J);
         end;
-        PArray1[J] := Viewport.Project(P1);
-        P2.X := P1.X - C * 2 * CurvatureScale * Normal.X;
-        P2.Y := P1.Y - C * 2 * CurvatureScale * Normal.Y;
-        P2.Z := P1.Z - C * 2 * CurvatureScale * Normal.Z;
-        PArray2[J] := Viewport.Project(P2);
+        PArray1[J]:=Viewport.Project(P1);
+        P2.X:=P1.X - C * 2 * CurvatureScale * Normal.X;
+        P2.Y:=P1.Y - C * 2 * CurvatureScale * Normal.Y;
+        P2.Z:=P1.Z - C * 2 * CurvatureScale * Normal.Z;
+        PArray2[J]:=Viewport.Project(P2);
         inc(J);
       end;
       SetLength(PArray1, J);
       SetLength(PArray2, J);
       Viewport.SetPenWidth(FPenWidth);
-      Viewport.PenColor := CurvatureColor;
-      for I := 0 to J - 1 do
+      Viewport.PenColor:=CurvatureColor;
+      for I:=0 to J - 1 do
         if (I mod 4 = 0) or (I = 1) or (I = Fragments) then
         begin
           Viewport.MoveTo(PArray1[I].X, PArray1[I].Y);
@@ -743,22 +743,22 @@ begin
     end
     else
     begin
-      PArray1 := GetValuesProjected(Viewport);
+      PArray1:=GetValuesProjected(Viewport);
     end;
     Viewport.SetPenWidth(FPenWidth);
-    Viewport.PenColor := Color;
-    Viewport.PenStyle := FPenstyle;
+    Viewport.PenColor:=Color;
+    Viewport.PenStyle:=FPenstyle;
     Viewport.Polyline(PArray1);
 
     if ShowPoints then
     begin
-      Viewport.Fontname := 'small fonts';
-      Viewport.FontSize := 7;
-      Viewport.FontColor := clBlack;
-      Viewport.BrushStyle := bsClear;
-      for I := 1 to NumberOfPoints do
+      Viewport.Fontname:='small fonts';
+      Viewport.FontSize:=7;
+      Viewport.FontColor:=clBlack;
+      Viewport.BrushStyle:=bsClear;
+      for I:=1 to NumberOfPoints do
       begin
-        Pt := Viewport.Project(Point[I - 1]);
+        Pt:=Viewport.Project(Point[I - 1]);
         Viewport.Ellipse(Pt.X - 2, Pt.Y - 2, Pt.X + 2, Pt.Y + 2);
         Viewport.TextOut(Pt.X + 2, Pt.Y, IntToStr(I));
       end;
@@ -769,22 +769,22 @@ begin
     // draw to z-buffer
     if not Built then
       Rebuild;
-    R := GetRValue(Color);
-    G := GetGValue(Color);
-    B := GetBValue(Color);
+    R:=GetRValue(Color);
+    G:=GetGValue(Color);
+    B:=GetBValue(Color);
 
     { replaced to code below, coz it draws knuckles correctly
       TODO remove
-    P1 := Value(0.0);
-    for I := 1 to Fragments do
+    P1:=Value(0.0);
+    for I:=1 to Fragments do
     begin
-      P2 := Value(I / Fragments);
+      P2:=Value(I / Fragments);
       Viewport.DrawLineToZBuffer(P1, P2, R, G, B);
-      P1 := P2;
+      P1:=P2;
     end;
     }
-    PArray3dc := self.GetValues;
-    for I := 1 to length(PArray3dc) - 1 do
+    PArray3dc:=self.GetValues;
+    for I:=1 to length(PArray3dc) - 1 do
     begin
       P1:=PArray3dc[i - 1];
       P2:=PArray3dc[i];
@@ -800,53 +800,53 @@ var
   NoNewPoints: integer;
 begin
   if NumberOfPoints = 0 then begin
-    Capacity := Source.NumberOfPoints;
+    Capacity:=Source.NumberOfPoints;
     if Invert then begin
-      for I := 0 to Source.NumberOfPoints - 1 do begin
-        FPoints[Source.NumberOfPoints - 1 - I] := Source.FPoints[I];
-        FKnuckles[Source.NumberOfPoints - 1 - I] := Source.FKnuckles[I];
+      for I:=0 to Source.NumberOfPoints - 1 do begin
+        FPoints[Source.NumberOfPoints - 1 - I]:=Source.FPoints[I];
+        FKnuckles[Source.NumberOfPoints - 1 - I]:=Source.FKnuckles[I];
       end;
     end else begin
-      for I := 0 to Source.NumberOfPoints - 1 do begin
-        FPoints[I] := Source.FPoints[I];
-        FKnuckles[I] := Source.FKnuckles[I];
+      for I:=0 to Source.NumberOfPoints - 1 do begin
+        FPoints[I]:=Source.FPoints[I];
+        FKnuckles[I]:=Source.FKnuckles[I];
       end;
     end;
-    FNoPoints := Source.NumberOfpoints;
-    //FFragments := FNoPoints - 1;
-    if FFragments < FNoPoints - 1 then FFragments := FNoPoints - 1;
-    Built := False;
+    FNoPoints:=Source.NumberOfpoints;
+    //FFragments:=FNoPoints - 1;
+    if FFragments < FNoPoints - 1 then FFragments:=FNoPoints - 1;
+    Built:=False;
   end else begin
-    if DuplicatePoint then NoNewPoints := Source.NumberOfPoints - 1
-                      else NoNewPoints := Source.NumberOfPoints;
-    Capacity := NumberOfPoints + NoNewPoints;
-    Built := False;
+    if DuplicatePoint then NoNewPoints:=Source.NumberOfPoints - 1
+                      else NoNewPoints:=Source.NumberOfPoints;
+    Capacity:=NumberOfPoints + NoNewPoints;
+    Built:=False;
     if Index < NumberOfPoints then begin         // insert space for new points
       Move(FPoints[Index], FPoints[Index + NoNewPoints],
         (NumberOfPoints - Index) * SizeOf(T3DCoordinate));
       Move(FKnuckles[Index], FKnuckles[Index+NoNewPoints],(NumberOfPoints-Index));
       // Insert the new data
       if Invert then begin
-        Knuckle[index] := Knuckle[Index] or Source.Knuckle[Source.NumberOfPoints - 1];
-        for I := 1 to NoNewPoints do begin
-          FPoints[Index + I - 1] := Source.FPoints[Source.FNoPoints - I];
-          FKnuckles[Index + I - 1] := Source.FKnuckles[Source.FNoPoints - I];
+        Knuckle[index]:=Knuckle[Index] or Source.Knuckle[Source.NumberOfPoints - 1];
+        for I:=1 to NoNewPoints do begin
+          FPoints[Index + I - 1]:=Source.FPoints[Source.FNoPoints - I];
+          FKnuckles[Index + I - 1]:=Source.FKnuckles[Source.FNoPoints - I];
         end;
       end else begin
-        Knuckle[index] := Knuckle[Index] or Source.Knuckle[0];
+        Knuckle[index]:=Knuckle[Index] or Source.Knuckle[0];
         Move(Source.FPoints[0], FPoints[Index], NoNewPoints * SizeOf(T3DCoordinate));
         Move(Source.FKnuckles[0], FKnuckles[Index], NoNewPoints);
       end;
     end else begin
       if Invert then begin
-        Knuckle[NumberOfPoints - 1] := Knuckle[NumberOfPoints - 1] or
+        Knuckle[NumberOfPoints - 1]:=Knuckle[NumberOfPoints - 1] or
                                     Source.Knuckle[Source.NumberOfPoints-1];
-        for I := 1 to NoNewPoints do begin
-          FPoints[FNoPoints - 1 + I] := Source.FPoints[Source.FNoPoints - I - 1];
-          FKnuckles[FNoPoints - 1 + I] := Source.FKnuckles[Source.FNoPoints - I - 1];
+        for I:=1 to NoNewPoints do begin
+          FPoints[FNoPoints - 1 + I]:=Source.FPoints[Source.FNoPoints - I - 1];
+          FKnuckles[FNoPoints - 1 + I]:=Source.FKnuckles[Source.FNoPoints - I - 1];
         end;
       end else begin
-        Knuckle[NumberOfPoints - 1] := Knuckle[NumberOfPoints - 1] or Source.Knuckle[0];
+        Knuckle[NumberOfPoints - 1]:=Knuckle[NumberOfPoints - 1] or Source.Knuckle[0];
         if DuplicatePoint then begin                       // Add controlpoints
           Move(Source.FPoints[1], FPoints[NumberOfPoints],
             NoNewPoints * SizeOf(T3DCoordinate));          // Add knuckles
@@ -859,10 +859,10 @@ begin
       end;
     end;
     Inc(FNoPoints, NoNewPoints);
-    //FFragments := FNoPoints-1;
-    if FFragments < FNoPoints-1 then FFragments := FNoPoints - 1;
-    if not DuplicatePoint then Fknuckles[index] := True;
-    Built := False;
+    //FFragments:=FNoPoints-1;
+    if FFragments < FNoPoints-1 then FFragments:=FNoPoints - 1;
+    if not DuplicatePoint then Fknuckles[index]:=True;
+    Built:=False;
   end;
 end;
 
@@ -883,40 +883,40 @@ var
       Setlength(Output.Points, Capacity);
       Setlength(Output.Parameters, Capacity);
     end;
-    Output.Points[Output.NumberOfIntersections] := P;
-    Output.Parameters[Output.NumberOfIntersections] := Parameter;
+    Output.Points[Output.NumberOfIntersections]:=P;
+    Output.Parameters[Output.NumberOfIntersections]:=Parameter;
     Inc(Output.NumberOfIntersections);
   end;
 
 begin
-  Capacity := 0;
-  Output.NumberOfIntersections := 0;
+  Capacity:=0;
+  Output.NumberOfIntersections:=0;
   Setlength(Output.Points, Capacity);
   Setlength(Output.Parameters, Capacity);
-  T1 := 0.0;
-  P1 := Value(T1);
-  S1 := Plane.a * P1.x + Plane.b * P1.y + Plane.c * P1.z + Plane.d;
+  T1:=0.0;
+  P1:=Value(T1);
+  S1:=Plane.a * P1.x + Plane.b * P1.y + Plane.c * P1.z + Plane.d;
   if abs(S1) < 1e-6 then
     AddToOutput(P1, T1);
-  for I := 1 to Fragments do
+  for I:=1 to Fragments do
   begin
-    T2 := I / Fragments;
-    P2 := Value(T2);
-    S2 := Plane.a * P2.x + Plane.b * P2.y + Plane.c * P2.z + Plane.d;
+    T2:=I / Fragments;
+    P2:=Value(T2);
+    S2:=Plane.a * P2.x + Plane.b * P2.y + Plane.c * P2.z + Plane.d;
     if abs(S2) < 1e-6 then
       AddToOutput(P2, T2);
     if ((S1 < 0.0) and (S2 > 0.0)) or ((S2 < 0.0) and (S1 > 0.0)) then
     begin
       // intersection found
-      T := -s1 / (s2 - s1);
-      T := T1 + T * (T2 - T1);
+      T:=-s1 / (s2 - s1);
+      T:=T1 + T * (T2 - T1);
       AddToOutput(Value(T), T);
     end;
-    P1 := P2;
-    S1 := S2;
-    T1 := T2;
+    P1:=P2;
+    S1:=S2;
+    T1:=T2;
   end;
-  Result := Output.NumberOfIntersections > 0;
+  Result:=Output.NumberOfIntersections > 0;
 end;
 
 // Invert the direction of controlpoints and knuckles
@@ -926,16 +926,16 @@ var
   P: T3DCoordinate;
   K: boolean;
 begin
-  Mid := (FNoPoints div 2) - 1;
-  for I := 0 to Mid do begin
-    P := FPoints[I];
-    FPoints[I] := FPoints[FNoPoints - I - 1];
-    FPoints[FNoPoints - I - 1] := P;
-    K := FKnuckles[I];
-    FKnuckles[I] := FKnuckles[FNoPoints - I - 1];
-    FKnuckles[FNoPoints - I - 1] := K;
+  Mid:=(FNoPoints div 2) - 1;
+  for I:=0 to Mid do begin
+    P:=FPoints[I];
+    FPoints[I]:=FPoints[FNoPoints - I - 1];
+    FPoints[FNoPoints - I - 1]:=P;
+    K:=FKnuckles[I];
+    FKnuckles[I]:=FKnuckles[FNoPoints - I - 1];
+    FKnuckles[FNoPoints - I - 1]:=K;
   end;
-  Built := False;
+  Built:=False;
 end;
 
 procedure TFreeSpline.LoadBinary(Source: TFreeFileBuffer);
@@ -947,13 +947,13 @@ begin
   Source.LoadBoolean(FShowCurvature);
   Source.LoadTFloatType(FCurvatureScale);
   Source.LoadInteger(N);
-  Capacity := N;
-  for I := 1 to N do
+  Capacity:=N;
+  for I:=1 to N do
   begin
     Source.LoadT3DCoordinate(P);
     Add(P);
     Source.LoadBoolean(K);
-    Knuckle[I - 1] := K;
+    Knuckle[I - 1]:=K;
   end;
 end;
 
@@ -964,7 +964,7 @@ begin
   Destination.Add(FShowCurvature);
   Destination.Add(FCurvatureScale);
   Destination.Add(NumberOfPoints);
-  for I := 1 to NumberOfPoints do
+  for I:=1 to NumberOfPoints do
   begin
     Destination.Add(Point[I - 1]);
     Destination.Add(Knuckle[I - 1]);
@@ -978,19 +978,19 @@ var
   NParams: integer;
   Params: TFloatArray;
 begin
-  Ind := FindDXFColorIndex(Color);
-  NParams := 0;
+  Ind:=FindDXFColorIndex(Color);
+  NParams:=0;
   Setlength( Params,NumberOfPoints );          // count number of knucklepoints
   if not Built then Rebuild;
-  for I := 2 to NumberOfPoints - 1 do begin
+  for I:=2 to NumberOfPoints - 1 do begin
     if Knuckle[I - 1] then begin
       Params[NParams]:=Parameter[I-1];
       Inc(NParams);
     end;
   end;
   Setlength(Params, NParams + Fragments);
-  for I := 1 to Fragments do begin
-    Params[NParams] := (I - 1) / (Fragments - 1);
+  for I:=1 to Fragments do begin
+    Params[NParams]:=(I - 1) / (Fragments - 1);
     Inc(NParams);
   end;
   SortFloatArray(Params, NParams);
@@ -999,8 +999,8 @@ begin
   Strings.Add('62' + EOL + IntToStr(Ind));     // color by layer
   Strings.Add('70' + EOL + '10');              // not closed
   Strings.Add('66' + EOL + '1');               // vertices follow
-  for J := 1 to NParams do begin
-    P := Value(Params[J - 1]);
+  for J:=1 to NParams do begin
+    P:=Value(Params[J - 1]);
     Strings.Add('0' + EOL + 'VERTEX');
     Strings.Add('8' + EOL + LayerName);
     Strings.Add('10' + EOL + FloatToDec(P.X, 4));
@@ -1015,9 +1015,9 @@ begin
     Strings.Add('62' + EOL + IntToStr(Ind));   // color by layer
     Strings.Add('70' + EOL + '10');            // not closed
     Strings.Add('66' + EOL + '1');             // vertices follow
-    for J := 1 to NParams do begin
-      P := Value(Params[J - 1]);
-      P.Y := -P.Y;
+    for J:=1 to NParams do begin
+      P:=Value(Params[J - 1]);
+      P.Y:=-P.Y;
       Strings.Add('0' + EOL + 'VERTEX');
       Strings.Add('8' + EOL + LayerName);
       Strings.Add('10' + EOL + FloatToDec(P.X, 4));
@@ -1033,18 +1033,18 @@ procedure TFreeSpline.Clear;
 begin
   Setlength(FDerivatives, 0);
   Setlength(FParameters, 0);
-  FTotalLength := 0.0;
-  FNoPoints := 0;
+  FTotalLength:=0.0;
+  FNoPoints:=0;
   inherited Clear;
-  Built := False;
+  Built:=False;
   Setlength(FPoints, 0);
-  FCapacity := 0;
-  FNoPoints := 0;
-  FFragments := 0;
-  FShowCurvature := False;
-  FCurvatureScale := 0.10;
-  FCurvatureColor := clFuchsia;
-  FShowPoints := False;
+  FCapacity:=0;
+  FNoPoints:=0;
+  FFragments:=0;
+  FShowCurvature:=False;
+  FCurvatureScale:=0.10;
+  FCurvatureColor:=clFuchsia;
+  FShowPoints:=False;
 end;
 
 function TFreeSpline.Value(Parameter: extended): T3DCoordinate;
@@ -1059,11 +1059,11 @@ var
   K: integer;
   H, a, b, a3, b3, h2: TFloatType;
 begin
-  Result.X := 0;
-  Result.Y := 0;
-  Result.Z := 0;
-  PointNo1 := 0;
-  PointNo2 := 0;
+  Result.X:=0;
+  Result.Y:=0;
+  Result.Z:=0;
+  PointNo1:=0;
+  PointNo2:=0;
   if not FBuilt then
     Rebuild;
   if FNoPoints < 2 then
@@ -1076,19 +1076,19 @@ begin
   PointNo1:=0; PointNo2:=0;
   if FNoPoints < 2 then exit;
   if FNoPoints = 2 then begin
-    Lo := 0;
-    Hi := 1;
+    Lo:=0;
+    Hi:=1;
   end
   else begin
     if (length(FParameters) < FNoPoints) then Rebuild;
-    Lo := 0;
-    Hi := FNoPoints - 1;
+    Lo:=0;
+    Hi:=FNoPoints - 1;
     repeat
-      K := (Lo + Hi) div 2;
+      K:=(Lo + Hi) div 2;
       try
-        if FParameters[K] < Parameter then Lo := K else Hi := K;
+        if FParameters[K] < Parameter then Lo:=K else Hi:=K;
       except
-        FParameters[K] := FParameters[K] - 1 + 1;
+        FParameters[K]:=FParameters[K] - 1 + 1;
       end;
       if (length(FParameters) < FNoPoints) then Rebuild;
     until Hi - Lo <= 1;
@@ -1101,33 +1101,33 @@ begin
   if (length(FDerivatives) < FNoPoints) then raise Exception.Create('length(FDerivatives)<FNoPoints' + EOL + IntToStr( length(FParameters)) + ' ' + IntToStr(FNoPoints));
   // MM: end debug
 *)
-  H := FParameters[Hi] - FParameters[Lo];
+  H:=FParameters[Hi] - FParameters[Lo];
 
   if abs(H) < 1e-6 then begin  //Raise exception.Create('Invalid cspline');
-    Result := FPoints[Hi];
+    Result:=FPoints[Hi];
   end
   else
   begin
     if Knuckle[Lo] and Knuckle[Hi] then
     begin
-      A := (FParameters[Hi] - Parameter) / H;
-      B := (Parameter - FParameters[Lo]) / H;
-      Result.X := A * FPoints[Lo].X + B * FPoints[Hi].X;
-      Result.Y := A * FPoints[Lo].Y + B * FPoints[Hi].Y;
-      Result.Z := A * FPoints[Lo].Z + B * FPoints[Hi].Z;
+      A:=(FParameters[Hi] - Parameter) / H;
+      B:=(Parameter - FParameters[Lo]) / H;
+      Result.X:=A * FPoints[Lo].X + B * FPoints[Hi].X;
+      Result.Y:=A * FPoints[Lo].Y + B * FPoints[Hi].Y;
+      Result.Z:=A * FPoints[Lo].Z + B * FPoints[Hi].Z;
     end
     else
     begin
-      A := (FParameters[Hi] - Parameter) / H;
-      B := (Parameter - FParameters[Lo]) / H;
-      a3 := a * a * a - a;
-      b3 := b * b * b - b;
-      h2 := h * h / 6.0;
-      Result.X := A * FPoints[Lo].X + B * FPoints[Hi].X +
+      A:=(FParameters[Hi] - Parameter) / H;
+      B:=(Parameter - FParameters[Lo]) / H;
+      a3:=a * a * a - a;
+      b3:=b * b * b - b;
+      h2:=h * h / 6.0;
+      Result.X:=A * FPoints[Lo].X + B * FPoints[Hi].X +
         (a3 * FDerivatives[Lo].X + b3 * (Fderivatives[Hi].X)) * h2;
-      Result.Y := A * FPoints[Lo].Y + B * FPoints[Hi].Y +
+      Result.Y:=A * FPoints[Lo].Y + B * FPoints[Hi].Y +
         (a3 * FDerivatives[Lo].Y + b3 * (Fderivatives[Hi].Y)) * h2;
-      Result.Z := A * FPoints[Lo].Z + B * FPoints[Hi].Z +
+      Result.Z:=A * FPoints[Lo].Z + B * FPoints[Hi].Z +
         (a3 * FDerivatives[Lo].Z + b3 * (Fderivatives[Hi].Z)) * h2;
     end;
   end;

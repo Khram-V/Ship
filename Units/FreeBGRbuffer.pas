@@ -44,17 +44,17 @@ implementation
   constructor TFreeBGRbuffer.Create;
   begin
     inherited Create;
-    //FCanvas := TCanvas.Create;
+    //FCanvas:=TCanvas.Create;
     FImage:= TRasterImage.Create;
-    //FCanvas := TBitmapCanvas.Create(FImage);
+    //FCanvas:=TBitmapCanvas.Create(FImage);
   end;
 
   function  TFreeBGRbuffer.GetScanline(ARow: Integer): pRGBTripleArray;
   var P:pointer;
   begin
-    P := pData;
+    P:=pData;
     inc(P, 3 * Arow);
-    result := pRGBTripleArray(P);
+    result:=pRGBTripleArray(P);
   end;
 
   procedure TFreeBGRbuffer.BeginUpdate;
@@ -68,7 +68,7 @@ implementation
   procedure TFreeBGRbuffer.ReallocateData;
   var L:integer;
   begin
-    L := FWidth * FHeight*3;
+    L:=FWidth * FHeight*3;
     //SetLength(pData, L);
     ReallocMem(pData,L);
     // TODO make smart with copying existing image over new data
@@ -76,40 +76,40 @@ implementation
 
   procedure TFreeBGRbuffer.SetSize(AWidth, AHeight : integer);
   begin
-    FWidth := AWidth;
-    FHeight := AHeight;
+    FWidth:=AWidth;
+    FHeight:=AHeight;
     ReallocateData;
-    //FCanvas.Width := FWidth;
-    //FCanvas.Height := FHeight;
+    //FCanvas.Width:=FWidth;
+    //FCanvas.Height:=FHeight;
   end;
 
   procedure TFreeBGRbuffer.SetWidth(AWidth : integer);
-  begin FWidth := AWidth; ReallocateData; //FCanvas.Width := FWidth;
+  begin FWidth:=AWidth; ReallocateData; //FCanvas.Width:=FWidth;
   end;
 
   procedure TFreeBGRbuffer.SetHeight(AHeight : integer);
-  begin FHeight := AHeight; ReallocateData; //FCanvas.Height := FHeight;
+  begin FHeight:=AHeight; ReallocateData; //FCanvas.Height:=FHeight;
   end;
 
   procedure TFreeBGRbuffer.SetCanvas(ACanvas : TCanvas);
-  begin FCanvas := ACanvas; end;
+  begin FCanvas:=ACanvas; end;
 
   function TFreeBGRbuffer.CreateBitmap:TBitmap;
   var BM : TBitmap;
   begin
-    BM := TBitmap.Create;
+    BM:=TBitmap.Create;
     BM.PixelFormat:=pf24bit;
     BM.RawImage.Init;
     BM.RawImage.Description.Init_BPP24_B8G8R8_BIO_TTB(FWidth,FHeight);
     BM.SetSize(FWidth,FHeight);
     BM.RawImage.Data:=pByte(pData);
-    result := BM;
+    result:=BM;
   end;
 
   procedure TFreeBGRbuffer.SaveToFile(AFileName : String);
   var BM : TBitmap;
   begin
-    BM := CreateBitmap;
+    BM:=CreateBitmap;
 //  try
       BM.SaveToFile( AFileName );
 //  finally
@@ -120,11 +120,11 @@ implementation
   procedure TFreeBGRbuffer.Fill(AColor : TColor);
   var rgb : TRGBTriple; i: integer;
   begin
-    rgb.rgbtBlue := Blue(AColor);
-    rgb.rgbtGreen := Green(AColor);
-    rgb.rgbtRed := Red(AColor);
+    rgb.rgbtBlue:=Blue(AColor);
+    rgb.rgbtGreen:=Green(AColor);
+    rgb.rgbtRed:=Red(AColor);
     for i:=0 to FWidth * FHeight do
-     pData^[i] := rgb;
+     pData^[i]:=rgb;
   end;
 
 end.

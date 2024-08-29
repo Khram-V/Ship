@@ -19,7 +19,7 @@ var ParametersHelp: boolean=false;
     sHelp : String;
 
 procedure InitByParameters; var S: string; p: integer; begin
-  for p:=1 to ParamCount do begin S := ParamStr(p);
+  for p:=1 to ParamCount do begin S:=ParamStr(p);
     if S = '--help' then ParametersHelp:=True else
     if ( lowerCase(UTF8RightStr( S,4 ) ) = '.ftm' )
     or ( lowerCase(UTF8RightStr( S,4 ) ) = '.fbm' ) then sOpenFile:=S;
@@ -60,9 +60,9 @@ begin
   LoadLanguage( Mainform.Freeship.Preferences.Language,
                 Mainform.Freeship.Preferences.LanguageFile );
   ShowTranslatedValues( Mainform );
-  Mainform.FFileName := sOpenFile;
+  Mainform.FFileName:=sOpenFile;
 
-  Application.OnActivate := MainForm.OnActivate;
+  Application.OnActivate:=MainForm.OnActivate;
 
   try
   SetExceptionMask(                              // Enabling FPU exception mask

@@ -7,17 +7,17 @@
 (*
 function TFreeHydrostaticCalc.FGetErrorString: string;
 begin
-  Result := '';
-  if feNothingSubmerged in Errors then Result := Result + UserString(0) + EOL;
+  Result:='';
+  if feNothingSubmerged in Errors then Result:=Result + UserString(0) + EOL;
   if feMakingWater in Errors then
-    Result := Result + UserString(1) + #32 + FloatToStrF(FData.Leak.X, ffFixed, 7, 3) +
+    Result:=Result + UserString(1) + #32 + FloatToStrF(FData.Leak.X, ffFixed, 7, 3) +
       ', ' + FloatToStrF(FData.Leak.Y, ffFixed, 7, 3) + ', ' +
       FloatToStrF(FData.Leak.Z, ffFixed, 7, 3) + EOL;
 end;
 *)
 function TFreeHydrostaticCalc.FGetTrimAngle: TFloatType;
 begin
-  Result := RadToDeg(ArcTan((-Trim * Cos(DegToRad(HeelingAngle))) /
+  Result:=RadToDeg(ArcTan((-Trim * Cos(DegToRad(HeelingAngle))) /
     Owner.ProjectSettings.ProjectLength));
 end;
 
@@ -26,21 +26,21 @@ var
   LowestValue: TFloatType;
   P1, P2, P3: T3DCoordinate;
 begin
-  LowestValue := Owner.FindLowestHydrostaticsPoint;
-  P1 := SetPoint(0.0, 0.0, LowestValue + (Draft - 0.5 * Trim));
-  P2 := SetPoint(Owner.ProjectSettings.ProjectLength, 0.0, LowestValue +
+  LowestValue:=Owner.FindLowestHydrostaticsPoint;
+  P1:=SetPoint(0.0, 0.0, LowestValue + (Draft - 0.5 * Trim));
+  P2:=SetPoint(Owner.ProjectSettings.ProjectLength, 0.0, LowestValue +
     (Draft + 0.5 * Trim));
-  P3 := SetPoint(Owner.ProjectSettings.ProjectLength, Cos(DegToRad(-HeelingAngle)),
+  P3:=SetPoint(Owner.ProjectSettings.ProjectLength, Cos(DegToRad(-HeelingAngle)),
     LowestValue + (Draft + 0.5 * Trim) - Sin(DegToRad(-HeelingAngle)));
-  Result := PlanePPP(P1, P2, P3);
+  Result:=PlanePPP(P1, P2, P3);
 end;
 
 procedure TFreeHydrostaticCalc.FSetCalculated(val: boolean);
 begin
-  FCalculated := val;
+  FCalculated:=val;
   if not FCalculated then
   begin
-    Errors := [];
+    Errors:=[];
     Fillchar(FData, SizeOf(FData), 0);
     FMidshipSection.Clear;
   end;
@@ -50,8 +50,8 @@ procedure TFreeHydrostaticCalc.FSetHeelingAngle(Val: TFloatType);
 begin
   if Val <> FHeelingAngle then
   begin
-    FheelingAngle := val;
-    Calculated := False;
+    FheelingAngle:=val;
+    Calculated:=False;
   end;
 end;
 
@@ -59,8 +59,8 @@ procedure TFreeHydrostaticCalc.FSetTrim(Val: TFloatType);
 begin
   if Val <> FTrim then
   begin
-    FTrim := val;
-    Calculated := False;
+    FTrim:=val;
+    Calculated:=False;
   end;
 end;
 
@@ -68,22 +68,22 @@ procedure TFreeHydrostaticCalc.FSetDraft(Val: TFloatType);
 begin
   if Val <> FDraft then
   begin
-    FDraft := val;
-    Calculated := False;
+    FDraft:=val;
+    Calculated:=False;
   end;
 end;
 
 procedure TFreeHydrostaticCalc.FSetErrors(val: TFreeHydrostaticErrors);
 begin
-  FErrors := val;
+  FErrors:=val;
 end;
 
 procedure TFreeHydrostaticCalc.FSetHydrostaticType(val: TFreeHydrostaticType);
 begin
   if Val <> FHydrostaticType then
   begin
-    FHydrostaticType := val;
-    Calculated := False;
+    FHydrostaticType:=val;
+    Calculated:=False;
   end;
 end;
 
@@ -115,10 +115,10 @@ var
 label
   ExitDo, new;
 begin
-  m_ballast := 20;
+  m_ballast:=20;
   // масса балласта принята 2% от водоизмещения порожнем [кг/тонн]
-  h_min := 0;
-  Separator := #32;
+  h_min:=0;
+  Separator:=#32;
   //if not Calculated then
   Calculate;
   if Errors = [] then
@@ -154,7 +154,7 @@ begin
           (FData.AbsoluteDraft + FData.ModelMin.Z);
         if FData.MidshipCoeff > 0 then
         begin
-          FData.PrismCoefficient := FData.BlockCoefficient / FData.MidshipCoeff;
+          FData.PrismCoefficient:=FData.BlockCoefficient / FData.MidshipCoeff;
           FData.VertPrismCoefficient :=
             FData.BlockCoefficient / FData.WaterplaneCoeff;
         end
@@ -228,41 +228,41 @@ begin
         //  Расчет Площади КВЛ альтернативным методом
         if (FData.WaterplaneCoeff > 1) or (FData.WaterplaneCoeff < 0.1) then
         begin
-          HydObject := TFreeHydrostaticCalc.Create(Owner);
-          HydObject.Draft := Owner.ProjectSettings.ProjectDraft - 0.001;
+          HydObject:=TFreeHydrostaticCalc.Create(Owner);
+          HydObject.Draft:=Owner.ProjectSettings.ProjectDraft - 0.001;
           HydObject.Calculate;
-          D1 := HydObject.Data.Volume;
-          X1 := HydObject.Data.CenterOfBuoyancy.X;
-          Y1 := HydObject.Data.CenterOfBuoyancy.Y;
-          Z1 := HydObject.Data.CenterOfBuoyancy.Z;
-          HydObject.Draft := Owner.ProjectSettings.ProjectDraft + 0.001;
+          D1:=HydObject.Data.Volume;
+          X1:=HydObject.Data.CenterOfBuoyancy.X;
+          Y1:=HydObject.Data.CenterOfBuoyancy.Y;
+          Z1:=HydObject.Data.CenterOfBuoyancy.Z;
+          HydObject.Draft:=Owner.ProjectSettings.ProjectDraft + 0.001;
           HydObject.Calculate;
-          D2 := HydObject.Data.Volume;
-          X2 := HydObject.Data.CenterOfBuoyancy.X;
-          Y2 := HydObject.Data.CenterOfBuoyancy.Y;
-          Z2 := HydObject.Data.CenterOfBuoyancy.Z;
-          Swl := (D2 - D1) * 500;
-          FData.WaterplaneArea := Swl;
-          FData.WaterplaneCoeff := Swl / FData.LengthWaterline / FData.BeamWaterline;
+          D2:=HydObject.Data.Volume;
+          X2:=HydObject.Data.CenterOfBuoyancy.X;
+          Y2:=HydObject.Data.CenterOfBuoyancy.Y;
+          Z2:=HydObject.Data.CenterOfBuoyancy.Z;
+          Swl:=(D2 - D1) * 500;
+          FData.WaterplaneArea:=Swl;
+          FData.WaterplaneCoeff:=Swl / FData.LengthWaterline / FData.BeamWaterline;
           Strings.Add(S4 + MakeLength(UserString(19), 43) +
             ' :  ' + Makelength(Swl, -1, 12) + ' ' +
             Areastr(Owner.ProjectSettings.ProjectUnits));
           Strings.Add(S4 + MakeLength(Userstring(20), 43) +
             ' :  ' + Makelength(FData.WaterplaneCoeff, -1, 12));
           FreeAndNil(HydObject);
-          Xd := (X2 * D2 - X1 * D1) / (D2 - D1);
+          Xd:=(X2 * D2 - X1 * D1) / (D2 - D1);
           Strings.Add(S4 + MakeLength(Userstring(21), 43) +
             ' :  ' + Makelength(Xd, -1, 12) + ' ' +
             LengthStr(Owner.ProjectSettings.ProjectUnits));
-          Yd := (Y2 * D2 - Y1 * D1) / (D2 - D1);
+          Yd:=(Y2 * D2 - Y1 * D1) / (D2 - D1);
           Strings.Add(S4 + MakeLength(Userstring(881), 43) +
             ' :  ' + Makelength(Yd, -1, 12) + ' ' +
             LengthStr(Owner.ProjectSettings.ProjectUnits));
-          Zd := (Z2 * D2 - Z1 * D1) / (D2 - D1);
+          Zd:=(Z2 * D2 - Z1 * D1) / (D2 - D1);
           //             Strings.Add(S4+MakeLength('VCF',43)+' :  '+Makelength(Zd,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-          FData.WaterplaneCOG.X := Xd;
-          FData.WaterplaneCOG.Y := Yd;
-          FData.WaterplaneCOG.Z := Zd + FData.ModelMin.Z;
+          FData.WaterplaneCOG.X:=Xd;
+          FData.WaterplaneCOG.Y:=Yd;
+          FData.WaterplaneCOG.Z:=Zd + FData.ModelMin.Z;
         end;
       end;
 
@@ -289,7 +289,7 @@ begin
         else
         begin
           //           Strings.Add('Theoretical formula for monohull ships:');
-          a := FData.WaterplaneCoeff;
+          a:=FData.WaterplaneCoeff;
           FData.WaterplaneMomInertia.X :=
             ((0.0613486 * a + 0.0298348) * a - 0.0076467) *
             power(FData.BeamWaterline, 3) * FData.LengthWaterline;
@@ -357,8 +357,8 @@ begin
           Separator + LengthStr(Owner.ProjectSettings.ProjectUnits));
         if FData.Z_Min_board < 10000 then
         begin
-          L_max := FData.ModelMax.X - FData.ModelMin.X;
-          h_min := FData.Z_min_board - Owner.ProjectSettings.Projectdraft -
+          L_max:=FData.ModelMax.X - FData.ModelMin.X;
+          h_min:=FData.Z_min_board - Owner.ProjectSettings.Projectdraft -
             FData.ModelMin.Z;
           //         MessageDlg('hmin='+Makelength(h_min,-1,8),mtError,[mbOk],0);
           Strings.Add(S4 + MakeLength(Userstring(1443), 43) +
@@ -367,7 +367,7 @@ begin
           Strings.Add(S4 + MakeLength(Userstring(1443), 43) +
             ' : ' + Separator + MakeLength(h_min / L_max * 100, -1, 12) + ' %Lmax');
           Strings.Add(Userstring(1442) + ':');
-          k_test := (FData.BeamWaterline + h_min * 2) / FData.LengthWaterline +
+          k_test:=(FData.BeamWaterline + h_min * 2) / FData.LengthWaterline +
             Owner.ProjectSettings.Projectdraft * m_ballast / 2;
           Strings.Add(S4 + MakeLength(Userstring(1444), 43) +
             ' : ' + ' ' + MakeLength(k_test, -1, 12) + ' if >= 0,8 then OK');
@@ -401,7 +401,7 @@ begin
         FData.MidshipCoeff :=
           FData.MidshipCoeff * FData.AbsoluteDraft /
           (FData.AbsoluteDraft + FData.ModelMin.Z);
-        FData.PrismCoefficient := FData.BlockCoefficient / FData.MidshipCoeff;
+        FData.PrismCoefficient:=FData.BlockCoefficient / FData.MidshipCoeff;
       end;
       Strings.Add(' | ' + Makelength(Draft, 3, 6) + ' | ' +
         Makelength(Trim, 3, 7) + ' | ' + Makelength(FData.LengthWaterline,
@@ -427,10 +427,10 @@ begin
   begin
 
     // Check if any layers are present to show
-    N := 0;
+    N:=0;
     if FileExistsUTF8('Weights.txt') { *Converted from FileExists* } then
       DeleteFileUTF8('Weights.txt'); { *Converted from DeleteFile* }
-    for I := 1 to Owner.NumberOfLayers do
+    for I:=1 to Owner.NumberOfLayers do
       if Owner.Layer[I - 1].Count > 0 then
         Inc(N);
     if N > 0 then
@@ -438,7 +438,7 @@ begin
       if (Owner.NumberofWaterlines > 0) and (Owner.NumberofWaterlines < 100) and
         (Owner.NumberofStations < 100) then
       begin
-        for i := 1 to 2 do
+        for i:=1 to 2 do
           Strings.Add('');
         Fillchar(Total, SizeOf(Total), 0);
         Strings.Add(Userstring(32) + ':');
@@ -461,10 +461,10 @@ begin
           '+-------------------------+---------+-----------+----------+---------+---------+---------+');
 
 
-        for I := 1 to Owner.NumberOfLayers do
+        for I:=1 to Owner.NumberOfLayers do
           if Owner.Layer[I - 1].Count > 0 then
           begin
-            Str := Owner.Layer[I - 1].Name;
+            Str:=Owner.Layer[I - 1].Name;
             if Owner.ProjectSettings.EnableBonjeanSAC then
             begin
               if FileExistsUTF8('Weights.txt') { *Converted from FileExists* } then
@@ -482,17 +482,17 @@ begin
               writeln(ffile1, '! ' + str);
               closefile(ffile1);
             end;
-            Properties := Owner.Layer[I - 1].SurfaceProperties;
+            Properties:=Owner.Layer[I - 1].SurfaceProperties;
             Properties.SurfaceCenterOfGravity.Z :=
               Properties.SurfaceCenterOfGravity.Z - FData.ModelMin.Z;
             if Owner.ProjectSettings.ProjectUnits = fuImperial then
-              Properties.Weight := Properties.Weight / (12 * 2240)
+              Properties.Weight:=Properties.Weight / (12 * 2240)
             else
-              Properties.Weight := Properties.Weight / 1000;
+              Properties.Weight:=Properties.Weight / 1000;
             while Length(Str) < 23 do
-              Str := Str + ' ';
+              Str:=Str + ' ';
             if Length(Str) > 23 then
-              Str := Copy(Str, 1, 23);
+              Str:=Copy(Str, 1, 23);
             Strings.Add('| ' + Str + ' | ' + Makelength(Properties.SurfaceArea, -1, 7) +
               ' | ' + MakeLength(Owner.Layer[I - 1].Thickness, 3, 9) +
               ' | ' + Makelength(Properties.Weight, 3, 8) + ' | ' +
@@ -500,8 +500,8 @@ begin
               ' | ' + MakeLength(Properties.SurfaceCenterOfGravity.Y,
               3, 7) + ' | ' + MakeLength(
               Properties.SurfaceCenterOfGravity.Z + FData.ModelMin.Z, 3, 7) + ' |');
-            Total.SurfaceArea := Total.SurfaceArea + Properties.SurfaceArea;
-            Total.Weight := Total.Weight + Properties.Weight;
+            Total.SurfaceArea:=Total.SurfaceArea + Properties.SurfaceArea;
+            Total.Weight:=Total.Weight + Properties.Weight;
             Total.SurfaceCenterOfGravity.X :=
               Total.SurfaceCenterOfGravity.X + Properties.Weight *
               Properties.SurfaceCenterOfGravity.X;
@@ -527,9 +527,9 @@ begin
         if N > 1 then
         begin
           // if more then 1 layer is added, then show the properties of all layers together
-          Str := UserString(37);
+          Str:=UserString(37);
           while Length(Str) < 23 do
-            Str := Str + #32;
+            Str:=Str + #32;
           Strings.Add('  ' + Str + '   ' + Makelength(Total.SurfaceArea, -1, 6) +
             '   ' + MakeLength('', 9) + '   ' +
             Makelength(Total.Weight, 3, 8) + '   ' +
@@ -547,11 +547,11 @@ begin
           mtError, [mbOK], 0);
         exit;
       end;
-      dDispl := Total.Weight / FData.Displacement - 1.;
-      dT := 0;
+      dDispl:=Total.Weight / FData.Displacement - 1.;
+      dT:=0;
       if Total.Weight > 0.01 then
       begin
-        dT := (Total.Weight - FData.Displacement) / FData.WaterplaneArea /
+        dT:=(Total.Weight - FData.Displacement) / FData.WaterplaneArea /
           Owner.ProjectSettings.ProjectWaterDensity;
         if abs(dT) > 0.001 then
         begin
@@ -590,11 +590,11 @@ begin
             ' : ' + Makelength(Draft + dT, -1, 8) + ' ' +
             LengthStr(Owner.ProjectSettings.ProjectUnits));
 
-        h0 := FData.KMtransverse - Total.SurfaceCenterOfGravity.Z;
-        hl := FData.KMlongitudinal - Total.SurfaceCenterOfGravity.Z;
-        HeelAngle := (Total.SurfaceCenterOfGravity.Y - FData.CenterOfBuoyancy.Y) /
+        h0:=FData.KMtransverse - Total.SurfaceCenterOfGravity.Z;
+        hl:=FData.KMlongitudinal - Total.SurfaceCenterOfGravity.Z;
+        HeelAngle:=(Total.SurfaceCenterOfGravity.Y - FData.CenterOfBuoyancy.Y) /
           h0 * 57.29;
-        vTrimAngle := -(Total.SurfaceCenterOfGravity.X - FData.CenterOfBuoyancy.X) /
+        vTrimAngle:=-(Total.SurfaceCenterOfGravity.X - FData.CenterOfBuoyancy.X) /
           hl * 57.29;
         if FData.CenterOfBuoyancy.Y < 0.01 then
         begin
@@ -610,7 +610,7 @@ begin
             ' : ' + Makelength(HeelAngle, -1, 8) + ' °' );
           Strings.Add(S4 + MakeLength(UserString(1024), 50) +
             ' : ' + Makelength(vTrimAngle, -1, 8) + ' °' );
-          Owner.ProjectSettings.FTrim := Draft;
+          Owner.ProjectSettings.FTrim:=Draft;
         end
         else
         begin
@@ -635,7 +635,7 @@ begin
 
       if abs(FData.CenterOfBuoyancy.Y) > 0.01 then
       begin
-        lform := FData.CenterOfBuoyancy.Y - Total.SurfaceCenterOfGravity.Y;
+        lform:=FData.CenterOfBuoyancy.Y - Total.SurfaceCenterOfGravity.Y;
         //             vTrimAngle:=-(Total.SurfaceCenterOfGravity.X-FData.CenterOfBuoyancy.X)/hl*57.29;
         Strings.Add(S4);
         Strings.Add(S4 + MakeLength(UserString(1453), 50) +
@@ -674,15 +674,15 @@ begin
 {$I+}
         Writeln(FFile, Owner.NumberofWaterlines: 3, Owner.NumberofStations: 3);
         Writeln(FFile, ' ');
-        HydObject := TFreeHydrostaticCalc.Create(Owner);
-        for I := 0 to Owner.NumberofWaterlines - 1 do
+        HydObject:=TFreeHydrostaticCalc.Create(Owner);
+        for I:=0 to Owner.NumberofWaterlines - 1 do
         begin
-          FData.WaterlinePlane.D := Owner.Waterline[I].FPlane.d;
-          Twl[I + 1] := -FData.WaterlinePlane.D;
-          HydObject.Draft := Twl[I + 1];
+          FData.WaterlinePlane.D:=Owner.Waterline[I].FPlane.d;
+          Twl[I + 1]:=-FData.WaterlinePlane.D;
+          HydObject.Draft:=Twl[I + 1];
           HydObject.Calculate;
-          Xaft[I + 1] := HydObject.Data.WlMin.X;
-          Xfor[I + 1] := HydObject.Data.WlMax.X;
+          Xaft[I + 1]:=HydObject.Data.WlMin.X;
+          Xfor[I + 1]:=HydObject.Data.WlMax.X;
           Writeln(FFile, -FData.WaterlinePlane.D: 9: 3, HydObject.Data.WlMin.X: 9: 3,
             HydObject.Data.WlMax.X: 9: 3);
         end;
@@ -697,20 +697,20 @@ begin
       if (Owner.ProjectSettings.EnableModelAutoMove) and (abs(dT) > 0.0005) then
       begin
         //             Strings.Add(S4+MakeLength('Старая осадка',50)+' : '+Makelength(Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Owner.ProjectSettings.ProjectDraft := Draft + dT;
-        HydObject := TFreeHydrostaticCalc.Create(Owner);
-        T[1] := FData.ModelMin.Z;
-        Displ[1] := 0;
-        T[10] := FData.ModelMax.Z;
+        Owner.ProjectSettings.ProjectDraft:=Draft + dT;
+        HydObject:=TFreeHydrostaticCalc.Create(Owner);
+        T[1]:=FData.ModelMin.Z;
+        Displ[1]:=0;
+        T[10]:=FData.ModelMax.Z;
         if (h_min <= 0) then
-          h_min := T[10] - Draft;
-        dT := (Draft + h_min) / 9;
+          h_min:=T[10] - Draft;
+        dT:=(Draft + h_min) / 9;
         new:
-          for id := 2 to 10 do
+          for id:=2 to 10 do
           begin
-            Displ[id] := 0;
-            HydObject.Draft := (id - 1) * dT - 0.001;
-            T[id] := HydObject.Draft;
+            Displ[id]:=0;
+            HydObject.Draft:=(id - 1) * dT - 0.001;
+            T[id]:=HydObject.Draft;
             if HydObject.Draft >= Owner.Surface.Max.Z then
               goto ExitDo;
             //              if (HydObject.Draft>=h_min+Draft) and (h_min>0) then goto ExitDo;
@@ -718,7 +718,7 @@ begin
               goto ExitDo;
             HydObject.Calculate;
             HydObject.CalculateGravity;
-            Displ[id] := HydObject.Data.Displacement;
+            Displ[id]:=HydObject.Data.Displacement;
 {             Strings.Add(S4+MakeLength('T,Xaft,Xfor=',10)+' : '+Makelength(T[id],-1,8)+Makelength(HydObject.Data.WlMin.x,-1,8)+Makelength(HydObject.Data.WlMax.x,-1,8));
               Strings.Add(S4+MakeLength('D0',50)+' : '+Makelength(HydObject.Data.Weight_,-1,8));
               Strings.Add(S4+MakeLength('Rho*g*V',50)+' : '+Makelength(HydObject.Data.Displacement,-1,8));
@@ -729,34 +729,34 @@ begin
           end;
         ExitDo:
           // Рассчитываем новую осадку по грузовому размеру
-          id := id - 1;
+          id:=id - 1;
         //             Strings.Add(S4+MakeLength('Id=',50)+' : '+Makelength(id,-1,8));
         SFINEX1(id, Displ, T, HydObject.Data.Weight_, Tr);
         //             Strings.Add(S4+MakeLength('T raschet=',50)+' : '+Makelength(Tr,-1,8));
-        Owner.ProjectSettings.ProjectDraft := Tr;
+        Owner.ProjectSettings.ProjectDraft:=Tr;
         // Уточняем новую осадку
 
         //              Strings.Add(S4+MakeLength('Максимальная осадка',50)+' : '+Makelength(h_min+Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
         //              Strings.Add(S4+MakeLength('Новая осадка',50)+' : '+Makelength(Tr,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        HydObject.Draft := Tr;
+        HydObject.Draft:=Tr;
         HydObject.Calculate;
         HydObject.CalculateGravity;
         //             dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement)/HydObject.Data.WaterplaneArea/Owner.ProjectSettings.ProjectWaterDensity;
         if HydObject.Data.WaterplaneArea > 0.1 then
-          dT_ := (HydObject.Data.Weight_ - HydObject.Data.Displacement) /
+          dT_:=(HydObject.Data.Weight_ - HydObject.Data.Displacement) /
             HydObject.Data.WaterplaneArea / Owner.ProjectSettings.ProjectWaterDensity
         else
-          dT_ := (HydObject.Data.Weight_ - HydObject.Data.Displacement) /
+          dT_:=(HydObject.Data.Weight_ - HydObject.Data.Displacement) /
             Owner.ProjectSettings.ProjectLength / Owner.ProjectSettings.ProjectBeam /
             Owner.ProjectSettings.ProjectWaterDensity;
-        Owner.ProjectSettings.ProjectDraft := Tr + dT_;
+        Owner.ProjectSettings.ProjectDraft:=Tr + dT_;
         if abs(Tr / (Tr + dT_) - 1) > 0.1 then
         begin
-          dT := Tr / 9;
+          dT:=Tr / 9;
           goto new;
         end;
         if Owner.ProjectSettings.ProjectDraft > 1.1 * Tr then
-          Owner.ProjectSettings.ProjectDraft := Draft + dT + FData.ModelMin.Z;
+          Owner.ProjectSettings.ProjectDraft:=Draft + dT + FData.ModelMin.Z;
 {
               Strings.Add(S4+MakeLength('D1',50)+' : '+Makelength(HydObject.Data.Weight_,-1,8));
               Strings.Add(S4+MakeLength('Rho*g*V',50)+' : '+Makelength(HydObject.Data.Displacement,-1,8));
@@ -772,7 +772,7 @@ begin
 
       // Add sectional Area data
 
-      N := Length(FData.SAC);
+      N:=Length(FData.SAC);
       // ***********************************************************
       if N > 100 then
         MessageDlg('N=' + FloatToStrF(N, ffFixed, 6, 0) + ' - ' + UserString(1484),
@@ -793,28 +793,28 @@ begin
             6) + ' |');
           Strings.Add(' +-----------+----------+');
 
-          JJ := 1;
+          JJ:=1;
           Strings.Add(' | ' + Makelength(FData.SubMin.X, 3, 9) +
             ' | ' + Makelength(Fdata.Sac[0].Y, 3, 8) + ' | ');
-          Xs[JJ] := FData.SubMin.X;
-          Ws[JJ] := FData.Sac[0].Y;
-          JJ := 2;
-          II := 1;
+          Xs[JJ]:=FData.SubMin.X;
+          Ws[JJ]:=FData.Sac[0].Y;
+          JJ:=2;
+          II:=1;
           if (FData.SubMin.X < 0) or (FData.SubMin.X > Fdata.Sac[0].X) then
-            II := 2;
-          for I := II to N - 1 do
+            II:=2;
+          for I:=II to N - 1 do
           begin
-            Position := FData.Sac[I - 1].X;
+            Position:=FData.Sac[I - 1].X;
             Strings.Add(' | ' + Makelength(Position, 3, 9) + ' | ' +
               Makelength(Fdata.Sac[I - 1].Y, 3, 8) + ' | ');
-            Xs[JJ] := Position;
-            Ws[JJ] := FData.Sac[I - 1].Y;
-            JJ := JJ + 1;
+            Xs[JJ]:=Position;
+            Ws[JJ]:=FData.Sac[I - 1].Y;
+            JJ:=JJ + 1;
           end;
           Strings.Add(' | ' + Makelength(FData.SubMax.X, 3, 9) +
             ' | ' + Makelength(0., 3, 8) + ' | ');
-          Xs[JJ] := FData.SubMax.X;
-          Ws[JJ] := 0.;
+          Xs[JJ]:=FData.SubMax.X;
+          Ws[JJ]:=0.;
           Strings.Add(' +-----------+----------+');
 
         end;
@@ -905,63 +905,63 @@ var
   Marker: TFreeMarker;
 begin
 
-  for I := 1 to Owner.NumberOfLayers do
+  for I:=1 to Owner.NumberOfLayers do
     if Owner.Layer[I - 1].SurfaceVisible then
-      for J := 1 to Owner.Layer[I - 1].Count do
-        Owner.Layer[I - 1].Items[J - 1].Selected := True;
-  for I := 1 to Owner.Surface.NumberOfControlPoints do
+      for J:=1 to Owner.Layer[I - 1].Count do
+        Owner.Layer[I - 1].Items[J - 1].Selected:=True;
+  for I:=1 to Owner.Surface.NumberOfControlPoints do
     if Owner.Surface.ControlPoint[I - 1].Visible then
-      Owner.Surface.ControlPoint[I - 1].Selected := True;
-  for I := 1 to Owner.NumberofMarkers do
+      Owner.Surface.ControlPoint[I - 1].Selected:=True;
+  for I:=1 to Owner.NumberofMarkers do
     if Owner.Marker[I - 1].Visible then
-      Owner.Marker[I - 1].Selected := True;
+      Owner.Marker[I - 1].Selected:=True;
   Owner.Redraw;
 
-  Points := TFasterListTFreeSubdivisionControlPoint.Create;
+  Points:=TFasterListTFreeSubdivisionControlPoint.Create;
   if Owner.ActiveControlPoint <> nil then
     Points.Add(Owner.ActiveControlPoint);
   Owner.Surface.ExtractPointsFromSelection(Points, NLocked);
-  Translate.X := 0.0;
-  Translate.Y := 0.0;
-  Translate.Z := -FData.ModelMin.Z;
-  PrevCursor := Screen.Cursor;
-  Screen.Cursor := crHourGlass;
+  Translate.X:=0.0;
+  Translate.Y:=0.0;
+  Translate.Z:=-FData.ModelMin.Z;
+  PrevCursor:=Screen.Cursor;
+  Screen.Cursor:=crHourGlass;
 //try
-    for I := 1 to Points.Count do begin
-      Point := TFreeSubdivisionControlPoint(Points[I - 1]);
+    for I:=1 to Points.Count do begin
+      Point:=TFreeSubdivisionControlPoint(Points[I - 1]);
       if not Point.Locked then begin
-        P := Point.Coordinate;
-        P.Z := P.Z + Translate.Z;
-        Point.Coordinate := P;
+        P:=Point.Coordinate;
+        P.Z:=P.Z + Translate.Z;
+        Point.Coordinate:=P;
       end;
     end;
     if Points.Count = Owner.Surface.NumberOfControlPoints then begin
-      for I := 1 to Owner.NumberofWaterlines do
-        Owner.Waterline[I - 1].FPlane.d := Owner.Waterline[I - 1].FPlane.d - Translate.Z;
+      for I:=1 to Owner.NumberofWaterlines do
+        Owner.Waterline[I - 1].FPlane.d:=Owner.Waterline[I - 1].FPlane.d - Translate.Z;
       // Update markers
-      for I := 1 to Owner.NumberofMarkers do begin
-        Marker := Owner.Marker[I - 1];
-        for J := 1 to Marker.NumberOfPoints do begin
-          P := Marker.Point[J - 1];
-          P.Z := P.Z + Translate.Z;
-          Marker.Point[J - 1] := P;
+      for I:=1 to Owner.NumberofMarkers do begin
+        Marker:=Owner.Marker[I - 1];
+        for J:=1 to Marker.NumberOfPoints do begin
+          P:=Marker.Point[J - 1];
+          P.Z:=P.Z + Translate.Z;
+          Marker.Point[J - 1]:=P;
         end;
       end;
     end;
-    Owner.Built := False;
+    Owner.Built:=False;
     Owner.Redraw;
 //finally
     // Refresh controlpoint data
     if Points.SortedIndexOf(Owner.ActiveControlPoint) <> -1 then
-      Owner.ActiveControlPoint := Owner.ActiveControlPoint;
-    Screen.Cursor := PrevCursor;
+      Owner.ActiveControlPoint:=Owner.ActiveControlPoint;
+    Screen.Cursor:=PrevCursor;
 //end;
-  for I := 1 to Owner.Surface.NumberOfControlPoints do
+  for I:=1 to Owner.Surface.NumberOfControlPoints do
     if Owner.Surface.ControlPoint[I - 1].Visible then
-      Owner.Surface.ControlPoint[I - 1].Selected := False;
-  for I := 1 to Owner.NumberofMarkers do
+      Owner.Surface.ControlPoint[I - 1].Selected:=False;
+  for I:=1 to Owner.NumberofMarkers do
     if Owner.Marker[I - 1].Visible then
-      Owner.Marker[I - 1].Selected := False;
+      Owner.Marker[I - 1].Selected:=False;
   Owner.Surface.Clearselection;
   //   Owner.ActiveControlPoint:=nil;
   //   Owner.FSelectedFlowlines.Clear;
@@ -1055,25 +1055,25 @@ var
                          else Result:=Y1+(Y2-Y1)*(X-X1)/(X2-X1);
       if (Result<Y1) or (result>Y2) then Result:=0.5*(Y1+Y2);
 }
-    Result := Y1 + (Y2 - Y1) * (X - X1) / (X2 - X1);
+    Result:=Y1 + (Y2 - Y1) * (X - X1) / (X2 - X1);
   end;{Interpolate}
 
   function RotatePointBack(P: T3DCoordinate): T3DCoordinate;
     // Rotate a point under given trim and heel back to heel=0 and trim=0 position
   begin
-    Result.x := P.x * FCosTrim - P.z * FSinTrim;
-    Result.y := P.y * FCosHeel + P.x * FSinTrim * FSinHeel + P.z * FCosTrim * FSinHeel;
-    Result.z := -P.y * FSinHeel + P.x * FSinTrim * FCosHeel + P.z * FCosTrim * FCosHeel;
+    Result.x:=P.x * FCosTrim - P.z * FSinTrim;
+    Result.y:=P.y * FCosHeel + P.x * FSinTrim * FSinHeel + P.z * FCosTrim * FSinHeel;
+    Result.z:=-P.y * FSinHeel + P.x * FSinTrim * FCosHeel + P.z * FCosTrim * FCosHeel;
   end;{RotatePointBack}
 
   function CalculatewaterlinePlane(Desireddraft: TFloatType): T3DPlane;
   var
     P: T3DCoordinate;
   begin
-    P.X := MinMaxdata.LowestPoint.X + Desireddraft * MinMaxdata.PlaneNormal.X;
-    P.Y := MinMaxdata.LowestPoint.Y + Desireddraft * MinMaxdata.PlaneNormal.Y;
-    P.Z := MinMaxdata.LowestPoint.Z + Desireddraft * MinMaxdata.PlaneNormal.Z;
-    Result := PlanePointNormal(P, MinMaxdata.PlaneNormal);
+    P.X:=MinMaxdata.LowestPoint.X + Desireddraft * MinMaxdata.PlaneNormal.X;
+    P.Y:=MinMaxdata.LowestPoint.Y + Desireddraft * MinMaxdata.PlaneNormal.Y;
+    P.Z:=MinMaxdata.LowestPoint.Z + Desireddraft * MinMaxdata.PlaneNormal.Z;
+    Result:=PlanePointNormal(P, MinMaxdata.PlaneNormal);
   end;{CalculatewaterlinePlane}
 
   procedure CalculateMinMaxdata;
@@ -1090,93 +1090,93 @@ var
     Child: TFreeSubdivisionFace;
   begin
     Fillchar(MinMaxdata, SizeOf(TMinMaxdata), 0);
-    P1 := RotatePointBack(SetPoint(0.0, 0.0, 0.0));
-    P2 := RotatePointBack(SetPoint(1.0, 0.0, 0.0));
-    P3 := RotatePointBack(SetPoint(1.0, 1.0, 0.0));
+    P1:=RotatePointBack(SetPoint(0.0, 0.0, 0.0));
+    P2:=RotatePointBack(SetPoint(1.0, 0.0, 0.0));
+    P3:=RotatePointBack(SetPoint(1.0, 1.0, 0.0));
     // The following plane has the right orientation for the given trim and angle of heel,
     // however the correct distance from the lowest point on the hull has to be calculated
-    MinMaxdata.PlaneNormal := UnifiedNormal(P1, P2, P3);
-    WlPlane := PlanePPP(P1, P2, P3);
+    MinMaxdata.PlaneNormal:=UnifiedNormal(P1, P2, P3);
+    WlPlane:=PlanePPP(P1, P2, P3);
 
     // Calculate min/max possible draft under this condition
-    First := True;
-    Firstleak := True;
-    Min := 0;
-    Max := 0;
-    for I := 1 to owner.NumberOfLayers do
+    First:=True;
+    Firstleak:=True;
+    Min:=0;
+    Max:=0;
+    for I:=1 to owner.NumberOfLayers do
       if Owner.Layer[I - 1].UseInHydrostatics then
       begin
-        Layer := owner.Layer[I - 1];
-        for J := 1 to Layer.Count do
+        Layer:=owner.Layer[I - 1];
+        for J:=1 to Layer.Count do
         begin
-          Face := Layer.Items[J - 1];
-          for K := 1 to Face.ChildCount do
+          Face:=Layer.Items[J - 1];
+          for K:=1 to Face.ChildCount do
           begin
-            Child := Face.Child[K - 1];
-            for L := 1 to Child.NumberOfpoints do
+            Child:=Face.Child[K - 1];
+            for L:=1 to Child.NumberOfpoints do
             begin
-              P1 := Child.Point[L - 1].Coordinate;
-              Distance := WlPlane.A * P1.x + WlPlane.B * P1.y + WlPlane.C *
+              P1:=Child.Point[L - 1].Coordinate;
+              Distance:=WlPlane.A * P1.x + WlPlane.B * P1.y + WlPlane.C *
                 P1.z + WlPlane.D;
               if First then
               begin
-                Min := Distance;
-                Max := min;
-                First := False;
-                MinMaxdata.LowestPoint := P1;
-                MinMaxData.LowestZ := P1.Z;
+                Min:=Distance;
+                Max:=min;
+                First:=False;
+                MinMaxdata.LowestPoint:=P1;
+                MinMaxData.LowestZ:=P1.Z;
               end
               else
               begin
                 if Distance < Min then
                 begin
-                  Min := Distance;
-                  MinMaxdata.LowestPoint := P1;
+                  Min:=Distance;
+                  MinMaxdata.LowestPoint:=P1;
                 end
                 else if Distance > Max then
-                  Max := Distance;
+                  Max:=Distance;
                 if P1.Z < MinMaxData.LowestZ then
-                  MinMaxData.LowestZ := P1.Z;
+                  MinMaxData.LowestZ:=P1.Z;
               end;
-              P1.Y := -P1.Y;
-              Distance := WlPlane.A * P1.x + WlPlane.B * P1.y + WlPlane.C *
+              P1.Y:=-P1.Y;
+              Distance:=WlPlane.A * P1.x + WlPlane.B * P1.y + WlPlane.C *
                 P1.z + WlPlane.D;
               if Distance < Min then
               begin
-                Min := Distance;
-                MinMaxdata.LowestPoint := P1;
+                Min:=Distance;
+                MinMaxdata.LowestPoint:=P1;
               end
               else if Distance > MAx then
-                Max := Distance;
+                Max:=Distance;
 
               // check if this point is a leak point
               if (abs(Child.Point[L - 1].Coordinate.Y) > 1e-4) and
                 (Child.Point[L - 1].IsBoundaryVertex) then
               begin
-                P1 := Child.Point[L - 1].Coordinate;
+                P1:=Child.Point[L - 1].Coordinate;
                 if Firstleak then
                 begin
-                  FirstLeak := False;
-                  MinMaxData.Lowestleak := P1;
+                  FirstLeak:=False;
+                  MinMaxData.Lowestleak:=P1;
                 end
                 else
                 begin
-                  Distance := WlPlane.A * P1.x + WlPlane.B * P1.y +
+                  Distance:=WlPlane.A * P1.x + WlPlane.B * P1.y +
                     WlPlane.C * P1.z + WlPlane.D;
-                  Tmp := WlPlane.A * MinMaxData.Lowestleak.x +
+                  Tmp:=WlPlane.A * MinMaxData.Lowestleak.x +
                     WlPlane.B * MinMaxData.Lowestleak.y + WlPlane.C *
                     MinMaxData.Lowestleak.z + WlPlane.D;
                   if Distance < Tmp then
-                    MinMaxData.Lowestleak := P1;
+                    MinMaxData.Lowestleak:=P1;
                 end;
-                P1.Y := -P1.Y;
-                Distance := WlPlane.A * P1.x + WlPlane.B * P1.y +
+                P1.Y:=-P1.Y;
+                Distance:=WlPlane.A * P1.x + WlPlane.B * P1.y +
                   WlPlane.C * P1.z + WlPlane.D;
-                Tmp := WlPlane.A * MinMaxData.Lowestleak.x + WlPlane.B *
+                Tmp:=WlPlane.A * MinMaxData.Lowestleak.x + WlPlane.B *
                   MinMaxData.Lowestleak.y + WlPlane.C *
                   MinMaxData.Lowestleak.z + WlPlane.D;
                 if Distance < Tmp then
-                  MinMaxData.Lowestleak := P1;
+                  MinMaxData.Lowestleak:=P1;
               end;
             end;
           end;
@@ -1185,66 +1185,66 @@ var
     if not Firstleak then
     begin
       // leak points have been found, check if this restricts the max draft
-      Distance := WlPlane.A * MinMaxData.Lowestleak.x + WlPlane.B *
+      Distance:=WlPlane.A * MinMaxData.Lowestleak.x + WlPlane.B *
         MinMaxData.Lowestleak.y + WlPlane.C * MinMaxData.Lowestleak.z + WlPlane.D;
       if Distance < Max then
-        max := Distance;
+        max:=Distance;
     end;
-    MinMaxdata.Maxdraft := Max - Min - 1e-4;
+    MinMaxdata.Maxdraft:=Max - Min - 1e-4;
   end;{Initalizes data of the hull under a specified heel and trim}
 
 begin
   Fillchar(FData, SizeOf(FData), 0);
-  MinMaxdata.Calculated := False;
+  MinMaxdata.Calculated:=False;
   Fillchar(Output, Sizeof(OutPut), 0);
 
   if Displacement <> 0 then
   begin
-    FCosHeel := Cos(DegTorad(-FHeelingAngle));
-    FSinHeel := Sin(DegTorad(-FHeelingAngle));
-    FCosTrim := Cos(DegToRad(TrimAngle));
-    FSinTrim := Sin(DegToRad(TrimAngle));
+    FCosHeel:=Cos(DegTorad(-FHeelingAngle));
+    FSinHeel:=Sin(DegTorad(-FHeelingAngle));
+    FCosTrim:=Cos(DegToRad(TrimAngle));
+    FSinTrim:=Sin(DegToRad(TrimAngle));
 
     if not MinMaxData.Calculated then
       CalculateMinMaxData;
 
-    MinDraft.Draft := 0;
-    MinDraft.Displ := 0.0;
-    MaxDraft.Draft := MinMaxdata.Maxdraft;
-    WlPLane := CalculatewaterlinePlane(MaxDraft.Draft);
+    MinDraft.Draft:=0;
+    MinDraft.Displ:=0.0;
+    MaxDraft.Draft:=MinMaxdata.Maxdraft;
+    WlPLane:=CalculatewaterlinePlane(MaxDraft.Draft);
     CalculateVolume(WlPlane);
-    MaxDraft.Displ := self.FData.Displacement;
+    MaxDraft.Displ:=self.FData.Displacement;
     if MaxDraft.Draft < 0.01 then
       exit;
-    T[1] := 0;
-    Displ[1] := 0;
-    dT := MaxDraft.Draft / 19;
-    for id := 2 to 20 do
+    T[1]:=0;
+    Displ[1]:=0;
+    dT:=MaxDraft.Draft / 19;
+    for id:=2 to 20 do
     begin
-      T[id] := (id - 1) * dT;
-      WlPLane := CalculatewaterlinePlane(T[id]);
+      T[id]:=(id - 1) * dT;
+      WlPLane:=CalculatewaterlinePlane(T[id]);
       CalculateVolume(WlPlane);
-      Displ[id] := self.FData.Displacement;
+      Displ[id]:=self.FData.Displacement;
     end;
-    id := 20;
+    id:=20;
     SFINEX1(id, Displ, T, Displacement, CurrDraft.Draft);
-    Result := True;
-    WlPLane := CalculatewaterlinePlane(CurrDraft.Draft - 0.01);
+    Result:=True;
+    WlPLane:=CalculatewaterlinePlane(CurrDraft.Draft - 0.01);
     CalculateVolume(WlPlane);
-    FData.Displacement := self.FData.Displacement;
+    FData.Displacement:=self.FData.Displacement;
     if Result then
     begin
-      Output.WaterlinePlane := Fdata.WaterlinePlane;
-      Output.AbsoluteDraft := FData.AbsoluteDraft;
-      Output.Volume := FData.Volume;
-      Output.Displacement := FData.Displacement;
-      Output.CenterOfBuoyancy := FData.CenterOfBuoyancy;
+      Output.WaterlinePlane:=Fdata.WaterlinePlane;
+      Output.AbsoluteDraft:=FData.AbsoluteDraft;
+      Output.Volume:=FData.Volume;
+      Output.Displacement:=FData.Displacement;
+      Output.CenterOfBuoyancy:=FData.CenterOfBuoyancy;
       if abs(HeelingAngle) < 1e-7 then
-        Output.CenterOfBuoyancy.Y := 0.0;
+        Output.CenterOfBuoyancy.Y:=0.0;
     end;
   end
   else
-    Result := True;
+    Result:=True;
 end;
 *)
 ///////////// Calculate Gravity Weight and CoG
@@ -1258,29 +1258,29 @@ var
 begin
   if not Owner.Built then exit;
 
-  N := 0;
+  N:=0;
   if FileExistsUTF8('Weights.txt') { *Converted from FileExists* } then
     DeleteFileUTF8('Weights.txt'); { *Converted from DeleteFile* }
-  Total.Weight := 0;
-  Total.SurfaceCenterOfGravity.X := 0.0;
-  Total.SurfaceCenterOfGravity.Y := 0.0;
-  Total.SurfaceCenterOfGravity.Z := 0.0;
-  for I := 1 to Owner.NumberOfLayers do
+  Total.Weight:=0;
+  Total.SurfaceCenterOfGravity.X:=0.0;
+  Total.SurfaceCenterOfGravity.Y:=0.0;
+  Total.SurfaceCenterOfGravity.Z:=0.0;
+  for I:=1 to Owner.NumberOfLayers do
     if Owner.Layer[I - 1].Count > 0 then
       Inc(N);
   if N > 0 then
-    for I := 1 to Owner.NumberOfLayers do
+    for I:=1 to Owner.NumberOfLayers do
       if Owner.Layer[I - 1].Count > 0 then
       begin
-        Properties := Owner.Layer[I - 1].SurfaceProperties;
+        Properties:=Owner.Layer[I - 1].SurfaceProperties;
         Properties.SurfaceCenterOfGravity.Z :=
           Properties.SurfaceCenterOfGravity.Z - FData.ModelMin.Z;
         if Owner.ProjectSettings.ProjectUnits = fuImperial then
-          Properties.Weight := Properties.Weight / (12 * 2240)
+          Properties.Weight:=Properties.Weight / (12 * 2240)
         else
-          Properties.Weight := Properties.Weight / 1000;
-        Total.SurfaceArea := Total.SurfaceArea + Properties.SurfaceArea;
-        Total.Weight := Total.Weight + Properties.Weight;
+          Properties.Weight:=Properties.Weight / 1000;
+        Total.SurfaceArea:=Total.SurfaceArea + Properties.SurfaceArea;
+        Total.Weight:=Total.Weight + Properties.Weight;
         Total.SurfaceCenterOfGravity.X :=
           Total.SurfaceCenterOfGravity.X + Properties.Weight *
           Properties.SurfaceCenterOfGravity.X;
@@ -1303,10 +1303,10 @@ begin
     end// if more then 1 layer is added, then show the properties of all layers together
   ;
   //// Weight
-  FData.Weight_ := Total.Weight;
-  FData.CenterOfGravity_.X := Total.SurfaceCenterOfGravity.X;
-  FData.CenterOfGravity_.Y := Total.SurfaceCenterOfGravity.Y;
-  FData.CenterOfGravity_.Z := Total.SurfaceCenterOfGravity.Z;
+  FData.Weight_:=Total.Weight;
+  FData.CenterOfGravity_.X:=Total.SurfaceCenterOfGravity.X;
+  FData.CenterOfGravity_.Y:=Total.SurfaceCenterOfGravity.Y;
+  FData.CenterOfGravity_.Z:=Total.SurfaceCenterOfGravity.Z;
 end;{TFreeHydrostaticCalc.CalculateGravity}
 
 procedure TFreeHydrostaticCalc.CalculateMidshipLocation;
@@ -1316,70 +1316,70 @@ var i:integer; Frame: TFreeIntersection;
   COG: T3DCoordinate;
   MaxStation: integer;
 begin
-  MaxStation := 0;
-  FMidshipLocation := 0.5 * FData.ModelMax.X;
+  MaxStation:=0;
+  FMidshipLocation:=0.5 * FData.ModelMax.X;
 
-  Frame := TFreeIntersection.Create(Owner);
-  Frame.FUseHydrostaticsSurfacesOnly := True;
-  Frame.FIntersectionType := fiStation;
-  MaxArea := 0.0;
-  for I := 0 to Owner.NumberofStations - 1 do
+  Frame:=TFreeIntersection.Create(Owner);
+  Frame.FUseHydrostaticsSurfacesOnly:=True;
+  Frame.FIntersectionType:=fiStation;
+  MaxArea:=0.0;
+  for I:=0 to Owner.NumberofStations - 1 do
   begin
-    Frame.Plane := Owner.Station[I].Plane;
-    X := -Frame.Plane.d;
-    Frame.Built := false;
+    Frame.Plane:=Owner.Station[I].Plane;
+    X:=-Frame.Plane.d;
+    Frame.Built:=false;
     Frame.CalculateArea(FData.WaterlinePlane, Area, COG, MOI);
     if MaxArea < Area then
     begin
-      FMidshipLocation := X;
-      MaxArea := Area;
-      MaxStation := i;
+      FMidshipLocation:=X;
+      MaxArea:=Area;
+      MaxStation:=i;
     end;
   end;
 
   // find precise location up to 0.1 of length unit
-  Step := 0.1;
+  Step:=0.1;
   if MaxStation > 0 then // search between MaxStation-1 and MaxStation
   begin
-    X1 := - Owner.Station[MaxStation - 1].Plane.d;
-    X2 := - Owner.Station[MaxStation].Plane.d;
-    Frame.FPlane.a := 1.0;
-    Frame.FPlane.b := 0.0;
-    Frame.FPlane.c := 0.0;
-    X := X1;
+    X1:=- Owner.Station[MaxStation - 1].Plane.d;
+    X2:=- Owner.Station[MaxStation].Plane.d;
+    Frame.FPlane.a:=1.0;
+    Frame.FPlane.b:=0.0;
+    Frame.FPlane.c:=0.0;
+    X:=X1;
     while X < X2 do
     begin
-      Frame.FPlane.d := -X;
-      Frame.Built := false;
+      Frame.FPlane.d:=-X;
+      Frame.Built:=false;
       Frame.CalculateArea(FData.WaterlinePlane, Area, COG, MOI);
       if MaxArea < Area then
       begin
-        FMidshipLocation := X;
-        MaxArea := Area;
+        FMidshipLocation:=X;
+        MaxArea:=Area;
       end;
-      X := X + Step;
+      X:=X + Step;
     end;
   end;
 
   if MaxStation < Owner.NumberofStations-1 then // search between MaxStation and MaxStation+1
   begin
-    X1 := - Owner.Station[MaxStation].Plane.d;
-    X2 := - Owner.Station[MaxStation+1].Plane.d;
-    Frame.FPlane.a := 1.0;
-    Frame.FPlane.b := 0.0;
-    Frame.FPlane.c := 0.0;
-    X := X1;
+    X1:=- Owner.Station[MaxStation].Plane.d;
+    X2:=- Owner.Station[MaxStation+1].Plane.d;
+    Frame.FPlane.a:=1.0;
+    Frame.FPlane.b:=0.0;
+    Frame.FPlane.c:=0.0;
+    X:=X1;
     while X < X2 do
     begin
-      Frame.FPlane.d := -X;
-      Frame.Built := false;
+      Frame.FPlane.d:=-X;
+      Frame.Built:=false;
       Frame.CalculateArea(FData.WaterlinePlane, Area, COG, MOI);
       if MaxArea < Area then
       begin
-        FMidshipLocation := X;
-        MaxArea := Area;
+        FMidshipLocation:=X;
+        MaxArea:=Area;
       end;
-      X := X + Step;
+      X:=X + Step;
     end;
   end;
 
@@ -1438,10 +1438,10 @@ var
   function RotatePoint(P: T3DCoordinate): T3DCoordinate;
     // Rotate a point at heel=0 and trim=0 position to given trim and heel
   begin
-    P.Z := P.Z - Keel.Z;
-    Result.x := P.x * CosTrim + (P.y * SinHeel + P.z * CosHeel) * SinTrim;
-    Result.y := P.y * CosHeel - P.z * SinHeel;
-    Result.z := -P.x * SinTrim + (P.y * SinHeel + P.z * CosHeel) * CosTrim;
+    P.Z:=P.Z - Keel.Z;
+    Result.x:=P.x * CosTrim + (P.y * SinHeel + P.z * CosHeel) * SinTrim;
+    Result.y:=P.y * CosHeel - P.z * SinHeel;
+    Result.z:=-P.x * SinTrim + (P.y * SinHeel + P.z * CosHeel) * CosTrim;
   end;{THydrostaticsData.RotatePoint}
 
   procedure ProcessTriangle(P1, P2, P3: T3DCoordinate);
@@ -1452,49 +1452,49 @@ var
     ax, ay, az: TFloatType;
   begin
     // Reposition points with respect to the new projected origin
-    P1.X := P1.X - NewOrigin.X;
-    P1.Y := P1.Y - NewOrigin.Y;
-    P1.Z := P1.Z - NewOrigin.Z;
-    P2.X := P2.X - NewOrigin.X;
-    P2.Y := P2.Y - NewOrigin.Y;
-    P2.Z := P2.Z - NewOrigin.Z;
-    P3.X := P3.X - NewOrigin.X;
-    P3.Y := P3.Y - NewOrigin.Y;
-    P3.Z := P3.Z - NewOrigin.Z;
-    Center.X := (P1.X + P2.X + P3.X) / 3;
-    Center.Y := (P1.Y + P2.Y + P3.Y) / 3;
-    Center.Z := (P1.Z + P2.Z + P3.Z) / 3;
-    Volume := ((P1.z) * (P2.x * P3.y - P2.y * P3.x)
+    P1.X:=P1.X - NewOrigin.X;
+    P1.Y:=P1.Y - NewOrigin.Y;
+    P1.Z:=P1.Z - NewOrigin.Z;
+    P2.X:=P2.X - NewOrigin.X;
+    P2.Y:=P2.Y - NewOrigin.Y;
+    P2.Z:=P2.Z - NewOrigin.Z;
+    P3.X:=P3.X - NewOrigin.X;
+    P3.Y:=P3.Y - NewOrigin.Y;
+    P3.Z:=P3.Z - NewOrigin.Z;
+    Center.X:=(P1.X + P2.X + P3.X) / 3;
+    Center.Y:=(P1.Y + P2.Y + P3.Y) / 3;
+    Center.Z:=(P1.Z + P2.Z + P3.Z) / 3;
+    Volume:=((P1.z) * (P2.x * P3.y - P2.y * P3.x)
              + (P1.y) * (P2.z * P3.x - P2.x * P3.z)
              + (P1.x) * (P2.y * P3.z - P2.z * P3.y)) / 6;
     if Volume <> 0 then
     begin
-      VolumeMoment.X := 0.75 * Center.X * Volume;
-      VolumeMoment.Y := 0.75 * Center.Y * Volume;
-      VolumeMoment.Z := 0.75 * Center.Z * Volume;
-      FData.Volume := Fdata.Volume + Volume;
-      FData.CenterOfBuoyancy.X := FData.CenterOfBuoyancy.X + VolumeMoment.X;
-      FData.CenterOfBuoyancy.Y := FData.CenterOfBuoyancy.Y + VolumeMoment.Y;
-      FData.CenterOfBuoyancy.Z := FData.CenterOfBuoyancy.Z + VolumeMoment.Z;
+      VolumeMoment.X:=0.75 * Center.X * Volume;
+      VolumeMoment.Y:=0.75 * Center.Y * Volume;
+      VolumeMoment.Z:=0.75 * Center.Z * Volume;
+      FData.Volume:=Fdata.Volume + Volume;
+      FData.CenterOfBuoyancy.X:=FData.CenterOfBuoyancy.X + VolumeMoment.X;
+      FData.CenterOfBuoyancy.Y:=FData.CenterOfBuoyancy.Y + VolumeMoment.Y;
+      FData.CenterOfBuoyancy.Z:=FData.CenterOfBuoyancy.Z + VolumeMoment.Z;
     end;
-    ax := 0.5 * ((P1.y - P2.y) * (P1.z + P2.z) + (P2.y - P3.y) *
+    ax:=0.5 * ((P1.y - P2.y) * (P1.z + P2.z) + (P2.y - P3.y) *
       (P2.z + P3.z) + (P3.y - P1.y) * (P3.z + P1.z));
-    ay := 0.5 * ((P1.z - P2.z) * (P1.x + P2.x) + (P2.z - P3.z) *
+    ay:=0.5 * ((P1.z - P2.z) * (P1.x + P2.x) + (P2.z - P3.z) *
       (P2.x + P3.x) + (P3.z - P1.z) * (P3.x + P1.x));
-    az := 0.5 * ((P1.x - P2.x) * (P1.y + P2.y) + (P2.x - P3.x) *
+    az:=0.5 * ((P1.x - P2.x) * (P1.y + P2.y) + (P2.x - P3.x) *
       (P2.y + P3.y) + (P3.x - P1.x) * (P3.y + P1.y));
-    FData.WettedSurface := FData.WettedSurface + Sqrt(ax * ax + ay * ay + az * az);
+    FData.WettedSurface:=FData.WettedSurface + Sqrt(ax * ax + ay * ay + az * az);
   end;{ProcessTriangle}
 
   procedure CheckSubmergedBody(P: T3DCoordinate; Side: TFloatType);
   begin
     // Calculate extents of waterplane and submerged body
-    P := RotatePoint(P);
+    P:=RotatePoint(P);
     if FirstSubmPoint then
     begin
-      FData.SubMin := P;
-      FData.SubMax := P;
-      FirstSubmPoint := False;
+      FData.SubMin:=P;
+      FData.SubMax:=P;
+      FirstSubmPoint:=False;
     end
     else
       MinMax(P, FData.SubMin, FData.SubMax);
@@ -1502,9 +1502,9 @@ var
       if FirstPoint then
       begin
         // Calculate waterline properties
-        FData.WlMin := P;
-        FData.WlMax := P;
-        FirstPoint := False;
+        FData.WlMin:=P;
+        FData.WlMax:=P;
+        FirstPoint:=False;
       end
       else
         MinMax(P, FData.WlMin, FData.WlMax)// point is exactly on waterplane
@@ -1524,81 +1524,81 @@ begin
    Trim:=-2.3698;
    HeelingAngle:=40;
    }
-  isymm := 0;
-  Nmet := 0;
-  CosHeel := Cos(DegToRad(-HeelingAngle));
-  SinHeel := Sin(DegToRad(-HeelingAngle));
-  CosTrim := Cos(DegToRad(-TrimAngle));
-  SinTrim := Sin(DegToRad(-TrimAngle));
+  isymm:=0;
+  Nmet:=0;
+  CosHeel:=Cos(DegToRad(-HeelingAngle));
+  SinHeel:=Sin(DegToRad(-HeelingAngle));
+  CosTrim:=Cos(DegToRad(-TrimAngle));
+  SinTrim:=Sin(DegToRad(-TrimAngle));
 
-  Calculated := False;   // Resets all data and calculated variables
+  Calculated:=False;   // Resets all data and calculated variables
   // Calculate the definition of the waterlineplane
-  Keel := SetPoint(0.0, 0.0, Owner.FindLowestHydrostaticsPoint);
-  FData.WaterlinePlane := WaterlinePlane;
+  Keel:=SetPoint(0.0, 0.0, Owner.FindLowestHydrostaticsPoint);
+  FData.WaterlinePlane:=WaterlinePlane;
 
   // In order to calculate the volume enclosed by the underwatership correctly,
   // the origin (0.0, 0.0, 0.0) is projected onto the waterline plane
-  NewOrigin := ProjectPointOnPlane(ZERO, FData.WaterlinePlane);
+  NewOrigin:=ProjectPointOnPlane(ZERO, FData.WaterlinePlane);
   // Now calculate the actual volume
-  FirstPoint := True;
-  Submerged := False;
-  PointCapacity := 5;
+  FirstPoint:=True;
+  Submerged:=False;
+  PointCapacity:=5;
   Setlength(Points, PointCapacity);
-  FirstSubmPoint := True;
-  FData.AbsoluteDraft := 1000;
+  FirstSubmPoint:=True;
+  FData.AbsoluteDraft:=1000;
 
   //  Альтернативный метод N1 расчета объема с использованием СПВ и СПШ
   if Nmet = 1 then
   begin
-    dT := Owner.ProjectSettings.Projectdraft / 12;
-    T := -dT;
-    Vol := 0;
-    FData.WaterplaneEntranceAngle := 0;
-    FData.WaterplaneArea := 0;
-    FData.WaterplaneCOG.X := 0;
-    FData.WaterplaneCOG.Y := 0;
-    FData.WaterplaneCOG.Z := 0;
-    FData.AbsoluteDraft := Draft;
-    Waterplane := TFreeIntersection.Create(Owner);
-    Waterplane.FIntersectionType := fiWaterline;
-    Waterplane.FUseHydrostaticsSurfacesOnly := True;
-    for N := 1 to 13 do
+    dT:=Owner.ProjectSettings.Projectdraft / 12;
+    T:=-dT;
+    Vol:=0;
+    FData.WaterplaneEntranceAngle:=0;
+    FData.WaterplaneArea:=0;
+    FData.WaterplaneCOG.X:=0;
+    FData.WaterplaneCOG.Y:=0;
+    FData.WaterplaneCOG.Z:=0;
+    FData.AbsoluteDraft:=Draft;
+    Waterplane:=TFreeIntersection.Create(Owner);
+    Waterplane.FIntersectionType:=fiWaterline;
+    Waterplane.FUseHydrostaticsSurfacesOnly:=True;
+    for N:=1 to 13 do
     begin
-      T := T + dT;
-      Draft := T;
-      FData.WaterlinePlane := WaterlinePlane;
-      Waterplane.FPlane := FData.WaterlinePlane;
+      T:=T + dT;
+      Draft:=T;
+      FData.WaterlinePlane:=WaterlinePlane;
+      Waterplane.FPlane:=FData.WaterlinePlane;
       Waterplane.Rebuild;
       Waterplane.CalculateArea(FData.WaterlinePlane, FData.WaterplaneArea,
         FData.WaterplaneCOG, FData.WaterplaneMomInertia);
-      Sw[N] := FData.WaterplaneArea;
-      Vol := Vol + Sw[N];
+      Sw[N]:=FData.WaterplaneArea;
+      Vol:=Vol + Sw[N];
       if N = 13 then
-        Vol := Vol - Sw[N] / 2 - Sw[1] / 2;
+        Vol:=Vol - Sw[N] / 2 - Sw[1] / 2;
     end;
     FreeAndNil(Waterplane);
-    Vol := Vol * dT;
+    Vol:=Vol * dT;
   end;
 
   // calculate overall extents of the hull alone
-  for I := 1 to Owner.NumberOfLayers do
+  for I:=1 to Owner.NumberOfLayers do
   begin
-    Layer := Owner.Layer[I - 1];
+    Layer:=Owner.Layer[I - 1];
     if Layer.UseInHydrostatics then
-      for J := 1 to Layer.Count do
+      for J:=1 to Layer.Count do
       begin
-        Face := Layer.Items[J - 1];
-        for K := 1 to Face.ChildCount do
+        Face:=Layer.Items[J - 1];
+        for K:=1 to Face.ChildCount do
         begin
-          Child := Face.Child[K - 1];
-          for L := 1 to Child.NumberOfPoints do
+          Child:=Face.Child[K - 1];
+          for L:=1 to Child.NumberOfPoints do
           begin
-            P2 := Child.Point[L - 1].Coordinate;
+            P2:=Child.Point[L - 1].Coordinate;
             if FirstPoint then
             begin
-              FData.ModelMin := P2;
-              FData.ModelMax := P2;
-              FirstPoint := False;
+              FData.ModelMin:=P2;
+              FData.ModelMax:=P2;
+              FirstPoint:=False;
             end
             else
               MinMax(P2, FData.ModelMin, FData.ModelMax);
@@ -1606,53 +1606,53 @@ begin
         end;
       end;
   end;
-  FirstPoint := True;
+  FirstPoint:=True;
 
-  for I := 1 to Owner.NumberOfLayers do
+  for I:=1 to Owner.NumberOfLayers do
   begin
-    Layer := Owner.Layer[I - 1];
+    Layer:=Owner.Layer[I - 1];
     if Layer.UseInHydrostatics then
-      for J := 1 to Layer.Count do
+      for J:=1 to Layer.Count do
       begin
-        Face := Layer.Items[J - 1];
-        for K := 1 to Face.ChildCount do
+        Face:=Layer.Items[J - 1];
+        for K:=1 to Face.ChildCount do
         begin
-          Child := Face.Child[K - 1];
+          Child:=Face.Child[K - 1];
           // Calculate the portside of the model
-          NoPoints := 0;
-          P1 := Child.Point[Child.NumberOfPoints - 1].Coordinate;
+          NoPoints:=0;
+          P1:=Child.Point[Child.NumberOfPoints - 1].Coordinate;
           // calculate on which side of the waterplane this point is
-          Side1 := FData.Waterlineplane.A * P1.x + FData.Waterlineplane.B *
+          Side1:=FData.Waterlineplane.A * P1.x + FData.Waterlineplane.B *
             P1.y + FData.Waterlineplane.C * P1.z + FData.Waterlineplane.D;
-          for L := 1 to Child.NumberOfPoints do
+          for L:=1 to Child.NumberOfPoints do
           begin
-            P2 := Child.Point[L - 1].Coordinate;
-            Side2 := FData.Waterlineplane.A * P2.x + FData.Waterlineplane.B *
+            P2:=Child.Point[L - 1].Coordinate;
+            Side2:=FData.Waterlineplane.A * P2.x + FData.Waterlineplane.B *
               P2.y + FData.Waterlineplane.C * P2.z + FData.Waterlineplane.D;
             if ((Side1 < -1e-7) and (Side2 > 1e-7)) or
               ((Side1 > 1e-7) and (Side2 < -1e-7)) then
             begin
               // The current linesegment between P1-P2 intersects the waterlineplae
               if Side1 = Side2 then
-                Parameter := 0.5 * (Side1 + Side2)
+                Parameter:=0.5 * (Side1 + Side2)
               else
-                Parameter := -Side1 / (Side2 - Side1);
-              P.X := P1.X + Parameter * (P2.X - P1.X);
-              P.Y := P1.Y + Parameter * (P2.Y - P1.Y);
-              P.Z := P1.Z + Parameter * (P2.Z - P1.Z);
+                Parameter:=-Side1 / (Side2 - Side1);
+              P.X:=P1.X + Parameter * (P2.X - P1.X);
+              P.Y:=P1.Y + Parameter * (P2.Y - P1.Y);
+              P.Z:=P1.Z + Parameter * (P2.Z - P1.Z);
               Inc(NoPoints);
               if NoPoints > PointCapacity then
               begin
                 Inc(PointCapacity);
                 Setlength(Points, PointCapacity);
               end;
-              Points[NoPoints - 1] := P;
+              Points[NoPoints - 1]:=P;
               CheckSubmergedBody(P, 0.0);
             end;
             if Side2 <= 1e-7 then
             begin
               if Side2 < FData.AbsoluteDraft then
-                FData.AbsoluteDraft := Side2;
+                FData.AbsoluteDraft:=Side2;
               // P2 lies also on or under the waterlineplane
               Inc(NoPoints);
               if NoPoints > PointCapacity then
@@ -1660,43 +1660,43 @@ begin
                 Inc(PointCapacity);
                 Setlength(Points, PointCapacity);
               end;
-              Points[NoPoints - 1] := P2;
+              Points[NoPoints - 1]:=P2;
               if Side2 < -1e-7 then
                 if (Child.Point[L - 1].IsBoundaryVertex) and
                   (abs(Child.Point[L - 1].Coordinate.Y) > 1e-4) then
                   if not (feMakingWater in Errors) then
                   begin
-                    Errors := Errors + [feMakingwater];
-                    FData.Leak := Child.Point[L - 1].Coordinate;
+                    Errors:=Errors + [feMakingwater];
+                    FData.Leak:=Child.Point[L - 1].Coordinate;
                   end// point is submerged, check if the model is making water
               ;
               CheckSubmergedBody(P2, Side2);
             end;
-            P1 := P2;
-            Side1 := Side2;
+            P1:=P2;
+            Side1:=Side2;
           end;
 
           // calculate volume aft of this face
           if NoPoints > 2 then
-            Submerged := True;
-          for L := 3 to NoPoints do
+            Submerged:=True;
+          for L:=3 to NoPoints do
             ProcessTriangle(Points[0], Points[L - 2], Points[L - 1]);
           if Layer.Symmetric then
           begin
             // Calculate the starboardside of the model
-            NoPoints := 0;
-            P1 := Child.Point[Child.NumberOfPoints - 1].Coordinate;
-            P1.Y := -P1.Y;
+            NoPoints:=0;
+            P1:=Child.Point[Child.NumberOfPoints - 1].Coordinate;
+            P1.Y:=-P1.Y;
             // calculate on which side of the waterplane this point is
-            Side1 := FData.Waterlineplane.A * P1.x
+            Side1:=FData.Waterlineplane.A * P1.x
                    + FData.Waterlineplane.B * P1.y
                    + FData.Waterlineplane.C * P1.z
                    + FData.Waterlineplane.D;
-            for L := 1 to Child.NumberOfPoints do
+            for L:=1 to Child.NumberOfPoints do
             begin
-              P2 := Child.Point[L - 1].Coordinate;
-              P2.Y := -P2.Y;
-              Side2 := FData.Waterlineplane.A * P2.x
+              P2:=Child.Point[L - 1].Coordinate;
+              P2.Y:=-P2.Y;
+              Side2:=FData.Waterlineplane.A * P2.x
                      + FData.Waterlineplane.B * P2.y
                      + FData.Waterlineplane.C * P2.z
                      + FData.Waterlineplane.D;
@@ -1705,93 +1705,93 @@ begin
               begin
                 // The current linesegment between P1-P2 intersects the waterlineplane
                 if Side1 = Side2 then
-                  Parameter := 0.5 * (Side1 + Side2)
+                  Parameter:=0.5 * (Side1 + Side2)
                 else
-                  Parameter := -Side1 / (Side2 - Side1);
-                P.X := P1.X + Parameter * (P2.X - P1.X);
-                P.Y := P1.Y + Parameter * (P2.Y - P1.Y);
-                P.Z := P1.Z + Parameter * (P2.Z - P1.Z);
+                  Parameter:=-Side1 / (Side2 - Side1);
+                P.X:=P1.X + Parameter * (P2.X - P1.X);
+                P.Y:=P1.Y + Parameter * (P2.Y - P1.Y);
+                P.Z:=P1.Z + Parameter * (P2.Z - P1.Z);
                 Inc(NoPoints);
                 if NoPoints > PointCapacity then
                 begin
                   Inc(PointCapacity);
                   Setlength(Points, PointCapacity);
                 end;
-                Points[NoPoints - 1] := P;
+                Points[NoPoints - 1]:=P;
                 CheckSubmergedBody(P, 0.0);
               end;
               if Side2 <= 1e-7 then
               begin
                 // P2 lies also under the waterlineplane
                 if Side2 < FData.AbsoluteDraft then
-                  FData.AbsoluteDraft := Side2;
+                  FData.AbsoluteDraft:=Side2;
                 Inc(NoPoints);
                 if NoPoints > PointCapacity then
                 begin
                   Inc(PointCapacity);
                   Setlength(Points, PointCapacity);
                 end;
-                Points[NoPoints - 1] := P2;
+                Points[NoPoints - 1]:=P2;
                 if Side2 < -1e-7 then
                   if (Child.Point[L - 1].IsBoundaryVertex) and
                     (abs(Child.Point[L - 1].Coordinate.Y) > 1e-4) then
                     if not (feMakingWater in Errors) then
                     begin
-                      Errors := Errors + [feMakingwater];
-                      FData.Leak := Child.Point[L - 1].Coordinate;
+                      Errors:=Errors + [feMakingwater];
+                      FData.Leak:=Child.Point[L - 1].Coordinate;
                     end// point is submerged, check if the model is making water
                 ;
                 CheckSubmergedBody(P2, Side2);
               end;
-              P1 := P2;
-              Side1 := Side2;
+              P1:=P2;
+              Side1:=Side2;
             end;
             // calculate volume aft of this face
             if NoPoints > 2 then
-              Submerged := True;
-            for L := 3 to NoPoints do
+              Submerged:=True;
+            for L:=3 to NoPoints do
               ProcessTriangle(Points[0], Points[L - 1], Points[L - 2]);
           end;
         end;
       end;
   end;
-  FData.Volume := FData.Volume;
-  FData.AbsoluteDraft := -FData.AbsoluteDraft;
+  FData.Volume:=FData.Volume;
+  FData.AbsoluteDraft:=-FData.AbsoluteDraft;
   if FirstPoint then
     if not submerged then
     begin
-      Errors := Errors + [feNothingSubmerged];
-      FData.AbsoluteDraft := 0.0;
+      Errors:=Errors + [feNothingSubmerged];
+      FData.AbsoluteDraft:=0.0;
     end// No intersection with the watersurface found, the ship is either
     // not submerged or totally submerged
   ;
   if feMakingWater in Errors then
   begin
-    FData.Volume := 0.0;
-    FData.CenterOfBuoyancy := ZERO;
+    FData.Volume:=0.0;
+    FData.CenterOfBuoyancy:=ZERO;
   end;
 
 
-  SubmergedLength := Fdata.SubMax.X - FData.SubMin.X;
-  SubmergedWidth := FData.SubMax.Y - FData.SubMin.Y;
-  FData.Displacement := VolumeToDisplacement(FData.Volume,
+  SubmergedLength:=Fdata.SubMax.X - FData.SubMin.X;
+  SubmergedWidth:=FData.SubMax.Y - FData.SubMin.Y;
+  FData.Displacement:=VolumeToDisplacement(FData.Volume,
     Owner.ProjectSettings.ProjectWaterDensity,
     Owner.ProjectSettings.ProjectAppendageCoefficient,
     Owner.ProjectSettings.ProjectUnits);
-  FData.LengthWaterline := FData.WlMax.X - FData.WlMin.X;
-  FData.BeamWaterline := FData.WlMax.Y - FData.WlMin.Y;
+  FData.LengthWaterline:=FData.WlMax.X - FData.WlMin.X;
+  FData.BeamWaterline:=FData.WlMax.Y - FData.WlMin.Y;
   if FData.Volume <> 0 then
   begin
     // Translate center of buoyancy back to the original origin
-    FData.CenterOfBuoyancy.X := NewOrigin.X + FData.CenterOfBuoyancy.X / FData.Volume;
-    FData.CenterOfBuoyancy.Y := NewOrigin.Y + FData.CenterOfBuoyancy.Y / FData.Volume;
-    FData.CenterOfBuoyancy.Z := NewOrigin.Z + FData.CenterOfBuoyancy.Z / FData.Volume;
-    FData.CenterOfBuoyancy := RotatePoint(FData.CenterOfBuoyancy);
+    FData.CenterOfBuoyancy.X:=NewOrigin.X + FData.CenterOfBuoyancy.X / FData.Volume;
+    FData.CenterOfBuoyancy.Y:=NewOrigin.Y + FData.CenterOfBuoyancy.Y / FData.Volume;
+    FData.CenterOfBuoyancy.Z:=NewOrigin.Z + FData.CenterOfBuoyancy.Z / FData.Volume;
+    FData.CenterOfBuoyancy:=RotatePoint(FData.CenterOfBuoyancy);
     if FData.LengthWaterline <> 0 then
-      FData.LCBPerc := 100 * ((FData.CenterOfBuoyancy.X -
+      FData.LCBPerc:=100 * ((FData.CenterOfBuoyancy.X -
         (FData.WlMin.X + FData.LengthWaterline / 2)) / FData.LengthWaterline);
     // Apply appendage coeff.
-    FData.Volume := FData.Volume * Owner.ProjectSettings.ProjectAppendageCoefficient;
+    FData.Volume:=FData.Volume * Owner.ProjectSettings.ProjectAppendageCoefficient;
   end;
 
   if (FData.Volume > 0) and (Errors = []) and
@@ -1799,30 +1799,30 @@ begin
   begin
     CalculateMidshipLocation;
     // Calculate midship/mainframe properties - Расчет параметров мидельшпангоута до КВЛ
-    FMidshipSection.FIntersectionType := fiStation;
-    FMidshipSection.FUseHydrostaticsSurfacesOnly := True;
-    FMidshipSection.FPlane.a := 1.0;
-    FMidshipSection.FPlane.b := 0.0;
-    FMidshipSection.FPlane.c := 0.0;
-    FMidshipSection.FPlane.d := -FMidshipLocation; //Owner.ProjectSettings.ProjectSplitSectionLocation;
+    FMidshipSection.FIntersectionType:=fiStation;
+    FMidshipSection.FUseHydrostaticsSurfacesOnly:=True;
+    FMidshipSection.FPlane.a:=1.0;
+    FMidshipSection.FPlane.b:=0.0;
+    FMidshipSection.FPlane.c:=0.0;
+    FMidshipSection.FPlane.d:=-FMidshipLocation; //Owner.ProjectSettings.ProjectSplitSectionLocation;
     FMidshipSection.CalculateArea(FData.WaterlinePlane, FData.MidshipArea,
       FData.MidshipCOG, TmpP2D);
-    FData.MidshipCOG.Z := FData.MidshipCOG.Z - FData.ModelMin.Z;
-    Smid_ := FData.MidshipArea;
-    Zmid_ := FData.MidshipCOG.Z;
+    FData.MidshipCOG.Z:=FData.MidshipCOG.Z - FData.ModelMin.Z;
+    Smid_:=FData.MidshipArea;
+    Zmid_:=FData.MidshipCOG.Z;
     if Owner.ProjectSettings.ProjectCoefficients = fcActualData then
     begin
       if SubmergedWidth * Draft <> 0.0 then
-        FData.MidshipCoeff := FData.MidshipArea / (SubmergedWidth * Draft);
+        FData.MidshipCoeff:=FData.MidshipArea / (SubmergedWidth * Draft);
       if FData.MidshipCoeff > 1.01 then
       begin
-        FData.MidshipCoeff := FData.MidshipCoeff / 2.0;
-        FData.MidshipArea := FData.MidshipArea / 2.0;
-        isymm := 1;
+        FData.MidshipCoeff:=FData.MidshipCoeff / 2.0;
+        FData.MidshipArea:=FData.MidshipArea / 2.0;
+        isymm:=1;
       end;
     end
     else if Owner.ProjectSettings.ProjectBeam * Draft <> 0.0 then
-      FData.MidshipCoeff := FData.MidshipArea /
+      FData.MidshipCoeff:=FData.MidshipArea /
         (Owner.ProjectSettings.ProjectBeam * Draft);
   end;
 
@@ -1831,18 +1831,18 @@ begin
     ((hcMidship in Calculations) or (hcAll in Calculations)) then
   begin
     // Calculate bulb and transom section properties - Расчет параметров бульба  и транца
-    FBulbSection := TFreeIntersection.Create(Owner);
-    FBulbSection.FIntersectionType := fiStation;
-    FBulbSection.FUseHydrostaticsSurfacesOnly := True;
-    FBulbSection.FPlane.a := 1.0;
-    FBulbSection.FPlane.b := 0.0;
-    FBulbSection.FPlane.c := 0.0;
-    FBulbSection.FPlane.d := -Owner.ProjectSettings.ProjectLength;
+    FBulbSection:=TFreeIntersection.Create(Owner);
+    FBulbSection.FIntersectionType:=fiStation;
+    FBulbSection.FUseHydrostaticsSurfacesOnly:=True;
+    FBulbSection.FPlane.a:=1.0;
+    FBulbSection.FPlane.b:=0.0;
+    FBulbSection.FPlane.c:=0.0;
+    FBulbSection.FPlane.d:=-Owner.ProjectSettings.ProjectLength;
     FBulbSection.CalculateArea(FData.WaterlinePlane, FData.BulbSectionArea,
       FData.BulbSectionCOG, TmpP2D);
     if isymm = 1 then
-      FData.BulbSectionArea := FData.BulbSectionArea / 2.0;
-    FData.BulbSectionCOG.Z := FData.BulbSectionCOG.Z - FData.ModelMin.Z;
+      FData.BulbSectionArea:=FData.BulbSectionArea / 2.0;
+    FData.BulbSectionCOG.Z:=FData.BulbSectionCOG.Z - FData.ModelMin.Z;
   end;
   //*************************************************
 
@@ -1851,41 +1851,41 @@ begin
     ((hcWaterline in Calculations) or (hcAll in Calculations)) then
   begin
     // Calculate waterplane properties - Расчет площади ватерлинии
-    Waterplane := TFreeIntersection.Create(Owner);
-    Waterplane.FIntersectionType := fiWaterline;
-    Waterplane.FPlane := FData.WaterlinePlane;
-    Waterplane.FUseHydrostaticsSurfacesOnly := True;
+    Waterplane:=TFreeIntersection.Create(Owner);
+    Waterplane.FIntersectionType:=fiWaterline;
+    Waterplane.FPlane:=FData.WaterlinePlane;
+    Waterplane.FUseHydrostaticsSurfacesOnly:=True;
     Waterplane.Rebuild;
-    Parameter := -1e6;
-    FData.WaterplaneEntranceAngle := 0;
+    Parameter:=-1e6;
+    FData.WaterplaneEntranceAngle:=0;
 
-    for J := 1 to Waterplane.Count do
+    for J:=1 to Waterplane.Count do
     begin
-      Spline := Waterplane.Items[J - 1];
+      Spline:=Waterplane.Items[J - 1];
       // Rotate all the points back to a horizontal plane
-      for K := 1 to Spline.NumberOfPoints do
+      for K:=1 to Spline.NumberOfPoints do
       begin
-        P1 := Spline.Point[K - 1];
-        P2 := RotatePoint(P1);
-        Spline.Point[K - 1] := P2;
+        P1:=Spline.Point[K - 1];
+        P2:=RotatePoint(P1);
+        Spline.Point[K - 1]:=P2;
       end;
 
       if Spline.Value(0.0).X > Spline.Value(1.0).X then
         Spline.InvertDirection;
-      P1 := Spline.Value(1.00);
+      P1:=Spline.Value(1.00);
       if P1.X > Parameter then
       begin
-        Parameter := P1.X;
-        P2 := Spline.Value(0.96);   /// для судов лучше и точнее
+        Parameter:=P1.X;
+        P2:=Spline.Value(0.96);   /// для судов лучше и точнее
         if P1.X - P2.X <> 0 then
           FData.WaterplaneEntranceAngle :=
             RadToDeg(ArcTan((P2.Y - P1.Y) / (P1.X - P2.X)))
         else
-          FData.WaterplaneEntranceAngle := 90.0;
+          FData.WaterplaneEntranceAngle:=90.0;
         if P2.Y < P1.Y then
-          FData.WaterplaneEntranceAngle := -FData.WaterplaneEntranceAngle; //if symmetry
+          FData.WaterplaneEntranceAngle:=-FData.WaterplaneEntranceAngle; //if symmetry
         if FData.WaterplaneEntranceAngle < 0 then
-          FData.WaterplaneEntranceAngle := -FData.WaterplaneEntranceAngle / 2.0;
+          FData.WaterplaneEntranceAngle:=-FData.WaterplaneEntranceAngle / 2.0;
       end;
     end;
     Waterplane.CalculateArea(FData.WaterlinePlane, FData.WaterplaneArea,
@@ -1899,8 +1899,8 @@ begin
       //if symmetry
       if FData.WaterplaneCoeff > 1.1 then
       begin
-        FData.WaterplaneCoeff := FData.WaterplaneCoeff / 2.0;
-        FData.Waterplanearea := FData.Waterplanearea / 2.0;
+        FData.WaterplaneCoeff:=FData.WaterplaneCoeff / 2.0;
+        FData.Waterplanearea:=FData.Waterplanearea / 2.0;
         FData.WaterplaneMomInertia.Y :=
           -FData.WaterplaneMomInertia.Y + FData.Waterplanearea *
           sqr(FData.WaterplaneCOG.X);
@@ -1912,9 +1912,9 @@ begin
         FData.Waterplanearea / (FData.BeamWaterline * FData.LengthWaterline);
     FreeAndNil(Waterplane);
     // Stability data
-    FData.KMtransverse := FData.CenterOfBuoyancy.Z + FData.WaterplaneMomInertia.X /
+    FData.KMtransverse:=FData.CenterOfBuoyancy.Z + FData.WaterplaneMomInertia.X /
       FData.Volume;
-    FData.KMlongitudinal := FData.CenterOfBuoyancy.Z + abs(
+    FData.KMlongitudinal:=FData.CenterOfBuoyancy.Z + abs(
       FData.WaterplaneMomInertia.Y) / FData.Volume;
   end;
   if Draft <> 0 then
@@ -1927,7 +1927,7 @@ begin
           FData.Volume / (SubmergedWidth * SubmergedLength * Draft);
       // Prismatic coefficient based on length and beam measured on the waterline
       if FData.MidshipArea * SubmergedLength <> 0.0 then
-        FData.PrismCoefficient := FData.Volume / (FData.MidshipArea * SubmergedLength);
+        FData.PrismCoefficient:=FData.Volume / (FData.MidshipArea * SubmergedLength);
     end
     else
     begin
@@ -1943,7 +1943,7 @@ begin
           FData.Volume / (FData.MidshipArea * Owner.ProjectSettings.ProjectLength);
     end;
     if FData.WaterplaneCoeff <> 0 then
-      FData.VertPrismCoefficient := FData.BlockCoefficient / FData.WaterplaneCoeff;
+      FData.VertPrismCoefficient:=FData.BlockCoefficient / FData.WaterplaneCoeff;
   end;
 
   // Calculate sectional areas SAC - Расчет СПШ
@@ -1951,14 +1951,14 @@ begin
     if Owner.NumberofStations > 0 then
     begin
       Setlength(FData.SAC, Owner.NumberofStations);
-      for I := 0 to Owner.NumberofStations - 1 do
+      for I:=0 to Owner.NumberofStations - 1 do
       begin
-        FData.SAC[I].X := 0.0;
-        FData.SAC[I].Y := 0.0;
+        FData.SAC[I].X:=0.0;
+        FData.SAC[I].Y:=0.0;
       end;
 
       // Расчет семейства СПШ до крайней верхней ватерлинии для построения масштаба Бонжана
-      SmomentZ := FData.WaterlinePlane.D;
+      SmomentZ:=FData.WaterlinePlane.D;
       if (Owner.NumberofWaterlines > 0) and (Owner.NumberofWaterlines < 100) and
         (Owner.NumberofStations < 100) and Owner.ProjectSettings.EnableBonjeanSAC then
       begin
@@ -1968,30 +1968,30 @@ begin
 {$I+}
         Writeln(FFile, Owner.NumberofWaterlines: 3, Owner.NumberofStations: 3);
         Writeln(FFile, ' ');
-        for J := 0 to Owner.NumberofWaterlines - 1 do
+        for J:=0 to Owner.NumberofWaterlines - 1 do
         begin
-          FData.WaterlinePlane.D := Owner.Waterline[J].FPlane.d;
-          Twl[J + 1] := -FData.WaterlinePlane.D;
+          FData.WaterlinePlane.D:=Owner.Waterline[J].FPlane.d;
+          Twl[J + 1]:=-FData.WaterlinePlane.D;
           Writeln(FFile, -FData.WaterlinePlane.D: 10: 4);
-          for I := 0 to Owner.NumberofStations - 1 do
+          for I:=0 to Owner.NumberofStations - 1 do
           begin
-            Frame := TFreeIntersection.Create(Owner);
-            Frame.FIntersectionType := Owner.Station[I].FIntersectionType;
-            Frame.Plane := Owner.Station[I].Plane;
-            Frame.FUseHydrostaticsSurfacesOnly := True;
-            Fdata.Sac[I].X := -Frame.Plane.d;
+            Frame:=TFreeIntersection.Create(Owner);
+            Frame.FIntersectionType:=Owner.Station[I].FIntersectionType;
+            Frame.Plane:=Owner.Station[I].Plane;
+            Frame.FUseHydrostaticsSurfacesOnly:=True;
+            Fdata.Sac[I].X:=-Frame.Plane.d;
             Frame.CalculateArea(FData.WaterlinePlane, FData.Sac[I].Y, P1, TmpP2D);
             FreeAndNil(Frame);
-            Xbon[I + 1] := Fdata.Sac[I].X;
-            Wbon[J + 1, I + 1] := Fdata.Sac[I].Y;
+            Xbon[I + 1]:=Fdata.Sac[I].X;
+            Wbon[J + 1, I + 1]:=Fdata.Sac[I].Y;
           end;
 
 
           if (Fdata.Sac[Trunc(Owner.NumberofStations / 2)].Y > FData.MidshipArea) and
             (isymm = 1) then
-            for I := 0 to Owner.NumberofStations - 1 do
-              Fdata.Sac[I].Y := Fdata.Sac[I].Y / 2.0;
-          for I := 0 to Owner.NumberofStations - 1 do
+            for I:=0 to Owner.NumberofStations - 1 do
+              Fdata.Sac[I].Y:=Fdata.Sac[I].Y / 2.0;
+          for I:=0 to Owner.NumberofStations - 1 do
             Writeln(FFile, Fdata.Sac[I].X: 10: 4, Fdata.Sac[I].Y: 10: 4);
           Writeln(FFile, ' ');
         end;
@@ -2007,13 +2007,13 @@ begin
         Writeln(FFile, Owner.NumberofWaterlines: 3, Owner.NumberofStations: 3);
         Writeln(FFile, ' ');
         Write(FFile, '        ');
-        for J := 1 to Owner.NumberofStations - 1 do
+        for J:=1 to Owner.NumberofStations - 1 do
           Write(FFile, Xbon[J]: 8: 3);
         WriteLn(FFile, Xbon[Owner.NumberofStations]: 8: 3);
-        for J := 1 to Owner.NumberofWaterlines do
+        for J:=1 to Owner.NumberofWaterlines do
         begin
           Write(FFile, Twl[J]: 8: 3);
-          for I := 1 to Owner.NumberofStations - 1 do
+          for I:=1 to Owner.NumberofStations - 1 do
             if Wbon[J, I] > 999 then
               Write(FFile, Wbon[J, I]: 8: 2)
             else
@@ -2026,105 +2026,105 @@ begin
 
 
       // Расчет СПШ для действующей ватерлинии КВЛ
-      FData.WaterlinePlane.D := SmomentZ;
-      for I := 0 to Owner.NumberofStations - 1 do
+      FData.WaterlinePlane.D:=SmomentZ;
+      for I:=0 to Owner.NumberofStations - 1 do
       begin
-        Frame := TFreeIntersection.Create(Owner);
-        Frame.FIntersectionType := Owner.Station[I].FIntersectionType;
-        Frame.Plane := Owner.Station[I].Plane;
-        Frame.FUseHydrostaticsSurfacesOnly := True;
-        Fdata.Sac[I].X := -Frame.Plane.d;
+        Frame:=TFreeIntersection.Create(Owner);
+        Frame.FIntersectionType:=Owner.Station[I].FIntersectionType;
+        Frame.Plane:=Owner.Station[I].Plane;
+        Frame.FUseHydrostaticsSurfacesOnly:=True;
+        Fdata.Sac[I].X:=-Frame.Plane.d;
         Frame.CalculateArea(FData.WaterlinePlane, FData.Sac[I].Y, P1, TmpP2D);
         FreeAndNil(Frame);
       end;
       if (Fdata.Sac[Trunc(Owner.NumberofStations / 2)].Y > FData.MidshipArea) and
         (isymm = 1) then
-        for I := 0 to Owner.NumberofStations - 1 do
-          Fdata.Sac[I].Y := Fdata.Sac[I].Y / 2.0;
+        for I:=0 to Owner.NumberofStations - 1 do
+          Fdata.Sac[I].Y:=Fdata.Sac[I].Y / 2.0;
 
     end;
 
   if (hcLateralArea in Calculations) or (hcAll in Calculations) then
   begin
     // Calculate lateral area end center of gravity  - Расчет площади контура ДП и цт (выше ватерлинии тоже)
-    SmomentZ := FData.WaterlinePlane.D;
-    FData.WaterlinePlane.D := -500;  // Задаем ватерлинию
-    LateralPlane := TFreeIntersection.Create(Owner);
-    LateralPlane.FIntersectionType := fiButtock;
-    LateralPlane.FUseHydrostaticsSurfacesOnly := True;
-    LateralPlane.FPlane.a := 0.0;
-    LateralPlane.FPlane.b := 1.0;
-    LateralPlane.FPlane.c := 0.0;
-    LateralPlane.FPlane.d := -0.001;
+    SmomentZ:=FData.WaterlinePlane.D;
+    FData.WaterlinePlane.D:=-500;  // Задаем ватерлинию
+    LateralPlane:=TFreeIntersection.Create(Owner);
+    LateralPlane.FIntersectionType:=fiButtock;
+    LateralPlane.FUseHydrostaticsSurfacesOnly:=True;
+    LateralPlane.FPlane.a:=0.0;
+    LateralPlane.FPlane.b:=1.0;
+    LateralPlane.FPlane.c:=0.0;
+    LateralPlane.FPlane.d:=-0.001;
     LateralPlane.CalculateArea(FData.WaterlinePlane, FData.LateralArea,
       FData.LateralCOG, TmpP2D);
-    FData.LateralCOG.Z := FData.LateralCOG.Z - FData.ModelMin.Z;
-    SDP := FData.LateralArea;
-    Zsdp := FData.LateralCOG.Z;
-    Xsdp := FData.LateralCOG.X;
+    FData.LateralCOG.Z:=FData.LateralCOG.Z - FData.ModelMin.Z;
+    SDP:=FData.LateralArea;
+    Zsdp:=FData.LateralCOG.Z;
+    Xsdp:=FData.LateralCOG.X;
     FreeAndNil(LateralPlane);
-    FData.WaterlinePlane.D := SmomentZ;
+    FData.WaterlinePlane.D:=SmomentZ;
   end;
 
   if (hcLateralArea in Calculations) or (hcAll in Calculations) then
   begin
     // Calculate lateral area end center of gravity  - Расчет площади ДП и цт
-    LateralPlane := TFreeIntersection.Create(Owner);
-    LateralPlane.FIntersectionType := fiButtock;
-    LateralPlane.FUseHydrostaticsSurfacesOnly := True;
-    LateralPlane.FPlane.a := 0.0;
-    LateralPlane.FPlane.b := 1.0;
-    LateralPlane.FPlane.c := 0.0;
-    LateralPlane.FPlane.d := -0.001;
+    LateralPlane:=TFreeIntersection.Create(Owner);
+    LateralPlane.FIntersectionType:=fiButtock;
+    LateralPlane.FUseHydrostaticsSurfacesOnly:=True;
+    LateralPlane.FPlane.a:=0.0;
+    LateralPlane.FPlane.b:=1.0;
+    LateralPlane.FPlane.c:=0.0;
+    LateralPlane.FPlane.d:=-0.001;
     LateralPlane.CalculateArea(FData.WaterlinePlane, FData.LateralArea,
       FData.LateralCOG, TmpP2D);
-    FData.LateralCOG.Z := FData.LateralCOG.Z - FData.ModelMin.Z;
-    SDP_ := FData.LateralArea;
-    Zsdp_ := FData.LateralCOG.Z;
-    Xsdp_ := FData.LateralCOG.X;
+    FData.LateralCOG.Z:=FData.LateralCOG.Z - FData.ModelMin.Z;
+    SDP_:=FData.LateralArea;
+    Zsdp_:=FData.LateralCOG.Z;
+    Xsdp_:=FData.LateralCOG.X;
     FreeAndNil(LateralPlane);
     //   Определяем боковую проекцию площади контура ДП выше ватерлинии и координату Z ее ЦТ от линии воды
-    SmomentZ := SDP * Zsdp - SDP_ * Zsdp_;
-    SmomentX := SDP * Xsdp - SDP_ * Xsdp_;
-    SDP := SDP - SDP_;
+    SmomentZ:=SDP * Zsdp - SDP_ * Zsdp_;
+    SmomentX:=SDP * Xsdp - SDP_ * Xsdp_;
+    SDP:=SDP - SDP_;
     if SDP <= 0 then
-      SDP := 0.0001;
-    Zsdp := SmomentZ / SDP + FData.WaterlinePlane.D;
-    Xsdp := SmomentX / SDP;
-    FData.SDP := SDP;
-    FData.Zsdp := Zsdp;
-    FData.SDPCOG.X := Xsdp;
-    FData.Xsdp := FData.BulbSectionCOG.X - Xsdp;
-    FData.SDPCOG.Z := FData.Zsdp - FData.WaterlinePlane.D;
+      SDP:=0.0001;
+    Zsdp:=SmomentZ / SDP + FData.WaterlinePlane.D;
+    Xsdp:=SmomentX / SDP;
+    FData.SDP:=SDP;
+    FData.Zsdp:=Zsdp;
+    FData.SDPCOG.X:=Xsdp;
+    FData.Xsdp:=FData.BulbSectionCOG.X - Xsdp;
+    FData.SDPCOG.Z:=FData.Zsdp - FData.WaterlinePlane.D;
   end;
 
 
   ////// Расчет минимального надводного борта
 
-  Leaks := TFasterListTFreeSubdivisionControlPoint.Create;
-  FData.Z_min_board := 10000;
-  Z_min := 10000;
-  for I := 1 to Owner.Surface.NumberOfControlPoints do
+  Leaks:=TFasterListTFreeSubdivisionControlPoint.Create;
+  FData.Z_min_board:=10000;
+  Z_min:=10000;
+  for I:=1 to Owner.Surface.NumberOfControlPoints do
   begin
-    CtrlPoint := Owner.Surface.ControlPoint[I - 1];
+    CtrlPoint:=Owner.Surface.ControlPoint[I - 1];
     if CtrlPoint.Coordinate.Z < Z_min then
-      Z_min := CtrlPoint.Coordinate.Z;
+      Z_min:=CtrlPoint.Coordinate.Z;
     // Определяем наинизшую точку
     if CtrlPoint.IsLeak then
       Leaks.Add(CtrlPoint);
   end;
 
-  for I := 1 to Leaks.Count do
-    for J := I to Leaks.Count do
+  for I:=1 to Leaks.Count do
+    for J:=I to Leaks.Count do
     begin
-      Pt := TFreeSubdivisionControlPoint(Leaks[J - 1]);
+      Pt:=TFreeSubdivisionControlPoint(Leaks[J - 1]);
       if Pt.Coordinate.Z < FData.Z_min_board then
-        FData.Z_min_board := Pt.Coordinate.Z;
+        FData.Z_min_board:=Pt.Coordinate.Z;
       // Определяем Z точки утечки с минимальной аппликатой
     end;
   FreeAndNil(Leaks);
 
-  Calculated := True;
+  Calculated:=True;
 end;{TFreeHydrostaticCalc.Calculate}
 
 procedure TFreeHydrostaticCalc.CalculateVolume(WaterlinePlane: T3DPlane);
@@ -2153,10 +2153,10 @@ var
   function RotatePoint(P: T3DCoordinate): T3DCoordinate;
     // Rotate a point at heel=0 and trim=0 position to given trim and heel
   begin
-    P.Z := P.Z - Keel.Z;
-    Result.x := P.x * CosTrim + (P.y * SinHeel + P.z * CosHeel) * SinTrim;
-    Result.y := P.y * CosHeel - P.z * SinHeel;
-    Result.z := -P.x * SinTrim + (P.y * SinHeel + P.z * CosHeel) * CosTrim;
+    P.Z:=P.Z - Keel.Z;
+    Result.x:=P.x * CosTrim + (P.y * SinHeel + P.z * CosHeel) * SinTrim;
+    Result.y:=P.y * CosHeel - P.z * SinHeel;
+    Result.z:=-P.x * SinTrim + (P.y * SinHeel + P.z * CosHeel) * CosTrim;
   end;{THydrostaticsData.RotatePoint}
 
   procedure ProcessTriangle(P1, P2, P3: T3DCoordinate);
@@ -2166,29 +2166,29 @@ var
     Center: T3DCoordinate;
   begin
     // Reposition points with respect to the new projected origin
-    P1.X := P1.X - NewOrigin.X;
-    P1.Y := P1.Y - NewOrigin.Y;
-    P1.Z := P1.Z - NewOrigin.Z;
-    P2.X := P2.X - NewOrigin.X;
-    P2.Y := P2.Y - NewOrigin.Y;
-    P2.Z := P2.Z - NewOrigin.Z;
-    P3.X := P3.X - NewOrigin.X;
-    P3.Y := P3.Y - NewOrigin.Y;
-    P3.Z := P3.Z - NewOrigin.Z;
-    Center.X := (P1.X + P2.X + P3.X) / 3;
-    Center.Y := (P1.Y + P2.Y + P3.Y) / 3;
-    Center.Z := (P1.Z + P2.Z + P3.Z) / 3;
-    Volume := ((P1.z) * (P2.x * P3.y - P2.y * P3.x) + (P1.y) *
+    P1.X:=P1.X - NewOrigin.X;
+    P1.Y:=P1.Y - NewOrigin.Y;
+    P1.Z:=P1.Z - NewOrigin.Z;
+    P2.X:=P2.X - NewOrigin.X;
+    P2.Y:=P2.Y - NewOrigin.Y;
+    P2.Z:=P2.Z - NewOrigin.Z;
+    P3.X:=P3.X - NewOrigin.X;
+    P3.Y:=P3.Y - NewOrigin.Y;
+    P3.Z:=P3.Z - NewOrigin.Z;
+    Center.X:=(P1.X + P2.X + P3.X) / 3;
+    Center.Y:=(P1.Y + P2.Y + P3.Y) / 3;
+    Center.Z:=(P1.Z + P2.Z + P3.Z) / 3;
+    Volume:=((P1.z) * (P2.x * P3.y - P2.y * P3.x) + (P1.y) *
       (P2.z * P3.x - P2.x * P3.z) + (P1.x) * (P2.y * P3.z - P2.z * P3.y)) / 6;
     if Volume <> 0 then
     begin
-      VolumeMoment.X := 0.75 * Center.X * Volume;
-      VolumeMoment.Y := 0.75 * Center.Y * Volume;
-      VolumeMoment.Z := 0.75 * Center.Z * Volume;
-      FData.Volume := Fdata.Volume + Volume;
-      FData.CenterOfBuoyancy.X := FData.CenterOfBuoyancy.X + VolumeMoment.X;
-      FData.CenterOfBuoyancy.Y := FData.CenterOfBuoyancy.Y + VolumeMoment.Y;
-      FData.CenterOfBuoyancy.Z := FData.CenterOfBuoyancy.Z + VolumeMoment.Z;
+      VolumeMoment.X:=0.75 * Center.X * Volume;
+      VolumeMoment.Y:=0.75 * Center.Y * Volume;
+      VolumeMoment.Z:=0.75 * Center.Z * Volume;
+      FData.Volume:=Fdata.Volume + Volume;
+      FData.CenterOfBuoyancy.X:=FData.CenterOfBuoyancy.X + VolumeMoment.X;
+      FData.CenterOfBuoyancy.Y:=FData.CenterOfBuoyancy.Y + VolumeMoment.Y;
+      FData.CenterOfBuoyancy.Z:=FData.CenterOfBuoyancy.Z + VolumeMoment.Z;
     end;
   end;{ProcessTriangle}
 
@@ -2196,70 +2196,70 @@ begin
   if not Owner.Built then exit;
 
   // Initial setup of data
-  CosHeel := Cos(DegToRad(-HeelingAngle));
-  SinHeel := Sin(DegToRad(-HeelingAngle));
-  CosTrim := Cos(DegToRad(-TrimAngle));
-  SinTrim := Sin(DegToRad(-TrimAngle));
+  CosHeel:=Cos(DegToRad(-HeelingAngle));
+  SinHeel:=Sin(DegToRad(-HeelingAngle));
+  CosTrim:=Cos(DegToRad(-TrimAngle));
+  SinTrim:=Sin(DegToRad(-TrimAngle));
 
-  Calculated := False;   // Resets all data and calculated variables
+  Calculated:=False;   // Resets all data and calculated variables
   // Calculate the definition of the waterlineplane
-  Keel := SetPoint(0.0, 0.0, Owner.FindLowestHydrostaticsPoint);
-  FData.WaterlinePlane := WaterlinePlane;
+  Keel:=SetPoint(0.0, 0.0, Owner.FindLowestHydrostaticsPoint);
+  FData.WaterlinePlane:=WaterlinePlane;
 
   // In order to calculate the volume enclosed by the underwatership correctly,
   // the origin (0.0, 0.0, 0.0) is projected onto the waterline plane
-  NewOrigin := ProjectPointOnPlane(ZERO, FData.WaterlinePlane);
+  NewOrigin:=ProjectPointOnPlane(ZERO, FData.WaterlinePlane);
 
   // Now calculate the actual volume
-  Submerged := False;
-  PointCapacity := 5;
+  Submerged:=False;
+  PointCapacity:=5;
   Setlength(Points, PointCapacity);
-  FData.AbsoluteDraft := 1000;
-  FirstPoint := True;
-  for I := 1 to Owner.NumberOfLayers do
+  FData.AbsoluteDraft:=1000;
+  FirstPoint:=True;
+  for I:=1 to Owner.NumberOfLayers do
   begin
-    Layer := Owner.Layer[I - 1];
+    Layer:=Owner.Layer[I - 1];
     if Layer.UseInHydrostatics then
-      for J := 1 to Layer.Count do
+      for J:=1 to Layer.Count do
       begin
-        Face := Layer.Items[J - 1];
-        for K := 1 to Face.ChildCount do
+        Face:=Layer.Items[J - 1];
+        for K:=1 to Face.ChildCount do
         begin
-          Child := Face.Child[K - 1];
+          Child:=Face.Child[K - 1];
           // Calculate the portside of the model
-          NoPoints := 0;
-          P1 := Child.Point[Child.NumberOfPoints - 1].Coordinate;
+          NoPoints:=0;
+          P1:=Child.Point[Child.NumberOfPoints - 1].Coordinate;
           // calculate on which side of the waterplane this point is
-          Side1 := FData.Waterlineplane.A * P1.x + FData.Waterlineplane.B *
+          Side1:=FData.Waterlineplane.A * P1.x + FData.Waterlineplane.B *
             P1.y + FData.Waterlineplane.C * P1.z + FData.Waterlineplane.D;
-          for L := 1 to Child.NumberOfPoints do
+          for L:=1 to Child.NumberOfPoints do
           begin
-            P2 := Child.Point[L - 1].Coordinate;
-            Side2 := FData.Waterlineplane.A * P2.x + FData.Waterlineplane.B *
+            P2:=Child.Point[L - 1].Coordinate;
+            Side2:=FData.Waterlineplane.A * P2.x + FData.Waterlineplane.B *
               P2.y + FData.Waterlineplane.C * P2.z + FData.Waterlineplane.D;
             if ((Side1 < -1e-7) and (Side2 > 1e-7)) or
               ((Side1 > 1e-7) and (Side2 < -1e-7)) then
             begin
               // The current linesegment between P1-P2 intersects the waterlineplae
               if Side1 = Side2 then
-                Parameter := 0.5 * (Side1 + Side2)
+                Parameter:=0.5 * (Side1 + Side2)
               else
-                Parameter := -Side1 / (Side2 - Side1);
-              P.X := P1.X + Parameter * (P2.X - P1.X);
-              P.Y := P1.Y + Parameter * (P2.Y - P1.Y);
-              P.Z := P1.Z + Parameter * (P2.Z - P1.Z);
+                Parameter:=-Side1 / (Side2 - Side1);
+              P.X:=P1.X + Parameter * (P2.X - P1.X);
+              P.Y:=P1.Y + Parameter * (P2.Y - P1.Y);
+              P.Z:=P1.Z + Parameter * (P2.Z - P1.Z);
               Inc(NoPoints);
               if NoPoints > PointCapacity then
               begin
                 Inc(PointCapacity);
                 Setlength(Points, PointCapacity);
               end;
-              Points[NoPoints - 1] := P;
+              Points[NoPoints - 1]:=P;
             end;
             if Side2 <= 1e-7 then
             begin
               if Side2 < FData.AbsoluteDraft then
-                FData.AbsoluteDraft := Side2;
+                FData.AbsoluteDraft:=Side2;
               // P2 lies also on or under the waterlineplane
               Inc(NoPoints);
               if NoPoints > PointCapacity then
@@ -2267,151 +2267,151 @@ begin
                 Inc(PointCapacity);
                 Setlength(Points, PointCapacity);
               end;
-              Points[NoPoints - 1] := P2;
+              Points[NoPoints - 1]:=P2;
               if Side2 < -1e-7 then
                 if (Child.Point[L - 1].IsBoundaryVertex) and
                   (abs(Child.Point[L - 1].Coordinate.Y) > 1e-4) then
                   if not (feMakingWater in Errors) then
                   begin
-                    Errors := Errors + [feMakingwater];
-                    FData.Leak := Child.Point[L - 1].Coordinate;
+                    Errors:=Errors + [feMakingwater];
+                    FData.Leak:=Child.Point[L - 1].Coordinate;
                   end// point is submerged, check if the model is making water
               ;
             end;
-            P1 := P2;
-            Side1 := Side2;
+            P1:=P2;
+            Side1:=Side2;
           end;
 
           // calculate volume aft of this face
           if NoPoints > 2 then
-            Submerged := True;
-          for L := 3 to NoPoints do
+            Submerged:=True;
+          for L:=3 to NoPoints do
             ProcessTriangle(Points[0], Points[L - 2], Points[L - 1]);
 
           if Layer.Symmetric then
           begin
             // Calculate the starboardside of the model
-            NoPoints := 0;
-            P1 := Child.Point[Child.NumberOfPoints - 1].Coordinate;
-            P1.Y := -P1.Y;
+            NoPoints:=0;
+            P1:=Child.Point[Child.NumberOfPoints - 1].Coordinate;
+            P1.Y:=-P1.Y;
             // calculate on which side of the waterplane this point is
-            Side1 := FData.Waterlineplane.A * P1.x + FData.Waterlineplane.B *
+            Side1:=FData.Waterlineplane.A * P1.x + FData.Waterlineplane.B *
               P1.y + FData.Waterlineplane.C * P1.z + FData.Waterlineplane.D;
-            for L := 1 to Child.NumberOfPoints do
+            for L:=1 to Child.NumberOfPoints do
             begin
-              P2 := Child.Point[L - 1].Coordinate;
-              P2.Y := -P2.Y;
-              Side2 := FData.Waterlineplane.A * P2.x + FData.Waterlineplane.B *
+              P2:=Child.Point[L - 1].Coordinate;
+              P2.Y:=-P2.Y;
+              Side2:=FData.Waterlineplane.A * P2.x + FData.Waterlineplane.B *
                 P2.y + FData.Waterlineplane.C * P2.z + FData.Waterlineplane.D;
               if ((Side1 < -1e-7) and (Side2 > 1e-7)) or
                 ((Side1 > 1e-7) and (Side2 < -1e-7)) then
               begin
                 // The current linesegment between P1-P2 intersects the waterlineplae
                 if Side1 = Side2 then
-                  Parameter := 0.5 * (Side1 + Side2)
+                  Parameter:=0.5 * (Side1 + Side2)
                 else
-                  Parameter := -Side1 / (Side2 - Side1);
-                P.X := P1.X + Parameter * (P2.X - P1.X);
-                P.Y := P1.Y + Parameter * (P2.Y - P1.Y);
-                P.Z := P1.Z + Parameter * (P2.Z - P1.Z);
+                  Parameter:=-Side1 / (Side2 - Side1);
+                P.X:=P1.X + Parameter * (P2.X - P1.X);
+                P.Y:=P1.Y + Parameter * (P2.Y - P1.Y);
+                P.Z:=P1.Z + Parameter * (P2.Z - P1.Z);
                 Inc(NoPoints);
                 if NoPoints > PointCapacity then
                 begin
                   Inc(PointCapacity);
                   Setlength(Points, PointCapacity);
                 end;
-                Points[NoPoints - 1] := P;
+                Points[NoPoints - 1]:=P;
               end;
               if Side2 <= 1e-7 then
               begin
                 // P2 lies also under the waterlineplane
                 if Side2 < FData.AbsoluteDraft then
-                  FData.AbsoluteDraft := Side2;
+                  FData.AbsoluteDraft:=Side2;
                 Inc(NoPoints);
                 if NoPoints > PointCapacity then
                 begin
                   Inc(PointCapacity);
                   Setlength(Points, PointCapacity);
                 end;
-                Points[NoPoints - 1] := P2;
+                Points[NoPoints - 1]:=P2;
                 if Side2 < -1e-7 then
                   if (Child.Point[L - 1].IsBoundaryVertex) and
                     (abs(Child.Point[L - 1].Coordinate.Y) > 1e-4) then
                     if not (feMakingWater in Errors) then
                     begin
-                      Errors := Errors + [feMakingwater];
-                      FData.Leak := Child.Point[L - 1].Coordinate;
+                      Errors:=Errors + [feMakingwater];
+                      FData.Leak:=Child.Point[L - 1].Coordinate;
                     end// point is submerged, check if the model is making water
                 ;
               end;
-              P1 := P2;
-              Side1 := Side2;
+              P1:=P2;
+              Side1:=Side2;
             end;
             // calculate volume aft of this face
             if NoPoints > 2 then
-              Submerged := True;
-            for L := 3 to NoPoints do
+              Submerged:=True;
+            for L:=3 to NoPoints do
               ProcessTriangle(Points[0], Points[L - 1], Points[L - 2]);
           end;
         end;
       end;
   end;
-  FData.AbsoluteDraft := -FData.AbsoluteDraft;
+  FData.AbsoluteDraft:=-FData.AbsoluteDraft;
   if FirstPoint then
     if not submerged then
     begin
-      Errors := Errors + [feNothingSubmerged];
-      FData.AbsoluteDraft := 0.0;
+      Errors:=Errors + [feNothingSubmerged];
+      FData.AbsoluteDraft:=0.0;
     end// No intersection with the watersurface found, the ship is either
     // not submerged or totally submerged
   ;
   if feMakingWater in Errors then
   begin
-    FData.Volume := 0.0;
-    FData.CenterOfBuoyancy := ZERO;
+    FData.Volume:=0.0;
+    FData.CenterOfBuoyancy:=ZERO;
   end;
   if FData.Volume <> 0 then
   begin
     // Translate center of buoyancy back to the original origin
-    FData.CenterOfBuoyancy.X := NewOrigin.X + FData.CenterOfBuoyancy.X / FData.Volume;
-    FData.CenterOfBuoyancy.Y := NewOrigin.Y + FData.CenterOfBuoyancy.Y / FData.Volume;
-    FData.CenterOfBuoyancy.Z := NewOrigin.Z + FData.CenterOfBuoyancy.Z / FData.Volume;
+    FData.CenterOfBuoyancy.X:=NewOrigin.X + FData.CenterOfBuoyancy.X / FData.Volume;
+    FData.CenterOfBuoyancy.Y:=NewOrigin.Y + FData.CenterOfBuoyancy.Y / FData.Volume;
+    FData.CenterOfBuoyancy.Z:=NewOrigin.Z + FData.CenterOfBuoyancy.Z / FData.Volume;
     /////////////////////////////////////////////////////////
-    FData.CenterOfBuoyancy := RotatePoint(FData.CenterOfBuoyancy);
+    FData.CenterOfBuoyancy:=RotatePoint(FData.CenterOfBuoyancy);
     CalculateMidshipLocation;
     if FData.LengthWaterline <> 0 then
-      FData.LCBPerc := 100 * ((FData.CenterOfBuoyancy.X -
+      FData.LCBPerc:=100 * ((FData.CenterOfBuoyancy.X -
         //Owner.ProjectSettings.ProjectSplitSectionLocation) / FData.LengthWaterline);
         FMidshipLocation) / FData.LengthWaterline);
     // Apply appendage coeff.
-    FData.Displacement := VolumeToDisplacement(FData.Volume,
+    FData.Displacement:=VolumeToDisplacement(FData.Volume,
       Owner.ProjectSettings.ProjectWaterDensity,
       Owner.ProjectSettings.ProjectAppendageCoefficient,
       Owner.ProjectSettings.ProjectUnits);
-    FData.Volume := FData.Volume * Owner.ProjectSettings.ProjectAppendageCoefficient;
+    FData.Volume:=FData.Volume * Owner.ProjectSettings.ProjectAppendageCoefficient;
 
   end;
-  Calculated := True;
+  Calculated:=True;
 end;{TFreeHydrostaticCalc.CalculateVolume}
 
 procedure TFreeHydrostaticCalc.Clear;
 begin
-  Calculated := False;
-  FHydrostaticType := fhShort;
-  FHeelingAngle := 0.0;
-  FTrim := 0.0;
-  FDraft := 0.0;
+  Calculated:=False;
+  FHydrostaticType:=fhShort;
+  FHeelingAngle:=0.0;
+  FTrim:=0.0;
+  FDraft:=0.0;
   Fillchar(FData, SizeOf(FData), 0);
-  FMidshipLocation := 0.0;
+  FMidshipLocation:=0.0;
   FMidshipSection.Clear;
-  FCalculations := [hcAll];
+  FCalculations:=[hcAll];
 end;{TFreeHydrostaticCalc.Clear}
 
 constructor TFreeHydrostaticCalc.Create(Owner: TFreeShip);
 begin
   inherited Create;
-  FOwner := Owner;
-  FMidshipSection := TFreeIntersection.Create(Owner);
+  FOwner:=Owner;
+  FMidshipSection:=TFreeIntersection.Create(Owner);
   Owner.FHydrostaticCalculations.Add(self);
   Clear;
 end;{TFreeHydrostaticCalc.Create}
@@ -2421,7 +2421,7 @@ var
   Index: integer;
 begin
   Clear;
-  Index := Owner.FHydrostaticCalculations.IndexOf(self);
+  Index:=Owner.FHydrostaticCalculations.IndexOf(self);
   if Index <> -1 then
     Owner.FHydrostaticCalculations.Delete(Index);
   FreeAndNil(FMidshipSection);
@@ -2437,15 +2437,15 @@ var
 begin
   if not Calculated then
     Calculate;
-  Strings := TStringList.Create;
+  Strings:=TStringList.Create;
   AddData(Strings, Mode, ';');
-  Dialog := TFreeHydrostaticsDialog.Create(Owner);                              //  ShowTranslatedValues(Dialog);
+  Dialog:=TFreeHydrostaticsDialog.Create(Owner);                              //  ShowTranslatedValues(Dialog);
   //Strings.SaveToFile('FreeHydrostaticsMode.ShowData.Strings.txt');
 //try
     Dialog.Edit.Lines.BeginUpdate;
     Dialog.Edit.Clear;
     //writeln('FreeHydrostaticsMode: Text >>>');
-    for I := 1 to Strings.Count do
+    for I:=1 to Strings.Count do
       Dialog.Edit.Lines.Add(Strings.Strings[I - 1])  //writeln(Strings.Strings[I-1]);
     ;
     //writeln('FreeHydrostaticsMode: Text <<<');

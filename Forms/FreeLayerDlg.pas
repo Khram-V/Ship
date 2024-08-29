@@ -225,8 +225,8 @@ procedure TFreeLayerDialog.LayerBoxClickCheck(Sender: TObject);
 var index : integer; chk : boolean;
     Layer   : TFreeSubdivisionLayer;
 begin
-   index := Layerbox.ItemIndex;
-   chk := Layerbox.Checked[index];
+   index:=Layerbox.ItemIndex;
+   chk:=Layerbox.Checked[index];
    Layer:=Layerbox.Items.Objects[index] as TFreeSubdivisionLayer;
    if Layer=nil then exit;
    if Layer.SurfaceVisible <> chk then
@@ -241,7 +241,7 @@ end;
 procedure TFreeLayerDialog.LayerBoxClick(Sender: TObject);
 var Index: integer;
 begin
-  index := Layerbox.ItemIndex;
+  index:=Layerbox.ItemIndex;
   LayerBoxItemClick(Sender, Index);
 end;
 
@@ -249,8 +249,8 @@ procedure TFreeLayerDialog.cbControlNetVisibleClick(Sender: TObject);
 var index : integer; chk : boolean;
     Layer   : TFreeSubdivisionLayer;
 begin
-   index := Layerbox.ItemIndex;
-   chk := cbControlNetVisible.Checked;
+   index:=Layerbox.ItemIndex;
+   chk:=cbControlNetVisible.Checked;
    Layer:=Layerbox.Items.Objects[index] as TFreeSubdivisionLayer;
    if Layer=nil then exit;
    if Layer.ControlNetVisible <> chk then
@@ -266,8 +266,8 @@ procedure TFreeLayerDialog.SelectLayer(Index: integer);
 var Layer   : TFreeSubdivisionLayer;
     Prop    : TLayerProperties;
 begin
-  FProgrammaticalChange := true;
-  index := Layerbox.ItemIndex;
+  FProgrammaticalChange:=true;
+  index:=Layerbox.ItemIndex;
   if index = -1 then exit;
 
   Layer:=Layerbox.Items.Objects[index] as TFreeSubdivisionLayer;
@@ -280,7 +280,7 @@ begin
   Checkbox3.Checked:=Layer.UseInHydrostatics;
   Checkbox4.Checked:=Layer.ShowInLinesplan;
   Checkbox5.Checked:=Layer.Symmetric;
-  cbControlNetVisible.Checked := Layer.ControlNetVisible;
+  cbControlNetVisible.Checked:=Layer.ControlNetVisible;
   ////////         Checkbox5.Enabled:=not Layer.UseInHydrostatics;
   Checkbox6.Enabled:=false;
   if Checkbox6.Checked then begin
@@ -322,13 +322,13 @@ begin
   AlphaBar.Position:=round((255-Layer.AlphaBlend) * 100 / 255);
   //_label1.Caption:=FloatToStrF(100*(255-Layer.AlphaBlend)/255,ffFixed,7,1)+'%';
   UpdateMenu;
-  FProgrammaticalChange := false;
+  FProgrammaticalChange:=false;
 end;
 
 
 procedure TFreeLayerDialog.LayerBoxItemClick(Sender: TObject; Index: integer);
 begin
-  index := Layerbox.ItemIndex;
+  index:=Layerbox.ItemIndex;
   if index = -1 then exit;
   SelectLayer(Index);
 end;
@@ -395,7 +395,7 @@ begin
    if FFreeShip.ActiveLayer<>NewLayer then FFreeShip.ActiveLayer:=NewLayer;
    LayVis:=NewLayer.SurfaceVisible;
    N:=Layerbox.Items.AddObject(NewLayer.Name,NewLayer);
-   Layerbox.Checked[N] := LayVis;
+   Layerbox.Checked[N]:=LayVis;
    Layerbox.ItemIndex:=N;
    LayerBoxItemClick(self,N);
    UpdateMenu;
@@ -408,7 +408,7 @@ procedure TFreeLayerDialog.ToolButton3Click(Sender: TObject);
 var noFeedback: Boolean;
 begin
 // delete the emtpy layers, set a new active layer:
-   noFeedback := False; // if quiet, then no undo object, no feedback about number of deleted layers
+   noFeedback:=False; // if quiet, then no undo object, no feedback about number of deleted layers
    FFreeShip.Edit.Layer_DeleteEmpty(noFeedback);
 // now update the dialog box: clear it and build it new
    FFillBox;

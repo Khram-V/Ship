@@ -13,8 +13,7 @@ uses
 type
 
   TFreeBitmap = class (TBitmap)
-  private
-      //pData : pRGBTripleArray;
+  private                                                                //pData : pRGBTripleArray;
       function  GetScanline(ARow: Integer): pRGBTripleArray;
   public
       constructor Create; override;
@@ -35,9 +34,9 @@ implementation
   function  TFreeBitmap.GetScanline(ARow: Integer): pRGBTripleArray;
   var P:pointer;
   begin
-    P := RawImage.Data;
+    P:=RawImage.Data;
     inc(P, RawImage.Description.BytesPerLine * Arow);
-    result := pRGBTripleArray(P);
+    result:=pRGBTripleArray(P);
   end;
 
 end.

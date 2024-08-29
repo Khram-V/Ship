@@ -69,34 +69,34 @@ implementation
 
 function TFreeGridDialog.GetStartPoint: T3DCoordinate;
 begin
-  Result := SetPoint(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
+  Result:=SetPoint(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
 end;
 
 procedure TFreeGridDialog.SetStartPoint(val: T3DCoordinate);
 begin
-  StartPointX.Value := Val.X;
-  StartPointY.Value := Val.Y;
-  StartPointZ.Value := Val.Z;
+  StartPointX.Value:=Val.X;
+  StartPointY.Value:=Val.Y;
+  StartPointZ.Value:=Val.Z;
 end;
 
 function TFreeGridDialog.Execute(Str: string): boolean;
 begin
-  lbUnit1.Caption := Str;
-  lbUnit2.Caption := Str;                                                       //ShowTranslatedValues(Self);
+  lbUnit1.Caption:=Str;
+  lbUnit2.Caption:=Str;                                                       //ShowTranslatedValues(Self);
   Showmodal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TFreeGridDialog.OKButtonClick(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TFreeGridDialog.CancelButtonClick(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 procedure TFreeGridDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TFreeGridDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 end.

@@ -64,44 +64,44 @@ begin
   FreeShip1:= TFreeShip.Create(Self);
   with FreeShip1 do
   begin
-    FileChanged := True;
-    Filename := 'New model.fbm';
-    FileVersion := fv261;
-    Precision := fpLow;
+    FileChanged:=True;
+    Filename:='New model.fbm';
+    FileVersion:=fv261;
+    Precision:=fpLow;
   end;
 end;
 
 procedure TFreeUndoHistoryDialog.CreateViewPort;
 begin
-  Viewport := TFreeViewport.Create(Self);
+  Viewport:=TFreeViewport.Create(Self);
   Viewport.Parent:=Panel1;
   with Viewport do
   begin
-    Left := 264;
-    Height := 392;
-    Top := 9;
-    Width := 411;
-    Angle := 20;
-    Align := alClient;
-    BackgroundImage.Alpha := 255;
-    BackgroundImage.Owner := Viewport;
-    BackgroundImage.Quality := 100;
-    BackgroundImage.Scale := 1;
-    BackgroundImage.ShowInView := fvBodyplan;
-    BackgroundImage.Tolerance := 5;
-    BackgroundImage.Transparent := False;
-    BackgroundImage.TransparentColor := clBlack;
-    BackgroundImage.Visible := True;
-    BevelOuter := bvLowered;
-    BorderStyle := bsSingle;
-    CameraType := ftStandard;
-    DoubleBuffer := True;
-    Elevation := 20;
-    Margin := 0;
-    ViewType := fvPerspective;
-    ViewportMode := vmWireFrame;
-    OnRedraw := ViewportRedraw;
-    OnRequestExtents := ViewportRequestExtents;
+    Left:=264;
+    Height:=392;
+    Top:=9;
+    Width:=411;
+    Angle:=20;
+    Align:=alClient;
+    BackgroundImage.Alpha:=255;
+    BackgroundImage.Owner:=Viewport;
+    BackgroundImage.Quality:=100;
+    BackgroundImage.Scale:=1;
+    BackgroundImage.ShowInView:=fvBodyplan;
+    BackgroundImage.Tolerance:=5;
+    BackgroundImage.Transparent:=False;
+    BackgroundImage.TransparentColor:=clBlack;
+    BackgroundImage.Visible:=True;
+    BevelOuter:=bvLowered;
+    BorderStyle:=bsSingle;
+    CameraType:=ftStandard;
+    DoubleBuffer:=True;
+    Elevation:=20;
+    Margin:=0;
+    ViewType:=fvPerspective;
+    ViewportMode:=vmWireFrame;
+    OnRedraw:=ViewportRedraw;
+    OnRequestExtents:=ViewportRequestExtents;
   end;
 end;
 

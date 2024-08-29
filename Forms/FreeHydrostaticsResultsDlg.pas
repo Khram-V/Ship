@@ -8,16 +8,8 @@ unit FreeHydrostaticsResultsDlg;
 
 interface
 
-uses
-     {$ifdef Windows}
-     Windows,
-     {$endif}
-     {$ifdef LCL}
-     LCLIntf, LCLType, //
-     LResources,
+uses LCLIntf,
      PrintersDlgs, FreePrinter,
-     {$endif}
-     //Messages,
      SysUtils,
      Classes,
      Graphics,
@@ -28,69 +20,52 @@ uses
      ExtCtrls,
      StdCtrls,
      Printers,
-     Buttons,
-     FreeShipUnit;
+     Buttons;
 
-type
-
-{ TFreeHydrostaticsResultsDialog }
-
+type                                         { TFreeHydrostaticsResultsDialog }
  TFreeHydrostaticsResultsDialog  = class(TForm)
-                                             Panel1: TPanel;
-                                             Panel2: TPanel;
-                                             Grid: TStringGrid;
-                                             Header: TMemo;
-                                             Splitter1: TSplitter;
-                                             ButtonPrint: TSpeedButton;
-                                             ButtonSave: TSpeedButton;
-                                             ButtonClose: TSpeedButton;
+    Panel1, Panel2: TPanel;
+    Grid: TStringGrid;
+    Header: TMemo;
+    Splitter1: TSplitter;
+    ButtonPrint, ButtonSave, ButtonClose: TSpeedButton;
     PrintDialog: TPrintDialog;
     SaveDialog: TSaveDialog;
-                                             procedure GridDrawCell(Sender: TObject; ACol, ARow: Integer;Rect: TRect; State: TGridDrawState);
-                                             procedure FormResize(Sender: TObject);
-                                             procedure ButtonCloseClick(Sender: TObject);
+    procedure GridDrawCell(Sender: TObject; ACol, ARow: Integer;Rect: TRect; State: TGridDrawState);
+    procedure FormResize(Sender: TObject);
+    procedure ButtonCloseClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure ButtonPrintClick(Sender: TObject);
-                                           private { Private declarations }
-                                              ColWidths : array of Integer;
-                                           public  { Public declarations }
-                                              function Execute:Boolean;
-                                        end;
+  private { Private declarations }
+    ColWidths : array of Integer;
+  public  { Public declarations }
+    function Execute:Boolean;
+  end;
 
 var FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog;
 
 implementation
 
-{$IFnDEF FPC}
-  {$R *.dfm}
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 procedure TFreeHydrostaticsResultsDialog.GridDrawCell(Sender: TObject;ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
 var W    : Integer;
     Str  : string;
     Back : TColor;
 begin
-   if (ACol=0) or (ARow in [0,1]) then
-   begin
+   if (ACol=0) or (ARow in [0,1]) then begin
       if Grid.Canvas.Font.Style=[] then Grid.Canvas.Font.Style:=[fsBold];
-   end else
-   begin
+   end else begin
       if Grid.Canvas.Font.Style=[fsBold] then Grid.Canvas.Font.Style:=[];
    end;
-   if (ARow>1) and (ACol>0) then
-   begin
-      if gdSelected in state then
-      begin
+   if (ARow>1) and (ACol>0) then begin
+      if gdSelected in state then begin
          //Back:=clWhite;
          //Grid.Canvas.Font.Color:=clBlack;
-      end else if Odd(ARow) then
-      begin
+      end else if Odd(ARow) then begin
          Back:=RGB(235,235,235);
          if Grid.Canvas.Brush.Color<>Back then Grid.Canvas.Brush.Color:=Back;
-      end else
-      begin
+      end else begin
          if Grid.Canvas.Brush.Color<>clWindow then Grid.Canvas.Brush.Color:=clWindow;
       end;
       Grid.Canvas.Rectangle(Rect);
@@ -143,27 +118,20 @@ var Strings    : TStringList;
     I,J,L,N    : Integer;
     Str,Tmp    : Ansistring;
 begin
-   if SaveDialog.Execute then
-   begin
+   if SaveDialog.Execute then begin
       strings:=TStringList.Create;
       Strings.Assign(Header.Lines);
       Setlength(MaxWidth,Grid.ColCount);
-      for I:=1 to Grid.ColCount do
-      begin
-         MaxWidth[I-1]:=0;
-         for J:=1 to Grid.RowCount do
-         begin
+      for I:=1 to Grid.ColCount do begin MaxWidth[I-1]:=0;
+         for J:=1 to Grid.RowCount do begin
             L:=Length(Grid.Cells[I-1,J-1]);
             if L>MaxWidth[I-1] then MaxWidth[I-1]:=L;
          end;
       end;
       Strings.Add('');
       Strings.Add('');
-      for I:=1 to Grid.RowCount do
-      begin
-         Str:='';
-         for J:=1 to Grid.ColCount do
-         begin
+      for I:=1 to Grid.RowCount do begin Str:='';
+         for J:=1 to Grid.ColCount do begin
             Tmp:=Grid.Cells[J-1,I-1];
             L:=Length(Tmp);
             for N:=L+1 to MaxWidth[J-1] do Tmp:=#32+Tmp;
@@ -185,19 +153,15 @@ var PrintText : TextFile;
     I,J,L,N   : Integer;
     Str,Tmp   : Ansistring;
 begin
-   if PrintDialog.Execute then
-   begin
+   if PrintDialog.Execute then begin
       AssignPrn(PrintText);
       Rewrite(PrintText);
       Printer.Canvas.Font.Assign(Header.Font);
       for I:=1 to Header.Lines.Count do Writeln(PrintText,#32,Header.Lines[I-1]);
-
       Setlength(MaxWidth,Grid.ColCount);
-      for I:=1 to Grid.ColCount do
-      begin
+      for I:=1 to Grid.ColCount do begin
          MaxWidth[I-1]:=0;
-         for J:=1 to Grid.RowCount do
-         begin
+         for J:=1 to Grid.RowCount do begin
             L:=Length(Grid.Cells[I-1,J-1]);
             if L>MaxWidth[I-1] then MaxWidth[I-1]:=L;
          end;
@@ -205,11 +169,8 @@ begin
       Writeln(PrintText);
       Writeln(PrintText);
       Printer.Canvas.Font.Size:=Printer.Canvas.Font.Size-1;
-      for I:=1 to Grid.RowCount do
-      begin
-         Str:='';
-         for J:=1 to Grid.ColCount do
-         begin
+      for I:=1 to Grid.RowCount do begin Str:='';
+         for J:=1 to Grid.ColCount do begin
             Tmp:=Grid.Cells[J-1,I-1];
             L:=Length(Tmp);
             for N:=L+1 to MaxWidth[J-1] do Tmp:=#32+Tmp;

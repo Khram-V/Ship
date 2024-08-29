@@ -716,19 +716,19 @@ var
   Str: string;
 begin
   SaveDialog := TSaveDialog.Create(Owner);
-  SaveDialog.InitialDir := FFreeship.Preferences.ExportDirectory;
-  Str := ChangeFileExt(ExtractFilename(FFreeship.FileName), '');
-  Str := Str + '_developments.dxf';
-  SaveDialog.FileName := Str;
-  SaveDialog.Filter := createDialogFilter(rsAutocadDxfFile,['dxf']);
-  Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
+  SaveDialog.InitialDir:=FFreeship.Preferences.ExportDirectory;
+  Str:=ChangeFileExt(ExtractFilename(FFreeship.FileName), '');
+  Str:=Str + '_developments.dxf';
+  SaveDialog.FileName:=Str;
+  SaveDialog.Filter:=createDialogFilter(rsAutocadDxfFile,['dxf']);
+  Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
-    FFreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
-    Strings := TStringList.Create;
+    FFreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
+    Strings:=TStringList.Create;
     Strings.Add('0' + EOL + 'SECTION');
     Strings.Add('2' + EOL + 'ENTITIES');
-    for I := 1 to FPlates.Count do begin
-      Patch := FPlates[I - 1];
+    for I:=1 to FPlates.Count do begin
+      Patch:=FPlates[I - 1];
       if Patch.Visible then Patch.SaveToDXF(Strings);
     end;
     Strings.Add('0' + EOL + 'ENDSEC');
@@ -741,60 +741,60 @@ end;
 
 procedure TFreeExpanedplatesDialog.ShowStationsExecute(Sender: TObject);
 begin
-  ShowStations.Checked := not ShowStations.Checked;
+  ShowStations.Checked:=not ShowStations.Checked;
   Viewport.Refresh;
 end;
 
 procedure TFreeExpanedplatesDialog.ShowButtocksExecute(Sender: TObject);
 begin
-  ShowButtocks.Checked := not ShowButtocks.Checked;
+  ShowButtocks.Checked:=not ShowButtocks.Checked;
   Viewport.Refresh;
 end;
 
 procedure TFreeExpanedplatesDialog.ShowWaterlinesExecute(Sender: TObject);
 begin
-  ShowWaterlines.Checked := not ShowWaterlines.Checked;
+  ShowWaterlines.Checked:=not ShowWaterlines.Checked;
   Viewport.Refresh;
 end;
 
 procedure TFreeExpanedplatesDialog.ShowInteriorEdgesExecute(Sender: TObject);
 begin
-  ShowInteriorEdges.Checked := not ShowInteriorEdges.Checked;
+  ShowInteriorEdges.Checked:=not ShowInteriorEdges.Checked;
   Viewport.Refresh;
 end;
 
 procedure TFreeExpanedplatesDialog.ShowFillColorExecute(Sender: TObject);
 begin
-  ShowFillColor.Checked := not ShowFillColor.Checked;
-  ShowSubmergedArea.Enabled := ShowFillColor.Checked;
+  ShowFillColor.Checked:=not ShowFillColor.Checked;
+  ShowSubmergedArea.Enabled:=ShowFillColor.Checked;
   Viewport.Refresh;
 end;
 
 procedure TFreeExpanedplatesDialog.ShowErrorEdgesExecute(Sender: TObject);
 begin
-  ShowErrorEdges.Checked := not ShowErrorEdges.Checked;
+  ShowErrorEdges.Checked:=not ShowErrorEdges.Checked;
   Viewport.Refresh;
 end;
 
 procedure TFreeExpanedplatesDialog.ShowDiagonalsExecute(Sender: TObject);
 begin
-  ShowDiagonals.Checked := not ShowDiagonals.Checked;
+  ShowDiagonals.Checked:=not ShowDiagonals.Checked;
   Viewport.Refresh;
 end;
 
 procedure TFreeExpanedplatesDialog.PrintExecute(Sender: TObject);
 begin
   if Viewport.Width > Viewport.Height then
-    Printer.Orientation := poLandscape
+    Printer.Orientation:=poLandscape
   else
-    Printer.Orientation := poPortrait;
+    Printer.Orientation:=poPortrait;
   if PrintDialog.Execute then
     Viewport.Print(self.FFreeShip.ProjectSettings.ProjectUnits,True,'FREE!ship plate developments ');
 end;
 
 procedure TFreeExpanedplatesDialog.ShowDimensionsExecute(Sender: TObject);
 begin
-  ShowDimensions.Checked := not ShowDimensions.Checked;
+  ShowDimensions.Checked:=not ShowDimensions.Checked;
   Viewport.Refresh;
 end;
 
@@ -816,23 +816,23 @@ begin end;
 procedure TFreeExpanedplatesDialog.FloatSpinEdit2Change(Sender: TObject);
 var S,I: integer;
 begin
-  FloatSpinEdit2.OnChange := nil; // detach to avoid looping
+  FloatSpinEdit2.OnChange:=nil; // detach to avoid looping
 //try
-    FXGridSpacing := FloatSpinEdit2.Value;
+    FXGridSpacing:=FloatSpinEdit2.Value;
  // Increment will automatically change from 0.01 to 10.0
  // We calculate in hundreds ints to simplify comparisons
-    I := round(FloatSpinEdit2.Increment * 100);
-    S := round(FXGridSpacing * 100);
-    if (S < 1) then S := 1;
-    if (S > 1000) then S := 1000;
-    if (I > 1) and (S <= I) then I := I div 10;
-    if (I < 1000) and (S >= (I * 10)) then I := I * 10;
-    FloatSpinEdit2.Increment := 0.01 * I;
-    FXGridSpacing := 0.01 * S;
-    FloatSpinEdit2.Value := FXGridSpacing;
+    I:=round(FloatSpinEdit2.Increment * 100);
+    S:=round(FXGridSpacing * 100);
+    if (S < 1) then S:=1;
+    if (S > 1000) then S:=1000;
+    if (I > 1) and (S <= I) then I:=I div 10;
+    if (I < 1000) and (S >= (I * 10)) then I:=I * 10;
+    FloatSpinEdit2.Increment:=0.01 * I;
+    FXGridSpacing:=0.01 * S;
+    FloatSpinEdit2.Value:=FXGridSpacing;
     Viewport.Refresh;
 //finally
-    FloatSpinEdit2.OnChange := FloatSpinEdit2Change;
+    FloatSpinEdit2.OnChange:=FloatSpinEdit2Change;
 //end;
 end;
 
@@ -840,30 +840,30 @@ procedure TFreeExpanedplatesDialog.FloatSpinEdit3Change(Sender: TObject);
 var
   S, I: integer;
 begin
-  FloatSpinEdit3.OnChange := nil; // detach to avoid looping
+  FloatSpinEdit3.OnChange:=nil; // detach to avoid looping
 //try
-    FYGridSpacing := FloatSpinEdit3.Value;
+    FYGridSpacing:=FloatSpinEdit3.Value;
  // Increment will automatically change from 0.01 to 10.0
  // We calculate in hundreds ints to simplify comparisons
-    I := round(FloatSpinEdit3.Increment * 100);
-    S := round(FYGridSpacing * 100);
-    if (S < 1) then S := 1;
-    if (S > 1000) then S := 1000;
-    if (I > 1) and (S <= I) then I := I div 10;
-    if (I < 1000) and (S >= (I * 10)) then I := I * 10;
-    FloatSpinEdit3.Increment := 0.01 * I;
-    FYGridSpacing := 0.01 * S;
-    FloatSpinEdit3.Value := FYGridSpacing;
+    I:=round(FloatSpinEdit3.Increment * 100);
+    S:=round(FYGridSpacing * 100);
+    if (S < 1) then S:=1;
+    if (S > 1000) then S:=1000;
+    if (I > 1) and (S <= I) then I:=I div 10;
+    if (I < 1000) and (S >= (I * 10)) then I:=I * 10;
+    FloatSpinEdit3.Increment:=0.01 * I;
+    FYGridSpacing:=0.01 * S;
+    FloatSpinEdit3.Value:=FYGridSpacing;
     Viewport.Refresh;
 //finally
-    FloatSpinEdit3.OnChange := FloatSpinEdit3Change;
+    FloatSpinEdit3.OnChange:=FloatSpinEdit3Change;
 //end;
 end;
 
 procedure TFreeExpanedplatesDialog.FloatSpinEdit1Change(Sender: TObject);
 begin
   if FloatSpinEdit1.Value <> ActivePatch.Rotation then begin
-    ActivePatch.Rotation := FloatSpinEdit1.Value;
+    ActivePatch.Rotation:=FloatSpinEdit1.Value;
     if Viewport.Zoom=1.0 then Viewport.ZoomExtents
                          else Viewport.Refresh;
   end;
@@ -871,7 +871,7 @@ end;
 
 procedure TFreeExpanedplatesDialog.ShowPartNameExecute(Sender: TObject);
 begin
-  ShowPartName.Checked := not ShowPartName.Checked;
+  ShowPartName.Checked:=not ShowPartName.Checked;
   Viewport.Refresh;
 end;
 
@@ -879,7 +879,7 @@ procedure TFreeExpanedplatesDialog.CheckBox1Click(Sender: TObject);
 begin
   if ActivePatch <> nil then
     if Checkbox1.Checked <> ActivePatch.MirrorOnScreen then begin
-      ActivePatch.MirroronScreen := Checkbox1.Checked;
+      ActivePatch.MirroronScreen:=Checkbox1.Checked;
       if Viewport.Zoom = 1.0 then Viewport.ZoomExtents
                              else Viewport.Refresh;
     end;
@@ -887,7 +887,7 @@ end;
 
 procedure TFreeExpanedplatesDialog.ShowSubmergedAreaExecute(Sender: TObject);
 begin
-  ShowSubmergedArea.Checked := not ShowSubmergedarea.Checked;
+  ShowSubmergedArea.Checked:=not ShowSubmergedarea.Checked;
   Viewport.Refresh;
 end;
 
@@ -899,18 +899,18 @@ var
   SaveDialog: TSaveDialog;
   Str: string;
 begin
-  SaveDialog := TSaveDialog.Create(Owner);
-  SaveDialog.InitialDir := FFreeship.Preferences.ExportDirectory;
-  Str := ChangeFileExt(ExtractFilename(FFreeship.FileName), '');
-  Str := Str + '_developments.txt';
-  SaveDialog.FileName := Str;
-  SaveDialog.Filter := createDialogFilter(rsTextFile,['txt']);
-  Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
+  SaveDialog:=TSaveDialog.Create(Owner);
+  SaveDialog.InitialDir:=FFreeship.Preferences.ExportDirectory;
+  Str:=ChangeFileExt(ExtractFilename(FFreeship.FileName), '');
+  Str:=Str + '_developments.txt';
+  SaveDialog.FileName:=Str;
+  SaveDialog.Filter:=createDialogFilter(rsTextFile,['txt']);
+  Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
-    FFreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
-    Strings := TStringList.Create;
-    for I := 1 to FPlates.Count do begin
-      Patch := FPlates[I - 1];
+    FFreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
+    Strings:=TStringList.Create;
+    for I:=1 to FPlates.Count do begin
+      Patch:=FPlates[I - 1];
       if Patch.Visible then Patch.SaveToTextFile(Strings);
     end;
     Strings.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.txt'));
@@ -921,37 +921,37 @@ end;
 
 procedure TFreeExpanedplatesDialog.InitViewPort;
 begin
-  ViewPort := TFreeViewPort.Create(Self);
+  ViewPort:=TFreeViewPort.Create(Self);
   with Viewport do begin
-    Parent := Self;
-    Left := 0;
-    Height := 557;
-    Top := 26;
-    Width := 636;
-    Angle := 90;
-    Align := alClient;
-    BackgroundImage.Alpha := 255;
-    BackgroundImage.Owner := Viewport;
-    BackgroundImage.Quality := 100;
-    BackgroundImage.Scale := 1;
-    BackgroundImage.ShowInView := fvBodyplan;
-    BackgroundImage.Tolerance := 5;
-    BackgroundImage.Transparent := False;
-    BackgroundImage.TransparentColor := clBlack;
-    BackgroundImage.Visible := True;
-    CameraType := ftStandard;
-    Color := clOlive; // clWhite;
-    DoubleBuffer := False;
-    Elevation := 90;
+    Parent:=Self;
+    Left:=0;
+    Height:=557;
+    Top:=26;
+    Width:=636;
+    Angle:=90;
+    Align:=alClient;
+    BackgroundImage.Alpha:=255;
+    BackgroundImage.Owner:=Viewport;
+    BackgroundImage.Quality:=100;
+    BackgroundImage.Scale:=1;
+    BackgroundImage.ShowInView:=fvBodyplan;
+    BackgroundImage.Tolerance:=5;
+    BackgroundImage.Transparent:=False;
+    BackgroundImage.TransparentColor:=clBlack;
+    BackgroundImage.Visible:=True;
+    CameraType:=ftStandard;
+    Color:=clOlive; // clWhite;
+    DoubleBuffer:=False;
+    Elevation:=90;
     ParentFont:=false;
-    Margin := 4;
-    ViewType := fvPlan;
-    ViewportMode := vmWireFrame;
-    OnMouseDown := ViewportMouseDown;
-    OnMouseUp := ViewportMouseUp;
-    OnMouseMove := ViewportMouseMove;
-    OnRedraw := ViewportRedraw;
-    OnRequestExtents := ViewportRequestExtents;
+    Margin:=4;
+    ViewType:=fvPlan;
+    ViewportMode:=vmWireFrame;
+    OnMouseDown:=ViewportMouseDown;
+    OnMouseUp:=ViewportMouseUp;
+    OnMouseMove:=ViewportMouseMove;
+    OnRedraw:=ViewportRedraw;
+    OnRequestExtents:=ViewportRequestExtents;
   end;
 end;
 

@@ -92,84 +92,84 @@ procedure TSaveImageDialog.SetImageSize;
 var
   Size: single;
 begin
-  Size := ImageWidth * ImageHeight * 3 / 1024;
+  Size:=ImageWidth * ImageHeight * 3 / 1024;
   if size > 1024 then begin
-    FloatSpinEdit1.Value := Size / 1024; Label5.Caption := 'MB';
+    FloatSpinEdit1.Value:=Size / 1024; Label5.Caption:='MB';
   end else begin
-    FloatSpinEdit1.Value := Size / 1024; Label5.Caption := 'KB';
+    FloatSpinEdit1.Value:=Size / 1024; Label5.Caption:='KB';
   end;
 end;
 
 function TSaveImageDialog.FGetFilename: string;
-begin Result := Edit3.Text; end;
+begin Result:=Edit3.Text; end;
 
 procedure TSaveImageDialog.FSetFilename(val: string);
 begin
-  Edit3.Text := val;
+  Edit3.Text:=val;
 end;
 
 procedure TSaveImageDialog.SetImageSizes(W,H: integer);
 begin
   FIsInteractive:=false;
-  ImageWidth := W;
-  ImageHeight := H;
-  FRatio := ImageWidth / ImageHeight;
+  ImageWidth:=W;
+  ImageHeight:=H;
+  FRatio:=ImageWidth / ImageHeight;
   FIsInteractive:=true;
 end;
 
 function TSaveImageDialog.FGetImageWidth: integer;
-begin Result := SpinEdit1.Value; end;
+begin Result:=SpinEdit1.Value; end;
 
 procedure TSaveImageDialog.FSetImageWidth(val: integer);
-begin SpinEdit1.Value := val; SetImageSize; end;
+begin SpinEdit1.Value:=val; SetImageSize; end;
 
 function TSaveImageDialog.FGetImageHeight: integer;
-begin Result := SpinEdit2.Value; end;
+begin Result:=SpinEdit2.Value; end;
 
 procedure TSaveImageDialog.FSetImageHeight(val: integer);
-begin SpinEdit2.Value := val; SetImageSize; end;
+begin SpinEdit2.Value:=val; SetImageSize; end;
 
 function TSaveImageDialog.Execute: boolean;
 begin
-  FRatio := Imagewidth / ImageHeight;                                           //ShowTranslatedValues(Self);
+  FRatio:=Imagewidth / ImageHeight;                                           //ShowTranslatedValues(Self);
   Showmodal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TSaveImageDialog.FormCreate(Sender: TObject);
 begin
-  FIsInteractive := true;
-  FRatio := 1.0;
+  FIsInteractive:=true;
+  FRatio:=1.0;
 end;
 
 procedure TSaveImageDialog.SpinEdit1Change(Sender: TObject);
 begin
   if not FIsInteractive then exit;
-  //ImageWidth := self.ImageWidth;
-  ImageHeight := Round(Imagewidth / FRatio);
+  //ImageWidth:=self.ImageWidth;
+  ImageHeight:=Round(Imagewidth / FRatio);
   SetImageSize;
 end;
 
 procedure TSaveImageDialog.SpinEdit2Change(Sender: TObject);
 begin
   if not FIsInteractive then exit;
-  //ImageHeight := self.ImageHeight;
-  ImageWidth := Round(FRatio * ImageHeight);
+  //ImageHeight:=self.ImageHeight;
+  ImageWidth:=Round(FRatio * ImageHeight);
   SetImageSize;
 end;
 
 procedure TSaveImageDialog.SpeedButton1Click(Sender: TObject);
 begin
   SaveDialog.InitialDir:= ExtractFileDir(Filename);
-  SaveDialog.FileName := ExtractFileName(Filename);
+  SaveDialog.FileName:=ExtractFileName(Filename);
   if SaveDialog.Execute then
-    Filename := SaveDialog.FileName;
+    Filename:=SaveDialog.FileName;
 end;
 
 procedure TSaveImageDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TSaveImageDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 end.

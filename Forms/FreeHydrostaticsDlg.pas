@@ -1,5 +1,4 @@
 
-
 unit FreeHydrostaticsDlg;
 
 {$IFDEF FPC}
@@ -9,29 +8,16 @@ unit FreeHydrostaticsDlg;
 interface
 
 uses
-{$IFnDEF FPC}
-  Windows,
-  RichEdit,
-{$ELSE}
-  LCLIntf, LCLType, //
-  PrintersDlgs, FreePrinter,
-{$ENDIF}
-  //Messages,
-  SysUtils,
-  Classes,
-  Graphics,
+  LResources, Classes, SysUtils, LCLType,
+  PrintersDlgs, FreePrinter, Printers,
   Controls,
   Forms,
   Dialogs,
   StdCtrls,
   Buttons,
-  Printers,
   ExtCtrls;
 
-type
-
-  { TFreeHydrostaticsDialog }
-
+type                                                { TFreeHydrostaticsDialog }
   TFreeHydrostaticsDialog = class(TForm)
     Panel1: TPanel;
     Edit: TMemo;
@@ -49,17 +35,11 @@ type
   public    { Public declarations }
   end;
 
-var
-  FreeHydrostaticsDialog: TFreeHydrostaticsDialog;
+var FreeHydrostaticsDialog: TFreeHydrostaticsDialog;
 
 implementation
 
-{$IFnDEF FPC}
-  {$R *.dfm}
-
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 procedure TFreeHydrostaticsDialog.ButtonCloseClick(Sender: TObject);
 begin Close; end;
@@ -70,18 +50,15 @@ var
   Str: ansistring;
   I: integer;
 begin
-  if PrintDialog.Execute then
-  begin
-
+  if PrintDialog.Execute then begin
     AssignPrn(PrintText);
     Rewrite(PrintText);
-    Printer.Canvas.Font.Assign(Edit.Font);
-    for I := 1 to Edit.Lines.Count do
-    begin
-      Str := Edit.Lines[I - 1];
-      Writeln(PrintText, Str);
+    Printer.Canvas.Font.Assign( Edit.Font );
+    for I:=1 to Edit.Lines.Count do begin
+      Str:=Edit.Lines[I-1];
+      Writeln( PrintText,Str );
     end;
-    CloseFile(PrintText);
+    CloseFile( PrintText );
   end;
 end;
 
@@ -89,9 +66,7 @@ procedure TFreeHydrostaticsDialog.ButtonSaveClick(Sender: TObject);
 begin
   if SaveDialog.Execute then
     case SaveDialog.FilterIndex of
-      1: Edit.Lines.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.txt'));
-        // save as plain text
-
+      1: Edit.Lines.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.txt')); // save as plain text
     end;
 end;
 
@@ -100,11 +75,11 @@ var
   I: integer;
   S: string;
 begin
-  I := Edit.Lines.Count;
-  S := Edit.Lines.CommaText;                       // Place cursor at beginning
-  Edit.CaretPos := TPoint(Point(0, 0));
-  I := Edit.Lines.Count;
-  S := Edit.Lines.CommaText;                                                    //ShowTranslatedValues(Self);
+  I:=Edit.Lines.Count;
+  S:=Edit.Lines.CommaText;                       // Place cursor at beginning
+  Edit.CaretPos:=TPoint(Point(0, 0));
+  I:=Edit.Lines.Count;
+  S:=Edit.Lines.CommaText;                                                    //ShowTranslatedValues(Self);
 end;
 
 end.

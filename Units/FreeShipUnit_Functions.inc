@@ -44,16 +44,16 @@ const
 var
   i: integer;
 begin
-  Result := 0;
-  for i := 1 to 11 do
+  Result:=0;
+  for i:=1 to 11 do
     if Temper < Temp[i] then
     begin
-      Result := Visc[i - 1] + (Visc[i - 1] - Visc[i]) / (Temp[i - 1] - Temp[i]) *
+      Result:=Visc[i - 1] + (Visc[i - 1] - Visc[i]) / (Temp[i - 1] - Temp[i]) *
         (Temper - Temp[i - 1]);
       exit;
     end;
   if Units = fuImperial then
-    Result := Result / (Foot * Foot)// convert to imperial
+    Result:=Result / (Foot * Foot)// convert to imperial
   ;
 end;{FindWaterViscosity}
 
@@ -65,19 +65,19 @@ var
 
 begin
   if XX < Xs[0] then
-    YY := Ws[1] - (Xs[1] - XX) * (Ws[1] - Ws[0]) / (Xs[1] - Xs[0])
+    YY:=Ws[1] - (Xs[1] - XX) * (Ws[1] - Ws[0]) / (Xs[1] - Xs[0])
   else if XX > Xs[N - 1] then
   begin
-    N1 := N - 2;
-    YY := Ws[N1] - (Xs[N1] - XX) * (Ws[N1] - Ws[N - 1]) / (Xs[N1] - Xs[N - 1]);
+    N1:=N - 2;
+    YY:=Ws[N1] - (Xs[N1] - XX) * (Ws[N1] - Ws[N - 1]) / (Xs[N1] - Xs[N - 1]);
   end
   else
-    for I := 0 to N - 1 do
+    for I:=0 to N - 1 do
       if (XX > Xs[I]) then
       begin
-        K := I;
-        K1 := I + 1;
-        YY := (Ws[K1] - Ws[K]) / (Xs[K1] - Xs[K]) * (XX - Xs[K]) + Ws[K];
+        K:=I;
+        K1:=I + 1;
+        YY:=(Ws[K1] - Ws[K]) / (Xs[K1] - Xs[K]) * (XX - Xs[K]) + Ws[K];
       end;
 end;
 //       MessageDlg(FloatToStrF(xx,ffFixed,6,2)+FloatToStrF(yy,ffFixed,6,2),mtError,[mbOk],0);
@@ -92,29 +92,29 @@ label
   exlabel;
 
 begin
-  SFIN := 0;
-  J1 := 0;
-  J2 := 1;
-  J3 := 2;
-  N1 := N - 1;
+  SFIN:=0;
+  J1:=0;
+  J2:=1;
+  J3:=2;
+  N1:=N - 1;
   if N1 = 0 then
   begin
-    SFIN := Y[J1];
+    SFIN:=Y[J1];
     goto exlabel;
   end;
   if (X0 <= X[0]) and (N1 > 1) then
   begin
-    SFIN := Y[J1] + (Y[J2] - Y[J1]) * (X0 - X[J1]) / (X[J2] - X[J1]);
+    SFIN:=Y[J1] + (Y[J2] - Y[J1]) * (X0 - X[J1]) / (X[J2] - X[J1]);
     goto exlabel;
   end;
   if (X0 > X[N1]) then
   begin
-    SFIN := Y[N1] + (Y[N1] - Y[N1 - 1]) * (X0 - X[N1]) / (X[N1] - X[N1 - 1]);
+    SFIN:=Y[N1] + (Y[N1] - Y[N1 - 1]) * (X0 - X[N1]) / (X[N1] - X[N1 - 1]);
     goto exlabel;
   end;
   if (X0 <= X[J2]) and (N1 >= 2) then
   begin
-    SFIN := (X0 - X[J3]) / (X[J1] - X[J2]) * ((X0 - X[J2]) / (X[J1] - X[J3]) *
+    SFIN:=(X0 - X[J3]) / (X[J1] - X[J2]) * ((X0 - X[J2]) / (X[J1] - X[J3]) *
       Y[J1] - (X0 - X[J1]) / (X[J2] - X[J3]) * Y[J2]) + (X0 - X[J1]) *
       (X0 - X[J2]) * Y[J3] / ((X[J3] - X[J1]) * (X[J3] - X[J2]));
 
@@ -122,16 +122,16 @@ begin
   end;
   if (X0 > X[N1 - 1]) then
   begin
-    SFIN := (X0 - X[N1]) / (X[N1 - 2] - X[N1 - 1]) *
+    SFIN:=(X0 - X[N1]) / (X[N1 - 2] - X[N1 - 1]) *
       ((X0 - X[N1 - 1]) / (X[N1 - 2] - X[N1]) * Y[N1 - 2] - (X0 - X[N1 - 2]) *
       Y[N1 - 1] / (X[N1 - 1] - X[N1])) + (X0 - X[N1 - 2]) * (X0 - X[N1 - 1]) /
       (X[N1] - X[N1 - 2]) * Y[N1] / (X[N1] - X[N1 - 1]);
     goto exlabel;
   end;
-  N1 := N - 2;
-  for I := 1 to N1 do
+  N1:=N - 2;
+  for I:=1 to N1 do
     if (X0 > X[I - 1]) and (X0 <= X[I]) then
-      SFIN := 0.5 * ((X0 - X[I - 1]) * (X0 - X[I]) *
+      SFIN:=0.5 * ((X0 - X[I - 1]) * (X0 - X[I]) *
         (Y[I - 2] / ((X[I - 2] - X[I - 1]) * (X[I - 2] - X[I])) +
         Y[I + 1] / ((X[I + 1] - X[I - 1]) * (X[I + 1] - X[I]))) +
         (X0 - X[I]) * ((X0 - X[I - 2]) / (X[I - 1] - X[I - 2]) +
@@ -140,7 +140,7 @@ begin
         (X[I] - X[I - 2]) + (X0 - X[I + 1]) / (X[I] - X[I + 1])) * Y[I] /
         (X[I] - X[I - 1]));
   exlabel:
-    yy := SFIN;
+    yy:=SFIN;
 end;
 
 // My correction end

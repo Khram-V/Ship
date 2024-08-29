@@ -76,47 +76,47 @@ implementation
 
 function TFreeCylinderDialog.FGetStartPoint: T3DCoordinate;
 begin
-  Result := SetPoint(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
+  Result:=SetPoint(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
 end;
 
 procedure TFreeCylinderDialog.FSetStartPoint(val: T3DCoordinate);
 begin
-  StartPointX.Value := Val.X;
-  StartPointY.Value := Val.Y;
-  StartPointZ.Value := Val.Z;
+  StartPointX.Value:=Val.X;
+  StartPointY.Value:=Val.Y;
+  StartPointZ.Value:=Val.Z;
 end;
 
 function TFreeCylinderDialog.FGetEndPoint: T3DCoordinate;
 begin
-  Result := SetPoint(EndPointX.Value, EndPointY.Value, EndPointZ.Value);
+  Result:=SetPoint(EndPointX.Value, EndPointY.Value, EndPointZ.Value);
 end;
 
 procedure TFreeCylinderDialog.FSetEndPoint(val: T3DCoordinate);
 begin
-  EndPointX.Value := Val.X;
-  EndPointY.Value := Val.Y;
-  EndPointZ.Value := Val.Z;
+  EndPointX.Value:=Val.X;
+  EndPointY.Value:=Val.Y;
+  EndPointZ.Value:=Val.Z;
 end;
 
 function TFreeCylinderDialog.Execute(Str: string): boolean;
 begin
-  _label3.Caption := Str;
-  _label6.Caption := Str;
-  _label9.Caption := Str;                                                       //ShowTranslatedValues(Self);
+  _label3.Caption:=Str;
+  _label6.Caption:=Str;
+  _label9.Caption:=Str;                                                       //ShowTranslatedValues(Self);
   Showmodal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TFreeCylinderDialog.OKButtonClick(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TFreeCylinderDialog.CancelButtonClick(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 procedure TFreeCylinderDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TFreeCylinderDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 end.

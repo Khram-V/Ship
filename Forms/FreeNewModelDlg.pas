@@ -70,50 +70,50 @@ implementation
 {$R *.lfm}
 
 function TFreeNewModelDialog.FGetLength: single;
-begin Result := FloatSpinEdit1.Value; end;
+begin Result:=FloatSpinEdit1.Value; end;
 
 procedure TFreeNewModelDialog.FSetLength(Val: single);
-begin FloatSpinEdit1.Value := Val; end;
+begin FloatSpinEdit1.Value:=Val; end;
 
 function TFreeNewModelDialog.FGetBreadth: single;
-begin Result := FloatSpinEdit2.Value; end;
+begin Result:=FloatSpinEdit2.Value; end;
 
 procedure TFreeNewModelDialog.FSetBreadth(Val: single);
-begin FloatSpinEdit2.Value := Val; end;
+begin FloatSpinEdit2.Value:=Val; end;
 
 function TFreeNewModelDialog.FGetDraft: single;
 begin result:=FloatSpinEdit3.Value; end;
 
 procedure TFreeNewModelDialog.FSetDraft(Val: single);
-begin FloatSpinEdit3.Value := Val; end;
+begin FloatSpinEdit3.Value:=Val; end;
 
 function TFreeNewModelDialog.FGetNCols: integer;
-begin Result := SpinEdit1.Value; end;
+begin Result:=SpinEdit1.Value; end;
 
 procedure TFreeNewModelDialog.FSetNCols(Val: integer);
-begin if Val < 3 then Val := 3; SpinEdit1.Value := Val; end;
+begin if Val < 3 then Val:=3; SpinEdit1.Value:=Val; end;
 
 function TFreeNewModelDialog.FGetNRows: integer;
-begin Result := SpinEdit2.Value; end;
+begin Result:=SpinEdit2.Value; end;
 
 procedure TFreeNewModelDialog.FSetNRows(Val: integer);
-begin if Val < 3 then Val := 3; SpinEdit2.Value := Val; end;
+begin if Val < 3 then Val:=3; SpinEdit2.Value:=Val; end;
 
 function TFreeNewModelDialog.Execute: boolean;
 begin
-  NCols := NCols;
-  NRows := NRows;
-  Length := Length;
-  Breadth := Breadth;
-  Draft := Draft;                                                               //ShowTranslatedValues(Self);
+  NCols:=NCols;
+  NRows:=NRows;
+  Length:=Length;
+  Breadth:=Breadth;
+  Draft:=Draft;                                                               //ShowTranslatedValues(Self);
   Showmodal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TFreeNewModelDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TFreeNewModelDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 end.

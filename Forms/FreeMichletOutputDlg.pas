@@ -315,19 +315,19 @@ begin
     exit;
 
   // Determine lowest point of the hull
-  First := True;
-  for I := 1 to FFreeship.Surface.NumberOfLayers do
+  First:=True;
+  for I:=1 to FFreeship.Surface.NumberOfLayers do
   begin
-    Layer := FFreeship.Surface.Layer[I - 1];
+    Layer:=FFreeship.Surface.Layer[I - 1];
     if Layer.UseInHydrostatics then
-      for J := 1 to Layer.Count do
+      for J:=1 to Layer.Count do
       begin
-        Ctrlface := Layer.Items[J - 1];
+        Ctrlface:=Layer.Items[J - 1];
         if First then
         begin
-          Min := Ctrlface.Min;
-          Max := Ctrlface.Max;
-          First := False;
+          Min:=Ctrlface.Min;
+          Max:=Ctrlface.Max;
+          First:=False;
         end
         else
         begin
@@ -336,38 +336,38 @@ begin
         end;
       end;
   end;
-  WlHeight := Min.Z + Draft;
+  WlHeight:=Min.Z + Draft;
 
   // initialize offsets data
   Setlength(Offsets, NumberOfStations);
-  for I := 1 to NumberOfStations do
+  for I:=1 to NumberOfStations do
   begin
     Setlength(Offsets[I - 1], NumberOfWaterlines);
-    for J := 1 to NumberOfWaterlines do
-      Offsets[I - 1][J - 1] := 0.0;
+    for J:=1 to NumberOfWaterlines do
+      Offsets[I - 1][J - 1]:=0.0;
   end;
 
   // Determine min/max underwatercoordinates
-  First := True;
-  for I := 1 to FFreeship.Surface.NumberOfLayers do
+  First:=True;
+  for I:=1 to FFreeship.Surface.NumberOfLayers do
   begin
-    Layer := FFreeship.Surface.Layer[I - 1];
+    Layer:=FFreeship.Surface.Layer[I - 1];
     if Layer.UseInHydrostatics then
-      for J := 1 to Layer.Count do
+      for J:=1 to Layer.Count do
       begin
-        Ctrlface := Layer.Items[J - 1];
-        for k := 1 to CtrlFace.ChildCount do
+        Ctrlface:=Layer.Items[J - 1];
+        for k:=1 to CtrlFace.ChildCount do
         begin
-          face := Ctrlface.Child[K - 1];
-          for L := 1 to face.NumberOfpoints do
+          face:=Ctrlface.Child[K - 1];
+          for L:=1 to face.NumberOfpoints do
           begin
-            P := Face.Point[L - 1].Coordinate;
+            P:=Face.Point[L - 1].Coordinate;
             if P.Z <= WlHeight then
               if First then
               begin
-                Min := P;
-                Max := P;
-                First := False;
+                Min:=P;
+                Max:=P;
+                First:=False;
               end
               else
                 MinMax(P, Min, Max);
@@ -376,41 +376,41 @@ begin
       end;
   end;
   if RadioButton3.Checked then
-    Dist := 0.5 * Distance.Value
+    Dist:=0.5 * Distance.Value
   else
-    Dist := 0;
+    Dist:=0;
   // Build offsets table
-  for I := NumberOfStations - 1 downto 1 do
+  for I:=NumberOfStations - 1 downto 1 do
   begin
-    StSpacing := Min.X + ((I - 1) / (NumberOfStations - 1)) * (Max.X - Min.X);
-    Station := TFreeIntersection.Create(FFreeship);
-    Plane.a := 1.0;
-    Plane.b := 0.0;
-    Plane.c := 0.0;
-    Plane.d := -StSpacing;
-    Station.Plane := Plane;
+    StSpacing:=Min.X + ((I - 1) / (NumberOfStations - 1)) * (Max.X - Min.X);
+    Station:=TFreeIntersection.Create(FFreeship);
+    Plane.a:=1.0;
+    Plane.b:=0.0;
+    Plane.c:=0.0;
+    Plane.d:=-StSpacing;
+    Station.Plane:=Plane;
     Station.Rebuild;
-    Plane.a := 0.0;
-    Plane.b := 0.0;
-    Plane.c := 1.0;
-    for N := 1 to Station.Count do
+    Plane.a:=0.0;
+    Plane.b:=0.0;
+    Plane.c:=1.0;
+    for N:=1 to Station.Count do
     begin
-      Spline := Station.Items[N - 1];
-      for J := 1 to NumberOfWaterlines do
+      Spline:=Station.Items[N - 1];
+      for J:=1 to NumberOfWaterlines do
       begin
-        WlSpacing := Min.Z + (J - 1) / (NumberOfWaterlines - 1) * Draft;
-        Plane.d := -WlSpacing;
+        WlSpacing:=Min.Z + (J - 1) / (NumberOfWaterlines - 1) * Draft;
+        Plane.d:=-WlSpacing;
         if Spline.IntersectPlane(Plane, Int) then
-          for K := 1 to Int.NumberOfIntersections do
+          for K:=1 to Int.NumberOfIntersections do
             if Int.Points[K - 1].Y >= Dist - 1e-4 then
             begin
-              Offsets[NumberOfStations - I][J - 1] := Int.Points[K - 1].Y;
+              Offsets[NumberOfStations - I][J - 1]:=Int.Points[K - 1].Y;
               if RadioButton3.Checked then
               begin
                 Offsets[NumberOfStations - I][J - 1] :=
                   Offsets[NumberOfStations - I][J - 1] - Dist;
                 if Offsets[NumberOfStations - I][J - 1] < 0 then
-                  Offsets[NumberOfStations - I][J - 1] := 0;
+                  Offsets[NumberOfStations - I][J - 1]:=0;
               end;
             end;
       end;
@@ -418,217 +418,217 @@ begin
     FreeAndNil(Station);
   end;
   Viewport.ZoomExtents;
-  Hydrostat := TFreeHydrostaticCalc.Create(FFreeship);
-  Hydrostat.Draft := Draft;
+  Hydrostat:=TFreeHydrostaticCalc.Create(FFreeship);
+  Hydrostat.Draft:=Draft;
   Hydrostat.Calculate;
-  Volume := Hydrostat.Data.Volume;
+  Volume:=Hydrostat.Data.Volume;
   FreeAndNil(Hydrostat);
 
 end;{TFreeMichletOutputDialog.FBuildOffsets}
 
 function TFreeMichletOutputDialog.FGetDraft: single;
 begin
-  Result := Edit3.Value;
+  Result:=Edit3.Value;
 end;{TFreeMichletOutputDialog.FGetDraft}
 
 procedure TFreeMichletOutputDialog.FSetDraft(val: single);
 begin
   if Val < 0 then
-    Val := 0;
+    Val:=0;
   if Edit3.Value <> val then
-    Edit3.Value := val;
+    Edit3.Value:=val;
   FBuildOffsets;
 end;{TFreeMichletOutputDialog.FSetDraft}
 
 function TFreeMichletOutputDialog.FGetG: single;
 begin
-  Result := Edit6.Value;
+  Result:=Edit6.Value;
 end;{TFreeMichletOutputDialog.FGetG}
 
 procedure TFreeMichletOutputDialog.FSetG(val: single);
 begin
-  Edit6.Value := val;
+  Edit6.Value:=val;
 end;{TFreeMichletOutputDialog.FSetG}
 
 function TFreeMichletOutputDialog.FGetR0: single;
 begin
-  Result := Edit15.Value;
+  Result:=Edit15.Value;
 end;{TFreeMichletOutputDialog.FGetR0}
 
 procedure TFreeMichletOutputDialog.FSetR0(val: single);
 begin
   if Val < 1.5 * Length then
-    Val := 1.5 * Length;
-  Edit15.Value := val;
+    Val:=1.5 * Length;
+  Edit15.Value:=val;
 end;{TFreeMichletOutputDialog.FSetR0}
 
 function TFreeMichletOutputDialog.FGetX0: single;
 begin
-  Result := Edit20.Value;
+  Result:=Edit20.Value;
 end;{TFreeMichletOutputDialog.FGetX0}
 
 procedure TFreeMichletOutputDialog.FSetX0(val: single);
 begin
   {if Val < 1.5 * Length then
-    Val := 1.5 * Length;}
-  Edit20.Value := val;
-  Edit21.MinValue := val + 1.0;
+    Val:=1.5 * Length;}
+  Edit20.Value:=val;
+  Edit21.MinValue:=val + 1.0;
 end;{TFreeMichletOutputDialog.FSetX0}
 
 function TFreeMichletOutputDialog.FGetX1: single;
 begin
-  Result := Edit21.Value;
+  Result:=Edit21.Value;
 end;{TFreeMichletOutputDialog.FGetX1}
 
 procedure TFreeMichletOutputDialog.FSetX1(val: single);
 begin
   {if Val < 2.5 * Length then
-    Val := 2.5 * Length;}
-  Edit21.Value := val;
+    Val:=2.5 * Length;}
+  Edit21.Value:=val;
 end;{TFreeMichletOutputDialog.FSetX1}
 
 function TFreeMichletOutputDialog.FGetY0: single;
 begin
-  Result := Edit22.Value;
+  Result:=Edit22.Value;
 end;{TFreeMichletOutputDialog.FGetY0}
 
 procedure TFreeMichletOutputDialog.FSetY0(val: single);
 begin
-  Edit22.Value := Val;
-  Edit23.MinValue := Val + 1.0;
+  Edit22.Value:=Val;
+  Edit23.MinValue:=Val + 1.0;
 end;{TFreeMichletOutputDialog.FSetY0}
 
 function TFreeMichletOutputDialog.FGetY1: single;
 begin
-  Result := Edit23.Value;
+  Result:=Edit23.Value;
 end;{TFreeMichletOutputDialog.FGetY1}
 
 procedure TFreeMichletOutputDialog.FSetY1(val: single);
 begin
-  Edit23.Value := val;
+  Edit23.Value:=val;
 end;{TFreeMichletOutputDialog.FSetY1}
 
 function TFreeMichletOutputDialog.FGetBeta: single;
 begin
-  Result := Edit17.Value;
+  Result:=Edit17.Value;
 end;{TFreeMichletOutputDialog.FGetBeta}
 
 procedure TFreeMichletOutputDialog.FSetBeta(val: single);
 begin
   if Val < 10 then
-    Val := 10;
+    Val:=10;
   if Val > 90 then
-    Val := 90;
-  Edit17.Value := Val;
+    Val:=90;
+  Edit17.Value:=Val;
 end;{TFreeMichletOutputDialog.FSetBeta}
 
 function TFreeMichletOutputDialog.FGetR1: single;
 begin
-  Result := Edit16.Value;
+  Result:=Edit16.Value;
 end;{TFreeMichletOutputDialog.FGetR1}
 
 procedure TFreeMichletOutputDialog.FSetR1(val: single);
 begin
   if Val < 2.5 * Length then
-    Val := 2.5 * Length;
-  Edit16.Value := Val;
+    Val:=2.5 * Length;
+  Edit16.Value:=Val;
 end;{TFreeMichletOutputDialog.FSetR1}
 
 function TFreeMichletOutputDialog.FGetLength: single;
 begin
-  Result := edit4.Value;
+  Result:=edit4.Value;
 end;{TFreeMichletOutputDialog.FGetLength}
 
 procedure TFreeMichletOutputDialog.FSetLength(val: single);
 begin
   if val < 0 then
-    Val := 0;
-  Edit4.Value := val;
+    Val:=0;
+  Edit4.Value:=val;
 
-  Edit20.MinValue := val * 1.5;
-  Edit21.MinValue := max(val * 2.5, Edit20.Value);
+  Edit20.MinValue:=val * 1.5;
+  Edit21.MinValue:=max(val * 2.5, Edit20.Value);
 end;{TFreeMichletOutputDialog.FSetLength}
 
 function TFreeMichletOutputDialog.FGetWaterViscosity: single;
 begin
-  Result := Edit8.Value;
+  Result:=Edit8.Value;
 end;{TFreeMichletOutputDialog.FGetWaterViscosity}
 
 procedure TFreeMichletOutputDialog.FSetWaterViscosity(val: single);
 begin
-  Edit8.Value := Val;
+  Edit8.Value:=Val;
 end;{TFreeMichletOutputDialog.FSetWaterViscosity}
 
 function TFreeMichletOutputDialog.FGetWaterDensity: single;
 begin
-  Result := Edit7.Value;
+  Result:=Edit7.Value;
 end;{TFreeMichletOutputDialog.FGetWaterDensity}
 
 procedure TFreeMichletOutputDialog.FSetWaterDensity(val: single);
 begin
-  Edit7.Value := Val;
-  WaterViscosity := FindWaterViscosity(WaterDensity, fuMetric);
+  Edit7.Value:=Val;
+  WaterViscosity:=FindWaterViscosity(WaterDensity, fuMetric);
 end;{TFreeMichletOutputDialog.FSetWaterDensity}
 
 function TFreeMichletOutputDialog.FGetVolume: single;
 begin
-  Result := Edit5.Value;
+  Result:=Edit5.Value;
 end;{TFreeMichletOutputDialog.FGetVolume}
 
 procedure TFreeMichletOutputDialog.FSetVolume(val: single);
 begin
-  Edit5.Value := val;
+  Edit5.Value:=val;
 end;{TFreeMichletOutputDialog.FSetVolume}
 
 function TFreeMichletOutputDialog.FGetStartSpeed: single;
 begin
-  Result := Edit12.Value;
+  Result:=Edit12.Value;
 end;{TFreeMichletOutputDialog.FGetStartSpeed}
 
 procedure TFreeMichletOutputDialog.FSetStartSpeed(val: single);
 begin
-  Edit12.Value := Val;
+  Edit12.Value:=Val;
   // Skip translation
   if g * length <> 0 then
-    _Label25.Caption := 'Fn ' + FloatToStrF((Val * 1852 / 3600) / Sqrt(g * Length), ffFixed, 7, 3)
+    _Label25.Caption:='Fn ' + FloatToStrF((Val * 1852 / 3600) / Sqrt(g * Length), ffFixed, 7, 3)
   else
-    _Label25.Caption := '';
+    _Label25.Caption:='';
   if StartSpeed >= EndSpeed - 0.1 then
-    EndSpeed := StartSpeed + 0.1;
+    EndSpeed:=StartSpeed + 0.1;
   // End Skip translation
 end;{TFreeMichletOutputDialog.FSetStartSpeed}
 
 function TFreeMichletOutputDialog.FGetEndSpeed: single;
 begin
-  Result := Edit13.Value;
+  Result:=Edit13.Value;
 end;{TFreeMichletOutputDialog.FGetEndSpeed}
 
 procedure TFreeMichletOutputDialog.FSetEndSpeed(val: single);
 begin
   if Val < StartSpeed + 0.0194 then
-    Val := StartSpeed + 0.0194;
-  Edit13.Value := val;
+    Val:=StartSpeed + 0.0194;
+  Edit13.Value:=val;
   // Skip translation
   if g * length <> 0 then
-    _Label26.Caption := 'Fn ' + FloatToStrF((Val * 1852 / 3600) / Sqrt(g * Length), ffFixed, 7, 3)
+    _Label26.Caption:='Fn ' + FloatToStrF((Val * 1852 / 3600) / Sqrt(g * Length), ffFixed, 7, 3)
   else
-    _Label26.Caption := '';
+    _Label26.Caption:='';
   // End Skip translation
 end;{TFreeMichletOutputDialog.FSetEndSpeed}
 
 function TFreeMichletOutputDialog.FGetWaterDepth: single;
 begin
-  Result := Edit9.Value;
+  Result:=Edit9.Value;
 end;{TFreeMichletOutputDialog.FGetWaterDepth}
 
 procedure TFreeMichletOutputDialog.FSetWaterDepth(val: single);
 begin
-  Edit9.Value := val;
+  Edit9.Value:=val;
 end;{TFreeMichletOutputDialog.FSetWaterDepth}
 
 function TFreeMichletOutputDialog.FGetNumberOfStations: integer;
 begin
-  Result := Edit1.Value;
+  Result:=Edit1.Value;
 end;{TFreeMichletOutputDialog.FGetNumberOfStations}
 
 procedure TFreeMichletOutputDialog.FSetNumberOfStations(val: integer);
@@ -636,63 +636,63 @@ begin
   if not odd(val) then
     Inc(val);
   if Edit1.Value <> Val then
-    Edit1.Value := Val;
+    Edit1.Value:=Val;
   FBuildOffsets;
 end;{TFreeMichletOutputDialog.FSetNumberOfStations}
 
 function TFreeMichletOutputDialog.FGetNumberOfSpeeds: integer;
 begin
-  Result := Edit14.Value;
+  Result:=Edit14.Value;
 end;{TFreeMichletOutputDialog.FGetNumberOfSpeeds}
 
 procedure TFreeMichletOutputDialog.FSetNumberOfSpeeds(val: integer);
 begin
-  Edit14.Value := Val;
+  Edit14.Value:=Val;
 end;{TFreeMichletOutputDialog.FSetNumberOfSpeeds}
 
 function TFreeMichletOutputDialog.FGetNr: integer;
 begin
-  Result := Edit18.Value;
+  Result:=Edit18.Value;
 end;{TFreeMichletOutputDialog.FGetNr}
 
 procedure TFreeMichletOutputDialog.FSetNr(val: integer);
 begin
-  Edit18.Value := Val;
+  Edit18.Value:=Val;
 end;{TFreeMichletOutputDialog.FSetNr}
 
 function TFreeMichletOutputDialog.FGetNx: integer;
 begin
-  Result := Edit24.Value;
+  Result:=Edit24.Value;
 end;{TFreeMichletOutputDialog.FGetNx}
 
 procedure TFreeMichletOutputDialog.FSetNx(val: integer);
 begin
-  Edit24.Value := val;
+  Edit24.Value:=val;
 end;{TFreeMichletOutputDialog.FSetNx}
 
 function TFreeMichletOutputDialog.FGetNy: integer;
 begin
-  Result := Edit25.Value;
+  Result:=Edit25.Value;
 end;{TFreeMichletOutputDialog.FGetNy}
 
 procedure TFreeMichletOutputDialog.FSetNy(val: integer);
 begin
-  Edit25.Value := Val;
+  Edit25.Value:=Val;
 end;{TFreeMichletOutputDialog.FSetNy}
 
 function TFreeMichletOutputDialog.FGetNBeta: integer;
 begin
-  Result := Edit19.Value;
+  Result:=Edit19.Value;
 end;{TFreeMichletOutputDialog.FGetNBeta}
 
 procedure TFreeMichletOutputDialog.FSetNBeta(val: integer);
 begin
-  Edit19.Value := val;
+  Edit19.Value:=val;
 end;{TFreeMichletOutputDialog.FSetNBeta}
 
 function TFreeMichletOutputDialog.FGetNumberOfWaterlines: integer;
 begin
-  Result := Edit2.Value;
+  Result:=Edit2.Value;
 end;{TFreeMichletOutputDialog.FGetNumberOfWaterlines}
 
 procedure TFreeMichletOutputDialog.FSetNumberOfWaterlines(val: integer);
@@ -700,7 +700,7 @@ begin
   if not odd(val) then
     Inc(val);
   if Edit2.Value <> Val then
-    Edit2.Value := Val;
+    Edit2.Value:=Val;
   FBuildOffsets;
 end;{TFreeMichletOutputDialog.FSetNumberOfWaterlines}
 
@@ -708,36 +708,36 @@ procedure TFreeMichletOutputDialog.createViewport();
 begin
   if assigned(Viewport) then
     exit;
-  Viewport := TFreeViewport.Create(Self);
+  Viewport:=TFreeViewport.Create(Self);
   with Viewport do
   begin
-    Parent := Panel6;
-    Left := 1;
-    Height := 316;
-    Top := 1;
-    Width := 451;
-    Angle := 20;
-    Align := alClient;
-    BackgroundImage.Alpha := 255;
-    BackgroundImage.Owner := Viewport;
-    BackgroundImage.Quality := 100;
-    BackgroundImage.Scale := 1;
-    BackgroundImage.ShowInView := fvBodyplan;
-    BackgroundImage.Tolerance := 5;
-    BackgroundImage.Transparent := False;
-    BackgroundImage.TransparentColor := clBlack;
-    BackgroundImage.Visible := True;
-    CameraType := ftStandard;
-    Color := clBlack;
-    DoubleBuffer := True;
-    Elevation := 20;
-    HorScrollbar := ScrollBar1;
-    Margin := 0;
-    VertScrollbar := ScrollBar2;
-    ViewType := fvPerspective;
-    ViewportMode := vmWireFrame;
-    OnRedraw := ViewportRedraw;
-    OnRequestExtents := ViewportRequestExtents;
+    Parent:=Panel6;
+    Left:=1;
+    Height:=316;
+    Top:=1;
+    Width:=451;
+    Angle:=20;
+    Align:=alClient;
+    BackgroundImage.Alpha:=255;
+    BackgroundImage.Owner:=Viewport;
+    BackgroundImage.Quality:=100;
+    BackgroundImage.Scale:=1;
+    BackgroundImage.ShowInView:=fvBodyplan;
+    BackgroundImage.Tolerance:=5;
+    BackgroundImage.Transparent:=False;
+    BackgroundImage.TransparentColor:=clBlack;
+    BackgroundImage.Visible:=True;
+    CameraType:=ftStandard;
+    Color:=clBlack;
+    DoubleBuffer:=True;
+    Elevation:=20;
+    HorScrollbar:=ScrollBar1;
+    Margin:=0;
+    VertScrollbar:=ScrollBar2;
+    ViewType:=fvPerspective;
+    ViewportMode:=vmWireFrame;
+    OnRedraw:=ViewportRedraw;
+    OnRequestExtents:=ViewportRequestExtents;
   end;
 end;
 
@@ -745,27 +745,27 @@ end;
 function TFreeMichletOutputDialog.Execute(Freeship: TFreeShip): boolean;
 begin
   createViewport();
-  ScrollBar1.Position := Round(Viewport.Angle);
-  ScrollBar2.Position := Round(Viewport.Elevation);
-  _Label18.Caption := LengthStr(Freeship.ProjectSettings.ProjectUnits);
-  _Label19.Caption := LengthStr(Freeship.ProjectSettings.ProjectUnits);
-  _Label20.Caption := VolStr(Freeship.ProjectSettings.ProjectUnits);
-  _Label15.Caption := LengthStr(Freeship.ProjectSettings.ProjectUnits);
-  FFreeship := Freeship;
-  Viewport.Color := FFreeship.Preferences.ViewportColor;
+  ScrollBar1.Position:=Round(Viewport.Angle);
+  ScrollBar2.Position:=Round(Viewport.Elevation);
+  _Label18.Caption:=LengthStr(Freeship.ProjectSettings.ProjectUnits);
+  _Label19.Caption:=LengthStr(Freeship.ProjectSettings.ProjectUnits);
+  _Label20.Caption:=VolStr(Freeship.ProjectSettings.ProjectUnits);
+  _Label15.Caption:=LengthStr(Freeship.ProjectSettings.ProjectUnits);
+  FFreeship:=Freeship;
+  Viewport.Color:=FFreeship.Preferences.ViewportColor;
   FBuildOffsets;
   ShowModal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;{TFreeMichletOutputDialog.Execute}
 
 procedure TFreeMichletOutputDialog.OKbuttonClick(Sender: TObject);
 begin
-  ModalResult := mrOk;
+  ModalResult:=mrOk;
 end;{TFreeMichletOutputDialog.OKbuttonClick}
 
 procedure TFreeMichletOutputDialog.CancelButtonClick(Sender: TObject);
 begin
-  ModalResult := mrCancel;
+  ModalResult:=mrCancel;
 end;{TFreeMichletOutputDialog.CancelButtonClick}
 
 procedure TFreeMichletOutputDialog.ViewportRequestExtents(Sender: TObject;
@@ -775,21 +775,21 @@ var
 begin
   if FFreeship = nil then
     exit;
-  Min.X := 0.0;
-  Min.Y := 0.0;
-  Min.Z := 0.0;
-  Max.X := FFreeship.ProjectSettings.ProjectLength;
-  Max.Y := 0.0;
-  Max.Z := Draft;
-  for I := 1 to NumberOfStations do begin
-    if -Min.Y > Max.Y then Max.Y := -Min.Y
-                      else Min.Y := -MaX.Y;
-    for J := 1 to NumberOfWaterlines do
+  Min.X:=0.0;
+  Min.Y:=0.0;
+  Min.Z:=0.0;
+  Max.X:=FFreeship.ProjectSettings.ProjectLength;
+  Max.Y:=0.0;
+  Max.Z:=Draft;
+  for I:=1 to NumberOfStations do begin
+    if -Min.Y > Max.Y then Max.Y:=-Min.Y
+                      else Min.Y:=-MaX.Y;
+    for J:=1 to NumberOfWaterlines do
       if Offsets[I - 1][J - 1] > Max.Y then
-        Max.Y := Offsets[I - 1][J - 1];
+        Max.Y:=Offsets[I - 1][J - 1];
   end;
-  if Multihull then Max.Y := Max.Y + Distance.Value;
-//Min.Y := -Max.Y;
+  if Multihull then Max.Y:=Max.Y + Distance.Value;
+//Min.Y:=-Max.Y;
 end;{TFreeMichletOutputDialog.ViewportRequestExtents}
 
 procedure TFreeMichletOutputDialog.ViewportRedraw(Sender: TObject);
@@ -803,22 +803,22 @@ var
 begin
   if FFreeship = nil then
     exit;
-  P1.X := 0;
-  P1.Y := 0;
-  P1.Z := 0;
-  XSpacing := FFreeship.ProjectSettings.ProjectLength / (NumberOfStations - 1);
-  ZSpacing := Draft / (NumberOfWaterlines - 1);
-  Viewport.PenColor := FFreeship.Preferences.StationColor;
-  Dist := 0.5 * Distance.Value;
-  for I := 1 to NumberOfStations do
+  P1.X:=0;
+  P1.Y:=0;
+  P1.Z:=0;
+  XSpacing:=FFreeship.ProjectSettings.ProjectLength / (NumberOfStations - 1);
+  ZSpacing:=Draft / (NumberOfWaterlines - 1);
+  Viewport.PenColor:=FFreeship.Preferences.StationColor;
+  Dist:=0.5 * Distance.Value;
+  for I:=1 to NumberOfStations do
   begin
-    Tmp := Dist + 1e-4;
-    for J := 1 to NumberOfWaterlines do
+    Tmp:=Dist + 1e-4;
+    for J:=1 to NumberOfWaterlines do
     begin
-      P2.X := (I - 1) * XSpacing;
-      P2.Y := Dist + Offsets[NumberOfStations - I][J - 1];
-      P2.Z := (J - 1) * ZSpacing;
-      Pt := Viewport.Project(P2);
+      P2.X:=(I - 1) * XSpacing;
+      P2.Y:=Dist + Offsets[NumberOfStations - I][J - 1];
+      P2.Z:=(J - 1) * ZSpacing;
+      Pt:=Viewport.Project(P2);
       if J = 1 then
         Viewport.MoveTo(Pt.X, Pt.Y)
       else
@@ -826,15 +826,15 @@ begin
         Viewport.LineTo(Pt.X, Pt.Y)
       else
         Viewport.MoveTo(Pt.X, Pt.Y);
-      P1 := P2;
+      P1:=P2;
     end;
-    Tmp := Dist - 1e-4;
-    for J := 1 to NumberOfWaterlines do
+    Tmp:=Dist - 1e-4;
+    for J:=1 to NumberOfWaterlines do
     begin
-      P2.X := (I - 1) * XSpacing;
-      P2.Y := Dist - Offsets[NumberOfStations - I][J - 1];
-      P2.Z := (J - 1) * ZSpacing;
-      Pt := Viewport.Project(P2);
+      P2.X:=(I - 1) * XSpacing;
+      P2.Y:=Dist - Offsets[NumberOfStations - I][J - 1];
+      P2.Z:=(J - 1) * ZSpacing;
+      Pt:=Viewport.Project(P2);
       if J = 1 then
         Viewport.MoveTo(Pt.X, Pt.Y)
       else
@@ -842,17 +842,17 @@ begin
         Viewport.LineTo(Pt.X, Pt.Y)
       else
         Viewport.MoveTo(Pt.X, Pt.Y);
-      P1 := P2;
+      P1:=P2;
     end;
     if multihull then // draw second hull
     begin
-      Tmp := -Dist + 1e-4;
-      for J := 1 to NumberOfWaterlines do
+      Tmp:=-Dist + 1e-4;
+      for J:=1 to NumberOfWaterlines do
       begin
-        P2.X := (I - 1) * XSpacing;
-        P2.Y := -Dist + Offsets[NumberOfStations - I][J - 1];
-        P2.Z := (J - 1) * ZSpacing;
-        Pt := Viewport.Project(P2);
+        P2.X:=(I - 1) * XSpacing;
+        P2.Y:=-Dist + Offsets[NumberOfStations - I][J - 1];
+        P2.Z:=(J - 1) * ZSpacing;
+        Pt:=Viewport.Project(P2);
         if J = 1 then
           Viewport.MoveTo(Pt.X, Pt.Y)
         else
@@ -860,15 +860,15 @@ begin
           Viewport.LineTo(Pt.X, Pt.Y)
         else
           Viewport.MoveTo(Pt.X, Pt.Y);
-        P1 := P2;
+        P1:=P2;
       end;
-      Tmp := -Dist - 1e-4;
-      for J := 1 to NumberOfWaterlines do
+      Tmp:=-Dist - 1e-4;
+      for J:=1 to NumberOfWaterlines do
       begin
-        P2.X := (I - 1) * XSpacing;
-        P2.Y := -Dist - Offsets[NumberOfStations - I][J - 1];
-        P2.Z := (J - 1) * ZSpacing;
-        Pt := Viewport.Project(P2);
+        P2.X:=(I - 1) * XSpacing;
+        P2.Y:=-Dist - Offsets[NumberOfStations - I][J - 1];
+        P2.Z:=(J - 1) * ZSpacing;
+        Pt:=Viewport.Project(P2);
         if J = 1 then
           Viewport.MoveTo(Pt.X, Pt.Y)
         else
@@ -876,21 +876,21 @@ begin
           Viewport.LineTo(Pt.X, Pt.Y)
         else
           Viewport.MoveTo(Pt.X, Pt.Y);
-        P1 := P2;
+        P1:=P2;
       end;
     end;
   end;
 
-  Viewport.PenColor := FFreeship.Preferences.WaterlineColor;
-  for I := 1 to NumberOfWaterlines do
+  Viewport.PenColor:=FFreeship.Preferences.WaterlineColor;
+  for I:=1 to NumberOfWaterlines do
   begin
-    Tmp := Dist + 1e-4;
-    for J := 1 to NumberOfStations do
+    Tmp:=Dist + 1e-4;
+    for J:=1 to NumberOfStations do
     begin
-      P2.Z := (I - 1) * ZSpacing;
-      P2.Y := Dist + Offsets[NumberOfStations - J][I - 1];
-      P2.X := (J - 1) * XSpacing;
-      Pt := Viewport.Project(P2);
+      P2.Z:=(I - 1) * ZSpacing;
+      P2.Y:=Dist + Offsets[NumberOfStations - J][I - 1];
+      P2.X:=(J - 1) * XSpacing;
+      Pt:=Viewport.Project(P2);
       if J = 1 then
         Viewport.MoveTo(Pt.X, Pt.Y)
       else
@@ -898,15 +898,15 @@ begin
         Viewport.LineTo(Pt.X, Pt.Y)
       else
         Viewport.MoveTo(Pt.X, Pt.Y);
-      P1 := P2;
+      P1:=P2;
     end;
-    Tmp := Dist - 1e-4;
-    for J := 1 to NumberOfStations do
+    Tmp:=Dist - 1e-4;
+    for J:=1 to NumberOfStations do
     begin
-      P2.Z := (I - 1) * ZSpacing;
-      P2.Y := Dist - Offsets[NumberOfStations - J][I - 1];
-      P2.X := (J - 1) * XSpacing;
-      Pt := Viewport.Project(P2);
+      P2.Z:=(I - 1) * ZSpacing;
+      P2.Y:=Dist - Offsets[NumberOfStations - J][I - 1];
+      P2.X:=(J - 1) * XSpacing;
+      Pt:=Viewport.Project(P2);
       if J = 1 then
         Viewport.MoveTo(Pt.X, Pt.Y)
       else
@@ -914,17 +914,17 @@ begin
         Viewport.LineTo(Pt.X, Pt.Y)
       else
         Viewport.MoveTo(Pt.X, Pt.Y);
-      P1 := P2;
+      P1:=P2;
     end;
     if multihull then // draw second hull
     begin
-      Tmp := -Dist + 1e-4;
-      for J := 1 to NumberOfStations do
+      Tmp:=-Dist + 1e-4;
+      for J:=1 to NumberOfStations do
       begin
-        P2.Z := (I - 1) * ZSpacing;
-        P2.Y := -Dist + Offsets[NumberOfStations - J][I - 1];
-        P2.X := (J - 1) * XSpacing;
-        Pt := Viewport.Project(P2);
+        P2.Z:=(I - 1) * ZSpacing;
+        P2.Y:=-Dist + Offsets[NumberOfStations - J][I - 1];
+        P2.X:=(J - 1) * XSpacing;
+        Pt:=Viewport.Project(P2);
         if J = 1 then
           Viewport.MoveTo(Pt.X, Pt.Y)
         else
@@ -932,15 +932,15 @@ begin
           Viewport.LineTo(Pt.X, Pt.Y)
         else
           Viewport.MoveTo(Pt.X, Pt.Y);
-        P1 := P2;
+        P1:=P2;
       end;
-      Tmp := -Dist - 1e-4;
-      for J := 1 to NumberOfStations do
+      Tmp:=-Dist - 1e-4;
+      for J:=1 to NumberOfStations do
       begin
-        P2.Z := (I - 1) * ZSpacing;
-        P2.Y := -Dist - Offsets[NumberOfStations - J][I - 1];
-        P2.X := (J - 1) * XSpacing;
-        Pt := Viewport.Project(P2);
+        P2.Z:=(I - 1) * ZSpacing;
+        P2.Y:=-Dist - Offsets[NumberOfStations - J][I - 1];
+        P2.X:=(J - 1) * XSpacing;
+        Pt:=Viewport.Project(P2);
         if J = 1 then
           Viewport.MoveTo(Pt.X, Pt.Y)
         else
@@ -948,11 +948,11 @@ begin
           Viewport.LineTo(Pt.X, Pt.Y)
         else
           Viewport.MoveTo(Pt.X, Pt.Y);
-        P1 := P2;
+        P1:=P2;
       end;
     end;
   end;
-  Viewport.PenColor := FFreeship.Preferences.ButtockColor;
+  Viewport.PenColor:=FFreeship.Preferences.ButtockColor;
 end;{TFreeMichletOutputDialog.ViewportRedraw}
 
 procedure TFreeMichletOutputDialog.SaveToFile(Filename: string);
@@ -962,12 +962,12 @@ var
   I, J, N: integer;
   Str: ansistring;
 begin
-  HydObject := TFreeHydrostaticCalc.Create(FFreeship);
-  HydObject.Draft := Draft;
+  HydObject:=TFreeHydrostaticCalc.Create(FFreeship);
+  HydObject.Draft:=Draft;
   HydObject.Calculate;
   if FFreeship = nil then
     exit;
-  Strings := TStringList.Create;
+  Strings:=TStringList.Create;
   Strings.Add('# ======================================================================');
   Strings.Add('#');
   Strings.Add('# Project  : ' + FFreeship.ProjectSettings.ProjectName);
@@ -989,9 +989,9 @@ begin
   Strings.Add('0');
   Strings.Add('# Number of Hulls (1, 2,..., or 5)');
   if (Radiobutton2.Checked) or (Radiobutton3.Checked) then
-    NumberOfHulls := 2
+    NumberOfHulls:=2
   else
-    NumberOfHulls := 1;
+    NumberOfHulls:=1;
   Strings.Add(IntToStr(NumberOfHulls));
   Strings.Add('# ======================== PHYSICAL QUANTITIES =========================');
   Strings.Add('# Gravitational Acceleration (m/sec/sec) (min 9.6, max 9.9)');
@@ -1090,21 +1090,21 @@ begin
   Strings.Add('11');
   Strings.Add('# Nbz');
   Strings.Add('11');
-  for N := 1 to NumberOfHulls do
+  for N:=1 to NumberOfHulls do
   begin
     if N = 1 then
       Strings.Add('# ============================ FIRST HULL ==============================')
     else
       Strings.Add('# ============================ SECOND HULL =============================');
     Strings.Add('# Offsets');
-    for I := 1 to NumberOfStations do
+    for I:=1 to NumberOfStations do
     begin
-      Str := '';
-      for J := 1 to NumberOfWaterlines do
+      Str:='';
+      for J:=1 to NumberOfWaterlines do
       begin
-        Str := Str + FloatToStrF(Offsets[I - 1][J - 1], ffFixed, 7, 4);
+        Str:=Str + FloatToStrF(Offsets[I - 1][J - 1], ffFixed, 7, 4);
         if J < NumberOfWaterlines then
-          Str := Str + ',';
+          Str:=Str + ',';
       end;
       Strings.Add(Str);
     end;
@@ -1114,7 +1114,7 @@ begin
     else
       Strings.Add(FloatToStrF(Volume, ffFixed, 7, 4));
     Strings.Add('# Length (metres)');
-    Length := HydObject.Data.LengthWaterline;
+    Length:=HydObject.Data.LengthWaterline;
     Strings.Add(FloatToStrF(Length, ffFixed, 7, 4));
     Strings.Add('# Draft (metres)');
     Strings.Add(FloatToStrF(Draft, ffFixed, 7, 4));
@@ -1160,14 +1160,14 @@ end;{TFreeMichletOutputDialog.SaveToFile}
 
 function TFreeMichletOutputDialog.FGetMultihull: boolean;
 begin
-  Result := (Radiobutton2.Checked) or (Radiobutton3.Checked);
+  Result:=(Radiobutton2.Checked) or (Radiobutton3.Checked);
 end;{TFreeMichletOutputDialog.FGetMultihull}
 
 procedure TFreeMichletOutputDialog.RadioButton1Click(Sender: TObject);
 begin
-  Distance.Enabled := Multihull;
+  Distance.Enabled:=Multihull;
   if not Multihull then
-    Distance.Value := 0.0;
+    Distance.Value:=0.0;
   FBuildOffsets;
 end;{TFreeMichletOutputDialog.RadioButton1Click}
 
@@ -1179,126 +1179,126 @@ end;{TFreeMichletOutputDialog.DistanceAfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit1AfterSetValue(Sender: TObject);
 begin
-  NumberOfStations := Edit1.Value;
+  NumberOfStations:=Edit1.Value;
 end;{TFreeMichletOutputDialog.Edit1AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit2AfterSetValue(Sender: TObject);
 begin
-  NumberOfWaterLines := Edit2.Value;
+  NumberOfWaterLines:=Edit2.Value;
 end;{TFreeMichletOutputDialog.Edit2AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit3AfterSetValue(Sender: TObject);
 begin
-  Draft := Edit3.Value;
+  Draft:=Edit3.Value;
 end;{TFreeMichletOutputDialog.Edit3AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit7AfterSetValue(Sender: TObject);
 begin
-  WaterDensity := Edit7.Value;
+  WaterDensity:=Edit7.Value;
 end;{TFreeMichletOutputDialog.Edit7AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit4AfterSetValue(Sender: TObject);
 begin
-  Length := Edit4.Value;
-  Edit20.MinValue := 1.5 * Length;
-  Edit21.MinValue := 2.5 * Length;
+  Length:=Edit4.Value;
+  Edit20.MinValue:=1.5 * Length;
+  Edit21.MinValue:=2.5 * Length;
 end;{TFreeMichletOutputDialog.Edit4AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit5AfterSetValue(Sender: TObject);
 begin
-  Volume := Edit5.Value;
+  Volume:=Edit5.Value;
 end;{TFreeMichletOutputDialog.Edit5AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit6AfterSetValue(Sender: TObject);
 begin
-  G := Edit6.Value;
+  G:=Edit6.Value;
 end;{TFreeMichletOutputDialog.Edit6AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit9AfterSetValue(Sender: TObject);
 begin
-  WaterDepth := Edit9.Value;
+  WaterDepth:=Edit9.Value;
 end;{TFreeMichletOutputDialog.Edit9AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit12AfterSetValue(Sender: TObject);
 begin
-  StartSpeed := Edit12.Value;
-  Edit13.MinValue := StartSpeed;
+  StartSpeed:=Edit12.Value;
+  Edit13.MinValue:=StartSpeed;
 end;{TFreeMichletOutputDialog.Edit12AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit13AfterSetValue(Sender: TObject);
 begin
-  Endspeed := Edit13.Value;
+  Endspeed:=Edit13.Value;
 end;{TFreeMichletOutputDialog.Edit13AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit14AfterSetValue(Sender: TObject);
 begin
-  NumberOfSpeeds := Edit14.Value;
+  NumberOfSpeeds:=Edit14.Value;
 end;{TFreeMichletOutputDialog.Edit14AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit15AfterSetValue(Sender: TObject);
 begin
-  R0 := Edit15.Value;
-  Edit16.MinValue := R0 + 1.0;
+  R0:=Edit15.Value;
+  Edit16.MinValue:=R0 + 1.0;
 end;{TFreeMichletOutputDialog.Edit15AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit16AfterSetValue(Sender: TObject);
 begin
-  R1 := Edit16.Value;
+  R1:=Edit16.Value;
 end;{TFreeMichletOutputDialog.Edit16AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit17AfterSetValue(Sender: TObject);
 begin
-  Beta := Edit17.Value;
+  Beta:=Edit17.Value;
 end;{TFreeMichletOutputDialog.Edit17AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit18AfterSetValue(Sender: TObject);
 begin
-  Nr := Edit18.Value;
+  Nr:=Edit18.Value;
 end;{TFreeMichletOutputDialog.Edit18AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit19AfterSetValue(Sender: TObject);
 begin
-  NBeta := Edit19.Value;
+  NBeta:=Edit19.Value;
 end;{TFreeMichletOutputDialog.Edit19AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit20AfterSetValue(Sender: TObject);
 begin
-  X0 := Edit20.Value;
-  Edit21.MinValue := max(Length * 2.5, X0 + 1.0);
-  X1 := X1;
+  X0:=Edit20.Value;
+  Edit21.MinValue:=max(Length * 2.5, X0 + 1.0);
+  X1:=X1;
 end;{TFreeMichletOutputDialog.Edit20AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit21AfterSetValue(Sender: TObject);
 begin
-  X1 := Edit21.Value;
+  X1:=Edit21.Value;
 end;{TFreeMichletOutputDialog.Edit21AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit22AfterSetValue(Sender: TObject);
 begin
-  Y0 := Edit22.Value;
-  Edit23.MinValue := max(Length * 2.5, Y0 + 1.0);
-  Y1 := Y1;
+  Y0:=Edit22.Value;
+  Edit23.MinValue:=max(Length * 2.5, Y0 + 1.0);
+  Y1:=Y1;
 end;{TFreeMichletOutputDialog.Edit22AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit23AfterSetValue(Sender: TObject);
 begin
-  Y1 := Edit23.Value;
+  Y1:=Edit23.Value;
 end;{TFreeMichletOutputDialog.Edit23AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit24AfterSetValue(Sender: TObject);
 begin
-  Nx := Edit24.Value;
+  Nx:=Edit24.Value;
 end;{TFreeMichletOutputDialog.Edit24AfterSetValue}
 
 procedure TFreeMichletOutputDialog.Edit25AfterSetValue(Sender: TObject);
 begin
-  Ny := Edit25.Value;
+  Ny:=Edit25.Value;
 end;{TFreeMichletOutputDialog.Edit25AfterSetValue}
 
 procedure TFreeMichletOutputDialog.FormResize(Sender: TObject);
 begin
-  OKButton.Left := Panel1.Clientwidth - CancelButton.Width - OkButton.Width - 5;
-  CancelButton.Left := Panel1.Clientwidth - CancelButton.Width - 5;
+  OKButton.Left:=Panel1.Clientwidth - CancelButton.Width - OkButton.Width - 5;
+  CancelButton.Left:=Panel1.Clientwidth - CancelButton.Width - 5;
 end;{TFreeMichletOutputDialog.FormResize}
 
 end.

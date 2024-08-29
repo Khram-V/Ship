@@ -2,10 +2,10 @@
 
 { WinPanelManager }
 function WinPanelManager.GetMDIPanel(Index: Integer): TCustomMDIPanel;
-begin Result := TCustomMDIPanel(MList[Index]); end;
+begin Result:=TCustomMDIPanel(MList[Index]); end;
 
 //function WinPanelManager.GetPanelCount: integer;
-//begin result := MList.Count; end;
+//begin result:=MList.Count; end;
 
 constructor WinPanelManager.Create;
       begin inherited Create; MList:=TFPList.Create; end;
@@ -14,7 +14,7 @@ destructor WinPanelManager.Destroy;
      begin FreeAndNil( MList ); end; // inherited; end;
 
 //function WinPanelManager.IndexOf( APanel: TCustomMDIPanel ): integer;
-//begin result := MList.IndexOf( APanel ); end;
+//begin result:=MList.IndexOf( APanel ); end;
 
 procedure WinPanelManager.Add(APanel: TCustomMDIPanel);
 begin if APanel=nil then exit;
@@ -58,22 +58,22 @@ begin
   parent:=Panels[0].Parent; // we get just parent of first MDIPanel. Assumed that all have same parent.
   if parent=nil then exit;
 
- MCC := MList.Count; if MCC=0 then exit else M:=MCC;
+ MCC:=MList.Count; if MCC=0 then exit else M:=MCC;
 
-  MW := parent.ClientWidth;
-  MH := parent.ClientHeight;
+  MW:=parent.ClientWidth;
+  MH:=parent.ClientHeight;
 { if (parent is TScrollingWinControl) then begin
-    swc := TScrollingWinControl(parent);
+    swc:=TScrollingWinControl(parent);
     if (parent is TCustomForm) and TCustomForm(parent).AutoScroll then begin
       if ((swc.HorzScrollBar<>nil) and swc.HorzScrollBar.Visible)
       or ((swc.VertScrollBar<>nil) and swc.VertScrollBar.Visible) then begin
-          MH := MH - swc.HorzScrollBar.Size;
-          MW := MW - swc.VertScrollBar.Size; end;
+          MH:=MH - swc.HorzScrollBar.Size;
+          MW:=MW - swc.VertScrollBar.Size; end;
     end else begin
       if (swc.HorzScrollBar<>nil) and swc.HorzScrollBar.IsScrollBarVisible then
-          MH := MH - swc.HorzScrollBar.Size;
+          MH:=MH - swc.HorzScrollBar.Size;
       if (swc.VertScrollBar<>nil) and swc.VertScrollBar.IsScrollBarVisible then
-          MW := MW - swc.VertScrollBar.Size;
+          MW:=MW - swc.VertScrollBar.Size;
     end
   end;
 }

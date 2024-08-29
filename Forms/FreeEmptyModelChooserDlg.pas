@@ -51,7 +51,7 @@ implementation
 
 function TFreeEmptyModelChooserDialog.Execute(FileName:String):Boolean;
 begin
-   LabelFileName.Caption := FileName;                                           // ShowTranslatedValues(Self);
+   LabelFileName.Caption:=FileName;                                           // ShowTranslatedValues(Self);
    Showmodal;
    BringToFront;
    Result:=ModalResult=mrOk;

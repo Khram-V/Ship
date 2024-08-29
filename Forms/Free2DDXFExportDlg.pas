@@ -81,7 +81,7 @@ function BrowseForFolderCallBack(Wnd: HWND;
 begin
   if uMsg = BFFM_INITIALIZED then
     SendMessage(Wnd, BFFM_SETSELECTION, 1, integer(@lg_StartFolder[1]));
-  Result := 0;
+  Result:=0;
 end;
 
 ///////////////////////////////////////////////////////////////////
@@ -103,25 +103,25 @@ var browse_info: TBrowseInfo;
   I: integer;
 begin
   FillChar(browse_info, SizeOf(browse_info), #0);
-  lg_StartFolder := initialFolder;
-  browse_info.pszDisplayName := @folder[0];
-  browse_info.lpszTitle := browseTitle;
-  browse_info.ulFlags := BIF_RETURNONLYFSDIRS;
-  browse_info.hwndOwner := Application.Handle;
-  if initialFolder <> '' then browse_info.lpfn := BrowseForFolderCallBack;
-  find_context := SHBrowseForFolder(browse_info);
+  lg_StartFolder:=initialFolder;
+  browse_info.pszDisplayName:=@folder[0];
+  browse_info.lpszTitle:=browseTitle;
+  browse_info.ulFlags:=BIF_RETURNONLYFSDIRS;
+  browse_info.hwndOwner:=Application.Handle;
+  if initialFolder <> '' then browse_info.lpfn:=BrowseForFolderCallBack;
+  find_context:=SHBrowseForFolder(browse_info);
   if Assigned(find_context) then
   begin
     if SHGetPathFromIDList(find_context, folder) then
     begin
-      Result := '';
-      for I := 1 to length(Folder) do
-        if Folder[I - 1] = #0 then break else Result := Result + Folder[I - 1];
+      Result:='';
+      for I:=1 to length(Folder) do
+        if Folder[I - 1] = #0 then break else Result:=Result + Folder[I - 1];
     end
-    else Result := '';
+    else Result:='';
     GlobalFreePtr(find_context);
   end
-  else Result := '';
+  else Result:='';
 end;
 {$ENDIF}
 
@@ -129,37 +129,37 @@ function TDXFExport2DDialog.BrowseForFolder(const browseTitle: PAnsiChar;
   initialFolder: string = ''): string;
 var dlg: TSelectDirectoryDialog;
 begin
-  dlg := TSelectDirectoryDialog.Create(Self);
-  dlg.Title := browseTitle;
-  dlg.InitialDir := initialFolder;
+  dlg:=TSelectDirectoryDialog.Create(Self);
+  dlg.Title:=browseTitle;
+  dlg.InitialDir:=initialFolder;
   if dlg.Execute then
-    Result := dlg.FileName
+    Result:=dlg.FileName
   else
-    Result := '';
+    Result:='';
 end;
 
 function TDXFExport2DDialog.FGetExportDirectory: string;
-begin Result := Edit3.Text; end;
+begin Result:=Edit3.Text; end;
 
 procedure TDXFExport2DDialog.FSetExportDirectory(val: string);
-begin Edit3.Text := Val; end;
+begin Edit3.Text:=Val; end;
 
 function TDXFExport2DDialog.FGetSegmentLength: double;
-begin Result := Edit1.Value; end;
+begin Result:=Edit1.Value; end;
 
 procedure TDXFExport2DDialog.FSetSegmentLength(val: double);
-begin if Val < 1e-5 then Val := 1e-5; Edit1.Value := Val; end;
+begin if Val < 1e-5 then Val:=1e-5; Edit1.Value:=Val; end;
 
 procedure TDXFExport2DDialog.FSetUnits;
 var Str: string;
-begin Str := ComboBox1.Text + ' ';  //Label3.Caption:=Str;
+begin Str:=ComboBox1.Text + ' ';  //Label3.Caption:=Str;
 end;
 
 function TDXFExport2DDialog.Execute: boolean;
 begin
   FSetUnits;                                                                    //ShowTranslatedValues(Self);
   Showmodal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TDXFExport2DDialog.SpeedButton1Click(Sender: TObject);
@@ -167,14 +167,14 @@ var Tmp: string;
 begin
   Tmp:=BrowseForFolder( 'Choose a directory where you want to save the dxf files to: ', ExportDirectory);
   if DirectoryExistsUTF8(Tmp) { *Converted from DirectoryExists* }
-     then self.ExportDirectory := Tmp;
+     then self.ExportDirectory:=Tmp;
 end;
 
 procedure TDXFExport2DDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult := mrOk; end;
+begin ModalResult:=mrOk; end;
 
 procedure TDXFExport2DDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult := mrCancel; end;
+begin ModalResult:=mrCancel; end;
 
 procedure TDXFExport2DDialog.ComboBox1Change(Sender: TObject);
 begin FSetUnits; end;

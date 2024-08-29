@@ -122,41 +122,41 @@ procedure TFreeIntersectionDialog.UpdateMenu;
 begin
   if ShowStations.Checked then
   begin
-    AddOne.Hint := 'Add one station';
-    AddRange.Hint := 'Add multiple stations';
-    DeleteAll.Hint := 'Delete all stations';
-    DeleteAll.Enabled := FFreeship.NumberofStations > 0;
+    AddOne.Hint:='Add one station';
+    AddRange.Hint:='Add multiple stations';
+    DeleteAll.Hint:='Delete all stations';
+    DeleteAll.Enabled:=FFreeship.NumberofStations > 0;
   end
   else if ShowButtocks.Checked then
   begin
-    AddOne.Hint := 'Add one buttock';
-    AddRange.Hint := 'Add multiple buttocks';
-    DeleteAll.Hint := 'Delete all buttocks';
-    DeleteAll.Enabled := FFreeship.NumberofButtocks > 0;
+    AddOne.Hint:='Add one buttock';
+    AddRange.Hint:='Add multiple buttocks';
+    DeleteAll.Hint:='Delete all buttocks';
+    DeleteAll.Enabled:=FFreeship.NumberofButtocks > 0;
   end
   else if ShowWaterlines.Checked then
   begin
-    AddOne.Hint := 'Add one waterline';
-    AddRange.Hint := 'Add multiple waterlines';
-    DeleteAll.Hint := 'Delete all waterlines';
-    DeleteAll.Enabled := FFreeship.NumberofWaterlines > 0;
+    AddOne.Hint:='Add one waterline';
+    AddRange.Hint:='Add multiple waterlines';
+    DeleteAll.Hint:='Delete all waterlines';
+    DeleteAll.Enabled:=FFreeship.NumberofWaterlines > 0;
   end
   else if ShowDiagonals.Checked then
   begin
-    AddOne.Hint := 'Add one diagonal';
-    AddRange.Hint := 'Add multiple diagonals';
-    DeleteAll.Hint := 'Delete all diagonals';
-    DeleteAll.Enabled := FFreeship.NumberofDiagonals > 0;
+    AddOne.Hint:='Add one diagonal';
+    AddRange.Hint:='Add multiple diagonals';
+    DeleteAll.Hint:='Delete all diagonals';
+    DeleteAll.Enabled:=FFreeship.NumberofDiagonals > 0;
   end;
 end;
 
 procedure TFreeIntersectionDialog.UnselectAll;
 var I : integer;
 begin
-  for I:=0 to FFreeShip.NumberofStations-1 do FFreeship.Station[I].Selected := False;
-  for I:=0 to FFreeShip.NumberofButtocks-1 do FFreeship.Buttock[I].Selected := False;
-  for I:=0 to FFreeShip.NumberofWaterlines-1 do FFreeship.Waterline[I].Selected := False;
-  for I:=0 to FFreeShip.NumberofDiagonals-1 do FFreeship.Diagonal[I].Selected := False;
+  for I:=0 to FFreeShip.NumberofStations-1 do FFreeship.Station[I].Selected:=False;
+  for I:=0 to FFreeShip.NumberofButtocks-1 do FFreeship.Buttock[I].Selected:=False;
+  for I:=0 to FFreeShip.NumberofWaterlines-1 do FFreeship.Waterline[I].Selected:=False;
+  for I:=0 to FFreeShip.NumberofDiagonals-1 do FFreeship.Diagonal[I].Selected:=False;
 end;
 
 (*
@@ -165,43 +165,43 @@ var
   I, Ind: integer;
   PrevInd: integer;
 begin
-  PrevInd := ListBox.ItemIndex;
+  PrevInd:=ListBox.ItemIndex;
   ListBox.Items.BeginUpdate;
   try
     ListBox.Clear;
     if ShowStations.Checked then
-      for I := 1 to FFreeShip.NumberofStations do
+      for I:=1 to FFreeShip.NumberofStations do
       begin
-        Ind := ListBox.Items.AddObject(FFreeship.Station[I - 1].Description,
+        Ind:=ListBox.Items.AddObject(FFreeship.Station[I - 1].Description,
           FFreeship.Station[I - 1]);
-        ListBox.Checked[Ind] := FFreeship.Station[I - 1].ShowCurvature;
+        ListBox.Checked[Ind]:=FFreeship.Station[I - 1].ShowCurvature;
       end// Fill box with stations
     else if ShowButtocks.Checked then
-      for I := 1 to FFreeShip.NumberofButtocks do
+      for I:=1 to FFreeShip.NumberofButtocks do
       begin
-        Ind := ListBox.Items.AddObject(FFreeship.Buttock[I - 1].Description,
+        Ind:=ListBox.Items.AddObject(FFreeship.Buttock[I - 1].Description,
           FFreeship.Buttock[I - 1]);
-        ListBox.Checked[Ind] := FFreeship.Buttock[I - 1].ShowCurvature;
+        ListBox.Checked[Ind]:=FFreeship.Buttock[I - 1].ShowCurvature;
       end// Fill box with buttocks
     else if ShowWaterlines.Checked then
-      for I := 1 to FFreeShip.NumberofWaterlines do
+      for I:=1 to FFreeShip.NumberofWaterlines do
       begin
-        Ind := ListBox.Items.AddObject(FFreeship.Waterline[I - 1].Description,
+        Ind:=ListBox.Items.AddObject(FFreeship.Waterline[I - 1].Description,
           FFreeship.Waterline[I - 1]);
-        ListBox.Checked[Ind] := FFreeship.Waterline[I - 1].ShowCurvature;
+        ListBox.Checked[Ind]:=FFreeship.Waterline[I - 1].ShowCurvature;
       end// Fill box with waterlines
     else
-      for I := 1 to FFreeShip.NumberofDiagonals do
+      for I:=1 to FFreeShip.NumberofDiagonals do
       begin
-        Ind := ListBox.Items.AddObject(FFreeship.Diagonal[I - 1].Description,
+        Ind:=ListBox.Items.AddObject(FFreeship.Diagonal[I - 1].Description,
           FFreeship.Diagonal[I - 1]);
-        ListBox.Checked[Ind] := FFreeship.Diagonal[I - 1].ShowCurvature;
+        ListBox.Checked[Ind]:=FFreeship.Diagonal[I - 1].ShowCurvature;
       end// Fill box with diagonals
     ;
   finally
     ListBox.Items.EndUpdate;
     if (PrevInd >= 0) and (PrevInd < ListBox.Count) then
-      ListBox.ItemIndex := PrevInd;
+      ListBox.ItemIndex:=PrevInd;
   end;
 end;{TFreeIntersectionDialog.FillBox}
 *)
@@ -224,12 +224,12 @@ begin
 //try
     sgStations.Clear;
     sgStations.RowCount:=FFreeShip.NumberofStations+1;
-    for i := 0 to FFreeShip.NumberofStations-1 do begin
-      r := i+1;
-      sgStations.Cells[0,r] := IntToStr(r);
-      sgStations.Cells[1,r] := format('%7.4f',[FFreeship.Station[i].Distance]);
-      sgStations.Objects[1,r] := FFreeship.Station[i];
-      sgStations.Cells[2,r] := boolToCB(FFreeship.Station[i].ShowCurvature);
+    for i:=0 to FFreeShip.NumberofStations-1 do begin
+      r:=i+1;
+      sgStations.Cells[0,r]:=IntToStr(r);
+      sgStations.Cells[1,r]:=format('%7.4f',[FFreeship.Station[i].Distance]);
+      sgStations.Objects[1,r]:=FFreeship.Station[i];
+      sgStations.Cells[2,r]:=boolToCB(FFreeship.Station[i].ShowCurvature);
     end;
 //finally
     sgStations.EndUpdate;
@@ -243,12 +243,12 @@ begin
 //try
     sgButtocks.Clear;
     sgButtocks.RowCount:=FFreeShip.NumberOfButtocks+1;
-    for i := 0 to FFreeShip.NumberOfButtocks-1 do begin
-      r := i+1;
-      sgButtocks.Cells[0,r] := IntToStr(r);
-      sgButtocks.Cells[1,r] := format('%7.4f',[FFreeship.Buttock[i].Distance]);
-      sgButtocks.Objects[1,r] := FFreeship.Buttock[i];
-      sgButtocks.Cells[2,r] := boolToCB(FFreeship.Buttock[i].ShowCurvature);
+    for i:=0 to FFreeShip.NumberOfButtocks-1 do begin
+      r:=i+1;
+      sgButtocks.Cells[0,r]:=IntToStr(r);
+      sgButtocks.Cells[1,r]:=format('%7.4f',[FFreeship.Buttock[i].Distance]);
+      sgButtocks.Objects[1,r]:=FFreeship.Buttock[i];
+      sgButtocks.Cells[2,r]:=boolToCB(FFreeship.Buttock[i].ShowCurvature);
     end;
 //finally
     sgButtocks.EndUpdate;
@@ -262,12 +262,12 @@ begin
 //try
     sgWaterlines.Clear;
     sgWaterlines.RowCount:=FFreeShip.NumberOfWaterlines+1;
-    for i := 0 to FFreeShip.NumberOfWaterlines-1 do begin
-      r := i+1;
-      sgWaterlines.Cells[0,r] := IntToStr(r);
-      sgWaterlines.Cells[1,r] := format('%7.4f',[FFreeship.Waterline[i].Distance]);
-      sgWaterlines.Objects[1,r] := FFreeship.Waterline[i];
-      sgWaterlines.Cells[2,r] := boolToCB(FFreeship.Waterline[i].ShowCurvature);
+    for i:=0 to FFreeShip.NumberOfWaterlines-1 do begin
+      r:=i+1;
+      sgWaterlines.Cells[0,r]:=IntToStr(r);
+      sgWaterlines.Cells[1,r]:=format('%7.4f',[FFreeship.Waterline[i].Distance]);
+      sgWaterlines.Objects[1,r]:=FFreeship.Waterline[i];
+      sgWaterlines.Cells[2,r]:=boolToCB(FFreeship.Waterline[i].ShowCurvature);
     end;
 //finally
     sgWaterlines.EndUpdate;
@@ -281,12 +281,12 @@ begin
 //try
     sgDiagonals.Clear;
     sgDiagonals.RowCount:=FFreeShip.NumberOfDiagonals+1;
-    for i := 0 to FFreeShip.NumberOfDiagonals-1 do begin
-      r := i+1;
-      sgDiagonals.Cells[0,r] := IntToStr(r);
-      sgDiagonals.Cells[1,r] := format('%7.4f',[FFreeship.Diagonal[i].Distance]);
-      sgDiagonals.Objects[1,r] := FFreeship.Diagonal[i];
-      sgDiagonals.Cells[2,r] := boolToCB(FFreeship.Diagonal[i].ShowCurvature);
+    for i:=0 to FFreeShip.NumberOfDiagonals-1 do begin
+      r:=i+1;
+      sgDiagonals.Cells[0,r]:=IntToStr(r);
+      sgDiagonals.Cells[1,r]:=format('%7.4f',[FFreeship.Diagonal[i].Distance]);
+      sgDiagonals.Objects[1,r]:=FFreeship.Diagonal[i];
+      sgDiagonals.Cells[2,r]:=boolToCB(FFreeship.Diagonal[i].ShowCurvature);
     end;
 //finally
     sgDiagonals.EndUpdate;
@@ -295,7 +295,7 @@ end;
 
 procedure TFreeIntersectionDialog.Execute(FreeShip: TFreeShip);
 begin
-  FFreeShip := FreeShip;
+  FFreeShip:=FreeShip;
 //Freeship.Preferences.LoadImageListByActions(MenuImages, ActionList1);
 //FillBox;
   FillGrids;
@@ -312,10 +312,10 @@ var
 begin
   if Key = 46 then // DeleteAll the currently selected intersection
   begin
-    Index := ListBox.ItemIndex;
+    Index:=ListBox.ItemIndex;
     if Index <> -1 then
     begin
-      Intersection := Listbox.Items.Objects[Index] as TFreeIntersection;
+      Intersection:=Listbox.Items.Objects[Index] as TFreeIntersection;
       if Intersection <> nil then
       begin
         Intersection.Delete(True);
@@ -323,10 +323,10 @@ begin
         ListBox.Items.Delete(Index);
         Dec(Index);
         if Index < 0 then
-          Index := 0;
+          Index:=0;
         if Index > Listbox.Count - 1 then
-          Index := Listbox.Count - 1;
-        Listbox.ItemIndex := index;
+          Index:=Listbox.Count - 1;
+        Listbox.ItemIndex:=index;
         ListBox.Items.EndUpdate;
       end;
     end;
@@ -339,12 +339,12 @@ procedure TFreeIntersectionDialog.ListBoxSelectionChange(Sender: TObject;
   User: boolean);
 var Intersection: TFreeIntersection;  i, ii:integer;
 begin
-  ii := ListBox.ItemIndex;
+  ii:=ListBox.ItemIndex;
   UnselectAll;
   if ListBox.ItemIndex <> -1 then
   begin
-    Intersection := ListBox.Items.Objects[ListBox.ItemIndex] as TFreeIntersection;
-    Intersection.Selected := User;
+    Intersection:=ListBox.Items.Objects[ListBox.ItemIndex] as TFreeIntersection;
+    Intersection.Selected:=User;
   end;
   FFreeship.Redraw;
 end;
@@ -369,12 +369,12 @@ var
 begin
   if aCol = 2 then
   begin
-    grid := sender as TStringGrid;
-    Intersection := grid.Objects[1,aRow+1] as TFreeIntersection;
+    grid:=sender as TStringGrid;
+    Intersection:=grid.Objects[1,aRow+1] as TFreeIntersection;
     if Intersection.ShowCurvature <> (aState = cbChecked) then
     begin
-      Intersection.ShowCurvature := (aState = cbChecked);
-      FFreeShip.FileChanged := True;
+      Intersection.ShowCurvature:=(aState = cbChecked);
+      FFreeShip.FileChanged:=True;
       FFreeship.Redraw;
     end;
   end;
@@ -385,13 +385,13 @@ procedure TFreeIntersectionDialog.sgButtocksEditingDone(Sender: TObject);
 var f:TFloatType; intersection:TFreeIntersection; i:integer;
 begin
   try
-    intersection := sgButtocks.Objects[1, sgButtocks.Row] as TFreeIntersection;
-    f := StrToFloat(sgButtocks.Cells[1, sgButtocks.Row]);
-    intersection.Distance := f;
+    intersection:=sgButtocks.Objects[1, sgButtocks.Row] as TFreeIntersection;
+    f:=StrToFloat(sgButtocks.Cells[1, sgButtocks.Row]);
+    intersection.Distance:=f;
     intersection.Rebuild;
     FFreeship.Redraw;
   except
-    sgButtocks.Cells[sgButtocks.Col, sgButtocks.Row] := format('%7.4f',[intersection.Distance]);
+    sgButtocks.Cells[sgButtocks.Col, sgButtocks.Row]:=format('%7.4f',[intersection.Distance]);
   end;
 end;
 *)
@@ -400,13 +400,13 @@ procedure TFreeIntersectionDialog.sgDiagonalsEditingDone(Sender: TObject);
 var f:TFloatType; intersection:TFreeIntersection; i:integer;
 begin
   try
-    intersection := sgDiagonals.Objects[1, sgDiagonals.Row] as TFreeIntersection;
-    f := StrToFloat(sgDiagonals.Cells[1, sgDiagonals.Row]);
-    intersection.Distance := f;
+    intersection:=sgDiagonals.Objects[1, sgDiagonals.Row] as TFreeIntersection;
+    f:=StrToFloat(sgDiagonals.Cells[1, sgDiagonals.Row]);
+    intersection.Distance:=f;
     intersection.Rebuild;
     FFreeship.Redraw;
   except
-    sgDiagonals.Cells[sgDiagonals.Col, sgDiagonals.Row] := format('%7.4f',[intersection.Distance]);
+    sgDiagonals.Cells[sgDiagonals.Col, sgDiagonals.Row]:=format('%7.4f',[intersection.Distance]);
   end;
 end;
 *)
@@ -416,45 +416,45 @@ var S:String; F:TFloatType;
   intersection:TFreeIntersection; i:integer;
   grid: TStringGrid;
 begin
-  grid := Sender as TStringGrid;
+  grid:=Sender as TStringGrid;
   if grid.Col<>1 then exit;
   try
-    intersection := grid.Objects[1, grid.Row] as TFreeIntersection;
-    S := grid.Cells[1, grid.Row];
+    intersection:=grid.Objects[1, grid.Row] as TFreeIntersection;
+    S:=grid.Cells[1, grid.Row];
     if TryStrToFloat(S,F) then begin
-      intersection.Distance := f;
+      intersection.Distance:=f;
       intersection.Rebuild;
       FFreeship.Redraw;
     end else
-      sgStations.Cells[grid.Col, grid.Row] := format('%7.4f',[intersection.Distance]);
+      sgStations.Cells[grid.Col, grid.Row]:=format('%7.4f',[intersection.Distance]);
   except
-      sgStations.Cells[grid.Col, grid.Row] := format('%7.4f',[intersection.Distance]);
+      sgStations.Cells[grid.Col, grid.Row]:=format('%7.4f',[intersection.Distance]);
   end;
 end;
 
 procedure TFreeIntersectionDialog.OnGridGetEditMask(Sender: TObject; ACol,
   ARow: Integer; var Value: string);
 begin
-  //if aCol = 1 then Value := '#000.9999';
+  //if aCol = 1 then Value:='#000.9999';
 end;
 
 procedure TFreeIntersectionDialog.sgStationsSelectEditor(Sender: TObject; aCol,
   aRow: Integer; var Editor: TWinControl);
 begin
-  //if aCol = 1 then Editor := FloatSpinEdit1;
+  //if aCol = 1 then Editor:=FloatSpinEdit1;
 end;
 
 function TFreeIntersectionDialog.GridRowSelected(grid: TStringGrid; aRow: Integer):boolean;
   var Intersection: TFreeIntersection;  i, ii, r,r1,r2:integer;
 begin
-  Result := false;
+  Result:=false;
   for r:=0 to grid.SelectedRangeCount-1 do
   begin
     r1:=grid.SelectedRange[r].Top;
     r2:=grid.SelectedRange[r].Bottom;
     if (r1 <= aRow) and (aRow <= r2) then
     begin
-      Result := true;
+      Result:=true;
       exit;
     end;
   end;
@@ -465,7 +465,7 @@ procedure TFreeIntersectionDialog.OnGridSelection(Sender: TObject; aCol,
 var Intersection: TFreeIntersection;  i, ii, r,r1,r2:integer;
   grid: TStringGrid;
 begin
-  grid := Sender as TStringGrid;
+  grid:=Sender as TStringGrid;
   UnselectAll;
   for r:=0 to grid.SelectedRangeCount-1 do
   begin
@@ -473,8 +473,8 @@ begin
     r2:=grid.SelectedRange[r].Bottom;
     for i:=r1 to r2 do
     begin
-      intersection := grid.Objects[1, i] as TFreeIntersection;
-      intersection.Selected := true;
+      intersection:=grid.Objects[1, i] as TFreeIntersection;
+      intersection.Selected:=true;
     end;
   end;
   FFreeship.Redraw;
@@ -486,9 +486,9 @@ var  grid: TStringGrid;
   F: TFloatType;
 begin
   if aCol <> 1 then exit;
-  grid := Sender as TStringGrid;
-  if TryStrToFloat(NewValue, F) then NewValue := format('%7.4f',[F])
-                                else NewValue := OldValue;
+  grid:=Sender as TStringGrid;
+  if TryStrToFloat(NewValue, F) then NewValue:=format('%7.4f',[F])
+                                else NewValue:=OldValue;
 end;
 
 (*
@@ -496,13 +496,13 @@ procedure TFreeIntersectionDialog.sgWaterlinesEditingDone(Sender: TObject);
 var f:TFloatType; intersection:TFreeIntersection; i:integer;
 begin
   try
-    intersection := sgWaterlines.Objects[1, sgWaterlines.Row] as TFreeIntersection;
-    f := GetFloat(sgWaterlines.Cells[1, sgWaterlines.Row]);
-    intersection.Distance := f;
+    intersection:=sgWaterlines.Objects[1, sgWaterlines.Row] as TFreeIntersection;
+    f:=GetFloat(sgWaterlines.Cells[1, sgWaterlines.Row]);
+    intersection.Distance:=f;
     intersection.Rebuild;
     FFreeship.Redraw;
   except
-    sgWaterlines.Cells[sgWaterlines.Col, sgWaterlines.Row] := format('%7.4f',[intersection.Distance]);
+    sgWaterlines.Cells[sgWaterlines.Col, sgWaterlines.Row]:=format('%7.4f',[intersection.Distance]);
   end;
 end;
 
@@ -513,13 +513,13 @@ var
 begin
   if ListBox.ItemIndex <> -1 then
   begin
-    Intersection := ListBox.Items.Objects[ListBox.ItemIndex] as TFreeIntersection;
+    Intersection:=ListBox.Items.Objects[ListBox.ItemIndex] as TFreeIntersection;
     if Intersection.ShowCurvature <> ListBox.Checked[ListBox.ItemIndex] then
     begin
-      Intersection.ShowCurvature := ListBox.Checked[ListBox.ItemIndex];
-      FFreeShip.FileChanged := True;
+      Intersection.ShowCurvature:=ListBox.Checked[ListBox.ItemIndex];
+      FFreeShip.FileChanged:=True;
       if FFreeship.Visibility.ShowCurvature then
-        for I := 1 to FFreeship.NumberOfViewports do
+        for I:=1 to FFreeship.NumberOfViewports do
           if FFreeship.Viewport[I - 1].Viewportmode = vmWireframe then
             FFreeship.Viewport[I - 1].Refresh;
     end;
@@ -540,22 +540,22 @@ procedure TFreeIntersectionDialog.DeleteSelectedExecute(Sender: TObject);
 var I: integer;
 begin
   if ShowStations.Checked then begin
-    for I := FFreeShip.NumberofStations-1 downto 0 do
+    for I:=FFreeShip.NumberofStations-1 downto 0 do
       if GridRowSelected(sgStations,i+1) then
         FFreeship.Station[i].Delete(I = 0);
   end else
   if ShowButtocks.Checked then begin
-    for I := FFreeShip.NumberofButtocks-1 downto 0 do
+    for I:=FFreeShip.NumberofButtocks-1 downto 0 do
       if GridRowSelected(sgButtocks,i+1) then
          FFreeship.Buttock[i].Delete(I = 0);
   end
   else if ShowWaterlines.Checked then begin
-    for I := FFreeShip.NumberofWaterlines-1 downto 0 do
+    for I:=FFreeShip.NumberofWaterlines-1 downto 0 do
       if GridRowSelected(sgWaterlines,i+1) then
         FFreeship.Waterline[i].Delete(I = 0);
   end else
   if ShowDiagonals.Checked then begin
-    for I := FFreeShip.NumberofDiagonals downto 0 do
+    for I:=FFreeShip.NumberofDiagonals downto 0 do
       if GridRowSelected(sgDiagonals,i+1) then
         FFreeship.Diagonal[i].Delete(I = 0);
   end;
@@ -565,10 +565,10 @@ end;
 
 procedure TFreeIntersectionDialog.ShowStationsExecute(Sender: TObject);
 begin
-  ShowStations.Checked := True;
-  ShowButtocks.Checked := False;
-  ShowWaterlines.Checked := False;
-  ShowDiagonals.Checked := False;
+  ShowStations.Checked:=True;
+  ShowButtocks.Checked:=False;
+  ShowWaterlines.Checked:=False;
+  ShowDiagonals.Checked:=False;
   UpdateMenu;
   //FillBox;
   FillGrids;
@@ -577,10 +577,10 @@ end;
 
 procedure TFreeIntersectionDialog.ShowButtocksExecute(Sender: TObject);
 begin
-  ShowStations.Checked := False;
-  ShowButtocks.Checked := True;
-  ShowWaterlines.Checked := False;
-  ShowDiagonals.Checked := False;
+  ShowStations.Checked:=False;
+  ShowButtocks.Checked:=True;
+  ShowWaterlines.Checked:=False;
+  ShowDiagonals.Checked:=False;
   UpdateMenu;
   //FillBox;
   FillGrids;
@@ -589,10 +589,10 @@ end;
 
 procedure TFreeIntersectionDialog.ShowWaterlinesExecute(Sender: TObject);
 begin
-  ShowStations.Checked := False;
-  ShowButtocks.Checked := False;
-  ShowWaterlines.Checked := True;
-  ShowDiagonals.Checked := False;
+  ShowStations.Checked:=False;
+  ShowButtocks.Checked:=False;
+  ShowWaterlines.Checked:=True;
+  ShowDiagonals.Checked:=False;
   UpdateMenu;
   //FillBox;
   FillGrids;
@@ -601,10 +601,10 @@ end;
 
 procedure TFreeIntersectionDialog.ShowDiagonalsExecute(Sender: TObject);
 begin
-  ShowStations.Checked := False;
-  ShowButtocks.Checked := False;
-  ShowWaterlines.Checked := False;
-  ShowDiagonals.Checked := True;
+  ShowStations.Checked:=False;
+  ShowButtocks.Checked:=False;
+  ShowWaterlines.Checked:=False;
+  ShowDiagonals.Checked:=True;
   //FillBox;
   FillGrids;
   if sender<>PageControl1 then PageControl1.PageIndex:=3;
@@ -618,17 +618,17 @@ var
   Str: ansistring;
   Int: TFreeIntersection;
 begin
-  Str := '1.0';
+  Str:='1.0';
   if InputQuery( 'New intersection ', 'Distance: ', Str) then begin
-    Int := nil;
+    Int:=nil;
     if ShowStations.Checked then
-      Int := FFreeShip.Edit.Intersection_Add(fiStation, GetFloat(Str));
+      Int:=FFreeShip.Edit.Intersection_Add(fiStation, GetFloat(Str));
     if ShowButtocks.Checked then
-      Int := FFreeShip.Edit.Intersection_Add(fiButtock, GetFloat(Str));
+      Int:=FFreeShip.Edit.Intersection_Add(fiButtock, GetFloat(Str));
     if ShowWaterlines.Checked then
-      Int := FFreeShip.Edit.Intersection_Add(fiWaterline, GetFloat(Str));
+      Int:=FFreeShip.Edit.Intersection_Add(fiWaterline, GetFloat(Str));
     if ShowDiagonals.Checked then
-      Int := FFreeShip.Edit.Intersection_Add(fiDiagonal, GetFloat(Str));
+      Int:=FFreeShip.Edit.Intersection_Add(fiDiagonal, GetFloat(Str));
     if Int <> nil then
       //FillBox// Added and sorted, refill the list
       FillGrids;
@@ -645,39 +645,39 @@ var
   Step: TFloatType;
   Index: integer;
 begin
-  Str := '1.0';
+  Str:='1.0';
   if not InputQuery( 'New range of intersections ','Distance: ',Str) then exit;
-  Step := abs(GetFloat(Str));
+  Step:=abs(GetFloat(Str));
   if abs(Step) < 1e-3 then
     exit;
   FFreeShip.Extents(Min, Max);
   if ShowStations.Checked then begin
-    Start := Min.X;
-    Stop := Max.X;
+    Start:=Min.X;
+    Stop:=Max.X;
   end else
   if ShowButtocks.Checked then begin
-    Start := 0.0;
-    Stop := Max.Y;
+    Start:=0.0;
+    Stop:=Max.Y;
   end else
   if ShowWaterlines.Checked then begin
-    Start := Min.Z;
-    Stop := Max.Z;
+    Start:=Min.Z;
+    Stop:=Max.Z;
   end else
   if ShowDiagonals.Checked then begin
-    Start := Min.Z;
-    Stop := 2 * Max.Z;
+    Start:=Min.Z;
+    Stop:=2 * Max.Z;
   end else begin
-    Start := 0.0;
-    Stop := -0.01;
+    Start:=0.0;
+    Stop:=-0.01;
   end;
-  Index := Trunc((Start / step) - 2);
-  Start := Index * Step;
+  Index:=Trunc((Start / step) - 2);
+  Start:=Index * Step;
   while Start <= Stop do begin
     if ShowStations.Checked then FFreeShip.Edit.Intersection_Add(fiStation, Start);
     if ShowButtocks.Checked then FFreeShip.Edit.Intersection_Add(fiButtock, Start);
     if ShowWaterlines.Checked then FFreeShip.Edit.Intersection_Add(fiWaterline, Start);
     if ShowDiagonals.Checked then FFreeShip.Edit.Intersection_Add(fidiagonal, Start);
-    Start := Start + step;
+    Start:=Start + step;
   end;
   FFreeShip.Redraw;
   UpdateMenu;
@@ -690,22 +690,22 @@ var
 begin
   if ShowStations.Checked then
   begin
-    for I := FFreeShip.NumberofStations downto 1 do
+    for I:=FFreeShip.NumberofStations downto 1 do
       FFreeship.Station[I - 1].Delete(I = 1);
   end
   else if ShowButtocks.Checked then
   begin
-    for I := FFreeShip.NumberofButtocks downto 1 do
+    for I:=FFreeShip.NumberofButtocks downto 1 do
       FFreeship.Buttock[I - 1].Delete(I = 1);
   end
   else if ShowWaterlines.Checked then
   begin
-    for I := FFreeShip.NumberofWaterlines downto 1 do
+    for I:=FFreeShip.NumberofWaterlines downto 1 do
       FFreeship.Waterline[I - 1].Delete(I = 1);
   end
   else if ShowDiagonals.Checked then
   begin
-    for I := FFreeShip.NumberofDiagonals downto 1 do
+    for I:=FFreeShip.NumberofDiagonals downto 1 do
       FFreeship.Diagonal[I - 1].Delete(I = 1);
   end;
   FillGrids;

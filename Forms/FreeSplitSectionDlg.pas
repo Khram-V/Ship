@@ -65,14 +65,14 @@ implementation
 procedure TFreeSplitSectionDialog.fseSplitSectionLocationMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  FEditMode := emMouse;
+  FEditMode:=emMouse;
 end;
 
 procedure TFreeSplitSectionDialog.fseSplitSectionLocationMouseWheel(Sender: TObject;
   Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
   var Handled: Boolean);
 begin
-  FEditMode := emMouse;
+  FEditMode:=emMouse;
 end;
 
 procedure TFreeSplitSectionDialog.SpeedButton1Click(Sender: TObject);
@@ -99,7 +99,7 @@ procedure TFreeSplitSectionDialog.SetSplitSectionLocation(AValue: TFloatType);
 begin
   if FSplitSectionLocation = AValue then Exit;
   FSplitSectionLocation:=AValue;
-  //FEditMode := emProgrammatic;
+  //FEditMode:=emProgrammatic;
   fseSplitSectionLocation.Value:=AValue;
   tbSplitSectionLocation.Position:=round(AValue*1000);
   if assigned(OnSplitSectionLocationChange) then
@@ -109,9 +109,9 @@ end;
 // Lendth of ship, location of widest place, location of spaciest place
 procedure TFreeSplitSectionDialog.SetDimensions(aLength, aWidest, aSpaciest: TFloatType);
 begin
-  FLength := aLength;
-  FWidest := aWidest;
-  FSpaciest := aSpaciest;
+  FLength:=aLength;
+  FWidest:=aWidest;
+  FSpaciest:=aSpaciest;
   tbSplitSectionLocation.Min:=-1;
   tbSplitSectionLocation.Max:=round(aLength*1000+1);
   fseSplitSectionLocation.MinValue:=-0.001;
@@ -119,12 +119,12 @@ begin
 end;
 
 procedure TFreeSplitSectionDialog.fseSplitSectionLocationKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState );
-begin FEditMode := emKeyboard; end;
+begin FEditMode:=emKeyboard; end;
 
 procedure TFreeSplitSectionDialog.fseSplitSectionLocationEditingDone(Sender: TObject);
 begin
   //if abs(fseSplitSectionLocation.Value - AValue) < 1e-5 then exit;
-  FEditMode := emKeyboard;
+  FEditMode:=emKeyboard;
   SetSplitSectionLocation(fseSplitSectionLocation.Value);
 end;
 

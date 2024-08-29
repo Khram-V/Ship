@@ -63,7 +63,7 @@ begin
    Result:='';
    if CurrentLanguage<>nil then begin Section:='User';
       Val:=IntToStr( Index );
-      Key := Copy( Key,1,8-len(Val) )+Val;
+      Key:=Copy( Key,1,8-len(Val) )+Val;
       Str:=CurrentLanguage.readString( Section,Key,'' );
       if Str<>'' then Result:=Str;
    end;
@@ -95,7 +95,7 @@ begin
    with CurrentLanguage do begin
       Str:=readString( Component.Classname,Component.Classname+'.Caption','' );
       if Str<>'' then setProp( Component,'Caption',Str );
-      for i:=0 to Component.componentCount-1 do begin comp := Component.Components[i];
+      for i:=0 to Component.componentCount-1 do begin comp:=Component.Components[i];
          Str:=readString(Component.Classname,Component.Classname+'.'+comp.name+'.Caption','');
          if Str<>'' then setProp(comp,'Caption',Str);
          Str:=readString(Component.ClassName,Component.Classname+'.'+comp.name+'.Hint','');
@@ -112,8 +112,8 @@ begin
                if Str<>'' then TRadioGroup(comp).items[J]:=Str;
             end;
          end else if comp is TComboBox then begin
-            CmbBox := TComboBox(comp);
-            Index := CmbBox.ItemIndex;
+            CmbBox:=TComboBox(comp);
+            Index:=CmbBox.ItemIndex;
             CmbBox.Items.BeginUpdate;
             for J:=0 to CmbBox.items.count-1 do begin
               Tmp:=Component.classname+'.'+CmbBox.name+'.items['+IntToStr(J)+']';
@@ -132,7 +132,7 @@ end;
 { TLanguageIniFile }
 
 constructor TLanguageIniFile.Create(const AName: string; const AFileName: string);
-begin Name := aName; inherited Create( AFileName,false ); end;
+begin Name:=aName; inherited Create( AFileName,false ); end;
 
 initialization
    CurrentLanguage:=nil;

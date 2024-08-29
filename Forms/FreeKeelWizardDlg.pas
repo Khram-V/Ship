@@ -884,21 +884,21 @@ implementation
 
 function TFreeKeelWizardDialog.FGetCols: integer;
 begin
-  Result := Input6.Value;
+  Result:=Input6.Value;
 {  if Result < 3 then
   begin
-    Result := 3;
-    Input6.Value := 3;
+    Result:=3;
+    Input6.Value:=3;
   end; }
 end;{TFreeKeelWizardDialog.FGetCols}
 
 function TFreeKeelWizardDialog.FGetRows: integer;
 begin
-  Result := Input5.Value;
+  Result:=Input5.Value;
 {  if Result < 2 then
   begin
-    Result := 2;
-    Input5.Value := 2;
+    Result:=2;
+    Input5.Value:=2;
   end; }
 end;{TFreeKeelWizardDialog.FGetRows}
 
@@ -940,47 +940,47 @@ var
     Center: T3DCoordinate;
     ax, ay, az: TFloatType;
   begin
-    Center.X := (P1.X + P2.X + P3.X) / 3;
-    Center.Y := (P1.Y + P2.Y + P3.Y) / 3;
-    Center.Z := (P1.Z + P2.Z + P3.Z) / 3;
-    Vol := ((P1.z) * (P2.x * P3.y - P2.y * P3.x) + (P1.y) *
+    Center.X:=(P1.X + P2.X + P3.X) / 3;
+    Center.Y:=(P1.Y + P2.Y + P3.Y) / 3;
+    Center.Z:=(P1.Z + P2.Z + P3.Z) / 3;
+    Vol:=((P1.z) * (P2.x * P3.y - P2.y * P3.x) + (P1.y) *
       (P2.z * P3.x - P2.x * P3.z) + (P1.x) * (P2.y * P3.z - P2.z * P3.y)) / 6;
     if Vol <> 0 then
     begin
-      VolumeMoment.X := 0.75 * Center.X * Vol;
-      VolumeMoment.Y := 0.75 * Center.Y * Vol;
-      VolumeMoment.Z := 0.75 * Center.Z * Vol;
-      Volume := Volume + Vol;
-      VolCOG.X := VolCOG.X + VolumeMoment.X;
-      VolCOG.Y := VolCOG.Y + VolumeMoment.Y;
-      VolCOG.Z := VolCOG.Z + VolumeMoment.Z;
+      VolumeMoment.X:=0.75 * Center.X * Vol;
+      VolumeMoment.Y:=0.75 * Center.Y * Vol;
+      VolumeMoment.Z:=0.75 * Center.Z * Vol;
+      Volume:=Volume + Vol;
+      VolCOG.X:=VolCOG.X + VolumeMoment.X;
+      VolCOG.Y:=VolCOG.Y + VolumeMoment.Y;
+      VolCOG.Z:=VolCOG.Z + VolumeMoment.Z;
     end;
-    ax := 0.5 * ((P1.y - P2.y) * (P1.z + P2.z) + (P2.y - P3.y) * (P2.z + P3.z) +
+    ax:=0.5 * ((P1.y - P2.y) * (P1.z + P2.z) + (P2.y - P3.y) * (P2.z + P3.z) +
       (P3.y - P1.y) * (P3.z + P1.z));
-    ay := 0.5 * ((P1.z - P2.z) * (P1.x + P2.x) + (P2.z - P3.z) * (P2.x + P3.x) +
+    ay:=0.5 * ((P1.z - P2.z) * (P1.x + P2.x) + (P2.z - P3.z) * (P2.x + P3.x) +
       (P3.z - P1.z) * (P3.x + P1.x));
-    az := 0.5 * ((P1.x - P2.x) * (P1.y + P2.y) + (P2.x - P3.x) * (P2.y + P3.y) +
+    az:=0.5 * ((P1.x - P2.x) * (P1.y + P2.y) + (P2.x - P3.x) * (P2.y + P3.y) +
       (P3.x - P1.x) * (P3.y + P1.y));
-    WettedArea := WettedArea + Sqrt(ax * ax + ay * ay + az * az);
+    WettedArea:=WettedArea + Sqrt(ax * ax + ay * ay + az * az);
   end;{ProcessTriangle}
 
   // calculate volume, center of bouyancy and wetted area
   procedure calculate_volume_CB_WA;
   var i,j:integer;
   begin
-    for I := 2 to Rows do
-      for J := 2 to Cols do
+    for I:=2 to Rows do
+      for J:=2 to Cols do
       begin
-        P_1 := Mesh[I - 1, J - 1];
-        P_2 := Mesh[I - 1, J - 2];
-        P_3 := Mesh[I - 2, J - 2];
-        P_4 := Mesh[I - 2, J - 1];
+        P_1:=Mesh[I - 1, J - 1];
+        P_2:=Mesh[I - 1, J - 2];
+        P_3:=Mesh[I - 2, J - 2];
+        P_4:=Mesh[I - 2, J - 1];
         ProcessTriangle(P_1, P_2, P_3);
         ProcessTriangle(P_1, P_3, P_4);
-        P_1.Y := -P_1.Y;
-        P_2.Y := -P_2.Y;
-        P_3.Y := -P_3.Y;
-        P_4.Y := -P_4.Y;
+        P_1.Y:=-P_1.Y;
+        P_2.Y:=-P_2.Y;
+        P_3.Y:=-P_3.Y;
+        P_4.Y:=-P_4.Y;
         ProcessTriangle(P_1, P_4, P_3);
         ProcessTriangle(P_1, P_3, P_2);
       end;
@@ -993,27 +993,27 @@ var
   begin
     if Span <> 0.0 then
     begin
-      VPs := FProfile.GetValues;
+      VPs:=FProfile.GetValues;
 
-      P := VPs[length(VPs)-1];
-      P1.X := P.X;
-      P1.Y := P.Z;
+      P:=VPs[length(VPs)-1];
+      P1.X:=P.X;
+      P1.Y:=P.Z;
 
-      for I := 0 to length(VPs)-1 do
+      for I:=0 to length(VPs)-1 do
       begin
         P:=VPs[i];
-        P2.X := P.X;
-        P2.Y := P.Z;
-        DeltaA := 0.5 * (P2.X + P1.X) * (P2.Y - P1.Y);
-        Area := Area + DeltaA;
-        COG.X := COG.X + DeltaA * 0.25 * (P2.X + P1.X);
-        COG.Y := COG.Y + DeltaA * 0.50 * (P2.Y + P1.Y);
-        P1 := P2;
+        P2.X:=P.X;
+        P2.Y:=P.Z;
+        DeltaA:=0.5 * (P2.X + P1.X) * (P2.Y - P1.Y);
+        Area:=Area + DeltaA;
+        COG.X:=COG.X + DeltaA * 0.25 * (P2.X + P1.X);
+        COG.Y:=COG.Y + DeltaA * 0.50 * (P2.Y + P1.Y);
+        P1:=P2;
       end;
       if Area <> 0 then
       begin
-        COG.X := COG.X / Area;
-        COG.Y := COG.Y / Area;
+        COG.X:=COG.X / Area;
+        COG.Y:=COG.Y / Area;
       end;
     end;
   end;
@@ -1029,42 +1029,42 @@ var
     // NACA66 Cx0=(1.7417034*10^(-7))*x^3-(9.1730796*10^(-6))*x^2+(3.2534774*10^(-4))*x+0.0086993
     // Jouk   Cx0=(1.4320923*10^(-7))*x^3-(1.0331613*10^(-5))*x^2+(5.1494225*10^(-4))*x+0.0091237
     // Calculate lift and drag
-    x := 2 * MaxY / MeanChord * 100.;
+    x:=2 * MaxY / MeanChord * 100.;
     //        MessageDlg(FloatToStrF(x,ffFixed,6,3),mtInformation,[mbOk],0);
     //  Cx0:=0.01;
-    Cx0 := 1.4320923e-7 * x * x * x - 1.0331613e-5 * x * x + 5.1494225e-4 * x + 0.0091237;
+    Cx0:=1.4320923e-7 * x * x * x - 1.0331613e-5 * x * x + 5.1494225e-4 * x + 0.0091237;
     {    x:=2*MaxY/MeanChord;
       Re:=8e6;
       Cf0:=0.455/power(log10(Re),2.58);
       Cx0:=(2+2.4*x+17*x*x*x)*Cf0;  // по формуле Шольца
     }
     //        MessageDlg(FloatToStrF(Cx0,ffFixed,6,3),mtInformation,[mbOk],0);
-    x := EffAspectRatio;
+    x:=EffAspectRatio;
     if x >= 5 then
-      x := 5;
-    ak := -0.0842831 * x * x * x + 0.0460527 * x * x + 0.6917343 * x - 0.001387;
+      x:=5;
+    ak:=-0.0842831 * x * x * x + 0.0460527 * x * x + 0.6917343 * x - 0.001387;
     if x > 2 then
-      ak := -0.0842831 * 8 + 0.0460527 * 4 + 0.6917343 * 2 - 0.001387;
-    Cya := 0.0245642 * x * x * x - 0.3124828 * x * x + 1.773608 * x + 0.0041893;
-    ama := 1.8518519e-4 * x * x * x + 0.020754 * x * x - 0.300463 * x + 0.0023016;
-    for I := 0 to 60 do
+      ak:=-0.0842831 * 8 + 0.0460527 * 4 + 0.6917343 * 2 - 0.001387;
+    Cya:=0.0245642 * x * x * x - 0.3124828 * x * x + 1.773608 * x + 0.0041893;
+    ama:=1.8518519e-4 * x * x * x + 0.020754 * x * x - 0.300463 * x + 0.0023016;
+    for I:=0 to 60 do
     begin
-      Angle := I / 2;
-      sina := sin(Angle / 180. * Pi);
-      a := 1;
+      Angle:=I / 2;
+      sina:=sin(Angle / 180. * Pi);
+      a:=1;
       if sina < 0 then
-        a := -1;
-      cosa := cos(Angle / 180. * Pi);
-      Cx := Cx0 + ak * sina * sina + abs(2. * sina * sina * sina);
-      Cy := Cya * sina + 2 * sina * sina * cosa * a;
-      am := ama * sina - a * sina * sina;
-      Cn := Cy * cosa + Cx * sina;
-      Ct := Cx * cosa - Cy * sina;
+        a:=-1;
+      cosa:=cos(Angle / 180. * Pi);
+      Cx:=Cx0 + ak * sina * sina + abs(2. * sina * sina * sina);
+      Cy:=Cya * sina + 2 * sina * sina * cosa * a;
+      am:=ama * sina - a * sina * sina;
+      Cn:=Cy * cosa + Cx * sina;
+      Ct:=Cx * cosa - Cy * sina;
       if Cn = 0 then
-        C_d := 0.25
+        C_d:=0.25
       else
-        C_d := abs(am) / Cn;
-      Kach := Cy / Cx / 10.;
+        C_d:=abs(am) / Cn;
+      Kach:=Cy / Cx / 10.;
       Series1.AddXY(Angle, Cy);
       Series2.AddXY(Angle, Cx);
       Series3.AddXY(Angle, -am);
@@ -1078,19 +1078,19 @@ var
   begin
     if ComboBoxPlanformShape.ItemIndex = 0 then
     begin
-      Volume := 0;
+      Volume:=0;
       //       V=h/3*(S1+sqrt(S1*S2)+S2)
       //       S1=SUM[(r1+r2)*dh]*Input1.Value**2/2
       //       S2=SUM[(r1+r2)*dh]*Input2.Value**2/2
       //       V=SUM[(r1+r2)*dh]*Span/3/2*(Input1.Value**2+Input1.Value*Input2.Value+Input2.Value**2)
-      for I := 2 to Nh do
+      for I:=2 to Nh do
       begin
-        dh := (NacaProfiles[0, I] - NacaProfiles[0, I - 1]);
-        r1 := NacaProfiles[_ComboBox2.ItemIndex + 1, I];
-        r2 := NacaProfiles[_ComboBox2.ItemIndex + 1, I - 1];
-        Volume := Volume + dh * (r1 + r2);
+        dh:=(NacaProfiles[0, I] - NacaProfiles[0, I - 1]);
+        r1:=NacaProfiles[_ComboBox2.ItemIndex + 1, I];
+        r2:=NacaProfiles[_ComboBox2.ItemIndex + 1, I - 1];
+        Volume:=Volume + dh * (r1 + r2);
       end;
-      Volume := Volume * Span / 3 *
+      Volume:=Volume * Span / 3 *
         (RootChordLength * RootChordLength
         + RootChordLength * TipChordLength
         + TipChordLength * TipChordLength);
@@ -1098,73 +1098,73 @@ var
     if InputBulbShape.ItemIndex = 0 then
     begin
       if Combobox.ItemIndex = 0 then
-        GroupBox1.Caption := 'Keel‘s properties: '
+        GroupBox1.Caption:='Keel‘s properties: '
       else
-        GroupBox1.Caption := 'Rudder‘s properties: ';
-      Label18.Caption := Str[0];
-      Label20.Caption := Str[1];
-      Label22.Caption := Str[2];
-      Label7.Caption := str[3];
-      Label9.Caption := str[4];
-      Label11.Caption := str[5];
-      Label13.Caption := str[6];
-      Label15.Caption := str[7];
-      Label24.Caption := str[8];
-      _Label19.Caption := FloatToStrF(Volume, ffFixed, 7, 3) + #32 + VolStr(
+        GroupBox1.Caption:='Rudder‘s properties: ';
+      Label18.Caption:=Str[0];
+      Label20.Caption:=Str[1];
+      Label22.Caption:=Str[2];
+      Label7.Caption:=str[3];
+      Label9.Caption:=str[4];
+      Label11.Caption:=str[5];
+      Label13.Caption:=str[6];
+      Label15.Caption:=str[7];
+      Label24.Caption:=str[8];
+      _Label19.Caption:=FloatToStrF(Volume, ffFixed, 7, 3) + #32 + VolStr(
         FFreeship.ProjectSettings.ProjectUnits);
-      _Label21.Caption := FloatToStrF(VolCOG.X / Volume / 0.75, ffFixed, 7, 3) +
+      _Label21.Caption:=FloatToStrF(VolCOG.X / Volume / 0.75, ffFixed, 7, 3) +
         ', ' + FloatToStrF(VolCOG.Z / Volume * 2, ffFixed, 7, 3) + #32 + LengthStr(
         FFreeship.ProjectSettings.ProjectUnits);
-      _Label23.Caption := FloatToStrF(WettedArea, ffFixed, 7, 3) + #32 +
+      _Label23.Caption:=FloatToStrF(WettedArea, ffFixed, 7, 3) + #32 +
         AreaStr(FFreeship.ProjectSettings.ProjectUnits);
-      _Label8.Caption := FloatToStrF(Area, ffFixed, 7, 3) + #32 + AreaStr(
+      _Label8.Caption:=FloatToStrF(Area, ffFixed, 7, 3) + #32 + AreaStr(
         FFreeship.ProjectSettings.ProjectUnits);
-      _Label10.Caption := FloatToStrF(COG.X, ffFixed, 7, 3) + ', ' + FloatToStrF(
+      _Label10.Caption:=FloatToStrF(COG.X, ffFixed, 7, 3) + ', ' + FloatToStrF(
         COG.Y, ffFixed, 7, 3) + #32 + LengthStr(FFreeship.ProjectSettings.ProjectUnits);
-      _Label12.Caption := FloatToStrF(MeanChord, ffFixed, 7, 3) + #32 + LengthStr(
+      _Label12.Caption:=FloatToStrF(MeanChord, ffFixed, 7, 3) + #32 + LengthStr(
         FFreeship.ProjectSettings.ProjectUnits);
-      _Label14.Caption := FloatToStrF(GeomAspectRatio, ffFixed, 7, 3);
-      _Label16.Caption := FloatToStrF(EffAspectRatio, ffFixed, 7, 3);
-      _Label25.Caption := FloatToStrF(2 * MaxY, ffFixed, 7, 3) + #32 + LengthStr(
+      _Label14.Caption:=FloatToStrF(GeomAspectRatio, ffFixed, 7, 3);
+      _Label16.Caption:=FloatToStrF(EffAspectRatio, ffFixed, 7, 3);
+      _Label25.Caption:=FloatToStrF(2 * MaxY, ffFixed, 7, 3) + #32 + LengthStr(
         FFreeship.ProjectSettings.ProjectUnits);
     end
     else if Combobox.ItemIndex = 0
-      then GroupBox1.Caption := 'Keel‘s properties with bulb: '
-      else GroupBox1.Caption := 'Rudder‘s properties with bulb: ';
+      then GroupBox1.Caption:='Keel‘s properties with bulb: '
+      else GroupBox1.Caption:='Rudder‘s properties with bulb: ';
   end;
 
 begin
   FProfile.Clear;
-  FProfile.Color := clBlack;
-  //FProfile.Fragments := 500;  // MM: Spline.Fragments needs to be set after all points added
+  FProfile.Color:=clBlack;
+  //FProfile.Fragments:=500;  // MM: Spline.Fragments needs to be set after all points added
 
-  InputBulbPoints.Enabled := False;
+  InputBulbPoints.Enabled:=False;
 
-  _label8.Caption := '';
-  _label10.Caption := '';
-  _label12.Caption := '';
-  _label14.Caption := '';
-  _label16.Caption := '';
-  _label19.Caption := '';
-  _label21.Caption := '';
-  _label23.Caption := '';
-  _label25.Caption := '';
+  _label8.Caption:='';
+  _label10.Caption:='';
+  _label12.Caption:='';
+  _label14.Caption:='';
+  _label16.Caption:='';
+  _label19.Caption:='';
+  _label21.Caption:='';
+  _label23.Caption:='';
+  _label25.Caption:='';
   Series1.Clear;
   Series2.Clear;
   Series3.Clear;
   Series4.Clear;
   Series5.Clear;
 
-  VFactor := 1 + TrackBarVerticalCompression.Value / TrackBarVerticalCompression.MaxValue;
-  HFactor := 1 + TrackBarHorizontalCompression.Value / TrackBarHorizontalCompression.MaxValue;
+  VFactor:=1 + TrackBarVerticalCompression.Value / TrackBarVerticalCompression.MaxValue;
+  HFactor:=1 + TrackBarHorizontalCompression.Value / TrackBarHorizontalCompression.MaxValue;
 
-  RootChordLength := Input1.Value;
-  TipChordLength := Input2.Value;
-  DeltaTip := Input4.Value;
-  Span :=  Input3.Value;
-  VpointsNum := Input5.Value;
-  HpointsNum := Input6.Value;
-  VCompression := TrackBarVerticalCompression.Value;
+  RootChordLength:=Input1.Value;
+  TipChordLength:=Input2.Value;
+  DeltaTip:=Input4.Value;
+  Span:= Input3.Value;
+  VpointsNum:=Input5.Value;
+  HpointsNum:=Input6.Value;
+  VCompression:=TrackBarVerticalCompression.Value;
 
   if ComboBoxPlanformShape.ItemIndex = 0 then
   begin
@@ -1176,180 +1176,180 @@ begin
   end
   else
   begin
-    L := Span;
+    L:=Span;
     case ComboBoxPlanformShape.ItemIndex of
-      1: a := 0.50 * RootChordLength;
-      2: a := 0.0;
-      3: a := 0.75 * RootChordLength;
+      1: a:=0.50 * RootChordLength;
+      2: a:=0.0;
+      3: a:=0.75 * RootChordLength;
       else
-        a := 0.0;
+        a:=0.0;
     end;
-    b := RootChordLength - a;
+    b:=RootChordLength - a;
     if a > 0 then
-      for I := 0 to 10 do
+      for I:=0 to 10 do
       begin
-        Angle := I * 0.1 * 90;
-        P.X := a - a * cos(DegToRad(Angle));
-        P.Y := 0.0;
-        P.Z := -L * sin(DegToRad(Angle));
+        Angle:=I * 0.1 * 90;
+        P.X:=a - a * cos(DegToRad(Angle));
+        P.Y:=0.0;
+        P.Z:=-L * sin(DegToRad(Angle));
         FProfile.Add(P);
       end
     else
     begin
       FProfile.Add(SetPoint(0, 0, 0));
       FProfile.Add(SetPoint(0, 0, -L));
-      FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+      FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
     end;
-    for I := 1 to 10 do
+    for I:=1 to 10 do
     begin
-      Angle := I * 0.1 * 90;
-      P.X := a + b * sin(DegToRad(Angle));
-      P.Y := 0.0;
-      P.Z := -L * cos(DegToRad(Angle));
+      Angle:=I * 0.1 * 90;
+      P.X:=a + b * sin(DegToRad(Angle));
+      P.Y:=0.0;
+      P.Z:=-L * cos(DegToRad(Angle));
       FProfile.Add(P);
     end;
-    FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+    FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
     FProfile.Add(FProfile.Point[0]);
   end;
-  FProfile.Fragments := 50;
+  FProfile.Fragments:=50;
   //FProfile.Color:=clRed;
 
-  MaxY := 0;
+  MaxY:=0;
 
   if FProfile.NumberOfPoints > 1 then
   begin
     Setlength(Mesh, Rows);
-    for I := 0 to Rows-1 do
+    for I:=0 to Rows-1 do
       SetLength(Mesh[I], Cols);
 
     // Vertical spacing between rows increases from bottom to top
-    VertInd := 0;
-    for I := 0 to Rows - 1 do
+    VertInd:=0;
+    for I:=0 to Rows - 1 do
       if I = 0 then
-        VertInd := 0
+        VertInd:=0
       else
-        VertInd := VertInd + Power(VFactor, I - 1);
-    VertDist := Span / VertInd;
+        VertInd:=VertInd + Power(VFactor, I - 1);
+    VertDist:=Span / VertInd;
 
-    Index := _ComboBox2.ItemIndex + 1;
-    Plane.a := 0.0;
-    Plane.b := 0.0;
-    Plane.c := 1.0;
-    Spline := TFreeSpline.Create(FFreeship.Surface);
-    Spline.Capacity := Nh;
-    for I := 1 to Nh do
+    Index:=_ComboBox2.ItemIndex + 1;
+    Plane.a:=0.0;
+    Plane.b:=0.0;
+    Plane.c:=1.0;
+    Spline:=TFreeSpline.Create(FFreeship.Surface);
+    Spline.Capacity:=Nh;
+    for I:=1 to Nh do
     begin
-      P.X := NacaProfiles[0, I];
-      P.Y := NacaProfiles[Index, I];
-      P.Z := 0;
+      P.X:=NacaProfiles[0, I];
+      P.Y:=NacaProfiles[Index, I];
+      P.Z:=0;
       Spline.Add(P);
     end;
 
-    VertInd := 0;  HorInd := 0;
-    for I := 0 to Rows - 1 do
+    VertInd:=0;  HorInd:=0;
+    for I:=0 to Rows - 1 do
     begin
-      Chord := 0.0;
-      Start := 0.0;
+      Chord:=0.0;
+      Start:=0.0;
       if I = 0 then
-        VertInd := 0
+        VertInd:=0
       else
-        VertInd := VertInd + Power(VFactor, I - 1);
-      Height := Span - VertInd * VertDist;
+        VertInd:=VertInd + Power(VFactor, I - 1);
+      Height:=Span - VertInd * VertDist;
       if (I > 0) and (I < Rows - 1) then
       begin
-        Plane.d := Height;
+        Plane.d:=Height;
         if FProfile.IntersectPlane(Plane, Results) then
           if Results.NumberOfIntersections = 2 then
           begin
-            Chord := Results.Points[1].X - Results.Points[0].X;
-            Start := Results.Points[0].X;
+            Chord:=Results.Points[1].X - Results.Points[0].X;
+            Start:=Results.Points[0].X;
           end;
       end
       else if I = Rows - 1 then
       begin
-        Chord := RootChordLength;
-        Start := 0.0;
+        Chord:=RootChordLength;
+        Start:=0.0;
       end
       else
       if ComboBoxPlanformShape.ItemIndex = 0 then
       begin
-        Chord := TipChordLength;
-        Start := DeltaTip;
+        Chord:=TipChordLength;
+        Start:=DeltaTip;
       end
       else
       begin
-        chord := 0.0;
+        chord:=0.0;
         case ComboBoxPlanformShape.ItemIndex of
-          1: Start := 0.5 * RootChordLength;
-          3: start := 0.75 * RootChordLength;
+          1: Start:=0.5 * RootChordLength;
+          3: start:=0.75 * RootChordLength;
           else
-            Start := 0;
+            Start:=0;
         end;
       end;
 
 
       // Horizontal spacing between columns increases from front to aft
-      HorInd := 0;
-      for J := 0 to Cols - 1 do
+      HorInd:=0;
+      for J:=0 to Cols - 1 do
         if J = 0 then
-          HorInd := 0
+          HorInd:=0
         else
-          HorInd := HorInd + Power(HFactor, J - 1);
-      HorDist := RootChordLength / HorInd;
+          HorInd:=HorInd + Power(HFactor, J - 1);
+      HorDist:=RootChordLength / HorInd;
 
-      HorInd := 0; FullWidth:=0;
-      for J := 0 to Cols - 1 do
+      HorInd:=0; FullWidth:=0;
+      for J:=0 to Cols - 1 do
       begin
         if J = 0
-        then HorInd := 0
-        else HorInd := HorInd + Power(HFactor, J - 1);
-        FullWidth := HorInd * HorDist;
+        then HorInd:=0
+        else HorInd:=HorInd + Power(HFactor, J - 1);
+        FullWidth:=HorInd * HorDist;
       end;
 
-      HorInd := 0;
+      HorInd:=0;
       Spline.Fragments:=500;
-      for J := 0 to Cols - 1 do
+      for J:=0 to Cols - 1 do
       begin
         if J = 0 then
-          HorInd := 0
+          HorInd:=0
         else
-          HorInd := HorInd + Power(HFactor, J - 1);
-        //P := Spline.Value(J / (Cols - 1));
-        Width := HorInd * HorDist;
-        P := Spline.Value(Width / FullWidth);
-        Mesh[I, J].X := Start + Chord - P.X * Chord;
-        Mesh[I, J].Y := P.Y * Chord;
-        Mesh[I, J].Z := -Height;
+          HorInd:=HorInd + Power(HFactor, J - 1);
+        //P:=Spline.Value(J / (Cols - 1));
+        Width:=HorInd * HorDist;
+        P:=Spline.Value(Width / FullWidth);
+        Mesh[I, J].X:=Start + Chord - P.X * Chord;
+        Mesh[I, J].Y:=P.Y * Chord;
+        Mesh[I, J].Z:=-Height;
         if Mesh[I, J].Y > MaxY then
-          MaxY := Mesh[I, J].Y;
+          MaxY:=Mesh[I, J].Y;
       end;
     end;
     FreeAndNil(Spline);
 
-    Area := 0;
-    COG.X := 0.0;
-    COG.Y := 0.0;
-    MeanChord := 0.0;
-    Span := Span;
-    GeomAspectRatio := 0.0;
-    EffAspectRatio := 0.0;
-    Volume := 0.0;
+    Area:=0;
+    COG.X:=0.0;
+    COG.Y:=0.0;
+    MeanChord:=0.0;
+    Span:=Span;
+    GeomAspectRatio:=0.0;
+    EffAspectRatio:=0.0;
+    Volume:=0.0;
     Fillchar(VolCOG, SizeOf(T3DCoordinate), 0);
-    WettedArea := 0.0;
+    WettedArea:=0.0;
 
     calculate_volume_CB_WA; // calculate volume, center of bouyancy and wetted area
     calculate_planform_area; // Calculate planform area
 
     if Span <> 0 then
-      MeanChord := Area / Span;
+      MeanChord:=Area / Span;
     if MeanChord <> 0 then
-      GeomAspectRatio := Span / MeanChord;
+      GeomAspectRatio:=Span / MeanChord;
 
     //  begin Victor T correction
     if Combobox.ItemIndex = 0 then
-      EffAspectRatio := 2 * GeomAspectRatio
+      EffAspectRatio:=2 * GeomAspectRatio
     else
-      EffAspectRatio := GeomAspectRatio;
+      EffAspectRatio:=GeomAspectRatio;
 
     calculate_lift_and_drag;
     calculate_keel_volume;
@@ -1361,21 +1361,21 @@ begin
   begin
 
     if InputBulbShape.ItemIndex > 1 then
-      wng := InputBulbWingWidth.Value / 2
+      wng:=InputBulbWingWidth.Value / 2
     else
-      wng := 0;
+      wng:=0;
 
     // для кругового бульба
     {
     FProfile.add(FProfile.Point[FProfile.NumberOfPoints - 1]);
-    FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+    FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
     FProfile.add(FProfile.Point[FProfile.NumberOfPoints - 3]);
-    FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+    FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
     FProfile.Add(SetPoint(DeltaTip + TipChordLength, 0, -Span));
-    FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+    FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
     FProfile.Add(SetPoint(DeltaTip + TipChordLength + InputBulbDelta.Value -
       InputBulbLength.Value, 0, -Span));
-    FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;}
+    FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;}
 
     { for ref
     FProfile.Add(SetPoint(0, 0, 0));
@@ -1385,7 +1385,7 @@ begin
     FProfile.Add(FProfile.Point[0]); }
 
     //FProfile.Color:=clRed;
-    N := FProfile.NumberOfPoints;
+    N:=FProfile.NumberOfPoints;
 
     FProfile.addKnuckle(FProfile.Point[N - 1]);
     FProfile.addKnuckle(FProfile.Point[N - 2]);
@@ -1398,159 +1398,159 @@ begin
     if (InputBulbShape.ItemIndex = 1) or (InputBulbShape.ItemIndex = 3) then
     begin
 
-      for I := Nh downto 1 do
+      for I:=Nh downto 1 do
       begin
-        P.X := TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
+        P.X:=TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
           InputBulbLength.Value;
-        P.Y := -NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value / 1.4142 - wng;
-        P.Z := -Span;
+        P.Y:=-NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value / 1.4142 - wng;
+        P.Z:=-Span;
         FProfile.Add(P);
         if I > Nh - 2 then
-          FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+          FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
       end;
 
-      for I := 1 to Nh do
+      for I:=1 to Nh do
       begin
-        P.X := TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
+        P.X:=TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
           InputBulbLength.Value;
-        P.Y := NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value / 1.4142 + wng;
-        P.Z := -Span;
+        P.Y:=NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value / 1.4142 + wng;
+        P.Z:=-Span;
         FProfile.Add(P);
       end;
-      FProfile.Knuckle[FProfile.NumberOfPoints - 2] := True;
-      FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+      FProfile.Knuckle[FProfile.NumberOfPoints - 2]:=True;
+      FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
       FProfile.Add(SetPoint(DeltaTip + TipChordLength + InputBulbDelta.Value -
         InputBulbLength.Value, 0, -Span));
-      FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+      FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
     end;
 
-    for I := Nh downto 1 do
+    for I:=Nh downto 1 do
     begin
-      P.X := TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
+      P.X:=TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
         InputBulbLength.Value;
-      P.Y := 0;
-      P.Z := -Span - NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
+      P.Y:=0;
+      P.Z:=-Span - NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
         InputBulbLength.Value * 14.14 / (20 + TrackBar2.Position);
       FProfile.Add(P);
     end;
-    for I := 1 to Nh do
+    for I:=1 to Nh do
     begin
-      P.X := TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
+      P.X:=TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
         InputBulbLength.Value;
-      P.Y := 0;
-      P.Z := -Span + NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
+      P.Y:=0;
+      P.Z:=-Span + NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
         InputBulbLength.Value * 14.14 / (20 + TrackBar2.Position);
       FProfile.Add(P);
     end;
     FProfile.Add(SetPoint(DeltaTip + TipChordLength + InputBulbDelta.Value -
       InputBulbLength.Value, 0, -Span));
-    FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+    FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
 
 
     if InputBulbShape.ItemIndex > 1 then
     begin
-      for I := Nh downto 1 do
+      for I:=Nh downto 1 do
       begin
-        P.X := TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
+        P.X:=TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
           InputBulbLength.Value;
-        P.Y := -wng;
-        P.Z := -Span - NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
+        P.Y:=-wng;
+        P.Z:=-Span - NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
           InputBulbLength.Value * 14.14 / (20 + TrackBar2.Position);
         FProfile.Add(P);
         if I > Nh - 2 then
-          FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+          FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
       end;
-      for I := 1 to Nh do
+      for I:=1 to Nh do
       begin
-        P.X := TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
+        P.X:=TipChordLength + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
           InputBulbLength.Value;
-        P.Y := -wng;
-        P.Z := -Span + NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
+        P.Y:=-wng;
+        P.Z:=-Span + NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
           InputBulbLength.Value * 14.14 / (20 + TrackBar2.Position);
         FProfile.Add(P);
       end;
-      FProfile.Knuckle[FProfile.NumberOfPoints - 2] := True;
-      FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+      FProfile.Knuckle[FProfile.NumberOfPoints - 2]:=True;
+      FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
       FProfile.Add(SetPoint(DeltaTip + Input2.Value + InputBulbDelta.Value -
         InputBulbLength.Value, 0, -Span));
-      FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
-      for I := Nh downto 1 do
+      FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
+      for I:=Nh downto 1 do
       begin
-        P.X := Input2.Value + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
+        P.X:=Input2.Value + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
           InputBulbLength.Value;
-        P.Y := wng;
-        P.Z := -Span - NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
+        P.Y:=wng;
+        P.Z:=-Span - NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
           InputBulbLength.Value * 14.14 / (20 + TrackBar2.Position);
         FProfile.Add(P);
         if I > Nh - 2 then
-          FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+          FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
       end;
-      for I := 1 to Nh do
+      for I:=1 to Nh do
       begin
-        P.X := Input2.Value + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
+        P.X:=Input2.Value + DeltaTip + InputBulbDelta.Value - NacaProfiles[0, I] *
           InputBulbLength.Value;
-        P.Y := wng;
-        P.Z := -Span + NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
+        P.Y:=wng;
+        P.Z:=-Span + NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
           InputBulbLength.Value * 14.14 / (20 + TrackBar2.Position);
         FProfile.Add(P);
       end;
-      FProfile.Knuckle[FProfile.NumberOfPoints - 2] := True;
-      FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+      FProfile.Knuckle[FProfile.NumberOfPoints - 2]:=True;
+      FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
       FProfile.Add(SetPoint(DeltaTip + Input2.Value + InputBulbDelta.Value -
         InputBulbLength.Value, 0, -Span));
-      FProfile.Knuckle[FProfile.NumberOfPoints - 1] := True;
+      FProfile.Knuckle[FProfile.NumberOfPoints - 1]:=True;
     end;
-    FProfile.Fragments := 500;
+    FProfile.Fragments:=500;
 
 
     // begin calculate bulbous volume
-    Volbulb := 0;
+    Volbulb:=0;
     //  расчет объема бульба
     if (InputBulbShape.ItemIndex = 1) or (InputBulbShape.ItemIndex = 3) then
     begin
-      for I := 2 to Nh do
+      for I:=2 to Nh do
       begin
-        dh := (NacaProfiles[0, I] - NacaProfiles[0, I - 1]) * InputBulbLength.Value;
+        dh:=(NacaProfiles[0, I] - NacaProfiles[0, I - 1]) * InputBulbLength.Value;
         ;
-        r1 := NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value;
-        r2 := NacaProfiles[InputBulbWing.ItemIndex + 1, I - 1] * InputBulbLength.Value;
-        Volbulb := Volbulb + dh * (r1 * r1 + r1 * r2 + r2 * r2);
+        r1:=NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value;
+        r2:=NacaProfiles[InputBulbWing.ItemIndex + 1, I - 1] * InputBulbLength.Value;
+        Volbulb:=Volbulb + dh * (r1 * r1 + r1 * r2 + r2 * r2);
         //         P.Z:=NacaProfiles[InputBulbWing.ItemIndex+1,I]*InputBulbLength.Value*20/(20+TrackBar2.Position);
       end;
-      Volbulb := Volbulb * 3.1415926 / 3;
-      Volbulb := Volbulb * (20 - Trackbar2.Position / 2) / Trackbar2.Max * 2;
+      Volbulb:=Volbulb * 3.1415926 / 3;
+      Volbulb:=Volbulb * (20 - Trackbar2.Position / 2) / Trackbar2.Max * 2;
     end;
 
     //  расчет объема горизонтального крыла
-    Volwing := 0;
+    Volwing:=0;
     if wng <> 0 then
     begin
-      for I := 2 to Nh do
+      for I:=2 to Nh do
       begin
-        dh := (NacaProfiles[0, I] - NacaProfiles[0, I - 1]) * InputBulbLength.Value;
+        dh:=(NacaProfiles[0, I] - NacaProfiles[0, I - 1]) * InputBulbLength.Value;
         ;
-        r1 := NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value;
-        r2 := NacaProfiles[InputBulbWing.ItemIndex + 1, I - 1] * InputBulbLength.Value;
-        Volwing := Volwing + dh * (r1 + r2) * 2;
+        r1:=NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value;
+        r2:=NacaProfiles[InputBulbWing.ItemIndex + 1, I - 1] * InputBulbLength.Value;
+        Volwing:=Volwing + dh * (r1 + r2) * 2;
       end;
-      Volwing := Volwing * wng * (20 - Trackbar2.Position / 2) / Trackbar2.Max;
+      Volwing:=Volwing * wng * (20 - Trackbar2.Position / 2) / Trackbar2.Max;
     end;
     // end calculate bulbous volume
-    Label18.Caption := 'Volume of rudder/keel ';
-    Label20.Caption := 'Volume of bulb ';
-    Label22.Caption := 'Oriented bulbous mass ';
-    Label7.Caption := ' ';
-    Label9.Caption := ' ';
-    Label11.Caption := ' ';
-    Label13.Caption := ' ';
-    Label15.Caption := ' ';
-    Label24.Caption := ' ';
-    Volbulb := Volbulb + Volwing;  // для бульб-крыла
+    Label18.Caption:='Volume of rudder/keel ';
+    Label20.Caption:='Volume of bulb ';
+    Label22.Caption:='Oriented bulbous mass ';
+    Label7.Caption:=' ';
+    Label9.Caption:=' ';
+    Label11.Caption:=' ';
+    Label13.Caption:=' ';
+    Label15.Caption:=' ';
+    Label24.Caption:=' ';
+    Volbulb:=Volbulb + Volwing;  // для бульб-крыла
     if Volume >= 0.05 then
-      _Label19.Caption := FloatToStrF(Volume, ffFixed, 8, 4) + #32 + VolStr(
+      _Label19.Caption:=FloatToStrF(Volume, ffFixed, 8, 4) + #32 + VolStr(
         FFreeship.ProjectSettings.ProjectUnits)
     else
-      _Label19.Caption := FloatToStrF(Volume, ffFixed, 8, 6) + #32 + VolStr(
+      _Label19.Caption:=FloatToStrF(Volume, ffFixed, 8, 6) + #32 + VolStr(
         FFreeship.ProjectSettings.ProjectUnits);
     if VolBulb * InputBulbDensity.Value >= 0.05 then
     begin
@@ -1571,7 +1571,7 @@ begin
 
   end;
 
-  IsUptoDate := True;
+  IsUptoDate:=True;
 
   Rebuild3dView;
   Viewport.ZoomExtents;
@@ -1584,7 +1584,7 @@ begin
   FKeelSurface:=TFreeSubdivisionsurface.Create(nil);
 
   SendToSurface(FKeelSurface);
-  FKeelSurface.DesiredSubdivisionLevel := ComboBoxSubdivisionLevel.ItemIndex + 1;
+  FKeelSurface.DesiredSubdivisionLevel:=ComboBoxSubdivisionLevel.ItemIndex + 1;
   FKeelSurface.Rebuild;
   FKeelSurface.ClearSelection;
   FKeelSurface.ShadeUnderWater:=false;
@@ -1592,10 +1592,10 @@ begin
   FKeelSurface.ShowInteriorEdges:=FShowInteriorEdges;
   FKeelSurface.DrawMirror:=FShowBothSides;
   FKeelSurface.UnderWaterColor:=FFreeship.Preferences.UnderWaterColor;
-  FKeelSurface.ControlPointSize := FFreeship.Preferences.PointSize;
+  FKeelSurface.ControlPointSize:=FFreeship.Preferences.PointSize;
 
-  Viewport.Color := FFreeship.Preferences.ViewportColor;
-  Viewport.FontSize := FFreeship.Preferences.FontSize;
+  Viewport.Color:=FFreeship.Preferences.ViewportColor;
+  Viewport.FontSize:=FFreeship.Preferences.FontSize;
   Viewport.Invalidate;
 end;
 
@@ -1604,66 +1604,66 @@ var VpLight:TFreeLight;
 begin
   if assigned(Viewport) then
     exit;
-  Viewport := TFreeViewport.Create(Self);
+  Viewport:=TFreeViewport.Create(Self);
   with Viewport do
   begin
-    Parent := TabSheet1;
-    Left := 0;
-    Height := 423;
-    Top := 0;
-    Width := 418;
-    Angle := 20;
-    Align := alClient;
-    BackgroundImage.Alpha := 255;
-    BackgroundImage.Owner := Viewport;
-    BackgroundImage.Quality := 100;
-    BackgroundImage.Scale := 1;
-    BackgroundImage.ShowInView := fvBodyplan;
-    BackgroundImage.Tolerance := 5;
-    BackgroundImage.Transparent := False;
-    BackgroundImage.TransparentColor := clBlack;
-    BackgroundImage.Visible := True;
-    BorderStyle := bsSingle;
-    CameraType := ftFarTele;
-    Color := clGray; //FFreeship.Preferences.ViewportColor;
-    DoubleBuffer := True;
-    Elevation := 20;
-    HorScrollbar := ScrollBar1;
-    Margin := 0;
-    VertScrollbar := ScrollBar2;
-    ViewType := fvPerspective;
-    ViewportMode := vmWireFrame;
-    OnMouseDown := ViewportMouseDown;
-    OnMouseUp := ViewportMouseUp;
-    OnMouseMove := ViewportMouseMove;
-    OnRedraw := ViewportRedraw2;
-    OnRequestExtents := ViewportRequestExtents;
-    PopupMenu := PopupMenu1;
-    VpLight := Light;
-    VpLight.Position := Point3D(-180,180,180);
-    Light := VpLight;
+    Parent:=TabSheet1;
+    Left:=0;
+    Height:=423;
+    Top:=0;
+    Width:=418;
+    Angle:=20;
+    Align:=alClient;
+    BackgroundImage.Alpha:=255;
+    BackgroundImage.Owner:=Viewport;
+    BackgroundImage.Quality:=100;
+    BackgroundImage.Scale:=1;
+    BackgroundImage.ShowInView:=fvBodyplan;
+    BackgroundImage.Tolerance:=5;
+    BackgroundImage.Transparent:=False;
+    BackgroundImage.TransparentColor:=clBlack;
+    BackgroundImage.Visible:=True;
+    BorderStyle:=bsSingle;
+    CameraType:=ftFarTele;
+    Color:=clGray; //FFreeship.Preferences.ViewportColor;
+    DoubleBuffer:=True;
+    Elevation:=20;
+    HorScrollbar:=ScrollBar1;
+    Margin:=0;
+    VertScrollbar:=ScrollBar2;
+    ViewType:=fvPerspective;
+    ViewportMode:=vmWireFrame;
+    OnMouseDown:=ViewportMouseDown;
+    OnMouseUp:=ViewportMouseUp;
+    OnMouseMove:=ViewportMouseMove;
+    OnRedraw:=ViewportRedraw2;
+    OnRequestExtents:=ViewportRequestExtents;
+    PopupMenu:=PopupMenu1;
+    VpLight:=Light;
+    VpLight.Position:=Point3D(-180,180,180);
+    Light:=VpLight;
   end;
 end;
 
 function TFreeKeelWizardDialog.Execute(Freeship: TFreeShip): boolean;
 begin
   createViewport();
-  str[0] := Label18.Caption;
-  str[1] := Label20.Caption;
-  str[2] := Label22.Caption;
-  str[3] := Label7.Caption;
-  str[4] := Label9.Caption;
-  str[5] := Label11.Caption;
-  str[6] := Label14.Caption;
-  str[7] := Label15.Caption;
-  str[8] := Label24.Caption;
-  FFreeship := Freeship;
-  Chart.BottomAxis.Title.Caption := 'Angle of attack [degr] ';
-  Chart.LeftAxis.Title.Caption := 'Cx(Drag), Cy(Lift), m_z, Cd, 0.1*K ';
-  FProfile := TFreeSpline.Create(FFreeship.Surface);                              //ShowTranslatedValues(Self);
-  FLayerColor := FFreeship.Preferences.LayerColor;
-  LayerColorButton.ButtonColor := FLayerColor;
-  ComboBoxSubdivisionLevel.ItemIndex := Ord(FFreeship.Precision);
+  str[0]:=Label18.Caption;
+  str[1]:=Label20.Caption;
+  str[2]:=Label22.Caption;
+  str[3]:=Label7.Caption;
+  str[4]:=Label9.Caption;
+  str[5]:=Label11.Caption;
+  str[6]:=Label14.Caption;
+  str[7]:=Label15.Caption;
+  str[8]:=Label24.Caption;
+  FFreeship:=Freeship;
+  Chart.BottomAxis.Title.Caption:='Angle of attack [degr] ';
+  Chart.LeftAxis.Title.Caption:='Cx(Drag), Cy(Lift), m_z, Cd, 0.1*K ';
+  FProfile:=TFreeSpline.Create(FFreeship.Surface);                              //ShowTranslatedValues(Self);
+  FLayerColor:=FFreeship.Preferences.LayerColor;
+  LayerColorButton.ButtonColor:=FLayerColor;
+  ComboBoxSubdivisionLevel.ItemIndex:=Ord(FFreeship.Precision);
 
   ComboBoxClick(self);
   ComboBoxPlanformShapeClick(self);
@@ -1671,11 +1671,11 @@ begin
   ShowModal;
 
   FreeAndNil(FProfile);
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TFreeKeelWizardDialog.BitBtn1Click(Sender: TObject);
-begin Modalresult := mrOk; end;
+begin Modalresult:=mrOk; end;
 
 procedure TFreeKeelWizardDialog.ActionModeShadeExecute(Sender: TObject);
 begin Viewport.ViewportMode:=vmShade; end;
@@ -1686,7 +1686,7 @@ begin Viewport.ViewportMode:=vmWireframe; end;
 procedure TFreeKeelWizardDialog.ActionSetLayerColorExecute(Sender: TObject);
 var i:integer;
 begin
-  FLayerColor := LayerColorButton.ButtonColor;
+  FLayerColor:=LayerColorButton.ButtonColor;
   if not assigned(FKeelSurface) then exit;
   for i:=0 to FKeelSurface.NumberOfLayers-1 do
     FKeelSurface.Layer[i].Color:=FLayerColor;
@@ -1695,35 +1695,35 @@ end;
 
 procedure TFreeKeelWizardDialog.ActionShowControlNetExecute(Sender: TObject);
 begin
-  FShowControlNet := not FShowControlNet;
+  FShowControlNet:=not FShowControlNet;
   sbShowControlNet.GroupIndex:=1;
-  sbShowControlNet.Down := FShowControlNet;
+  sbShowControlNet.Down:=FShowControlNet;
   FKeelSurface.ShowControlNet:=FShowControlNet;
   ViewPort.Invalidate;
 end;
 
 procedure TFreeKeelWizardDialog.ActionShowInteriorEdgesExecute(Sender: TObject);
 begin
-  FShowInteriorEdges := not FShowInteriorEdges;
+  FShowInteriorEdges:=not FShowInteriorEdges;
   sbShowInteriorEdges.GroupIndex:=2;
-  sbShowInteriorEdges.Down := FShowInteriorEdges;
+  sbShowInteriorEdges.Down:=FShowInteriorEdges;
   FKeelSurface.ShowInteriorEdges:=FShowInteriorEdges;
   ViewPort.Invalidate;
 end;
 
 procedure TFreeKeelWizardDialog.ActionShowBothSidesExecute(Sender: TObject);
 begin
-  FShowBothSides := not FShowBothSides;
+  FShowBothSides:=not FShowBothSides;
   sbShowBothSides.GroupIndex:=3;
-  sbShowBothSides.Down := FShowBothSides;
-  FKeelSurface.DrawMirror := FShowBothSides;
+  sbShowBothSides.Down:=FShowBothSides;
+  FKeelSurface.DrawMirror:=FShowBothSides;
   ViewPort.Invalidate;
 end;
 
 
 procedure TFreeKeelWizardDialog.BitBtn2Click(Sender: TObject);
 begin
-  Modalresult := mrCancel;
+  Modalresult:=mrCancel;
 end;{TFreeKeelWizardDialog.BitBtn2Click}
 
 procedure TFreeKeelWizardDialog.ComboBoxClick(Sender: TObject);
@@ -1733,10 +1733,10 @@ end;{TFreeKeelWizardDialog.ComboBoxClick}
 
 procedure TFreeKeelWizardDialog.ComboBoxPlanformShapeClick(Sender: TObject);
 begin
-  Input2.Enabled := ComboBoxPlanformShape.ItemIndex = 0;
-  Input4.Enabled := Input2.Enabled;
+  Input2.Enabled:=ComboBoxPlanformShape.ItemIndex = 0;
+  Input4.Enabled:=Input2.Enabled;
   if not Input2.Enabled then
-    Input2.Value := 0.0;
+    Input2.Value:=0.0;
   UpdateData;
 end;{TFreeKeelWizardDialog.ComboBox1Click}
 
@@ -1750,7 +1750,7 @@ begin
   FShowControlNet:=true;
   FShowInteriorEdges:=false;
   FShowBothSides:=false;
-  FLayerColor := clSilver;
+  FLayerColor:=clSilver;
   FBgColor:=clGray;
 end;
 
@@ -1767,74 +1767,74 @@ end;{TFreeKeelWizardDialog.Input1AfterSetValue}
 
 procedure TFreeKeelWizardDialog.Input1ChangeValue(Sender: TObject);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input1KeyDown(Sender: TObject;
   var Key: word; Shift: TShiftState);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input2ChangeValue(Sender: TObject);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input2KeyDown(Sender: TObject;
   var Key: word; Shift: TShiftState);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input3ChangeValue(Sender: TObject);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input3KeyDown(Sender: TObject;
   var Key: word; Shift: TShiftState);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input4ChangeValue(Sender: TObject);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input4KeyDown(Sender: TObject;
   var Key: word; Shift: TShiftState);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input5ChangeValue(Sender: TObject);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input5KeyDown(Sender: TObject;
   var Key: word; Shift: TShiftState);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input6ChangeValue(Sender: TObject);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Input6KeyDown(Sender: TObject;
   var Key: word; Shift: TShiftState);
 begin
-  IsUptoDate := False;
+  IsUptoDate:=False;
 end;
 
 procedure TFreeKeelWizardDialog.Panel8Resize(Sender: TObject);
 begin
-  //PageControl1.Contraints.MinHeight := Panel8.Height + 30;
-  //PageControl1.Contraints.MinWidth := Panel8.Width + 10;
+  //PageControl1.Contraints.MinHeight:=Panel8.Height + 30;
+  //PageControl1.Contraints.MinWidth:=Panel8.Width + 10;
 end;
 
 procedure TFreeKeelWizardDialog.sbShowBothSidesChangeBounds(Sender: TObject);
@@ -1864,12 +1864,12 @@ begin
     if FProfile.NumberOfPoints > 1 then
     begin
       FProfile.Extents(Min, Max);
-      for I := 1 to Rows do
-        for J := 1 to Cols do
+      for I:=1 to Rows do
+        for J:=1 to Cols do
         begin
-          P := Mesh[I - 1, J - 1];
+          P:=Mesh[I - 1, J - 1];
           MinMax(P, Min, Max);
-          P.Y := -P.Y;
+          P.Y:=-P.Y;
           MinMax(P, Min, Max);
         end;
     end;
@@ -1887,37 +1887,37 @@ procedure TFreeKeelWizardDialog.ViewportRedraw(Sender: TObject);
     Pt: TPoint;
     Size: integer;
   begin
-    Pt := Viewport.Project(P);
+    Pt:=Viewport.Project(P);
     if Text <> '' then
     begin
       // Skip translation
-      Viewport.FontName := 'Arial';
+      Viewport.FontName:='Arial';
       // End Skip translation
-      Viewport.FontColor := FFreeship.Preferences.HydrostaticsFontColor;
-      size := Round(Sqrt(Viewport.Zoom) * 7);
+      Viewport.FontColor:=FFreeship.Preferences.HydrostaticsFontColor;
+      size:=Round(Sqrt(Viewport.Zoom) * 7);
       if size < 2 then
-        size := 2;
-      Viewport.FontSize := size;
+        size:=2;
+      Viewport.FontSize:=size;
     end;
-    Size := Round(Sqrt(Viewport.Zoom) * (FFreeship.Preferences.PointSize + 1));
+    Size:=Round(Sqrt(Viewport.Zoom) * (FFreeship.Preferences.PointSize + 1));
     if size < 1 then
-      size := 1;
-    Viewport.BrushStyle := bsClear;
+      size:=1;
+    Viewport.BrushStyle:=bsClear;
     if Viewport.Printing then
-      Size := round(Size * Viewport.PrintResolution / 150);
-    Viewport.PenColor := clDkGray; // Black;
-    Viewport.BrushColor := clOlive; // clWhite;
-    Viewport.BrushStyle := bsSolid;
+      Size:=round(Size * Viewport.PrintResolution / 150);
+    Viewport.PenColor:=clDkGray; // Black;
+    Viewport.BrushColor:=clOlive; // clWhite;
+    Viewport.BrushStyle:=bsSolid;
     // Draw entire circle in white;
     Viewport.Ellipse(Pt.X - Size, Pt.Y - Size, Pt.X + Size, Pt.Y + Size);
     // Draw upper left part in black
-    Viewport.BrushColor := clBlack;
+    Viewport.BrushColor:=clBlack;
     //Viewport.Pie(Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size,Pt.X-1,Pt.Y-Size,Pt.X-Size,Pt.Y-1);
     Viewport.Line(Pt.X - Size, Pt.Y, Pt.X + Size, Pt.Y);
     Viewport.Line(Pt.X, Pt.Y - Size, Pt.X, Pt.Y - Size);
     // Draw lower right part in black
     //Viewport.Pie(Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size,Pt.X-1,Pt.Y+Size,Pt.X+Size,Pt.Y-1);
-    Viewport.BrushStyle := bsClear;
+    Viewport.BrushStyle:=bsClear;
     if Text <> '' then
       Viewport.TextOut(Pt.X + 2 * size, Pt.Y, Text);
   end;{DrawPoint}
@@ -1944,89 +1944,89 @@ begin
 
         Setlength(Pts, Cols);
         //Setlength(Mesh,Cols*Rows);
-        Rn := Rows;
+        Rn:=Rows;
         if not IsUptoDate then
           UpdateData;
-        for I := 1 to Rn do //if (I=0) or (I=Rows) then
+        for I:=1 to Rn do //if (I=0) or (I=Rows) then
         begin
           if I in [1, Rn] then
-            Viewport.PenColor := clBlack
+            Viewport.PenColor:=clBlack
           else
-            Viewport.PenColor := clSilver;
-          C := Cols;
-          for J := 1 to C do
-            Pts[J - 1] := Viewport.Project(Mesh[I - 1, J - 1]);
+            Viewport.PenColor:=clSilver;
+          C:=Cols;
+          for J:=1 to C do
+            Pts[J - 1]:=Viewport.Project(Mesh[I - 1, J - 1]);
           Viewport.Polyline(Pts);
-          for J := 1 to C do
+          for J:=1 to C do
           begin
-            P1 := Mesh[I - 1, J - 1];
-            P1.Y := -P1.Y;
-            Pts[J - 1] := Viewport.Project(P1);
+            P1:=Mesh[I - 1, J - 1];
+            P1.Y:=-P1.Y;
+            Pts[J - 1]:=Viewport.Project(P1);
           end;
           Viewport.Polyline(Pts);
         end;
         Setlength(Pts, Rn);
         //Setlength(Mesh,Cols*Rows);
-        C := Cols;
+        C:=Cols;
         if not IsUptoDate then
           UpdateData;
-        for J := 1 to C do //if not odd(J) then
+        for J:=1 to C do //if not odd(J) then
         begin
           if J in [1, C] then
-            Viewport.PenColor := clBlack
+            Viewport.PenColor:=clBlack
           else
-            Viewport.PenColor := clSilver;
-          for I := 1 to Rows do
-            Pts[I - 1] := Viewport.Project(Mesh[I - 1, J - 1]);
+            Viewport.PenColor:=clSilver;
+          for I:=1 to Rows do
+            Pts[I - 1]:=Viewport.Project(Mesh[I - 1, J - 1]);
           Viewport.Polyline(Pts);
-          Rn := Rows;
+          Rn:=Rows;
           if not IsUptoDate then
             UpdateData;
-          for I := 1 to Rn do
+          for I:=1 to Rn do
           begin
-            P1 := Mesh[I - 1, J - 1];
-            P1.Y := -P1.Y;
-            Pts[I - 1] := Viewport.Project(P1);
+            P1:=Mesh[I - 1, J - 1];
+            P1.Y:=-P1.Y;
+            Pts[I - 1]:=Viewport.Project(P1);
           end;
           Viewport.Polyline(Pts);
         end;
         DrawPoint(SetPoint(COG.X, 0, COG.Y), '');
 
         //Bulb intersections
-        Viewport.PenColor := clGray;
+        Viewport.PenColor:=clGray;
         if InputBulbShape.ItemIndex > 0 then
         begin
           if InputBulbShape.ItemIndex > 1 then
-            wng := InputBulbWingWidth.Value / 2
+            wng:=InputBulbWingWidth.Value / 2
           else
-            wng := 0;
+            wng:=0;
 
 
-          for i := 2 to Nh - 1 do
+          for i:=2 to Nh - 1 do
           begin
-            P1.X := Input2.Value + Input4.Value + InputBulbDelta.Value -
+            P1.X:=Input2.Value + Input4.Value + InputBulbDelta.Value -
               NacaProfiles[0, I] * InputBulbLength.Value;
             if (InputBulbShape.ItemIndex = 1) or (InputBulbShape.ItemIndex = 3) then
             begin
-              for j := 0 to 24 do
+              for j:=0 to 24 do
               begin
-                dy := Cos(Pi / 48 * j) * NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
+                dy:=Cos(Pi / 48 * j) * NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
                   InputBulbLength.Value / 1.4142;
-                dz := Sin(Pi / 48 * j) * NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
+                dz:=Sin(Pi / 48 * j) * NacaProfiles[InputBulbWing.ItemIndex + 1, I] *
                   InputBulbLength.Value * 14.14 / (20 + TrackBar2.Position);
 
-                P1.Y := -dy - wng;
-                P1.Z := -Input3.Value - dz;
-                Pts100[j] := Viewport.Project(P1);
+                P1.Y:=-dy - wng;
+                P1.Z:=-Input3.Value - dz;
+                Pts100[j]:=Viewport.Project(P1);
 
-                P1.Z := -Input3.Value + dz;
-                Pts100[99 - j] := Viewport.Project(P1);
+                P1.Z:=-Input3.Value + dz;
+                Pts100[99 - j]:=Viewport.Project(P1);
 
-                P1.y := dy + wng;
-                P1.Z := -Input3.Value - dz;
-                Pts100[49 - j] := Viewport.Project(P1);
-                P1.Z := -Input3.Value + dz;
-                Pts100[50 + j] := Viewport.Project(P1);
+                P1.y:=dy + wng;
+                P1.Z:=-Input3.Value - dz;
+                Pts100[49 - j]:=Viewport.Project(P1);
+                P1.Z:=-Input3.Value + dz;
+                Pts100[50 + j]:=Viewport.Project(P1);
               end;
               Viewport.Polyline(Pts100);
             end
@@ -2034,19 +2034,19 @@ begin
             if (InputBulbShape.ItemIndex = 2) then
             begin
               SetLength(Pts, 5);
-              dz := NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * 14.14 /
+              dz:=NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * 14.14 /
                 (20 + TrackBar2.Position);
-              P1.Y := -wng;
-              P1.Z := -Input3.Value - dz;
-              Pts[0] := Viewport.Project(P1);
-              P1.Z := -Input3.Value + dz;
-              Pts[1] := Viewport.Project(P1);
-              P1.Y := wng;
-              P1.Z := -Input3.Value + dz;
-              Pts[2] := Viewport.Project(P1);
-              P1.Z := -Input3.Value - dz;
-              Pts[3] := Viewport.Project(P1);
-              Pts[4] := Pts[0];
+              P1.Y:=-wng;
+              P1.Z:=-Input3.Value - dz;
+              Pts[0]:=Viewport.Project(P1);
+              P1.Z:=-Input3.Value + dz;
+              Pts[1]:=Viewport.Project(P1);
+              P1.Y:=wng;
+              P1.Z:=-Input3.Value + dz;
+              Pts[2]:=Viewport.Project(P1);
+              P1.Z:=-Input3.Value - dz;
+              Pts[3]:=Viewport.Project(P1);
+              Pts[4]:=Pts[0];
 
               Viewport.Polyline(Pts);
             end;
@@ -2056,24 +2056,24 @@ begin
     end
     else
     begin
-      R := GetRValue(FFreeship.Preferences.LayerColor);
-      G := GetGValue(FFreeship.Preferences.LayerColor);
-      B := GetBValue(FFreeship.Preferences.LayerColor);
+      R:=GetRValue(FFreeship.Preferences.LayerColor);
+      G:=GetGValue(FFreeship.Preferences.LayerColor);
+      B:=GetBValue(FFreeship.Preferences.LayerColor);
       A:=255;
       Viewport.BeginUpdate;
-      for I := 2 to Rows do
-        for J := 2 to Cols do
+      for I:=2 to Rows do
+        for J:=2 to Cols do
         begin
-          P1 := Mesh[I - 1][J - 1];
-          P2 := Mesh[I - 1][J - 2];
-          P3 := Mesh[I - 2][J - 2];
-          P4 := Mesh[I - 2][J - 1];
+          P1:=Mesh[I - 1][J - 1];
+          P2:=Mesh[I - 1][J - 2];
+          P3:=Mesh[I - 2][J - 2];
+          P4:=Mesh[I - 2][J - 1];
           Viewport.ShadeTriangle(P1, P2, P3, R, G, B, A);
           Viewport.ShadeTriangle(P1, P3, P4, R, G, B, A);
-          P1.Y := -P1.Y;
-          P2.Y := -P2.Y;
-          P3.Y := -P3.Y;
-          P4.Y := -P4.Y;
+          P1.Y:=-P1.Y;
+          P2.Y:=-P2.Y;
+          P3.Y:=-P3.Y;
+          P4.Y:=-P4.Y;
           Viewport.ShadeTriangle(P1, P2, P3, R, G, B, A);
           Viewport.ShadeTriangle(P1, P3, P4, R, G, B, A);
         end;
@@ -2093,10 +2093,10 @@ procedure TFreeKeelWizardDialog.SpeedButton1Click(Sender: TObject);
 var
   Str: string;
 begin
-  Str := UTF8Lowercase(Combobox.Text) + ' ' + _Combobox2.Text;
+  Str:=UTF8Lowercase(Combobox.Text) + ' ' + _Combobox2.Text;
   FFreeship.Edit.CreateUndoObject('Add ' + str, True);
   SendToSurface(FFreeship.Surface);
-  FFreeship.FileChanged := True;
+  FFreeship.FileChanged:=True;
   if Assigned(FFreeship.OnUpdateGeometryInfo) then
     FFreeship.OnUpdateGeometryInfo(FFreeship);
   FFreeship.ProjectSettings.ProjectDraft :=
@@ -2135,58 +2135,58 @@ var
     FacePoints: TFasterListTFreeSubdivisionControlPoint;
   begin
 
-    Layer.UseInHydrostatics := False;
-    dX := Input4.Value + Input2.Value + InputBulbDelta.Value;
-    dY := 0;
-    dZ := -Input3.Value;
-    kZ := 14.14 / (20 + TrackBar2.Position);
-    kR := 2.11; //sqrt(2);
+    Layer.UseInHydrostatics:=False;
+    dX:=Input4.Value + Input2.Value + InputBulbDelta.Value;
+    dY:=0;
+    dZ:=-Input3.Value;
+    kZ:=14.14 / (20 + TrackBar2.Position);
+    kR:=2.11; //sqrt(2);
 
-    P1 := TFreeSubdivisionControlPoint.Create(Surface);
+    P1:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P1);
-    P1.Coordinate := SetPoint(dX, 0, dZ);
+    P1.Coordinate:=SetPoint(dX, 0, dZ);
 
-    P2 := TFreeSubdivisionControlPoint.Create(Surface);
+    P2:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P2);
-    P2.Coordinate := SetPoint(dX - InputBulbLength.Value, 0, dZ);
+    P2.Coordinate:=SetPoint(dX - InputBulbLength.Value, 0, dZ);
 
-    for i := 2 to Nh - 1 do
+    for i:=2 to Nh - 1 do
     begin
-      P := TFreeSubdivisionControlPoint.Create(Surface);
+      P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate := SetPoint(
+      P.Coordinate:=SetPoint(
         dX - InputBulbLength.Value * NacaProfiles[0, I],
         dY,
         dZ + kZ * NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR);
-      PP[0, i] := P;
+      PP[0, i]:=P;
 
-      P := TFreeSubdivisionControlPoint.Create(Surface);
+      P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate := SetPoint(
+      P.Coordinate:=SetPoint(
         dX - InputBulbLength.Value * NacaProfiles[0, I],
         dY + NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR / 1.4142,
         dZ + kZ * NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR);
-      PP[1, i] := P;
+      PP[1, i]:=P;
 
-      P := TFreeSubdivisionControlPoint.Create(Surface);
+      P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate := SetPoint(
+      P.Coordinate:=SetPoint(
         dX - InputBulbLength.Value * NacaProfiles[0, I],
         dY + NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR / 1.4142,
         dZ - kZ * NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR);
-      PP[2, i] := P;
+      PP[2, i]:=P;
 
-      P := TFreeSubdivisionControlPoint.Create(Surface);
+      P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate := SetPoint(
+      P.Coordinate:=SetPoint(
       dX - InputBulbLength.Value * NacaProfiles[0, I],
       dY,
       dZ - kZ * NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR);
-      PP[3, i] := P;
+      PP[3, i]:=P;
 
     end;
 
-    FacePoints := TFasterListTFreeSubdivisionControlPoint.Create;
+    FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create;
     begin
       FacePoints.Clear;
       FacePoints.Add(P1);
@@ -2214,7 +2214,7 @@ var
       ///Surface.AddControlFace(FacePoints, True, Layer);
       }
 
-      for i := 2 to Nh - 2 do
+      for i:=2 to Nh - 2 do
       begin
         FacePoints.Clear;
         FacePoints.Add(PP[0, i]);
@@ -2287,84 +2287,84 @@ var
     ControlPoints: TFasterListTFreeSubdivisionControlPoint;
   begin
 
-    Layer.UseInHydrostatics := True;
-    dX := Input4.Value + Input2.Value + InputBulbDelta.Value;
-    dY := 0;
-    dZ := -Input3.Value;
-    kZ := 14.14 / (20 + TrackBar2.Position);
-    kR := sqrt(2);
+    Layer.UseInHydrostatics:=True;
+    dX:=Input4.Value + Input2.Value + InputBulbDelta.Value;
+    dY:=0;
+    dZ:=-Input3.Value;
+    kZ:=14.14 / (20 + TrackBar2.Position);
+    kR:=sqrt(2);
     if InputBulbShape.ItemIndex > 1 then
-      wng := InputBulbWingWidth.Value / 2
+      wng:=InputBulbWingWidth.Value / 2
     else
-      wng := 0;
+      wng:=0;
 
-    P1 := TFreeSubdivisionControlPoint.Create(Surface);
+    P1:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P1);
-    P1.Coordinate := SetPoint(dX, wng, dZ);
+    P1.Coordinate:=SetPoint(dX, wng, dZ);
 
-    P2 := TFreeSubdivisionControlPoint.Create(Surface);
+    P2:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P2);
-    P2.Coordinate := SetPoint(dX - InputBulbLength.Value, wng, dZ);
+    P2.Coordinate:=SetPoint(dX - InputBulbLength.Value, wng, dZ);
 
-    P3 := TFreeSubdivisionControlPoint.Create(Surface);
+    P3:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P3);
-    P3.Coordinate := SetPoint(dX, 0, dZ);
+    P3.Coordinate:=SetPoint(dX, 0, dZ);
 
-    P4 := TFreeSubdivisionControlPoint.Create(Surface);
+    P4:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P4);
-    P4.Coordinate := SetPoint(dX - InputBulbLength.Value, 0, dZ);
+    P4.Coordinate:=SetPoint(dX - InputBulbLength.Value, 0, dZ);
 
-    for i := 2 to Nh - 1 do
+    for i:=2 to Nh - 1 do
     begin
-      P := TFreeSubdivisionControlPoint.Create(Surface);
+      P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate := SetPoint(
+      P.Coordinate:=SetPoint(
         dX - InputBulbLength.Value * NacaProfiles[0, I],
         dY,
         dZ + kZ * NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR);
-      PP[0, i] := P;
+      PP[0, i]:=P;
 
-      P := TFreeSubdivisionControlPoint.Create(Surface);
+      P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate := SetPoint(
+      P.Coordinate:=SetPoint(
         dX - InputBulbLength.Value * NacaProfiles[0, I],
         dY + Wng,
         dZ + kZ * NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR);
-      PP[1, i] := P;
+      PP[1, i]:=P;
 
-      P := TFreeSubdivisionControlPoint.Create(Surface);
+      P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
       if InputBulbShape.ItemIndex = 3 then
-        P.Coordinate := SetPoint(
+        P.Coordinate:=SetPoint(
           dX - InputBulbLength.Value * NacaProfiles[0, I],
           dY + NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR + wng,
           dZ)
       else
-        P.Coordinate := SetPoint(
+        P.Coordinate:=SetPoint(
           dX - InputBulbLength.Value * NacaProfiles[0, I],
           dY + Wng,
           dZ);
-      PP[2, i] := P;
+      PP[2, i]:=P;
 
 
-      P := TFreeSubdivisionControlPoint.Create(Surface);
+      P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate := SetPoint(
+      P.Coordinate:=SetPoint(
         dX - InputBulbLength.Value * NacaProfiles[0, I],
         dY + Wng,
         dZ - kZ * NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR);
-      PP[3, i] := P;
+      PP[3, i]:=P;
 
-      P := TFreeSubdivisionControlPoint.Create(Surface);
+      P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate := SetPoint(
+      P.Coordinate:=SetPoint(
         dX - InputBulbLength.Value * NacaProfiles[0, I],
         dY,
         dZ - kZ * NacaProfiles[InputBulbWing.ItemIndex + 1, I] * InputBulbLength.Value * kR);
-      PP[4, i] := P;
+      PP[4, i]:=P;
     end;
 
-    ControlPoints := TFasterListTFreeSubdivisionControlPoint.Create;
+    ControlPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
     begin
       ControlPoints.Clear;
       ControlPoints.Add(P1);
@@ -2392,7 +2392,7 @@ var
       ControlPoints.Add(PP[4, 2]);
       Surface.AddControlFace(ControlPoints, True, Layer);
 
-      for i := 2 to Nh - 2 do
+      for i:=2 to Nh - 2 do
       begin
         ControlPoints.Clear;
         ControlPoints.Add(PP[0, i]);
@@ -2459,74 +2459,74 @@ var
   p11, p12, p21, p22: TFreeSubdivisionControlpoint;
 begin
 
-  PrevCursor := Screen.Cursor;
+  PrevCursor:=Screen.Cursor;
 //try
-    Str := UTF8Lowercase(Combobox.Text) + ' ' + _Combobox2.Text;
-    Layer := Surface.AddNewLayer;
-    Str := ComboBoxPlanformShape.Text + ' ' + UTF8Lowercase(ComboBox.Text) + ' ' + _ComboBox2.Text;
-    Layer.Name := Str;
-    Layer.Color := FFreeship.Preferences.LayerColor;
-    Layer.Color := FLayerColor;
+    Str:=UTF8Lowercase(Combobox.Text) + ' ' + _Combobox2.Text;
+    Layer:=Surface.AddNewLayer;
+    Str:=ComboBoxPlanformShape.Text + ' ' + UTF8Lowercase(ComboBox.Text) + ' ' + _ComboBox2.Text;
+    Layer.Name:=Str;
+    Layer.Color:=FFreeship.Preferences.LayerColor;
+    Layer.Color:=FLayerColor;
     Layer.AlphaBlend:=255;
 
     Setlength(Grid, Rows + 2);
-    for I := 1 to Rows + 2 do Setlength(Grid[I - 1], Cols);
-    for I := 2 to Rows + 1 do
+    for I:=1 to Rows + 2 do Setlength(Grid[I - 1], Cols);
+    for I:=2 to Rows + 1 do
       if (I = 2) and (ComboBoxPlanformShape.ItemIndex > 0) then begin
-        P := TFreeSubdivisionControlPoint.Create(Surface);
-        P.Selected := SelectControlPoints;
+        P:=TFreeSubdivisionControlPoint.Create(Surface);
+        P.Selected:=SelectControlPoints;
         Surface.AddControlPoint(P);
-        P.Coordinate := Mesh[I - 2, 0];
-        Grid[I - 1, 0] := P;
-        for J := 2 to Cols do
-          Grid[I - 1][J - 1] := grid[I - 1][0];
+        P.Coordinate:=Mesh[I - 2, 0];
+        Grid[I - 1, 0]:=P;
+        for J:=2 to Cols do
+          Grid[I - 1][J - 1]:=grid[I - 1][0];
       end else
-        for J := 1 to Cols do begin
-          P := TFreeSubdivisionControlPoint.Create(Surface);
-          P.Selected := SelectControlPoints;
+        for J:=1 to Cols do begin
+          P:=TFreeSubdivisionControlPoint.Create(Surface);
+          P.Selected:=SelectControlPoints;
           Surface.AddControlPoint(P);
-          P.Coordinate := Mesh[I - 2, J - 1];
-          Grid[I - 1, J - 1] := P;
+          P.Coordinate:=Mesh[I - 2, J - 1];
+          Grid[I - 1, J - 1]:=P;
         end;
-    for J := 1 to Cols do
+    for J:=1 to Cols do
     begin
       if ComboBoxPlanformShape.ItemIndex = 0 then begin  // Close bottom
-        P := Grid[1][J - 1] as TFreeSubdivisionControlpoint;
+        P:=Grid[1][J - 1] as TFreeSubdivisionControlpoint;
         if abs(P.Coordinate.Y) < 1e-4 then
-          Grid[0, J - 1] := P                            // do nothing
+          Grid[0, J - 1]:=P                            // do nothing
         else begin                                       // close at bottom
-          P3D := P.Coordinate;
-          P3D.Y := 0.0;
-          P := TFreeSubdivisionControlPoint.Create(Surface);
-          P.Selected := SelectControlPoints;
+          P3D:=P.Coordinate;
+          P3D.Y:=0.0;
+          P:=TFreeSubdivisionControlPoint.Create(Surface);
+          P.Selected:=SelectControlPoints;
           Surface.AddControlPoint(P);
-          P.Coordinate := P3D;
-          Grid[0, J - 1] := P;
+          P.Coordinate:=P3D;
+          Grid[0, J - 1]:=P;
         end;
-      end else Grid[0, J - 1] := Grid[1, J - 1];
+      end else Grid[0, J - 1]:=Grid[1, J - 1];
 
       // Close Top
-      P := Grid[Rows][J - 1] as TFreeSubdivisionControlpoint;
+      P:=Grid[Rows][J - 1] as TFreeSubdivisionControlpoint;
       if abs(P.Coordinate.Y) < 1e-4 then
-        Grid[Rows + 1, J - 1] := P    // do nothing
+        Grid[Rows + 1, J - 1]:=P    // do nothing
       else begin                      // close at top
-        P3D := P.Coordinate;
-        P3D.Y := 0.0;
-        P := TFreeSubdivisionControlPoint.Create(Surface);
-        P.Selected := SelectControlPoints;
+        P3D:=P.Coordinate;
+        P3D.Y:=0.0;
+        P:=TFreeSubdivisionControlPoint.Create(Surface);
+        P.Selected:=SelectControlPoints;
         Surface.AddControlPoint(P);
-        P.Coordinate := P3D;
-        Grid[Rows + 1, J - 1] := P;
+        P.Coordinate:=P3D;
+        Grid[Rows + 1, J - 1]:=P;
       end;
     end;
-    ControlPoints := TFasterListTFreeSubdivisionControlPoint.Create;
-    for I := 2 to Rows + 2 do
-      for J := 2 to Cols do begin
+    ControlPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
+    for I:=2 to Rows + 2 do
+      for J:=2 to Cols do begin
         ControlPoints.Clear;
-        p11 := Grid[I - 1, J - 1] as TFreeSubdivisionControlpoint;
-        p12 := Grid[I - 1, J - 2] as TFreeSubdivisionControlpoint;
-        p22 := Grid[I - 2, J - 2] as TFreeSubdivisionControlpoint;
-        p21 := Grid[I - 2, J - 1] as TFreeSubdivisionControlpoint;
+        p11:=Grid[I - 1, J - 1] as TFreeSubdivisionControlpoint;
+        p12:=Grid[I - 1, J - 2] as TFreeSubdivisionControlpoint;
+        p22:=Grid[I - 2, J - 2] as TFreeSubdivisionControlpoint;
+        p21:=Grid[I - 2, J - 1] as TFreeSubdivisionControlpoint;
 
         if ControlPoints.IndexOf(p11) = -1 then ControlPoints.Add(p11);
         if ControlPoints.IndexOf(p12) = -1 then ControlPoints.Add(p12);
@@ -2537,26 +2537,26 @@ begin
     FreeAndNil(ControlPoints);
 
     // set crease edges at top and bottom
-    for J := 2 to Cols do begin
+    for J:=2 to Cols do begin
       if ComboBoxPlanformShape.ItemIndex = 0 then begin
-        Edge := Surface.EdgeExists(Grid[1, J - 2], Grid[1, J - 1]);
-        if Edge <> nil then Edge.Crease := True;
+        Edge:=Surface.EdgeExists(Grid[1, J - 2], Grid[1, J - 1]);
+        if Edge <> nil then Edge.Crease:=True;
       end;
-      Edge := Surface.EdgeExists(Grid[Rows, J - 2], Grid[Rows, J - 1]);
-      if Edge <> nil then Edge.Crease := True;
+      Edge:=Surface.EdgeExists(Grid[Rows, J - 2], Grid[Rows, J - 1]);
+      if Edge <> nil then Edge.Crease:=True;
     end;
     Layer.SelectAll;
     if InputBulbShape.ItemIndex > 0 then begin
-      Layer := Surface.AddNewLayer;
-      Layer.Name := InputBulbShape.Text + '_' + InputBulbWing.Text;
-      Layer.Color := FLayerColor; //FFreeship.Preferences.LayerColor;
+      Layer:=Surface.AddNewLayer;
+      Layer.Name:=InputBulbShape.Text + '_' + InputBulbWing.Text;
+      Layer.Color:=FLayerColor; //FFreeship.Preferences.LayerColor;
       Layer.AlphaBlend:=255;
       if InputBulbShape.ItemIndex = 1 then AddRoundBulb
                                       else AddWingBulb;
       Layer.SelectAll;
     end;
 //finally
-    Screen.Cursor := prevCursor;
+    Screen.Cursor:=prevCursor;
 //end;
 end;
 
@@ -2566,10 +2566,10 @@ var
   Faces: TFasterListTFreeSubdivisionControlFace;
   I: integer;
 begin
-  Surface := TFreeSubdivisionSurface.Create(FFreeship.Surface);
+  Surface:=TFreeSubdivisionSurface.Create(FFreeship.Surface);
   SendToSurface(Surface);
-  Faces := TFasterListTFreeSubdivisionControlFace.Create;
-  Faces.Capacity := Surface.NumberOfControlFaces;
+  Faces:=TFasterListTFreeSubdivisionControlFace.Create;
+  Faces.Capacity:=Surface.NumberOfControlFaces;
   for I:=1 to Surface.NumberOfControlFaces do Faces.Add(Surface.ControlFace[I-1]);
   FFreeship.SavePart(Faces);
   FreeAndNil(Faces);
@@ -2581,12 +2581,12 @@ begin UpdateData; InputBulbWingWidth.Enabled:=InputBulbShape.ItemIndex>1; end;
 
 procedure TFreeKeelWizardDialog.InputMaterialChange(Sender: TObject);
 begin
-  InputBulbDensity.Enabled := False;
+  InputBulbDensity.Enabled:=False;
   case InputMaterial.ItemIndex of
-    0: InputBulbDensity.Value := 11.35;
-    1: InputBulbDensity.Value := 7.2;
-    2: InputBulbDensity.Value := 19.3;
-  else InputBulbDensity.Enabled := True
+    0: InputBulbDensity.Value:=11.35;
+    1: InputBulbDensity.Value:=7.2;
+    2: InputBulbDensity.Value:=19.3;
+  else InputBulbDensity.Enabled:=True
   end; UpdateData;
 end;
 
@@ -2606,9 +2606,9 @@ procedure TFreeKeelWizardDialog.ViewportMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
   if (ssRight in Shift) then begin
-    fDragBegin.X := X;
-    fDragBegin.Y := Y;
-    fMouseDownLoc := fDragBegin;
+    fDragBegin.X:=X;
+    fDragBegin.Y:=Y;
+    fMouseDownLoc:=fDragBegin;
   end;
 end;
 
@@ -2623,10 +2623,10 @@ procedure TFreeKeelWizardDialog.ViewportMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: integer);
 begin
   if (ssRight in Shift) then begin
-    Viewport.Pan := Point(Viewport.Pan.X + X - fDragBegin.X,
+    Viewport.Pan:=Point(Viewport.Pan.X + X - fDragBegin.X,
       Viewport.Pan.Y + Y - fDragBegin.Y);
-    fDragBegin.X := X;
-    fDragBegin.Y := Y;
+    fDragBegin.X:=X;
+    fDragBegin.Y:=Y;
   end;
 end;
 

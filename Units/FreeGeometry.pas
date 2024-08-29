@@ -685,7 +685,7 @@ type
     constructor Create(Owner: TFreeSubdivisionSurface); virtual;
     property Surface: TFreeSubdivisionSurface read FSurface write FSurface;
     //property Surface: TFreeSubdivisionSurface read FSurface write FSurface;
-    procedure PrintDebug; virtual;
+    //procedure PrintDebug; virtual;
     property Id: Integer read FId;
     property Name: String read FName write FName;
     property Selected:boolean read FGetSelected write FSetSelected;
@@ -856,7 +856,7 @@ type
   public
     constructor Create(Owner: TFreeSubdivisionSurface); override;
     //property Surface: TFreeSubdivisionSurface read FSurface write FSurface;
-    procedure PrintDebug; override;
+    //procedure PrintDebug; override;
   end;
 
   {---------------------------------------------------------------------------------------------------}
@@ -900,7 +900,7 @@ type
     procedure InsertEdgePoint(P1, P2, New: TFreeSubdivisionPoint);
     function IsFreeStanding:boolean;
     procedure LoadBinary(Source: TFreeFileBuffer);
-    procedure PrintDebug; override;
+//    procedure PrintDebug; override;
     procedure Rebuild;
     procedure RebuildSpline;
     procedure RebuildFreeStanding;
@@ -1037,7 +1037,7 @@ type
     function FGetRegularPoint: boolean;
     function FGetLimitPoint: T3DCoordinate;
     procedure FSetCoordinate(Val: T3DCoordinate);virtual;
-    procedure PrintDebug; override;
+//    procedure PrintDebug; override;
     procedure SetVertexType(AValue: TFreeVertexType);
   public
     procedure AddEdge(Edge: TFreeSubdivisionEdge);
@@ -1112,7 +1112,7 @@ type
     procedure SetLinearConstraint(pointA, pointB: TFreeSubdivisionControlPoint);
     procedure SetAnchorPoint(pointA: TFreeSubdivisionControlPoint);
     procedure SetIsAnchorHard(val: boolean);
-    procedure PrintDebug; override;
+//    procedure PrintDebug; override;
     procedure Unreference; override;
     property Color: TColor read FGetColor;
     property IsLeak: boolean read FGetIsLeak;
@@ -1179,7 +1179,7 @@ type
     procedure FSetCrease(Val: boolean); virtual;
     function FGetPreviousEdge: TFreeSubdivisionEdge;
     function FGetNextEdge: TFreeSubdivisionEdge;
-    procedure PrintDebug; override;
+//    procedure PrintDebug; override;
     procedure SetCurve(AValue: TFreeSubdivisionControlCurve);
     procedure SetStartPoint(aPoint:TFreeSubdivisionPoint);
     procedure SetEndPoint(aPoint:TFreeSubdivisionPoint);
@@ -1274,7 +1274,7 @@ type
     procedure FlipNormal;
     // Inverts the point ordering of the face
     function IndexOfPoint( P: TFreeSubdivisionPoint): integer;
-    procedure PrintDebug; override;
+//    procedure PrintDebug; override;
     procedure Subdivide(
       aOwner: TFreeSubdivisionSurface;
       aIsControlFace: boolean;
@@ -1863,8 +1863,8 @@ begin
 // try
       Items[I].Free;
     { while Count > 0 do begin
-        I := Count-1;
-        O := TObject(Items[I]);
+        I:=Count-1;
+        O:=TObject(Items[I]);
         if Assigned(O) then  begin  FreeAndNil(O);  Delete(I);  end;
       end; }
 //  finally
@@ -1878,7 +1878,7 @@ end;
 
 initialization
   Randomize;
-  DelayedDestroyList := TFreeDestroyList.Create;
+  DelayedDestroyList:=TFreeDestroyList.Create;
 
 end.
 

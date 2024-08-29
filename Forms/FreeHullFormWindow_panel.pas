@@ -507,7 +507,7 @@ begin
          fvPerspective: begin
          { Str:=format('Perspective. Pan.X=%d Pan.Y=%d Elevation=%6.2f Rotation=%6.2f Zoom=%6.4f Scale=%6.3f',
              [Viewport.Pan.X,Viewport.Pan.Y,Viewport.Elevation,Viewport.Angle,Viewport.Zoom,Viewport.Scale] );
-         } P3D := Viewport.ProjectBack( Point(X,Y),ZERO );
+         } P3D:=Viewport.ProjectBack( Point(X,Y),ZERO );
            Str:=format('Perspective.  X=%-4.2f  Y=%-4.2f  Z=%-4.2f',[P3D.X,P3D.Y,P3D.Z]);
          end else Str:='';
       end; Caption:=Str;
