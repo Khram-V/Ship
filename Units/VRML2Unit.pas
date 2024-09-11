@@ -509,25 +509,21 @@ constructor TVRML2Object.Create(Scene: TVRML2Scene; Parent: TVRML2object);
       VRMLObject: TVRMLObject;
       ValidFile: boolean;
     begin
-      if FileExistsUTF8(Filename) { *Converted from FileExists* } then
-      begin
+      if FileExistsUTF8(Filename) { *Converted from FileExists* } then begin
         Clear;
         Strings:=TStringList.Create;
         AssignFile(FFile, FileName);
         Reset(FFile);
         ValidFile:=False;
-        if not EOF(FFile) then
-        begin
+        if not EOF(FFile) then begin
           Readln(FFile, Str); // First line, must contain the string: "#VRML V1.0 ascii"
           Str:=Uppercase(Str);
-          if pos('#VRML V2.0 UTF8', Str) <> 0 then
-          begin
+          if pos('#VRML V2.0 UTF8', Str) <> 0 then begin
             FFileType:=ftVRML2;
             ValidFile:=True;
           end;
         end;
-        if not ValidFile then
-        begin
+        if not ValidFile then begin
           MessageDlg('This_is_not_a_valid_VRML_2_0_file!', mtError, [mbOK], 0);
           CloseFile(FFile);
           FreeAndNil(Strings);
@@ -535,18 +531,13 @@ constructor TVRML2Object.Create(Scene: TVRML2Scene; Parent: TVRML2object);
         end;
         if FTokens = nil then FTokens:=specialize TFasterList<TToken>.Create;
         L:=1;
-        while not EOF(FFile) do
-        begin
+        while not EOF(FFile) do begin
           Readln(FFile, Str);
           I:=1;
-          while I <= Length(Str) do
-          begin
-            if Str[I] in [#9, #10, #13] then
-              Str[I]:=#32
+          while I <= Length(Str) do begin
+            if Str[I] in [#9, #10, #13] then Str[I]:=#32
             else
-            if Str[I] = '#' then
-            begin
-              // remove comments
+            if Str[I] = '#' then begin                       // remove comments
               Str:=copy(Str, 1, I - 1);
               break;
             end;
@@ -559,29 +550,21 @@ constructor TVRML2Object.Create(Scene: TVRML2Scene; Parent: TVRML2object);
             begin
               System.Delete(Str, I, 1);
             end;
-          until I = 0;}
-          // remove leading and trailing spaces
+          until I = 0;}                   // remove leading and trailing spaces
           //Str:=Trim(Str);
-          if Trim(Str) <> '' then
-          begin
+          if Trim(Str) <> '' then begin
             tokens:=Tokenize(Str, L);
-            for I:=0 to tokens.Count-1 do
-            begin
+            for I:=0 to tokens.Count-1 do begin
               FTokens.Add(tokens[I]);
             end;
-            FreeAndNil(tokens);
-            //Strings.Add(Uppercase(Str));
+            FreeAndNil(tokens);                  //Strings.Add(Uppercase(Str));
           end;
           inc(L);
         end;
         CloseFile(FFile);
 
-        if FTokens.Count > 0 then
-        begin
-          LoadVrml2;
-        end
-        else
-          MessageDlg('This_is_not_a_valid_VRML_1_0_file', mtError, [mbOK], 0);
+        if FTokens.Count > 0 then begin LoadVrml2; end
+           else MessageDlg('This_is_not_a_valid_VRML_1_0_file',mtError,[mbOK],0);
         FreeAndNil(Strings);
       end;
     end;{TVRML2Scene.LoadFromFile}

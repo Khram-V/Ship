@@ -19,7 +19,7 @@ uses
   Buttons,
   FreeTypes,
   FreeGeometry,
-  FreeShipUnit,
+  FreeShipUnit, FreeLanguageSupport,
   ExtCtrls,
   Spin,
   CheckLst;
@@ -484,9 +484,8 @@ begin
         if abs(Desireddata.LCB - TotalProp.LCB) <= 2e-3
            then LCBError:=MaxLCBError - 1e-6
            else LCBError:=abs((Desireddata.LCB - TotalProp.LCB) / Totalprop.Length);
-        if (DisplError <= MaxDisplError) and (LCBError <= MaxLCBError) then
-        begin                                    // Job is done, interrupt
-          Iteration:=Iteration + 1 - 1;
+        if (DisplError<=MaxDisplError) and (LCBError<=MaxLCBError) then begin
+            Iteration:=Iteration+1-1;            // Job is done, interrupt
         end else begin                           // Make all data dimensionless
           with AftProperties do begin
             Displacement:=Displacement / (Length * (FMax.Y - FMin.Y) * FFreeship.ProjectSettings.ProjectDraft);
@@ -530,10 +529,7 @@ begin
               x:=x + dX;
               P3D.X:=MainLoc - x * AftProperties.Length;
               Point.Coordinate:=P3D;
-            end
-            else begin
-              // Point is part of the foreship
-              // make dimensionless
+            end else begin                             // Point is part of the foreship make dimensionless
               P3D:=Point.Coordinate;
               x:=(P3D.X - MainLoc) / ForeProperties.Length;
               dx:=(1 - x) * (ForeProperties.dp / (1 - ForeProperties.p) +
@@ -771,10 +767,8 @@ begin
   DisplacementNew.Value:=DisplacementCurrent.Value;
   BlockCoeffNew.Value:=BlockCoeffCurrent.Value;
   Viewport.ZoomExtents;
-  TopView.ZoomExtents;                                                          //ShowTranslatedValues(Self);
-
-  Showmodal;
-
+  TopView.ZoomExtents;
+  ShowTranslatedValues(Self); Showmodal;
   Modified:=FModified;
   Result:=ModalResult = mrOk;
 

@@ -27,7 +27,7 @@ uses
   StdCtrls, Spin,
   FreeTypes,
   //FreeGeometry,
-  FreeShipUnit;
+  FreeShipUnit,FreeLanguageSupport;
 
 type
 
@@ -122,21 +122,16 @@ begin
 end;
 
 function TFreeInsertPlaneDialog.Execute: boolean;
-begin FUpdate; ShowModal; Result:=ModalResult = mrOk; end;                    //ShowTranslatedValues(Self);
-
+   begin FUpdate; ShowTranslatedValues(Self); ShowModal; Result:=ModalResult=mrOk; end;
 procedure TFreeInsertPlaneDialog.RadioButton1Click(Sender: TObject);
-begin FUpdate; end;
-
+    begin FUpdate; end;
 procedure TFreeInsertPlaneDialog.RadioButton2Click(Sender: TObject);
-begin FUpdate; end;
-
+    begin FUpdate; end;
 procedure TFreeInsertPlaneDialog.RadioButton3Click(Sender: TObject);
-begin FUpdate; end;
-
+    begin FUpdate; end;
 procedure TFreeInsertPlaneDialog.BitBtn1Click(Sender: TObject);
-begin Modalresult:=mrOk; end;
-
+    begin Modalresult:=mrOk; end;
 procedure TFreeInsertPlaneDialog.BitBtn2Click(Sender: TObject);
-begin Modalresult:=mrCancel; end;
+    begin Modalresult:=mrCancel; end;
 
 end.

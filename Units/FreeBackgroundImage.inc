@@ -379,7 +379,8 @@ var
   Dialog: TFreeBackgroundBlendDialog;
   Old: byte;
 begin
-  Dialog:=TFreeBackgroundBlendDialog.Create(Owner);                           //ShowTranslatedValues(Dialog);
+  Dialog:=TFreeBackgroundBlendDialog.Create(Owner);
+  ShowTranslatedValues(Dialog);
   Old:=FAlpha;
   if Dialog.Execute(Owner) then begin
     if assigned(Owner.FOnChangeBackgroundImage) then
@@ -395,7 +396,8 @@ var
   Dialog: TFreeBackgroundToleranceDialog;
   Old: byte;
 begin
-  Dialog:=TFreeBackgroundToleranceDialog.Create(Owner);                       //ShowTranslatedValues(Dialog);
+  Dialog:=TFreeBackgroundToleranceDialog.Create(Owner);
+  ShowTranslatedValues(Dialog);
   Old:=FTolerance;
   if Dialog.Execute(Owner) then begin
     if assigned(Owner.FOnChangeBackgroundImage) then

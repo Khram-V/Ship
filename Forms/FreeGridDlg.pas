@@ -19,7 +19,7 @@ uses
   FreeTypes,
   FreeGeometry,
   ExtCtrls, Spin,
-  FreeShipUnit;
+  FreeShipUnit,FreeLanguageSupport;
 type
 
   { TFreeGridDialog }
@@ -82,8 +82,8 @@ end;
 function TFreeGridDialog.Execute(Str: string): boolean;
 begin
   lbUnit1.Caption:=Str;
-  lbUnit2.Caption:=Str;                                                       //ShowTranslatedValues(Self);
-  Showmodal;
+  lbUnit2.Caption:=Str;
+  ShowTranslatedValues(Self); Showmodal;
   Result:=ModalResult = mrOk;
 end;
 

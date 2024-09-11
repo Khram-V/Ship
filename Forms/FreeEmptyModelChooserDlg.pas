@@ -17,7 +17,7 @@ uses
     StdCtrls,
     Buttons,
     ExtCtrls,
-    FreeGeometry;
+    FreeGeometry,FreeLanguageSupport;
 
 type
 
@@ -51,8 +51,8 @@ implementation
 
 function TFreeEmptyModelChooserDialog.Execute(FileName:String):Boolean;
 begin
-   LabelFileName.Caption:=FileName;                                           // ShowTranslatedValues(Self);
-   Showmodal;
+   LabelFileName.Caption:=FileName;
+   ShowTranslatedValues(Self); Showmodal;
    BringToFront;
    Result:=ModalResult=mrOk;
 end;

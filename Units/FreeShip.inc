@@ -299,12 +299,14 @@ begin
   if Val <> FActiveControlPoint then begin
     FActiveControlPoint:=Val;
     FControlpointForm.ActiveControlPoint:=FActiveControlPoint;
-    if FActiveControlPoint = nil then begin                                     //    ShowTranslatedValues(FControlpointForm);
+    if FActiveControlPoint = nil then begin
+      ShowTranslatedValues(FControlpointForm);
       if FControlpointForm.Visible then FControlpointForm.Visible:=False;
     end else begin
       // The first line makes sure that the activecontrolpoint form does NOT recieve focus.
       // because the mousewheel zoom in/out doesn't work anymore in that case
-      if not FControlpointForm.Visible then begin                               //      ShowTranslatedValues(FControlpointForm);
+      if not FControlpointForm.Visible then begin
+        ShowTranslatedValues(FControlpointForm);
         ShowWindow(FControlpointForm.Handle, SW_SHOWNOACTIVATE);
       end;
       if not FControlpointForm.Visible then FControlpointForm.Visible:=True;

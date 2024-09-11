@@ -1,113 +1,87 @@
-{---------------------------------------------------------------------------------------------------}
-{                                           TFreeSubdivisionLayer                                   }
-{ TFreeSubdivisionLayer is a layertype class                                                        }
-{ All individual controlfaces can be assigned to a layer. Properties such as color,                 }
-{ visibility etc. are common for all controlfaces belonging the the same layer                      }
-{---------------------------------------------------------------------------------------------------}
+{---------------------------------------------------------}
+{                                  TFreeSubdivisionLayer  }
+{ TFreeSubdivisionLayer is a layertype class              }
+{ All individual controlfaces can be assigned to a layer. }
+{ Properties such as color, visibility etc. are common    }
+{ for all controlfaces belonging the the same layer       }
+{---------------------------------------------------------}
 function TFreeSubdivisionLayer.FGetColor: TColor;
-begin
-  Result:=FColor;
-end;
-
+   begin Result:=FColor; end;
 function TFreeSubdivisionLayer.FGetCount: integer;
-begin
-  Result:=FPatches.Count;
-end;
-
+   begin Result:=FPatches.Count; end;
 function TFreeSubdivisionLayer.FGetDXFLayername: string;
-begin
-  Result:=self.Name;
-end;
-
+   begin Result:=self.Name; end;
 function TFreeSubdivisionLayer.FGetName: string;
 begin
   if FDescription = '' then Result:='Layer ' + IntToStr( LayerId )
                        else Result:=FDescription;
 end;
-
 function TFreeSubdivisionLayer.FGetItems(Index: integer): TFreeSubdivisionControlFace;
-begin
-  Result:=FPatches[Index];
-end;
-
+   begin Result:=FPatches[Index]; end;
 function TFreeSubdivisionLayer.FGetLayerIndex: integer;
-begin
-  Result:=Surface.FLayers.IndexOf(self);
-end;
+   begin Result:=Surface.FLayers.IndexOf(self); end;
 
 function TFreeSubdivisionLayer.FGetSurfaceProperties: TLayerProperties;
 var
-  I, J, K, II: integer;
-  Coeff, Xmin, Xmax: single;
+  I,J,K: integer;
   Child: TFreeSubdivisionFace;
-  ffile: textfile;
-  Area: TFloatType;
+  Area:  TFloatType;
   Center: T3DCoordinate;
 
   procedure ProcessTriangle(P1, P2, P3: T3DCoordinate);
   var
     ax, ay, az: TFloatType;
   begin
-    Center.X:=(P1.X + P2.X + P3.X) / 3;
-    Center.Y:=(P1.Y + P2.Y + P3.Y) / 3;
-    Center.Z:=(P1.Z + P2.Z + P3.Z) / 3;
-    ax:=(P1.y - P2.y) * (P1.z + P2.z) + (P2.y - P3.y) * (P2.z + P3.z) + (P3.y - P1.y) * (P3.z + P1.z);
-    ay:=(P1.z - P2.z) * (P1.x + P2.x) + (P2.z - P3.z) * (P2.x + P3.x) + (P3.z - P1.z) * (P3.x + P1.x);
-    az:=(P1.x - P2.x) * (P1.y + P2.y) + (P2.x - P3.x) * (P2.y + P3.y) + (P3.x - P1.x) * (P3.y + P1.y);
-    Area:=Sqrt(ax * ax + ay * ay + az * az) * 0.5;
+    Center.X:=(P1.X+P2.X+P3.X)/3;
+    Center.Y:=(P1.Y+P2.Y+P3.Y)/3;
+    Center.Z:=(P1.Z+P2.Z+P3.Z)/3;
+    ax:=(P1.y-P2.y)*(P1.z+P2.z)+(P2.y-P3.y)*(P2.z+P3.z)+(P3.y-P1.y)*(P3.z+P1.z);
+    ay:=(P1.z-P2.z)*(P1.x+P2.x)+(P2.z-P3.z)*(P2.x+P3.x)+(P3.z-P1.z)*(P3.x+P1.x);
+    az:=(P1.x-P2.x)*(P1.y+P2.y)+(P2.x-P3.x)*(P2.y+P3.y)+(P3.x-P1.x)*(P3.y+P1.y);
+    Area:=Sqrt( ax*ax+ay*ay+az*az)*0.5;
     Result.SurfaceArea:=Result.SurfaceArea + Area;
-    Result.SurfaceCenterOfGravity.X:=Result.SurfaceCenterOfGravity.X + Area * Center.X;
-    Result.SurfaceCenterOfGravity.Y:=Result.SurfaceCenterOfGravity.Y + Area * Center.Y;
-    Result.SurfaceCenterOfGravity.Z:=Result.SurfaceCenterOfGravity.Z + Area * Center.Z;
+    Result.SurfaceCenterOfGravity.X:=Result.SurfaceCenterOfGravity.X+Area*Center.X;
+    Result.SurfaceCenterOfGravity.Y:=Result.SurfaceCenterOfGravity.Y+Area*Center.Y;
+    Result.SurfaceCenterOfGravity.Z:=Result.SurfaceCenterOfGravity.Z+Area*Center.Z;
   end;
 
 begin
-  II:=0;
-  Coeff:=Thickness * MaterialDensity;
-  Fillchar(Result, SizeOf(Result), 0);
-  if FileExists('Weights.txt') { *Converted from FileExists* } and (coeff > 0) then
-  begin
-    Assignfile(FFile, 'Weights.txt');
+//  II:=0;
+//Coeff:=Thickness*MaterialDensity;
+  Fillchar(Result,SizeOf(Result),0);
+(*if FileExists('Weights.txt') { *Converted from FileExists* }
+  and (coeff > 0) then begin
+    Assignfile(FFile,'Weights.txt');
     Append(FFile);
     II:=1;
-    if Symmetric then
-    begin
-      writeln(ffile, Count: 4, Items[0].ChildCount: 4, ' 2');
-      Coeff:=Coeff * 2;
-    end
-    else
-      writeln(ffile, IntToStr(Count) + ' ' + IntToStr(Items[0].ChildCount) + ' 1');
+    if Symmetric then begin
+      writeln(ffile,Count:4,Items[0].ChildCount:4,' 2'); Coeff:=Coeff*2;
+    end else
+      writeln(ffile,IntToStr(Count)+' '+IntToStr(Items[0].ChildCount)+' 1');
   end;
-  for I:=1 to Count do
-  begin
-    for J:=1 to Items[I - 1].ChildCount do
-    begin
-      Child:=Items[I - 1].Child[J - 1];
-      for K:=3 to Child.NumberOfpoints do
-        ProcessTriangle(Child.Point[0].Coordinate, Child.Point[K - 2].Coordinate,
-          Child.Point[K - 1].Coordinate);
-      if ii = 1 then
-      begin
-        if Child.NumberOfpoints = 3 then
-        begin
+*)
+  for I:=1 to Count do begin
+    for J:=1 to Items[I-1].ChildCount do begin
+      Child:=Items[I-1].Child[J-1];
+      for K:=3 to Child.NumberOfpoints do ProcessTriangle
+        ( Child.Point[0].Coordinate,
+          Child.Point[K-2].Coordinate,
+          Child.Point[K-1].Coordinate
+        );
+(*
+      if ii = 1 then begin
+        if Child.NumberOfpoints = 3 then begin
           Xmin:=Child.Point[0].Coordinate.X;
           Xmax:=Child.Point[0].Coordinate.X;
-          if Child.Point[1].Coordinate.X > Xmax then
-            Xmax:=Child.Point[1].Coordinate.X;
-          if Child.Point[2].Coordinate.X > Xmax then
-            Xmax:=Child.Point[2].Coordinate.X;
-          if Child.Point[1].Coordinate.X < Xmin then
-            Xmin:=Child.Point[1].Coordinate.X;
-          if Child.Point[2].Coordinate.X < Xmin then
-            Xmin:=Child.Point[2].Coordinate.X;
-          if area * coeff > 10000 then
-            Write(ffile, Center.X: 7: 3, Center.Y: 7: 3, Center.Z: 7: 3, Area * Coeff: 10: 1)
-          else
-            Write(ffile, Center.X: 7: 3, Center.Y: 7: 3, Center.Z: 7: 3, Area * Coeff: 10: 3);
+          if Child.Point[1].Coordinate.X > Xmax then Xmax:=Child.Point[1].Coordinate.X;
+          if Child.Point[2].Coordinate.X > Xmax then Xmax:=Child.Point[2].Coordinate.X;
+          if Child.Point[1].Coordinate.X < Xmin then Xmin:=Child.Point[1].Coordinate.X;
+          if Child.Point[2].Coordinate.X < Xmin then Xmin:=Child.Point[2].Coordinate.X;
+          if area * coeff > 10000
+          then Write(ffile,Center.X:7:3,Center.Y:7:3,Center.Z:7:3, Area*Coeff:10:1)
+          else Write(ffile,Center.X:7:3,Center.Y:7:3,Center.Z:7:3, Area*Coeff:10:3);
           writeln(ffile, Xmin: 8: 3, Xmax: 8: 3, ' 3');
-        end
-        else
-        begin
+        end else begin
           if area * coeff > 10000 then
             writeln(ffile, Center.X: 7: 3, Center.Y: 7: 3, Center.Z: 7: 3, Area * Coeff: 10: 1,
               (Child.Point[0].Coordinate.X + Child.Point[3].Coordinate.X) / 2: 8: 3,
@@ -118,30 +92,30 @@ begin
               (Child.Point[1].Coordinate.X + Child.Point[2].Coordinate.X) / 2: 8: 3, ' 4');
         end;
       end;
+*)
     end;
   end;
-  if Result.SurfaceArea <> 0 then
-  begin
-    Result.SurfaceCenterOfGravity.X :=
-      Result.SurfaceCenterOfGravity.X / Result.SurfaceArea;
-    Result.SurfaceCenterOfGravity.Y :=
-      Result.SurfaceCenterOfGravity.Y / Result.SurfaceArea;
-    Result.SurfaceCenterOfGravity.Z :=
-      Result.SurfaceCenterOfGravity.Z / Result.SurfaceArea;
-    if Symmetric then
-    begin
-      Result.SurfaceArea:=2 * Result.SurfaceArea;
-      Result.SurfaceCenterOfGravity.Y:=0.0;
-    end;
-    Result.Weight:=Result.SurfaceArea * Thickness * MaterialDensity;
+  if Result.SurfaceArea<>0 then begin
+     Result.SurfaceCenterOfGravity.X:=Result.SurfaceCenterOfGravity.X/Result.SurfaceArea;
+     Result.SurfaceCenterOfGravity.Y:=Result.SurfaceCenterOfGravity.Y/Result.SurfaceArea;
+     Result.SurfaceCenterOfGravity.Z:=Result.SurfaceCenterOfGravity.Z/Result.SurfaceArea;
+     if Symmetric then begin
+       Result.SurfaceArea:=2*Result.SurfaceArea;
+       Result.SurfaceCenterOfGravity.Y:=0.0;
+     end;
+     Result.Weight:=Result.SurfaceArea*Thickness*MaterialDensity;
   end;
-  if ii = 1 then
-  begin
-    writeln(ffile, Result.SurfaceCenterOfGravity.X: 7: 3,
-      Result.SurfaceCenterOfGravity.Y: 7: 3, Result.SurfaceCenterOfGravity.Z: 7: 3,
-      Result.SurfaceArea * Thickness * MaterialDensity: 12: 1, Thickness: 8: 3, MaterialDensity: 8: 3);
+(*if ii = 1 then begin
+    writeln(ffile,
+       Result.SurfaceCenterOfGravity.X:7:3,
+       Result.SurfaceCenterOfGravity.Y:7:3,
+       Result.SurfaceCenterOfGravity.Z:7:3,
+       Result.SurfaceArea*Thickness*MaterialDensity:12:1,
+       Thickness:8:3,
+       MaterialDensity:8:3 );
     closefile(ffile);
   end;
+*)
 end;
 
 procedure TFreeSubdivisionLayer.FSetFDevelopable(Val: boolean);
@@ -265,8 +239,8 @@ end;
 function ToStr( c: T3DCoordinate ): string;
 begin
   Result:='(' + FloatToStr( c.X ) + ','
-                + FloatToStr( c.Y ) + ','
-                + FloatToStr( c.Z ) + ')';
+              + FloatToStr( c.Y ) + ','
+              + FloatToStr( c.Z ) + ')';
 end;
 
 procedure TFreeSubdivisionLayer.FindEdgeFaceIntersectionPoints(
@@ -292,36 +266,28 @@ label
 begin
   Edges:=TFasterListTFreeSubdivisionControlEdge.Create;
   try
-    StartAgain:
-        // assemble all controledges in a list
-      for I:=1 to Layer.Count do
-      begin
+    StartAgain:                          // assemble all controledges in a list
+      for I:=1 to Layer.Count do begin
         Face:=Layer.Items[I - 1];
         P1:=Face.Point[Face.NumberOfPoints - 1];
-        for J:=1 to Face.NumberOfpoints do
-        begin
+        for J:=1 to Face.NumberOfpoints do begin
           P2:=Face.Point[J - 1];
           Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-          if Edge <> nil then
-          begin
+          if Edge <> nil then begin
             if Edges.SortedIndexOf(Edge) = -1 then
               Edges.AddSorted(Edge);
           end;
           P1:=P2;
         end;
-      end;
-
-    // now check all edges for intersection with layer 2
+      end;                 // now check all edges for intersection with layer 2
     I:=1;
-    while I <= Edges.Count do
-    begin
+    while I <= Edges.Count do begin
       Edge:=Edges[I - 1];
       IntFound:=False;
       esp:=Edge.FStartpoint.FCoordinate;
       eep:=Edge.FEndpoint.FCoordinate;
       J:=1;
-      while (J <= NewEdge.FFaces.Count) and (not IntFound) do
-      begin
+      while (J <= NewEdge.FFaces.Count) and (not IntFound) do begin
         Face:=TFreeSubdivisionControlFace(NewEdge.Face[J - 1]);
         esl:=Edge.Selected;
         psl:=Face.Selected;
@@ -329,12 +295,10 @@ begin
           if psl then
             T:=0;
         K:=1;
-        while (K <= Face.ChildCount) and (not IntFound) do
-        begin
+        while (K <= Face.ChildCount) and (not IntFound) do begin
           Child:=Face.Child[K - 1];
           L:=3;
-          while (L <= Child.NumberOfpoints) and (not IntFound) do
-          begin
+          while (L <= Child.NumberOfpoints) and (not IntFound) do begin
             CP0:=Child.Point[0].Coordinate;
             CP2:=Child.Point[L - 2].Coordinate;
             CP1:=Child.Point[L - 1].Coordinate;
@@ -345,13 +309,10 @@ begin
               + Plane.c * esp.Z + Plane.d;
             S2:=Plane.a * eep.X + Plane.b * eep.Y
               + Plane.c * eep.Z + Plane.d;
-            if ((S1 < 0) and (S2 > 0)) or ((S1 > 0) and (S2 < 0)) then
-            begin
+            if ((S1 < 0) and (S2 > 0)) or ((S1 > 0) and (S2 < 0)) then begin
               // Edge intersects the plane, does it lie in the triangle?
-              if S1 = S2 then
-                T:=0.5
-              else
-                T:=-s1 / (s2 - s1);
+              if S1 = S2 then T:=0.5
+                         else T:=-s1 / (s2 - s1);
               P3D.X:=esp.X + T * (eep.X - esp.X);
               P3D.Y:=esp.Y + T * (eep.Y - esp.Y);
               P3D.Z:=esp.Z + T * (eep.Z - esp.Z);
@@ -366,8 +327,7 @@ begin
               //write('P3D:',ToStr(P3D), ' CP0:',ToStr(CP0),' CP2:',ToStr(CP2),' CP1:',ToStr(CP1));
               //if PIT<>PIT0
               //then writeln ('PIT<>PIT0');
-              if PiT then
-              begin
+              if PiT then begin
                 //if Edge.Selected or Face.Selected then
                 //   write(' :IN');
                 // Yes, we have a valid intersection here
@@ -375,8 +335,7 @@ begin
                 //writeln('FreeGeometry.CalculateIntersectionPoint: Intersection found. P3D(',P3D.X,',',P3D.Y,',',P3D.Z,')');
 
                 P:=TFreeSubdivisionControlPoint.Create(Surface);
-                if (P<>nil) then
-                begin
+                if (P<>nil) then begin
                   P.FSetCoordinate(P3D);
                   {New(PP3D);
                   PP3D^.X:=P3D.X;
@@ -385,7 +344,6 @@ begin
                   NewPoints.Add(PP3D);}
                   NewPoints.Add(P);
                 end;
-
               end;
               //if Edge.Selected or Face.Selected then
               //writeln();

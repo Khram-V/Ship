@@ -1,31 +1,31 @@
 object FREEProjectSettingsDialog: TFREEProjectSettingsDialog
   Left = 565
-  Height = 600
+  Height = 450
   Top = 286
   Width = 800
   BorderStyle = bsDialog
   Caption = 'Project settings.'
-  ClientHeight = 600
+  ClientHeight = 450
   ClientWidth = 800
   OnShow = FormShow
   Position = poOwnerFormCenter
   LCLVersion = '2.0.10.0'
   object Panel1: TPanel
     Left = 0
-    Height = 566
+    Height = 420
     Top = 34
     Width = 800
     Align = alClient
     Alignment = taRightJustify
     BevelOuter = bvNone
     BorderWidth = 8
-    ClientHeight = 566
+    ClientHeight = 420
     ClientWidth = 800
     Constraints.MinWidth = 80
     TabOrder = 0
     object PageControl1: TPageControl
       Left = 8
-      Height = 550
+      Height = 420
       Top = 8
       Width = 784
       ActivePage = TabSheet1
@@ -34,11 +34,11 @@ object FREEProjectSettingsDialog: TFREEProjectSettingsDialog
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'General'
-        ClientHeight = 510
+        ClientHeight = 420
         ClientWidth = 780
         object Panel: TPanel
           Left = 0
-          Height = 510
+          Height = 420
           Top = 0
           Width = 780
           Align = alClient
@@ -48,7 +48,7 @@ object FREEProjectSettingsDialog: TFREEProjectSettingsDialog
           ChildSizing.VerticalSpacing = 10
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
-          ClientHeight = 510
+          ClientHeight = 420
           ClientWidth = 780
           TabOrder = 0
           object Panel6: TPanel
@@ -720,14 +720,6 @@ object FREEProjectSettingsDialog: TFREEProjectSettingsDialog
               Width = 343
               Caption = 'Enable auto move model to baseline'
               TabOrder = 1
-            end
-            object CheckBox14: TCheckBox
-              Left = 3
-              Height = 28
-              Top = 60
-              Width = 343
-              Caption = 'Save Bonjean scale and SAC in files'
-              TabOrder = 2
             end
           end
           object GroupBox1: TGroupBox

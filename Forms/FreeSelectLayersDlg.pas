@@ -23,10 +23,10 @@ uses
      Dialogs,
      Buttons,
      ExtCtrls,
-     StdCtrls,
+     StdCtrls, CheckLst,
      FreeshipUnit,
      FreeGeometry,
-     CheckLst;
+     FreeLanguageSupport;
 
 type TFreeSelectMode          = (fsFaces,fsPoints);
 
@@ -182,7 +182,8 @@ begin
       Freeship.Visibility.ShowNormals:=False;
       Freeship.Visibility.ShowControlNet:=True;
       Freeship.Visibility.ShowInteriorEdges:=False;
-   end;                                                                         // ShowTranslatedValues(Self);
+   end;                                                                         //
+   ShowTranslatedValues(Self);
 // try
       ShowModal;
 // finally

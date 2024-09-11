@@ -34,7 +34,7 @@ uses
   Classes,
   FreeTypes,
   FreeGeometry,
-  FreeShipUnit,
+  FreeShipUnit,FreeLanguageSupport,
   Math,
   ExtCtrls,
   Menus, ActnList, Types;
@@ -1660,7 +1660,8 @@ begin
   FFreeship:=Freeship;
   Chart.BottomAxis.Title.Caption:='Angle of attack [degr] ';
   Chart.LeftAxis.Title.Caption:='Cx(Drag), Cy(Lift), m_z, Cd, 0.1*K ';
-  FProfile:=TFreeSpline.Create(FFreeship.Surface);                              //ShowTranslatedValues(Self);
+  FProfile:=TFreeSpline.Create(FFreeship.Surface);
+  ShowTranslatedValues(Self);
   FLayerColor:=FFreeship.Preferences.LayerColor;
   LayerColorButton.ButtonColor:=FLayerColor;
   ComboBoxSubdivisionLevel.ItemIndex:=Ord(FFreeship.Precision);

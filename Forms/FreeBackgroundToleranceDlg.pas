@@ -5,15 +5,10 @@ unit FreeBackgroundToleranceDlg;
 interface
 
 uses
-  SysUtils, Forms, Controls, Dialogs, ExtCtrls, Buttons,
-  Spin, StdCtrls,
-  FreeGeometry,
-  FreeShipUnit
-;
+  SysUtils, Forms, Controls, Dialogs, ExtCtrls, Buttons, Spin, StdCtrls,
+  FreeGeometry,FreeShipUnit,FreeLanguageSupport;
 
-type
-
-  { TFreeBackgroundToleranceDialog }
+type                                         { TFreeBackgroundToleranceDialog }
 
   TFreeBackgroundToleranceDialog = class(TForm)
     BitBtn1: TSpeedButton;
@@ -45,8 +40,8 @@ implementation
 function TFreeBackgroundToleranceDialog.Execute(Viewport: TFreeViewport): boolean;
 begin
   FViewport:=Viewport;
-  SpinEdit1.Value:=FViewport.BackgroundImage.Tolerance;                       //ShowTranslatedValues(Self);
-  Showmodal;
+  SpinEdit1.Value:=FViewport.BackgroundImage.Tolerance;
+  ShowTranslatedValues(Self); Showmodal;
   Result:=ModalResult = mrOk;
 end;
 

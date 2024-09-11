@@ -485,11 +485,8 @@ begin
           Viewport.Rectangle(Pz.X - I, Pz.Y - I, Pz.X + I, Pz.Y + I);
       end;
     end;
-  end
-  else
-  begin
-    //with Viewport.DrawingCanvas do
-    //begin
+  end else begin
+  //with Viewport.DrawingCanvas do begin
     P3D:=FCoordinate;
     if Viewport.ViewType = fvBodyplan then
       if P3D.X <= Surface.SplitSectionLocation then P3D.Y:=-P3D.Y;
@@ -505,13 +502,10 @@ begin
                          P.Y - Surface.ControlPointSize - 2,
                          P.X + Surface.ControlPointSize + 2,
                          P.Y + Surface.ControlPointSize + 2);
-    end
-    else
-    begin
+    end else begin
       for I:=1 to Surface.ControlPointSize do
         Viewport.Rectangle(P.X - I, P.Y - I, P.X + I, P.Y + I);
     end;
-
     if (FLinearConstraintPointA <> nil) and (FLinearConstraintPointB <> nil) then
     begin
       B3D:=Line3P(self.Coordinate,
@@ -543,27 +537,23 @@ begin
            ViewPort.Line(PA.x,PA.y,PB.x,PB.y);
            end;
         end;
-
       PA:=Viewport.Project(P3DA);
       PB:=Viewport.Project(P3DB);
       ViewPort.PenStyle:=psDash;
       ViewPort.Line(PA.x,PA.y,PB.x,PB.y);
     end;
-
     {else
     begin  // temporary until Names completely implemented
       Viewport.FontColor:=Color;
       ViewPort.TextOut(P.X + 2, P.Y + 2, IntToStr(FId));
     end;}
-
     //end;
   end;
-  if (FName > '') then
-  begin
+  if (FName > '') then begin
     Viewport.FontColor:=Color;
     ViewPort.TextOut(P.X + 2, P.Y + 2, FName);
   end;
-end;{TFreeSubdivisionControlPoint.Draw}
+end;
 
 
 // Adjust To Linear Constraint during editing/moving
@@ -581,16 +571,12 @@ var P,PN: TPoint;
       d2.X:=P2.X - P1.X;     d2.Y:=P2.Y - P1.Y;     d2.Z:=P2.Z - P1.Z;
       L:=Sqr(d2.X) + Sqr(d2.Y) + Sqr(d2.Z);
 
-      if L > 1e-6 then
-        begin
+      if L > 1e-6 then begin
         T:=((d1.X * d2.X) + (d1.Y * d2.Y) + (d1.Z * d2.Z)) / L;
         Result.X:=P1.X + T * d2.X;
         Result.Y:=P1.Y + T * d2.Y;
         Result.Z:=P1.Z + T * d2.Z;
-        end
-      else
-        Result:=P;
-
+      end else Result:=P;
     end;{Dist_PL_3D}
 
     // project point P on the ray through P1 and P2 by X
@@ -709,28 +695,21 @@ var
   Str: string;
   I: integer;
   sel: boolean;
-begin
-  // FCoordinate
+begin                                                       // FCoordinate
   Inc(LineNr);
   Str:=Strings[LineNr];
   FCoordinate.X:=GetFloat( Str);
   FCoordinate.Y:=GetFloat( Str);
-  FCoordinate.Z:=GetFloat( Str);
-  // FVertexType
-  if Str <> '' then
-  begin
+  FCoordinate.Z:=GetFloat( Str);                            // FVertexType
+  if Str <> '' then begin
     I:=GetInteger( Str);
     FVertextype:=TFreeVertexType(I);
-    if Str <> '' then
-    begin
+    if Str <> '' then begin
       Sel:=GetBoolean( Str);
-      if sel then
-        Selected:=True;
+      if sel then Selected:=True;
     end;
-  end
-  else
-    FVertextype:=TFreeVertexType(0);
-end;{TFreeSubdivisionControlPoint.LoadFromStream}
+  end else FVertextype:=TFreeVertexType(0);
+end;
 
 procedure TFreeSubdivisionControlPoint.MoveBy( Viewport:TFreeViewPort; dX,dY,dZ: TFloatType;
                                                vAnchor:TFreeSubdivisionControlPoint);
@@ -747,8 +726,7 @@ begin
   Destination.Add(FCoordinate);
   Destination.Add(Ord(VertexType));
   Destination.Add(Selected);
-  if Destination.Version >= fv198 then
-  begin
+  if Destination.Version >= fv198 then begin
     Destination.Add(Locked);
   end;
 end;{TFreeSubdivisionControlPoint.SaveBinary}
@@ -767,7 +745,6 @@ end;{TFreeSubdivisionControlPoint.SaveToStream}
 procedure TFreeSubdivisionControlPoint.SetLinearConstraint(pointA, pointB: TFreeSubdivisionControlPoint);
 begin
   if (FLinearConstraintPointA = pointA) and (FLinearConstraintPointB = pointB) then exit;
-
   if FLinearConstraintPointA <> nil then
      FLinearConstraintPointA.FLinearConstrainedPoints.DeleteItem(Self);
   if FLinearConstraintPointB <> nil then
@@ -776,10 +753,8 @@ begin
   FLinearConstraintPointA:=pointA;
   FLinearConstraintPointB:=pointB;
 
-  if pointA <> nil then
-     pointA.FLinearConstrainedPoints.Add(Self);
-  if pointB <> nil then
-     pointB.FLinearConstrainedPoints.Add(Self);
+  if pointA <> nil then pointA.FLinearConstrainedPoints.Add(Self);
+  if pointB <> nil then pointB.FLinearConstrainedPoints.Add(Self);
 end;
 
 procedure TFreeSubdivisionControlPoint.SetAnchorPoint(pointA: TFreeSubdivisionControlPoint);
@@ -797,9 +772,7 @@ begin
 end;
 
 procedure TFreeSubdivisionControlPoint.SetIsAnchorHard(val: boolean);
-begin
-  FIsAnchorHard:=val;
-end;
+    begin FIsAnchorHard:=val; end;
 {
 procedure TFreeSubdivisionControlPoint.PrintDebug;
 var i:integer; svt:string;
@@ -811,9 +784,7 @@ end;
 procedure TFreeSubdivisionControlPoint.Unreference;
 var i:integer;
 begin
-
-  for i:=0 to FLinearConstrainedPoints.Count-1 do
-    begin
+  for i:=0 to FLinearConstrainedPoints.Count-1 do begin
     if FLinearConstrainedPoints[i].FLinearConstraintPointA = Self then
        FLinearConstrainedPoints[i].FLinearConstraintPointA:=nil;
     if FLinearConstrainedPoints[i].FLinearConstraintPointB = Self then
@@ -824,8 +795,7 @@ begin
   if FLinearConstraintPointB <> nil then
      FLinearConstraintPointB.FLinearConstrainedPoints.DeleteItem(self);
 
-  for i:=0 to FAnchoredPoints.Count-1 do
-    begin
+  for i:=0 to FAnchoredPoints.Count-1 do begin
     if FAnchoredPoints[i].FAnchorPoint = Self then
        FAnchoredPoints[i].FAnchorPoint:=nil;
     if FAnchoredPoints[i].FAnchorPoint = Self then
@@ -833,7 +803,6 @@ begin
     end;
   if FAnchorPoint <> nil then
      FAnchorPoint.FAnchoredPoints.DeleteItem(Self);
-
   if FSurface <> nil then FSurface.UnreferenceControlPoint(Self);
   inherited;
 end;

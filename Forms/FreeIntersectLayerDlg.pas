@@ -17,7 +17,7 @@ uses
   StdCtrls,
   ExtCtrls,
   Freegeometry,
-  FreeShipUnit;
+  FreeShipUnit,FreeLanguageSupport;
 
 type
 
@@ -107,29 +107,25 @@ var
 begin
   ComboBox1.Items.BeginUpdate;
   ComboBox1.Clear;
-  try
-    for I:=1 to Layers.Count do
-    begin
+//try
+    for I:=1 to Layers.Count do begin
       Layer:=Layers[I - 1];
-      ComboBox1.Items.AddObject(Layer.Name, Layer);
+      ComboBox1.Items.AddObject(Layer.Name,Layer);
     end;
-  finally
+//finally
     ComboBox1.Items.EndUpdate;
-    if Combobox1.Items.Count > 0 then
-      ComboBox1.ItemIndex:=0;
+    if Combobox1.Items.Count > 0 then ComboBox1.ItemIndex:=0;
     UpdateBox2;
-  end;                                                                          //ShowTranslatedValues(Self);
-  ShowModal;
+//end;
+  ShowTranslatedValues(Self); ShowModal;
   Result:=modalResult = mrOk;
 end;
 
 procedure TFreeIntersectLayerDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult:=mrOk; end;
-
+    begin ModalResult:=mrOk; end;
 procedure TFreeIntersectLayerDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult:=mrCancel; end;
-
+    begin ModalResult:=mrCancel; end;
 procedure TFreeIntersectLayerDialog.ComboBox1Change(Sender: TObject);
-begin UpdateBox2; end;
+    begin UpdateBox2; end;
 
 end.

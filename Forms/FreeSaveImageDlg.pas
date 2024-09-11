@@ -23,7 +23,7 @@ uses
   StdCtrls,
   Buttons,
   ExtCtrls, Spin,
-  FreeShipUnit;
+  FreeShipUnit,FreeLanguageSupport;
 
 type
 
@@ -131,8 +131,8 @@ begin SpinEdit2.Value:=val; SetImageSize; end;
 
 function TSaveImageDialog.Execute: boolean;
 begin
-  FRatio:=Imagewidth / ImageHeight;                                           //ShowTranslatedValues(Self);
-  Showmodal;
+  FRatio:=Imagewidth / ImageHeight;
+  ShowTranslatedValues(Self); Showmodal;
   Result:=ModalResult = mrOk;
 end;
 

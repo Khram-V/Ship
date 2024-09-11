@@ -19,7 +19,7 @@ uses
      ExtCtrls,
      FreeShipUnit, FreeVersionUnit,
      FreeTypes,
-     FreeGeometry,
+     FreeGeometry,FreeLanguageSupport,
      Buttons;
 
 type
@@ -135,8 +135,8 @@ begin
       UndoBox.Items.EndUpdate;
       Freeship1.AddViewport(Viewport);
       UndoBox.ItemIndex:=Freeship.UndoPosition-1;
-      Viewport.Color:=Freeship.Preferences.ViewportColor;                       //    ShowTranslatedValues(Self);
-      ShowModal;
+      Viewport.Color:=Freeship.Preferences.ViewportColor;
+      ShowTranslatedValues(Self); ShowModal;
    end;
    Result:=ModalResult=mrOK;
 end;

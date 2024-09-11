@@ -18,7 +18,7 @@ uses
   Controls,
   StdCtrls,
   Buttons,
-  ExtCtrls, Spin;
+  ExtCtrls, Spin, FreeLanguageSupport;
 
 type TFreeNewModelDialog = class(TForm)
     FloatSpinEdit1: TFloatSpinEdit;
@@ -105,8 +105,8 @@ begin
   NRows:=NRows;
   Length:=Length;
   Breadth:=Breadth;
-  Draft:=Draft;                                                               //ShowTranslatedValues(Self);
-  Showmodal;
+  Draft:=Draft;
+  ShowTranslatedValues(Self); Showmodal;
   Result:=ModalResult = mrOk;
 end;
 

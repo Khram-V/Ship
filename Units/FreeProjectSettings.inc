@@ -31,7 +31,7 @@ begin
     FreeShip.FileChanged:=True;
   end;
 end;
-
+(*
 procedure TFreeProjectSettings.FSetEnableBonjeanSAC(Val: boolean);
 begin
   if val <> FEnableBonjeanSAC then begin
@@ -39,7 +39,7 @@ begin
     FreeShip.FileChanged:=True;
   end;
 end;
-
+*)
 function TFreeProjectSettings.FGetProjectSplitSectionLocation: TFloatType;
 begin
   if UseDefaultSplitSectionLocation then Result:=FProjectLength / 2
@@ -281,7 +281,7 @@ begin
   FProjectSplitSectionLocation:=0.0;
   FDisableModelCheck:=False;
   FEnableModelAutoMove:=False;
-  FEnableBonjeanSAC:=False;
+//FEnableBonjeanSAC:=False;
   FSavePreview:=True;
   FFreeHydrostaticCoefficients:=fcActualData;
   FProjectSimplifyIntersections:=True;
@@ -360,7 +360,7 @@ begin
   Dialog.CheckBox3.Checked:=DisableModelCheck;
   Dialog.cbSavePreviewImage.Checked:=SavePreview;
   Dialog.CheckBox13.Checked:=EnableModelAutoMove;
-  Dialog.CheckBox14.Checked:=EnableBonjeanSAC;
+//Dialog.CheckBox14.Checked:=EnableBonjeanSAC;
   Dialog.ComboBox1.ItemIndex:=Ord(ProjectCoefficients);
 
   Dialog.CheckBox5.Checked:=FreeShip.Visibility.FShowHydrostDisplacement;
@@ -368,7 +368,8 @@ begin
   Dialog.CheckBox7.Checked:=FreeShip.Visibility.FShowHydrostMetacentricHeight;
   Dialog.CheckBox8.Checked:=FreeShip.Visibility.FShowHydrostLCF;
   Dialog.CheckBox9.Checked:=FreeShip.Visibility.FShowHydrostLateralArea;
-  Dialog.cbSimplifyIntersections.Checked:=ProjectSimplifyIntersections;       //ShowTranslatedValues(Dialog);
+  Dialog.cbSimplifyIntersections.Checked:=ProjectSimplifyIntersections;
+  ShowTranslatedValues(Dialog);
 
   if Dialog.Execute then
   begin
@@ -393,7 +394,7 @@ begin
     UseDefaultSplitSectionLocation:=Dialog.CheckBox2.Checked;
     DisableModelCheck:=Dialog.CheckBox3.Checked;
     EnableModelAutoMove:=Dialog.CheckBox13.Checked;
-    EnableBonjeanSAC:=Dialog.CheckBox14.Checked;
+//  EnableBonjeanSAC:=Dialog.CheckBox14.Checked;
     SavePreview:=Dialog.cbSavePreviewImage.Checked;
     ProjectCoefficients:=TFreeHydrostaticCoeff(Dialog.ComboBox1.ItemIndex);
 
@@ -412,8 +413,7 @@ end;
 
 procedure TFreeProjectSettings.LoadBinary(Source: TFreeFilebuffer; Image: TJPegImage);
 var
-  I: integer;
-  Jpg: TJPEGImage;
+  I: integer; Jpg: TJPEGImage;        FEnableBonjeanSAC: boolean; // == отменён
 begin
   Clear;
   Source.LoadString(FProjectName);
@@ -536,7 +536,8 @@ begin
         Destination.Add(FVCG);
       end;
       if FreeShip.Fileversion>=fv317 then Destination.Add(EnableModelAutoMove);
-      if FreeShip.Fileversion>=fv332 then Destination.Add(EnableBonjeanSAC);
+//    if FreeShip.Fileversion>=fv332 then Destination.Add(EnableBonjeanSAC);
+      if FreeShip.Fileversion>=fv332 then Destination.Add( false );
       if FreeShip.Fileversion>=fv500 then Destination.Add(FProjectUnderWaterColorAlpha);
     end;
   end;

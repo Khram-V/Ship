@@ -327,7 +327,8 @@ var
   Str: string;
   vUndo: TFreeUndoObject;
 begin
-  Dialog:=TFreeExtrudeDialog.Create(FreeShip);                                //ShowTranslatedValues(Dialog);
+  Dialog:=TFreeExtrudeDialog.Create(FreeShip);
+  ShowTranslatedValues(Dialog);
   Dialog.XValue:=0.0;
   Dialog.YValue:=0.0;
   Dialog.ZValue:=0.0;
@@ -375,7 +376,8 @@ var
   Str: string;
   vUndo: TFreeUndoObject;
 begin
-  Dialog:=TFreeExtrudeDialog.Create(FreeShip);                                //ShowTranslatedValues(Dialog);
+  Dialog:=TFreeExtrudeDialog.Create(FreeShip);
+  ShowTranslatedValues(Dialog);
   Dialog.XValue:=0.0;
   Dialog.YValue:=0.0;
   Dialog.ZValue:=0.0;
@@ -584,7 +586,8 @@ var
 begin
   Faces:=TFasterListTFreeSubdivisionControlFace.Create;
   if FreeShip.NumberOfSelectedControlFaces = 0 then begin
-    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);                      //  ShowTranslatedValues(SelectDlg);
+    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
+    ShowTranslatedValues(SelectDlg);
     if SelectDlg.Execute(FFreeShip, fsFaces) then
       SelectDlg.ExtractSelectedFaces(Faces)
     else begin
@@ -599,9 +602,9 @@ begin
                 Faces.Add(FreeShip.SelectedControlFace[I-1]);
   end;
   if Faces.Count > 0 then begin
-    Dialog:=TFreeMirrorPlaneDialog.Create(FreeShip);                          //  ShowTranslatedValues(Dialog);
-    if Dialog.Execute then
-    begin
+    Dialog:=TFreeMirrorPlaneDialog.Create(FreeShip);
+    ShowTranslatedValues(Dialog);
+    if Dialog.Execute then begin
       Mirrorplane:=Dialog.Plane;
       CreateUndoObject(Userstring(84), True);
       PrevCursor:=Screen.Cursor;
@@ -713,7 +716,8 @@ begin
     Points.Add(FreeShip.ActiveControlPoint);
   FreeShip.Surface.ExtractPointsFromSelection( Points,NLocked );
   if Points.Count = 0 then begin
-    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip); // ShowTranslatedValues(SelectDlg);
+    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
+    ShowTranslatedValues(SelectDlg);
     if SelectDlg.Execute( FFreeShip,fsPoints ) then
        SelectDlg.ExtractSelectedPoints(Points)
     else begin
@@ -727,8 +731,9 @@ begin
       Proceed:=MessageDlg(Userstring(86)+EOL+Userstring(87),mtWarning,[mbYes,mbNo],0)=mrYes
     else Proceed:=True;
     if Proceed then begin
-      Dialog:=TFreeRotateDialog.Create( FreeShip ); // ShowTranslatedValues(Dialog);
-      Dialog.Caption:='Rotate selected items.';  // ShowTranslatedValues(Dialog);
+      Dialog:=TFreeRotateDialog.Create( FreeShip );
+      ShowTranslatedValues(Dialog);
+      Dialog.Caption:='Rotate selected items.';  //-- ShowTranslatedValues(Dialog);
       Dialog.XValue:=0.0;
       Dialog.YValue:=0.0;
       Dialog.ZValue:=0.0;
@@ -799,7 +804,8 @@ begin
   FreeShip.Surface.ExtractPointsFromSelection(Points,NLocked);
   if Points.Count>0 then begin
     Dialog:=TFreeRotateDialog.Create( FreeShip );
-    Dialog.Caption:='Heeling and/or trimming all model items.';  // ShowTranslatedValues(Dialog);
+    Dialog.Caption:='Heeling and/or trimming all model items.';
+    ShowTranslatedValues(Dialog);
     Dialog.XValue:=0.0;
     Dialog.YValue:=0.0;
     Dialog.ZValue:=0.0;
@@ -861,7 +867,8 @@ begin
     Points.Add(FreeShip.ActiveControlPoint);
   FreeShip.Surface.ExtractPointsFromSelection(Points, NLocked);
   if Points.Count = 0 then begin
-    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);                      //  ShowTranslatedValues(SelectDlg);
+    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
+    ShowTranslatedValues(SelectDlg);
     if SelectDlg.Execute(FFreeShip, fsPoints) then
       SelectDlg.ExtractSelectedPoints(Points)
     else begin
@@ -878,7 +885,8 @@ begin
     else Proceed:=True;
     if Proceed then begin
       Dialog:=TFreeRotateDialog.Create(FreeShip);
-      Dialog.Caption:='Scale selected items.';                                                //    //ShowTranslatedValues(Dialog);
+      Dialog.Caption:='Scale selected items.';
+      ShowTranslatedValues(Dialog);
       Dialog.XValue:=1.0;
       Dialog.YValue:=1.0;
       Dialog.ZValue:=1.0;
@@ -946,7 +954,8 @@ begin
     Points.Add(FreeShip.ActiveControlPoint);
   FreeShip.Surface.ExtractPointsFromSelection(Points, NLocked);
   if Points.Count = 0 then begin
-    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);                      //  ShowTranslatedValues(SelectDlg);
+    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
+    ShowTranslatedValues(SelectDlg);
     if SelectDlg.Execute(FFreeShip, fsPoints) then
       SelectDlg.ExtractSelectedPoints(Points)
     else begin
@@ -963,7 +972,8 @@ begin
     else Proceed:=True;
     if Proceed then begin
       Dialog:=TFreeRotateDialog.Create(FreeShip);
-      Dialog.Caption:= 'Move the entire model.'; // ShowTranslatedValues(Dialog);
+      Dialog.Caption:= 'Move the entire model.';
+      ShowTranslatedValues(Dialog);
       Dialog.XValue:=0.0;
       Dialog.YValue:=0.0;
       Dialog.ZValue:=0.0;
@@ -1557,14 +1567,12 @@ var
   begin
     //if not Intersection.Built then
     Intersection.Rebuild;
-    if intersection.Count > 0 then
-    begin
+    if intersection.Count > 0 then begin
       Layername:=getLayerName(Intersection.IntersectionType);
       if CreateIndividualLayers then
         Layername:=format(Layername+'%.2d',[IntersectionNumber]);
       Filename:=FreeShip.Preferences.ExportDirectory + Intersection.Description + '.dxf';
-      for I:=1 to Intersection.Count do
-      begin
+      for I:=1 to Intersection.Count do begin
         Intersection.Items[I - 1].Color:=Intersection.Color;
         SaveSpline(Intersection.Items[I - 1], Strings, Intersection.IntersectionType);
       end;
@@ -1572,16 +1580,15 @@ var
   end;
 
 begin
-  Dialog:=TDXFExport2DDialog.Create(FreeShip);                                //ShowTranslatedValues(Dialog);
+  Dialog:=TDXFExport2DDialog.Create(FreeShip);
+  ShowTranslatedValues(Dialog);
   Dialog.ExportDirectory:=FreeShip.Preferences.ExportDirectory;
-  if FreeShip.ProjectSettings.ProjectUnits = fuMetric then
-    Dialog.ComboBox1.ItemIndex:=0
-  else
-  if FreeShip.ProjectSettings.ProjectUnits = fuImperial then
-    Dialog.ComboBox1.ItemIndex:=3;
+  if FreeShip.ProjectSettings.ProjectUnits = fuMetric
+  then Dialog.ComboBox1.ItemIndex:=0
+  else if FreeShip.ProjectSettings.ProjectUnits = fuImperial
+       then Dialog.ComboBox1.ItemIndex:=3;
 
-  if Dialog.Execute then
-  begin
+  if Dialog.Execute then begin
     FreeShip.Preferences.ExportDirectory:=Dialog.ExportDirectory;
     if Length(FreeShip.Preferences.ExportDirectory) > 0 then
       if FreeShip.Preferences.ExportDirectory[Length(
@@ -1606,13 +1613,11 @@ begin
         3: ScaleFactor:=1.0;         // Scale from feet to feet
         4: ScaleFactor:=12;          // Scale from feet to inches
       end;
-
     Strings:=TStringList.Create;
     PrevCursor:=Screen.Cursor;
     Screen.Cursor:=crHourGlass;
     try
       CreateIndividualLayers:=Dialog.cbCreateIndividualLayers.Checked;
-
       if Dialog.cbCreateIndividualFiles.Checked then begin        // send each intersection to an individual dxf file
         Intersections:=TFasterListTFreeIntersection.Create;
         if FreeShip.Visibility.ShowStations then Intersections.AddList(FreeShip.FStations);
@@ -1630,9 +1635,7 @@ begin
           Strings.SaveToFile(Filename);
         end;
         FreeAndNil(Intersections);
-      end
-      else
-      begin
+      end else begin
         if (FreeShip.Visibility.ShowStations) and (FreeShip.NumberofStations > 0) then
         begin
           Strings.Clear;
@@ -1647,8 +1650,8 @@ begin
           Filename:=FreeShip.Preferences.ExportDirectory + 'stations.dxf';
           Strings.SaveToFile(Filename);
         end;
-        if (FreeShip.Visibility.ShowButtocks) and (FreeShip.NumberofButtocks > 0) then
-        begin
+        if (FreeShip.Visibility.ShowButtocks)
+        and (FreeShip.NumberofButtocks > 0) then begin
           Strings.Clear;
           Layername:=getLayerName(fiButtock);
           DefineLayers(Strings, Layername, 1, FreeShip.NumberofButtocks);
@@ -1661,8 +1664,8 @@ begin
           Filename:=FreeShip.Preferences.ExportDirectory + 'buttocks.dxf';
           Strings.SaveToFile(Filename);
         end;
-        if (FreeShip.Visibility.ShowWaterlines) and (FreeShip.NumberofWaterlines > 0) then
-        begin
+        if (FreeShip.Visibility.ShowWaterlines)
+        and (FreeShip.NumberofWaterlines > 0) then begin
           Strings.Clear;
           Layername:=getLayerName(fiWaterline);
           DefineLayers(Strings, Layername, 1, FreeShip.NumberofWaterlines);
@@ -1698,7 +1701,11 @@ var
   Point: TFreeSubdivisionPoint;
 
   Procedure Str2( A,B: single );
-    begin Str:=Str+format( ' %1.5g %1.5g',[F2S(A),F2S(B)] );  end;
+    begin
+      if abs( A )<1e-5 then A:=0 else A:=F2S( A );
+      if abs( B )<1e-5 then B:=0 else B:=F2S( B );
+      Str:=Str+format( ' %1.5g %1.5g',[A,B] );
+    end;
   Procedure StemStern( Dir:boolean );                  // Dir=true - форштевень
     var I,J,K,M,N: Integer;
   begin Str:='';
@@ -2197,26 +2204,23 @@ var
   I: integer;
 begin
   Faces:=TFasterListTFreeSubdivisionControlFace.Create;
-  if FreeShip.NumberOfSelectedControlFaces = 0 then
-  begin
-    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);                      //  ShowTranslatedValues(SelectDlg);
+  if FreeShip.NumberOfSelectedControlFaces = 0 then begin
+    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
+    ShowTranslatedValues(SelectDlg);
     if SelectDlg.Execute(FFreeShip, fsFaces) then
       SelectDlg.ExtractSelectedFaces(Faces);
     for I:=FreeShip.NumberOfSelectedControlFaces downto 1 do
       FreeShip.SelectedControlFace[I - 1].Selected:=False;
     Freeship.ReDraw;
     FreeAndNil(SelectDlg);
-  end
-  else
-  begin
+  end else begin
     Faces.Capacity:=Faces.Count + FreeShip.NumberOfSelectedControlFaces;
     for I:=1 to FreeShip.NumberOfSelectedControlFaces do
-      Faces.Add(FreeShip.SelectedControlFace[I - 1]);
+      Faces.Add(FreeShip.SelectedControlFace[I-1]);
   end;
-  if Faces.Count > 0 then
-    FreeShip.SavePart(Faces);
+  if Faces.Count > 0 then FreeShip.SavePart(Faces);
   FreeAndNil(Faces);
-end;{TFreeEdit.File_ExportPart}
+end;
 
 // Save NURBS patches to an IGES file
 procedure TFreeEdit.File_ExportIGES;
@@ -2829,25 +2833,20 @@ begin
     FreeShip.ProjectSettings.ProjectUnits:=fuMetric;
   end else UndoObject:=nil;
 //try
-    if not FreeShip.ProjectSettings.DisableModelCheck then
-      Model_Check(False);
-    Dialog:=TFreeMichletOutputDialog.Create(FreeShip);            //  ShowTranslatedValues(Dialog);
-    // Hull
+    if not FreeShip.ProjectSettings.DisableModelCheck then Model_Check(False);
+    Dialog:=TFreeMichletOutputDialog.Create(FreeShip);
+    ShowTranslatedValues(Dialog);                                       // Hull
     Dialog.NumberOfStations:=31;
     Dialog.NumberOfWaterlines:=21;
     Dialog.Draft:=FreeShip.ProjectSettings.ProjectDraft;
-    Dialog.Length:=FreeShip.ProjectSettings.ProjectLength;
-    // Resistance
+    Dialog.Length:=FreeShip.ProjectSettings.ProjectLength;        // Resistance
     Dialog.StartSpeed:=1;
     Dialog.EndSpeed:=5;
-    Dialog.NumberOfSpeeds:=50;
-
-    // Environment
+    Dialog.NumberOfSpeeds:=50;                                   // Environment
     Dialog.G:=9.80665;
     Dialog.WaterDensity:=FreeShip.ProjectSettings.ProjectWaterDensity;
     //      Dialog.WaterTemper:=FreeShip.ProjectSettings.ProjectWaterTemper;
-    Dialog.WaterDepth:=10000;
-    // Waves
+    Dialog.WaterDepth:=10000;                                          // Waves
     Dialog.R0:=1.5 * Dialog.Length;
     Dialog.R1:=5.0 * Dialog.Length;
     Dialog.Beta:=22.5;
@@ -2859,7 +2858,6 @@ begin
     Dialog.Y1:=-Dialog.Y0;
     Dialog.Nx:=100;
     Dialog.Ny:=100;
-
     if Dialog.Execute(FreeShip) then begin
       SaveDialog:=TSaveDialog.Create(FreeShip);
       SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
@@ -4584,7 +4582,8 @@ var
   Layer: TFreeSubdivisionLayer;
   Grid: TFreeSubdivisionControlPointGrid;
 begin
-  Dialog:=TFreeCylinderDialog.Create(FreeShip);                               //ShowTranslatedValues(Dialog);
+  Dialog:=TFreeCylinderDialog.Create(FreeShip);
+  ShowTranslatedValues(Dialog);
   Dialog.StartPoint:=SetPoint(0.0, 0.0, 0.0);
   Dialog.EndPoint:=SetPoint(0.0, 1.0, 0.0);
   Dialog.Radius.Value:=1.0;
@@ -4765,7 +4764,8 @@ begin
     MessageDlg(UserString(196), mtError, [mbOK], 0)
   else begin                                 // Check model for inconsistencies
     if not FreeShip.ProjectSettings.DisableModelCheck then Model_Check(False);
-    Dialog:=TFreeCrosscurvesDialog.Create(FreeShip);                          ////    ShowTranslatedValues(Dialog);
+    Dialog:=TFreeCrosscurvesDialog.Create(FreeShip);
+    ShowTranslatedValues(Dialog);
     Dialog.SetDisplacements(FreeShip.ProjectSettings.FDisplacements,FreeShip.ProjectSettings.FNoDisplacements);
     Dialog.FreeNumInput2.Value:=FreeShip.ProjectSettings.FMinimumDisplacement;
     Dialog.FreeNumInput3.Value:=FreeShip.ProjectSettings.FMaximumDisplacement;
@@ -4792,7 +4792,8 @@ end;
 procedure TFreeEdit.Hydrostatics_Dialog;
 var HydrostaticsForm: TFreeHydrostaticsForm;
 begin
-  HydrostaticsForm:=TFreeHydrostaticsForm.Create(FreeShip);                   //ShowTranslatedValues(HydrostaticsForm);
+  HydrostaticsForm:=TFreeHydrostaticsForm.Create(FreeShip);
+  ShowTranslatedValues(HydrostaticsForm);
   Hydrostaticsform.StartDraft:=FreeShip.ProjectSettings.Hydrostatics_Startdraft;
   Hydrostaticsform.EndDraft:=FreeShip.ProjectSettings.Hydrostatics_Enddraft;
   Hydrostaticsform.DraftStep:=FreeShip.ProjectSettings.Hydrostatics_DraftStep;
@@ -5400,7 +5401,8 @@ procedure TFreeEdit.Intersection_Dialog;
 var
   Dialog: TFreeIntersectionDialog;
 begin
-  Dialog:=FreeShip.FIntersectionDialog as TFreeIntersectionDialog;            //ShowTranslatedValues(Dialog);
+  Dialog:=FreeShip.FIntersectionDialog as TFreeIntersectionDialog;
+  ShowTranslatedValues(Dialog);
   Dialog.Execute(FreeShip);
   FreeShip.FDesignHydrostatics.Calculated:=False;
   if FreeShip.Visibility.ShowHydrostaticData then
@@ -5583,14 +5585,14 @@ begin
 //end;
 
   if Plates.Count > 0 then begin
-    Dlg:=TFreeExpanedplatesDialog.Create(FreeShip);                           //  ShowTranslatedValues(Dlg);
+    Dlg:=TFreeExpanedplatesDialog.Create(FreeShip);
+    ShowTranslatedValues(Dlg);
     FreeShip.IsRebuildAsyncDisabled:=true;
     Dlg.Execute(FreeShip, Plates);
     FreeAndNil(Dlg);
     FreeShip.IsRebuildAsyncDisabled:=false;
   end;
-  for I:=1 to Plates.Count do
-  begin
+  for I:=1 to Plates.Count do begin
     Patch:=plates[I - 1];
     FreeAndNil(Patch);
   end;
@@ -5604,23 +5606,17 @@ var
   vUndo: TFreeUndoObject;
 begin
   N:=0;
-  if Quiet then
-    vUndo:=nil
-  else
-    vUndo:=CreateUndoObject(Userstring(140), False);
+  if Quiet then vUndo:=nil
+           else vUndo:=CreateUndoObject(Userstring(140), False);
   for I:=FreeShip.NumberOfLayers downto 1 do
-    if (FreeShip.Layer[I - 1].Count = 0) and (FreeShip.NumberOfLayers > 1) then
-    begin
+    if (FreeShip.Layer[I-1].Count=0) and (FreeShip.NumberOfLayers>1) then begin
       FreeShip.Layer[I - 1].Delete;
       Inc(N);
       FreeShip.FileChanged:=True;
     end;
-  if FreeShip.ActiveLayer = nil then
-    FreeShip.ActiveLayer:=FreeShip.Layer[FreeShip.NumberOfLayers - 1]
-  else
-    FreeShip.ActiveLayer:=FreeShip.ActiveLayer;
-  if (N > 0) and (not Quiet) then
-  begin
+  if FreeShip.ActiveLayer=nil then FreeShip.ActiveLayer:=FreeShip.Layer[FreeShip.NumberOfLayers-1]
+                              else FreeShip.ActiveLayer:=FreeShip.ActiveLayer;
+  if (N>0) and (not Quiet) then begin
     vUndo.Accept;
     ShowMessage(IntToStr(N) + #32 + Userstring(141) + '.');
   end;
@@ -5632,7 +5628,8 @@ procedure TFreeEdit.Layer_Dialog;
 var
   LayerDialog: TFreeLayerDialog;
 begin
-  LayerDialog:=TFreeLayerDialog.Create(FreeShip);                             //ShowTranslatedValues(LayerDialog);
+  LayerDialog:=TFreeLayerDialog.Create(FreeShip);
+  ShowTranslatedValues(LayerDialog);
   LayerDialog.Execute(FreeShip);
   LayerDialog.Free;
 end;
@@ -6132,7 +6129,8 @@ begin
     end;
   end;
 *)
-  FreeNewModelDialog:=TFreeNewModelDialog.Create(FreeShip);                   //ShowTranslatedValues(FreeNewModelDialog);
+  FreeNewModelDialog:=TFreeNewModelDialog.Create(FreeShip);
+  ShowTranslatedValues(FreeNewModelDialog);
   if FreeNewModelDialog.Execute then begin
     FreeShip.ModelIsLoaded:=False;
     CreateUndoObject( Userstring(157), True );
@@ -6293,7 +6291,8 @@ begin
     MessageDlg( Userstring(96), mtError, [mbOK], 0 );
     exit;
   end;
-  Dialog:=TFreeLackenbyDialog.Create(FreeShip);                               //ShowTranslatedValues(Dialog);
+  Dialog:=TFreeLackenbyDialog.Create(FreeShip);
+  ShowTranslatedValues(Dialog);
   vUndo:=CreateUndoObject(Userstring(159), False);
   UndoIndex:=FreeShip.UndoCount;
   if Dialog.Execute(FreeShip, Modified) then begin
@@ -6449,7 +6448,8 @@ var
   N: integer;
 begin
   FreeShip.Extents(Min, Max);
-  Dialog:=TFreeInsertPlaneDialog.Create(FreeShip);                            //ShowTranslatedValues(Dialog);
+  Dialog:=TFreeInsertPlaneDialog.Create(FreeShip);
+  ShowTranslatedValues(Dialog);
   Dialog.Max:=Max;
   Dialog.Min:=Min;
   if Dialog.Execute then begin
@@ -6483,7 +6483,8 @@ begin
       Layers.Add(FreeShip.Layer[I - 1]);
   if Layers.Count > 1 then
   begin
-    Dialog:=TFreeIntersectLayerDialog.Create(FreeShip);                       //  ShowTranslatedValues(Dialog);
+    Dialog:=TFreeIntersectLayerDialog.Create(FreeShip);
+    ShowTranslatedValues(Dialog);
     if Dialog.Execute(Layers) then
       if assigned(Dialog.Layer1) and assigned(Dialog.Layer2) then
       begin
@@ -6936,7 +6937,8 @@ var
   Index: integer;
   vRedo: TFreeUndoObject;
 begin
-  Dialog:=TFreeUndoHistoryDialog.Create(FreeShip);                            //ShowTranslatedValues(Dialog);
+  Dialog:=TFreeUndoHistoryDialog.Create(FreeShip);
+  ShowTranslatedValues(Dialog);
   vRedo:=nil;
   if (FreeShip.FUndoPosition = FreeShip.UndoCount) and (FreeShip.UndoCount > 0) then
     if not FreeShip.UndoObject[FreeShip.UndoCount - 1].FIsTempRedoObject then

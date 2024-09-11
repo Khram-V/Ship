@@ -64,7 +64,8 @@ procedure TFreeRotateDialog.FSetZValue(val: extended);
     begin FloatSpinEdit3.Value:=val; end;
 
 function TFreeRotateDialog.Execute( Units: String ): boolean;
-begin                                               ShowTranslatedValues(Self);
+begin
+  ShowTranslatedValues(Self);
   Label3.Caption:=Units;                        //  Self.Caption:=Caption;
   Label6.Caption:=Units;
   Label9.Caption:=Units;

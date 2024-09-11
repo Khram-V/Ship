@@ -30,7 +30,7 @@ uses
   ExtCtrls,
   ExtDlgs,
   LazFileUtils,
-  FreeBitmapFormatHelper;
+  FreeBitmapFormatHelper,FreeLanguageSupport;
 
 const // Cursors
 {  crCOLORPICKER_32 = 1;

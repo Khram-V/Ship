@@ -25,7 +25,7 @@ uses
   FreeTypes,
   FreeGeometry,
   ExtCtrls,
-  FreeHydrostaticsResultsDlg,
+  FreeHydrostaticsResultsDlg,FreeLanguageSupport,
   Buttons, Spin;
 
 type
@@ -174,7 +174,8 @@ begin
     PrevCursor:=Screen.Cursor;
     Screen.Cursor:=crHourglass;
     Strings:=TStringList.Create;
-    ResultsDlg:=TFreeHydrostaticsResultsDialog.Create(self);                  //  ShowTranslatedValues(ResultsDlg);
+    ResultsDlg:=TFreeHydrostaticsResultsDialog.Create(self);
+    ShowTranslatedValues(ResultsDlg);
 //  try  // Quietly test for inconsistencies
       if not FFreeShip.ProjectSettings.DisableModelCheck then
         FFreeShip.Edit.Model_Check(False);

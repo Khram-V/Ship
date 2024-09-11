@@ -793,7 +793,7 @@ type
     FMainparticularsHasBeenset: boolean;     // Flag to check if the main particulars have been set before hydrostatic calculationss are being performed
     FDisableModelCheck: boolean;             // Disable the automatic checking of the surface
     FEnableModelAutoMove: boolean;           // Unable the automatic moving model along Z
-    FEnableBonjeanSAC: boolean;              // Unable calculation and save in file Bonjean scale and SAC
+//  FEnableBonjeanSAC: boolean;              // Unable calculation and save in file Bonjean scale and SAC
     FProjectAppendageCoefficient: TFloatType;
     FProjectBeam: TFloatType;
     FProjectDraft: TFloatType;
@@ -833,7 +833,7 @@ type
     procedure FSetFreeHydrostaticCoefficients(val: TFreeHydrostaticCoeff);
     procedure FSetDisableModelCheck(Val: boolean);
     procedure FSetEnableModelAutoMove(Val: boolean);
-    procedure FSetEnableBonjeanSAC(Val: boolean);
+//  procedure FSetEnableBonjeanSAC(Val: boolean);
     function FGetProjectSplitSectionLocation: TFloatType;
     procedure FSetProjectAppendageCoefficient(Val: TFloatType);
     procedure FSetProjectBeam(Val: TFloatType);
@@ -865,7 +865,7 @@ type
     procedure SaveBinary(Destination: TFreeFileBuffer);
     property DisableModelCheck: boolean read FDisableModelCheck write FSetDisableModelCheck;
     property EnableModelAutoMove: boolean read FEnableModelAutoMove write FSetEnableModelAutoMove;
-    property EnableBonjeanSAC: boolean read FEnableBonjeanSAC write FSetEnableBonjeanSAC;
+//  property EnableBonjeanSAC: boolean read FEnableBonjeanSAC write FSetEnableBonjeanSAC;
     property Hydrostatics_Startdraft: TFloatType read FStartDraft write FSetStartDraft;
     property Hydrostatics_EndDraft: TFloatType read FEndDraft write FSetEndDraft;
     property Hydrostatics_DraftStep: TFloatType read FDraftStep write FSetDraftStep;

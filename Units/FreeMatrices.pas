@@ -33,8 +33,8 @@ type TFreeMatrixError= class(Exception);
                              function     Copy:TFreeMatrix;
                              constructor  Create;
                              procedure    CreateIdentity;
-                             destructor   Destroy;                                 override;
-                             procedure    DumpToFile(Filename:string;Length,Digits:Integer);
+                             destructor   Destroy; override;
+//                           procedure    DumpToFile(Filename:string;Length,Digits:Integer);
                              procedure    Fill(Value:TFreeMatrixType);
                              function     Invert:TFreeMatrix;
                              function     Multiply(Matrix:TFreeMatrix):TFreeMatrix;
@@ -140,7 +140,7 @@ begin
    Clear;
    inherited Destroy;
 end;{TFreeMatrix.Destroy}
-
+(*
 procedure TFreeMatrix.DumpToFile(Filename:string;Length,Digits:Integer);
 var I,J:Integer;
     FFile:TextFile;
@@ -154,8 +154,8 @@ begin
       Writeln(FFile);
    end;
    CloseFile(FFile);
-end;{TFreeMatrix.DumpToFile}
-
+end;
+*)
 procedure TFreeMatrix.Fill(Value:TFreeMatrixType);
 var i,j  : integer;
     Size : Integer;

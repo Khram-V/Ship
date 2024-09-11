@@ -1207,7 +1207,8 @@ var
   TargetImage:TImage;
 begin
   if ShowDialog then begin
-    Dialog:=TSaveImageDialog.Create( self );                                  // ShowTranslatedValues(Dialog);
+    Dialog:=TSaveImageDialog.Create( self );
+    ShowTranslatedValues(Dialog);
     Dialog.SetImageSizes( ClientWidth,ClientHeight );
     Dialog.Filename:=Filename;
     OK:=Dialog.Execute;

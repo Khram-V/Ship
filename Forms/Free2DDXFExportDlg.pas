@@ -18,8 +18,7 @@ uses
   Buttons,
   ExtCtrls,
   Spin,
-  LazFileUtils,
-  FreeShipUnit;
+  LazFileUtils,FreeShipUnit,FreeLanguageSupport;
 type
 
   { TDXFExport2DDialog }
@@ -64,11 +63,7 @@ var DXFExport2DDialog: TDXFExport2DDialog;
 
 implementation
 
-{$IFnDEF FPC}
-  {$R *.dfm}
-{$ELSE}
   {$R *.lfm}
-{$ENDIF}
 
 var lg_StartFolder: string;
 
@@ -110,10 +105,8 @@ begin
   browse_info.hwndOwner:=Application.Handle;
   if initialFolder <> '' then browse_info.lpfn:=BrowseForFolderCallBack;
   find_context:=SHBrowseForFolder(browse_info);
-  if Assigned(find_context) then
-  begin
-    if SHGetPathFromIDList(find_context, folder) then
-    begin
+  if Assigned(find_context) then begin
+    if SHGetPathFromIDList(find_context, folder) then begin
       Result:='';
       for I:=1 to length(Folder) do
         if Folder[I - 1] = #0 then break else Result:=Result + Folder[I - 1];
@@ -132,10 +125,8 @@ begin
   dlg:=TSelectDirectoryDialog.Create(Self);
   dlg.Title:=browseTitle;
   dlg.InitialDir:=initialFolder;
-  if dlg.Execute then
-    Result:=dlg.FileName
-  else
-    Result:='';
+  if dlg.Execute then Result:=dlg.FileName
+                 else Result:='';
 end;
 
 function TDXFExport2DDialog.FGetExportDirectory: string;
@@ -157,8 +148,8 @@ end;
 
 function TDXFExport2DDialog.Execute: boolean;
 begin
-  FSetUnits;                                                                    //ShowTranslatedValues(Self);
-  Showmodal;
+  FSetUnits;
+  ShowTranslatedValues(Self); Showmodal;
   Result:=ModalResult = mrOk;
 end;
 
@@ -169,14 +160,11 @@ begin
   if DirectoryExistsUTF8(Tmp) { *Converted from DirectoryExists* }
      then self.ExportDirectory:=Tmp;
 end;
-
 procedure TDXFExport2DDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult:=mrOk; end;
-
+    begin ModalResult:=mrOk; end;
 procedure TDXFExport2DDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult:=mrCancel; end;
-
+    begin ModalResult:=mrCancel; end;
 procedure TDXFExport2DDialog.ComboBox1Change(Sender: TObject);
-begin FSetUnits; end;
+    begin FSetUnits; end;
 
 end.

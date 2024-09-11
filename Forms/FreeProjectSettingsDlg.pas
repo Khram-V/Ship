@@ -16,8 +16,8 @@ uses
   Dialogs,
   ExtCtrls,
   StdCtrls,
-  FreeGeometry,
-  Buttons, ComCtrls, Spin;
+  FreeGeometry, FreeLanguageSupport,
+  Buttons, ComCtrls, Spin, Menus;
 
 type                                             { TFREEProjectSettingsDialog }
   TFREEProjectSettingsDialog = class(TForm)
@@ -64,6 +64,7 @@ type                                             { TFREEProjectSettingsDialog }
     Label5:  TLabel;
     Label6:  TLabel;
     Label9:  TLabel;
+    MainMenu1: TMainMenu;
     Panel1:  TPanel;
     Panel10: TPanel;
     Panel11: TPanel;
@@ -104,7 +105,7 @@ type                                             { TFREEProjectSettingsDialog }
     cbSimplifyIntersections: TCheckBox;
     CheckBox3: TCheckBox;
     CheckBox13: TCheckBox;
-    CheckBox14: TCheckBox;
+//  CheckBox14: TCheckBox;
     procedure Edit2EditingDone(Sender: TObject);
     procedure Edit3EditingDone(Sender: TObject);
     procedure Edit4EditingDone(Sender: TObject);
@@ -233,8 +234,8 @@ begin
   checkbox12.Checked:=True;
   YWindAreaMax:=0.0;
   XWindAreaMax:=0.5 * Length;
-  FSetUnitCaptions;                                                             //ShowTranslatedValues(Self);
-  ShowModal;
+  FSetUnitCaptions;
+  ShowTranslatedValues(Self); ShowModal;
   Result:=Modalresult = mrOk;
 end;
 

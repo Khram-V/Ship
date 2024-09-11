@@ -20,7 +20,7 @@ uses LCLIntf,
      ExtCtrls,
      StdCtrls,
      Printers,
-     Buttons;
+     Buttons,FreeLanguageSupport;
 
 type                                         { TFreeHydrostaticsResultsDialog }
  TFreeHydrostaticsResultsDialog  = class(TForm)
@@ -83,8 +83,8 @@ function TFreeHydrostaticsResultsDialog.Execute:Boolean;
 var I : Integer;
 begin // Store the column width for resizing purposes
    setlength(ColWidths,Grid.ColCount);
-   for I:=1 to Grid.ColCount do ColWidths[I-1]:=Grid.ColWidths[I-1];              // ShowTranslatedValues(Self);
-   ShowModal;
+   for I:=1 to Grid.ColCount do ColWidths[I-1]:=Grid.ColWidths[I-1];
+   ShowTranslatedValues(Self); ShowModal;
    Result:=modalresult=mrOK;
 end;
 

@@ -28,7 +28,7 @@ uses
      Interfaces,
      FreeSplitSectionDlg,
      FreeLayerVisibilityDlg,
-     FreeSelectedDlg;
+     FreeSelectedDlg,FreeLanguageSupport;
 
 type
 
@@ -628,10 +628,11 @@ begin
   if (FFileName<>'') and not FreeShip.ModelIsLoaded and not FreeShip.IsLoadError
   then begin                                                // Skip translation
     FileExt:=Uppercase( ExtractFileExt( FFileName ) );
-       Est:=(FileExt = '.FBM') or (FileExt = '.FTM');
+       Est:=(FileExt='.FBM') or (FileExt='.FTM');
     if Est then Est:=Load_and_Scale( FFileName );
     if not Est then begin
-       FreeEmptyModelChooserDialog:=TFreeEmptyModelChooserDialog.Create(Self);  //     ShowTranslatedValues(FreeEmptyModelChooserDialog);
+       FreeEmptyModelChooserDialog:=TFreeEmptyModelChooserDialog.Create(Self);
+       ShowTranslatedValues(FreeEmptyModelChooserDialog);
        if FreeEmptyModelChooserDialog.Execute( FFileName ) then begin
          if FreeEmptyModelChooserDialog.RbCreateNew.Checked then NewModelExecute(Self) else
          if FreeEmptyModelChooserDialog.RbLoadFile.Checked then LoadFileExecute(Self)
@@ -1885,7 +1886,8 @@ begin Freeship.Edit.Point_IntersectLayer; UpdateMenu; end;
 procedure TMainForm.KeelRudderWizardExecute(Sender: TObject);
 begin
    if not Assigned(FreeKeelWizardDialog) then
-     FreeKeelWizardDialog:=TFreeKeelWizardDialog.Create(Self);                // ShowTranslatedValues(FreeKeelWizardDialog);
+     FreeKeelWizardDialog:=TFreeKeelWizardDialog.Create(Self);
+   ShowTranslatedValues(FreeKeelWizardDialog);
    FreeKeelWizardDialog.Execute(freeship);
    UpdateMenu;
 end;

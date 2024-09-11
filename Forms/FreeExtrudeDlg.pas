@@ -24,7 +24,7 @@ uses
   StdCtrls,
   Buttons,
   ExtCtrls, Spin,
-  FreeShipUnit;
+  FreeShipUnit, FreeLanguageSupport;
 type
 
   { TFreeExtrudeDialog }
@@ -113,8 +113,8 @@ function TFreeExtrudeDialog.Execute(Str: string): boolean;
 begin
   _label3.Caption := Str;
   _label6.Caption := Str;
-  _label9.Caption := Str;                                                       //ShowTranslatedValues(Self);
-  Showmodal;
+  _label9.Caption := Str;
+  ShowTranslatedValues(Self); Showmodal;
   Result := ModalResult = mrOk;
 end;
 

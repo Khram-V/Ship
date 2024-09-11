@@ -20,7 +20,7 @@ uses
   StdCtrls,
   Buttons,
   ExtCtrls,
-  FreeGeometry,
+  FreeGeometry,FreeLanguageSupport,
   ComCtrls;
 
 type
@@ -57,8 +57,8 @@ function TFreeBackgroundBlendDialog.Execute(Viewport: TFreeViewport): boolean;
 begin
   FViewport:=Viewport;
   Trackbar1.Position:=Viewport.BackgroundImage.Alpha;
-  TrackBar1Change(self);                                                        //ShowTranslatedValues(Self);
-  Showmodal;
+  TrackBar1Change(self);
+  ShowTranslatedValues(Self); Showmodal;
   Result:=ModalResult = mrOk;
 end;
 

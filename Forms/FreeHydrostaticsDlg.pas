@@ -15,7 +15,7 @@ uses
   Dialogs,
   StdCtrls,
   Buttons,
-  ExtCtrls;
+  ExtCtrls,FreeLanguageSupport;
 
 type                                                { TFreeHydrostaticsDialog }
   TFreeHydrostaticsDialog = class(TForm)
@@ -79,7 +79,8 @@ begin
   S:=Edit.Lines.CommaText;                       // Place cursor at beginning
   Edit.CaretPos:=TPoint(Point(0, 0));
   I:=Edit.Lines.Count;
-  S:=Edit.Lines.CommaText;                                                    //ShowTranslatedValues(Self);
+  S:=Edit.Lines.CommaText;
+  ShowTranslatedValues(Self);
 end;
 
 end.
