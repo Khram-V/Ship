@@ -434,11 +434,11 @@ begin
   Source.LoadBoolean(FDisableModelCheck);
   Source.LoadString(FProjectComment);
   Source.LoadString(FProjectFileCreatedBy);
-  FSavePreview:=True;
+  FSavePreview:=false;
   if FreeShip.FileVersion >= fv210 then begin
     Source.LoadInteger(I);
     FFreeHydrostaticCoefficients:=TFreeHydrostaticCoeff(I);
-    Source.LoadBoolean(FSavePreview);
+    Source.LoadBoolean( FSavePreview );
     if FSavePreview then begin
       Jpg:=TJPEGImage.Create;
       Source.LoadTJPEGImage( Jpg );

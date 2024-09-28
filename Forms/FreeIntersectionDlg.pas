@@ -648,8 +648,7 @@ begin
   Str:='1.0';
   if not InputQuery( 'New range of intersections ','Distance: ',Str) then exit;
   Step:=abs(GetFloat(Str));
-  if abs(Step) < 1e-3 then
-    exit;
+  if abs(Step) < 1e-3 then exit;
   FFreeShip.Extents(Min, Max);
   if ShowStations.Checked then begin
     Start:=Min.X;
@@ -688,23 +687,19 @@ procedure TFreeIntersectionDialog.DeleteAllExecute(Sender: TObject);
 var
   I: integer;
 begin
-  if ShowStations.Checked then
-  begin
+  if ShowStations.Checked then begin
     for I:=FFreeShip.NumberofStations downto 1 do
       FFreeship.Station[I - 1].Delete(I = 1);
   end
-  else if ShowButtocks.Checked then
-  begin
+  else if ShowButtocks.Checked then begin
     for I:=FFreeShip.NumberofButtocks downto 1 do
       FFreeship.Buttock[I - 1].Delete(I = 1);
   end
-  else if ShowWaterlines.Checked then
-  begin
+  else if ShowWaterlines.Checked then begin
     for I:=FFreeShip.NumberofWaterlines downto 1 do
       FFreeship.Waterline[I - 1].Delete(I = 1);
   end
-  else if ShowDiagonals.Checked then
-  begin
+  else if ShowDiagonals.Checked then begin
     for I:=FFreeShip.NumberofDiagonals downto 1 do
       FFreeship.Diagonal[I - 1].Delete(I = 1);
   end;

@@ -195,26 +195,26 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 3
       Transparent = True
-      object ToolButtonSelect: TToolButton
-        Left = 3
-        Hint = 'Deselect All'
-        Top = 0
-        Action = DeselectAll
-      end
-      object ToolButtonDelete: TToolButton
+      object ToolButtonOpenFile: TToolButton
         Tag = 1
-        Left = 27
+        Left = 24
         Top = 0
-        Action = Delete
+        Action = LoadFile
+      end
+      object ToolButton38: TToolButton
+        Tag = 2
+        Left = 44
+        Top = 0
+        Action = FileSave
       end
       object ToolButtonUndo: TToolButton
-        Tag = 2
+        Tag = 3
         Left = 51
         Top = 0
         Action = Undo
       end
       object ToolButtonRedo: TToolButton
-        Tag = 3
+        Tag = 4
         Left = 75
         Top = 0
         Action = Redo

@@ -1728,6 +1728,20 @@ var
       end;
     end;
     if Str='' then Strings.Add( EOL+' 0' ) else Strings.Add( Str );
+
+    if Dir and (FreeShip.NumberofButtocks>0) then begin // ...и всё-таки батокс с следует записать особо
+      Strings.Add( EOL+'Buttocs(0) for Centerline['+IntToStr( FreeShip.NumberofButtocks )+']' );
+      for I:=0 to FreeShip.NumberofButtocks-1 do      // поиск нулевого батокса
+      with FreeShip.Buttock[I] do begin Str:='';
+        if Count>0 then                   // батокс для диаметрильной плоскости
+        for J:=0 to Count-1 do
+        if Items[0].Point[0].Y=0 then begin N:=Items[J].NumberOfPoints;
+          Str:=' '+InttoStr( N );
+          for K:=0 to N-1 do with Items[J].Point[K] do Str2( Z,X );
+          Strings.Add( Str );
+        end;
+      end;
+    end;
   end;
   procedure SendSpline( Spline:TFreespline );
   var J,N: integer; P: T3DCoordinate;
@@ -1786,7 +1800,8 @@ begin
       Strings.Add( Title+S );
     end;
     Strings.Add( EOL+' 0' );                         // форштевень в завершение
-    StemStern( true );          // и в заключение еще и все контрольные контуры
+    StemStern( true );
+                                // и в заключение еще и все контрольные контуры
 
     if FreeShip.NumberOfControlCurves>0 then begin
       Strings.Add( EOL+'ContorlCurves['+IntToStr(FreeShip.NumberOfControlCurves)+']' );

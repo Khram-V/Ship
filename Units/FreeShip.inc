@@ -441,7 +441,8 @@ begin
     if assigned( Frm ) then
     if (MainForm as TMainForm).WindowState=wsNormal then               ///+++
 //  if Frm.ViewPort.ViewPortMode = vmShade then
-    if Frm.ViewPort.ViewType = fvPerspective then begin
+//  if Frm.ViewPort.ViewType = fvPerspective then begin
+    if( ProjectSettings.FSavePreview ) then begin
        Frm.Repaint;
 //     Pic:=TBitmap.Create;
 //     Pic.PixelFormat:=pf24bit;
@@ -1829,7 +1830,7 @@ begin if not Built then RebuildModel; end;
 
 function TFreeShip.DetectMinFileVersion:TFreeFileVersion;
 var I: integer;
-begin result:=fv210;            // s картинкой
+begin result:=fv210;            // s картинкой  - никак не меньше
 //if NumberOfDiagonals > 0 then result:=fv180;
 //if NumberOfMarkers > 0   then result:=fv191;
 //if (FResistanceDelftData.EndSpeed>0)
