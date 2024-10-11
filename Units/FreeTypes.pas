@@ -161,7 +161,11 @@ end;
 //   begin Result:=UTF8Length( Str ); end;
 
 function F2S( Value: TFloatType ): TFloatType;
-var W:Double; begin W:=Value; W:=Round( W*1e6 ); Result:=W/1e6; end;
+var W:Double;
+begin
+  if abs( Value )<1e-5 then Result:=0 else begin
+  W:=Value; W:=Round( W*1e6 ); Result:=W/1e6; end;
+end;
 
 function FloatTypeToStr( Value: TFloatType ): String;
 begin Result:=FloatToStr( F2S( Value ) ); end;

@@ -1691,29 +1691,20 @@ end;
 
 procedure TFreeEdit.File_Export_Aurora_Experiments;
 var
-  I,J,K,N: integer; Title,Str,S: String; z1,z2: Single;
-  T3: T3DCoordinate=(X:0;Y:0;Z:0);
+  Str: String;
   Strings: TStringList;
-  Dialog: TSaveDialog;
-
-  EdgePointLists: TFasterListTFasterListTFreeSubdivisionPoint;
-  Points: TFasterListTFreeSubdivisionPoint;
-  Point: TFreeSubdivisionPoint;
 
   Procedure Str2( A,B: single );
-    begin
-      if abs( A )<1e-5 then A:=0 else A:=F2S( A );
-      if abs( B )<1e-5 then B:=0 else B:=F2S( B );
-      Str:=Str+format( ' %1.5g %1.5g',[A,B] );
+    begin Str:=Str+format( ' %1.5g %1.5g',[F2S(A),F2S(B)] );
     end;
-  Procedure StemStern( Dir:boolean );                  // Dir=true - форштевень
-    var I,J,K,M,N: Integer;
+  Procedure StemStern( Dir:boolean );                 // Dir=true - форштевень
+    var I,J,K,M,N: Integer; z1:single;
   begin Str:='';
     for I:=0 to FreeShip.NumberofButtocks-1 do        // поиск нулевого батокса
     with FreeShip.Buttock[I] do begin
       if not Built then Rebuild;
       if Count>0 then                     // батокс для диаметрильной плоскости
-      if Items[0].Point[0].Y=0 then begin M:=0; z1:=Items[0].Point[0].Z;
+      if abs( Items[0].Point[0].Y )<1e-4 then begin M:=0; z1:=Items[0].Point[0].Z;
         for J:=0 to Count-1 do begin
           N:=Items[J].NumberOfPoints-1;
           for K:=0 to N do if Items[J].Point[K].Z<=z1 then begin z1:=Items[J].Point[K].Z; M:=K; end;
@@ -1728,17 +1719,21 @@ var
       end;
     end;
     if Str='' then Strings.Add( EOL+' 0' ) else Strings.Add( Str );
-
-    if Dir and (FreeShip.NumberofButtocks>0) then begin // ...и всё-таки батокс с следует записать особо
-      Strings.Add( EOL+'Buttocs(0) for Centerline['+IntToStr( FreeShip.NumberofButtocks )+']' );
+    //
+    //                            ...и всё-таки батокс следует записать особо
+    if Dir and (FreeShip.NumberofButtocks>0) then begin
+      Strings.Add( EOL+'Buttocs['+IntToStr( FreeShip.NumberofButtocks )+'] of Centerline' );
       for I:=0 to FreeShip.NumberofButtocks-1 do      // поиск нулевого батокса
       with FreeShip.Buttock[I] do begin Str:='';
+      if not Built then Rebuild;
         if Count>0 then                   // батокс для диаметрильной плоскости
-        for J:=0 to Count-1 do
-        if Items[0].Point[0].Y=0 then begin N:=Items[J].NumberOfPoints;
-          Str:=' '+InttoStr( N );
-          for K:=0 to N-1 do with Items[J].Point[K] do Str2( Z,X );
-          Strings.Add( Str );
+        for J:=0 to Count-1 do begin
+          if abs( Items[J].Point[0].Y )<1e-4 then begin
+            N:=Items[J].NumberOfPoints;
+            Str:=' '+InttoStr( N );
+            for K:=0 to N-1 do with Items[J].Point[K] do Str2( Z,X );
+            Strings.Add( Str );
+          end;
         end;
       end;
     end;
@@ -1752,6 +1747,15 @@ var
     else for J:=N downto 0 do with Spline.Point[J] do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] );
     Strings.Add( Str );
   end;
+
+
+var I,J,K,N: integer;
+    Title,S: String; z1,z2: Single;
+    Dialog: TSaveDialog;
+    T3: T3DCoordinate=(X:0;Y:0;Z:0);
+    EdgePointLists: TFasterListTFasterListTFreeSubdivisionPoint;
+    Points: TFasterListTFreeSubdivisionPoint;
+    Point: TFreeSubdivisionPoint;
 
 begin
   Title:=ExtractFilename( FreeShip.FileName );
@@ -1790,7 +1794,7 @@ begin
       T3.Y:=-FreeShip.FProjectSettings.FProjectBeam; T3.X:=Items[0].Point[0].X;
       Title:=format( '%3d %-4.4g',[N,F2S(T3.X)] ); S:='';
       for J:=0 to Count-1 do with Items[J] do begin
-        N:=NumberOfPoints-1; Str:='';          // ещё и сортировки - не хватало
+        N:=NumberOfPoints-1; Str:='';   // ещё и сортировки только и не хватало
         if ( Point[N].Z-Point[0].Z>0.01 ) or         // == может быть на палубе
          ( ( (Point[0]-T3) * (Point[N]-T3) ).X>=0.0 )
         then begin z1:=Point[0].Z; for K:=0 to N do with Point[K] do Str2( Z,Y ); end
@@ -1801,8 +1805,8 @@ begin
     end;
     Strings.Add( EOL+' 0' );                         // форштевень в завершение
     StemStern( true );
-                                // и в заключение еще и все контрольные контуры
-
+                        // и в заключение еще и все контрольные точки и контуры
+                        //
     if FreeShip.NumberOfControlCurves>0 then begin
       Strings.Add( EOL+'ContorlCurves['+IntToStr(FreeShip.NumberOfControlCurves)+']' );
       for I:=0 to FreeShip.NumberOfControlCurves-1 do
