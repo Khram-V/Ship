@@ -1750,9 +1750,9 @@ var
 
 
 var I,J,K,N: integer;
-    Title,S: String; z1,z2: Single;
+    Title,S: String; P0,PN: T3DCoordinate; Dis: boolean=true;
     Dialog: TSaveDialog;
-    T3: T3DCoordinate=(X:0;Y:0;Z:0);
+//    T3: T3DCoordinate=(X:0;Y:0;Z:0);
     EdgePointLists: TFasterListTFasterListTFreeSubdivisionPoint;
     Points: TFasterListTFreeSubdivisionPoint;
     Point: TFreeSubdivisionPoint;
@@ -1786,22 +1786,31 @@ begin
     Strings.Add( ' 0'+EOL );
     for I:=0 to FreeShip.NumberofStations-1 do
     with FreeShip.Station[I] do begin
-      if not Built then Rebuild; N:=0; T3.Z:=0;
+      if not Built then Rebuild; N:=0;                   //  T3.Z:=0;
       for J:=0 to Count-1 do with Items[J] do begin
-        N+=NumberOfPoints; for K:=0 to NumberOfPoints-1 do T3.Z+=Point[K].Z;
+        N+=NumberOfPoints; //for K:=0 to NumberOfPoints-1 do T3.Z+=Point[K].Z;
+        if J=0 then P0:=Point[0]; // else
+        if J=Count-1 then PN:=Point[NumberOfPoints-1];
       end;                                                   // Z-положительно
-      T3.Z:=0.98*T3.Z/N;
-      T3.Y:=-FreeShip.FProjectSettings.FProjectBeam; T3.X:=Items[0].Point[0].X;
-      Title:=format( '%3d %-4.4g',[N,F2S(T3.X)] ); S:='';
+        Dis:=(P0.Z<PN.Z) or (P0.Y<1e-6) or (P0.Y<=PN.Y);
+//      Dis:=P0.Y<=PN.Y;
+//      T3.Z:=0.98*T3.Z/N;
+//      T3.Y:=-FreeShip.FProjectSettings.FProjectBeam;
+//      T3.X:=Items[0].Point[0].X;
+      Title:=format( '%3d %-4.4g',[N,F2S(Items[0].Point[0].X)] ); S:='';
       for J:=0 to Count-1 do with Items[J] do begin
         N:=NumberOfPoints-1; Str:='';   // ещё и сортировки только и не хватало
-        if ( Point[N].Z-Point[0].Z>0.01 ) or         // == может быть на палубе
-         ( ( (Point[0]-T3) * (Point[N]-T3) ).X>=0.0 )
-        then begin z1:=Point[0].Z; for K:=0 to N do with Point[K] do Str2( Z,Y ); end
-        else begin z1:=Point[N].Z; for K:=N downto 0 do with Point[K] do Str2( Z,Y ); end;
-        if J=0 then S:=Str else begin if z1>=z2 then S:=S+Str else S:=Str+S; end; z2:=z1;
+        if ( Point[N].Z>=Point[0].Z )                // == может быть на палубе
+//      or ( Point[N].X>Point[0].X )
+//      or ( ( (Point[0]-T3) * (Point[N]-T3) ).X>=0.0 )
+//      or ( Point[0].Y=0.0 )
+//      if Dis
+        then begin for K:=0 to N do with Point[K] do Str2( Z,Y ); end
+        else begin for K:=N downto 0 do with Point[K] do Str2( Z,Y ); end;
+
+        if J=0 then S:=Str else begin if Dis then S:=S+Str else S:=Str+S; end;
       end;
-      Strings.Add( Title+S );
+      Strings.Add( Title+S );//+' ['+InttoStr(Count)+'] = '+floattostr(P0.y)+' < '+floattostr(PN.y) );
     end;
     Strings.Add( EOL+' 0' );                         // форштевень в завершение
     StemStern( true );

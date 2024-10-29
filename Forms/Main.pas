@@ -31,11 +31,7 @@ uses
      FreeSelectedDlg,FreeLanguageSupport;
 
 type
-
-  { TMainForm }
-
   TMainForm = class( TForm )                                    // TMainForm
-
      ToolBarCurves,
      ToolBarFaces,
      ToolBarFile,
@@ -132,40 +128,28 @@ type
     MenuImages                 : TImageList;
     MainMenu1                  : TMainMenu;
 
-    tbShowFreeObjects,
-    ToolButton1,
-    ToolButton39,
-    ToolButtonSelect,
-    ToolButtonRedo,
-    ToolButtonUndo,
- // ToolButtonOpenFile,
- // ToolButton3,
-    ToolButton5,
-    ToolButton6,
-    ToolButton8,
-    ToolButton9,
-    ToolButton10,
-    ToolButton13,
+    tbShowFreeObjects,              ToolButton1,
+    ToolButton39,                   ToolButtonSelect,
+    ToolButtonRedo,                 ToolButtonUndo,
     ToolButtonDelete,
-    ToolButton16,
-    ToolButton17,
-    ToolButton18,
-//  ToolButton20,
-    ToolButton21,
-    ToolButton22,
-    ToolButton23,
-    ToolButton24,
-    ToolButton26,
-    ToolButton27,
-    ToolButton29,
-    ToolButton30: TToolButton;
+ // ToolButtonOpenFile,          // ToolButton3,
+    ToolButton5,                    ToolButton6,
+    ToolButton8,                    ToolButton9,
+    ToolButton10,                   ToolButton13,
+    ToolButton16,                   ToolButton17,
+    ToolButton18,               //  ToolButton20,
+    ToolButton21,                   ToolButton22,
+    ToolButton23,                   ToolButton24,
+    ToolButton26,                   ToolButton27,
+    ToolButton29,                   ToolButton30   : TToolButton;
 
-    ColorDialog : TColorDialog;
-    RemoveNegative: TAction;         RemoveNegative1: TMenuItem;
-    RotateModel   : TAction;         Rotatemodel1   : TMenuItem;
-    RotateModelM  : TAction;         Rotatemodel2   : TMenuItem;
-    ScaleModel    : TAction;         Scale3D1       : TMenuItem;
-    Undo: TAction;                   Undo1: TMenuItem;
+    ColorDialog   : TColorDialog;
+    Preferences   : TAction;        Preferences1   : TMenuItem;
+    RemoveNegative: TAction;        RemoveNegative1: TMenuItem;
+    RotateModel   : TAction;        Rotatemodel1   : TMenuItem;
+    RotateModelM  : TAction;        Rotatemodel2   : TMenuItem;
+    ScaleModel    : TAction;        Scale3D1       : TMenuItem;
+    Undo          : TAction;        Undo1          : TMenuItem;
     ShowGrid: TAction;
     ToolButton31: TToolButton;
     Analyzesurface2: TMenuItem;
@@ -178,8 +162,6 @@ type
     Invert1: TMenuItem;
     ToolButton32: TToolButton;
     ToolButton33: TToolButton;
-    Preferences: TAction;
-    Preferences1: TMenuItem;
     N2: TMenuItem;
     ImportBodyplan: TAction;
     ExportDXF3DPolylines: TAction;

@@ -2344,27 +2344,22 @@ begin
 end;{TFreeHydrostaticCalc.Destroy}
 
 procedure TFreeHydrostaticCalc.ShowData(Mode: TFreeHydrostaticsMode);
-var
-  Strings: TStringList;
-  Dialog: TFreeHydrostaticsDialog;
-  I: integer;
-
+var Strings: TStringList;
+    Dialog: TFreeHydrostaticsDialog;
+    I: integer;
 begin
-  if not Calculated then
-    Calculate;
+  if not Calculated then Calculate;
   Strings:=TStringList.Create;
-  AddData(Strings, Mode, ';');
+  AddData( Strings,Mode,';' );
   Dialog:=TFreeHydrostaticsDialog.Create(Owner);
   ShowTranslatedValues(Dialog);
-  //Strings.SaveToFile('FreeHydrostaticsMode.ShowData.Strings.txt');
+//Strings.SaveToFile('FreeHydrostaticsMode.ShowData.Strings.txt');
 //try
     Dialog.Edit.Lines.BeginUpdate;
-    Dialog.Edit.Clear;
-    //writeln('FreeHydrostaticsMode: Text >>>');
-    for I:=1 to Strings.Count do
-      Dialog.Edit.Lines.Add(Strings.Strings[I - 1])  //writeln(Strings.Strings[I-1]);
-    ;
-    //writeln('FreeHydrostaticsMode: Text <<<');
+    Dialog.Edit.Clear;                              //writeln('FreeHydrostaticsMode: Text >>>');
+    for I:=0 to Strings.Count-1 do
+      Dialog.Edit.Lines.Add( Strings.Strings[I] );  //writeln(Strings.Strings[I-1]);
+                                                    //writeln('FreeHydrostaticsMode: Text <<<');
     Dialog.Edit.Lines.EndUpdate;
     Dialog.ShowModal;
 //finally
