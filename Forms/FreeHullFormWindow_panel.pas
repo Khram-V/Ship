@@ -501,9 +501,9 @@ begin
       if abs(P2D.Y)<1e-6 then P2D.Y:=0;
       if abs(P2D.Y)>1e+6 then P2D.Y:=1e+6;
       Case Viewport.ViewType of
-         fvBodyplan: Str:='Bodyplan.  Y='+FloatToStrF(P2D.X,ffFixed,4,2)+'  Z='+FloatToStrF(P2D.Y,ffFixed,4,2);
-         fvProfile : Str:='Profile.  X='+FloatToStrF(P2D.X,ffFixed,4,2)+'  Z='+FloatToStrF(P2D.Y,ffFixed,4,2);
-         fvPlan    : Str:='Plan.  X='+FloatToStrF(P2D.X,ffFixed,4,2)+'  Y='+FloatToStrF(P2D.Y,ffFixed,4,2);
+         fvBodyplan: Str:='Bodyplan.  Y='+FloatToStrF(P2D.X,ffFixed,6,4)+'  Z='+FloatToStrF(P2D.Y,ffFixed,6,4);
+         fvProfile : Str:='Profile.  X='+FloatToStrF(P2D.X,ffFixed,6,4)+'  Z='+FloatToStrF(P2D.Y,ffFixed,6,4);
+         fvPlan    : Str:='Plan.  X='+FloatToStrF(P2D.X,ffFixed,6,4)+'  Y='+FloatToStrF(P2D.Y,ffFixed,6,4);
          fvPerspective: begin
          { Str:=format('Perspective. Pan.X=%d Pan.Y=%d Elevation=%6.2f Rotation=%6.2f Zoom=%6.4f Scale=%6.3f',
              [Viewport.Pan.X,Viewport.Pan.Y,Viewport.Elevation,Viewport.Angle,Viewport.Zoom,Viewport.Scale] );

@@ -44,7 +44,7 @@ type
      ActionList1 : TActionList;
 //   FActionListHull : TActionList;
 
-     AboutAction,                   CrossCurves,
+     AboutAction,
      NewModel,                      ResistanceDelft,
      ResistanceKaper,               SelectionDialog,
      SplitSection50pct,             LayerVisibilityDialog,
@@ -61,7 +61,7 @@ type
      Delete,                        ExitProgram,
      ShowControlNet,                ShowInteriorEdges,
      EdgeCollapse,                  NewEdge,
-     ImportFEF,                     EdgeCrease,
+     DesignHydrostatics,            EdgeCrease,
      DeselectAll,                   PointCollapse,
      ActiveLayerColor,              DeleteEmptyLayers,
      LayerDialog,               //  NewModel,
@@ -70,8 +70,8 @@ type
      IntersectionDialog,            EdgeExtrude,
      EdgeSplit,                     ExportFEF,
      EditProjectSettings,           CheckModel,
-     ShowNormals,                   DesignHydrostatics,
-     ImportVRML: TAction;
+     ShowNormals,                   CrossCurves,
+     ImportVRML,ImportSTL,ImportOBJ,ImportFEF: TAction;
 
      AuroraHullVsl,                 MichletCFD1,
      miSelectionDialog,             miShowLayerVisibilityDialog,
@@ -105,9 +105,7 @@ type
      Project1,                      Projectsettings1,
      ools1,                         Analyzesurface1,
      Calculations,                  Hydrostatics1,
-     Normals1,                      Export1,
-     VRML1,
-     Import1: TMenuItem;
+     VRML1,MenuItemOBJ,MenuItemSTL,Normals1,Export1,Import1: TMenuItem;
 
      cbPrecision               : TComboBox;
      LayerBox                  : TComboBox;
@@ -377,6 +375,9 @@ type
     procedure ShowNormalsExecute       (Sender: TObject);
     procedure DesignHydrostaticsExecute(Sender: TObject);
     procedure ImportVRMLExecute        (Sender: TObject);
+    procedure ImportSTLExecute         (Sender: TObject);
+    procedure ImportOBJExecute         (Sender: TObject);
+    procedure ImportChinesExecute      (Sender: TObject);
     procedure RemoveNegativeExecute    (Sender: TObject);
     procedure RotateModelExecute       (Sender: TObject);
     procedure RotateModelMExecute      (Sender: TObject);
@@ -410,7 +411,6 @@ type
     procedure IncreaseCurvatureScaleExecute(Sender: TObject);
     procedure DecreaseCurvatureScaleExecute(Sender: TObject);
     procedure FileSaveExecute          (Sender: TObject);
-    procedure ImportChinesExecute      (Sender: TObject);
     procedure ShowControlCurvesExecute (Sender: TObject);
     procedure NewCurveExecute          (Sender: TObject);
     procedure ExportCoordinatesExecute (Sender: TObject);
@@ -1768,6 +1768,22 @@ begin
    SetCaption;
    UpdateMenu;
 end;
+procedure TMainForm.ImportOBJExecute(Sender: TObject);
+begin
+   FreeShip.Edit.File_ImportOBJ;
+   FOpenHullWindows;
+   SetCaption;
+   UpdateMenu;
+end;
+procedure TMainForm.ImportSTLExecute(Sender: TObject);
+begin
+   FreeShip.Edit.File_ImportSTL;
+   FOpenHullWindows;
+   SetCaption;
+   UpdateMenu;
+end;
+
+
 
 procedure TMainForm.ShowControlCurvesExecute(Sender: TObject);
 begin

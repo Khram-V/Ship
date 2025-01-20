@@ -2444,9 +2444,7 @@ var
   Entity: TFreeSubdivisionBase;
   Dist,MinDistance:TFloatType;
 begin
-  Entity:=nil;
-
-  // First check the selected vertices
+  Entity:=nil;                             // First check the selected vertices
   for i:=Surface.NumberOfSelectedControlPoints - 1 downto 0 do
     begin
       Point:=Surface.SelectedControlPoint[i];
@@ -2467,15 +2465,11 @@ begin
   // Second check the vertices
   I:=1;
   if Entity = nil then
-  while I <= Surface.NumberOfControlPoints do
-  begin
-    if Surface.ControlPoint[I - 1].Visible then
-    begin
-      Point:=Surface.ControlPoint[I - 1];
+  while I <= Surface.NumberOfControlPoints do begin
+    if Surface.ControlPoint[I-1].Visible then begin
+      Point:=Surface.ControlPoint[I-1];
       Tmp:=Point.DistanceToCursor(X, Y, Viewport);
-      if Tmp <= SelectDistance then
-      begin
-        Entity:=Point;
+      if Tmp <= SelectDistance then begin Entity:=Point;
         //Point.Selected:=not Point.Selected;
         ItemSelected:=True;
         // Draw the selected point to all viewports
@@ -2488,25 +2482,19 @@ begin
     Inc(I);
   end;
   if Entity = nil then
-  begin
-    // No points found, search for nearest controlEdge
+  begin                      // No points found, search for nearest controlEdge
     I:=1;
-    while I <= Surface.NumberOfControlEdges do
-    begin
-      if Surface.ControlEdge[I - 1].Visible then
-      begin
-        Edge:=Surface.ControlEdge[I - 1];
+    while I <= Surface.NumberOfControlEdges do begin
+      if Surface.ControlEdge[I-1].Visible then begin
+        Edge:=Surface.ControlEdge[I-1];
         Tmp:=Edge.DistanceToCursor(X, Y, P3D, Viewport);
-        if Tmp <= SelectDistance then
-        begin
+        if Tmp <= SelectDistance then begin
           Entity:=Edge;
           Edge.Selected:=not Edge.Selected;
-          // If CTRL key is pressed, select multiple edges in one pass
-          // by tracing regular edges to a boundary or irregular points
-          if (ssCtrl in shift) then
-            Edge.Trace;
-          ItemSelected:=True;
-          // Draw the selected edge to all viewports
+                   // If CTRL key is pressed, select multiple edges in one pass
+                   // by tracing regular edges to a boundary or irregular points
+          if (ssCtrl in shift) then Edge.Trace;
+          ItemSelected:=Edge.Selected;    // True; // Draw the selected edge to all viewports
           for J:=1 to NumberOfViewports do
             Self.Viewport[J - 1].Refresh;
           break;

@@ -3193,6 +3193,50 @@ begin
   FreeAndNil(OpenDialog);
 end;{TFreeEdit.File_Import_MichletWaves}
 
+procedure TFreeEdit.File_ImportObj;
+var
+  OpenDialog: TOpenDialog;
+  PrevCursor: TCursor;
+  Strings: TStringList;
+begin
+  OpenDialog := TOpenDialog.Create(FreeShip);
+  OpenDialog.InitialDir := FreeShip.Preferences.ImportDirectory;
+  OpenDialog.Filter := createDialogFilter(rsWavefrontFile,['obj']);
+  if OpenDialog.Execute then
+  begin
+    if not CheckIfChangedAndAskToSave() then
+    begin
+      FreeAndNil(OpenDialog);
+      exit;
+    end;
+
+    PrevCursor := Screen.Cursor;
+    Screen.Cursor := crHourglass;
+
+    try
+      CreateUndoObject( rsOBJfile,True );
+      FreeShip.Clear;
+
+      Strings := TStringList.Create;
+      Strings.LoadFromFile(ChangeFileExt(OpenDialog.FileName, '.obj'));
+      FreeShip.Surface.ImportObjFile( Strings );
+
+      FreeShip.ModelIsLoaded := True;
+      FreeShip.FileName := ChangeFileExt(Opendialog.FileName, '');
+      FreeShip.RebuildModel;
+      FreeShip.FileChanged := True;
+      FreeShip.Redraw;
+
+    finally
+      FreeAndNil(Strings);
+      if Assigned(FreeShip.OnUpdateGeometryInfo) then
+        FreeShip.OnUpdateGeometryInfo(self);
+      Screen.Cursor := PrevCursor;
+    end;
+  end;
+  FreeAndNil(OpenDialog);
+end;{TFreeEdit.File_ImportObj}
+
 procedure TFreeEdit.File_ExportObj;
 var
   SaveDialog: TSaveDialog;
@@ -3329,6 +3373,230 @@ begin
   FreeAndNil(SaveDialog);
 
 end;{TFreeEdit.File_ExportSTL}
+
+procedure TFreeEdit.File_ImportSTL;
+var
+  OpenDialog: TOpenDialog;
+  FileName: String;
+  FFile: TextFile;
+  Str: string;
+begin
+  OpenDialog := TOpenDialog.Create(FreeShip);
+  OpenDialog.InitialDir := FreeShip.Preferences.ImportDirectory;
+  OpenDialog.Filter := createDialogFilter( rsSTLFile,['stl'] );
+  if OpenDialog.Execute then begin
+    if not CheckIfChangedAndAskToSave() then begin FreeAndNil(OpenDialog); exit; end;
+    CreateUndoObject( rsSTLfile, True);
+    FreeShip.Clear;
+    FileName := ChangeFileExt( OpenDialog.FileName, '.stl' );
+    AssignFile( FFile,FileName );
+//    {$I-}
+    Reset(FFile);
+//    {$I+}
+    if IOResult = 0 then begin
+//      try
+        if not EOF(FFile) then begin
+          Readln( FFile,Str ); Str := Str.Trim.ToLower;
+          if Str.StartsWith( 'solid ' ) then begin
+            CloseFile( FFile ); File_ImportSTLtext( FileName );
+          end else begin
+            CloseFile( FFile ); File_ImportSTLbin( FileName );
+          end;
+        end;
+//      finally
+//      CloseFile(FFile);
+//      FreeShip.Filename := ChangeFileExt(Opendialog.FileName, '.stl');
+        FreeShip.ModelIsLoaded := True;
+        FreeShip.FileChanged := True;
+        FreeShip.RebuildModel;
+        FreeShip.Redraw;
+//    end;
+    end
+    else
+      MessageDlg( UserString(97), mtError, [mbOK], 0);
+  end;
+  FreeAndNil(OpenDialog);
+end;{TFreeEdit.File_ImportSTL}
+
+procedure TFreeEdit.File_ImportSTLtext( FileName: string );
+var
+  FFile: TextFile;
+  Str: string;
+  LineNr, SolidNr, FacetNr, VertexNr, I, J, K, L: integer;
+  Layer: TFreeSubdivisionLayer;
+  Face: TFreeSubdivisionControlface;
+  Child: TFreeSubdivisionface;
+  V, C1, C2, C3: T3DCoordinate;
+  FacePoints: TFasterListTFreeSubdivisionControlPoint;
+  CtrPoint: TFreeSubdivisionControlPoint;
+  SubdivisionSurface: TFreeSubdivisionSurface;
+  Precision: double;
+  Tokens: array of string;
+
+  function detectPrecision(D:string): double;
+  var i:integer; dc, code:integer; ss:string;
+  begin
+    Result := 1.0;
+    if D.IndexOf('e') < 0 then begin i:=D.IndexOf('.');
+      if i > -1 then dc:=D.length - i - 1;
+      if Result > power(10,-dc) then Result := power(10,-dc);
+    end else begin                                                 //scientific
+      i:=D.IndexOf('e');
+      ss:=D.Substring(i+1,32);
+      val(ss,dc,code);
+      if code = 0 then
+        if Result > power(10,dc) then Result := power(10,dc);
+    end
+  end;
+
+begin
+//  FreeShip.ProjectSettings.ProjectName := FileName;
+    AssignFile( FFile,FileName ); Reset( FFile);
+    if IOResult = 0 then begin
+//    try
+        SubdivisionSurface := FreeShip.Surface;
+        SubdivisionSurface.IsLoading := true;
+        FacePoints := TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+        LineNr := 1; SolidNr:=0; FacetNr:=0; VertexNr:=1;
+        while not EOF(FFile) do begin
+          Readln( FFile,Str );
+//        if EOF( FFile ) then break;
+          Str := Str.Trim.ToLower; Inc( LineNr );
+          if Str.StartsWith('solid ') then begin
+            inc(SolidNr);
+            if( SolidNr=1 )
+               then Layer := SubdivisionSurface.Layer[0]
+               else Layer := SubdivisionSurface.AddNewLayer;
+            Layer.Name := Str.SubString( 7,256 );
+          end
+          else if Str.StartsWith('facet ') then begin          // read Normal ?
+            inc(FacetNr);
+            VertexNr:=1;
+            FacePoints.Clear;
+          end
+          else if Str.StartsWith('outer loop') then
+          else if Str.StartsWith('vertex ') then begin
+            Str := Str.Replace('  ',' ').Replace('  ',' ');
+            Tokens := Str.Split([' ']);
+            V.X := Single.Parse(Tokens[1]);
+            V.Y := Single.Parse(Tokens[2]);
+            V.Z := Single.Parse(Tokens[3]);
+            Precision := detectPrecision(Tokens[1]);
+            CtrPoint := SubdivisionSurface.AddControlPoint( V,Precision );
+          //if FacePoints.IndexOf(CtrPoint) = -1 then
+            FacePoints.Add( CtrPoint );
+            inc( VertexNr );
+            SetLength( Tokens,0 );
+          end
+          else if Str.StartsWith('endloop') then                     //  break
+          else if Str.StartsWith('endfacet') then begin
+            if FacePoints.Count>2 then
+               SubdivisionSurface.AddControlFace( FacePoints,True,Layer );
+          end else if Str.StartsWith('endsolid') then begin         //   break;
+          end;
+        end;
+        FreeAndNil(FacePoints);
+//    finally
+        CloseFile(FFile);
+        SubdivisionSurface.IsLoading := false;
+//    end;
+    end
+    else
+      MessageDlg( UserString(97), mtError, [mbOK], 0);
+end;{TFreeEdit.File_ImportSTLtext}
+
+procedure TFreeEdit.File_ImportSTLbin(FileName: string);
+var
+  FileStream: TFileStream;
+  STLheader: array[0..79] of char;
+  STLfacets: uint32;
+  STLrecord: packed record
+    normalX, normalY, normalZ: single;
+    vertex1_X, vertex1_Y, vertex1_Z: single;
+    vertex2_X, vertex2_Y, vertex2_Z: single;
+    vertex3_X, vertex3_Y, vertex3_Z: single;
+    unused: uint16;
+  end;
+  Str: string;
+  LineNr, SolidNr, FacetNr, VertexNr, I, J, K, L: integer;
+  r: longint;
+  Layer: TFreeSubdivisionLayer;
+  Face: TFreeSubdivisionControlface;
+  Child: TFreeSubdivisionface;
+  V, C1, C2, C3: T3DCoordinate;
+  FacePoints: TFasterListTFreeSubdivisionControlPoint;
+  CtrPoint: TFreeSubdivisionControlPoint;
+  SubdivisionSurface: TFreeSubdivisionSurface;
+  Precision: double;
+  Tokens: array of string;
+
+  function detectPrecision(D:string): double;
+  var i:integer; dc, code:integer; ss:string;
+  begin
+    Result := 1.0;
+    if D.IndexOf('e') < 0 then begin
+      i:=D.IndexOf('.');
+      if i > -1 then dc:=D.length - i - 1;
+      if Result > power(10,-dc) then Result := power(10,-dc);
+    end else begin                                                 //scientific
+      i:=D.IndexOf('e');
+      ss:=D.Substring(i+1,32);
+      val(ss,dc,code);
+      if code = 0 then
+      if Result > power(10,dc) then Result := power(10,dc);
+    end
+  end;
+
+begin
+    //FreeShip.ProjectSettings.ProjectName := FileName;
+    FileStream := TFileStream.Create( FileName,fmOpenRead );
+    if FileStream.Size>80 then begin
+      try
+        SubdivisionSurface := FreeShip.Surface;
+        SubdivisionSurface.IsLoading := true;
+        FacePoints := TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+        SolidNr:=0; FacetNr:=1;
+        r := FileStream.Read(STLheader,80);
+        Str := String.Create(STLheader);
+        inc(SolidNr);
+        if( SolidNr = 1 )
+        then Layer := SubdivisionSurface.Layer[0]
+        else Layer := SubdivisionSurface.AddNewLayer;
+        Layer.Name := Str;
+        r := FileStream.Read( STLfacets,4 );
+        for FacetNr:=1 to STLfacets do begin
+          r:=FileStream.Read( STLrecord,SizeOf(STLrecord) );
+            if r<SizeOf( STLrecord ) then break;
+            FacePoints.Clear;
+            V.X := STLrecord.vertex1_X;
+            V.Y := STLrecord.vertex1_Y;
+            V.Z := STLrecord.vertex1_Z;
+//            Precision := 0.1;
+            CtrPoint := SubdivisionSurface.AddControlPoint( V,Precision );
+            FacePoints.Add( CtrPoint );
+
+            V.X := STLrecord.vertex2_X;
+            V.Y := STLrecord.vertex2_Y;
+            V.Z := STLrecord.vertex2_Z;
+//            Precision := 0.1;
+            CtrPoint := SubdivisionSurface.AddControlPoint( V,Precision );
+            FacePoints.Add(CtrPoint);
+
+            V.X := STLrecord.vertex3_X;
+            V.Y := STLrecord.vertex3_Y;
+            V.Z := STLrecord.vertex3_Z;
+//            Precision := 0.1;
+            CtrPoint := SubdivisionSurface.AddControlPoint( V,Precision );
+            FacePoints.Add( CtrPoint );
+
+            SubdivisionSurface.AddControlFace( FacePoints,True,Layer );
+        end;
+      finally
+        FileStream.Free;
+        SubdivisionSurface.IsLoading := false;
+      end;
+    end else MessageDlg( UserString(97), mtError, [mbOK], 0);
+end; {TFreeEdit.File_ImportSTLbin}
 
 // imports a Carene XYZ file and creates a multichine boat with developable surfaces
 procedure TFreeEdit.File_ImportCarene;
@@ -3950,17 +4218,33 @@ begin
   FreeAndNil(OpenDialog);
 end;
 
+
+function TFreeEdit.CheckIfChangedAndAskToSave():boolean;
+  var Answer: word;
+begin
+  Result := true;
+  if FreeShip.FileChanged then begin
+    Answer := MessageDlg(UserString(103) + EOL + UserString(104),
+      mtConfirmation, [mbYes, mbNo, mbCancel], 0);
+    if Answer = mrCancel then begin Result := false; end
+    else if Answer = mrYes then begin File_SaveAs;
+      if FreeShip.FileChanged then begin // Apparently saving was not successfull, abort
+        Result := false;
+      end;
+    end;
+  end;
+end;
+
 // Imports a PolyCad file
 procedure TFreeEdit.File_ImportPolycad;
 var
   OpenDialog: TOpenDialog;
-  Answer: word;
   PrevCursor: TCursor;
   Strings: TStringList;
   I, J, K, N: integer;
   Cols, Rows: integer;
-  Index: integer;
-  NSurfaces: integer;
+  Index, EndIndex: integer;
+  NSections, NumSurfaces, SurfaceNo: integer;
   Indices: array of integer;
   Str, Tmp: string;
   Abort: boolean;
@@ -3968,221 +4252,422 @@ var
   Value: TFloatType;
   P: T3DCoordinate;
 
-  function Next_Line: string;
+  function NextLine: string;
   begin
-    if Index + 1 < Strings.Count then begin
-      Inc(Index); Result:=Strings[index];
-    end else begin
-      Result:='';
-      Abort:=True;
-      MessageDlg(UserString(115), mtError, [mbOK], 0);
+    if Index + 1 < Strings.Count then
+    begin
+      Inc(Index);
+      Result := Strings[index];
+    end
+    else
+    begin
+      Result := '';
+      Abort := True;
+      MessageDlg( UserString(115), mtError, [mbOK], 0);
     end;
   end;{NextLine}
 
-  function Get_Integer( const Str: string): integer;
-  var Index: integer;
+  function GetInteger(str: string): integer;
+  var
+    Index: integer; tmp:string;
   begin
-    Index:=Pos('=', Str);
-    Result:=0;
-    if Index<>0 then Result:=GetInteger( Copy( Str,Index+1,Length(Str)-Index ));
+    Index := Pos('=', Str);
+    Result := 0;
+    if Index <> 0 then
+    begin
+      tmp := Copy(Str, Index + 1, Length(Str) - Index);
+      Val(tmp, Result, Index);
+      if Index <> 0 then
+      begin
+        MessageDlg(UserString(116) + #32
+          + IntToStr(I) + ' at row '+IntToStr(Index) + ' value: "'+tmp+'"',
+          mtError, [mbOK], 0);
+        Abort := True;
+      end;
+    end
+    else
+      Abort := True;
   end;{GetInteger}
 
-  function Get_Float( const Str: string): TFloatType;
-  var Index: integer;
+  function GetFloat(str: string): TFloatType;
+  var
+    Index: integer; tmp:string;
   begin
-    Index:=Pos( '=',Str );
-    Result:=0;
-    if Index<>0 then Result:=GetFloat( Copy(Str,Index+1,Length(Str)-Index) );
+    Index := Pos('=', Str);
+    Result := 0;
+    if Index <> 0 then
+    begin
+      tmp := Copy(Str, Index + 1, Length(Str) - Index);
+      Val(tmp, Result, Index);
+      if Index <> 0 then
+      begin
+        MessageDlg(UserString(117) + #32
+          + IntToStr(I) + ' at row '+IntToStr(Index) + ' value: "'+tmp+'"',
+          mtError, [mbOK], 0);
+        Abort := True;
+      end;
+    end
+    else
+      Abort := True;
   end;{GetFloat}
 
   function NextParameter(var input: string): string;
-  var Index: integer;
+  var
+    Index: integer;
   begin
-    Index:=pos(#32, Input);
-    if Index <> 0 then begin
-      Result:=Copy(Input, 1, Index - 1);
+    Index := pos(#32, Input);
+    if Index <> 0 then
+    begin
+      Result := Copy(Input, 1, Index - 1);
       Delete(Input, 1, Index);
-      Input:=Trim(Input);
-    end else begin
-      Result:='';
-      Abort:=True;
+      Input := Trim(Input);
+    end
+    else
+    begin
+      Result := '';
+      Abort := True;
     end;
   end;{NextParameter}
 
-begin
-  OpenDialog:=TOpenDialog.Create(FreeShip);
-  OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsPolyCadFiles, ['geo']);
-  Opendialog.Options:=[ofHideReadOnly];
-  if OpenDialog.Execute then
-  begin
-    Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
-    if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
-(*                                                                      ////+++
-    if FreeShip.FileChanged then begin
-      Answer:=MessageDlg(Userstring(103) + EOL + Userstring(104),
-        mtConfirmation, [mbYes, mbNo, mbCancel], 0);
-      if Answer = mrCancel then begin FreeAndNil(OpenDialog); exit; end;
-      if Answer = mrYes then begin
-!!!     File_SaveAs;
-        if FreeShip.FileChanged then begin // Apparently saving was not successfull, abort
-          FreeAndNil(OpenDialog);
-          exit;
-        end;
+  procedure readSurface(Cols, Rows: integer; var Points: TFreeCoordinateGrid);
+  var J,K: integer;
+    begin
+      // Initialize points
+      Setlength(Points, Rows);
+      for J := 1 to Rows do
+      begin
+        Setlength(Points[J - 1], Cols);
+        for K := 1 to Cols do
+          Points[J - 1][K - 1] := ZERO;
       end;
-    end;
-*)
-    PrevCursor:=Screen.Cursor;
-    Screen.Cursor:=crHourglass;
-    Strings:=TStringList.Create;
-//  try
-      Strings.LoadFromFile(OpenDialog.FileName);
-      for I:=Strings.Count downto 1 do
-        if Strings[I-1] = '' then Strings.Delete(I-1);  // delete empty strings
-      NSurfaces:=0;                       // count number of BSpline surfaces
-      for I:=1 to strings.Count do
-        if (pos('[TBSplineSurface]', Strings[I - 1]) <> 0)
-        or (pos('[TShipLines]', Strings[I - 1]) <> 0)
-        or (pos('[TYachtLines]', Strings[I - 1]) <> 0) then  begin
-          Setlength(Indices, NSurfaces + 1);
-          Indices[NSurfaces]:=I - 1;
-          Inc(NSurfaces);
-        end;
-      if NSurfaces > 0 then begin
-        CreateUndoObject(Userstring(118), True);
-        FreeShip.Clear;
-        FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-        I:=1;
-        Abort:=False;
-        while (I <= NSurfaces) and (not Abort) do begin
-          Index:=Indices[I - 1];
-          Str:=Strings[index];
-          if (pos('[TYachtLines]', Strings[I - 1]) <> 0) then begin // Read loa
-            Str:=Next_Line;
-            FreeShip.ProjectSettings.ProjectLength:=Get_Float(Str);
-            Next_Line;
-            Next_Line;
-            // read beam over all
-            Str:=Next_Line;
-            FreeShip.ProjectSettings.ProjectBeam:=Get_Float(Str);
-            Next_Line;
-            Next_Line;
-            // Read draft
-            Str:=Next_Line;
-            FreeShip.ProjectSettings.ProjectDraft:=Get_Float(Str);
-            FreeShip.ProjectSettings.FMainparticularsHasBeenset:=True;
-            for J:=1 to 12 do Next_Line;
-          end
-          else if (pos('[TShipLines]', Strings[I - 1]) <> 0) then begin
-            Next_Line;
-            // Read length
-            Str:=Next_Line;
-            FreeShip.ProjectSettings.ProjectLength:=Get_Float(Str);
-            // read beam
-            Str:=Next_Line;
-            FreeShip.ProjectSettings.ProjectBeam:=Get_Float(Str);
-            // skip depth
-            Next_Line;
-            // Read draft
-            Str:=Next_Line;
-            FreeShip.ProjectSettings.ProjectDraft:=Get_Float(Str);
-            FreeShip.ProjectSettings.FMainparticularsHasBeenset:=True;
-            for J:=1 to 22 do Next_Line;
-          end;
-
-          Next_Line;            // skip OrderU=
-          Next_Line;            // skip OrderV=
-
-          // Read number of columns
-          Str:=Next_Line;
-          Cols:=Get_Integer(Str);
-          // Read number of rows
-          Str:=Next_Line;
-          Rows:=Get_Integer(Str);
-          if (Cols > 1) and (Rows > 1) then begin
-            // Initialize points
-            Setlength(Points, Rows);
-            for J:=1 to Rows do begin
-              Setlength(Points[J - 1], Cols);
-              for K:=1 to Cols do
-                Points[J - 1][K - 1]:=ZERO;
-            end;
-            for J:=1 to Cols do begin
-              for K:=1 to Rows do begin
-                Str:=Next_Line;
-                if not abort then begin
-                  Str:=Trim(Str);
-                  P.X:=0;
-                  P.Y:=0;
-                  P.Z:=0;
-                  // X coordinate
-                  Tmp:=NextParameter(Str);
-                  if not abort then begin
-                    Val(Tmp, P.X, N);
-                    if N <> 0 then begin
-                      MessageDlg(Userstring(119) + #32 +
-                        IntToStr(I), mtError, [mbOK], 0);
-                      Abort:=True;
-                    end;
-                  end;
-                  if not Abort then begin
-                    Tmp:=NextParameter(Str);
-                    if not abort then begin
-                      Val(Tmp, P.Y, N);
-                      if N <> 0 then begin
-                        MessageDlg(Userstring(120) + #32 +
-                          IntToStr(I), mtError, [mbOK], 0);
-                        Abort:=True;
-                      end;
-                    end;
-                  end;
-                  if not Abort then begin                      // Z coordinate
-                    Tmp:=NextParameter(Str);
-                    if not abort then begin
-                      Val(Tmp, P.Z, N);
-                      if N <> 0 then begin
-                        MessageDlg(Userstring(121) + #32 +
-                          IntToStr(I), mtError, [mbOK], 0);
-                        Abort:=True;
-                      end;
-                    end;
-                  end;
-                  Points[K - 1][J - 1]:=P;
-                end else break;
+      for J := 1 to Cols do
+      begin
+        for K := 1 to Rows do
+        begin
+          Str := NextLine;
+          if not abort then
+          begin
+            Str := Trim(Str);
+            P.X := 0;
+            P.Y := 0;
+            P.Z := 0;
+            // X coordinate
+            Tmp := NextParameter(Str);
+            if not abort then
+            begin
+              Val(Tmp, P.X, N);
+              if N <> 0 then
+              begin
+                MessageDlg(UserString(119) + #32 +
+                  IntToStr(I) + ' at row '+IntToStr(Index) + ' value: "'+Tmp+'"',
+                  mtError, [mbOK], 0);
+                Abort := True;
               end;
-              if abort then break;
             end;
             if not Abort then
-              FreeShip.Surface.ImportCoordGrid(Points, Cols, Rows, nil);
-          end;
-          Inc(i);
-        end;
-        if not Abort then begin                               // Read contours;
-          for I:=1 to Strings.Count do
-            if Pos('[TContours]', Strings[I - 1]) <> 0 then begin
-              Index:=I - 1;
-              Str:=Next_Line;
-              N:=Get_Integer(Str);
+            begin
+              Tmp := NextParameter(Str);
               if not abort then
-                for J:=1 to N do begin
-                  Str:=Next_Line;
+              begin
+                Val(Tmp, P.Y, N);
+                if N <> 0 then
+                begin
+                  MessageDlg(UserString(119) + #32 +
+                    IntToStr(I) + ' at row '+IntToStr(Index) + ' value: "'+Tmp+'"',
+                    mtError, [mbOK], 0);
+                  Abort := True;
+                end;
+              end;
+            end;
+            if not Abort then
+            begin
+              // Z coordinate
+              Tmp := NextParameter(Str);
+              if not abort then
+              begin
+                Val(Tmp, P.Z, N);
+                if N <> 0 then
+                begin
+                  MessageDlg(UserString(119) + #32 +
+                    IntToStr(I) + ' at row '+IntToStr(Index) + ' value: "'+Tmp+'"',
+                    mtError, [mbOK], 0);
+                  Abort := True;
+                end;
+              end;
+            end;
+            Points[K - 1][J - 1] := P;
+          end
+          else
+            break;
+        end;
+        if abort then
+          break;
+      end;
+      if not Abort then
+        FreeShip.Surface.ImportCoordGrid(Points, Cols, Rows, nil);
+    end;
+
+
+begin
+  OpenDialog := TOpenDialog.Create(FreeShip);
+  OpenDialog.InitialDir := FreeShip.Preferences.ImportDirectory;
+  OpenDialog.Filter := createDialogFilter(rsPolyCadFiles, ['geo']);
+  Opendialog.Options := [ofHideReadOnly];
+  if OpenDialog.Execute then begin
+    if not CheckIfChangedAndAskToSave() then begin
+      FreeAndNil(OpenDialog);
+      exit;
+    end;
+    PrevCursor := Screen.Cursor;
+    Screen.Cursor := crHourglass;
+    Strings := TStringList.Create;
+
+    try
+      Strings.LoadFromFile(OpenDialog.FileName);
+      // delete empty strings
+      {for I := Strings.Count downto 1 do
+        if Strings[I - 1] = '' then
+          Strings.Delete(I - 1);}
+      // count number of Sections
+      NSections := 0;
+      for I := 0 to strings.Count-1 do
+      begin
+        Str := Strings[I].TrimLeft();
+        if Str.StartsWith('[') and Str.EndsWith(']') then
+        begin
+          Setlength(Indices, NSections + 1);
+          Indices[NSections] := I;
+          Inc(NSections);
+        end;
+      end;
+
+      if NSections > 0 then begin
+        CreateUndoObject(UserString(118), True);
+        FreeShip.Clear;
+        FreeShip.Preferences.ImportDirectory := ExtractFilePath(OpenDialog.FileName);
+        I := 1;
+        Abort := False;
+        while (I <= NSections) and (not Abort) do
+        begin
+          Index := Indices[I - 1];
+          Str := Strings[index];
+          if Str = '' then inc(index)
+          else if Str = '[TYachtLines]' then begin
+            FreeShip.ProjectSettings.ProjectLength := 0.0;
+            FreeShip.ProjectSettings.ProjectBeam := 0.0;
+            FreeShip.ProjectSettings.ProjectDraft := 0.0;
+            FreeShip.ProjectSettings.FMainparticularsHasBeenset := False;
+            EndIndex := Strings.Count-1;
+            while Index < EndIndex do
+            begin
+              Str := NextLine;
+              Str := Str.TrimLeft();
+              if Str = '' then
+              else if (pos('Loa=', Str) = 1) then
+                FreeShip.ProjectSettings.ProjectLength := GetFloat(Str)
+              else if (pos('Lwl=', Str) = 1) then
+              else if (pos('Ovh=', Str) = 1) then
+              else if (pos('BMax=', Str) = 1) then
+                FreeShip.ProjectSettings.ProjectBeam := GetFloat(Str)
+              else if (pos('Bwl=', Str) = 1) then
+              else if (pos('BTransom=', Str) = 1) then
+              else if (pos('MaxVParameter=', Str) = 1) then
+              else if (pos('Tc=', Str) = 1) then
+                FreeShip.ProjectSettings.ProjectDraft := GetFloat(Str)
+              else if (pos('Cp=', Str) = 1) then
+              else if (pos('Cm=', Str) = 1) then
+              else if (pos('LCB=', Str) = 1) then
+              else if (pos('Cwp=', Str) = 1) then
+              else if (pos('Lcf=', Str) = 1) then
+              else if (pos('FreeBow=', Str) = 1) then
+              else if (pos('FreeMid=', Str) = 1) then
+              else if (pos('FreeAft=', Str) = 1) then
+              else if (pos('BowCurve=', Str) = 1) then
+              else if (pos('ForeFoot=', Str) = 1) then
+              else if (pos('TransomAngle=', Str) = 1) then
+              else if (pos('FlareAngle=', Str) = 1) then
+              else if (pos('OrderU=', Str) = 1) then
+              else if (pos('OrderV=', Str) = 1) then
+              else if (pos('NumU=', Str) = 1) then Cols := GetInteger(Str)
+              else if (pos('NumV=', Str) = 1) then Rows := GetInteger(Str)
+              else if (pos('Name=', Str) = 1) then
+              else if (pos('$POLYCADVERSION', Str) = 1) then
+              else if (pos('=', Str) = 0) then
+              begin
+                dec(index);
+                if (Cols > 1) and (Rows > 1) then
+                begin
+                  readSurface(Cols, Rows, Points);
+                end;
+              end;
+            end;
+            FreeShip.ProjectSettings.FMainparticularsHasBeenset := (
+              (FreeShip.ProjectSettings.ProjectLength > 0.0)
+              and(FreeShip.ProjectSettings.ProjectBeam > 0.0)
+              and(FreeShip.ProjectSettings.ProjectDraft > 0.0)
+            );
+          end
+
+          else if Str = '[TShipLines]' then begin
+            FreeShip.ProjectSettings.ProjectLength := 0.0;
+            FreeShip.ProjectSettings.ProjectBeam := 0.0;
+            FreeShip.ProjectSettings.ProjectDraft := 0.0;
+            FreeShip.ProjectSettings.FMainparticularsHasBeenset := False;
+            EndIndex := Strings.Count-1;
+            while Index < EndIndex do begin
+              Str := NextLine;
+              Str := Str.TrimLeft();
+              if Str = '' then
+              else if (pos('BowShape=', Str) = 1) then
+              else if (pos('Lbp=', Str) = 1) then
+                FreeShip.ProjectSettings.ProjectLength := GetFloat(Str)
+              else if (pos('Beam=', Str) = 1) then
+                FreeShip.ProjectSettings.ProjectBeam := GetFloat(Str)
+              else if (pos('Depth=', Str) = 1) then
+              else if (pos('Draught=', Str) = 1) then
+                FreeShip.ProjectSettings.ProjectDraft := GetFloat(Str)
+              else if (pos('ParallelDeckF=', Str) = 1) then
+              else if (pos('ParallelDeckA=', Str) = 1) then
+              else if (pos('FOSBow=', Str) = 1) then
+              else if (pos('FOSAft=', Str) = 1) then
+              else if (pos('BowRadiusAtDeck=', Str) = 1) then
+              else if (pos('BilgeRadius=', Str) = 1) then
+              else if (pos('TransomBehindAP=', Str) = 1) then
+              else if (pos('TransomImmersion=', Str) = 1) then
+              else if (pos('TransomBeam=', Str) = 1) then
+              else if (pos('TransomCurvature=', Str) = 1) then
+              else if (pos('BowCurvature=', Str) = 1) then
+              else if (pos('BulbRadius=', Str) = 1) then
+              else if (pos('ForeOverHang=', Str) = 1) then
+              else if (pos('BulbLength=', Str) = 1) then
+              else if (pos('ForeFootRadius=', Str) = 1) then
+              else if (pos('StemRadius=', Str) = 1) then
+              else if (pos('StRootHeight=', Str) = 1) then
+              else if (pos('StShaftHeight=', Str) = 1) then
+              else if (pos('StBossToRoot=', Str) = 1) then
+              else if (pos('StBossRadius=', Str) = 1) then
+              else if (pos('StBossStart=', Str) = 1) then
+              else if (pos('StFlatOfBottomStart=', Str) = 1) then
+              else if (pos('DrawBoundaries=', Str) = 1) then
+              else if (pos('DrawParameters=', Str) = 1) then
+              else if (pos('DesignDraught=', Str) = 1) then
+              else if (pos('OrderU=', Str) = 1) then
+              else if (pos('OrderV=', Str) = 1) then
+              else if (pos('NumU=', Str) = 1) then Cols := GetInteger(Str)
+              else if (pos('NumV=', Str) = 1) then Rows := GetInteger(Str)
+              else if (pos('Name=', Str) = 1) then
+              else if (pos('$POLYCADVERSION', Str) = 1) then
+              else if (pos('=', Str) = 0) then
+              begin
+                dec(index);
+                if (Cols > 1) and (Rows > 1) then
+                begin
+                  readSurface(Cols, Rows, Points);
+                end;
+              end;
+            end;
+            FreeShip.ProjectSettings.FMainparticularsHasBeenset := (
+              (FreeShip.ProjectSettings.ProjectLength > 0.0)
+              and(FreeShip.ProjectSettings.ProjectBeam > 0.0)
+              and(FreeShip.ProjectSettings.ProjectDraft > 0.0)
+            );
+          end
+
+          else if Str = '[TBSplineSurface]' then
+          begin
+            if I < NSections then
+              EndIndex := Indices[I]-1
+            else
+              EndIndex := Strings.Count-1;
+
+            while Index < EndIndex do
+            begin
+              Str := NextLine;
+              Str := Str.TrimLeft();
+              if Str = '' then
+              else if (pos('KnotType=', Str) = 1) then
+              else if (pos('KnotU=', Str) = 1) then
+              else if (pos('KnotV=', Str) = 1) then
+              else if (pos('MinUParameter=', Str) = 1) then
+              else if (pos('MinVParameter=', Str) = 1) then
+              else if (pos('MaxUParameter=', Str) = 1) then
+              else if (pos('MaxVParameter=', Str) = 1) then
+              else if (pos('OrderU=', Str) = 1) then
+              else if (pos('OrderV=', Str) = 1) then
+              else if (pos('NumU=', Str) = 1) then Cols := GetInteger(Str)
+              else if (pos('NumV=', Str) = 1) then Rows := GetInteger(Str)
+              else if (pos('Name=', Str) = 1) then
+              else if (pos('$POLYCADVERSION', Str) = 1) then
+              else if (pos('=', Str) = 0) then
+              begin
+                dec(index);
+                if (Cols > 1) and (Rows > 1) then
+                begin
+                  readSurface(Cols, Rows, Points);
+                end;
+              end;
+            end;
+          end
+
+          else if Str = '[TBSplineSurfaceList]' then
+          begin
+            if I < NSections then EndIndex := Indices[I]-1
+                             else EndIndex := Strings.Count-1;
+            SurfaceNo:=0;
+            while Index < EndIndex do begin
+              Str := NextLine;
+              Str := Str.TrimLeft();
+              if Str = '' then
+              else if (pos('NumSurfaces=', Str) = 1) then NumSurfaces := GetInteger(Str)
+              else if (pos('KnotType=', Str) = 1) then
+              else if (pos('KnotU=', Str) = 1) then
+              else if (pos('KnotV=', Str) = 1) then
+              else if (pos('MinUParameter=', Str) = 1) then
+              else if (pos('MinVParameter=', Str) = 1) then
+              else if (pos('MaxUParameter=', Str) = 1) then
+              else if (pos('MaxVParameter=', Str) = 1) then
+              else if (pos('OrderU=', Str) = 1) then
+              else if (pos('OrderV=', Str) = 1) then
+              else if (pos('NumU=', Str) = 1) then Cols := GetInteger(Str)
+              else if (pos('NumV=', Str) = 1) then Rows := GetInteger(Str)
+              else if (pos('Name=', Str) = 1) then
+              else if (pos('$POLYCADVERSION', Str) = 1) then
+              else if (pos('=', Str) = 0) then begin
+                inc(SurfaceNo);
+                dec(index);
+                if (Cols > 1) and (Rows > 1) then begin
+                  readSurface(Cols, Rows, Points);
+                end;
+              end;
+            end;
+          end;
+          Inc(I);
+        end;  // while (I <= NSections)
+
+        if not Abort then begin     // Read contours;               ///**!**///
+          for I := 1 to Strings.Count do
+            if Pos('[TContours]', Strings[I-1]) <> 0 then begin
+              Index := I - 1;
+              Str := NextLine;
+              N := GetInteger(Str);
+              if not abort then
+                for J := 1 to N do begin
+                  Str := NextLine;
                   if not abort then begin
-                    Str:=Trim(Str);
-                    Tmp:=NextParameter(Str);
-                    if not abort
-                      then K:=StrToInt(Tmp)// 1=station, 2=buttock, 3=waterline
-                      else K:=0;
-                    if not abort then begin
-                      Val(Str, Value, N);
+                    Str := Trim(Str);
+                    Tmp := NextParameter(Str);
+                    if not abort then K := StrToInt(Tmp)
+                    else K := 0;           // 1=station, 2=buttock, 3=waterline
+                    if not abort then begin Val(Str, Value, N);
                       if N <> 0 then begin
-                        MessageDlg(Userstring(122), mtError, [mbOK], 0);
-                        Abort:=True;
+                        MessageDlg( UserString(122), mtError, [mbOK], 0);
+                        Abort := True;
                       end else
                         case K of
-                          1: self.Intersection_Add(fiStation, Value);
+                          1: self.Intersection_Add( fiStation,Value );
                           2: if Value >= 0 then
-                              self.Intersection_Add(fiButtock, Value);
-                          3: self.Intersection_Add(fiWaterline, Value);
+                             self.Intersection_Add( fiButtock,Value );
+                          3: self.Intersection_Add( fiWaterline,Value );
                         end;
                     end;
                   end;
@@ -4190,21 +4675,24 @@ begin
                 end;
               break;
             end;
-          FreeShip.Precision:=fpMedium;
-          FreeShip.FileName:=ChangeFileExt(Opendialog.FileName, '');
+                                                                    ///**!**///
+          FreeShip.Precision := fpMedium;
+          FreeShip.FileName := ChangeFileExt(Opendialog.FileName, '');
           FreeShip.ModelIsLoaded:=True;
           FreeShip.RebuildModel;
-          FreeShip.FileChanged:=True;
+          FreeShip.FileChanged := True;
         end else MessageDlg(UserString(123), mtInformation, [mbOK], 0);
       end else MessageDlg(UserString(124), mtInformation, [mbOK], 0);
-//  finally
-      FreeAndNil(Strings);
-      if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
-      Screen.Cursor:=PrevCursor;
-//  end;
+    finally
+      FreeAndNil( Strings );
+      if Assigned( FreeShip.OnUpdateGeometryInfo ) then
+                   FreeShip.OnUpdateGeometryInfo( self );
+      Screen.Cursor := PrevCursor;
+    end;
+
   end;
   FreeAndNil(OpenDialog);
-end;
+end;{TFreeEdit.File_ImportPolycad}
 
 // Load a VRML file
 procedure TFreeEdit.File_ImportVRML;

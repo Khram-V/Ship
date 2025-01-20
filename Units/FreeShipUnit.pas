@@ -8,7 +8,7 @@ unit FreeShipUnit; //  FreeShipUnit
 interface
 
 uses SysUtils,      // this declaration must be at the start, before the FreeGeometry unit
-  Windows, Windirs, shellapi, IniFiles,             Interfaces,
+  Windows, Windirs, shellapi, IniFiles,    Interfaces,
   LCLIntf, LCLType, LCLProc, IntfGraphics, FPImage,
   Graphics, Controls,
   LazFileUtils,
@@ -53,6 +53,7 @@ resourcestring
   rsMichletInputFile = 'Michlet input file';
   rsMichletWaveElevationsFile = 'Michlet wave elevations file';
 //rsAllFiles = 'All files';
+  rsOBJfile = 'OBJ file';
   rsSTLFile = 'STL file';
   rsCareneXYZFiles = 'Carene XYZ files';
   rsTextFiles = 'Text files';
@@ -511,6 +512,7 @@ type
     procedure AddToRecentFiles(Filename: string);              // Takes a filename and adds it to the list with recent files
     procedure BackgroundImage_Delete(Viewport: TFreeViewport); // Delete the backgrundimage associated with this view
     procedure BackgroundImage_Open(Viewport: TFreeViewport);   // browse for and open a backgroundimage
+    function CheckIfChangedAndAskToSave():boolean;
     constructor Create(FreeShip: TFreeShip);
     function CreateRedoObject: TFreeUndoObject; // Creates redo data before an undo is done
     function CreateUndoObject(UndoText: string; Accept: boolean): TFreeUndoObject; // Creates undodata just prior to modifications
@@ -545,9 +547,13 @@ type
     procedure File_ExportIGES;            // Save NURBS patches to an IGES file
     procedure File_Export_Michlet;        // Creates a file to be read by the CFD program Michlet
     procedure File_Import_MichletWaves;
+    procedure File_ImportObj;             // Import the model as a Wavefront Technologies.Obj file
     procedure File_ExportObj;             // Saves the model as a wavefront .Obj file
     procedure File_ExportOffsets;         // Exports all intersections to a textfile as 3D points
     procedure File_ExportSTL;             // Export the surface to a STL file
+    procedure File_ImportSTL;             // Imoprt the surface to a Standard Triangle STL file
+    procedure File_ImportSTLtext(FileName: string); // Import the surface from a STL text file
+    procedure File_ImportSTLbin(FileName: string);  // Import the surface from a STL binary file
     procedure File_ImportCarene;          // imports a Carene XYZ file and creates a multichine boat with developable surfaces
     procedure File_ImportChines;          // Import chines from a textfile and fit a surface through them
     procedure File_ImportFEF;             // Import a Freeship Exchange Format (FEF) file
