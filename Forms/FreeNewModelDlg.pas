@@ -29,12 +29,7 @@ type TFreeNewModelDialog = class(TForm)
     BitBtn1: TSpeedButton;
     BitBtn2: TSpeedButton;
     Panel1: TPanel;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
+    Label1,Label2,Label3,Label4,Label5,Label6: TLabel;
     ComboBox1: TComboBox;
     Panel4: TPanel;
     Panel5: TPanel;

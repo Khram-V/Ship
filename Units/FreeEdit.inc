@@ -3511,10 +3511,15 @@ var
   STLheader: array[0..79] of char;
   STLfacets: uint32;
   STLrecord: packed record
-    normalX, normalY, normalZ: single;
+{     normalX,  normalY,    normalZ: single;
     vertex1_X, vertex1_Y, vertex1_Z: single;
     vertex2_X, vertex2_Y, vertex2_Z: single;
     vertex3_X, vertex3_Y, vertex3_Z: single;
+}
+      normalY,   normalZ,   normalX: single;      // для Зумвальта, т.к.
+    vertex1_Y, vertex1_Z, vertex1_X: single;      // другого файла провреки
+    vertex2_Y, vertex2_Z, vertex2_X: single;      // пока не нашлось
+    vertex3_Y, vertex3_Z, vertex3_X: single;
     unused: uint16;
   end;
   Str: string;

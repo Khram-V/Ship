@@ -1324,11 +1324,9 @@ type
   public
     procedure CalcExtents;
     function CheckIntegrity: boolean;
-    procedure Clear;
-      override;
+    procedure Clear; override;
     procedure ClearChildren;
-    constructor Create(Owner: TFreeSubdivisionSurface);
-      override;
+    constructor Create(Owner: TFreeSubdivisionSurface); override;
     function DistanceToCursor(X, Y: integer;
       var P: T3DCoordinate; Viewport: TFreeViewport): integer;
     function PointInFace(X, Y: integer;
@@ -1361,35 +1359,22 @@ type
       aDest: TFasterListTFreeSubdivisionFace);
     procedure Trace;
     // select all controlfaces connected to the current one that belong to the same layer and are not separated by a crease edge
-    property Color: TColor
-      read FGetColor;
-    property ControlDescendantEdge[index: integer]
-      : TFreeSubdivisionEdge read FGetControlDescendantEdge;
-    property ControlDescendantEdgeCount: integer
-      read FGetControlDescendantEdgeCount;
-    property Child[index: integer]
-      : TFreeSubdivisionFace read FGetChild;
-    property ChildCount: integer
-      read FGetChildCount;
-    property Edge[index: integer]
-      : TFreeSubdivisionEdge read FGetEdge;
-    property EdgeCount: integer
-      read FGetEdgeCount;
-    property FaceIndex: integer
-      read FGetIndex;
-    property Layer:
-      TFreeSubdivisionLayer read FLayer write FSetLayer;
-    property Max:
-      T3DCoordinate read FMax;
-    property Min:
-      T3DCoordinate read FMin;
+    property Color: TColor  read FGetColor;
+    property ControlDescendantEdge[index: integer] : TFreeSubdivisionEdge read FGetControlDescendantEdge;
+    property ControlDescendantEdgeCount: integer  read FGetControlDescendantEdgeCount;
+    property Child[index: integer]: TFreeSubdivisionFace read FGetChild;
+    property ChildCount: integer read FGetChildCount;
+    property Edge[index: integer] : TFreeSubdivisionEdge read FGetEdge;
+    property EdgeCount: integer read FGetEdgeCount;
+    property FaceIndex: integer read FGetIndex;
+    property Layer: TFreeSubdivisionLayer read FLayer write FSetLayer;
+    property Max: T3DCoordinate read FMax;
+    property Min: T3DCoordinate read FMin;
     property Point[index: integer]: TFreeSubdivisionControlPoint read FGetPoint;
 
-    property Selected: boolean
-      read FGetSelected write FSetSelected;
+    property Selected: boolean read FGetSelected write FSetSelected;
     // Property to see if this controlface has been selected by the user
-    property Visible: boolean
-      read FGetVisible;
+    property Visible: boolean read FGetVisible;
   end;
 
   {--------------------------------------------------------------------------------------------------}
@@ -1436,8 +1421,6 @@ type
     FSubdivisionMode: TFreeSubdivisionMode; // Varaiable to switch between quad-triangle and Catmull Clark subdivision
     FDesiredSubdivisionLevel: byte;
     FCurrentSubdivisionLevel: byte;
-    FCreaseColor: TColor;           // color of descendants from creaseedges
-    FCreaseEdgeColor: TColor;       // Color of crease controledges
     FLastusedLayerID: integer;
 
     FOnChangeLayerData: TNotifyEvent;              // Event which is raised when layer-data has been changed
@@ -1449,25 +1432,27 @@ type
 //    FOnSelectItemListeners: TMethodList<TNotifyEvent>;  // This event is raised whenever an item (such as controlpoint, controledge or controlface) is selected or deselected
 //    FOnChangeItemListeners: TMethodList<TNotifyEvent>;
 
-    FUnderWaterColor: TColor;
-    FUnderWaterColorAlpha: byte;    // Color used for shading the underwater part
     FWaterlinePlane: T3DPlane;      // This plane is used to clip the hull, and shade the underwatership in a different color
     FShadeUnderWater: boolean;      // Switch to turn under water shading on or off
     FShowNormals: boolean;          // show normals of selected controlfaces
-
     FControlPointSize: integer;
-    FEdgeColor: TColor;             // Color of normal edges (no crease)
-    FSelectedcolor: TColor;         // Default color for selected items
-    FCreasePointColor: TColor;      // Color for vertices connected to two creaseedges
-    FRegularPointColor: TColor;     // Color of regular controlpoints
-    FCornerPointColor: TColor;      // color of cornerpoints
-    FDartPointColor: TColor;
-    FLayerColor: TColor;            // Default color for layers;
-    FNormalColor: TColor;           // color of surface normals
-    FLeakColor: TColor;             // color of leak points
-    FCurvatureColor: TColor;        // color of the curvature plot of controlcurves
-    FControlCurveColor: TColor;
-    FZebraColor: TColor;
+
+    FUnderWaterColorAlpha: byte;    // Color used for shading the underwater part
+    FCreaseColor,           // color of descendants from creaseedges
+    FCreaseEdgeColor,       // Color of crease controledges
+    FUnderWaterColor,
+    FEdgeColor,             // Color of normal edges (no crease)
+    FSelectedcolor,         // Default color for selected items
+    FCreasePointColor,      // Color for vertices connected to two creaseedges
+    FRegularPointColor,     // Color of regular controlpoints
+    FCornerPointColor,      // color of cornerpoints
+    FDartPointColor,
+    FLayerColor,            // Default color for layers;
+    FNormalColor,           // color of surface normals
+    FLeakColor,             // color of leak points
+    FCurvatureColor,        // color of the curvature plot of controlcurves
+    FControlCurveColor,
+    FZebraColor:       TColor;
 
     FControlEdgeLineWidth: integer;
     FInternalEdgeLineWidth: integer;

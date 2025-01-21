@@ -183,11 +183,11 @@ begin
   if not FileExistsUTF8( Filename ) then begin
     if Mainform <> nil then begin
        MainForm.WindowState:=wsNormal;
-       MainForm.SetBounds( 0,0,Screen.WorkAreaWidth,Screen.WorkAreaHeight);
+       MainForm.SetBounds( 0,0,Screen.WorkAreaWidth,Screen.WorkAreaHeight );
     end;
     SetDefaults; exit;
   end;
-  params:=TColorIniFile.Create(Filename, False);
+  params:=TColorIniFile.Create( Filename,False );
   FLastDirectory       :=params.ReadString (D,'LastDirectory', FLastDirectory);
   FOpenDirectory       :=params.ReadString (D,'OpenDirectory', FOpenDirectory);
   FSaveDirectory       :=params.ReadString (D,'SaveDirectory', FSaveDirectory);
@@ -213,7 +213,7 @@ begin
   FSelectColor         :=params.ReadColor  (G,'SelectColor', FSelectColor);
   FLayerColor          :=params.ReadColor  (G,'LayerColor', FLayerColor);
   FUnderWaterColor     :=params.ReadColor  (G,'UnderWaterColor', FUnderWaterColor);
-  FUnderWaterColorAlpha:=params.ReadInteger(G,'UnderWaterColorAlpha', FUnderWaterColorAlpha);
+  FUnderWaterColorAlpha:=params.ReadInteger(G,'UnderWaterColorAlpha',FUnderWaterColorAlpha);
   FNormalColor         :=params.ReadColor  (G,'NormalColor', FNormalColor);
   FViewportColor       :=params.ReadColor  (G,'ViewportColor', FViewportColor);
   FDiagonalColor       :=params.ReadColor  (G,'DiagonalColor', FDiagonalColor);
@@ -221,8 +221,8 @@ begin
   FMarkerColor         :=params.ReadColor  (G,'MarkerColor', FMarkerColor);
   FCurvaturePlotColor  :=params.ReadColor  (G,'CurvaturePlotColor',FCurvaturePlotColor);
   FControlCurveColor   :=params.ReadColor  (G,'ControlCurveColor',FControlCurveColor);
-  FHydrostaticsFontColor:= params.ReadColor  (G,'HydrostaticsFontColor', FHydrostaticsFontColor);
-  FZebraStripeColor    :=params.ReadColor  (G,'ZebraStripeColor', FZebraStripeColor);
+  FHydrostaticsFontColor:=params.ReadColor (G,'HydrostaticsFontColor',FHydrostaticsFontColor);
+  FZebraStripeColor    :=params.ReadColor  (G,'ZebraStripeColor',FZebraStripeColor);
 
   FIntersectionLineWidth:= params.ReadInteger(G,'IntersectionLineWidth', FIntersectionLineWidth);
   FControlEdgeLineWidth:=params.ReadInteger(G,'ControlEdgeLineWidth', FControlEdgeLineWidth);
@@ -318,36 +318,37 @@ procedure TFreePreferences.ResetColors; // Расцветка по умолча�
 begin
 //  FThemeName:='Default';
 //  FParentThemeName:='';
-  FButtockColor  :=clLtGray;           //=$00808040;   // Kind of teal-blue
-  FWaterlineColor:=clGreen;            //=$00808040;   // Kind of teal-blue
-  FStationColor  :=clBlue;             //=$00808040;   // Kind of teal-blue
-  FDiagonalColor :=clSkyBlue;          //=$00808040;   // Kind of teal-blue
-  FCreaseColor   :=clBlack;      // color of descendants from crease controledges
-  FCreaseEdgeColor:= clRed;    // Color of crease control edges
-  FGridColor     :=clSilver;
-  FGridFontColor :=clLtGray;   //= White;
-  FEdgeColor     :=$006F6F6F;
-  FCreasePointColor:= $00004080;
+  FViewportColor  :=clWhite;
+  FGridColor      :=clSilver;
+  FGridFontColor  :=clGray;
+  FLayerColor     :=$FFFFF0; //~azure $FFFF00~Aqua; // Default color each layer
+  FNormalColor    :=clLime;
+  FUnderwaterColor:=clGreen;  //$009933;
+  FUnderwaterColorAlpha:=255; //opaque
+  FControlCurveColor:=16711808;
+  FEdgeColor      :=$006F6F6F;
+  FCreaseEdgeColor:=$32CD9A; //~yellowgreen; $0670DA~orchid // Color of crease control edges
+  FCreaseColor    :=$00999966; // color of descendants from crease controledges
   FRegularPointColor:= $00E1E1E1;
+  FCreasePointColor:= $00004080;
   FCornerPointColor:= $00B95C00;
   FDartPointColor:=clFuchsia;
+  FLeakPointColor:=clRed;              // $0099FF00;
   FSelectColor   :=clYellow;
-  FLayerColor    :=RGB(0, 128, 0);  // Default color of each layer (green-ish)
-  FViewportColor :=clWhite;                       // $009F9F9F;
-  FUnderwaterColor:= RGB(240, 240, 240);            // clOlive;
-  FUnderwaterColorAlpha:= 255;                      //opaque
-  FLeakPointColor:=$0099FF00;
-  FNormalColor   :=clGray;             //White;
-  FMarkerColor   :=$008000FF;
   FCurvaturePlotColor:=clFuchsia;
-  FControlCurveColor:=16711808;
-  FHydrostaticsFontColor:=clGreen;       //= clMaroon;
-  FZebraStripeColor:= RGB(230,230,230);
-  FIntersectionLineWidth:= 1;
-  FControlEdgeLineWidth:=2;
-  FInteriorEdgeLineWidth:= 1;
-  FAuxEdgeLineWidth    :=1;
-  FHydrostaticLineWidth:=1;
+  FMarkerColor   :=$008000FF;
+  FStationColor   :=clBlue;             //=$00808040;   // Kind of teal-blue
+  FButtockColor   :=clLtGray;           //=$00808040;   // Kind of teal-blue
+  FWaterlineColor :=clLime;             //=$00808040;   // Kind of teal-blue
+  FDiagonalColor  :=clSkyBlue;          //=$00808040;   // Kind of teal-blue
+  FHydrostaticsFontColor:=clGreen;      //= clMaroon;
+  FZebraStripeColor:= clGray;
+
+  FIntersectionLineWidth:=1;
+  FControlEdgeLineWidth :=2;
+  FInteriorEdgeLineWidth:=1;
+  FAuxEdgeLineWidth     :=1;
+  FHydrostaticLineWidth :=1;
 end;
 
 procedure TFreePreferences.Save;
@@ -357,7 +358,7 @@ var FileName: string;
 begin
   FileName:=FConfigDirectory + DirectorySeparator+'FreeShip.ini';
   if not FileExistsUTF8(Filename) then ForceDirectoriesUTF8(ExtractFilePath(Filename));
-  params:=TColorIniFile.Create(Filename, False);
+  params:=TColorIniFile.Create( Filename,False );
 
   params.WriteString ('General','Language',FLanguage);
   params.WriteString ('General','FbmEncoding',FbmEncoding);
@@ -381,31 +382,33 @@ begin
 
   params.WriteInteger(G,'PointSize', FPointSize);
   params.WriteInteger(G,'FontSize', FFontSize);
-  params.WriteColor  (G,'ButtockColor', FButtockColor);
-  params.WriteColor  (G,'WaterlineColor', FWaterlineColor);
-  params.WriteColor  (G,'StationColor', FStationColor);
-  params.WriteColor  (G,'CreaseColor', FCreaseColor);
-  params.WriteColor  (G,'CreaseEdgeColor', FCreaseEdgeColor);
+
+  params.WriteColor  (G,'ViewportColor', FViewportColor);
   params.WriteColor  (G,'GridColor', FGridColor);
   params.WriteColor  (G,'GridFontColor', FGridFontColor);
-  params.WriteColor  (G,'EdgeColor', FEdgeColor);
-  params.WriteColor  (G,'CreasePointColor', FCreasePointColor);
-  params.WriteColor  (G,'RegularPointColor', FRegularPointColor);
-  params.WriteColor  (G,'CornerPointColor', FCornerPointColor);
-  params.WriteColor  (G,'DartPointColor', FDartPointColor);
-  params.WriteColor  (G,'SelectColor', FSelectColor);
   params.WriteColor  (G,'LayerColor', FLayerColor);
+  params.WriteColor  (G,'NormalColor', FNormalColor);
   params.WriteColor  (G,'UnderWaterColor', FUnderWaterColor);
   params.WriteInteger(G,'UnderWaterColorAlpha', FUnderWaterColorAlpha);
-  params.WriteColor  (G,'NormalColor', FNormalColor);
-  params.WriteColor  (G,'ViewportColor', FViewportColor);
-  params.WriteColor  (G,'DiagonalColor', FDiagonalColor);
-  params.WriteColor  (G,'LeakPointColor', FLeakPointColor);
-  params.WriteColor  (G,'MarkerColor', FMarkerColor);
-  params.WriteColor  (G,'CurvaturePlotColor', FCurvaturePlotColor);
   params.WriteColor  (G,'ControlCurveColor', FControlCurveColor);
+  params.WriteColor  (G,'EdgeColor', FEdgeColor);
+  params.WriteColor  (G,'CreaseEdgeColor', FCreaseEdgeColor);
+  params.WriteColor  (G,'CreaseColor', FCreaseColor);
+  params.WriteColor  (G,'RegularPointColor', FRegularPointColor);
+  params.WriteColor  (G,'CreasePointColor', FCreasePointColor);
+  params.WriteColor  (G,'CornerPointColor', FCornerPointColor);
+  params.WriteColor  (G,'DartPointColor', FDartPointColor);
+  params.WriteColor  (G,'LeakPointColor', FLeakPointColor);
+  params.WriteColor  (G,'SelectColor', FSelectColor);
+  params.WriteColor  (G,'CurvaturePlotColor', FCurvaturePlotColor);
+  params.WriteColor  (G,'MarkerColor', FMarkerColor);
+  params.WriteColor  (G,'StationColor', FStationColor);
+  params.WriteColor  (G,'ButtockColor', FButtockColor);
+  params.WriteColor  (G,'WaterlineColor', FWaterlineColor);
+  params.WriteColor  (G,'DiagonalColor', FDiagonalColor);
   params.WriteColor  (G,'HydrostaticsFontColor', FHydrostaticsFontColor);
   params.WriteColor  (G,'ZebraStripeColor', FZebraStripeColor);
+
   params.WriteInteger(G,'IntersectionLineWidth', FIntersectionLineWidth);
   params.WriteInteger(G,'ControlEdgeLineWidth', FControlEdgeLineWidth);
   params.WriteInteger(G,'InteriorEdgeLineWidth', FInteriorEdgeLineWidth);

@@ -2495,8 +2495,8 @@ begin
         SetLength(S3d,0);
         S3d := Str.Split([' ']);
         C3d.X := TFloatType.Parse(S3d[1]);
-        C3d.Y := TFloatType.Parse(S3d[2]);
-        C3d.Z := TFloatType.Parse(S3d[3]);
+        C3d.Y := TFloatType.Parse(S3d[3]);
+        C3d.Z := TFloatType.Parse(S3d[2]);
         CPoint := AddControlPoint(C3d);
         CPoints.Add(CPoint);
       end
@@ -3222,7 +3222,7 @@ end;
 
 constructor TFreeSubdivisionSurface.Create(Owner: TFreeSubdivisionSurface);
 begin
-  inherited Create(Owner);
+  inherited Create( Owner );
   FControlPoints:=TFasterListTFreeSubdivisionControlPoint.Create(false,false);
   FControlPointGroups:=TFasterListTFreeSubdivisionControlPointGroup.Create(false,false);
   FControlEdges:=TFasterListTFreeSubdivisionControlEdge.Create(false,false);
@@ -3248,24 +3248,27 @@ begin
 //  FOnChangeItemListeners:= TMethodList<TNotifyEvent>.Create;
 
   FControlPointSize:=4;
-  FEdgeColor:=clDkGray;
-  FSelectedcolor:=clYellow;
-  FCreasePointColor:=clLime;
-  FRegularPointColor:=clSilver;
-  FCornerPointColor:=clAqua;
-  FDartPointColor:=$00C08000;
-  FLeakColor:=clRed;
-  FLayerColor:=clAqua;
-  FCreaseColor:=clBlue;
-  FCreaseEdgeColor:=clRed;
-  FNormalColor:=clSilver;
-  FCurvatureColor:=clOlive; //clWhite;
+  FLayerColor     :=$FFFFF0;   // Default color each layer
+  FNormalColor    :=clLime;    // color of surface normals
+  FUnderwaterColor:=clGreen;   // $009933;
+  FUnderwaterColorAlpha:=255;  // Color used for shading the underwater part
+  FControlCurveColor:=16711808;
+  FEdgeColor      :=$6F6F6F;   // Color of normal edges (no crease)
+  FCreaseEdgeColor:=$32CD9A;   // Color of crease control edges
+  FCreaseColor    :=$999966;   // color of descendants from crease controledges
+  FRegularPointColor:= $00E1E1E1; // Color of regular controlpoints
+  FCreasePointColor:= $004080; // Color for vertices connected to two creaseedges
+  FCornerPointColor:= $B95C00; // color of cornerpoints
+  FDartPointColor:=clFuchsia;
+  FLeakColor     :=clRed;     //~~ color of leak points
+  FSelectedColor :=clYellow;  // Default color for selected items
+  FCurvatureColor:=clFuchsia; //~~ color of the curvature plot of controlcurves
+  FZebraColor    := clGray;   //~~
+
   FShowCurvature:=True;
-  FCurvatureScale:=0.25;
   FShowControlCurves:=True;
-  FControlCurveColor:=clRed;
   FSubdivisionMode:=fmQuadTriangle;
-  FZebraColor:=clBlack;
+  FCurvatureScale:=0.25;
 end;
 
 destructor TFreeSubdivisionSurface.Destroy;
@@ -3275,7 +3278,7 @@ begin
   Clear;
   FOnChangeLayerData:=nil;
   FOnChangeActiveLayer:=nil;
-  //FOnChangeActiveControlPoint:=nil;
+//  FOnChangeActiveControlPoint:=nil;
 //  FOnSelectItemListeners.Free;
 //  FOnSelectItemListeners:=nil;
 //  FOnChangeItemListeners.Free;
@@ -3289,9 +3292,8 @@ begin
 //  FOnChangeActiveControlCurveListeners.Free;
 //  FOnChangeActiveControlCurveListeners:=nil;
 
-  // Make sure to also destroy the default layer (layer 0)
-  for I:=1 to NumberOfLayers do
-    Layer[I - 1].Destroy;
+// Make sure to also destroy the default layer (layer 0)
+  for I:=0 to NumberOfLayers-1 do Layer[I].Destroy;
   FLayers.Clear;
   FreeAndNil(FControlFaces);
   FreeAndNil(FControlEdges);
@@ -3313,52 +3315,34 @@ end;
 
 procedure TFreeSubdivisionSurface.Draw(Viewport: TFreeViewport);
 var
-  I: integer; //t:DWord;
+  I: integer;
   Edge: TFreeSubdivisionEdge;
 begin
   if FIsBuilding then exit; // no double entries
 
-  if not Built then
-    Rebuild;
-
-  if Viewport.ViewportMode <> vmWireframe then
-  begin
+  if not Built then Rebuild;
+  if Viewport.ViewportMode <> vmWireframe then begin
     if Viewport.ViewportMode in [vmShadeGauss, vmShadeDevelopable] then
-      if not GaussCurvatureCalculated then
-        CalculateGaussCurvature;
-  end
-  else
-    inherited Draw(Viewport);
+      if not GaussCurvatureCalculated then CalculateGaussCurvature;
+  end else inherited Draw( Viewport );
 
-  //t:=LclIntf.GetTickCount;
-  for i:=0 to NumberOfLayers-1 do Layer[i].Draw(Viewport);
-  //t:=LclIntf.GetTickCount - t;
-
+  for i:=0 to NumberOfLayers-1 do Layer[i].Draw( Viewport );
   Viewport.AlphaBuffer.Draw;
-
   if ShowControlNet then begin
-    for I:=0 to NumberOfControlEdges-1 do begin
-      Edge:=ControlEdge[I];
-      Edge.Draw(False, Viewport);
-    end;
-
+    for I:=0 to NumberOfControlEdges-1 do begin Edge:=ControlEdge[I];
+                                          Edge.Draw( False,Viewport ); end;
     for I:=0 to NumberOfControlPoints-1 do
-      if ControlPoint[I].Visible then
-        ControlPoint[I].Draw(Viewport);
+      if ControlPoint[I].Visible then ControlPoint[I].Draw(Viewport);
 
     for i:=0 to FControlPointGroups.Count-1 do
-      if FControlPointGroups[i].Visible then
-         FControlPointGroups[i].Draw(ViewPort);
+      if FControlPointGroups[i].Visible then FControlPointGroups[i].Draw(ViewPort);
   end;
-
-  for I:=1 to NumberOfControlCurves do
-    if ControlCurve[I - 1].Visible then
-      ControlCurve[I - 1].Draw(Viewport);
-
+  for I:=0 to NumberOfControlCurves-1 do
+    if ControlCurve[I].Visible then ControlCurve[I].Draw(Viewport);
 end;
 
-function TFreeSubdivisionSurface.EdgeExists(P1, P2: TFreeSubdivisionPoint):
-TFreeSubdivisionEdge;
+function TFreeSubdivisionSurface.EdgeExists( P1,P2: TFreeSubdivisionPoint ) :
+         TFreeSubdivisionEdge;
 var
   I: integer;
   Edge: TFreeSubdivisionEdge=nil;
@@ -3369,9 +3353,8 @@ begin
   // If the edge exists then it must exist
   // in both the points, therefore only the point
   // with the smallest number of edges has to be checked
-  if P1.FEdges.Count <= P2.FEdges.Count
-     then P:=P1
-     else P:=P2;
+
+  if P1.FEdges.Count <= P2.FEdges.Count then P:=P1 else P:=P2;
 
   P:=P1; // thorow check
   for I:=0 to P.FEdges.Count - 1 do begin

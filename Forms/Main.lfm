@@ -888,7 +888,7 @@ object MainForm: TMainForm
     object ImportVRML: TAction
       Category = 'Import'
       Caption = 'Virtual Reality (VRML)'
-      Hint = 'Import a VRML file.'
+      Hint = 'Import a Virtual Reality Modeling Language file.'
       OnExecute = ImportVRMLExecute
     end
     object ImportSTL: TAction

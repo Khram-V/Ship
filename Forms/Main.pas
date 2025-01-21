@@ -1783,8 +1783,6 @@ begin
    UpdateMenu;
 end;
 
-
-
 procedure TMainForm.ShowControlCurvesExecute(Sender: TObject);
 begin
    FreeShip.Visibility.ShowControlCurves:=not FreeShip.Visibility.ShowControlCurves;

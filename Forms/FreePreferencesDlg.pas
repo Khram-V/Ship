@@ -228,43 +228,38 @@ const rs_Save: String = 'Are you sure you want to reset the preferences?'
              + #13#10 + 'The current settings will be lost.';
 
 implementation
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 procedure TFreePreferencesDialog.Updatedata;
 var
   i: integer;
-begin
-  Panel4.Color:=FFreeship.Preferences.ViewportColor;
-  Panel2.Color:=FFreeship.Preferences.LayerColor;
-  Panel5.Color:=FFreeship.Preferences.UnderWaterColor;
-  seSubmergedSurfaceOpacity.Value:=FFreeship.Preferences.UnderWaterColorAlpha * 100 div 255;
-  Panel6.Color:=FFreeship.Preferences.EdgeColor;
-  Panel7.Color:=FFreeship.Preferences.CreaseEdgeColor;
-  Panel8.Color:=FFreeship.Preferences.CreaseColor;
-  Panel9.Color:=FFreeship.Preferences.RegularPointColor;
-  Panel10.Color:=FFreeship.Preferences.CreasePointColor;
-  Panel11.Color:=FFreeship.Preferences.CornerPointColor;
-  Panel12.Color:=FFreeship.Preferences.DartPointColor;
-  Panel13.Color:=FFreeship.Preferences.SelectColor;
-  Panel14.Color:=FFreeship.Preferences.GridColor;
-  Panel15.Color:=FFreeship.Preferences.GridFontColor;
-  Panel16.Color:=FFreeship.Preferences.StationColor;
-  Panel17.Color:=FFreeship.Preferences.ButtockColor;
-  Panel18.Color:=FFreeship.Preferences.WaterlineColor;
-  Panel19.Color:=FFreeship.Preferences.NormalColor;
-  Panel20.Color:=FFreeship.Preferences.DiagonalColor;
-  Panel21.Color:=FFreeship.Preferences.LeakPointColor;
-  Panel22.Color:=FFreeship.Preferences.MarkerColor;
-  Panel23.Color:=FFreeship.Preferences.CurvaturePlotColor;
-  Panel24.Color:=FFreeship.Preferences.ControlCurveColor;
-  Panel25.Color:=FFreeship.Preferences.HydrostaticsFontColor;
-  Panel26.Color:=FFreeship.Preferences.ZebraStripeColor;
+begin                                                                           //  Label Panel Top
+  Panel4.Color:=FFreeship.Preferences.ViewportColor;                            //    1    4    4   'Viewport background'
+  Panel14.Color:=FFreeship.Preferences.GridColor;                               //    12   14   32  'Viewport grid'
+  Panel15.Color:=FFreeship.Preferences.GridFontColor;                           //    3    5    60  'Grid font'
+  Panel2.Color:=FFreeship.Preferences.LayerColor;                               //    2    2    94  'New surfaces'
+  Panel19.Color:=FFreeship.Preferences.NormalColor;                             //   18    19   122 'Surface normals'
+  Panel5.Color:=FFreeship.Preferences.UnderWaterColor;                          //    3    5    150 'Submerged surfaces'
+  seSubmergedSurfaceOpacity.Value:=FFreeship.Preferences.UnderWaterColorAlpha * 100 div 255; // 178 'Submerged surface opacity, %'
+  Panel24.Color:=FFreeship.Preferences.ControlCurveColor;                       //   23    24   220 'Control curves'
+  Panel6.Color:=FFreeship.Preferences.EdgeColor;                                //    4    6    248 'Regular control edges'
+  Panel7.Color:=FFreeship.Preferences.CreaseEdgeColor;                          //    5    17   276 'Crease edges (control)'
+  Panel8.Color:=FFreeship.Preferences.CreaseColor;                              //    6    8    304 'Crease edges (interior)'
+  Panel9.Color:=FFreeship.Preferences.RegularPointColor;                        //    7    9      4 'Regular control points'
+  Panel10.Color:=FFreeship.Preferences.CreasePointColor;                        //    8    10    32 'Crease points'
+  Panel11.Color:=FFreeship.Preferences.CornerPointColor;                        //    9    11    60 'Corner points'
+  Panel12.Color:=FFreeship.Preferences.DartPointColor;                          //   10    12    88 'Dart points'
+  Panel21.Color:=FFreeship.Preferences.LeakPointColor;                          //   20    21   116 'Leak points'
+  Panel13.Color:=FFreeship.Preferences.SelectColor;                             //   11    13   150 'Selected items'
+  Panel23.Color:=FFreeship.Preferences.CurvaturePlotColor;                      //   22    23   178 'Curvature plots'
+  Panel22.Color:=FFreeship.Preferences.MarkerColor;                             //   21    33   206 'Markers'
+  Panel16.Color:=FFreeship.Preferences.StationColor;                            //   14    16   234 'Stations'
+  Panel17.Color:=FFreeship.Preferences.ButtockColor;                            //   15    17   262 'Buttocks'
+  Panel18.Color:=FFreeship.Preferences.WaterlineColor;                          //   16    18   290 'Waterlines'
+  Panel20.Color:=FFreeship.Preferences.DiagonalColor;                           //   19    20   318 'Diagonals'
+  Panel25.Color:=FFreeship.Preferences.HydrostaticsFontColor;                   //   24    25   346 'Hydrostatics font color'
+  Panel26.Color:=FFreeship.Preferences.ZebraStripeColor;                        //   25    26   374 'Zebra stripes color'
+
   SpinEdit1.Value:=FFreeship.Preferences.PointSize;
   seFontSize.Value:=FFreeship.Preferences.FontSize;
   if FFreeship.Preferences.MaxUndoMemory < 1 

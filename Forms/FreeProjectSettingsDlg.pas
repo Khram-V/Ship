@@ -64,7 +64,6 @@ type                                             { TFREEProjectSettingsDialog }
     Label5:  TLabel;
     Label6:  TLabel;
     Label9:  TLabel;
-    MainMenu1: TMainMenu;
     Panel1:  TPanel;
     Panel10: TPanel;
     Panel11: TPanel;

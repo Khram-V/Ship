@@ -304,7 +304,7 @@ var
   end; //EdgeCheck
 
 begin
-  if (NumberOfPoints <> 3) or (aOwner.FSubdivisionMode = fmCatmullClark) then
+  if (NumberOfPoints<>3) or (aOwner.FSubdivisionMode=fmCatmullClark) then
   begin
     for I:=1 to FPoints.Count do begin
       P2:=FPoints[I-1];
@@ -329,7 +329,7 @@ begin
       Index2:=(Index1+1) mod 4;
       TmpIndex:=aRefFaces.SortedIndexOf(self);
       Pts[index2]:=aRefFaces.Objects[TmpIndex];     //self.FNewLocation;        if Pts[Index2-1] = nil then Showmessage('Subdivision error. Point 2 (face center) not found');// else
-      NewLocation:=Pts[index2-1];
+      NewLocation:=Pts[index2];
 
       Index3:=(Index2+1) mod 4;
       TmpIndex:=aRefEdges.SortedIndexOf(PrevEdge);
@@ -348,16 +348,13 @@ begin
 
       NewFace.FPoints.Capacity:=4;
       for J:=0 to 3 do
-      if Pts[J] <> nil then begin                  // Add new face to points
+      if Pts[J] <> nil then begin                     // Add new face to points
          Pts[J].FFaces.Add(NewFace);
          NewFace.FPoints.Add(Pts[J]);
       end;                                                                      // else Showmessage(format('Subdivision error. Pts[%d] is nil',[J]));
     end;
-  end
-  else if NumberOfPoints = 3 then
-  begin
-    // Special case, quadrisect triangle by connecting all three
-    // edge points
+  end else if NumberOfPoints = 3 then begin
+    // Special case, quadrisect triangle by connecting all three edge points
     // first process the three surrounding triangles
     for I:=1 to FPoints.Count do begin
       P2:=FPoints[I - 1];
@@ -368,29 +365,28 @@ begin
 
       Index0:=0;
       TmpIndex:=aRefEdges.SortedIndexOf(PrevEdge);
-      Pts[Index0]:=aRefEdges.Objects[tmpindex];// PrevEdge.FNewLocation;
+      Pts[Index0]:=aRefEdges.Objects[tmpindex];       // PrevEdge.FNewLocation;
       Index1:=1;
       TmpIndex:=aRefVertices.SortedIndexOf(P2);
-      Pts[index1]:=aRefVertices.Objects[Tmpindex];// P2.FNewLocation;
+      Pts[index1]:=aRefVertices.Objects[Tmpindex];    // P2.FNewLocation;
       Index2:=2;
       TmpIndex:=aRefEdges.SortedIndexOf(CurrEdge);
-      Pts[index2]:=aRefEdges.Objects[Tmpindex];// CurrEdge.FNewLocation;
+      Pts[index2]:=aRefEdges.Objects[Tmpindex];       // CurrEdge.FNewLocation;
 
       // add the new face
       NewFace:=TFreeSubdivisionFace.Create(aOwner);
       NewFace.SubdivisionLevel:=self.SubdivisionLevel+1;
       aNewFaces.Add(NewFace);
-      EdgeCheck(Pts[0], Pts[1], PrevEdge.Crease, PrevEdge.FControlEdge or
-        aIsControlFace, PrevEdge.FCurve);
-      EdgeCheck(Pts[1], Pts[2], CurrEdge.Crease, CurrEdge.FControlEdge or
-        aIsControlFace, CurrEdge.FCurve);
+      EdgeCheck( Pts[0],Pts[1],PrevEdge.Crease,
+        PrevEdge.FControlEdge or aIsControlFace, PrevEdge.FCurve );
+      EdgeCheck( Pts[1],Pts[2],CurrEdge.Crease,
+        CurrEdge.FControlEdge or aIsControlFace, CurrEdge.FCurve);
       EdgeCheck(Pts[2], Pts[0], False, False, nil);
 
       NewFace.FPoints.Capacity:=3;
-      for J:=1 to 3 do begin                       // Add new face to points
-        Pts[J - 1].FFaces.Add(NewFace);
-        NewFace.FPoints.Add(Pts[J - 1]);
-        Pts[J - 1].AddFace(NewFace);
+      for J:=0 to 2 do begin                       // Add new face to points
+        Pts[J].FFaces.Add( NewFace ); NewFace.FPoints.Add(Pts[J]);
+        Pts[J].AddFace( NewFace );
       end;
     end;
     // then process the center triangle
@@ -412,11 +408,11 @@ begin
     EdgeCheck(Pts[2],Pts[0],False,False,nil);
 
     NewFace.FPoints.Capacity:=3;
-    for J:=1 to 3 do begin                            // Add new face to points
-      Pts[J - 1].FFaces.Add(NewFace);
-      NewFace.FPoints.Add(Pts[J - 1]);
-      Pts[J - 1].AddFace(NewFace);
+    for J:=0 to 2 do begin                            // Add new face to points
+      Pts[J].FFaces.Add(NewFace);
+      NewFace.FPoints.Add(Pts[J]);
+      Pts[J].AddFace(NewFace);
     end;
   end;
-end;{TFreeSubdivisionFace.Subdivide}
+end;  {TFreeSubdivisionFace.Subdivide}
 

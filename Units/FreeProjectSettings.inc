@@ -19,16 +19,14 @@ end;
 procedure TFreeProjectSettings.FSetDisableModelCheck(Val: boolean);
 begin
   if val <> FDisableModelCheck then begin
-    FDisableModelCheck:=Val;
-    FreeShip.FileChanged:=True;
+    FDisableModelCheck:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetEnableModelAutoMove(Val: boolean);
 begin
   if val <> FEnableModelAutoMove then begin
-    FEnableModelAutoMove:=Val;
-    FreeShip.FileChanged:=True;
+    FEnableModelAutoMove:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 (*
@@ -49,8 +47,7 @@ end;
 procedure TFreeProjectSettings.FSetProjectAppendageCoefficient(Val: TFloatType);
 begin
   if abs(Val - FProjectAppendageCoefficient) > 1e-7 then begin
-    FProjectAppendageCoefficient:=Val;
-    FreeShip.FileChanged:=True;
+    FProjectAppendageCoefficient:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
@@ -58,8 +55,7 @@ procedure TFreeProjectSettings.FSetProjectBeam(Val: TFloatType);
 begin
   if abs(Val - FProjectBeam) > 1e-7 then begin
     FProjectBeam:=Val;
-    FMainparticularsHasBeenset:=True;
-    FreeShip.FileChanged:=True;
+    FMainparticularsHasBeenset:=True; FreeShip.FileChanged:=True;
   end;
 end;
 
@@ -69,10 +65,8 @@ var
 begin
   if abs(Val - FProjectDraft) > 1e-7 then begin
     FProjectDraft:=Val;
-    FMainparticularsHasBeenset:=True;
-    FreeShip.FileChanged:=True;
-    for I:=1 to FreeShip.NumberOfFlowLines do
-      FreeShip.Flowline[I - 1].Build:=False;
+    FMainparticularsHasBeenset:=True; FreeShip.FileChanged:=True;
+    for I:=0 to FreeShip.NumberOfFlowLines-1 do FreeShip.Flowline[I].Build:=False;
   end;
 end;
 
@@ -80,120 +74,105 @@ procedure TFreeProjectSettings.FSetProjectLength(Val: TFloatType);
 begin
   if abs(Val - FProjectLength) > 1e-7 then begin
     FProjectLength:=Val;
-    FMainparticularsHasBeenset:=True;
-    FreeShip.FileChanged:=True;
+    FMainparticularsHasBeenset:=True; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectSplitSectionLocation(val: TFloatType);
 begin
   if Val <> FProjectSplitSectionLocation then begin
-    FProjectSplitSectionLocation:=val;
-    FreeShip.FileChanged:=True;
+    FProjectSplitSectionLocation:=val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectWaterDensity(Val: TFloatType);
 begin
   if abs(Val - FProjectWaterDensity) > 1e-6 then begin
-    FProjectWaterDensity:=Val;
-    FreeShip.FileChanged:=True;
+    FProjectWaterDensity:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectWaterTemper(Val: TFloatType);
 begin
   if abs(Val - FProjectWaterTemper) > 1e-6 then begin
-    FProjectWaterTemper:=Val;
-    FreeShip.FileChanged:=True;
+    FProjectWaterTemper:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetSavePreview(val: boolean);
 begin
   if val <> FSavePreview then begin
-    FSavePreview:=Val;
-    FreeShip.FileChanged:=True;
+    FSavePreview:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetStartDraft(Val: TFloatType);
 begin
   if Val <> FStartDraft then begin
-    FStartdraft:=Val;
-    FreeShip.FileChanged:=True;
+    FStartdraft:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetTrim(Val: TFloatType);
 begin
   if Val <> FTrim then begin
-    FTrim:=Val;
-    FreeShip.FileChanged:=True;
+    FTrim:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetEndDraft(Val: TFloatType);
 begin
   if Val <> FEndDraft then begin
-    FEnddraft:=Val;
-    FreeShip.FileChanged:=True;
+    FEnddraft:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetDraftStep(Val: TFloatType);
 begin
   if Val <> FDraftStep then begin
-    FDraftStep:=Val;
-    FreeShip.FileChanged:=True;
+    FDraftStep:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetUseDefaultSplitSectionLocation(Val: boolean);
 begin
   if val <> FUseDefaultSplitSectionLocation then begin
-    FUseDefaultSplitSectionLocation:=Val;
-    FreeShip.FileChanged:=True;
+    FUseDefaultSplitSectionLocation:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectName(Val: string);
 begin
   if val <> FProjectName then begin
-    FProjectName:=Val;
-    FreeShip.FileChanged:=True;
+    FProjectName:=Val; FreeShip.FileChanged:=True;
   end;
 end;{TFreeProjectSettings.FSetProjectName}
 
 procedure TFreeProjectSettings.FSetProjectDesigner(Val: string);
 begin
   if val <> FProjectDesigner then begin
-    FProjectDesigner:=Val;
-    FreeShip.FileChanged:=True;
+    FProjectDesigner:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectComment(Val: string);
 begin
   if val <> FProjectComment then begin
-    FProjectComment:=Val;
-    FreeShip.FileChanged:=True;
+    FProjectComment:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectFileCreatedBy(Val: string);
 begin
   if val <> FProjectFileCreatedBy then begin
-    FProjectFileCreatedBy:=Val;
-    FreeShip.FileChanged:=True;
+    FProjectFileCreatedBy:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectShadeUnderwaterShip(Val: boolean);
 begin
   if val <> FProjectShadeUnderwaterShip then begin
-    FProjectShadeUnderwaterShip:=Val;
-    FreeShip.FileChanged:=True;
+    FProjectShadeUnderwaterShip:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
@@ -214,15 +193,12 @@ end;
 procedure TFreeProjectSettings.FSetProjectUnderWaterColor(Val: TColor);
 begin
   if Val <> FProjectUnderWaterColor then begin
-    FProjectUnderWaterColor:=Val;
-    FreeShip.FileChanged:=True;
+    FProjectUnderWaterColor:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectUnderWaterColorAlpha(Val: byte);
-begin
-// if FProjectUnderWaterColorAlpha = Val then exit;
-      FProjectUnderWaterColorAlpha:=Val;
+begin FProjectUnderWaterColorAlpha:=Val;
 end;
 
 procedure TFreeProjectSettings.FSetProjectUnits(Val: TFreeUnitType);
