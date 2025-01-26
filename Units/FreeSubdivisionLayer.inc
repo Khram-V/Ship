@@ -48,7 +48,7 @@ var
 begin
 //  II:=0;
 //Coeff:=Thickness*MaterialDensity;
-  Fillchar(Result,SizeOf(Result),0);
+  Fillchar( Result,SizeOf(Result),0 );
 (*if FileExists('Weights.txt') { *Converted from FileExists* }
   and (coeff > 0) then begin
     Assignfile(FFile,'Weights.txt');
@@ -265,7 +265,7 @@ label
   StartAgain;
 begin
   Edges:=TFasterListTFreeSubdivisionControlEdge.Create;
-  try
+//  try
     StartAgain:                          // assemble all controledges in a list
       for I:=1 to Layer.Count do begin
         Face:=Layer.Items[I - 1];
@@ -356,9 +356,9 @@ begin
       end; //while (J<=Layer.Count) and (not IntFound) do
       Inc(I);
     end; //while I<=Edges.Count do
-  finally
+//  finally
     FreeAndNil(Edges);
-  end;
+//  end;
 end;
 
 // find all intersection points of edges of the Self with subfaces of Layer
@@ -385,21 +385,16 @@ label
 begin
   //TmpPoints:= TFasterListTFreeSubdivisionControlPoint.Create;
   Edges:=TFasterListTFreeSubdivisionControlEdge.Create;
-  try
-    StartAgain:
-        // assemble all controledges in a list
-    for I:=1 to Count do
-    begin
+//  try
+    StartAgain:                          // assemble all controledges in a list
+    for I:=1 to Count do begin
       Face:=Items[I - 1];
       P1:=Face.Point[Face.NumberOfPoints - 1];
-      for J:=1 to Face.NumberOfpoints do
-      begin
+      for J:=1 to Face.NumberOfpoints do begin
         P2:=Face.Point[J - 1];
         Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-        if Edge <> nil then
-        begin
-          if Edges.SortedIndexOf(Edge) = -1 then
-            Edges.AddSorted(Edge);
+        if Edge <> nil then begin
+          if Edges.SortedIndexOf(Edge) = -1 then Edges.AddSorted(Edge);
         end;
         P1:=P2;
       end;
@@ -407,40 +402,31 @@ begin
 
     // now check all edges for intersection with layer 2
     I:=1;
-    while I <= Edges.Count do
-    begin
+    while I <= Edges.Count do begin
       Edge:=Edges[I - 1];
       IntFound:=False;
       esp:=Edge.FStartpoint.FCoordinate;
       eep:=Edge.FEndpoint.FCoordinate;
       J:=1;
-      while (J <= Layer.Count) and (not IntFound) do
-      begin
+      while (J <= Layer.Count) and (not IntFound) do begin
         Face:=Layer.Items[J - 1];
         K:=1;
-        while (K <= Face.ChildCount) and (not IntFound) do
-        begin
+        while (K <= Face.ChildCount) and (not IntFound) do begin
           Child:=Face.Child[K - 1];
           L:=3;
-          while (L <= Child.NumberOfpoints) and (not IntFound) do
-          begin
+          while (L <= Child.NumberOfpoints) and (not IntFound) do begin
             CP0:=Child.Point[0].Coordinate;
             CP2:=Child.Point[L - 2].Coordinate;
             CP1:=Child.Point[L - 1].Coordinate;
-
             Plane:=PlanePPP(CP0, CP2, CP1);
-
             S1:=Plane.a * esp.X + Plane.b * esp.Y
               + Plane.c * esp.Z + Plane.d;
             S2:=Plane.a * eep.X + Plane.b * eep.Y
               + Plane.c * eep.Z + Plane.d;
-            if ((S1 < 0) and (S2 > 0)) or ((S1 > 0) and (S2 < 0)) then
-            begin
+            if ((S1 < 0) and (S2 > 0)) or ((S1 > 0) and (S2 < 0)) then begin
               // Edge intersects the plane, does it lie in the triangle?
-              if S1 = S2 then
-                T:=0.5
-              else
-                T:=-s1 / (s2 - s1);
+              if S1 = S2 then T:=0.5
+                         else T:=-s1 / (s2 - s1);
               P3D.X:=esp.X + T * (eep.X - esp.X);
               P3D.Y:=esp.Y + T * (eep.Y - esp.Y);
               P3D.Z:=esp.Z + T * (eep.Z - esp.Z);
@@ -456,8 +442,7 @@ begin
               //write('P3D:',ToStr(P3D), ' CP0:',ToStr(CP0),' CP2:',ToStr(CP2),' CP1:',ToStr(CP1));
               //if PIT<>PIT0
               //then writeln ('PIT<>PIT0');
-              if PiT then
-              begin
+              if PiT then begin
                 //if Edge.Selected or Face.Selected then
                 //   write(' :IN');
                 // Yes, we have a valid intersection here
@@ -465,15 +450,13 @@ begin
                 //writeln('FreeGeometry.CalculateIntersectionPoint: Intersection found. P3D(',P3D.X,',',P3D.Y,',',P3D.Z,')');
 
                 P:=Edge.InsertControlPoint(P3D);
-                if P <> nil then
-                begin
+                if P <> nil then begin
                   //IntFound:=true;  //MM:I do not know why to stop searching for all intersections ?
                   //Result:=True;
                   P.Selected:=True;
                   NewPoints.Add(P);
                   goto StartAgain;
                 end;
-
                 {  // abandone
                 // new way: store new point in TmpPoints list with Edge attached.
                 // then later insert them into these edges
@@ -516,10 +499,9 @@ begin
     end;
     }
 
-  finally
-    FreeAndNil(Edges);
-    //TmpPoints.Destroy;
-  end;
+//  finally
+    FreeAndNil(Edges);      //TmpPoints.Destroy;
+//  end;
 end;
 
 // find all intersection control points of edges of the Self with subfaces of Layer
@@ -543,7 +525,7 @@ label
   StartAgain;
 begin
   Edges:=TFasterListTFreeSubdivisionControlEdge.Create;
-  try
+//  try
     StartAgain:
         // assemble all controledges in a list
       for I:=1 to Count do
@@ -626,9 +608,9 @@ begin
       end; //while (J<=Layer.Count) and (not IntFound) do
       Inc(I);
     end; //while I<=Edges.Count do
-  finally
+//  finally
     FreeAndNil(Edges);
-  end;
+//  end;
 end;
 
 procedure Sort3DPoints(var Points: TFasterListTFreeSubdivisionControlPoint);
@@ -650,7 +632,6 @@ begin
         Points.Exchange(I, J);
     end;
 end;
-
 {
 The two lines may not meet at a single point.
 The best you can do in general is find the point on line1 closest to line2 and vise versa.
@@ -667,11 +648,10 @@ you can find the points on the line which are closest to the other line like thi
     Find the point on line1 p1=Add(r1,Scale(d1,e1))
     Find the point on line2 p2=Add(r2,Scale(d2,e2))
 }
-function LineIntersection(P1b, P1e, P2b, P2e: T3DCoordinate): T3DCoordinate;
-begin
-  Result:=ZERO;
-end;
-
+//function LineIntersection(P1b, P1e, P2b, P2e: T3DCoordinate): T3DCoordinate;
+//begin
+//  Result:=ZERO;
+//end;
 
 function TFreeSubdivisionLayer.CalculateIntersectionPoints(
   Layer: TFreeSubdivisionLayer): boolean;
@@ -697,7 +677,7 @@ begin
   Edges:=TFasterListTFreeSubdivisionControlEdge.Create;
   NewPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
   EdgeNewPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
-  try
+//  try
     // find all intersection points of control edges of the Self with subdivision faces of Layer
     FindIntersectionPoints(Layer, NewPoints);
     // find all intersection points of control edges of the Self with control faces of Layer
@@ -798,11 +778,11 @@ begin
          inc(I);
        end;
       }
-  finally
+//  finally
     FreeAndNil(NewPoints);
     FreeAndNil(Edges);
     FreeAndNil(EdgeNewPoints);
-  end;
+//  end;
 end;
 
 constructor TFreeSubdivisionLayer.Create(Owner: TFreeSubdivisionSurface);
@@ -857,11 +837,9 @@ var
   Index: integer;
 begin
   FPatches.DeleteItem(ControlFace);
- {
-  Index:=FPatches.IndexOf(ControlFace);
-  if index <> -1 then
-    FPatches.Delete(Index);
- }
+{ Index:=FPatches.IndexOf(ControlFace);
+  if index <> -1 then FPatches.Delete(Index);
+}
 end;
 
 destructor TFreeSubdivisionLayer.Destroy;
@@ -871,29 +849,13 @@ begin
 end;
 
 function TFreeSubdivisionLayer.CheckIntegrity: boolean;
-var  I, J: integer;
-  CFace: TFreeSubdivisionControlface;
-begin
-  result:=true;
-//try
-  for I:=0 to Count - 1 do
-  begin
+var I,J: integer; CFace: TFreeSubdivisionControlface;
+begin result:=true;
+  for I:=0 to Count-1 do begin
     CFace:=Items[I];
-    if CFace.Layer <> Self then begin                                           // logger.Error(Format('TFreeSubdivisionLayer.CheckIntegrity: CFace[%d].Layer <> Self',[I]));
-      result:= result and false;
-    end;
-    if not CFace.CheckIntegrity then begin                                      // logger.Error(Format('TFreeSubdivisionLayer.CheckIntegrity: In CFace[%d]',[I]));
-    result:= result and false;
-    end;
+    if CFace.Layer <> Self then begin result:= result and false; end;
+    if not CFace.CheckIntegrity then begin result:= result and false; end;
   end;
-(*
-  except on E : Exception do
-    begin
-//  logger.Error(Format('TFreeSubdivisionLayer.CheckIntegrity: Exception: %s',[E.Message]));
-    result:=false;
-    end;
-  end;
-*)
 end;
 
 procedure TFreeSubdivisionLayer.Draw(Viewport: TFreeViewport);
@@ -904,10 +866,8 @@ var
   P: TFreeSubdivisionControlPoint;
   G: TFreeSubdivisionControlPointGroup;
 begin
-  if SurfaceVisible and (Count > 0) then
-  begin
-    if (Viewport.ViewportMode <> vmWireframe) then
-    begin
+  if SurfaceVisible and (Count > 0) then begin
+    if (Viewport.ViewportMode <> vmWireframe) then begin
       if Viewport.ViewportMode = vmShadeGauss then
         for i:=0 to Count-1 do
           Items[i].Draw(Viewport, Surface.FMinGaussCurvature,
@@ -916,45 +876,33 @@ begin
         for i:=0 to Count-1 do
           if items[i] is TFreeSubdivisionControlFace then
             Items[i].Draw(Viewport)
-    end
-    else
-    begin
+    end else begin
       Viewport.Canvas.AntialiasingMode:=amOn; // MM 04/22/2019 10:30:47 AM. added
-      if Surface.ShowInteriorEdges then
-      begin
+      if Surface.ShowInteriorEdges then begin
         Viewport.SetPenWidth(1);
         Viewport.PenColor:=Color;
-        for I:=1 to Count do
-          Items[I - 1].Draw(Viewport);
+        for I:=1 to Count do Items[I-1].Draw(Viewport);
       end;
       // Draw all interior crease-edges
       Viewport.PenWidth:=Surface.InternalEdgeLineWidth;
       Viewport.PenStyle:=psSolid;
       Viewport.PenColor:=Surface.CreaseColor;
 
-      for I:=1 to Count do
-      begin
-        Face:=Items[I - 1];
-        for J:=0 to Face.FEdges.Count - 1 do
-        begin
+      for I:=1 to Count do begin
+        Face:=Items[I-1];
+        for J:=0 to Face.FEdges.Count - 1 do begin
           Edge:=Face.FEdges[J];
-          if Edge.FCrease or (Edge.NumberOfFaces<2) then
-          begin
+          if Edge.FCrease or (Edge.NumberOfFaces<2) then begin
             Edge.Draw(Surface.DrawMirror and Symmetric, Viewport);
           end;
-        end;
-
-        //MM 2019-04-21. added to draw boundary and crease edges
-        for J:=0 to Face.FControlDescendantEdges.Count - 1 do
-        begin
+        end;           //MM 2019-04-21. added to draw boundary and crease edges
+        for J:=0 to Face.FControlDescendantEdges.Count-1 do begin
           Edge:=Face.FControlDescendantEdges[J];
-          if Edge.FCrease or (Edge.NumberOfFaces<2) then
-          begin
-            Edge.Draw(Surface.DrawMirror and Symmetric, Viewport);
+          if Edge.FCrease or (Edge.NumberOfFaces<2) then begin
+            Edge.Draw(Surface.DrawMirror and Symmetric,Viewport);
           end;
         end;
       end;
-
       Viewport.Canvas.AntialiasingMode:=amOff; // MM 04/22/2019 10:30:47 AM. added
     end;
   end;
@@ -962,18 +910,14 @@ end;
 
 procedure TFreeSubdivisionLayer.Extents(var Min, Max: T3DCoordinate);
 var
-  I: integer;
-  Face: TFreeSubdivisionControlface;
-  P: T3DCoordinate;
+  I: integer; Face: TFreeSubdivisionControlface; P: T3DCoordinate;
 begin
   if SurfaceVisible then
-    for I:=1 to Count do
-    begin
+    for I:=1 to Count do begin
       Face:=Items[I - 1];
       MinMax(Face.Min, Min, Max);
       MinMax(Face.Max, Min, Max);
-      if (Symmetric) and (Surface.DrawMirror) then
-      begin
+      if (Symmetric) and (Surface.DrawMirror) then begin
         P:=Face.Min;
         P.Y:=-P.Y;
         MinMax(P, Min, Max);
@@ -990,8 +934,7 @@ var
 begin
   Source.LoadString(FDescription);
   Source.LoadInteger(FLayerID);
-  if FLayerID > Surface.FLastusedLayerID then
-    Surface.FLastusedLayerID:=FLayerID;
+  if FLayerID>Surface.FLastusedLayerID then Surface.FLastusedLayerID:=FLayerID;
   Source.LoadTColor(FColor);
   Source.LoadBoolean(FSurfaceVisible);
   Source.LoadBoolean(FSymmetric);
@@ -1232,7 +1175,7 @@ begin
 
   ToDoList:=TFasterListTFreeSubdivisionControlFace.Create;
   DoneList:=TFasterList<TFasterListTFreeSubdivisionControlFace>.Create;
-  try
+//  try
     ToDoList.Capacity:=FPatches.Count;
     ToDoList.AddList(FPatches);
     if ToDoList.Count > 0 then
@@ -1273,9 +1216,9 @@ begin
         FreeAndNil(Current);
       end;
     end;
-  finally
+//  finally
     FreeAndNil(ToDoList);
     FreeAndNil(DoneList);
-  end;
+//  end;
 end;
 

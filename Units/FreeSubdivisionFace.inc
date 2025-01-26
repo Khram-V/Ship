@@ -149,14 +149,14 @@ end;
 procedure TFreeSubdivisionFace.Clear;
 begin
   FPoints.Clear;
-end;{TFreeSubdivisionFace.Clear}
+end;
 
 constructor TFreeSubdivisionFace.Create(Owner: TFreeSubdivisionSurface);
 begin
   inherited Create(Owner);
   FPoints:=TFasterListTFreeSubdivisionPoint.Create(true,false);
   Clear;
-end;{TFreeSubdivisionFace.Create}
+end;
 
 procedure TFreeSubdivisionFace.Delete;
 var
@@ -172,38 +172,31 @@ begin                                                                           
   Free;
   //Destroy;
   //DelayedDestroyList.Add(Self);                                               //logger.DecreaseIndent;
-end; {TFreeSubdivisionFace.Delete}
+end;
 
 procedure TFreeSubdivisionFace.Unreference;
 var i,j: integer; E:TFreeSubdivisionEdge; P:TFreeSubdivisionPoint;
 begin
   if not IsUnreferenceEnabled then exit;
-  if InUnreference then exit; // speed up
+  if InUnreference then exit;                                       // speed up
   InUnreference:=true;
-//logger.IncreaseIndent;
-//logger.Debug(format('TFreeSubdivisionFace[%d].Unreference',[self.FID]));
-  {if FID=99
-   then FID:=99;
-  if FPoints = nil then // debug
-     FID:=FID;}
-
+  { if FID=99 then FID:=99;
+    if FPoints = nil then  FID:=FID;                                   // debug
+  }
   if FPoints <> nil then
   for i:=0 to FPoints.Count-1 do
     begin
     P:=FPoints[i];
     P.UnreferenceFace(Self);
-    {for j:=0 to FPoints[i].FEdges.Count-1 do
-      begin
+    {for j:=0 to FPoints[i].FEdges.Count-1 do begin
       E:=FPoints[i].FEdges[j];
       if (E<>nil)
         and ((E is TFreeSubdivisionEdge)or(E is TFreeSubdivisionControlEdge) )
-        and (E.FFaces <> nil) then
-         E.FFaces.DeleteItem(Self);
+        and (E.FFaces <> nil) then E.FFaces.DeleteItem(Self);
       end;}
     end;
   if FSurface <> nil then FSurface.UnreferenceFace(Self);
   InUnreference:=false;
-//logger.DecreaseIndent;
 end;
 
 destructor TFreeSubdivisionFace.Destroy;
@@ -213,7 +206,7 @@ begin
   Clear;
   FreeAndNil(FPoints);
   inherited Destroy;
-end;{TFreeSubdivisionFace.Destroy}
+end;
 
 // Inverts the point ordering of the face
 procedure TFreeSubdivisionFace.FlipNormal;
@@ -226,21 +219,12 @@ begin
   begin
     FPoints.Exchange(I, FPoints.Count - I - 1);
   end;
-end;{TFreeSubdivisionFace.FlipNormal}
+end;
 
 function TFreeSubdivisionFace.IndexOfPoint(P: TFreeSubdivisionPoint): integer;
 begin
   Result:=FPoints.IndexOf(P);
-end;{TFreeSubdivisionFace.IndexOfPoint}
-{
-procedure TFreeSubdivisionFace.PrintDebug;
-var i:integer;
-begin
-  inherited;
-//Logger.Debug(Format(' SubdivisionLevel:%d',[SubdivisionLevel]));
-//for i:=0 to FPoints.Count-1 do Logger.Debug(Format(' point[%d]:%d %s',[i,FPoints[i].Id, FPoints[i].Name]));
 end;
-}
 
 procedure TFreeSubdivisionFace.Subdivide(
     aOwner: TFreeSubdivisionSurface;

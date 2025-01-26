@@ -31,11 +31,13 @@ procedure PrintParametersHelp( Ans: Boolean ); begin
         + #10+ 'Where parameter is: --help = this screen'
         + #10+ '    model file: <Ship>.ftm or <Ship>.fbm' + #10
         + #10+ '«Free!Ship» in Pascal.'
-        + #10+ 'Compiled at       '+ReleasedDate+' '+COMPILE_TIME
-        + #10+ 'Compiler version: '+FPCVERSION
-        + #10+ 'Target CPU:       '+TARGET_CPU
-        + #10+ 'Target OS:        '+TARGET_OS
-        + #10+ 'FreeShip version: '+FREESHIP_VERSION;   // ResourceVersionInfo
+        + #10+ 'Compiled at '+ ReleasedDate+' '+COMPILE_TIME
+        + #10+ 'Compiler version: '+ FPCVERSION
+        + #10+ 'Target CPU:       '+ TARGET_CPU
+        + #10+ 'Target OS:        '+ TARGET_OS
+        + #10+ 'Free!Ship version: '+ FREESHIP_VERSION
+        + ' для ['+VersionString( low(TFreeFileVersion) )+'..5.0]'
+        ;                                                // ResourceVersionInfo
     if Ans then ShowMessage( sHelp )
            else WriteLn( sHelp );
 end;
@@ -57,17 +59,14 @@ begin
                 Mainform.Freeship.Preferences.LanguageFile );
   ShowTranslatedValues( Mainform );
   Mainform.FFileName:=sOpenFile;
-
   Application.OnActivate:=MainForm.OnActivate;
 try
   SetExceptionMask(                              // Enabling FPU exception mask
   [exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
-
   Application.Run;
-
-except                     // Floating point operation
-    on E: EMathError do;   //  ( 'General floating-point exception caught!' );
-//  on E: EAccessViolation do;
+except                 // Floating point operation - сбои и ошибки игнорируются
+    on E: EMathError do;      // ( 'General floating-point exception caught!' )
+    on E: EAccessViolation do;         // -- не знаю.., но и так всё же не хуже
 //  on E: EIntError  do Writeln( 'General integer exception!' );
 //  on E: EDivByZero do Writeln( 'Division by zero exception!' );
 //  on E: EOverflow  do Writeln( 'Overflow exception!' );

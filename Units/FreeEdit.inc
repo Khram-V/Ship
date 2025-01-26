@@ -15,13 +15,14 @@ begin Result:=FRecentFiles.Count;
 end;
 
 // Takes a filename and adds it to the list with recent files
-procedure TFreeEdit.AddToRecentFiles(Filename: string);
+procedure TFreeEdit.AddToRecentFiles( Filename:string );
 var
   I,Index: integer;
   AlreadyPresent: boolean;
   Tmp,Ext: string;
 begin
   AlreadyPresent:=False;
+  FreeShip.Preferences.LastDirectory:=ExtractFilePath( FileName );
   Ext:=Uppercase(ExtractFileExt(Filename));
   Index:=-1;
   Tmp:=Trim(Filename);
@@ -37,8 +38,8 @@ begin
        FRecentFiles.Insert(0,Tmp); // file not yet in the list, add at the front
                                   // delete items until no more than 10 are left
   while FRecentFiles.Count > 10 do FRecentFiles.Delete(FRecentFiles.Count - 1);
-  if assigned(FreeShip.FOnUpdateRecentFileList) then
-     FreeShip.FOnUpdateRecentFileList(self);
+  if assigned( FreeShip.FOnUpdateRecentFileList ) then
+               FreeShip.FOnUpdateRecentFileList( self );
 end;
 
 // Delete the backgrundimage associated with this view
@@ -83,7 +84,7 @@ begin
       [mbYes, mbNo], 0) = mrNo then exit;
 
   Dialog:=TOpenPictureDialog.Create(Viewport);
-  Dialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
+  Dialog.InitialDir:=FreeShip.Preferences.ImportDirectory; //+ConfigDirectory
   Dialog.Filter:=createDialogFilter(rsImageFiles, ['jpg', 'bmp'], False)
       +'|'+createDialogFilter(rsJPEGFiles, ['jpg'], False)
       +'|'+createDialogFilter(rsBitmapFiles, ['bmp']);
@@ -1616,7 +1617,7 @@ begin
     Strings:=TStringList.Create;
     PrevCursor:=Screen.Cursor;
     Screen.Cursor:=crHourGlass;
-    try
+//    try
       CreateIndividualLayers:=Dialog.cbCreateIndividualLayers.Checked;
       if Dialog.cbCreateIndividualFiles.Checked then begin        // send each intersection to an individual dxf file
         Intersections:=TFasterListTFreeIntersection.Create;
@@ -1679,10 +1680,10 @@ begin
           Strings.SaveToFile(Filename);
         end;
       end;
-    finally
+//    finally
       FreeAndNil(Strings);
       Screen.Cursor:=PrevCursor;
-    end;
+//    end;
   end;
   FreeAndNil(Dialog);
 end;
@@ -2121,7 +2122,7 @@ begin
       Strings.Add('P:F');
     // Add max. 10 comments
     Strings.Add('\Generated with FREE!ship');
-    Strings.Add('\www.freeship.org');
+//  Strings.Add('\www.freeship.org');
 
     // Save shape
     Strings.Add('*');
@@ -2853,7 +2854,7 @@ var
   UndoObject: TFreeUndoObject;
 begin
   if not FreeShip.ProjectSettings.FMainparticularsHasBeenset then begin
-    MessageDlg(Userstring(95),mtWarning,[mbOK],0); exit;
+                    MessageDlg(Userstring(95),mtWarning,[mbOK],0); exit;
   end;
   // temporarily switch to metric units for michlet export
   if FreeShip.ProjectSettings.ProjectUnits = fuImperial then begin
@@ -2925,23 +2926,21 @@ var
   PrevCursor: TCursor;
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
-  OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
+  OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory; //+ConfigDirectory
   OpenDialog.Filter:=createDialogFilter(rsMichletWaveElevationsFile,['mlt']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then
   begin
-    assignfile(FFile, Opendialog.Filename);
+    assignfile( FFile,Opendialog.Filename );
     Reset(FFile);
     Readln(FFile, Str);
     Nx:=0;
     Ny:=0;
     Speed:='';
-    if Str = 'RECTANGULAR PATCH' then
-    begin
+    if Str = 'RECTANGULAR PATCH' then begin
       readln(FFile);
       readln(FFile, Speed);
       readln(FFile);
-
       //Read X0, X1, Nx
       Readln(FFile, Str);
       // X0
@@ -2956,7 +2955,6 @@ begin
       Delete(Str, 1, J);
       // Nx
       Nx:=StrToInt(Str);
-
       //Read Y0, Y1, Ny
       Readln(FFile, Str);
       Readln(FFile, Str);
@@ -2973,16 +2971,14 @@ begin
       // Ny
       Ny:=StrToInt(Str);
 
-      for I:=1 to 5 do
-        readln(Ffile);
+      for I:=1 to 5 do readln(Ffile);
 
       Ny:=Ny div 2; // use only port half
       // Read X distances
       Setlength(XArray, Nx);
       Readln(FFile, Str);
       J:=Pos(',', Str);
-      if J <> 0 then
-        Delete(Str, 1, J);
+      if J <> 0 then Delete(Str, 1, J);
       for I:=1 to Nx do begin
         Str:=Trim(Str);
         J:=Pos(',', Str);
@@ -3199,42 +3195,36 @@ var
   PrevCursor: TCursor;
   Strings: TStringList;
 begin
-  OpenDialog := TOpenDialog.Create(FreeShip);
-  OpenDialog.InitialDir := FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter := createDialogFilter(rsWavefrontFile,['obj']);
-  if OpenDialog.Execute then
-  begin
-    if not CheckIfChangedAndAskToSave() then
-    begin
-      FreeAndNil(OpenDialog);
-      exit;
+  OpenDialog := TOpenDialog.Create( FreeShip );
+  OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory; //+ConfigDirectory
+  OpenDialog.Filter := createDialogFilter( rsOBJfile,['obj'] );
+  if OpenDialog.Execute then begin
+    if not CheckIfChangedAndAskToSave() then begin
+      FreeAndNil( OpenDialog ); exit;
     end;
-
     PrevCursor := Screen.Cursor;
     Screen.Cursor := crHourglass;
-
-    try
+//    try
       CreateUndoObject( rsOBJfile,True );
       FreeShip.Clear;
 
       Strings := TStringList.Create;
-      Strings.LoadFromFile(ChangeFileExt(OpenDialog.FileName, '.obj'));
+      Strings.LoadFromFile( ChangeFileExt( OpenDialog.FileName,'.obj' ) );
       FreeShip.Surface.ImportObjFile( Strings );
 
       FreeShip.ModelIsLoaded := True;
-      FreeShip.FileName := ChangeFileExt(Opendialog.FileName, '');
+      FreeShip.FileName := ChangeFileExt( Opendialog.FileName,'' );
       FreeShip.RebuildModel;
       FreeShip.FileChanged := True;
       FreeShip.Redraw;
 
-    finally
+//    finally
       FreeAndNil(Strings);
-      if Assigned(FreeShip.OnUpdateGeometryInfo) then
-        FreeShip.OnUpdateGeometryInfo(self);
+      if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
       Screen.Cursor := PrevCursor;
-    end;
+//    end;
   end;
-  FreeAndNil(OpenDialog);
+  FreeAndNil( OpenDialog );
 end;{TFreeEdit.File_ImportObj}
 
 procedure TFreeEdit.File_ExportObj;
@@ -3245,8 +3235,10 @@ begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
   SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.obj');
-  SaveDialog.Filter:=createDialogFilter(rsWavefrontFile, ['obj']);
+  SaveDialog.Filter:=createDialogFilter( rsWavefrontFile_NC,['obj'],false )
+               +'|'+ createDialogFilter( rsWavefrontFile_CN,['obj'],false );
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  SaveDialog.FilterIndex:=1;
   if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
     Strings:=TStringList.Create;
@@ -3276,103 +3268,72 @@ var
   SaveDialog: TSaveDialog;
   FFile: TextFile;
   I, J, K, L: integer;
+  C1, C2, C3: T3DCoordinate;
   Layer: TFreeSubdivisionLayer;
   Face: TFreeSubdivisionControlface;
   Child: TFreeSubdivisionface;
-  C1, C2, C3: T3DCoordinate;
 
- {
-  procedure Addfacet(P1, P2, P3: TFreeSubdivisionPoint);
+  procedure Addfacet( C1,C2,C3: T3DCoordinate );
   var
     Normal: T3DCoordinate;
   begin
-    Normal:=UnifiedNormal(p1.Coordinate, P2.Coordinate, P3.Coordinate);
-    Write(FFile, '  facet normal ');
-    writeln(FFile, FloatToDec(normal.X, 4) + #32 + FloatToDec(normal.Y, 4) +
-      #32 + FloatToDec(normal.Z, 4));
-    writeln(FFile, '    outer loop');
-    writeln(FFile, '      vertex ' + FloatToDec(P1.Coordinate.X, 4) + #32 +
-      FloatToDec(P1.Coordinate.Y, 4) + #32 + FloatToDec(P1.Coordinate.Z, 4));
-    writeln(FFile, '      vertex ' + FloatToDec(P2.Coordinate.X, 4) + #32 +
-      FloatToDec(P2.Coordinate.Y, 4) + #32 + FloatToDec(P2.Coordinate.Z, 4));
-    writeln(FFile, '      vertex ' + FloatToDec(P3.Coordinate.X, 4) + #32 +
-      FloatToDec(P3.Coordinate.Y, 4) + #32 + FloatToDec(P3.Coordinate.Z, 4));
-    writeln(FFile, '    endloop');
-    Writeln(FFile, '  endfacet');
-
-  end;
- }
-  procedure Addfacet(C1, C2, C3: T3DCoordinate);
-  var
-    Normal: T3DCoordinate;
-  begin
-    Normal:=UnifiedNormal(C1, C2, C3);
-    Write(FFile, '  facet normal ');
-    writeln(FFile, FloatToDec(normal.X, 4) + #32 + FloatToDec(normal.Y, 4) +
-      #32 + FloatToDec(normal.Z, 4));
-    writeln(FFile, '    outer loop');
-    writeln(FFile, '      vertex ' + FloatToDec(C1.X, 4) + #32 +
-      FloatToDec(C1.Y, 4) + #32 + FloatToDec(C1.Z, 4));
-    writeln(FFile, '      vertex ' + FloatToDec(C2.X, 4) + #32 +
-      FloatToDec(C2.Y, 4) + #32 + FloatToDec(C2.Z, 4));
-    writeln(FFile, '      vertex ' + FloatToDec(C3.X, 4) + #32 +
-      FloatToDec(C3.Y, 4) + #32 + FloatToDec(C3.Z, 4));
-    writeln(FFile, '    endloop');
-    Writeln(FFile, '  endfacet');
-  end;{Addfacet}
+    Normal:=UnifiedNormal( C1,C2,C3 );
+//  Write(FFile,   'facet normal ');
+    writeln(FFile, 'facet normal ' + FloatToDec(normal.X, 4)
+                             + #32 + FloatToDec(normal.Y, 4)
+                             + #32 + FloatToDec(normal.Z, 4));
+    writeln(FFile, '  outer loop');
+    writeln(FFile, '    vertex ' + FloatToDec(C1.X, 4)
+                           + #32 + FloatToDec(C1.Y, 4)
+                           + #32 + FloatToDec(C1.Z, 4) );
+    writeln(FFile, '    vertex ' + FloatToDec(C2.X, 4)
+                           + #32 + FloatToDec(C2.Y, 4)
+                           + #32 + FloatToDec(C2.Z, 4) );
+    writeln(FFile, '    vertex ' + FloatToDec(C3.X, 4)
+                           + #32 + FloatToDec(C3.Y, 4)
+                           + #32 + FloatToDec(C3.Z, 4) );
+    writeln(FFile, '  endloop');
+    Writeln(FFile, 'endfacet');
+  end; {Addfacet}
 begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.stl');
-  SaveDialog.Filter:=createDialogFilter(rsSTLFile, ['stl', 'txt']);
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'.stl');
+  SaveDialog.Filter:=createDialogFilter( rsSTLFile,['stl','txt'] );
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
-    AssignFile(FFile, Changefileext(SaveDialog.FileName, '.stl'));
-      {$I-}
-    Rewrite(FFile);
-{$I+}
-    if IOResult = 0 then
-    begin
-      // perform modelcheck to ensure normals point outward
-      writeln(FFile, 'solid');
-      if not FreeShip.ProjectSettings.DisableModelCheck then
-        Model_Check(False);
-      for I:=1 to FreeShip.Surface.NumberOfLayers do
-      begin
-        Layer:=FreeShip.Surface.Layer[I - 1];
+    AssignFile( FFile,Changefileext( SaveDialog.FileName,'.stl' ) );
+    Rewrite( FFile );
+    if IOResult=0 then begin // perform modelcheck to ensure normals point outward
+      WriteLn( FFile,'solid ['+Changefileext( ExtractFileName( SaveDialog.FileName ),'' )+']' );
+      if not FreeShip.ProjectSettings.DisableModelCheck then Model_Check(False);
+      for I:=1 to FreeShip.Surface.NumberOfLayers do begin
+        Layer:=FreeShip.Surface.Layer[I-1];
         if Layer.SurfaceVisible then
-          for J:=1 to Layer.Count do
-          begin
-            Face:=Layer.Items[J - 1];
-            for K:=1 to Face.ChildCount do
-            begin
-              Child:=face.Child[K - 1];
-              for L:=3 to Child.NumberOfpoints do
-              begin
+          for J:=1 to Layer.Count do begin
+            Face:=Layer.Items[J-1];
+            for K:=1 to Face.ChildCount do begin
+              Child:=face.Child[K-1];
+              for L:=3 to Child.NumberOfpoints do begin
                 C1:=Child.Point[0].Coordinate;
-                C2:=Child.Point[L - 2].Coordinate;
-                C3:=Child.Point[L - 1].Coordinate;
-                AddFacet(C1, C2, C3);
-
-                // mirror points, starboard to port
+                C2:=Child.Point[L-2].Coordinate;
+                C3:=Child.Point[L-1].Coordinate;
+                AddFacet( C1,C2,C3 );       // mirror points, starboard to port
                 C1.Y:=-C1.Y;
                 C2.Y:=-C2.Y;
                 C3.Y:=-C3.Y;
-                AddFacet(C3, C2, C1);
+                AddFacet( C3,C2,C1 );
               end;
             end;
           end;
       end;
       writeln(FFile, 'endsolid');
       Closefile(FFile);
-    end
-    else
-      MessageDlg(Userstring(97), mtError, [mbOK], 0);
+    end else MessageDlg( Userstring(97),mtError,[mbOK],0 );
   end;
   FreeAndNil(SaveDialog);
-
-end;{TFreeEdit.File_ExportSTL}
+end;
 
 procedure TFreeEdit.File_ImportSTL;
 var
@@ -3389,31 +3350,22 @@ begin
     CreateUndoObject( rsSTLfile, True);
     FreeShip.Clear;
     FileName := ChangeFileExt( OpenDialog.FileName, '.stl' );
-    AssignFile( FFile,FileName );
-//    {$I-}
-    Reset(FFile);
-//    {$I+}
+    AssignFile( FFile,FileName ); Reset( FFile );
     if IOResult = 0 then begin
-//      try
-        if not EOF(FFile) then begin
-          Readln( FFile,Str ); Str := Str.Trim.ToLower;
-          if Str.StartsWith( 'solid ' ) then begin
-            CloseFile( FFile ); File_ImportSTLtext( FileName );
-          end else begin
-            CloseFile( FFile ); File_ImportSTLbin( FileName );
-          end;
+      if not EOF(FFile) then begin
+        Readln( FFile,Str ); Str := Str.Trim.ToLower;
+        if Str.StartsWith( 'solid ' ) then begin
+          CloseFile( FFile ); File_ImportSTLtext( FileName );
+        end else begin
+          CloseFile( FFile ); File_ImportSTLbin( FileName );
         end;
-//      finally
-//      CloseFile(FFile);
-//      FreeShip.Filename := ChangeFileExt(Opendialog.FileName, '.stl');
-        FreeShip.ModelIsLoaded := True;
-        FreeShip.FileChanged := True;
-        FreeShip.RebuildModel;
-        FreeShip.Redraw;
-//    end;
-    end
-    else
-      MessageDlg( UserString(97), mtError, [mbOK], 0);
+      end;
+      FreeShip.FileName := ChangeFileExt( Opendialog.FileName,'' );
+      FreeShip.ModelIsLoaded := True;
+      FreeShip.FileChanged := True;
+      FreeShip.RebuildModel;
+      FreeShip.Redraw;
+    end else MessageDlg( UserString(97), mtError, [mbOK], 0);
   end;
   FreeAndNil(OpenDialog);
 end;{TFreeEdit.File_ImportSTL}
@@ -3421,78 +3373,54 @@ end;{TFreeEdit.File_ImportSTL}
 procedure TFreeEdit.File_ImportSTLtext( FileName: string );
 var
   FFile: TextFile;
-  Str: string;
-  LineNr, SolidNr, FacetNr, VertexNr, I, J, K, L: integer;
+  Str: string; idSolid:boolean;
+  LineNr,SolidNr,FacetNr,VertexNr:Integer; V:T3DCoordinate;
   Layer: TFreeSubdivisionLayer;
-  Face: TFreeSubdivisionControlface;
-  Child: TFreeSubdivisionface;
-  V, C1, C2, C3: T3DCoordinate;
   FacePoints: TFasterListTFreeSubdivisionControlPoint;
   CtrPoint: TFreeSubdivisionControlPoint;
   SubdivisionSurface: TFreeSubdivisionSurface;
-  Precision: double;
   Tokens: array of string;
-
-  function detectPrecision(D:string): double;
-  var i:integer; dc, code:integer; ss:string;
-  begin
-    Result := 1.0;
-    if D.IndexOf('e') < 0 then begin i:=D.IndexOf('.');
-      if i > -1 then dc:=D.length - i - 1;
-      if Result > power(10,-dc) then Result := power(10,-dc);
-    end else begin                                                 //scientific
-      i:=D.IndexOf('e');
-      ss:=D.Substring(i+1,32);
-      val(ss,dc,code);
-      if code = 0 then
-        if Result > power(10,dc) then Result := power(10,dc);
-    end
-  end;
-
 begin
-//  FreeShip.ProjectSettings.ProjectName := FileName;
+    FreeShip.ProjectSettings.ProjectName := ExtractFileName( FileName );
     AssignFile( FFile,FileName ); Reset( FFile);
     if IOResult = 0 then begin
 //    try
         SubdivisionSurface := FreeShip.Surface;
         SubdivisionSurface.IsLoading := true;
-        FacePoints := TFasterListTFreeSubdivisionControlPoint.Create(true,false);
-        LineNr := 1; SolidNr:=0; FacetNr:=0; VertexNr:=1;
+        FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+        LineNr:=1; SolidNr:=0; FacetNr:=0; VertexNr:=0;
         while not EOF(FFile) do begin
-          Readln( FFile,Str );
-//        if EOF( FFile ) then break;
-          Str := Str.Trim.ToLower; Inc( LineNr );
-          if Str.StartsWith('solid ') then begin
-            inc(SolidNr);
-            if( SolidNr=1 )
-               then Layer := SubdivisionSurface.Layer[0]
-               else Layer := SubdivisionSurface.AddNewLayer;
-            Layer.Name := Str.SubString( 7,256 );
-          end
-          else if Str.StartsWith('facet ') then begin          // read Normal ?
-            inc(FacetNr);
-            VertexNr:=1;
-            FacePoints.Clear;
-          end
-          else if Str.StartsWith('outer loop') then
-          else if Str.StartsWith('vertex ') then begin
-            Str := Str.Replace('  ',' ').Replace('  ',' ');
-            Tokens := Str.Split([' ']);
-            V.X := Single.Parse(Tokens[1]);
-            V.Y := Single.Parse(Tokens[2]);
-            V.Z := Single.Parse(Tokens[3]);
-            Precision := detectPrecision(Tokens[1]);
-            CtrPoint := SubdivisionSurface.AddControlPoint( V,Precision );
-          //if FacePoints.IndexOf(CtrPoint) = -1 then
-            FacePoints.Add( CtrPoint );
-            inc( VertexNr );
+          Readln( FFile,Str );                   // if EOF( FFile ) then break;
+          idSolid:=copy( Str,1,6 ).ToLower.StartsWith( 'solid ' );
+          if not idSolid then Str:=BlankOff( Str );             Inc( LineNr );
+          if idSolid then begin                                 inc( SolidNr );
+            if SolidNr=1
+               then Layer:=SubdivisionSurface.Layer[0]
+               else Layer:=SubdivisionSurface.AddNewLayer;
+            if Length( Str )>7 then Layer.Name:=copy( Str,7,Length(Str)-6 )     // Str.SubString( 7,256 )
+                               else Layer.Name:='Layer '+inttostr( SolidNr );
+          end else
+          if Str.StartsWith('facet ') then begin inc(FacetNr);  // read Normal?
+            VertexNr:=1; FacePoints.Clear;
+          end else
+          if Str.StartsWith('outer loop') then else
+          if Str.StartsWith('vertex ') then begin
+            Tokens:=Str.Split( [' '] );
+            V.X := GetFloat( Tokens[1] );
+            V.Y := GetFloat( Tokens[2] );
+            V.Z := GetFloat( Tokens[3] );
+//          Precision := detectPrecision( Tokens[1] );
+            CtrPoint := SubdivisionSurface.AddControlPoint( V );//,Precision );
+//          if FacePoints.IndexOf( CtrPoint )=-1 then
+               FacePoints.Add( CtrPoint );                     inc( VertexNr );
             SetLength( Tokens,0 );
-          end
-          else if Str.StartsWith('endloop') then                     //  break
-          else if Str.StartsWith('endfacet') then begin
+          end else
+          if Str.StartsWith('endloop') then else                      // break;
+          if Str.StartsWith('endfacet') then begin
             if FacePoints.Count>2 then
                SubdivisionSurface.AddControlFace( FacePoints,True,Layer );
-          end else if Str.StartsWith('endsolid') then begin         //   break;
+          end else
+          if Str.StartsWith('endsolid') then begin                    // break;
           end;
         end;
         FreeAndNil(FacePoints);
@@ -3503,7 +3431,7 @@ begin
     end
     else
       MessageDlg( UserString(97), mtError, [mbOK], 0);
-end;{TFreeEdit.File_ImportSTLtext}
+end;
 
 procedure TFreeEdit.File_ImportSTLbin(FileName: string);
 var
@@ -3511,97 +3439,60 @@ var
   STLheader: array[0..79] of char;
   STLfacets: uint32;
   STLrecord: packed record
-{     normalX,  normalY,    normalZ: single;
-    vertex1_X, vertex1_Y, vertex1_Z: single;
-    vertex2_X, vertex2_Y, vertex2_Z: single;
-    vertex3_X, vertex3_Y, vertex3_Z: single;
-}
-      normalY,   normalZ,   normalX: single;      // для Зумвальта, т.к.
-    vertex1_Y, vertex1_Z, vertex1_X: single;      // другого файла провреки
-    vertex2_Y, vertex2_Z, vertex2_X: single;      // пока не нашлось
-    vertex3_Y, vertex3_Z, vertex3_X: single;
+      normalX,   normalY,   normalZ: single;
+    vertex1_X, vertex1_Y, vertex1_Z: single;      // для Зумвальта, т.к.
+    vertex2_X, vertex2_Y, vertex2_Z: single;      // другого файла провреки
+    vertex3_X, vertex3_Y, vertex3_Z: single;      // тогда не находилось
     unused: uint16;
   end;
-  Str: string;
-  LineNr, SolidNr, FacetNr, VertexNr, I, J, K, L: integer;
-  r: longint;
+  Str: string; SolidNr, FacetNr: Integer; r: longint; V: T3DCoordinate;
   Layer: TFreeSubdivisionLayer;
-  Face: TFreeSubdivisionControlface;
-  Child: TFreeSubdivisionface;
-  V, C1, C2, C3: T3DCoordinate;
   FacePoints: TFasterListTFreeSubdivisionControlPoint;
   CtrPoint: TFreeSubdivisionControlPoint;
-  SubdivisionSurface: TFreeSubdivisionSurface;
-  Precision: double;
-  Tokens: array of string;
-
-  function detectPrecision(D:string): double;
-  var i:integer; dc, code:integer; ss:string;
-  begin
-    Result := 1.0;
-    if D.IndexOf('e') < 0 then begin
-      i:=D.IndexOf('.');
-      if i > -1 then dc:=D.length - i - 1;
-      if Result > power(10,-dc) then Result := power(10,-dc);
-    end else begin                                                 //scientific
-      i:=D.IndexOf('e');
-      ss:=D.Substring(i+1,32);
-      val(ss,dc,code);
-      if code = 0 then
-      if Result > power(10,dc) then Result := power(10,dc);
-    end
-  end;
-
+  SubdivisionSurface: TFreeSubdivisionSurface;    //  Precision: double = 1e-8;
 begin
-    //FreeShip.ProjectSettings.ProjectName := FileName;
+    FreeShip.ProjectSettings.ProjectName := ExtractFileName( FileName );
     FileStream := TFileStream.Create( FileName,fmOpenRead );
     if FileStream.Size>80 then begin
-      try
+//      try
         SubdivisionSurface := FreeShip.Surface;
         SubdivisionSurface.IsLoading := true;
-        FacePoints := TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+        FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
         SolidNr:=0; FacetNr:=1;
-        r := FileStream.Read(STLheader,80);
-        Str := String.Create(STLheader);
-        inc(SolidNr);
-        if( SolidNr = 1 )
-        then Layer := SubdivisionSurface.Layer[0]
-        else Layer := SubdivisionSurface.AddNewLayer;
+        r:=FileStream.Read( STLheader,80 );
+        Str:=String.Create( STLheader );                        inc( SolidNr );
+        if SolidNr=1
+           then Layer := SubdivisionSurface.Layer[0]
+           else Layer := SubdivisionSurface.AddNewLayer;
         Layer.Name := Str;
         r := FileStream.Read( STLfacets,4 );
         for FacetNr:=1 to STLfacets do begin
-          r:=FileStream.Read( STLrecord,SizeOf(STLrecord) );
-            if r<SizeOf( STLrecord ) then break;
-            FacePoints.Clear;
-            V.X := STLrecord.vertex1_X;
-            V.Y := STLrecord.vertex1_Y;
-            V.Z := STLrecord.vertex1_Z;
-//            Precision := 0.1;
-            CtrPoint := SubdivisionSurface.AddControlPoint( V,Precision );
-            FacePoints.Add( CtrPoint );
-
-            V.X := STLrecord.vertex2_X;
-            V.Y := STLrecord.vertex2_Y;
-            V.Z := STLrecord.vertex2_Z;
-//            Precision := 0.1;
-            CtrPoint := SubdivisionSurface.AddControlPoint( V,Precision );
-            FacePoints.Add(CtrPoint);
-
-            V.X := STLrecord.vertex3_X;
-            V.Y := STLrecord.vertex3_Y;
-            V.Z := STLrecord.vertex3_Z;
-//            Precision := 0.1;
-            CtrPoint := SubdivisionSurface.AddControlPoint( V,Precision );
-            FacePoints.Add( CtrPoint );
-
-            SubdivisionSurface.AddControlFace( FacePoints,True,Layer );
+          r:=FileStream.Read( STLrecord,SizeOf( STLrecord ) );
+          if r<SizeOf( STLrecord ) then break;
+          FacePoints.Clear;
+          V.X := STLrecord.vertex1_X;
+          V.Y := STLrecord.vertex1_Y;
+          V.Z := STLrecord.vertex1_Z;                    //     Precision:=0.1;
+          CtrPoint := SubdivisionSurface.AddControlPoint( V );  //,Precision );
+          FacePoints.Add( CtrPoint );
+          V.X := STLrecord.vertex2_X;
+          V.Y := STLrecord.vertex2_Y;
+          V.Z := STLrecord.vertex2_Z;                    //     Precision:=0.1;
+          CtrPoint := SubdivisionSurface.AddControlPoint( V );  //,Precision );
+          FacePoints.Add( CtrPoint );
+          V.X := STLrecord.vertex3_X;
+          V.Y := STLrecord.vertex3_Y;
+          V.Z := STLrecord.vertex3_Z;                    //     Precision:=0.1;
+          CtrPoint := SubdivisionSurface.AddControlPoint( V );  //,Precision );
+          FacePoints.Add( CtrPoint );
+          SubdivisionSurface.AddControlFace( FacePoints,True,Layer );
         end;
-      finally
+//      finally
         FileStream.Free;
         SubdivisionSurface.IsLoading := false;
-      end;
+//      end;
     end else MessageDlg( UserString(97), mtError, [mbOK], 0);
-end; {TFreeEdit.File_ImportSTLbin}
+end;
 
 // imports a Carene XYZ file and creates a multichine boat with developable surfaces
 procedure TFreeEdit.File_ImportCarene;
@@ -3657,9 +3548,7 @@ begin
         begin
           Readln(FFile, Str);
           Inc(LineNr);
-          if Pos('LINE', Str) = 1 then begin
-            // New chine
-            // skip one line
+          if Pos('LINE', Str) = 1 then begin         // New chine skip one line
             if not EOF(FFile) then begin
               Readln(FFile);
               Inc(LineNr);
@@ -3693,14 +3582,13 @@ begin
         FreeShip.ModelIsLoaded:=True;
         FreeShip.RebuildModel;
 //    end;
-    end
-    else
-      MessageDlg(Userstring(106), mtError, [mbOK], 0);
+    end else MessageDlg(Userstring(106), mtError, [mbOK], 0);
   end;
   FreeAndNil(OpenDialog);
 end;
 
 // Import chines from a textfile and fit a surface through them
+
 procedure TFreeEdit.File_ImportChines;
 var
   OpenDialog: TOpenDialog;
@@ -4229,8 +4117,8 @@ function TFreeEdit.CheckIfChangedAndAskToSave():boolean;
 begin
   Result := true;
   if FreeShip.FileChanged then begin
-    Answer := MessageDlg(UserString(103) + EOL + UserString(104),
-      mtConfirmation, [mbYes, mbNo, mbCancel], 0);
+    Answer := MessageDlg( UserString(103)+EOL+UserString(104),mtConfirmation,
+                                                    [mbYes,mbNo,mbCancel],0 );
     if Answer = mrCancel then begin Result := false; end
     else if Answer = mrYes then begin File_SaveAs;
       if FreeShip.FileChanged then begin // Apparently saving was not successfull, abort
@@ -4259,13 +4147,10 @@ var
 
   function NextLine: string;
   begin
-    if Index + 1 < Strings.Count then
-    begin
+    if Index + 1 < Strings.Count then begin
       Inc(Index);
       Result := Strings[index];
-    end
-    else
-    begin
+    end else begin
       Result := '';
       Abort := True;
       MessageDlg( UserString(115), mtError, [mbOK], 0);
@@ -4426,8 +4311,7 @@ begin
     PrevCursor := Screen.Cursor;
     Screen.Cursor := crHourglass;
     Strings := TStringList.Create;
-
-    try
+//    try
       Strings.LoadFromFile(OpenDialog.FileName);
       // delete empty strings
       {for I := Strings.Count downto 1 do
@@ -4435,8 +4319,7 @@ begin
           Strings.Delete(I - 1);}
       // count number of Sections
       NSections := 0;
-      for I := 0 to strings.Count-1 do
-      begin
+      for I := 0 to strings.Count-1 do begin
         Str := Strings[I].TrimLeft();
         if Str.StartsWith('[') and Str.EndsWith(']') then
         begin
@@ -4688,12 +4571,12 @@ begin
           FreeShip.FileChanged := True;
         end else MessageDlg(UserString(123), mtInformation, [mbOK], 0);
       end else MessageDlg(UserString(124), mtInformation, [mbOK], 0);
-    finally
+//    finally
       FreeAndNil( Strings );
       if Assigned( FreeShip.OnUpdateGeometryInfo ) then
                    FreeShip.OnUpdateGeometryInfo( self );
       Screen.Cursor := PrevCursor;
-    end;
+//    end;
 
   end;
   FreeAndNil(OpenDialog);
@@ -4776,7 +4659,7 @@ begin
   pvHeight:=400;
   Result:=TJPegImage.Create;
   TempFreeShip:=TFreeShip.Create(nil);
-  try
+//  try
       TempFreeShip.Clear;
       TempFreeShip.LoadPreview( aFileName,Result );
       if not assigned( Result ) or ( Result.Width=0 ) then begin
@@ -4831,46 +4714,38 @@ begin
         TempFreeShip.DrawToViewport( vp );
         vp.Free;
       end;
-  finally
+//  finally
     TempFreeShip.Free;
-  end;
+//  end;
 end;
 
 resourcestring
   FileDialogFilterFreeship = 'FreeShip files (*.ftm *.fbm)|*.ftm;*.fbm';
   FileDialogFilterFreeshipText = 'FreeShip Text (*.ftm)|*.ftm';
   FileDialogFilterFreeshipBinary = 'FreeShip Binary (*.fbm)|*.fbm';
-  FileDialogFilterAll = 'All|*';
-  FileDialogPlaceLast = 'Last';
-  FileDialogPlaceMyShips = 'My Ships';
-  FileDialogPlaceMyImport = 'My Import';
-//FileDialogPlaceGlobalShips = 'Global Ships';
-//FileDialogPlaceGlobalImport = 'Global Import';
   rsFreeShipFiles = 'FreeShip files';
   rsFreeShipTextFiles = 'FreeShip Text files';
   rsFreeShipBinaryFiles = 'FreeShip Binary files';
-
 
 procedure TFreeEdit.File_Load;
 var Answer     : word;
     OpenDialog : TOpenDialog;
 begin
    OpenDialog:=TOpenDialog.Create( FreeShip );
-   OpenDialog.InitialDir:=FreeShip.Preferences.OpenDirectory;
-// OpenDialog.Filter:='FREE!ship files (*.fbm)|*.fbm';
+   OpenDialog.InitialDir:=FreeShip.Preferences.OpenDirectory; //+ConfigDirectory
    OpenDialog.Filter:=createDialogFilter(rsFreeShipFiles,['fbm','ftm'],False )
               + '|' + createDialogFilter(rsFreeShipTextFiles,['ftm'],False)
               + '|' + createDialogFilter(rsFreeShipBinaryFiles,['fbm'] );
    Opendialog.Options:=[ofHideReadOnly];
-  try
+//  try
      if OpenDialog.Execute then begin
         Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
         if (Answer=mrCancel) or FreeShip.FileChanged then exit;
         File_Load( Opendialog.FileName );        // Load everything into memory
      end;
-  finally
+//  finally
      Opendialog.Destroy;
-  end
+//  end
 end;
 
 procedure TFreeEdit.File_Load( FileName: string );
@@ -4883,7 +4758,7 @@ begin
   if Ext = '.fbm' then Source:=TFreeFileBuffer.Create else
   if Ext = '.ftm' then Source:=TFreeTextBuffer.Create else
      begin WriteLN( 'Unsupported file format: ' + Ext); halt; end;
-  try
+//  try
     FreeShip.Surface.Clearselection;    // Make sure no items are selected
     FreeShip.FSelectedFlowlines.Clear;
     FreeShip.FSelectedMarkers.Clear;
@@ -4906,11 +4781,11 @@ begin
     end;
     TMainForm(MainForm).SetCaption;
     TMainForm(MainForm).UpdateMenu;
-  finally
+//  finally
     FreeAndNil( Source );
     if FreeShip.ModelIsLoaded then AddToRecentFiles( FileName );
     Undo_Clear;
-  end;
+//  end;
   FreeShip.FileChanged:=False;
 end;
 
@@ -5045,9 +4920,8 @@ function TFreeEdit.File_SaveAs: boolean;
 var SaveDialog : TSaveDialog;
 begin result:=false;
    SaveDialog:=TSaveDialog.Create( FreeShip );
-   SaveDialog.InitialDir:=FreeShip.Preferences.SaveDirectory;
-   Savedialog.FileName:=ExtractFilename(FreeShip.Filename);
-// SaveDialog.Filter:='FREE!ship files (*.fbm)|*.fbm';
+   SaveDialog.InitialDir:=FreeShip.Preferences.SaveDirectory; //+ConfigDirectory
+   Savedialog.FileName:=ExtractFilename( FreeShip.Filename );
    SaveDialog.Filter:=FileDialogFilterFreeship +
                   '|' + FileDialogFilterFreeshipText +
                   '|' + FileDialogFilterFreeshipBinary;
@@ -5059,7 +4933,7 @@ begin result:=false;
       FreeShip.FFilenameSet:=True;
       Result:=File_Save;
       if Result then FreeShip.Preferences.LastDirectory
-                 :=ExtractFilePath( SaveDialog.FileName );
+                  := ExtractFilePath( SaveDialog.FileName );
    end;
    SaveDialog.Destroy;
 end;{TFreeEdit.File_SaveAs}
@@ -5423,13 +5297,11 @@ begin
       // Determine the minimum and maximum Z values for each station
       // and the overall min/max z-coordinate
       Setlength(MinMaxData, Frames.Count);
-      for I:=1 to Frames.Count do
-      begin
+      for I:=1 to Frames.Count do begin
         Spline:=Frames[I - 1];
         MinMaxData[I - 1].MinZ:=Spline.Point[0].Z;
         MinMaxData[I - 1].MaxZ:=Spline.Point[Spline.NumberOfPoints - 1].Z;
-        if I = 1 then
-        begin
+        if I = 1 then begin
           MinZ:=Spline.Point[0].Z;
           MaxZ:=MinZ;
         end;
@@ -5440,28 +5312,22 @@ begin
         Marker:=TFreeMarker.Create(FreeShip.Surface);
         Marker_Add(Marker);
         Marker.Capacity:=Spline.NumberOfPoints;
-        for J:=1 to Spline.NumberOfPoints do
-        begin
+        for J:=1 to Spline.NumberOfPoints do begin
           Marker.Add(Spline.Point[J - 1]);
           Marker.Knuckle[J - 1]:=Spline.Knuckle[J - 1];
         end;
       end;
-
-      // extend all stations upwards and downwards to the min/max z-values
-      for I:=1 to Frames.Count do
-      begin
+           // extend all stations upwards and downwards to the min/max z-values
+      for I:=1 to Frames.Count do begin
         Spline:=Frames[I - 1];
         // extend downwards to Z=0
-        if Spline.Point[0].Z > MinZ then
-        begin
+        if Spline.Point[0].Z > MinZ then begin
           P:=Spline.Point[0];
           P.Z:=MinZ;
           Spline.Insert(0, P);
           Spline.Knuckle[1]:=True;
-        end;
-        // extend upwards
-        if Spline.Point[Spline.NumberOfPoints - 1].Z < MaxZ then
-        begin
+        end;                                                  // extend upwards
+        if Spline.Point[Spline.NumberOfPoints - 1].Z < MaxZ then begin
           P:=Spline.Point[Spline.NumberOfPoints - 1];
           P.Z:=MaxZ;
           Spline.Add(P);
@@ -5480,37 +5346,28 @@ begin
         Spline:=Frames[I - 1];
         NewSpline:=TFreeSpline.Create(FreeShip.Surface);
         NewSpline.Capacity:=NoPoints;
-        for J:=1 to NoPoints do
-        begin
+        for J:=1 to NoPoints do begin
           P:=Spline.Value((J - 1) / (NoPoints - 1));
           NewSpline.Add(P);
-        end;
-        // correct for any present knuckles
+        end;                                // correct for any present knuckles
         for J:=1 to Spline.NumberOfPoints do
-          if Spline.Knuckle[J - 1] then
-          begin
-            Index:=0;
-            // find the nearest point on resampled spline
+          if Spline.Knuckle[J - 1] then begin
+            Index:=0;             // find the nearest point on resampled spline
             for K:=2 to NewSpline.NumberOfPoints - 1 do
               if DistPP3D(Spline.Point[J - 1], NewSpline.Point[K - 1]) <
                 DistPP3D(Spline.Point[J - 1], NewSpline.Point[index]) then
-                Index:=K - 1;
-            // replace by the old coordinate
+                Index:=K - 1;                  // replace by the old coordinate
             NewSpline.Point[index]:=Spline.Point[J - 1];
             NewSpline.Knuckle[index]:=True;
           end;
-
-        // Delete the old station
-        FreeAndNil(Spline);
-        // and replace by the resampled one
-        Frames[I - 1]:=NewSpline;
-        // Add the controlpoints to the subdivision surface
-        Setlength(ControlPoints[I - 1], NewSpline.NumberOfPoints);
+                                            // Delete the old station
+        FreeAndNil(Spline);                 // and replace by the resampled one
+        Frames[I-1]:=NewSpline; // Add the controlpoints to the subdivision surface
+        Setlength(ControlPoints[I-1], NewSpline.NumberOfPoints);
         for J:=1 to NewSpline.NumberOfPoints do
           ControlPoints[I - 1][J - 1] :=
             FreeShip.Surface.AddControlPoint(NewSpline.Point[J - 1]);
-      end;
-      // Add the new controlfaces
+      end;                                          // Add the new controlfaces
       Points:=TFasterListTFreeSubdivisionControlPoint.Create;
       for I:=2 to Frames.Count do
         for J:=2 to NoPoints do
@@ -5679,13 +5536,11 @@ begin
         if IOResult = 0 then
         begin
           Nr:=0;
-          try
+//          try
             // first read unit information; 0=metric, 1=imperial
             readln(FFile, I);
-            if I in [0, 1] then
-              UnitType:=TFreeUnitType(I)
-            else
-              MessageDlg(Userstring(108), mtError, [mbOK], 0);
+            if I in [0, 1] then UnitType:=TFreeUnitType(I)
+                           else MessageDlg(Userstring(108),mtError,[mbOK],0);
             Spline:=TFreeSpline.Create(FreeShip.Surface);
             repeat
               Readln(FFile, Str);
@@ -5702,20 +5557,18 @@ begin
                 P.Z:=GetFloat( Str);
                 Spline.Add(P);
                 Str:=#32;
-              end
-              else if Str = '' then begin
+              end else
+              if Str = '' then begin
                 if Spline.NumberOfPoints > 1 then Curves.Add(Spline)
                                              else FreeAndNil(Spline);
                 Spline:=TFreeSpline.Create(FreeShip.Surface);
               end;
             until (Str = 'EOF') or (EOF(FFile));
-            if Spline.NumberOfPoints > 1 then
-              Curves.Add(Spline)
-            else
-              FreeAndNil(Spline);
-          except
-            MessageDlg(Userstring(132) + #32 + IntToStr(Nr), mtError, [mbOK], 0);
-          end;
+            if Spline.NumberOfPoints > 1 then Curves.Add(Spline)
+                                         else FreeAndNil(Spline);
+//          except
+//            MessageDlg(Userstring(132) + #32 + IntToStr(Nr), mtError, [mbOK], 0);
+//          end;
           CloseFile(FFile);
         end
         else

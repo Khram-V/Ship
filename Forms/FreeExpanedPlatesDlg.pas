@@ -789,7 +789,8 @@ begin
   else
     Printer.Orientation:=poPortrait;
   if PrintDialog.Execute then
-    Viewport.Print(self.FFreeShip.ProjectSettings.ProjectUnits,True,'FREE!ship plate developments ');
+    Viewport.Print( self.FFreeShip.ProjectSettings.ProjectUnits,
+                             True,'FREE!ship plate developments ');
 end;
 
 procedure TFreeExpanedplatesDialog.ShowDimensionsExecute(Sender: TObject);

@@ -1,4 +1,4 @@
-{--------------------------------------------------------------------------}
+{--«Free!Ship»-------------------------------------------------------------}
 {   TFreeShip                                                              }
 {    is the actual component used for modelling and representing the ship  }
 {--------------------------------------------------------------------------}
@@ -133,69 +133,55 @@ begin
     if not Intersection.Built then Intersection.Rebuild;
     TmpList:=TFasterListTFreeSpline.Create;
     for J:=1 to Intersection.Count do begin
-      Spline:=TFreeSpline.Create(Surface);
-      Spline.Assign(Intersection.Items[J - 1]);
+      Spline:=TFreeSpline.Create( Surface );
+      Spline.Assign(Intersection.Items[J-1]);
       // Quick check to determine if the frame runs from bottom to top
       if Spline.Value(0.0).Z > Spline.Value(1.0).Z then
          Spline.InvertDirection;              // If not then reverse the points
       TmpList.Add(Spline);
-    end;
-    // Take all segments and join into one
-    if TmpList.Count > 1 then JoinSplineSegments(0.01, True, TmpList);
+    end;                                 // Take all segments and join into one
+    if TmpList.Count>1 then JoinSplineSegments( 0.01,True,TmpList );
     for J:=1 to TmpList.Count do begin
-      Spline:=TmpList[J - 1];
+      Spline:=TmpList[J-1];
       if CloseAtDeck then
-        if Spline.Point[Spline.NumberOfPoints - 1].Y <> 0.0 then begin
-          P:=Spline.Point[Spline.NumberOfPoints - 1];
-          P.Y:=0.0;
-          Spline.Add(P);
-          Spline.Knuckle[Spline.NumberOfPoints - 2]:=True;
-        end;
+      if Spline.Point[Spline.NumberOfPoints-1].Y <> 0.0 then begin
+        P:=Spline.Point[Spline.NumberOfPoints-1];
+        P.Y:=0.0;
+        Spline.Add(P);
+        Spline.Knuckle[Spline.NumberOfPoints-2]:=True;
+      end;
       Destination.Add(Spline);
-      if I = 1 then Min:=Spline.Min.Z else
+      if I=1 then Min:=Spline.Min.Z else
       if Spline.Min.Z < Min then Min:=Spline.Min.Z;
     end;
     FreeAndNil(Tmplist);
-  end;
-  // Now shift all stations up or down so that the lowest point
-  // of all stations is on the baseline z=0.0
+  end;                 // Now shift all stations up or down so that the
+                       // lowest point of all stations is on the baseline z=0.0
   if Min <> 0.0 then
-    for I:=1 to Destination.Count do
-    begin
-      Spline:=Destination[I - 1];
-      for J:=1 to Spline.NumberOfPoints do
-      begin
-        P:=Spline.Point[J - 1];
+    for I:=1 to Destination.Count do begin
+      Spline:=Destination[I-1];
+      for J:=1 to Spline.NumberOfPoints do begin
+        P:=Spline.Point[J-1];
         P.Z:=P.Z - Min;
-        Spline.Point[J - 1]:=P;
+        Spline.Point[J-1]:=P;
       end;
     end;
 end;
 
 function TFreeShip.FindByName(aName:String):TFreeNamedObject;
 var i:integer;
-begin
-  result:=nil;
+begin result:=nil;
   for i:=0 to Surface.NumberOfControlPoints-1 do
-    if Surface.ControlPoint[i].Name = aName then
-      begin
-        result:=Surface.ControlPoint[i];
-        break;
-      end;
-  if result = nil then
+    if Surface.ControlPoint[i].Name = aName then begin
+       result:=Surface.ControlPoint[i]; break; end;
+  if result=nil then
   for i:=0 to Surface.NumberOfControlEdges-1 do
-    if Surface.ControlEdge[i].Name = aName then
-      begin
-        result:=Surface.ControlEdge[i];
-        break;
-      end;
-  if result = nil then
+    if Surface.ControlEdge[i].Name = aName then begin
+       result:=Surface.ControlEdge[i]; break; end;
+  if result=nil then
   for i:=0 to Surface.NumberOfControlFaces-1 do
-    if Surface.ControlFace[i].Name = aName then
-      begin
-        result:=Surface.ControlFace[i];
-        break;
-      end;
+    if Surface.ControlFace[i].Name = aName then begin
+       result:=Surface.ControlFace[i]; break; end;
 end;
 
 function TFreeShip.GetAllNamedPoints:TStringList;
@@ -439,25 +425,27 @@ begin
   for I:=(MainForm as TMainForm).MDIChildCount-1 downto 0 do begin
     Frm:=(MainForm as TMainForm).GetMDIChildren( I );
     if assigned( Frm ) then
-    if (MainForm as TMainForm).WindowState=wsNormal then               ///+++
-//  if Frm.ViewPort.ViewPortMode = vmShade then
-//  if Frm.ViewPort.ViewType = fvPerspective then begin
+    if (MainForm as TMainForm).WindowState=wsNormal then        ///+++ активная
+    if Frm.ViewPort.ViewPortMode = vmShade then                 /// 3D-картинка
+//  if Frm.ViewPort.ViewType = fvPerspective then
     if( ProjectSettings.FSavePreview ) then begin
        Frm.Repaint;
 //     Pic:=TBitmap.Create;
-//     Pic.PixelFormat:=pf24bit;
+//     Pic.PixelFormat:=pf15bit;
        Pic:=Frm.ViewPort.GetDrawingBuffer;
        if Pic <> nil then begin
           Result:=TJPEGImage.Create;
           Result.Assign( Pic );
-          Result.CompressionQuality:=50;                        ///+++ 90%%
+          Result.CompressionQuality:=32;                        ///+++ 90%%
 //        Result.SaveToFile( 'Pic_screenshot.jpg ');
        end;
-//     FreeAndNil( Pic );
+       //FreeAndNil( Pic );
+       break;
     end;
   end;
 end;
 
+//TPixelFormat=(pfDevice,pf1bit,pf4bit,pf8bit,pf15bit,pf16bit,pf24bit,pf32bit,pfCustom);
 {
 procedure TFreeShip.SetOnChangeActiveControlPoint(AValue: TNotifyEvent);
 begin Surface.OnChangeActiveControlPoint:=AValue; end;
@@ -1376,7 +1364,7 @@ var
   NewPts: TFreeMatrix;
   Curve: TFreeSubdivisionControlCurve;
 begin
-  try
+//  try
     for I:=1 to Chines.Count - 1 do begin
       if I <= Surface.NumberOfLayers then vLayer:=Surface.Layer[I - 1]
                                       else vLayer:=Surface.AddNewLayer;
@@ -1541,7 +1529,7 @@ begin
     FreeAndNil( Tmp  );
     FreeAndNil( Pts2 );
     FreeAndNil( Pts  );
-  finally
+//  finally
     Extents(Min, Max);
     //ProjectSettings.ProjectWaterDensity:=1.0;
     ProjectSettings.ProjectBeam:=2 * Max.Y;
@@ -1555,10 +1543,10 @@ begin
       Spline:=Chines[I - 1];
       FreeAndNil(Spline);
     end;
-  end;
+//  end;
 end;
 
-procedure TFreeShip.LoadProject( Source: TFreeFileBuffer );
+procedure TFreeShip.LoadProject( Source: TFreeFileBuffer );  //  «Free!Ship»
 var
   PrevCursor: TCursor;
   I, N, PointN: integer;
@@ -1577,7 +1565,7 @@ begin
   FFilename:=Str;
   PrevCursor:=Screen.Cursor;
   Screen.Cursor:=crHourGlass;
-  try               // finally
+//  try               // finally
 //  try             // except
     Source.Reset;
     Source.Encoding:=Preferences.FbmEncoding;
@@ -1588,7 +1576,7 @@ begin
 //    if (FFileVersion <= CurrentVersion)
 //    or (FFileVersion <= High(FFileVersion) ) then    // !! без ограничений...
       begin
-        WriteLN( 'File.Version = ',FFileVersion,' : [',low(TFreeFileVersion),'..',high(TFreeFileVersion),'].' );
+        WriteLN( '[',FFileVersion,'] "',ExtractFilename( FFilename ),'"'   );
         Source.LoadInteger( I );
         FPrecision:=TFreePrecisionType( I );
         Visibility.LoadBinary( Source );
@@ -1674,7 +1662,7 @@ begin
 //  except
 //    Surface.Clear; raise;
 //  end;
-  finally
+//  finally
     Surface.DesiredSubdivisionLevel:=Ord(Precision) + 1;
 //    MessageDlg( '///begin???',mtError,[mbOK],0 );
 //    CF0:=Surface.ControlFace[0];
@@ -1683,7 +1671,7 @@ begin
     Screen.Cursor:=PrevCursor;
 //  for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;  ///!!! -->> File_Load(Name)
     if Assigned( OnUpdateGeometryInfo ) then OnUpdateGeometryInfo( self );
-  end;
+//  end;
 end;
 
 // fv421
@@ -1800,7 +1788,7 @@ begin
 //end;
 end;
 
-procedure TFreeShip.RebuildAsync(Data: PtrInt);
+procedure TFreeShip.RebuildAsync( Data: PtrInt );
 begin
   if not IsRebuildAsyncDisabled then Surface.Rebuild;
   Draw;
@@ -1810,9 +1798,10 @@ procedure TFreeShip.RebuildModel;
 var
   PrevCursor: TCursor;
 begin
+//MessageDlg( 'ReBuild?',mtInformation,[mbYes,mbNo],0 );
+//Writeln( 'ReBuildModel? ' + InttoStr( Ord( Precision )+1 ) );
   PrevCursor:=Screen.Cursor;
-  if Screen.Cursor <> crHourglass then
-    Screen.Cursor:=crHourglass;
+  if Screen.Cursor <> crHourglass then Screen.Cursor:=crHourglass;
 //try
     Surface.DesiredSubdivisionLevel:=Ord( Precision ) + 1;
     Surface.Rebuild;
@@ -1890,12 +1879,12 @@ begin
     Destination.Add( FileVersion );
     Destination.Add( Ord( Precision ) );
     Visibility.SaveBinary( Destination );
-    ProjectSettings.SaveBinary(Destination);    // Save actual subdivision-surface data.
-    Surface.SaveBinary(Destination);            // Save stations
+    ProjectSettings.SaveBinary( Destination ); // Save actual subdivision-surface data.
+    Surface.SaveBinary(Destination);           // Save stations
     Destination.Add(NumberOfStations);
-    for I:=1 to NumberOfStations do Station[I - 1].SaveBinary(Destination);    // Save Buttocks
+    for I:=1 to NumberOfStations do Station[I-1].SaveBinary(Destination);    // Save Buttocks
     Destination.Add(NumberOfButtocks);
-    for I:=1 to NumberOfButtocks do Buttock[I - 1].SaveBinary(Destination);    // Save Waterlines
+    for I:=1 to NumberOfButtocks do Buttock[I-1].SaveBinary(Destination);    // Save Waterlines
     Destination.Add(NumberOfWaterlines);
     for I:=1 to NumberOfWaterlines do Waterline[I - 1].SaveBinary(Destination);
     if FileVersion >= fv180 then begin          // Save Diagonals
@@ -1903,17 +1892,15 @@ begin
       for I:=1 to NumberOfDiagonals do Diagonal[I-1].SaveBinary(Destination);
       if FileVersion >= fv191 then begin        // Save markers
         Destination.Add(NumberOfMarkers);
-        for I:=1 to NumberOfMarkers do Marker[I - 1].SaveBinary(Destination);
+        for I:=1 to NumberOfMarkers do Marker[I-1].SaveBinary(Destination);
         if FileVersion >= fv210 then begin
           Destination.Add(FResistanceDelftData);
           Destination.Add(FResistanceKaperData);
           if FileVersion >= fv250 then begin
             Destination.Add( NumberOfbackgroundImages );
-            for I:=1 to NumberOfBackgroundImages do
-                BackgroundImage[I-1].SaveBinary(Destination);
+            for I:=1 to NumberOfBackgroundImages do BackgroundImage[I-1].SaveBinary(Destination);
             Destination.Add(NumberOfFlowlines);
-            for I:=1 to NumberOfFlowlines do
-                Flowline[I - 1].SaveBinary(Destination);
+            for I:=1 to NumberOfFlowlines do Flowline[I-1].SaveBinary(Destination);
           end;
         end;
       end;

@@ -113,17 +113,15 @@ begin
    CreateFreeShip;
    CreateViewPort;
    UndoBox.Clear;
-   try
+//   try
       UndoBox.Items.BeginUpdate;
       Max:=0;
-      for I:=1 to Freeship.UndoCount do
-      begin
+      for I:=1 to Freeship.UndoCount do begin
          Undo:=Freeship.UndoObject[I-1];
          if length(Undo.UndoText)>Max then Max:=Length(Undo.UndoText);
       end;
       inc(Max,2);
-      for I:=1 to Freeship.UndoCount do
-      begin
+      for I:=1 to Freeship.UndoCount do begin
          Undo:=Freeship.UndoObject[I-1];
          Str:=Freeship.UndoObject[I-1].UndoText;
          if Length(Str)>0 then Str[1]:=Upcase(Str[1]);
@@ -131,13 +129,13 @@ begin
          Str:=Str+' ('+Undo.Time+')';
          UndoBox.Items.AddObject(Str,Undo);
       end;
-   finally
+//   finally
       UndoBox.Items.EndUpdate;
       Freeship1.AddViewport(Viewport);
       UndoBox.ItemIndex:=Freeship.UndoPosition-1;
       Viewport.Color:=Freeship.Preferences.ViewportColor;
       ShowTranslatedValues(Self); ShowModal;
-   end;
+//   end;
    Result:=ModalResult=mrOK;
 end;
 

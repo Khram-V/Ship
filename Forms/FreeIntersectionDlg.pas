@@ -302,7 +302,6 @@ begin
   UpdateMenu;
   ShowModal;
 end;
-
 (*
 procedure TFreeIntersectionDialog.ListBoxKeyDown(Sender: TObject;
   var Key: word; Shift: TShiftState);
@@ -332,9 +331,7 @@ begin
     end;
   end;
 end;{TFreeIntersectionDialog.ListBoxKeyDown}
-*)
 
-(*
 procedure TFreeIntersectionDialog.ListBoxSelectionChange(Sender: TObject;
   User: boolean);
 var Intersection: TFreeIntersection;  i, ii:integer;
@@ -349,7 +346,6 @@ begin
   FFreeship.Redraw;
 end;
 *)
-
 procedure TFreeIntersectionDialog.PageControl1Change(Sender: TObject);
 begin
   case PageControl1.PageIndex of
@@ -367,19 +363,16 @@ var
   Intersection: TFreeIntersection;
   I: integer;
 begin
-  if aCol = 2 then
-  begin
+  if aCol = 2 then begin
     grid:=sender as TStringGrid;
     Intersection:=grid.Objects[1,aRow+1] as TFreeIntersection;
-    if Intersection.ShowCurvature <> (aState = cbChecked) then
-    begin
-      Intersection.ShowCurvature:=(aState = cbChecked);
+    if Intersection.ShowCurvature <> (aState=cbChecked) then begin
+      Intersection.ShowCurvature:=(aState=cbChecked);
       FFreeShip.FileChanged:=True;
       FFreeship.Redraw;
     end;
   end;
 end;
-
 (*
 procedure TFreeIntersectionDialog.sgButtocksEditingDone(Sender: TObject);
 var f:TFloatType; intersection:TFreeIntersection; i:integer;
@@ -394,8 +387,6 @@ begin
     sgButtocks.Cells[sgButtocks.Col, sgButtocks.Row]:=format('%7.4f',[intersection.Distance]);
   end;
 end;
-*)
-(*
 procedure TFreeIntersectionDialog.sgDiagonalsEditingDone(Sender: TObject);
 var f:TFloatType; intersection:TFreeIntersection; i:integer;
 begin
@@ -410,7 +401,6 @@ begin
   end;
 end;
 *)
-
 procedure TFreeIntersectionDialog.OnGridEditingDone(Sender: TObject);
 var S:String; F:TFloatType;
   intersection:TFreeIntersection; i:integer;
@@ -418,18 +408,18 @@ var S:String; F:TFloatType;
 begin
   grid:=Sender as TStringGrid;
   if grid.Col<>1 then exit;
-  try
-    intersection:=grid.Objects[1, grid.Row] as TFreeIntersection;
-    S:=grid.Cells[1, grid.Row];
+//  try
+    intersection:=grid.Objects[1,grid.Row] as TFreeIntersection;
+    S:=grid.Cells[1,grid.Row];
     if TryStrToFloat(S,F) then begin
       intersection.Distance:=f;
       intersection.Rebuild;
       FFreeship.Redraw;
     end else
       sgStations.Cells[grid.Col, grid.Row]:=format('%7.4f',[intersection.Distance]);
-  except
-      sgStations.Cells[grid.Col, grid.Row]:=format('%7.4f',[intersection.Distance]);
-  end;
+//  except
+//      sgStations.Cells[grid.Col, grid.Row]:=format('%7.4f',[intersection.Distance]);
+//  end;
 end;
 
 procedure TFreeIntersectionDialog.OnGridGetEditMask(Sender: TObject; ACol,

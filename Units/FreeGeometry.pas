@@ -1,18 +1,11 @@
-
 unit FreeGeometry;
-
 {$MODE Delphi} {$H+}
 
 interface
 uses
-{$IFnDEF FPC}
-  JPeg, Windows,
-{$ELSE}
   LCLIntf,
-{$ENDIF}
   LazUTF8,
   FasterList,
-//MethodList,
   Messages,
   SysUtils,
   Classes,
@@ -29,8 +22,8 @@ uses
   FreeFileBuffer,
   ExtCtrls,
   ExtDlgs,
-  LazFileUtils,
-  FreeBitmapFormatHelper,FreeLanguageSupport;
+  FreeBitmapFormatHelper,
+  FreeLanguageSupport;
 
 const // Cursors
 {  crCOLORPICKER_32 = 1;
@@ -113,8 +106,8 @@ type
   end;
   TFreeVertexType=(svRegular, svCrease, svDart, svCorner); // Different types of subdivisionvertices
   TFreeCameraType=(ftWide,ftStandard,ftShortTele,ftMediumTele,ftFarTele); // Different types of camera lenses, corresponding to focalpoints 20mm, 50mm, 90mm, 130mm, 200mm
-  TFreeViewType = (fvBodyplan, fvProfile, fvPlan, fvPerspective);
-  TFreeUnitType = (fuMetric, fuImperial); // Switch between metric and imperial units
+  TFreeViewType=( fvBodyplan, fvProfile, fvPlan, fvPerspective );
+  TFreeUnitType=( fuMetric,fuImperial ); // Switch between metric and imperial units
   TFreeViewportMode = (vmWireFrame, vmShade, vmShadeGauss, vmShadeDevelopable, vmShadeZebra);
   TFreeSubdivisionMode = (fmQuadTriangle, fmCatmullClark);
   TFreeAssembleMode = (amRegular, amNURBS);
@@ -1284,16 +1277,11 @@ type
       aInteriorEdges:TFasterListTFreeSubdivisionEdge;
       aControlDescendandEdges:TFasterListTFreeSubdivisionEdge;
       aNewFaces: TFasterListTFreeSubdivisionFace);
-    property Area: TFloatType
-      read FGetArea;
-    property FaceCenter:
-      T3DCoordinate read FGetFaceCenter;
-    property FaceNormal:
-      T3DCoordinate read FGetFaceNormal;
-    property NumberOfPoints: integer
-      read FGetNumberOfPoints;
-    property Point[index: integer]
-      : TFreeSubdivisionPoint read FGetPoint;
+    property Area: TFloatType        read FGetArea;
+    property FaceCenter:             T3DCoordinate read FGetFaceCenter;
+    property FaceNormal:             T3DCoordinate read FGetFaceNormal;
+    property NumberOfPoints:integer read FGetNumberOfPoints;
+    property Point[index: integer]:  TFreeSubdivisionPoint read FGetPoint;
     property Points:TFasterListTFreeSubdivisionPoint read FPoints;
   end;
 
@@ -1586,14 +1574,15 @@ type
     procedure ClearMesh;
     procedure ConvertToGrid(Input: TFreeFaceGrid; var Cols, Rows: integer; var Grid: TFreeSubdivisionPointGrid);
     procedure Edge_Connect;
-    function CanInsertEdge: boolean;
-    procedure ExportFeFFile(Strings: TStringList);
-    procedure ImportObjFile(Strings: TStringList);
-    procedure ExportObjFile(ExportControlNet: boolean; Strings: TStringList);
-    procedure Extents(var Min, Max: T3DCoordinate);     override;
-    function ExtrudeControlPoints(
-               Points: TFasterListTFreeSubdivisionControlPoint;
-               Direction: T3DCoordinate): TFasterListTFreeSubdivisionControlPoint;
+    function  CanInsertEdge: boolean;
+    procedure ExportFeFFile( Strings: TStringList );
+    procedure ImportObjFile( Strings: TStringList );
+    procedure ExportObjFile( ExportControlNet: boolean; Strings: TStringList );
+    procedure Extents(var Min, Max: T3DCoordinate); override;
+    function  ExtrudeControlPoints
+           (  Points: TFasterListTFreeSubdivisionControlPoint;
+              Direction: T3DCoordinate
+           ): TFasterListTFreeSubdivisionControlPoint;
     procedure ExtrudeEdges(Edges: TFasterListTFreeSubdivisionEdge; Direction: T3DCoordinate);
       reintroduce; overload;
     procedure CalculateIntersections(Plane: T3DPlane;

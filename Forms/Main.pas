@@ -7,29 +7,26 @@ unit Main;
 interface
 
 uses
-     SysUtils,
-     Classes,
-     Graphics, IntfGraphics,
-     Controls, LCLIntf, LCLType, LazFileUtils,
+     SysUtils,      // =exception...
+     Classes,       // constructor Create
+     Graphics,
+     Controls,
+     LCLIntf,       // openDocument
+     LazFileUtils,  // дата и время файла
      Forms,
-     Math,
      Dialogs,
-     ExtCtrls,
-     ActnList,
-     StdCtrls,
-     ComCtrls,
-     FreeTypes,
-     FreeGeometry,
-     FreeShipUnit,
-     FreeVersionUnit,
-     freehullformwindow_panel, MDIPanel,
+     ExtCtrls,     ActnList,
+     StdCtrls,     ComCtrls,
+     FreeTypes,    FreeGeometry,
+     FreeShipUnit, FreeVersionUnit,
+     FreehullFormWindow_panel,MDIPanel,
      FreeAboutDlg,
-     Menus, StdActns, Spin,                     // Buttons, DefaultTranslator,
+     Menus,
+     StdActns,
+     Spin,
      Interfaces,
-     FreeSplitSectionDlg,
-     FreeLayerVisibilityDlg,
-     FreeSelectedDlg,FreeLanguageSupport;
-
+     FreeSplitSectionDlg, FreeLayerVisibilityDlg,
+     FreeSelectedDlg,     FreeLanguageSupport;
 type
   TMainForm = class( TForm )                                    // TMainForm
      ToolBarCurves,
@@ -126,116 +123,73 @@ type
     MenuImages                 : TImageList;
     MainMenu1                  : TMainMenu;
 
-    tbShowFreeObjects,              ToolButton1,
-    ToolButton39,                   ToolButtonSelect,
-    ToolButtonRedo,                 ToolButtonUndo,
-    ToolButtonDelete,
- // ToolButtonOpenFile,          // ToolButton3,
-    ToolButton5,                    ToolButton6,
-    ToolButton8,                    ToolButton9,
-    ToolButton10,                   ToolButton13,
-    ToolButton16,                   ToolButton17,
-    ToolButton18,               //  ToolButton20,
-    ToolButton21,                   ToolButton22,
-    ToolButton23,                   ToolButton24,
-    ToolButton26,                   ToolButton27,
-    ToolButton29,                   ToolButton30   : TToolButton;
+    tbShowFreeObjects,ToolButton1,   ToolButton39,
+    ToolButtonSelect, ToolButtonRedo,ToolButtonUndo,
+    ToolButtonDelete, ToolButton2,   ToolButton5,
+    ToolButton6,      ToolButton8,   ToolButton9,
+    ToolButton10,     ToolButton13,  ToolButton16,
+    ToolButton17,     ToolButton18,  ToolButton21,
+    ToolButton22,     ToolButton23,  ToolButton24,
+    ToolButton26,     ToolButton27,  ToolButton29,
+    ToolButton30,     ToolButton31,  ToolButton32,
+    ToolButton33,     ToolButton34,  ToolButton35,
+    ToolButton36,     ToolButton37,  ToolButton40,
+    ToolButton41,     ToolButton42,  ToolButton43,
+    ToolButton44,     ToolButton45,  ToolButton46,
+    ToolButton47,     ToolButton48:  TToolButton;
 
+    StatusPanel2  : TPanel;
     ColorDialog   : TColorDialog;
-    Preferences   : TAction;        Preferences1   : TMenuItem;
-    RemoveNegative: TAction;        RemoveNegative1: TMenuItem;
-    RotateModel   : TAction;        Rotatemodel1   : TMenuItem;
-    RotateModelM  : TAction;        Rotatemodel2   : TMenuItem;
-    ScaleModel    : TAction;        Scale3D1       : TMenuItem;
-    Undo          : TAction;        Undo1          : TMenuItem;
-    ShowGrid: TAction;
-    ToolButton31: TToolButton;
-    Analyzesurface2: TMenuItem;
-    StatusPanel2: TPanel;
-    HydrostaticsDialog: TAction;
-    Hydrostatics2: TMenuItem;
-    ExportObj: TAction;
-    WavefrontfileObj1: TMenuItem;
-    InvertFace: TAction;
-    Invert1: TMenuItem;
-    ToolButton32: TToolButton;
-    ToolButton33: TToolButton;
-    N2: TMenuItem;
+    ExportAurora,
+    ExportMichlet : TAction;
+    FileSave      : TAction;     Save2          : TMenuItem;
+    Preferences   : TAction;     Preferences1   : TMenuItem;
+    RemoveNegative: TAction;     RemoveNegative1: TMenuItem;
+    RotateModel   : TAction;     Rotatemodel1   : TMenuItem;
+    RotateModelM  : TAction;     Rotatemodel2   : TMenuItem;
+    ScaleModel    : TAction;     Scale3D1       : TMenuItem;
+    Undo          : TAction;     Undo1          : TMenuItem;
+    ShowGrid      : TAction;     Analyzesurface2: TMenuItem;
+    HydrostaticsDialog:TAction;  Hydrostatics2  : TMenuItem;
+    ExportObj     : TAction;     WavefrontfileObj1: TMenuItem;
+    InvertFace    : TAction;     Invert1          : TMenuItem;
+    ExportDXF3DPolylines:TAction; ExportDXFPolylines1: TMenuItem;
+    ExportDXFFaces: TAction;     DXF3Dfaces1     : TMenuItem;
+    ImportHullFile: TAction;     Carlssonhulfile1: TMenuItem;
+    ExportOffsets : TAction;     Offsets1        : TMenuItem;
+    AddPoint      : TAction;     Add1            : TMenuItem;
+    DevelopLayers : TAction;     Developplates1  : TMenuItem;
+    ShowLinesplan : TAction;     Linesplan1      : TMenuItem;
+    DeleteMarkers : TAction;     Deletemarkers1  : TMenuItem;
+    ImportSurface : TAction;     Surface1        : TMenuItem;
+    InsertPlane   : TAction;     InsertPlane1    : TMenuItem;
+    PointsLock    : TAction;     PointsLock1     : TMenuItem;
+    PointsUnlock  : TAction;     Unlockpoints1   : TMenuItem;
+    ImportMarkers : TAction;     Markers2        : TMenuItem;
+    PointsUnlockAll: TAction;    Unlockallpoints1: TMenuItem;
+    IncreaseCurvatureScale:TAction; Incrcurvaturescale1: TMenuItem;
+    DecreaseCurvatureScale:TAction; Decrcurvaturescale1: TMenuItem;
+    ExportArchimedes : TAction;     ArchimedesMB1 : TMenuItem;
+    ShowControlCurves: TAction;     Controlcurves1: TMenuItem;
+    ImportChines     : TAction;     Chines1       : TMenuItem;
+    ShowDiagonals    : TAction;     Diagonals1    : TMenuItem;
+    ShowMarkers      : TAction;     Markers1      : TMenuItem;
+    NewCurve         : TAction;     AddCurve1     : TMenuItem;
+    ExportCoordinates: TAction;     Coordinates1  : TMenuItem;
+    ImportCarene     : TAction;     Carenefile1   : TMenuItem;
+    N2 : TMenuItem;
     ImportBodyplan: TAction;
-    ExportDXF3DPolylines: TAction;
-    ExportDXFPolylines1: TMenuItem;
-    ExportDXFFaces: TAction;
-    DXF3Dfaces1: TMenuItem;
-    ImportHullFile: TAction;
-    Carlssonhulfile1: TMenuItem;
-    ExportOffsets: TAction;
-    Offsets1: TMenuItem;
     MoveModel: TAction;
     Deselectall2: TMenuItem;
-    AddPoint: TAction;
-    Add1: TMenuItem;
     Intersections1: TMenuItem;
-    DevelopLayers: TAction;
-    Developplates1: TMenuItem;
-    ExportArchimedes: TAction;
     N3: TMenuItem;
-    ArchimedesMB1: TMenuItem;
-    ToolButton34: TToolButton;
-    ShowLinesplan: TAction;
-    Linesplan1: TMenuItem;
-    ShowDiagonals: TAction;
-    ToolButton35: TToolButton;
-    Diagonals1: TMenuItem;
     RecentFiles: TMenuItem;
     N4: TMenuItem;
-    ImportCarene: TAction;
-    Carenefile1: TMenuItem;
-    ShowMarkers: TAction;
-    ToolButton36: TToolButton;
-    Markers1: TMenuItem;
-    DeleteMarkers: TAction;
-    Deletemarkers1: TMenuItem;
-    ImportSurface: TAction;
-    Surface1: TMenuItem;
     Showcurvature: TAction;
-    ToolButton37: TToolButton;
-    IncreaseCurvatureScale: TAction;
-    DecreaseCurvatureScale: TAction;
     N5: TMenuItem;
-    Decrcurvaturescale1: TMenuItem;
-    Incrcurvaturescale1: TMenuItem;
-    FileSave: TAction;
-//  ToolButton38: TToolButton;
-    Save2: TMenuItem;
     Curvature1: TMenuItem;
-    ImportChines: TAction;
-    Chines1: TMenuItem;
     Curve1: TMenuItem;
-    ShowControlCurves: TAction;
-    Controlcurves1: TMenuItem;
-    ToolButton2: TToolButton;
-    NewCurve: TAction;
-    AddCurve1: TMenuItem;
-    ToolButton40: TToolButton;
-    ExportCoordinates: TAction;
-    Coordinates1: TMenuItem;
-    InsertPlane: TAction;
-    InsertPlane1: TMenuItem;
-    ToolButton41: TToolButton;
-    PointsLock: TAction;
-    PointsLock1: TMenuItem;
-    PointsUnlock: TAction;
-    Unlockpoints1: TMenuItem;
-    ToolButton42: TToolButton;
-    ToolButton43: TToolButton;
-    PointsUnlockAll: TAction;
-    Unlockallpoints1: TMenuItem;
-    ToolButton44: TToolButton;
-    Markers2: TMenuItem;
-    ImportMarkers: TAction;
     Import2: TMenuItem;
-    ExportAurora: TAction;
-    ExportMichlet: TAction;
 //    Resistance1: TMenuItem;
 //    Kaper1: TMenuItem;
 //    ResistanceDelft: TAction;
@@ -244,13 +198,11 @@ type
 //    MichletCFD1: TMenuItem;
     StatusPanel3: TPanel;
     PointAlign: TAction;
-    ToolButton45: TToolButton;
     Projectline1: TMenuItem;
     ImportMichletWaves: TAction;
     N6: TMenuItem;
     ImportMichletWaves1: TMenuItem;
     ShowHydrostatics: TAction;
-    ToolButton46: TToolButton;
     Hydrostaticdata1: TMenuItem;
     MirrorFace: TAction;
     ransform1: TMenuItem;
@@ -267,7 +219,6 @@ type
     ImportPart: TAction;
     Part2: TMenuItem;
     LayerIntersection: TAction;
-    ToolButton47: TToolButton;
     Saveas1: TMenuItem;
     KeelRudderWizard: TAction;
     Deleteempty3: TMenuItem;
@@ -287,7 +238,6 @@ type
     GHS1: TMenuItem;
     ShowFlowlines: TAction;
     Flowlines1: TMenuItem;
-    ToolButton48: TToolButton;
     AddCylinder: TAction;
     AddCylinder1: TMenuItem;
     SelectAll: TAction;
@@ -323,7 +273,6 @@ type
     procedure SplitSectionDialogExecute(Sender: TObject);
     procedure ShowFreeObjectsExecute   (Sender: TObject);
     procedure LayerVisibilityDialogExecute(Sender: TObject);
- // function ShowSplashWindow:TModalResult;
     procedure FormShow                 (Sender: TObject);
     procedure MainClientPanelClick     (Sender: TObject);
     procedure MenuItem1Click           (Sender: TObject);
@@ -449,15 +398,8 @@ type
     procedure ExportSTLExecute         (Sender: TObject);
 //  procedure CrossCurvesExecute       (Sender: TObject);
     procedure SelectLeakPointsExecute  (Sender: TObject);
-
     procedure LoadMostRecentFile;
-//    procedure LoadNamedFile(FileName:string);
-//    procedure dumpIcons;
-//    procedure LoadToolIcons;
-//    function  getToolbarControlsWidth(tb:TToolBar): integer;
-//    function  getAllToolbarsControlWidth: integer;
-//    procedure AlignAllToolbars;
-//    procedure SetAllActionsEnabled(val : boolean);
+//  procedure LoadNamedFile(FileName:string);
     procedure InitiallyLoadModel;
    private                                             { Private declarations }
       FAllToolbarsControlsWidth,
@@ -471,7 +413,6 @@ type
       FToolBarCurvesControlsWidth : integer;
       FDestroying: boolean;
       FSplitSectionDialog: TFreeSplitSectionDialog;
-
       function  Load_and_Scale( FileName: String ): Boolean;
       procedure FLoadRecentFile(sender:TObject);
       procedure FreeLayerVisibilityDialogChange(Sender: TObject);
@@ -503,8 +444,7 @@ type
       procedure Cascade;
       procedure CustomExceptionHandler(Sender: TObject; E: Exception);
       constructor Create(AOwner: TComponent); override;
-//+++  destructor Destroy; override;
-
+//+++ destructor Destroy; override;
       procedure SetCaption;
       procedure UpdateMenu;
       procedure RecentFilesDialogActivate(Sender: TObject);
@@ -518,18 +458,16 @@ implementation
 uses FreeLinesplanFrm,
      FreeKeelWizardDlg,
      FreeEmptyModelChooserDlg,
-//   RibbonToolBarMgr,        <<== ArrangeRibbonPanel( PanelMain );
      TileDialog,
      FreePointGroupForm;
 
 {$R *.lfm}
 
-procedure TMainForm.CustomExceptionHandler( Sender:TObject; E:Exception ); begin
-      WriteLn( 'Exception: '+E.Message );
-////  Halt; // End of program execution
+procedure TMainForm.CustomExceptionHandler( Sender:TObject; E:Exception );
+begin WriteLn( 'Exception: '+E.Message );   // Halt; = End of program execution
 end;
 
-constructor TMainForm.Create(AOwner: TComponent);
+constructor TMainForm.Create( AOwner:TComponent );
 begin
   Application.OnException:=CustomExceptionHandler;
 inherited Create(AOwner);
@@ -658,8 +596,8 @@ end;
 
 procedure TMainForm.cbPrecisionChange(Sender: TObject);
 begin
-  if cbPrecision.ItemIndex = ord(FreeShip.Precision) then exit;
-  FreeShip.Precision:=TFreePrecisionType(cbPrecision.ItemIndex);
+  if cbPrecision.ItemIndex = ord( FreeShip.Precision ) then exit;
+  FreeShip.Precision:=TFreePrecisionType( cbPrecision.ItemIndex );
   FreeShip.RebuildModel;
   UpdateMenu;
 end;
@@ -768,13 +706,12 @@ end;
 procedure TMainForm.CloseHullWindows;
 var thw: TFreeHullWindow;
 begin
-   if assigned(PanelManager) then while PanelManager.MList.Count>0 do
-   begin
+   if assigned(PanelManager) then while PanelManager.MList.Count>0 do begin
      thw:=TFreeHullWindow(PanelManager.Panels[0]);
             ///if assigned(thw) and assigned(thw.FreeHullForm)
             ///  and assigned(thw.FreeHullForm.ActionListHull)
             ///  then self.RemoveComponent(thw.FreeHullForm.ActionListHull);
-      if assigned(thw) then thw.Close;
+      if assigned( thw ) then thw.Close;
       PanelManager.Remove(thw);
    end;
 end;
@@ -791,8 +728,9 @@ begin
 end;
 
 procedure TMainForm.SetCaption;
-begin if FreeShip.FileChanged then Caption:='Free!Ship : '+FreeShip.Filename+' (modified)'
-                              else Caption:='Free!Ship : '+FreeShip.Filename+' (not modified';
+begin if FreeShip.FileChanged
+ then Caption:='«Free!Ship» :  ' + ExtractFileName( FreeShip.Filename )+'  (modified)'
+ else Caption:='«Free!Ship» :  ' + ExtractFileName( FreeShip.Filename )+'  [not modified]';
 end;
 (*
 procedure TMainForm.SetAllActionsEnabled( val: boolean );
@@ -806,33 +744,13 @@ end;
 *)
 procedure TMainForm.UpdateMenu;
 var I,NLayers : Integer;
-//  FExecDirectory     : string;
-//  FileToFind         : string;
-// In this procedure all actions are set to enabled/disabled according to the current state
-// and selected items
+        // In this procedure all actions are set to enabled/disabled according
+        // to the current state and selected items
   const DS=DirectorySeparator;
 begin
    NLayers:=0;
    For I:=1 to Freeship.NumberOfLayers do
-     if Freeship.Layer[I-1].Count>0 then inc(NLayers);
-   {
-   // disable almost all actions if model was not loaded for some reason
-   if not Freeship.ModelLoaded then begin
-        FreeShip.Filename:='MODEL NOT LOADED!';
-        FreeShip.FilenameSet:=false;
-        SetAllActionsEnabled(false);
-        NewModel.Enabled:=true;
-        LoadFile.Enabled:=true;
-        ExitProgram.Enabled:=true;
-        HelpAction.Enabled:=true;
-        AboutAction.Enabled:=true;
-        //ImportFEF.Enabled:=true;
-        //ImportCarene.Enabled:=true;
-        //ImportVRML.Enabled:=true;
-        //ImportHullFile.Enabled:=true;
-     end;
-    }
-   // File menu
+     if Freeship.Layer[I-1].Count>0 then inc(NLayers);             // File menu
    FileSaveas.Enabled:=(FreeShip.Surface.NumberOfControlPoints>0)
                       or (Freeship.FileChanged) or (Freeship.FilenameSet);
    FileSave.Enabled:= FileSaveas.Enabled and Freeship.FileChanged
@@ -912,13 +830,18 @@ begin
 // CrossCurves.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
    // edit commands
    AddPoint.Enabled:=(MDIChildCount>0) and (FreeShip.Visibility.ShowControlNet);
-   Insertplane.Enabled:=(Freeship.Surface.NumberOfControlEdges>0) and (Freeship.Visibility.ShowControlNet);
+   Insertplane.Enabled:=(Freeship.Surface.NumberOfControlEdges>0)
+                    and (Freeship.Visibility.ShowControlNet);
    LayerIntersection.Enabled:=NLayers>1;
    EdgeCollapse.Enabled:=FreeShip.NumberOfSelectedControlEdges>0;
-   NewEdge.Enabled:= (FreeShip.NumberOfSelectedControlPoints>1) and FreeShip.Surface.CanInsertEdge;
+   NewEdge.Enabled:= (FreeShip.NumberOfSelectedControlPoints>1)
+                  and FreeShip.Surface.CanInsertEdge;
    EdgeCrease.Enabled:=FreeShip.NumberOfSelectedControlEdges>0;
-   DeselectAll.Enabled:=(Freeship.NumberOfSelectedControlPoints+FreeShip.NumberOfSelectedControlEdges+Freeship.NumberOfSelectedControlFaces+Freeship.NumberOfSelectedControlCurves>0) or
-                        (Freeship.ActiveControlPoint<>nil);
+   DeselectAll.Enabled:=(Freeship.NumberOfSelectedControlPoints
+                        +FreeShip.NumberOfSelectedControlEdges
+                        +Freeship.NumberOfSelectedControlFaces
+                        +Freeship.NumberOfSelectedControlCurves>0 )
+                     or (Freeship.ActiveControlPoint<>nil);
    NewCurve.Enabled:=FreeShip.NumberOfSelectedControlEdges>0;
    PointCollapse.Enabled:=Freeship.NumberOfSelectedControlPoints>0;
    DeleteEmptyLayers.Enabled:=False;
@@ -926,9 +849,7 @@ begin
      if (FreeShip.ModelIsLoaded)
      and (FreeShip.Layer[I-1].Count=0)
      and (FreeShip.NumberOfLayers>0) then begin
-          DeleteEmptyLayers.Enabled:=True;
-          break;
-     end;
+          DeleteEmptyLayers.Enabled:=True; break; end;
    RemoveUnusedPoints.Enabled:=False;
    for I:=1 to Freeship.Surface.NumberOfControlPoints do
      if Freeship.Surface.ControlPoint[I-1].NumberOfFaces=0 then begin
@@ -955,7 +876,8 @@ begin
    ShowControlCurves.Checked:=FreeShip.Visibility.ShowControlCurves;
    ShowControlCurves.Enabled:=Freeship.Surface.NumberOfControlCurves>0;
    ShowHydrostatics.Checked:=Freeship.Visibility.ShowHydrostaticData;
-   ShowHydrostatics.Enabled:=(Freeship.Surface.NumberOfControlFaces>2) and (Freeship.ProjectSettings.MainparticularsHasBeenset);
+   ShowHydrostatics.Enabled:=(Freeship.Surface.NumberOfControlFaces>2)
+                         and (Freeship.ProjectSettings.MainparticularsHasBeenset);
    ShowFlowlines.Checked:=Freeship.Visibility.ShowFlowlines;
    ShowFlowlines.Enabled:=Freeship.NumberOfFlowLines>0;
 
@@ -1149,38 +1071,32 @@ begin    // Initialize some data
 //   FreeShip.Surface.AddOnChangeActiveControlEdgeListener(OnChangeActiveControlEdge);
 //   FreeShip.Surface.AddOnChangeActiveControlFaceListener(OnChangeActiveControlFace);
 //   FreeShip.Surface.AddOnChangeActiveControlCurveListener(OnChangeActiveControlCurve);
-   FreeShip.Clear;
-   // fit to screen
+   FreeShip.Clear;                                             // fit to screen
    L:=Left; T:=Top; W:=Width; H:=Height;
    if self.BoundsRect.Right > Screen.Width then L:=0;
    if self.Width > Screen.Width then W:=Screen.Width;
    if self.BoundsRect.Bottom > Screen.Height then T:=0;
    if self.Height > Screen.Height then H:=Screen.Height;
    Self.SetBounds( L,T,W,H );
-
-   SetCaption;
-// LoadToolIcons;
-   UpdateMenu;
-// ArrangeRibbonPanel(PanelMain);
+   SetCaption;                                                // LoadToolIcons;
+   UpdateMenu;                                 // ArrangeRibbonPanel(PanelMain);
 end;
 
 procedure TMainForm.MainClientPanelClick(Sender: TObject); begin end;
 procedure TMainForm.MenuItem1Click(Sender: TObject); begin end;
 
 procedure TMainForm.PanelMainResize(Sender: TObject);
- // var I: Integer=0;
- // TP: Tpanel;
- // TB: TToolBar;
+   // var I:Integer=0;
+   // TP: Tpanel;
+   // TB: TToolBar;
 begin
- // TP:=TPanel( TObject );
- // for I:=0 to TP.ControlCount-1 do
- // if TP.Controls[I] is TToolBar then
- //   begin
- //     TB:=TToolBar( TP.Controls[I] );
- //     TB.ButtonHeight:=24;
- //     TB.Height:=24;
- //   end;
- //
+   // TP:=TPanel( TObject );
+   // for I:=0 to TP.ControlCount-1 do
+   // if TP.Controls[I] is TToolBar then begin
+   //    TB:=TToolBar( TP.Controls[I] );
+   //    TB.ButtonHeight:=24;
+   //    TB.Height:=24;
+   //   end;
   PanelMain.Height:=24;
   PanelMain.ClientHeight:=24;
    // if PanelMain.IsResizing then exit;
@@ -1284,7 +1200,6 @@ procedure TMainForm.PrecisionBoxChange(Sender: TObject);
 begin FreeShip.Precision:=TFreePrecisionType(PrecisionBox.ItemIndex); UpdateMenu;
 end;
 }
-
 procedure TMainForm.FileSaveasExecute(Sender: TObject);
     begin FreeShip.Edit.File_SaveAs; UpdateMenu; SetCaption; end;
 procedure TMainForm.LayerAutoGroupExecute(Sender: TObject);
@@ -1479,10 +1394,10 @@ begin
 {$ifndef Windows}
    if self.Align = alTop then self.Top:=0;
 {$endif}                                        // Removed from LFM, moved here
-   FreeShip            :=TFreeShip.Create( self );
-   FreeShip.MainForm   :=self;
+   FreeShip := TFreeShip.Create( self );
+   FreeShip.MainForm := self;
    FreeShip.FileChanged:=true;
-   FreeShip.Filename   :='New model.fbm';
+   FreeShip.Filename := 'New model';
    FreeShip.FileVersion:=fv261;
    FreeShip.OnChangeCursorIncrement:=FreeShipChangeCursorIncrement;
    FreeShip.OnFileChanged          :=FreeShipFileChanged;
@@ -1491,7 +1406,7 @@ begin
    FreeShip.OnUpdateUndoData       :=FreeShipUpdateUndoData;
    FreeShip.Precision:=fpLow;
    FAllToolbarsControlsWidth:=0;
-   GlobalFreeship      :=Freeship;     // копия для воссоздания новых моделей
+   GlobalFreeship   :=Freeship;          // копия для воссоздания новых моделей
    FModelInitallyLoaded:=false;
 end;
 
@@ -1534,12 +1449,11 @@ begin
     FreeAndNil(FreeAboutDlg);
 end;
 
-// begin correction Victor T
-procedure TMainForm.Help1Click(Sender: TObject);
+procedure TMainForm.Help1Click(Sender: TObject);   // begin correction Victor T
 var FileToFind,FManDirectory,FLang,man : string;
 begin
   FLang:=Freeship.Preferences.Language;
-  FManDirectory:=Freeship.Preferences.ManualsDirectory;
+  FManDirectory:=Freeship.Preferences.ManualsDirectory; //+ConfigDirectory
   man:=FLang+'.pdf';
   FileToFind:=FileSearch(FManDirectory+DirectorySeparator+man,FManDirectory);
   if (FileToFind='') and (FLang<>'English') then begin

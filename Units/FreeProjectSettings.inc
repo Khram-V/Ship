@@ -80,21 +80,21 @@ end;
 
 procedure TFreeProjectSettings.FSetProjectSplitSectionLocation(val: TFloatType);
 begin
-  if Val <> FProjectSplitSectionLocation then begin
+  if Val<>FProjectSplitSectionLocation then begin
     FProjectSplitSectionLocation:=val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectWaterDensity(Val: TFloatType);
 begin
-  if abs(Val - FProjectWaterDensity) > 1e-6 then begin
+  if abs( Val-FProjectWaterDensity )>1e-6 then begin
     FProjectWaterDensity:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectWaterTemper(Val: TFloatType);
 begin
-  if abs(Val - FProjectWaterTemper) > 1e-6 then begin
+  if abs( Val-FProjectWaterTemper )>1e-6 then begin
     FProjectWaterTemper:=Val; FreeShip.FileChanged:=True;
   end;
 end;
@@ -115,23 +115,17 @@ end;
 
 procedure TFreeProjectSettings.FSetTrim(Val: TFloatType);
 begin
-  if Val <> FTrim then begin
-    FTrim:=Val; FreeShip.FileChanged:=True;
-  end;
+  if Val<>FTrim then begin FTrim:=Val; FreeShip.FileChanged:=True; end;
 end;
 
 procedure TFreeProjectSettings.FSetEndDraft(Val: TFloatType);
 begin
-  if Val <> FEndDraft then begin
-    FEnddraft:=Val; FreeShip.FileChanged:=True;
-  end;
+  if Val<>FEndDraft then begin FEnddraft:=Val; FreeShip.FileChanged:=True; end;
 end;
 
 procedure TFreeProjectSettings.FSetDraftStep(Val: TFloatType);
 begin
-  if Val <> FDraftStep then begin
-    FDraftStep:=Val; FreeShip.FileChanged:=True;
-  end;
+  if Val<>FDraftStep then begin FDraftStep:=Val; FreeShip.FileChanged:=True; end;
 end;
 
 procedure TFreeProjectSettings.FSetUseDefaultSplitSectionLocation(Val: boolean);
@@ -146,7 +140,7 @@ begin
   if val <> FProjectName then begin
     FProjectName:=Val; FreeShip.FileChanged:=True;
   end;
-end;{TFreeProjectSettings.FSetProjectName}
+end;
 
 procedure TFreeProjectSettings.FSetProjectDesigner(Val: string);
 begin
@@ -299,15 +293,11 @@ begin
   FStabTrims[0]:=0.0;
   FFreeTrim:=True;
   FVCG:=1.0;
-
 end;
 
 constructor TFreeProjectSettings.Create(Owner: TFreeShip);
-begin
-  inherited Create;
-  FFreeShip:=Owner;
-  Clear;
-end;{TFreeProjectSettings.Create}
+begin inherited Create; FFreeShip:=Owner; Clear;
+end;
 
 // User input of mainparticulars and project setting
 procedure TFreeProjectSettings.Edit;
@@ -424,8 +414,7 @@ begin
     if FreeShip.FileVersion >= fv230 then
       Source.LoadBoolean(FProjectSimplifyIntersections);
     if FreeShip.Fileversion >= fv250 then begin
-      // save settings for hydrostatics and crosscurves
-      // hydrostatics
+      // save settings for hydrostatics and crosscurves hydrostatics
       Source.LoadTFloatType(FStartdraft);
       Source.LoadTFloatType(FEndDraft);
       Source.LoadTFloatType(FDraftStep);
@@ -449,11 +438,9 @@ begin
     end;
     if FreeShip.Fileversion >= fv317 then Source.LoadBoolean(FEnableModelAutoMove);
     if FreeShip.Fileversion >= fv332 then Source.LoadBoolean(FEnableBonjeanSAC);
-
     FProjectUnderWaterColorAlpha:=FreeShip.Preferences.UnderWaterColorAlpha; // = fv210
-
     if FreeShip.Fileversion >= fv500 then begin
-      Source.LoadInteger(I);
+      Source.LoadInteger( I );
       FProjectUnderWaterColorAlpha:=byte(I);
       end;
   end;
@@ -481,10 +468,10 @@ begin
       Destination.Add(FProjectSplitSectionLocation);
       if FreeShip.FileVersion >= fv165 then Destination.Add(DisableModelCheck);
     end;
-    Destination.Add(FProjectComment);
-    Destination.Add(FProjectFileCreatedBy);
+    Destination.Add( FProjectComment );
+    Destination.Add( FProjectFileCreatedBy );
     if FreeShip.FileVersion >= fv210 then begin
-      Destination.Add(Ord(ProjectCoefficients));
+      Destination.Add( Ord( ProjectCoefficients ) );
       Jpg:=FreeShip.FGetPreview;
       FSetSavePreview( Jpg<>nil );
       Destination.Add( FSavePreview );
@@ -512,9 +499,9 @@ begin
         Destination.Add(FVCG);
       end;
       if FreeShip.Fileversion>=fv317 then Destination.Add(EnableModelAutoMove);
-//    if FreeShip.Fileversion>=fv332 then Destination.Add(EnableBonjeanSAC);
+//    if FreeShip.Fileversion>=fv332 then Destination.Add(EnableBonjeanSAC); !!
       if FreeShip.Fileversion>=fv332 then Destination.Add( false );
-      if FreeShip.Fileversion>=fv500 then Destination.Add(FProjectUnderWaterColorAlpha);
+      if FreeShip.Fileversion>=fv500 then Destination.Add( FProjectUnderWaterColorAlpha );
     end;
   end;
 end;

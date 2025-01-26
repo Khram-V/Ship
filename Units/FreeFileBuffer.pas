@@ -817,8 +817,7 @@ end;
 
 procedure TFreeTextBuffer.LoadTFloatType(var Output: TFloatType);
 var
-  S: string;
-//  LocalFormatSettings: TFormatSettings;
+  S: string; // LocalFormatSettings: TFormatSettings;
 begin
   S:=FLines[FPosition];
   Output:=GetFloat(S);
@@ -826,14 +825,13 @@ begin
 end;
 {
 procedure TFreeTextBuffer.LoadTJPEGImage(var Output: TColor);
-var
-  S: string;
+var S: string;
 begin
   S:=FLines[FPosition];
   Output:=StrToInt(S);
   Inc(FPosition);
-end;}
-
+end;
+}
 procedure TFreeTextBuffer.LoadTNameData(var Output: TNameData);
 var  p:integer; S: string;
 begin
@@ -841,7 +839,7 @@ begin
   p:=pos(' ',S);
   Output.N:=StrToInt(copy(S,1,p-1));
   Output.Name:=copy(S,p+1,length(S));
-  Inc(FPosition);
+  Inc( FPosition );
 end;
 
 procedure TFreeTextBuffer.LoadTLinearConstraintData(var Output: TLinearConstraintData);
@@ -851,7 +849,7 @@ begin
   Output.N:=StrToInt(ExtractWord(1, S, [' ']));
   Output.LinearConstraintPointA:=StrToInt(ExtractWord(2, S, [' ']));
   Output.LinearConstraintPointB:=StrToInt(ExtractWord(3, S, [' ']));
-  Inc(FPosition);
+  Inc( FPosition );
 end;
 
 procedure TFreeTextBuffer.LoadT3DCoordinate(var Output: T3DCoordinate);
@@ -861,7 +859,7 @@ begin
   Output.X:=GetFloat(ExtractWord(1, S, [' ']));
   Output.Y:=GetFloat(ExtractWord(2, S, [' ']));
   Output.Z:=GetFloat(ExtractWord(3, S, [' ']));
-  Inc(FPosition);
+  Inc( FPosition );
 end;
 
 procedure TFreeTextBuffer.LoadT3DPlane(var Output: T3DPlane);
@@ -872,7 +870,7 @@ begin
   Output.b:=GetFloat(ExtractWord(2, S, [' ']));
   Output.c:=GetFloat(ExtractWord(3, S, [' ']));
   Output.d:=GetFloat(ExtractWord(4, S, [' ']));
-  Inc(FPosition);
+  Inc( FPosition );
 end;
 
 // load string of words separated by spaces

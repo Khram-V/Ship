@@ -420,7 +420,7 @@ begin
    if SelectedLayer<>nil then if SelectedLayer.UseForIntersections<>Checkbox2.Checked then
    begin
       SelectedLayer.UseForIntersections:=CheckBox2.Checked;
-      FFreeship.Built:=False;// forces to rebuild all intersection lines
+      FFreeship.Built:=False;       // forces to rebuild all intersection lines
       FFreeShip.FileChanged:=true;
       FFreeShip.Redraw;
    end;
@@ -433,7 +433,7 @@ begin
       SelectedLayer.UseInHydrostatics:=CheckBox3.Checked;
 /////      Checkbox5.Enabled:=not SelectedLayer.UseInHydrostatics;
 /////      Checkbox5.Checked:=SelectedLayer.Symmetric;
-      FFreeship.Built:=False;// forces to rebuild all hydrostatic calculations
+      FFreeship.Built:=False; // forces to rebuild all hydrostatic calculations
       FFreeShip.FileChanged:=true;
       FFreeShip.Redraw;
    end;
@@ -529,7 +529,7 @@ begin
    if SelectedLayer<>nil then if SelectedLayer.Symmetric<>Checkbox5.Checked then
    begin
       SelectedLayer.Symmetric:=CheckBox5.Checked;
-      FFreeship.Built:=False;// forces to rebuild all hydrostatic calculations
+      FFreeship.Built:=False; // forces to rebuild all hydrostatic calculations
       FFreeShip.FileChanged:=true;
       FFreeShip.Redraw;
    end;

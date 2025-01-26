@@ -29,7 +29,6 @@ Type
   operator *  (s:TFloatType; v:T3DVector): T3DVector;
   operator *  (v1:T3DVector; v2:T3DVector): T3DVector;
   operator *  (v1:T3DCoordinate; v2:T3DCoordinate): T3DCoordinate;
-
 Type
   TRGBTriple = packed record rgbtBlue : BYTE;
                              rgbtGreen: BYTE;
@@ -97,6 +96,7 @@ Function GetInteger( const S:String ): Integer;
 Function GetBoolean( const S:String ): Boolean;
 Function FloatTypeToStr( Value: TFloatType ): String;
 Procedure WestPoint;
+Function BlankOff( S:string ): string;
 //Function Dist( A:T3DVector ): TFloatType;
 
 Implementation
@@ -107,10 +107,10 @@ begin result:=(c1.x=c2.x) and (c1.y=c2.y) and (c1.z=c2.z); end;
 operator <> (c1,c2:T3DCoordinate): boolean;
 begin result:=not( (c1.x=c2.x) and (c1.y=c2.y) and (c1.z=c2.z) ); end;
 
-operator = (v1, v2:T3DVector): boolean;
+operator = (v1,v2:T3DVector): boolean;
 begin result:=(v1.x=v2.x) and (v1.y=v2.y) and (v1.z=v2.z); end;
 
-operator <> (v1, v2:T3DVector): boolean;
+operator <> (v1,v2:T3DVector): boolean;
 begin result:=not( (v1.x=v2.x) and (v1.y=v2.y) and (v1.z=v2.z) ); end;
 
 operator + (c:T3DCoordinate; v:T3DVector): T3DCoordinate ;
@@ -143,7 +143,7 @@ begin result.x:=s*v.x;
       result.z:=s*v.z;
 end;
 
-operator *  (v1:T3DCoordinate; v2:T3DCoordinate): T3DCoordinate;
+operator * (v1:T3DCoordinate; v2:T3DCoordinate): T3DCoordinate;
 begin result.x:=(v1.y * v2.z) - (v1.z * v2.y);
       result.y:=(v1.z * v2.x) - (v1.x * v2.z);
       result.z:=(v1.x * v2.y) - (v1.y * v2.x);
@@ -172,21 +172,18 @@ begin Result:=FloatToStr( F2S( Value ) ); end;
 //begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
 
 Function GetFloat( const S: String ): TFloatType;
-  var LocalFormatSettings: TFormatSettings; I,J,K: Integer;
+  var LocalFormatSettings: TFormatSettings; I,J,K: Integer; R:extended;
 begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
   for J:=1 to Length( S ) do begin
     if S[J]>' ' then begin K:=J+1;
       if I=0 then I:=J;
-      if S[J] ='.' then begin
-        LocalFormatSettings.DecimalSeparator:='.';
-        LocalFormatSettings.ThousandSeparator:=','; end
-      else if S[J] =',' then begin
-        LocalFormatSettings.DecimalSeparator:=',';
-        LocalFormatSettings.ThousandSeparator:='.'; end;
-    end
-    else if I>0 then break;
+      if S[J]='.' then begin LocalFormatSettings.DecimalSeparator:='.';
+                             LocalFormatSettings.ThousandSeparator:=','; end else
+      if S[J]=',' then begin LocalFormatSettings.DecimalSeparator:=',';
+                             LocalFormatSettings.ThousandSeparator:='.'; end;
+    end else if I>0 then begin K:=J; break; end;
   end;
-  if K>0 then Result:=StrToFloat( copy( S,I,K-I ),LocalFormatSettings );
+  if I>0 then Result:=StrToFloat( copy( S,I,K-I ),LocalFormatSettings );
 //if K>0 then begin WriteLn( copy( S,I,K-I )+'['+IntToStr(Length(S))+'] <- '+S ); ReadLn; end;
 end;
 
@@ -194,26 +191,33 @@ Function GetInteger( const S: String ): Integer;
 var I,J,K: Integer;
 begin I:=0; K:=0; Result:=0;
   for J:=1 to Length( S ) do
-    if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else if I>0 then break;
-  if K>0 then Result:=StrToInt( copy( S,I,K-I ) );
+    if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else
+    if I>0 then begin K:=J; break; end;
+  if I>0 then Result:=StrToInt( copy( S,I,K-I ) );
 end;
 
 Function GetBoolean( const S: String ): Boolean;
 var I,J,K: Integer; Str: String;
 begin I:=0; K:=0; Result:=false;
   for J:=1 to Length( S ) do
-    if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else if I>0 then break;
+   if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else if I>0 then break;
   if K>0 then begin Str:=Upcase( copy( S,I,K-I ) );
-    Result:=(Str='1') or (Str='TRUE') or (Str='YES');
+  Result:=(Str='1') or (Str='TRUE') or (Str='YES');
   end;
 end;
-
 Procedure WestPoint;
 Begin DefaultFormatSettings.DecimalSeparator:='.';
       DefaultFormatSettings.ThousandSeparator:=',';
       DefaultFormatSettings.ShortDateFormat:='yyyy-mm-dd';
       DefaultFormatSettings.ShortTimeFormat:='hh:nn:ss';
       FormatSettings:=DefaultFormatSettings;
+end;
+Function BlankOff( S:string ): string; var I,J,K,L:integer;
+begin J:=1; K:=1; L:=Length( S );       // вычистка лишних пробелов и пропусков
+  for I:=1 to L do
+    if S[I]>' ' then begin S[J]:=S[I]; inc( J ); K:=J; end else
+    if (J>1) and (J=K) then begin S[J]:=' '; inc( J ); end;
+  for I:=J to L do S[I]:=' '; Result:=S;
 end;
 
 end.

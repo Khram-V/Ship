@@ -236,28 +236,8 @@ end;
   end;
 
 implementation
-(*
-uses FreeStringsUnit;
-{$modeSwitch class+}
-{$modeSwitch exceptions+}
-type VRML2ParserException = class end;
-procedure RaiseParserError(found:TToken; message:String); begin
-    MessageDlg(String.Format('Parser error: %s at %d,%d', [message, found.FLine, found.FPosition]), mtError, [mbOK], 0);
-    raise VRML2ParserException.create at get_caller_addr(get_frame), get_caller_frame(get_frame);
-end;
 
-procedure Assert(found:TToken; expected:String); begin
-    if found.FString.ToUpper <> expected.ToUpper then begin
-      MessageDlg(String.Format('Found "%s", "%s" was expected at %d,%d', [found.FString, expected, found.FLine, found.FPosition]), mtError, [mbOK], 0);
-      raise VRML2ParserException.create at get_caller_addr(get_frame), get_caller_frame(get_frame);
-      end;
-  end;
-procedure RaiseSyntaxError(found:TToken; expected: String); begin
-    MessageDlg(String.Format('Found "%s", %s was expected at %d,%d', [found.FString, expected, found.FLine, found.FPosition]), mtError, [mbOK], 0);
-    raise VRML2ParserException.create at get_caller_addr(get_frame), get_caller_frame(get_frame);
-  end;
-*)
-constructor TToken.Create(val:String; ln,pos:integer);
+  constructor TToken.Create(val:String; ln,pos:integer);
 begin
   FString:=val;
   FLine:=ln;
@@ -1281,7 +1261,7 @@ function TVRML2Coordinates.FGetPoint(Index: integer): T3DCoordinate;
               new(fc);
               SetLength(fc^, FaceCoords.Count);
               for i:=0 to FaceCoords.Count-1 do
-                 fc^[i]:=Integer.Parse(FaceCoords[i]);
+                 fc^[i]:=GetInteger( FaceCoords[i] ); //Integer.Parse(FaceCoords[i]);
               FFaces.Add(fc^);
               FaceCoords.Clear;
             end;
@@ -1343,7 +1323,7 @@ function TVRML2Coordinates.FGetPoint(Index: integer): T3DCoordinate;
         if IndexedFaceSets <> nil then
         begin
           Clear;
-          try
+//          try
             AddedCtrlPts:=TFasterListTVRML2Coordinates.Create(true,false);
             AddedCtrlPts.Capacity:=IndexedFaceSets.Count;
             // Assemble coordinate sets
@@ -1417,10 +1397,10 @@ function TVRML2Coordinates.FGetPoint(Index: integer): T3DCoordinate;
             end;
             SubdivisionSurface.ActiveLayer :=
               SubdivisionSurface.Layer[SubdivisionSurface.NumberOfLayers-1];
-          finally
+//          finally
             SubdivisionSurface.Built:=False;
             FreeAndNil(IndexedFaceSets);
-          end;
+//          end;
         end
         else
           MessageDlg('No_meshdata_could_be_imported.', mtError, [mbOK], 0);

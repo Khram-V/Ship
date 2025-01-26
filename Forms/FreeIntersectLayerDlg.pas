@@ -1,38 +1,22 @@
-
-
 unit FreeIntersectLayerDlg;
-
 {$IFDEF FPC}
   {$MODE Delphi}
 {$ENDIF}
 
 interface
-
 uses
-  SysUtils,
-  Classes,
-  Controls,
-  Forms,
-  Buttons,
-  StdCtrls,
-  ExtCtrls,
-  Freegeometry,
+  SysUtils,  Classes,
+  Controls,  Forms,
+  Buttons,   StdCtrls,
+  ExtCtrls,  Freegeometry,
   FreeShipUnit,FreeLanguageSupport;
 
-type
-
-  { TFreeIntersectLayerDialog }
-
+type                                              { TFreeIntersectLayerDialog }
   TFreeIntersectLayerDialog = class(TForm)
-    BitBtn1: TSpeedButton;
-    BitBtn2: TSpeedButton;
-    ComboBox1: TComboBox;
-    ComboBox2: TComboBox;
-    Label1: TLabel;
-    Label2: TLabel;
-    Panel1: TPanel;
-    Panel2: TPanel;
-    Panel3: TPanel;
+    BitBtn1,BitBtn2: TSpeedButton;
+    ComboBox1,ComboBox2: TComboBox;
+    Label1,Label2: TLabel;
+    Panel1,Panel2,Panel3: TPanel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
@@ -41,25 +25,16 @@ type
     function FGetLayer2: TFreeSubdivisionLayer;
     procedure UpdateBox2;
   public { Public declarations }
-    function Execute(
-      Layers: TFasterListTFreeSubdivisionLayer): boolean;
-    property Layer1: TFreeSubdivisionLayer
-      read FGetLayer1;
-    property Layer2: TFreeSubdivisionLayer
-      read FGetLayer2;
+    function Execute( Layers: TFasterListTFreeSubdivisionLayer): boolean;
+    property Layer1: TFreeSubdivisionLayer read FGetLayer1;
+    property Layer2: TFreeSubdivisionLayer read FGetLayer2;
   end;
 
 var
   FreeIntersectLayerDialog: TFreeIntersectLayerDialog;
 
 implementation
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 function TFreeIntersectLayerDialog.FGetLayer1: TFreeSubdivisionLayer;
 begin
@@ -77,26 +52,23 @@ end;
 
 procedure TFreeIntersectLayerDialog.UpdateBox2;
 var
-  I, Ind: integer;
+  I,Ind: integer;
   Layer: TFreeSubdivisionLayer;
 begin
   Ind:=ComboBox2.ItemIndex;
   ComboBox2.Items.BeginUpdate;
   ComboBox2.Clear;
-  try
-    for I:=1 to ComboBox1.Items.Count do
-    begin
+//  try
+    for I:=1 to ComboBox1.Items.Count do begin
       Layer:=ComboBox1.Items.Objects[I - 1] as TFreeSubdivisionLayer;
       if I - 1 <> ComboBox1.ItemIndex then
         ComboBox2.Items.AddObject(Layer.Name, Layer);
     end;
-  finally
+//  finally
     ComboBox2.Items.EndUpdate;
-    if Ind <> -1 then
-      ComboBox2.ItemIndex:=Ind
-    else
-      ComboBox2.ItemIndex:=0;
-  end;
+    if Ind <> -1 then ComboBox2.ItemIndex:=Ind
+                 else ComboBox2.ItemIndex:=0;
+//  end;
 end;
 
 function TFreeIntersectLayerDialog.Execute(

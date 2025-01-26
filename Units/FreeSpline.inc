@@ -8,11 +8,9 @@
 {------------------------------------------------------------------------}
 procedure TFreeSpline.SetBuilt(val: boolean);
 begin
-  if not val then
-  begin
+  if not val then begin
     Setlength(FDerivatives, 0);
-    Setlength(FParameters, 0);
-    // Clear extents
+    Setlength(FParameters, 0);                                // Clear extents
     FMin.X:=0;
     FMin.Y:=0;
     FMin.Z:=0;
@@ -26,15 +24,13 @@ end;
 
 procedure TFreeSpline.FSetCapacity(Val: integer);
 begin
-  if Val <> FCapacity then
-  begin
+  if Val <> FCapacity then begin
     FCapacity:=Val;
     Setlength(FPoints, FCapacity);
     Setlength(FKnuckles, FCapacity);
       { // MM: this logic may cause Built not set in case of decrease of Capacity.
         // MM: Replacing it with unconditional Built:=false;}
-    if FNoPoints>FCapacity then
-      begin
+    if FNoPoints>FCapacity then begin
          // Make sure that number of points does not exceed the capacity of the curve
          FNoPoints:=FCapacity;
          Built:=false;
@@ -44,18 +40,12 @@ end;
 
 procedure TFreeSpline.FSetFragments(Val: integer);
 begin
-  if Val <> FFragments then
-  begin
-    FFragments:=val;
-    Built:=False;
-  end;
+  if Val <> FFragments then begin FFragments:=val; Built:=False; end;
 end;
 
 function TFreeSpline.FGetFragments: integer;
 begin
-  if not Built then
-    Rebuild;
-  Result:=FFragments;
+  if not Built then Rebuild; Result:=FFragments;
 end;
 
 function TFreeSpline.FGetKnuckle(Index: integer): boolean;
@@ -259,13 +249,13 @@ begin
     Lo:=0;
     Hi:=FNoPoints - 1;
     repeat
-      K:=(Lo + Hi) div 2;
-      try
-        if FParameters[K] < Parameter then Lo:=K
-                                      else Hi:=K;
-      except
-        FParameters[K]:=FParameters[K] - 1 + 1;
-      end;
+      K:=(Lo+Hi) div 2;
+//    try
+        if FParameters[K]<Parameter then Lo:=K
+                                    else Hi:=K;
+//    except
+//      FParameters[K]:=FParameters[K]-1+1;
+//    end;
     until Hi - Lo <= 1;
   end;
   if FParameters[Hi] - FParameters[Lo] <= 0.0 then
@@ -278,7 +268,7 @@ begin
 end;
 
 // Remove points that do not contribute significantly to the shape
-function TFreeSpline.Simplify(Criterium: TFloatType): boolean;
+function TFreeSpline.Simplify( Criterium: TFloatType ): boolean;
 var
   Weights: array of TFloatType;
   TotalLength: TFloatType;
@@ -293,32 +283,21 @@ var
   begin
     if (Index = 0) or (Index = NumberOfPoints - 1) or (Knuckle[Index]) then
       Result:=1e10
-    else
-    begin
+    else begin
       P1:=Point[Index - 1];
       P2:=Point[Index];
       P3:=Point[Index + 1];
-      Length:=Sqrt((P3.X - P1.X) * (P3.X - P1.X) + (P3.Y - P1.Y) * (P3.Y - P1.Y) +
-        (P3.Z - P1.Z) * (P3.Z - P1.Z));
-      if Length < 1e-5 then
-      begin
-        Result:=0.0;
-      end
-      else
-      begin
+      Length:=Sqrt((P3.X - P1.X) * (P3.X - P1.X) +
+              (P3.Y - P1.Y) * (P3.Y - P1.Y) + (P3.Z - P1.Z) * (P3.Z - P1.Z));
+      if Length < 1e-5 then begin Result:=0.0; end else begin
         Dist:=DistancepointToLine(P2, P1, P3);
-        if Dist < 1e-2 then
-        begin
-          if Length * Length / TotalLength > 0.01 then
-            Result:=1e10
-          else
-            Result:=1e8 * Dist * Dist * Length;
-        end
-        else
-          Result:=1e8 * Dist * Dist * Length;
+        if Dist < 1e-2 then begin
+          if Length * Length / TotalLength > 0.01 then Result:=1e10
+                                  else Result:=1e8 * Dist * Dist * Length;
+        end else Result:=1e8 * Dist * Dist * Length;
       end;
     end;
-  end;{Weight}
+  end;                                                                 {Weight}
 
   function FindNextPoint: integer;
   var
@@ -326,39 +305,30 @@ var
     I: integer;
   begin
     Result:=-1;
-    if NumberOfPoints < 3 then
-      exit;
+    if NumberOfPoints < 3 then exit;
     MinVal:=Weights[1];
     Result:=1;
     I:=2;
-    while (I < NumberOfPoints) and (MinVal > 0) do
-    begin
-      if Weights[I - 1] < MinVal then
-      begin
+    while (I < NumberOfPoints) and (MinVal > 0) do begin
+      if Weights[I - 1] < MinVal then begin
         MinVal:=Weights[I - 1];
         Result:=I - 1;
       end;
       Inc(I);
     end;
-  end;{FindNextPoint}
+  end;                                                          {FindNextPoint}
 
 begin
   Result:=False;
-  if NumberOfPoints < 3 then
-  begin
-    Result:=True;
-    exit;
-  end;
-
+  if NumberOfPoints < 3 then begin Result:=True; exit; end;
   N1:=0;
   N2:=0;
   for I:=1 to numberofpoints do if Knuckle[I - 1] then Inc(N1);
-
   TotalLength:=FTotalLength * FTotalLength;
   if TotalLength = 0 then exit;
   SetLength(Weights, NumberOfPoints);
   for I:=1 to NumberOfPoints do Weights[I-1]:=Weight(I-1) / TotalLength;
-  try
+//  try
     repeat
       Index:=FindNextPoint;
       if Index <> -1 then begin
@@ -385,9 +355,9 @@ begin
       end;
     until index = -1;
     Result:=True;
-  except
-    Result:=False;
-  end;
+//  except
+//  Result:=False;
+//  end;
 
   for I:=1 to numberofpoints do if Knuckle[I-1] then inc(N2);
   if N1<>N2 then Built:=false;
@@ -1085,11 +1055,11 @@ begin
     Hi:=FNoPoints - 1;
     repeat
       K:=(Lo + Hi) div 2;
-      try
+//    try
         if FParameters[K] < Parameter then Lo:=K else Hi:=K;
-      except
-        FParameters[K]:=FParameters[K] - 1 + 1;
-      end;
+//    except
+//      FParameters[K]:=FParameters[K] - 1 + 1;
+//    end;
       if (length(FParameters) < FNoPoints) then Rebuild;
     until Hi - Lo <= 1;
   end;

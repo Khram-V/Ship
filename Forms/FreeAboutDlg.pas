@@ -1,46 +1,31 @@
-{##################################################################}
-{                                                                  }
-{    You should write to the Free Software Foundation, Inc.,       }
-{    59 Temple Place, Suite 330, Boston, MA 02111-1307 USA         }
-{                                                                  }
-{##################################################################}
-
 unit FreeAboutDlg;
-
 {$mode delphi}
-
+       {###############################################################}
+       {                                                               }
+       {    You should write to the Free Software Foundation, Inc.,    }
+       {    59 Temple Place, Suite 330, Boston, MA 02111-1307 USA      }
+       {                                                               }
+       {###############################################################}
 interface
-
 uses
-  Forms,
-  ExtCtrls,
-  StdCtrls,
-  Grids,
+  Forms, ExtCtrls,
+  StdCtrls, Grids,
   FreeVersionUnit;
-
-type
-
-  { TFreeAboutDlg }
-
-  TFreeAboutDlg = class( TForm )             // TFreeAboutDlg
-    Button1: TButton;
-    Label3: TLabel;
-    LabelTitle: TLabel;
+type                                                          { TFreeAboutDlg }
+  TFreeAboutDlg = class( TForm )
+    Button1:TButton;
+    Label3,LabelTitle: TLabel;
     Panel2,Panel4,Panel5: TPanel;
     StringGridVersionInfo: TStringGrid;
     procedure FormCreate(Sender: TObject);
   private
-    procedure AddInfo(sName,sValue:String);
+    procedure AddInfo( sName,sValue: String );
   end;
 
-var
-  FreeAboutDlg: TFreeAboutDlg;
+var FreeAboutDlg: TFreeAboutDlg;
 
 implementation
-
 {$R *.lfm}
-
-{ TFreeAboutDlg }
 
 procedure TFreeAboutDlg.AddInfo( sName, sValue:String );
 begin with StringGridVersionInfo do begin RowCount:=RowCount + 1;
@@ -58,10 +43,9 @@ begin
   AddInfo('© 2005, Martijn van Engeland, DelftShip','Marine software developer, Netherlands' );
   AddInfo('© 2007-2012 Виктор Фёдорович Тимошенко','Николавский кораблестроительный институт' );
   AddInfo('© 2015 Mark Malakanov','FreePascal Lazarus, Woodbridge, Canada' );
-  AddInfo('© 2024, НТО Крылова, о.Сахалин','‏יְרוּשָׁלַיִם' );
-       //  © 2005, by Martijn van Engeland
-       //  © 2007-2012, by Timoshenko Victor F., vftim@rambler.ru
-       //  © 2015, by Mark Malakanov, markmal@github.com
+  AddInfo('© 2024… НТО Крылова, о.Сахалин','‏יְרוּשָׁלַיִם' );
+       //  Timoshenko Victor F., vftim@rambler.ru
+       //  Mark Malakanov, markmal@github.com
 end;
 
 end.

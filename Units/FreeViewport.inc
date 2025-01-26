@@ -691,7 +691,7 @@ begin
     OldCanvas:=FDrawingCanvas;
     OldCenter:=FScreencenter;
     OldZoom:=FZoom;
-    try
+//    try
       CanvasWidth:=Printer.PageWidth;
       CanvasHeight:=Printer.PageHeight;
       Resolution:=Printer.XDPI; // GetDeviceCaps(Printer.Handle, LogPixelsX);
@@ -789,7 +789,7 @@ begin
         refresh;
         Printer.EndDoc;
       end;
-    finally                            // Restore settings;
+//    finally                            // Restore settings;
       FPrinting:=False;
       FPrintResolution:=1;
       FPrintScaleFactor:=1.0;
@@ -799,7 +799,7 @@ begin
       FZoom:=OldZoom;
       FScreencenter:=OldCenter;
       Refresh;
-    end;
+//    end;
   end
   else MessageDlg( 'No printer assigned!',mtError,[mbOK],0 );
 end;
@@ -1221,7 +1221,7 @@ begin
     OldPan:=FPan;
     OldCanvas:=FDrawingCanvas;
     OldCenter:=FScreencenter;
-    try
+//    try
       if ShowDialog then begin
         CanvasWidth:=Dialog.ImageWidth;
         CanvasHeight:=Dialog.ImageHeight;
@@ -1255,14 +1255,14 @@ begin
                              self.Canvas, Rect(0,0,CanvasWidth,CanvasHeight));
       TargetImage.Picture.SaveToFile( Dialog.Filename );
       TargetImage.Free;
-    finally // Restore settings;
+//    finally // Restore settings;
       FPrinting:=False;
       FDrawingCanvas:=OldCanvas;
       FScale:=OldScale;
       FPan:=OldPan;
       FScreencenter:=OldCenter;
       Refresh;
-    end;
+//    end;
   end;
   if ShowDialog then FreeAndNil( Dialog );
 end;{TFreeViewport.SaveAsBitmap}

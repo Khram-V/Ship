@@ -402,40 +402,23 @@ function DistanceToLine(P1, P2: TPoint; X, Y: integer; var Parameter: TFloatType
 var
   Pt: T2DCoordinate;
 begin
-  if (P1.X < 0) and (P2.X < 0) then
-    Result:=1e6
-  else
-  if (P1.X > Screen.Width) and (P2.X > Screen.Width) then
-    Result:=1e6
-  else
-  if (P1.Y < 0) and (P2.Y < 0) then
-    Result:=1e6
-  else
-  if (P1.Y > Screen.Height) and (P2.Y > Screen.Height) then
-    Result:=1e6
-  else
-  if (P2.X = P1.X) and (P1.Y = P2.Y) then
-  begin
+  if (P1.X < 0) and (P2.X < 0) then Result:=1e6 else
+  if (P1.X > Screen.Width) and (P2.X > Screen.Width) then Result:=1e6 else
+  if (P1.Y < 0) and (P2.Y < 0) then Result:=1e6 else
+  if (P1.Y > Screen.Height) and (P2.Y > Screen.Height) then Result:=1e6 else
+  if (P2.X = P1.X) and (P1.Y = P2.Y) then begin
     Result:=Sqrt(Sqr(P1.X - X) + Sqr(P1.Y - Y));
-  end
-  else
-  begin
+  end else begin
     Parameter:=((X - P1.X) * (P2.X - P1.X) + (Y - P1.Y) * (P2.Y - P1.Y)) /
       (sqr(P2.X - P1.X) + Sqr(P2.Y - P1.Y));
-    if (Parameter >= 0) and (Parameter <= 1) then
-    begin
+    if (Parameter >= 0) and (Parameter <= 1) then begin
       Pt.X:=P1.X + Parameter * (P2.X - P1.X);
       Pt.Y:=P1.Y + Parameter * (P2.Y - P1.Y);
       if (Pt.X >= 0) and (Pt.Y >= 0) and (Pt.X <= Screen.Width) and
         (Pt.Y <= Screen.Height) then
         Result:=Sqrt(Sqr(Pt.X - X) + Sqr(Pt.Y - Y))
-      //else Result:=1e10;
-      else
-        Result:=1e8;
-    end
-    //else Result:=1e10;
-    else
-      Result:=1e8;
+      else Result:=1e8;
+    end else Result:=1e8;
   end;
 end;{DistanceToLine}
 
@@ -570,17 +553,18 @@ end;{Interpolate}
 
 // This procedure takes a lot of linesegments and tries to connect them into
 // as few as possible splines
-procedure JoinSplineSegments(JoinError: TFloatType; ForceToOneSegment: boolean;
-  List: TFasterListTFreeSpline);
-
-type
-  TSegmentRecord = record
-    Length: TFloatType;
-    COG: T3DCoordinate;
-  end;
-  TSegmentdata = array[0..0] of TSegmentRecord;
-  PSegmentdata = ^TSegmentdata;
-
+procedure JoinSplineSegments
+(  JoinError: TFloatType;
+   ForceToOneSegment: boolean;
+   List: TFasterListTFreeSpline
+);
+//type
+//  TSegmentRecord = record
+//    Length: TFloatType;
+//    COG: T3DCoordinate;
+//  end;
+//  TSegmentdata = array[0..0] of TSegmentRecord;
+//PSegmentdata = ^TSegmentdata;
 var
   I, J: integer;
   Fixed: TFreeSpline;
@@ -698,7 +682,7 @@ function Lines3DIntersect(P1, P2, P3, P4: T3DCoordinate; var Param: double;
 const
   eps = 1e-6;
   eps2 = 1e-12;
-  eps3 = 3e-6;
+//eps3 = 3e-6;
 var
   pa, pb, p13, p43, p21: T3DCoordinate;
   numer, denom, mua, mub: double;

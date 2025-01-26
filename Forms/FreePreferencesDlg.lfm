@@ -140,7 +140,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
     ClientWidth = 638
     ParentFont = False
     TabOrder = 1
-    OnPaint = Panel1Paint
     object PageControl1: TPageControl
       Left = 10
       Height = 631

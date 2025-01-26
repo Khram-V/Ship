@@ -574,7 +574,9 @@ procedure TFreeHullWindow.PrintExecute(Sender: TObject);
 begin
    if Viewport.Width>Viewport.Height then Printer.Orientation:=poLandscape
                                      else Printer.Orientation:=poPortrait;
-   if PrintDialogHull.Execute then Viewport.Print(FreeShip.ProjectSettings.ProjectUnits,Viewport.ViewType<>fvPerspective,'FREE!ship '+FCaptiontext);
+   if PrintDialogHull.Execute then
+      Viewport.Print( FreeShip.ProjectSettings.ProjectUnits,
+               Viewport.ViewType<>fvPerspective,'FREE!ship '+FCaptiontext );
 end;
 
 procedure TFreeHullWindow.ShowWireFrameExecute(Sender: TObject);

@@ -671,29 +671,21 @@ var
 begin
   Spline.Clear;
   Built:=False;
-
   Spline.Capacity:=SubdividedPoints.Count;
-  for J:=0 to SubdividedPoints.Count - 1 do
-  begin
+  for J:=0 to SubdividedPoints.Count - 1 do begin
     Point:=SubdividedPoints[J];
-    Spline.Add(Point.Coordinate);
-    if (J > 0) and (J < SubdividedPoints.Count - 1) then
-    begin
-      if Point.VertexType = svCorner then
-        Spline.Knuckle[J]:=True
-      else
-      begin
+    Spline.Add( Point.Coordinate );
+    if (J>0) and (J<SubdividedPoints.Count - 1) then begin
+      if Point.VertexType = svCorner then Spline.Knuckle[J]:=True else begin
         P1:=SubdividedPoints[J - 1];
         P2:=SubdividedPoints[J];
         P3:=SubdividedPoints[J + 1];
         Edge1:=Surface.EdgeExists(P1,P2);
         Edge2:=Surface.EdgeExists(P2,P3);
-        if (Edge1 = nil) or (Edge2 = nil) then
-        begin
-          x:=0;
-          //if (Edge1.Crease=False) and (Edge2.Crease=False) then FSpline.Knuckle[J-1]:=Point.VertexType=svCrease;
-        end
-        else if (Edge1.Crease = False) and (Edge2.Crease = False) then
+        if (Edge1 = nil) or (Edge2 = nil) then begin x:=0;
+        //if (Edge1.Crease=False) and (Edge2.Crease=False) then FSpline.Knuckle[J-1]:=Point.VertexType=svCrease;
+        end else
+        if (Edge1.Crease = False) and (Edge2.Crease = False) then
           Spline.Knuckle[J]:=Point.VertexType = svCrease;
       end;
     end;

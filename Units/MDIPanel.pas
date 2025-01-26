@@ -117,7 +117,6 @@ type                                                        { TCustomMDIPanel }
     procedure CreateSystemPopupMenu;
     procedure DeleteSystemPopupMenu;
 
-
     procedure SystemButtonClick(Sender: TObject);
     procedure CloseButtonClick(Sender: TObject);
     procedure DoClose(CloseAction: TCloseAction);

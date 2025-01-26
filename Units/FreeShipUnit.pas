@@ -8,20 +8,10 @@ unit FreeShipUnit; //  FreeShipUnit
 interface
 
 uses SysUtils,      // this declaration must be at the start, before the FreeGeometry unit
-  Windows, Windirs, shellapi, IniFiles,    Interfaces,
-  LCLIntf, LCLType, LCLProc, IntfGraphics, FPImage,
-  Graphics, Controls,
-  LazFileUtils,
-  Types,
-  Forms,
-  Dialogs,
-  Classes,
-  StdCtrls,
-  ExtCtrls,
-  ExtDlgs,
-  ComCtrls,
-  ActnList,
-  FreeTypes,
+  Windows,LazFileUtils,
+  IniFiles,Interfaces,Graphics,Controls,
+  Forms,Dialogs,Classes,ExtCtrls,ExtDlgs,
+  ComCtrls,FreeTypes,
   FreeVersionUnit,
   FasterList,
   FreeFileBuffer,
@@ -62,7 +52,8 @@ resourcestring
   rsFREEShipGeometryPart = 'FREE!ship geometry part';
   rsCarlssonHullFiles = 'Carlsson Hull files';
   rsFREEShipExchangeFormatFile = 'FREE!ship Exchange Format file';
-  rsWavefrontFile = 'Wavefront file';
+  rsWavefrontFile_NC = 'Wavefront export subdivided surface';   // 1
+  rsWavefrontFile_CN = 'Wavefront export the controlnet only';  // 2
   rsArchimedesMBMultiBodyHullData = 'ArchimedesMB multi body hull data';
   rsArchimedesSingleBodyHullData = 'Archimedes single body hull data';
 
@@ -171,16 +162,14 @@ type
   private
     FOwner: TFreeShip;
     FUndoText: string;
-    FUndoData: TFreeFileBuffer;
-    // some other data to be stored
+    FUndoData: TFreeFileBuffer;                 // some other data to be stored
     FFileChanged: boolean;
     FFilenameSet: boolean;
     FFilename: string;
     FEditMode: TFreeEditMode;
     FTime: TDateTime;
     FIsTempRedoObject: boolean;
-    function FGetMemory: integer;
-    // calculates the amount of bytes used for each undo object
+    function FGetMemory: integer; // calculates the amount of bytes used for each undo object
     function FGetTime: string;
     function FGetUndoText: string;
   public
@@ -189,8 +178,7 @@ type
     procedure Delete;
     destructor Destroy; override;
     procedure Restore;
-    property Memory: integer read FGetMemory;
-    // calculates the amount of bytes used for each undo object
+    property Memory: integer read FGetMemory; // calculates the amount of bytes used for each undo object
     property Owner: TFreeShip read FOwner;
     property Time: string read FGetTime;
     property UndoData: TFreeFileBuffer read FUndoData;
@@ -509,7 +497,7 @@ type
     function FGetRecentFileCount: integer;
 //  procedure SaveDialogTypeChange(Sender: TObject);
   public
-    procedure AddToRecentFiles(Filename: string);              // Takes a filename and adds it to the list with recent files
+    procedure AddToRecentFiles( Filename: string );            // Takes a filename and adds it to the list with recent files
     procedure BackgroundImage_Delete(Viewport: TFreeViewport); // Delete the backgrundimage associated with this view
     procedure BackgroundImage_Open(Viewport: TFreeViewport);   // browse for and open a backgroundimage
     function CheckIfChangedAndAskToSave():boolean;
@@ -634,8 +622,7 @@ type
   {   Container class for all program settings                   }
   {--------------------------------------------------------------}
 
-  TApplicationScope = (asMachine,asUser);
-
+  TApplicationScope=(asMachine,asUser);
   TFreePreferences = class(TPersistent)
   private
     FFontSize: integer;
@@ -644,91 +631,73 @@ type
     FPointSize: integer;
     // Half width of controlpoints in pixels when drawn on screen
     // Colors
-    FButtockColor: TColor;
     FUnderWaterColorAlpha: byte;
-    FWaterlineColor: TColor;
-    FStationColor : TColor;
-    FDiagonalColor: TColor;
-    FEdgeColor    : TColor;   // Color of normal edges
-    FCreaseColor  : TColor;   // color of crease edges
-    FCreaseEdgeColor: TColor; // color of crease control-edges
-    FGridColor    : TColor;   // Color of gridlines
-    FGridFontColor: TColor;   // Color of font with gridlines
-    FCreasePointColor: TColor; // Color of crease vertices
-    FRegularPointColor: TColor;
-    FCornerPointColor: TColor; // Color of cornerpoints and points with at least 3 crease edges
-    FDartPointColor: TColor;
-    FSelectColor: TColor;   // Color of selected items
-    FLayerColor: TColor;   // Default color for new layers
-    FNormalColor: TColor;   // color of surface normals
-    FUnderWaterColor: TColor; // Default color used for shading underwaterpart of the vessel
-    FViewportColor: TColor;
-    FLeakPointColor: TColor;
-    FMarkerColor: TColor;
-    FCurvaturePlotColor: TColor;
-    FControlCurveColor: TColor;
-    FHydrostaticsFontColor: TColor;
+    FButtockColor,
+    FWaterlineColor,
+    FStationColor,
+    FDiagonalColor,
+    FEdgeColor,        // Color of normal edges
+    FCreaseColor,      // color of crease edges
+    FCreaseEdgeColor,  // color of crease control-edges
+    FGridColor,        // Color of gridlines
+    FGridFontColor,    // Color of font with gridlines
+    FCreasePointColor, // Color of crease vertices
+    FRegularPointColor,
+    FCornerPointColor, // Color of cornerpoints and points with at least 3 crease edges
+    FDartPointColor,
+    FSelectColor,      // Color of selected items
+    FLayerColor,       // Default color for new layers
+    FNormalColor,      // color of surface normals
+    FUnderWaterColor,  // Default color used for shading underwaterpart of the vessel
+    FViewportColor,
+    FLeakPointColor,
+    FMarkerColor,
+    FCurvaturePlotColor,
+    FControlCurveColor,
+    FHydrostaticsFontColor,
     FZebraStripeColor: TColor;
 
-    FConfigDirectory   : string; // Default directory where users FreeShip.ini file is stored
-    FManualsDirectory : string; // Manuals directory
-    FLastDirectory: string;   // directory of last Open/Save
-    FInitDirectory: string;   // Default directory where freeship.exe started
-    FOpenDirectory: string;   // Default directory to open existing files
-    FSaveDirectory: string;   // Default directory to save files
-    FImportDirectory: string; // Default directory to import files
-    FExportDirectory: string; // Default directory to export files
-    FLanguagesDirectory: string; // Default directory where Language files stored. Default FGlobalAppDataDirectory/Languages
-    FLanguageFile: string;
-    FLanguage: string;
+    FFbmEncoding: string; //encoding that is used to convert national strings from/to FBM files
+    FMaxUndoMemory, // Max. amount of allowable undo memory in megabytes
 
-    FUserAppDataDirectory  : string; // Default directory where users FreeShip programs and r/o resource files stored
-    FUserDataDirectory     : string; // Default directory where users FreeShip r/w data (projects etc) stored
-
-    FMaxUndoMemory: integer; // Max. amount of allowable undo memory in megabytes
-    FFbmEncoding: string;    //encoding that is used to convert national strings from/to FBM files
-//  FApplicationScope : TApplicationScope ; // can be 'machine' or 'user'
-
-    FIntersectionLineWidth: integer;
-    FControlEdgeLineWidth: integer;
-    FInteriorEdgeLineWidth: integer;
-    FAuxEdgeLineWidth: integer;
+    FIntersectionLineWidth,
+    FControlEdgeLineWidth,
+    FInteriorEdgeLineWidth,
+    FAuxEdgeLineWidth,
     FHydrostaticLineWidth: integer;
 
-//  procedure detectApplicationScope;
-    function FGetInitDirectory: string;
-    function FGetLastDirectory: string;
-    procedure FSetOpenDirectory(val: string);
-    procedure FSetLastDirectory(val: string);
-    procedure FSetViewportColor(Val: TColor);
+    procedure FSetViewportColor( Val: TColor );
   public
+
+    ConfigDirectory,    // Default directory where users FreeShip.ini file is stored
+    ManualsDirectory,   // Manuals directory
+    OpenDirectory,      // Default directory to open existing files
+    SaveDirectory,      // Default directory to save files
+    ImportDirectory,    // Default directory to import files
+    ExportDirectory,    // Default directory to export files
+    LanguagesDirectory, // Default directory where Language files stored.
+    LastDirectory,      // directory of last Open/Save
+    LanguageFile: UnicodeString;
+
+//  FInitDirectory,    // Default directory where freeship.exe started
+//  FUserDataDirectory,// Default directory where users FreeShip r/w data (projects etc) stored
+//  FUserAppDataDirectory, // Default directory where users FreeShip programs and r/o resource files stored
+    FLanguage: string;
+
+//  function FullName( const N: string ): string; // --
+    function OnlyName( const S: string ): string; // имя внутри/вне директории
+
     procedure Clear;
     constructor Create(Owner: TFreeShip);
     procedure Edit;
     procedure Load;
-    procedure LoadFromIni(Filename: string);
+    procedure LoadFromIni;
     procedure ResetColors;
     procedure ResetDirectories;
     procedure SetDefaults;
     procedure Save;
 //  procedure LoadFromDta(Filename: string);
 //  procedure SaveToDta;
-
-//  function  getThemeConfigFile(ThemeName: string): string;
-//  function  getParentThemeName(ThemeName: string): string;
-//  procedure getAllThemes(ss: TStrings);
-//  procedure getThemesInDir(dir: string; ss: TStrings);
-//  function  GetIconFileName(ThemeName, IconName: string; IconSize: integer): string;
-//  procedure dumpIcons(ImageList: TImageList; ActionList: TActionList);
-//  procedure LoadImageIntoBitmap(Bitmap: TBitmap; Name: string);
-//  procedure LoadImageListByActions(ImageList: TImageList; ActionList: TActionList);
-//  procedure LoadImageIntoList(ImageList: TImageList; Item: integer; Name: string);
-//  function  IsThemeCustom(ThemeName: string): boolean;
-//  procedure SaveCustomTheme;
-//  procedure SaveThemeAsCustom(Dialog: TForm);
-//  procedure LoadTheme(ThemeName: string);
-//  procedure LoadThemeIni(FileName: string);
-//  procedure SaveTheme(ThemeName, ParentThemeName: string);
     property  Owner: TFreeShip read FOwner write FOwner;
     property  MainForm: TForm read FMainForm write FMainForm;
   published
@@ -749,23 +718,13 @@ type
     property EdgeColor: TColor read FEdgecolor write FEdgeColor;
 
     property CreasePointColor: TColor read FCreasePointColor write FCreasePointColor;
-    property Language: string read FLanguage write FLanguage;
-    property LanguageFile: string read FLanguageFile write FLanguageFile;
-    property LayerColor: TColor read FLayerColor write FLayerColor;
+    property Language      : string read FLanguage write FLanguage;
+//  property LanguageFile  : string read FLanguageFile write FLanguageFile;
+    property LayerColor    : TColor read FLayerColor write FLayerColor;
     property LeakPointColor: TColor read FLeakPointColor write FLeakPointColor;
-    property MarkerColor: TColor read FMarkerColor write FMarkerColor;
-    property MaxUndoMemory: integer read FMaxUndoMemory write FMaxUndoMemory;
-    property NormalColor: TColor read FNormalColor write FNormalColor;
-
-    property InitDirectory:       string read FGetInitDirectory write FInitDirectory;
-    property LastDirectory:       string read FGetLastDirectory write FSetLastDirectory;
-
-    property ImportDirectory:     string read FImportDirectory write FImportDirectory;
-    property ExportDirectory:     string read FExportDirectory write FExportDirectory;
-    property OpenDirectory:       string read FOpenDirectory write FSetOpenDirectory;
-    property SaveDirectory:       string read FSaveDirectory write FSaveDirectory;
-    property LanguagesDirectory:  string read FLanguagesDirectory write FLanguagesDirectory;
-    property ManualsDirectory:    string read FManualsDirectory write FManualsDirectory;
+    property MarkerColor   : TColor read FMarkerColor write FMarkerColor;
+    property MaxUndoMemory : integer read FMaxUndoMemory write FMaxUndoMemory;
+    property NormalColor   : TColor read FNormalColor write FNormalColor;
 
     property StationColor: TColor read FStationColor write FStationColor;
     property UnderWaterColor: TColor read FUnderWaterColor write FUnderWaterColor;
@@ -776,17 +735,6 @@ type
     property ViewportColor: TColor read FViewportColor write FSetViewportColor;
     property WaterlineColor: TColor read FWaterlineColor write FWaterlineColor;
     property ZebraStripeColor: TColor read FZebraStripeColor write FZebraStripeColor;
-
-//  property GlobalAppDataDirectory: string read FGlobalAppDataDirectory write FGlobalAppDataDirectory;
-//  property GlobalImportDirectory: string read FGlobalImportDirectory write FGlobalImportDirectory;
-//  property GlobalOpenDirectory: string read FGlobalOpenDirectory write FGlobalOpenDirectory;
-//  property ExecDirectory:       string read FExecDirectory write FExecDirectory;
-//  property TempDirectory:       string read FTempDirectory write FTempDirectory;
-//  property MenuIconDirectory: string read FMenuIconDirectory write FMenuIconDirectory;
-//  property ToolIconDirectory: string read FToolIconDirectory write FToolIconDirectory;
-//  property MenuIconSize: integer read FMenuIconSize write FMenuIconSize;
-//  property ToolIconSize: integer read FToolIconSize write FToolIconSize;
-//  property Theme: string read FThemeName;
     property FbmEncoding: string read FFbmEncoding write FFbmEncoding;
   end;
   {------------------------------------------------------------}
@@ -796,10 +744,10 @@ type
   TFreeProjectSettings = class
   private
     FFreeShip: TFreeShip;
-    FMainparticularsHasBeenset: boolean;     // Flag to check if the main particulars have been set before hydrostatic calculationss are being performed
-    FDisableModelCheck: boolean;             // Disable the automatic checking of the surface
-    FEnableModelAutoMove: boolean;           // Unable the automatic moving model along Z
-//  FEnableBonjeanSAC: boolean;              // Unable calculation and save in file Bonjean scale and SAC
+    FMainparticularsHasBeenset: boolean; // Flag to check if the main particulars have been set before hydrostatic calculationss are being performed
+    FDisableModelCheck: boolean;         // Disable the automatic checking of the surface
+    FEnableModelAutoMove: boolean;       // Unable the automatic moving model along Z
+//  FEnableBonjeanSAC: boolean;          // Unable calculation and save in file Bonjean scale and SAC
     FProjectAppendageCoefficient: TFloatType;
     FProjectBeam: TFloatType;
     FProjectDraft: TFloatType;
@@ -1212,9 +1160,6 @@ uses Math,
   FreeLinesplanFrme,
   FreeInsertPlaneDlg,
   FreeMichletOutputDlg,
-//  FreeAddMassOutputDlg,
-//  FreeResistance_KaperDlg,
-//  FreeResistance_DelftDlg,
   FreeSelectLayersDlg,
   FreeMirrorPlaneDlg,
   Free2DDXFExportDlg,
@@ -1223,8 +1168,10 @@ uses Math,
   FreeUndoHistoryDlg,
   FreeCylinderDlg,
   FreeLayerDlg,
+//  FreeAddMassOutputDlg,
+//  FreeResistance_KaperDlg,
+//  FreeResistance_DelftDlg,
 //  FreeCrosscurvesDlg,
-//  EnterThemeNameDlg,
   Main,
   freehullformwindow_panel,
   FreeGridDlg,

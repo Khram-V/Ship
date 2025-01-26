@@ -1,52 +1,22 @@
 
 unit FreePreferencesDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
+{$MODE Delphi}
+  interface
 uses
-{$IFnDEF FPC}
-  Windows,
-{$ELSE}
   LCLIntf, LCLType,
-{$ENDIF}
-  //Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
-  ExtCtrls,
-  FreeShipUnit,
-  ComCtrls,
-  Spin, Menus; //ValEdit,
-
-type
-
-{$IFDEF ZWindows}
-  TTabSheet = class(ComCtrls.TTabSheet)
-  protected
-    //procedure PaintWindow(DC: HDC); override;
-  public
-    ActualColor: TColor;
-  end;
-{$ENDIF}
-
-  { TFreePreferencesDialog }
-
+  SysUtils,Variants,
+  Classes, Graphics,
+  Controls,Forms,
+  Dialogs, StdCtrls,
+  Buttons, ExtCtrls,
+  ComCtrls,Spin,
+  Menus,FreeShipUnit;
+type                                                 { TFreePreferencesDialog }
   TFreePreferencesDialog = class(TForm)
     BitBtnResetDirs: TSpeedButton;
     BitBtnResetColors: TSpeedButton;
     ComboBox1: TComboBox;
     ComboBoxEncoding: TComboBox;
-//  ComboBoxThemes: TComboBox;
     EditExportDir: TEdit;
     EditImportDir: TEdit;
     EditLanguagesDir: TEdit;
@@ -58,129 +28,27 @@ type
 //  EditGlobalImportDir: TEdit;
 //  EditGlobalOpenDir: TEdit;
 //  EditTempDir: TEdit;
-    Label1: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
-    Label12: TLabel;
-    Label13: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label16: TLabel;
-    Label17: TLabel;
-    Label18: TLabel;
-    Label19: TLabel;
-    Label2: TLabel;
-    Label20: TLabel;
-    Label21: TLabel;
-    Label22: TLabel;
-    Label23: TLabel;
-    Label24: TLabel;
-    Label25: TLabel;
-    Label26: TLabel;
-    Label27: TLabel;
-    Label28: TLabel;
     lbSubmergedSurfaceOpacity: TLabel;
-    Label29: TLabel;
-    Label3: TLabel;
-//  Label30: TLabel;
-//  Label31: TLabel;
-    Label32: TLabel;
-    Label33: TLabel;
-    Label34: TLabel;
-    Label35: TLabel;
-//  Label36: TLabel;
-//  Label37: TLabel;
-//  Label38: TLabel;
-//  Label39: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    LabelEncoding: TLabel;
-    LabelLanguagesDir: TLabel;
+    Label1,Label2,Label3,Label4,Label5,Label6,Label7,Label8,Label9,Label10,
+    Label11,Label12,Label13,Label14,Label15,Label16,Label17,Label18,Label19,
+    Label20,Label21,Label22,Label23,Label24,Label25,Label26,Label27,Label28,
+    Label29,Label32,Label33,Label34,Label35,LabelEncoding,LabelLanguagesDir:
+                                                                     TLabel;
     PageControl1: TPageControl;
-    Panel: TPanel;
-    Panel1: TPanel;
-    Panel10: TPanel;
-    Panel11: TPanel;
-    Panel12: TPanel;
-    Panel13: TPanel;
-    Panel14: TPanel;
-    Panel15: TPanel;
-    Panel16: TPanel;
-    Panel17: TPanel;
-    Panel18: TPanel;
-    Panel19: TPanel;
-    Panel2: TPanel;
-    Panel20: TPanel;
-    Panel21: TPanel;
-    Panel22: TPanel;
-    Panel23: TPanel;
-    Panel24: TPanel;
-    Panel25: TPanel;
-    Panel26: TPanel;
-    Panel27: TPanel;
-    ButtonPanel: TPanel;
-    BitBtn2: TSpeedButton;
+    Panel,Panel1,Panel2,Panel3,Panel4,Panel5,Panel6,Panel7,Panel8,Panel9,
+    Panel10,Panel11,Panel12,Panel13,Panel14,Panel15,Panel16,Panel17,Panel18,
+    Panel19,Panel20,Panel21,Panel22,Panel23,Panel24,Panel25,Panel26,Panel27,
+    Panel30,Panel31,Panel32,Panel33,Panel36,Panel38,Panel39,Panel40,Panel41,
+    Panel42,Panel43,Panel44,Panel45,Panel46,Panel50,Panel51,Panel52,Panel53,
+    Panel54,Panel55,Panel56,Panel57,ButtonPanel:                     TPanel;
     ColorDialog: TColorDialog;
-//  Panel28: TPanel;
-//  Panel29: TPanel;
-    Panel3: TPanel;
-    Panel30: TPanel;
-    Panel31: TPanel;
-    Panel32: TPanel;
-    Panel33: TPanel;
-//  Panel34: TPanel;
-//  Panel35: TPanel;
-    Panel36: TPanel;
-//  Panel37: TPanel;
-    Panel38: TPanel;
-    Panel39: TPanel;
-    Panel4: TPanel;
-    Panel40: TPanel;
-    Panel41: TPanel;
-    Panel42: TPanel;
-    Panel43: TPanel;
-    Panel44: TPanel;
-    Panel45: TPanel;
-    Panel46: TPanel;
-//  Panel47: TPanel;
-//  Panel48: TPanel;
-//  Panel49: TPanel;
-    Panel5: TPanel;
-    Panel50: TPanel;
-    Panel51: TPanel;
-    Panel52: TPanel;
-    Panel53: TPanel;
-    Panel54: TPanel;
-    Panel55: TPanel;
-    Panel56: TPanel;
-    Panel57: TPanel;
-    Panel6: TPanel;
-    Panel7: TPanel;
-    Panel8: TPanel;
-    Panel9: TPanel;
-//  PanelGlobalImportDir: TPanel;
-
     SelectDirectoryDialog1: TSelectDirectoryDialog;
-    BitBtn1: TSpeedButton;
-//  SelectToolIconSize: TComboBox;
-//  SpeedButton12: TSpeedButton;
-//  SpeedButton13: TSpeedButton;
-    SpeedButton14: TSpeedButton;
-    SpeedButton15: TSpeedButton;
-    SpeedButton16: TSpeedButton;
-    SpeedButton17: TSpeedButton;
-//  SpeedButton18: TSpeedButton;
-//  SpeedButton19: TSpeedButton;
-    SpeedButton9: TSpeedButton;
-    SpeedButtonLanguagesDir: TSpeedButton;
+    BitBtn1,BitBtn2,SpeedButton9,SpeedButton14,SpeedButton15,
+    SpeedButton16,SpeedButton17,SpeedButtonLanguagesDir:       TSpeedButton;
     SpinEdit1: TSpinEdit;
     seSubmergedSurfaceOpacity: TSpinEdit;
     seFontSize: TSpinEdit;
-    TabSheet1: TTabSheet;
+//  TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     procedure FormResize(Sender: TObject);
@@ -189,35 +57,26 @@ type
     procedure ColorPanelClick(Sender: TObject);
     procedure OkButtonClick(Sender: TObject);
     procedure CancelButtonClick(Sender: TObject);
-    procedure Panel1Paint(Sender: TObject);
     procedure ResetDirsButtonClick(Sender: TObject);
-//  procedure ComboBoxThemesChange(Sender: TObject);
     procedure EditDirChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure PageControl1Change(Sender: TObject);
-//  procedure SpeedButton12Click(Sender: TObject);
-//  procedure SpeedButton13Click(Sender: TObject);
     procedure SpeedButton14Click(Sender: TObject);
     procedure SpeedButton15Click(Sender: TObject);
     procedure SpeedButton16Click(Sender: TObject);
     procedure SpeedButton17Click(Sender: TObject);
-//  procedure SpeedButton18Click(Sender: TObject);
-//  procedure SpeedButton19Click(Sender: TObject);
     procedure SpeedButtonLanguagesDirClick(Sender: TObject);
     procedure SpeedButton9Click(Sender: TObject);
     procedure SpinEdit1Change(Sender: TObject);
     procedure seSubmergedSurfaceOpacityChange(Sender: TObject);
-  private   { Private declarations }
+  private                                             { Private declarations }
     FFreeship: TFreeShip;
     FConfigChanged: boolean;
-//  FThemeChanged: boolean;
     procedure Updatedata;
     procedure ComboBoxEncodingFillItems;
     function getPreferredSize:TRect; reintroduce;
-  public    { Public declarations }
-//  property IsThemeChanged: boolean read FThemeChanged;
+  public                                                { Public declarations }
     property IsConfigChanged: boolean read FConfigChanged;
-    //property Theme: string read ComboBoxThemes.Text;
     function Execute( Freeship: TFreeShip ): boolean;
   end;
 
@@ -231,8 +90,7 @@ implementation
 {$R *.lfm}
 
 procedure TFreePreferencesDialog.Updatedata;
-var
-  i: integer;
+var I: integer;
 begin                                                                           //  Label Panel Top
   Panel4.Color:=FFreeship.Preferences.ViewportColor;                            //    1    4    4   'Viewport background'
   Panel14.Color:=FFreeship.Preferences.GridColor;                               //    12   14   32  'Viewport grid'
@@ -262,7 +120,7 @@ begin                                                                           
 
   SpinEdit1.Value:=FFreeship.Preferences.PointSize;
   seFontSize.Value:=FFreeship.Preferences.FontSize;
-  if FFreeship.Preferences.MaxUndoMemory < 1 
+  if FFreeship.Preferences.MaxUndoMemory<1
      then FreeNumInput1.Value:=1
      else FreeNumInput1.Value:=FFreeship.Preferences.MaxUndoMemory;
 
@@ -274,12 +132,11 @@ begin                                                                           
   EditExportDir.Text:=FFreeship.Preferences.ExportDirectory;
 
   ComboBoxEncodingFillItems;
-  for i:=0 to ComboBoxEncoding.Items.Count - 1 do
-    if string(ComboBoxEncoding.Items.Objects[i]) =
-      FFreeship.Preferences.FbmEncoding then
-      break;
-  if i > ComboBoxEncoding.Items.Count then i:=-1;
-  ComboBoxEncoding.ItemIndex:=i;
+  for I:=0 to ComboBoxEncoding.Items.Count-1 do
+    if string( ComboBoxEncoding.Items.Objects[i] ) =
+               FFreeship.Preferences.FbmEncoding then break;
+  if I>ComboBoxEncoding.Items.Count then I:=-1;
+  ComboBoxEncoding.ItemIndex:=I;
 end;
 
 function TFreePreferencesDialog.Execute(Freeship: TFreeShip): boolean;
@@ -295,16 +152,14 @@ procedure TFreePreferencesDialog.ColorPanelClick(Sender: TObject);
 var
   Panel: TPanel;
 begin
-  if (Sender.ClassType <> TPanel) then
-    exit;
+  if (Sender.ClassType <> TPanel) then exit;
   Panel:=TPanel(Sender);
   ColorDialog.Color:=Panel.Color;
   if ColorDialog.Execute then
-    if ColorDialog.Color <> Panel.Color then
-    begin
-      Panel.Color:=ColorDialog.Color;
-      FConfigChanged:=true;
-    end;
+  if ColorDialog.Color <> Panel.Color then begin
+    Panel.Color:=ColorDialog.Color;
+    FConfigChanged:=true;
+  end;
 end;
 
 procedure TFreePreferencesDialog.ResetColorsButtonClick(Sender: TObject);
@@ -314,13 +169,10 @@ begin
 end;
 
 procedure TFreePreferencesDialog.FormResize(Sender: TObject);
-var sz:TRect;
-begin sz:=getPreferredSize; end;
+var sz:TRect; begin sz:=getPreferredSize; end;
 
 procedure TFreePreferencesDialog.FormShow(Sender: TObject);
-var sz:TRect;
-begin sz:=getPreferredSize; end;
-
+var sz:TRect; begin sz:=getPreferredSize; end;
 
 procedure TFreePreferencesDialog.OkButtonClick(Sender: TObject);
 begin ModalResult:=mrOk; end;
@@ -328,25 +180,6 @@ begin ModalResult:=mrOk; end;
 procedure TFreePreferencesDialog.CancelButtonClick(Sender: TObject);
 begin ModalResult:=mrCancel; end;
 
-procedure TFreePreferencesDialog.Panel1Paint(Sender: TObject);
-begin
-  {$IFDEF ZWindows}
-  Panel53.Color:=Tabsheet1.ActualColor;
-  Panel51.Color:=Tabsheet1.ActualColor;
-  Panel.Color:=Tabsheet1.ActualColor;
-  {$ENDIF}
-end;
-(*
-procedure TFreePreferencesDialog.ComboBoxThemesChange(Sender: TObject);
-begin
-  if Sender=ComboBoxThemes then begin
-    FFreeship.Preferences.LoadTheme( ComboBoxThemes.Text );
-    FThemeChanged:=False;
-    UpdateData;
-  end;
-  FConfigChanged:=True;
-end;
-*)
 procedure TFreePreferencesDialog.EditDirChange(Sender: TObject);
 begin FConfigChanged:=True; end;
 
@@ -367,17 +200,16 @@ begin
   HdrHeight:=ScreenPoint.Y - self.Top;
   BrdWidth:=ScreenPoint.X - self.Left;
   HdrHeight:=HdrHeight - BrdWidth;
-  {Tabsheet1.AdjustSize;
-  Tabsheet1.Repaint;
-  //Tabsheet1.Invalidate;
-
-  TabSheet2.AdjustSize;
-  PageControl1.AdjustSize;
-  Panel1.AdjustSize;
-  ButtonPanel.AdjustSize;
-  self.AdjustSize;
-  Application.ProcessMessages;}
-
+{   Tabsheet1.AdjustSize;
+    Tabsheet1.Repaint;
+//  Tabsheet1.Invalidate;
+    TabSheet2.AdjustSize;
+    PageControl1.AdjustSize;
+    Panel1.AdjustSize;
+    ButtonPanel.AdjustSize;
+    self.AdjustSize;
+    Application.ProcessMessages;
+}
   TbT:=TabSheet2.ClientToParent(Point(0, 0), self).Y;
   PgT:=PageControl1.ClientToParent(Point(0, 0), self).Y;
   PnT:=Panel1.ClientToParent(Point(0, 0), self).Y;
@@ -417,20 +249,7 @@ begin
   if SelectDirectoryDialog1.Execute then
     EditManualsDir.Text:=SelectDirectoryDialog1.FileName;
 end;
-(*
-procedure TFreePreferencesDialog.SpeedButton12Click(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditExecDir.Text;
-  if SelectDirectoryDialog1.Execute then
-    EditExecDir.Text:=SelectDirectoryDialog1.FileName;
-end;
-procedure TFreePreferencesDialog.SpeedButton13Click(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditTempDir.Text;
-  if SelectDirectoryDialog1.Execute then
-    EditTempDir.Text:=SelectDirectoryDialog1.FileName;
-end;
-*)
+
 procedure TFreePreferencesDialog.SpeedButton14Click(Sender: TObject);
 begin
   SelectDirectoryDialog1.FileName:=EditOpenDir.Text;
@@ -458,30 +277,17 @@ begin
   if SelectDirectoryDialog1.Execute then
     EditExportDir.Text:=SelectDirectoryDialog1.FileName;
 end;
-(*
-procedure TFreePreferencesDialog.SpeedButton18Click(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditGlobalOpenDir.Text;
-  if SelectDirectoryDialog1.Execute then
-    EditGlobalOpenDir.Text:=SelectDirectoryDialog1.FileName;
-end;
-procedure TFreePreferencesDialog.SpeedButton19Click(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditGlobalImportDir.Text;
-  if SelectDirectoryDialog1.Execute then
-    EditGlobalImportDir.Text:=SelectDirectoryDialog1.FileName;
-end;
-*)
+
 procedure TFreePreferencesDialog.ComboBoxEncodingFillItems;
 begin
   with ComboBoxEncoding.Items do begin
-(*  AddObject('ISO_8859_1 -  Central Europe', TObject(string('iso88591')));
-    AddObject('ISO_8859_15 -  Western European languages', TObject(string('iso885915')));
-    AddObject('ISO_8859_2 -  Eastern Europe', TObject(string('iso88592')));
+(*  AddObject('ISO_8859_1 - Central Europe', TObject(string('iso88591')));
+    AddObject('ISO_8859_15 - Western European languages',TObject(string('iso885915')));
+    AddObject('ISO_8859_2 - Eastern Europe', TObject(string('iso88592')));
     AddObject('CP1250 -  Central Europe', TObject(string('cp1250')));
 *)  AddObject('CP1251 -  ANSI Cyrillic(Windows)', TObject(string('cp1251')));
     AddObject('CP1252 -  ANSI Latin; Western European(Windows)', TObject(string('cp1252')));
-    AddObject( 'CP950 -  ANSI/OEM Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)', TObject(string('cp950')));
+    AddObject( 'CP950 -  ANSI/OEM Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
 (*  AddObject('CP1253 -  Greek', TObject(string('cp1253')));
     AddObject('CP1254 -  Turkish', TObject(string('cp1254')));
     AddObject('CP1255 -  Hebrew', TObject(string('cp1255')));

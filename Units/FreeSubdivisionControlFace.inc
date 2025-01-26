@@ -831,15 +831,12 @@ var
   end;{ZebraStripe}
 
 begin
-  if Viewport.ViewportMode <> vmWireframe then
-  begin
+  if Viewport.ViewportMode <> vmWireframe then begin
     R:=GetRValue(Layer.Color);
     G:=GetGValue(Layer.Color);
-    B:=GetBValue(Layer.Color);
-    Alpha:=Layer.AlphaBlend;
+    B:=GetBValue(Layer.Color); Alpha:=Layer.AlphaBlend;
 
-    if Self.Selected then
-    begin
+    if Self.Selected then begin
       R:=GetRValue(Surface.SelectedColor);
       G:=GetGValue(Surface.SelectedColor);
       B:=GetBValue(Surface.SelectedColor);
@@ -847,10 +844,8 @@ begin
 
     Viewport.BeginUpdate;
     if (Surface.ShadeUnderWater) and (Viewport.ViewportMode = vmShade) and
-      (Layer.UseInHydrostatics) then
-    begin
+       (Layer.UseInHydrostatics) then begin
       // Clip all triangles against the waterline plane
-
       // blend layer color with underwater color
       uwR:=GetRValue(Surface.UnderWaterColor);
       uwG:=GetGValue(Surface.UnderWaterColor);
@@ -862,123 +857,86 @@ begin
 
       Setlength(Above, 6);
       setlength(Below, 6);
-      for I:=1 to ChildCount do
-      begin
+      for I:=1 to ChildCount do begin
         Child:=Self.Child[I - 1];
-        for J:=2 to Child.NumberOfpoints - 1 do
-        begin
+        for J:=2 to Child.NumberOfpoints - 1 do begin
           P1:=Child.Point[0].Coordinate;
           P2:=Child.Point[J - 1].Coordinate;
-          P3:=Child.Point[J].Coordinate;
-
-          // Check if clipping is required
+          P3:=Child.Point[J].Coordinate;       // Check if clipping is required
           Min:=Surface.WaterlinePlane.a * P1.x + Surface.WaterlinePlane.b *
             P1.y + Surface.WaterlinePlane.c * P1.z + Surface.WaterlinePlane.d;
           Max:=Min;
           Tmp:=Surface.WaterlinePlane.a * P2.x + Surface.WaterlinePlane.b *
             P2.y + Surface.WaterlinePlane.c * P2.z + Surface.WaterlinePlane.d;
-          if Tmp < Min then
-            Min:=Tmp
-          else if Tmp > Max then
-            Max:=Tmp;
+          if Tmp < Min then Min:=Tmp else
+          if Tmp > Max then Max:=Tmp;
           Tmp:=Surface.WaterlinePlane.a * P3.x + Surface.WaterlinePlane.b *
             P3.y + Surface.WaterlinePlane.c * P3.z + Surface.WaterlinePlane.d;
-          if Tmp < Min then
-            Min:=Tmp
-          else if Tmp > Max then
-            Max:=Tmp;
-          if Max <= 0.0 then
-          begin
-            // entirely below the plane
+          if Tmp < Min then Min:=Tmp else
+          if Tmp > Max then Max:=Tmp;
+          if Max <= 0.0 then begin                  // entirely below the plane
             Viewport.ShadeTriangle(P1, P2, P3, Ru, Gu, Bu, Alpha);
-          end
-          else if Min >= 0.0 then
-          begin
-            // entirely above the plane
+          end else
+          if Min >= 0.0 then begin                  // entirely above the plane
             Viewport.ShadeTriangle(P1, P2, P3, R, G, B, Alpha);
-          end
-          else
-          begin
-            // pierces water, clip triangle
-            ClipTriangle(P1, P2, P3, Surface.WaterlinePlane, Na, Nb, Above, Below);
+          end else begin                        // pierces water, clip triangle
+            ClipTriangle(P1,P2,P3, Surface.WaterlinePlane,Na,Nb,Above,Below);
             for K:=3 to Na do
-              Viewport.ShadeTriangle(Above[0], Above[K - 2], Above[K - 1], R, G, B, Alpha);
+              Viewport.ShadeTriangle(Above[0],Above[K-2],Above[K-1],R,G,B,Alpha);
             for K:=3 to Nb do
-              Viewport.ShadeTriangle(Below[0], Below[K - 2], Below[K - 1], Ru, Gu, Bu, Alpha);
+              Viewport.ShadeTriangle(Below[0],Below[K-2],Below[K-1],Ru,Gu,Bu,Alpha);
           end;
-          if (Surface.DrawMirror) and (Layer.Symmetric) then
-          begin
+          if (Surface.DrawMirror) and (Layer.Symmetric) then begin
             P1.Y:=-P1.Y;
             P2.Y:=-P2.Y;
-            P3.Y:=-P3.Y;
-            // Check if clipping is required
+            P3.Y:=-P3.Y;                       // Check if clipping is required
             Min:=Surface.WaterlinePlane.a * P1.x + Surface.WaterlinePlane.b *
               P1.y + Surface.WaterlinePlane.c * P1.z + Surface.WaterlinePlane.d;
             Max:=Min;
             Tmp:=Surface.WaterlinePlane.a * P2.x + Surface.WaterlinePlane.b *
               P2.y + Surface.WaterlinePlane.c * P2.z + Surface.WaterlinePlane.d;
-            if Tmp < Min then
-              Min:=Tmp
-            else if Tmp > Max then
-              Max:=Tmp;
+            if Tmp < Min then Min:=Tmp else
+            if Tmp > Max then Max:=Tmp;
             Tmp:=Surface.WaterlinePlane.a * P3.x + Surface.WaterlinePlane.b *
               P3.y + Surface.WaterlinePlane.c * P3.z + Surface.WaterlinePlane.d;
-            if Tmp < Min then
-              Min:=Tmp
-            else if Tmp > Max then
-              Max:=Tmp;
-            if Max <= 0.0 then
-            begin
-              // entirely below the plane
+            if Tmp < Min then Min:=Tmp else
+            if Tmp > Max then Max:=Tmp;
+            if Max <= 0.0 then begin                // entirely below the plane
               Viewport.ShadeTriangle(P1, P2, P3, Ru, Gu, Bu, Alpha);
-            end
-            else if Min >= 0.0 then
-            begin
-              // entirely above the plane
+            end else
+            if Min >= 0.0 then begin                // entirely above the plane
               Viewport.ShadeTriangle(P1, P2, P3, R, G, B, Alpha);
-            end
-            else
-            begin
-              // pierces water, clip triangle
-              ClipTriangle(P1, P2, P3, Surface.WaterlinePlane, Na, Nb, Above, Below);
+            end else begin                      // pierces water, clip triangle
+              ClipTriangle(P1,P2,P3,Surface.WaterlinePlane,Na,Nb,Above,Below);
               for K:=3 to Na do
-                Viewport.ShadeTriangle(Above[0], Above[K - 2], Above[K - 1], R, G, B, Alpha);
+                Viewport.ShadeTriangle(Above[0],Above[K-2],Above[K-1],R,G,B,Alpha);
               for K:=3 to Nb do
-                Viewport.ShadeTriangle(Below[0], Below[K - 2], Below[K - 1], Ru, Gu, Bu, Alpha);
+                Viewport.ShadeTriangle(Below[0],Below[K-2],Below[K-1],Ru,Gu,Bu,Alpha);
             end;
           end;
         end;
       end;
     end
-    else if Viewport.ViewportMode = vmShadeZebra then
-    begin
+    else if Viewport.ViewportMode = vmShadeZebra then begin
       Ru:=GetRValue(Surface.ZebraColor);
       Gu:=GetGValue(Surface.ZebraColor);
       Bu:=GetBValue(Surface.ZebraColor);
       Camera:=Viewport.RotatedPointBack(Viewport.FCameraLocation);
       Capacity:=10;
       Setlength(Intersections, Capacity);
-      for I:=1 to ChildCount do
-      begin
-        Child:=Self.Child[I - 1];
-        for J:=2 to Child.NumberOfpoints - 1 do
-          ZebraStripe(Camera, Child.Point[0], Child.Point[J - 1], Child.Point[J], R, G, B, Ru, Gu, Bu);
+      for I:=1 to ChildCount do begin Child:=Self.Child[I-1];
+        for J:=2 to Child.NumberOfpoints-1 do
+          ZebraStripe(Camera,Child.Point[0],Child.Point[J-1],Child.Point[J],R,G,B,Ru,Gu,Bu);
       end;
-      if capacity < 0 then
-        exit;
-    end
-    else // Gauss
-    begin
-      for I:=1 to ChildCount do
-      begin
-        Child:=Self.Child[I - 1];
-        for J:=2 to Child.NumberOfpoints - 1 do
-        begin
+      if capacity < 0 then exit;
+    end else begin                                                     // Gauss
+      for I:=1 to ChildCount do begin
+        Child:=Self.Child[I-1];
+        for J:=2 to Child.NumberOfpoints - 1 do begin
           P1:=Child.Point[0].Coordinate;
           P2:=Child.Point[J - 1].Coordinate;
           P3:=Child.Point[J].Coordinate;
-          if Viewport.ViewportMode <> vmShade then
-          begin
+          if Viewport.ViewportMode <> vmShade then begin
             Index:=Surface.FPoints.SortedIndexOf(Child.Point[0]);
             C1:=Surface.FGausCurvature[index];
             Index:=Surface.FPoints.SortedIndexOf(Child.Point[J - 1]);
@@ -986,19 +944,15 @@ begin
             Index:=Surface.FPoints.SortedIndexOf(Child.Point[J]);
             C3:=Surface.FGausCurvature[index];
             Viewport.ShadeTriangle(P1, P2, P3, C1, C2, C3);
-            if (Surface.DrawMirror) and (Layer.Symmetric) then
-            begin
+            if (Surface.DrawMirror) and (Layer.Symmetric) then begin
               P1.Y:=-P1.Y;
               P2.Y:=-P2.Y;
               P3.Y:=-P3.Y;
               Viewport.ShadeTriangle(P1, P2, P3, C1, C2, C3);
             end;
-          end
-          else
-          begin
+          end else begin
             Viewport.ShadeTriangle(P1, P2, P3, R, G, B, Alpha);
-            if (Surface.DrawMirror) and (Layer.Symmetric) then
-            begin
+            if (Surface.DrawMirror) and (Layer.Symmetric) then begin
               P1.Y:=-P1.Y;
               P2.Y:=-P2.Y;
               P3.Y:=-P3.Y;
@@ -1015,51 +969,38 @@ begin
     // Draw interior edges (not descending from controledges)
     Viewport.PenStyle:=psSolid;
     Viewport.PenWidth:= Surface.InternalEdgeLineWidth;
-    if Selected then
-      Viewport.PenColor:=Surface.Selectedcolor
-    else
-      Viewport.PenColor:=Layer.Color;
-    for I:=1 to FEdges.Count do
-    begin
-      Edge:=FEdges[I - 1];
+    if Selected then Viewport.PenColor:=Surface.Selectedcolor
+                else Viewport.PenColor:=Layer.Color;
+    for I:=1 to FEdges.Count do begin
+      Edge:=FEdges[I-1];
       Edge.Draw(Surface.DrawMirror and Layer.Symmetric, Viewport);
     end;
     // Draw edges descending from controledges, but slighly darker then interior edges
-    if not Selected then
-    begin
+    if not Selected then begin
       R:=round(0.6 * GetRValue(Layer.Color));
       G:=round(0.6 * GetGValue(Layer.Color));
       B:=round(0.6 * GetBValue(Layer.Color));
       Viewport.PenColor:=RGB(R, G, B);
     end;
-    for I:=1 to FControlDescendantEdges.Count do
-    begin
+    for I:=1 to FControlDescendantEdges.Count do begin
       Edge:=FControlDescendantEdges[I - 1];
       Edge.Draw(Surface.DrawMirror and Layer.Symmetric, Viewport);
     end;
-    if (Selected) and (Surface.ShowNormals) then
-    begin
-      // Draw normals
-      // First assemble all points within this controlface
+    if (Selected) and (Surface.ShowNormals) then begin          // Draw normals
+                           // First assemble all points within this controlface
       Points:=TFasterListTFreeSubdivisionPoint.Create(false,true);
-      for I:=1 to ChildCount do
-      begin
+      for I:=1 to ChildCount do begin
         Child:=Self.Child[I - 1];
-        for J:=1 to Child.NumberOfpoints - 1 do
-        begin
-          Point:=Child.Point[J - 1];
-          if Points.SortedIndexOf(Point) = -1 then
-            Points.AddSorted(Point);
+        for J:=1 to Child.NumberOfpoints-1 do begin Point:=Child.Point[J-1];
+          if Points.SortedIndexOf(Point) = -1 then Points.AddSorted(Point);
         end;
       end;
-      for I:=1 to Points.Count do
-      begin
+      for I:=1 to Points.Count do begin
         Point:=Points[I - 1];
         P1:=Point.Coordinate;
         P2:=Point.Normal;
         DrawNormal(P1, P2, Surface.NormalColor);
-        if (Layer.Symmetric) and (Surface.DrawMirror) then
-        begin
+        if (Layer.Symmetric) and (Surface.DrawMirror) then begin
           P1.Y:=-P1.Y;
           P2.Y:=-P2.Y;
           DrawNormal(P1, P2, Surface.NormalColor);
@@ -1087,14 +1028,10 @@ var
   const
     contrast = 0.1;
   begin
-    if (Curvature > -1e-4) and (Curvature < 1e-4) then
-      Result:=0.5
-    else
-    begin
-      if Curvature > 0 then
-        Result:=0.5 + 0.5 * Power(Curvature / MaxCurvature, contrast)
-      else
-        Result:=0.5 - 0.5 * Power(Curvature / MinCurvature, contrast);
+    if (Curvature > -1e-4) and (Curvature < 1e-4) then Result:=0.5 else begin
+      if Curvature > 0
+      then Result:=0.5 + 0.5 * Power(Curvature / MaxCurvature, contrast)
+      else Result:=0.5 - 0.5 * Power(Curvature / MinCurvature, contrast);
       Result:=1 - Result;
           {
           if (Result<0.2) then Result:=0.10 else
@@ -1109,12 +1046,10 @@ var
 begin
   Viewport.BeginUpdate;
   ChidCnt:=ChildCount;
-  for I:=1 to ChidCnt do
-  begin
+  for I:=1 to ChidCnt do begin
     Child:=Self.Child[I - 1];
     ChildPointsCnt:=Child.NumberOfpoints;
-    for J:=2 to ChildPointsCnt - 1 do
-    begin
+    for J:=2 to ChildPointsCnt - 1 do begin
       P1:=Child.Point[0].Coordinate;
       Index:=Surface.FPoints.SortedIndexOf(Child.Point[0]);
       Curv:=Surface.FGausCurvature[index];
@@ -1128,8 +1063,7 @@ begin
       Curv:=Surface.FGausCurvature[index];
       FillColor(Fragment(Curv), R3, G3, B3);
       Viewport.ShadeTriangle(P1, P2, P3, R1, G1, B1, R2, G2, B2, R3, G3, B3);
-      if (Surface.DrawMirror) and (Layer.Symmetric) then
-      begin
+      if (Surface.DrawMirror) and (Layer.Symmetric) then begin
         P1.Y:=-P1.Y;
         P2.Y:=-P2.Y;
         P3.Y:=-P3.Y;
@@ -1147,51 +1081,37 @@ var
   Pts: TFasterListTFreeSubdivisionControlPoint;
 begin
   Result:=nil; IsFaceDeleted:=false;
-  try
+//try                                                                    ///???
     if (P1.FFaces.IndexOf(self) <> -1) and (P2.FFaces.IndexOf(self) <> -1) then
     begin
-      if Surface.EdgeExists(P1, P2) <> nil then
-        exit;
+      if Surface.EdgeExists(P1, P2) <> nil then exit;
       Tmp:=IndexOfPoint(P1);
-      Pts:=TFasterListTFreeSubdivisionControlPoint.Create;
-      // create new face 1
+      Pts:=TFasterListTFreeSubdivisionControlPoint.Create; // create new face 1
       Pts.Add(P1);
-      for I:=1 to NumberOfpoints do
-      begin
+      for I:=1 to NumberOfpoints do begin
         Tmp:=(Tmp + 1) mod NumberOfpoints;
         Pts.Add(Point[Tmp]);
-        if Pts[Pts.Count - 1] = P2 then
-          break;
+        if Pts[Pts.Count-1] = P2 then break;
       end;
-      if Pts.Count > 2 then
-      begin
-        Surface.AddControlFace(Pts, False, Layer);
-      end;
+      if Pts.Count>2 then begin Surface.AddControlFace(Pts,False,Layer); end;
       Tmp:=IndexOfPoint(P2);
-      Pts.Clear;
-      // create new face 2
+      Pts.Clear;                                           // create new face 2
       Pts.Add(P2);
-      for I:=1 to NumberOfpoints do
-      begin
+      for I:=1 to NumberOfpoints do begin
         Tmp:=(Tmp + 1) mod NumberOfpoints;
         Pts.Add(Point[Tmp]);
-        if Pts[Pts.Count - 1] = P1 then
-          break;
+        if Pts[Pts.Count - 1] = P1 then break;
       end;
-      if Pts.Count > 2 then
-      begin
-        Surface.AddControlFace(Pts, False, Layer);
-      end;
+      if Pts.Count > 2 then begin Surface.AddControlFace(Pts,False,Layer); end;
       FreeAndNil(Pts);
       Delete; // delete the current face because it is split into two new faces
       IsFaceDeleted:=true;
     end;
-    Result:=FSurface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
-    if Result <> nil then
-      Result.Crease:=False;
-  except
-    Result:=FSurface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
-  end;
+    Result:=FSurface.EdgeExists(P1,P2) as TFreesubdivisionControlEdge;
+    if Result <> nil then Result.Crease:=False;
+//except
+//  Result:=FSurface.EdgeExists(P1,P2) as TFreesubdivisionControlEdge;
+//end;
 end;
 
 procedure TFreeSubdivisionControlFace.LoadBinary(Source: TFreeFileBuffer);
@@ -1214,15 +1134,13 @@ begin                                     // Read controlpoint data
       P1.FFaces.Add(Self);
     end;
   end;
-  // Read layer-index
   Source.LoadInteger(Index);
   if (Index >= 0) and (Index < Surface.FLayers.Count) then begin
-    FLayer:=Surface.Layer[Index];
+    FLayer:=Surface.Layer[Index];                           // Read layer-index
   end else begin
     FLayer:=Surface.Layer[0]; // Reference to an invalid layer. Assign to owners default layer
   end;
-//if FLayer <> nil then
-    FLayer.AddControlFace(self);
+  if FLayer <> nil then FLayer.AddControlFace(self);
 //else raise Exception.Create( 'Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadBinary!');
 
   Source.LoadBoolean(Sel);
@@ -1235,10 +1153,10 @@ begin                                     // Read controlpoint data
       Edge.FFaces.Add(Self);
       //FControlDescendantEdges.Add(Edge); // MM: 20190421 added. No FControlDescendantEdges is for descendant edges
     end else begin
-      Edge:=Surface.AddControlEdge(P1, P2);
-      Edge.FFaces.Add(Self);
+      Edge:=Surface.AddControlEdge( P1,P2 );
+      Edge.FFaces.Add( Self );
       Edge.Crease:=True;
-      MessageDlg('Could not find edge!', mtError, [mbOK], 0);
+      MessageDlg( 'Could not find edge!',mtError,[mbOK],0 );
     end;
     P1:=P2;
   end;
@@ -1470,8 +1388,7 @@ begin
 end;
 
 procedure TFreeSubdivisionControlFace.Subdivide(
-      aOwner: TFreeSubdivisionSurface;
-      aControlFace: boolean;
+      aOwner: TFreeSubdivisionSurface; aControlFace: boolean;
       aVertexPoints:TFasterListTFreeSubdivisionPoint;
       aEdgePoints:TFasterListTFreeSubdivisionEdge;
       aFacePoints:TFasterListTFreeSubdivisionFace;
@@ -1485,68 +1402,50 @@ var
   ChildFace: TFreeSubdivisionFace;
   NewControlEdges:TFasterListTFreeSubdivisionEdge; // MM: not really control edges, just children of them
 begin
-  NewControlEdges:=TFasterListTFreeSubdivisionEdge.Create(false,false);
+  NewControlEdges:=TFasterListTFreeSubdivisionEdge.Create( false,false );
 
-  //if not CheckIntegrity
-  //     then X:=0;
-
-  //for i:=0 to FControlDescendantEdges.Count-1 do
-  //    FControlDescendantEdges[i].Free;
+  //if not CheckIntegrity then X:=0;
+  //for i:=0 to FControlDescendantEdges.Count-1 do FControlDescendantEdges[i].Free;
   //FControlDescendantEdges.Clear;
 
-  if FChildren.Count = 0 then
-  begin
+  if FChildren.Count = 0 then begin
     FChildren.Capacity:=NumberOfPoints;
     FEdges.Capacity:=4;
-    inherited Subdivide(aOwner, True, aVertexPoints, aEdgePoints, aFacePoints,
-      FEdges, NewControlEdges, FChildren);
-  end
-  else
-  begin
+    inherited Subdivide( aOwner,True,aVertexPoints,aEdgePoints,aFacePoints,
+                                FEdges,NewControlEdges,FChildren );
+  end else begin
     TmpFaces:=TFasterListTFreeSubdivisionFace.Create(false,false);
     TmpFaces.Capacity:=4 * ChildCount;
     TmpEdges:=TFasterListTFreeSubdivisionEdge.Create(false,false);
-    I:=Round(Power(2, aOwner.FCurrentSubdivisionLevel));
-    TmpEdges.Capacity:=2 * (I * (I - 1));
+    I:=Round( Power( 2,aOwner.FCurrentSubdivisionLevel ) );
+    TmpEdges.Capacity:=2*(I*(I-1));
 
-    for I:=0 to FChildren.Count-1 do
-    begin
+    for I:=0 to FChildren.Count-1 do begin
       ChildFace:=FChildren[I];
-      ChildFace.Subdivide(aOwner, False, aVertexPoints, aEdgePoints, aFacePoints,
-        TmpEdges, NewControlEdges, TmpFaces);
+      ChildFace.Subdivide( aOwner,False,aVertexPoints,aEdgePoints,aFacePoints,
+                                  TmpEdges,NewControlEdges,TmpFaces );
     end;
 
     ClearChildren;
 
-    //for i:=0 to FEdges.Count-1 do
-    //    FEdges[i].Free;
-    while FEdges.Count>0 do
-      begin
-      FEdges[FEdges.Count-1].Destroy;
-      //FEdges.Delete(FEdges.Count-1);
-      end;
+    //for i:=0 to FEdges.Count-1 do FEdges[i].Free;
+    while FEdges.Count>0 do begin
+      FEdges[FEdges.Count-1].Destroy; //FEdges.Delete(FEdges.Count-1);
+    end;
     FEdges.Free;
     FEdges:=TmpEdges;
 
-    //for i:=0 to FChildren.Count-1 do
-    //    FChildren[i].Free;
-    while FChildren.Count > 0 do
-      begin
-      FChildren[FChildren.Count-1].Free;
-      //FChildren.Delete(FChildren.Count-1);
-      end;
+    //for i:=0 to FChildren.Count-1 do FChildren[i].Free;
+    while FChildren.Count > 0 do begin
+      FChildren[FChildren.Count-1].Free; //FChildren.Delete(FChildren.Count-1);
+    end;
     FChildren.Free;
     FChildren:=TmpFaces;
 
 {    // investigation
-    for I:=0 to FEdges.Count-1 do
-      if not  FEdges[i].CheckIntegrity
-         then X:=0;
-    // investigation
-    for I:=0 to FChildren.Count-1 do
-      if not  FChildren[i].CheckIntegrity
-         then X:=0;
- }
+    for I:=0 to FEdges.Count-1 do if not FEdges[i].CheckIntegrity then X:=0;
+    for I:=0 to FChildren.Count-1 do if not FChildren[i].CheckIntegrity then X:=0;
+}
   end;
 
   FControlDescendantEdges.Clear;
@@ -1611,7 +1510,7 @@ var
 begin
   Prev:=screen.Cursor;
   Screen.Cursor:=crHourglass;
-  try
+//  try
     ToDoList:=TFasterListTFreeSubdivisionControlFace.Create;
     ToDoList.capacity:=Layer.Count;
     for I:=1 to Layer.Count do
@@ -1623,8 +1522,8 @@ begin
     ToDoList.Sort;
     FindAttachedFaces(ToDoList, self);
     FreeAndNil(ToDoList);
-  finally
+//  finally
     Screen.Cursor:=prev;
-  end;
+//  end;
 end;
 

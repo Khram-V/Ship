@@ -504,7 +504,7 @@ begin
 
       {
       TODO remove
-      try
+      --try
         //writeln('Try to allocate ',Spline.Fragments+1,' TPoints');
         Setlength(Pts, Spline.Fragments + 1);
       except
