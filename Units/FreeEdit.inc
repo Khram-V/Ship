@@ -473,29 +473,24 @@ begin
     Layers.Add(FreeShip.Surface.Layer[I - 1]);
   FreeShip.Visibility.ShowInteriorEdges:=True;
   FreeShip.Surface.AssembleFacesToPatches(Layers, amNurbs, Assembled, NAssembled);
-  if NAssembled > 0 then
-  begin
-    // assign all patches to new layers
-    for I:=1 to NAssembled do
-    begin
+  if NAssembled > 0 then begin              // assign all patches to new layers
+    for I:=1 to NAssembled do begin
       Layer:=FreeShip.Surface.AddNewLayer;
       Layer.Color:=RandomColor;
       AssFace:=Assembled[I - 1];
       for J:=1 to AssFace.NRows do
-        for K:=1 to AssFace.NCols do
-        begin
-          Face:=AssFace.Faces[J - 1][K - 1];
-          if Face <> nil then
-            Face.Layer:=Layer;
-        end;
+      for K:=1 to AssFace.NCols do begin
+        Face:=AssFace.Faces[J - 1][K - 1];
+        if Face <> nil then Face.Layer:=Layer;
+      end;
     end;
     Layer_DeleteEmpty(True);
     Freeship.RebuildModel;
     ShowMessage('Assembled ' + IntToStr(NAssembled) + ' patches');
   end;
   FreeAndNil(Layers);
-end;{TFreeEdit.Face_Assemble}
-
+end;
+(*
 // Deletes all faces on the starboardside of the hull
 procedure TFreeEdit.Face_DeleteNegative;
 var
@@ -552,6 +547,75 @@ begin
     end else begin
       MessageDlg( Userstring(82),mtInformation,[mbOK],0);
       vUndo.Delete;
+    end;
+//finally
+    Screen.Cursor:=PrevCursor;
+//end;
+end;
+*)
+
+// Deletes all faces on the starboardside of the hull
+procedure TFreeEdit.Face_DeleteNegative; //var P3D: T3DCoordinate;
+var
+  IsNegative: boolean; Str: AnsiString;
+  I,J,K, RemovedF, RemovedP: integer; P3D: T3DCoordinate;
+  Face: TFreeSubdivisionControlFace;
+  Point: TFreeSubdivisionControlPoint;
+  PrevCursor: TCursor;
+  vUndo: TFreeUndoObject;
+begin
+  RemovedF:=0;
+  RemovedP:=0;
+  PrevCursor:=Screen.Cursor;
+  Screen.Cursor:=crHourglass;
+  vUndo:=CreateUndoObject(Userstring(79), False);                      /// 1e-7
+//try
+    for I:=FreeShip.Surface.NumberOfControlFaces downto 1 do begin
+      Face:=FreeShip.Surface.ControlFace[I-1];
+      if face.NumberOfpoints>2 then begin IsNegative:=True;
+        for J:=1 to Face.NumberOfpoints do
+          if Face.Point[J-1].Coordinate.Y>0.0 then IsNegative:=False;
+      end else IsNegative:=True;
+      if IsNegative then begin Face.Delete; Inc(RemovedF); end;
+    end;
+
+    for I:=FreeShip.Surface.NumberOfControlPoints downto 1 do begin
+      Point:=FreeShip.Surface.ControlPoint[I-1];
+      if (Point.NumberOfFaces=0) and (Point.Coordinate.Y<0.0 )         // -1e-4
+      then begin Point.Delete; Inc(RemovedP); end;
+    end;
+    //
+    //  приведение к диметральной плоскости правых отрицательных точек
+    //
+    for I:=FreeShip.Surface.NumberOfControlFaces downto 1 do begin
+      Face:=FreeShip.Surface.ControlFace[I-1]; K:=0;
+      for J:=1 to Face.NumberOfpoints do begin
+        P3D:=Face.Point[J-1].Coordinate;
+        if P3D.Y=0.0 then inc( K ) else
+        if P3D.Y<0 then begin P3D.Y:=0.0; Face.Point[J-1].Coordinate:=P3D; end;
+      end;
+      if K=Face.NumberOfPoints then begin Face.Delete; Inc( RemovedF ); end;
+    end;
+    for I:=FreeShip.Surface.NumberOfControlPoints downto 1 do begin
+      P3D:=FreeShip.Surface.ControlPoint[I-1].Coordinate;
+      if P3D.Y<0.0 then
+      begin P3D.Y:=0; FreeShip.Surface.ControlPoint[I-1].Coordinate:=P3D; end;
+    end;
+    //  справка по успешным результатам
+    //
+    if (RemovedF + RemovedP) > 0 then begin Str:='';
+      if RemovedF>0 then Str:=Str+IntToStr(RemovedF)+#32+Userstring(80);
+      if RemovedP>0 then begin if Str<>'' then Str:=Str+EOL;
+         Str:=Str+IntToStr(RemovedP)+#32+Userstring(81);
+      end;
+      MessageDlg(Str, mtInformation, [mbOK], 0); vUndo.Accept;
+      FreeShip.FileChanged:=True;
+      FreeShip.Built:=False;
+      Freeship.RebuildModel;
+//      if Assigned(FreeShip.OnUpdateGeometryInfo) then
+//                  FreeShip.OnUpdateGeometryInfo(self);
+    end else begin
+      MessageDlg( Userstring(82),mtInformation,[mbOK],0); vUndo.Delete;
     end;
 //finally
     Screen.Cursor:=PrevCursor;
@@ -1692,7 +1756,7 @@ end;
 
 procedure TFreeEdit.File_Export_Aurora_Experiments;
 var
-  Str: String;
+  Str: AnsiString;
   Strings: TStringList;
 
   Procedure Str2( A,B: single );
@@ -1751,7 +1815,7 @@ var
 
 
 var I,J,K,N: integer;
-    Title,S: String; P0,PN: T3DCoordinate; Dis: boolean=true;
+    Title,S: AnsiString; P0,PN: T3DCoordinate; Dis: boolean=true;
     Dialog: TSaveDialog;
 //    T3: T3DCoordinate=(X:0;Y:0;Z:0);
     EdgePointLists: TFasterListTFasterListTFreeSubdivisionPoint;
@@ -1771,10 +1835,10 @@ begin
     with FreeShip.FProjectSettings do
     Strings.Add( '; FREE!Ship' + EOL+';'
           + EOL +'; File Name: '+Title
-          + EOL +'; Name     : '+FProjectName
-          + EOL +'; Designer : '+FProjectDesigner
-          + EOL +'; Create by: '+FProjectFileCreatedBy
-          + EOL +'; Comment  : '+FProjectComment
+          + EOL +'; Name     : '+ProjectName
+          + EOL +'; Designer : '+ProjectDesigner
+          + EOL +'; Create by: '+ProjectFileCreatedBy
+          + EOL +'; Comment  : '+ProjectComment
           + EOL +';'
           + EOL + #30 + ' < ' + ExtractFilename( Dialog.FileName ) + ' > '      ///+++!!! уточнить где мидель
           + EOL + InttoStr( FreeShip.NumberofStations )
@@ -2039,15 +2103,15 @@ begin
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
     Strings:=TStringList.Create;
     // Add general info and mainparticulars
-    Strings.Add(FreeShip.ProjectSettings.ProjectName);
-    Strings.Add(FreeShip.ProjectSettings.ProjectDesigner);
-    Strings.Add(FreeShip.ProjectSettings.ProjectFileCreatedBy);
-    Strings.Add(FreeShip.ProjectSettings.ProjectComment);
-    Strings.Add(FloatToDec(FreeShip.ProjectSettings.ProjectLength, 4) +
-      #32 + FloatToDec(FreeShip.ProjectSettings.ProjectBeam, 4) + #32 +
-      FloatToDec(FreeShip.ProjectSettings.ProjectDraft, 4) + #32 +
-      FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity, 5) + #32 +
-      FloatToDec(FreeShip.ProjectSettings.ProjectAppendageCoefficient, 5) +
+    Strings.Add(FreeShip.ProjectSettings.FProjectName);
+    Strings.Add(FreeShip.ProjectSettings.FProjectDesigner);
+    Strings.Add(FreeShip.ProjectSettings.FProjectComment);
+    Strings.Add(FreeShip.ProjectSettings.FProjectFileCreatedBy);
+    Strings.Add(FloatToDec(FreeShip.ProjectSettings.ProjectLength,4) +
+      #32 + FloatToDec(FreeShip.ProjectSettings.ProjectBeam,4) + #32 +
+      FloatToDec(FreeShip.ProjectSettings.ProjectDraft,4) + #32 +
+      FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity,5) + #32 +
+      FloatToDec(FreeShip.ProjectSettings.ProjectAppendageCoefficient,5) +
       #32 + IntToStr(Ord(FreeShip.ProjectSettings.ProjectUnits)) + #32 +
       BoolToStr(FreeShip.ProjectSettings.MainparticularsHasBeenset) +
       #32 + IntToStr(Ord(FreeShip.Precision)));
@@ -3381,7 +3445,7 @@ var
   SubdivisionSurface: TFreeSubdivisionSurface;
   Tokens: array of string;
 begin
-    FreeShip.ProjectSettings.ProjectName := ExtractFileName( FileName );
+    FreeShip.ProjectSettings.FProjectName := ExtractFileName( FileName );
     AssignFile( FFile,FileName ); Reset( FFile);
     if IOResult = 0 then begin
 //    try
@@ -3451,7 +3515,7 @@ var
   CtrPoint: TFreeSubdivisionControlPoint;
   SubdivisionSurface: TFreeSubdivisionSurface;    //  Precision: double = 1e-8;
 begin
-    FreeShip.ProjectSettings.ProjectName := ExtractFileName( FileName );
+    FreeShip.ProjectSettings.FProjectName := ExtractFileName( FileName );
     FileStream := TFileStream.Create( FileName,fmOpenRead );
     if FileStream.Size>80 then begin
 //      try
@@ -3542,7 +3606,7 @@ begin
         // first 18 characters are description
         Str:=Copy(Str, 1, 18);
         Str:=Trim(Str);
-        FreeShip.ProjectSettings.ProjectName:=Str;
+        FreeShip.ProjectSettings.FProjectName:=Str;
         Chines:=TFasterListTFreeSpline.Create;
         while not EOF(FFile) do
         begin
@@ -3718,23 +3782,17 @@ begin
     FreeShip.Clear;
     Strings:=TStringList.Create;
     Strings.LoadFromFile(OpenDialog.Filename);
-    LineNr:=-1;
-    // Read general information and mainparticulars
-    Inc(LineNr);
-    FreeShip.ProjectSettings.ProjectName:=Strings[LineNr];
-    Inc(LineNr);
-    FreeShip.ProjectSettings.ProjectDesigner:=Strings[LineNr];
-    Inc(LineNr);
-    FreeShip.ProjectSettings.FProjectFileCreatedBy:=Strings[LineNr];
-    Inc(LineNr);
-    FreeShip.ProjectSettings.FProjectComment:=Strings[LineNr];
-    Inc(LineNr);
-    Str:=Strings[LineNr];
+    LineNr:=-1;                 // Read general information and mainparticulars
+    Inc(LineNr); FreeShip.ProjectSettings.FProjectName:=Strings[LineNr];
+    Inc(LineNr); FreeShip.ProjectSettings.FProjectDesigner:=Strings[LineNr];
+    Inc(LineNr); FreeShip.ProjectSettings.FProjectFileCreatedBy:=Strings[LineNr];
+    Inc(LineNr); FreeShip.ProjectSettings.FProjectComment:=Strings[LineNr];
+    Inc(LineNr); Str:=Strings[LineNr];
     FreeShip.ProjectSettings.ProjectLength:=GetFloat( Str);
     FreeShip.ProjectSettings.ProjectBeam:=GetFloat( Str);
     FreeShip.ProjectSettings.ProjectDraft:=GetFloat( Str);
     FreeShip.ProjectSettings.ProjectWaterDensity:=GetFloat( Str);
-    //      FreeShip.ProjectSettings.ProjectWaterTemper:=GetFloat( Str);
+                // FreeShip.ProjectSettings.ProjectWaterTemper:=GetFloat( Str);
     FreeShip.ProjectSettings.ProjectAppendageCoefficient:=GetFloat( Str);
     I:=GetInteger( Str);
     FreeShip.ProjectSettings.FProjectUnits:=TFreeUnitType(I);
@@ -3751,7 +3809,7 @@ begin
       FreeShip.OnUpdateGeometryInfo(self);
   end;
   FreeAndNil(OpenDialog);
-end;{TFreeEdit.File_ImportFEF}
+end;
 
 // Imports a file created with Carlssons's Hulls program
 procedure TFreeEdit.File_ImportHull;
@@ -3876,43 +3934,27 @@ begin
           end;
 
       Chines:=TFasterListTFreeSpline.Create;
-      for I:=1 to NoChines do
-      begin
-        for J:=1 to NBulkheads do
-        begin
-          P:=Points[J - 1, I - 1];
-          P.X:=-P.X + Max.X;
-          Points[J - 1, I - 1]:=P;
+      for I:=1 to NoChines do begin
+        for J:=1 to NBulkheads do  begin
+          P:=Points[J-1,I-1]; P.X:=-P.X+Max.X; Points[J-1,I-1]:=P;
         end;
-        Spline:=TFreeSpline.Create(FreeShip.Surface);
-        Chines.Add(Spline);
-        for J:=1 to NBulkheads do
-        begin
-          P:=Points[J - 1, I - 1];
-          Spline.Add(P);
-          Spline.Knuckle[J - 1]:=False;
+        Spline:=TFreeSpline.Create(FreeShip.Surface); Chines.Add(Spline);
+        for J:=1 to NBulkheads do begin
+          P:=Points[J-1,I-1]; Spline.Add(P); Spline.Knuckle[J-1]:=False;
         end;
       end;
-      FreeShip.ImportChines(NBulkheads, Chines);
+      FreeShip.ImportChines( NBulkheads,Chines );
       FreeAndNil(Chines);
-      // read stations
-      for I:=1 to 8 do
-      begin
-        Readln(FFile, Value);
-        Intersection_Add(fiStation, -Value * 0.024 + Max.X);
+      for I:=1 to 8 do begin                               // read stations
+        Readln( FFile,Value );
+        Intersection_Add( fiStation, -Value * 0.024 + Max.X );
       end;
-
-      // Skip rig info
-      for I:=1 to 9 do
-        Readln(FFile);
-
-      // Read designer info
-      Readln(FFile, Str);
-      FreeShip.ProjectSettings.ProjectDesigner:=Str;
-      Readln(FFile, Str);
-      FreeShip.ProjectSettings.ProjectName:=Str;
-//  finally
-      CloseFile(FFile);
+      for I:=1 to 9 do Readln(FFile);                      // Skip rig info
+      Readln(FFile,Str);                                   // Read designer info
+      FreeShip.ProjectSettings.FProjectDesigner:=Str;
+      Readln(FFile,Str);
+      FreeShip.ProjectSettings.FProjectName:=Str;
+      CloseFile(FFile);                                    //  finally
       FreeShip.ProjectSettings.ProjectWaterDensity:=1.0;
       FreeShip.ProjectSettings.ProjectUnits:=fuImperial;
       FreeShip.ProjectSettings.ProjectDraft:=1.0;
@@ -4838,7 +4880,7 @@ begin
   if FileExistsUTF8(FreeShip.Filename) then
   begin
     Backup:=ChangeFileExt(FreeShip.Filename, '.Bak'); // First check for a backup, and delete when present
-    if FileExistsUTF8(Backup)  then
+    if FileExistsUTF8(Backup) then
       if not DeleteFileUTF8(Backup) then begin
         MessageDlg( 'Unable to delete backup file '+Backup, mtError, [mbOK], 0);
         FreeShip.FileIsReadOnly:=true;

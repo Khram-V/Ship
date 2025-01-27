@@ -1749,7 +1749,7 @@ procedure JoinSplineSegments(JoinError: TFloatType; ForceToOneSegment: boolean; 
 function Lines3DIntersect(P1, P2, P3, P4: T3DCoordinate; var Param: double; var Int: T3DCoordinate): boolean;
 function LengthStr(Units: TFreeUnitType): string;                 // Returns a string value with the length units
 function MakeLength(Value: TFloatType; Decimals, DesLength: integer): string; overload;
-function MakeLength(Value: string; DesLength: integer): string; overload;
+function MakeLength(Value: Ansistring; DesLength: integer): Ansistring; overload;
 procedure MinMax(P: T3DCoordinate; var Min, Max: T3DCoordinate);
 function Point3D(x,y,z: TFloatType): T3DCoordinate;
 function Midpoint(P1, P2: T3DCoordinate): T3DCoordinate;          // Calculate the mid-point between P1 and P2

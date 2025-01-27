@@ -484,81 +484,58 @@ begin
           Point:=Face.Point[J - 1];
           s3:=WlPlane.a * Point.Coordinate.x + WlPlane.b * Point.Coordinate.y +
             WlPlane.c * Point.Coordinate.z + WlPlane.d;
-          if s3 < MinZ then
-            MinZ:=s3
-          else if s3 > MaxZ then
-            MaxZ:=s3;
-          if MaxZ <= 0.0 then
-          begin
-            // entirely below the plane
+          if s3 < MinZ then MinZ:=s3 else
+          if s3 > MaxZ then MaxZ:=s3;
+          if MaxZ <= 0.0 then begin                // entirely below the plane
             DrawTriangle(P1, P2, P3, Owner.Surface.UnderWaterColor);
-          end
-          else if MinZ >= 0.0 then
-          begin
-            // entirely above the plane
+          end else
+          if MinZ >= 0.0 then begin                // entirely above the plane
             DrawTriangle(P1, P2, P3, Owner.Color);
-          end
-          else
-          begin
-            // pierces water, clip triangle
+          end else begin                       // pierces water, clip triangle
             ClipTriangle(P1, P2, P3, s1, s2, s3, Na, Nb, Above, Below);
             for K:=3 to Na do
-              DrawTriangle(Above[0], Above[K - 2], Above[K - 1], Owner.Color);
+              DrawTriangle(Above[0],Above[K-2],Above[K-1],Owner.Color);
             for K:=3 to Nb do
-              DrawTriangle(Below[0], Below[K - 2], Below[K - 1], Owner.Surface.UnderWaterColor);
+              DrawTriangle(Below[0],Below[K-2],Below[K-1],Owner.Surface.UnderWaterColor);
           end;
         end;
-      end
-      else
-      begin
-        for J:=1 to Face.NumberOfpoints do
-        begin
+      end else begin
+        for J:=1 to Face.NumberOfpoints do begin
           Index:=FPoints.SortedIndexOf(Face.Point[J - 1]);
-          if Index <> -1 then
-          begin
+          if Index <> -1 then begin
             P1:=self.Point[index];
             Pts[J - 1]:=Viewport.Project(P1);
-          end;
-//        else raise Exception.Create('Unrolled point could not be found!');
+          end;                                                                  // else raise Exception.Create('Unrolled point could not be found!');
         end;
         Viewport.Polygon(Pts);
       end;
-      if FMirror then
-      begin
-        for J:=1 to Face.NumberOfpoints do
-        begin
+      if FMirror then begin
+        for J:=1 to Face.NumberOfpoints do begin
           Index:=FPoints.SortedIndexOf(Face.Point[J - 1]);
-          if Index <> -1 then
-          begin
+          if Index <> -1 then begin
             P1:=MirrorPoint[index];
             Pts[J - 1]:=Viewport.Project(P1);
-          end;
-//        else raise Exception.Create('Unrolled point could not be found!');
+          end;                                                                  // else raise Exception.Create('Unrolled point could not be found!');
         end;
         Viewport.Polygon(Pts);
       end;
     end;
   end;
 
-  if not ShowInteriorEdges then
-  begin
-    // Draw only boundaryedges
+  if not ShowInteriorEdges then begin                // Draw only boundaryedges
     Viewport.PenColor:=EdgeColor;
     Viewport.PenStyle:=psSolid;
     Viewport.PenWidth:=1 * PenwidthFactor;
-    for I:=1 to FBoundaryEdges.Count do
-    begin
+    for I:=1 to FBoundaryEdges.Count do begin
       Edge:=FBoundaryEdges[I - 1];
       S:=FPoints.SortedIndexOf(Edge.StartPoint);
       E:=FPoints.SortedIndexOf(Edge.EndPoint);
-      if (S <> -1) and (E <> -1) then
-      begin
+      if (S <> -1) and (E <> -1) then begin
         Pt:=Viewport.Project(self.Point[S]);
         Viewport.MoveTo(Pt.X, Pt.Y);
         Pt:=Viewport.Project(self.Point[E]);
         Viewport.LineTo(Pt.X, Pt.Y);
-        if FMirror then
-        begin
+        if FMirror then begin
           Pt:=Viewport.Project(MirrorPoint[S]);
           Viewport.MoveTo(Pt.X, Pt.Y);
           Pt:=Viewport.Project(MirrorPoint[E]);
@@ -568,9 +545,8 @@ begin
     end;
   end;
 
-  // draw dimensions
-  if ShowDimensions then
-  begin
+
+  if ShowDimensions then begin                               // draw dimensions
     Viewport.PenColor:=clBlack;
     Viewport.BrushStyle:=bsClear;
     Viewport.PenWidth:=PenwidthFactor;
@@ -583,33 +559,26 @@ begin
     Viewport.DrawingCanvas.Font.Name:=FDimFontName;
     Viewport.DrawingCanvas.Font.Size:=FDimFontSize;
 
-    for I:=1 to FBoundaryEdges.Count do
-    begin
+    for I:=1 to FBoundaryEdges.Count do begin
       Edge:=FBoundaryEdges[I - 1];
-      if (not FMirror) or (FMirror and (abs(Edge.FStartPoint.Coordinate.Y) > 1e-3) and
-        (abs(Edge.FEndPoint.Coordinate.Y) > 1e-3)) then
-      begin
+      if (not FMirror) or (FMirror and (abs(Edge.FStartPoint.Coordinate.Y)>1e-3)
+      and (abs(Edge.FEndPoint.Coordinate.Y) > 1e-3)) then begin
         S:=FPoints.SortedIndexOf(Edge.StartPoint);
         E:=FPoints.SortedIndexOf(Edge.EndPoint);
-        if (S <> -1) and (E <> -1) then
-        begin
+        if (S <> -1) and (E <> -1) then begin
           DrawDimension(self.Point[S], self.Point[E]);
-          if FMirror then
-            DrawDimension(MirrorPoint[S], MirrorPoint[E]);
+          if FMirror then DrawDimension(MirrorPoint[S], MirrorPoint[E]);
         end;
       end;
     end;
-
-    for I:=1 to FCorners.Count do
-    begin
+    for I:=1 to FCorners.Count do begin
       Point:=FCorners[I - 1];
       S:=FPoints.SortedIndexOf(Point);
       P1:=Self.Point[S];
       Str:='(' + ConvertDimension(P1.X, Units) + ' / ' + ConvertDimension(P1.Y, Units) + ')';
       Pt:=Viewport.Project(P1);
       Viewport.TextOut(Pt.X - Viewport.TextWidth(Str) div 2, Pt.Y, Str);
-      if FMirror then
-      begin
+      if FMirror then begin
         P1:=Self.MirrorPoint[S];
         Str:='(' + ConvertDimension(P1.X, Units) + ' / ' + ConvertDimension(P1.Y, Units) + ')';
         Pt:=Viewport.Project(P1);
@@ -618,54 +587,35 @@ begin
     end;
   end;
   // show edges with errors
-  if ShowErrorEdges then
-  begin
+  if ShowErrorEdges then begin
     Viewport.PenWidth:=2 * PenwidthFactor;
-    for I:=1 to FEdges.Count do
-    begin
-      if abs(FEdgeErrors[I - 1]) > 1e-4 then
-      begin
-        if FEdgeErrors[I - 1] > 0 then
-          Viewport.PenColor:=clRed
-        else
-          Viewport.PenColor:=clBlue;
-        Edge:=Fedges[I - 1];
+    for I:=1 to FEdges.Count do begin
+      if abs(FEdgeErrors[I-1]) > 1e-4 then begin
+        if FEdgeErrors[I-1] > 0 then Viewport.PenColor:=clRed
+                                else Viewport.PenColor:=clBlue;
+        Edge:=Fedges[I-1];
         S:=FPoints.SortedIndexOf(Edge.StartPoint);
         E:=FPoints.SortedIndexOf(Edge.EndPoint);
-        if (S <> -1) and (E <> -1) then
-        begin
+        if (S <> -1) and (E <> -1) then begin
           Pt:=Viewport.Project(self.Point[S]);
           Viewport.MoveTo(Pt.X, Pt.Y);
           Pt:=Viewport.Project(self.Point[E]);
           Viewport.LineTo(Pt.X, Pt.Y);
-          if FMirror then
-          begin
+          if FMirror then begin
             Pt:=Viewport.Project(MirrorPoint[S]);
             Viewport.MoveTo(Pt.X, Pt.Y);
             Pt:=Viewport.Project(MirrorPoint[E]);
             Viewport.LineTo(Pt.X, Pt.Y);
           end;
-
         end;
       end;
     end;
   end;
-
-  if ShowStations then
-    for I:=1 to FStations.Count do
-      DrawSpline(FStations[I - 1]);
-  if ShowButtocks then
-    for I:=1 to FButtocks.Count do
-      DrawSpline(FButtocks[I - 1]);
-  if ShowWaterlines then
-    for I:=1 to FWaterlines.Count do
-      DrawSpline(FWaterlines[I - 1]);
-  if ShowDiagonals then
-    for I:=1 to FDiagonals.Count do
-      DrawSpline(FDiagonals[I - 1]);
-
-  if ShowPartName then
-  begin
+  if ShowStations then for I:=1 to FStations.Count do DrawSpline(FStations[I-1]);
+  if ShowButtocks then for I:=1 to FButtocks.Count do DrawSpline(FButtocks[I-1]);
+  if ShowWaterlines then for I:=1 to FWaterlines.Count do DrawSpline(FWaterlines[I-1]);
+  if ShowDiagonals then for I:=1 to FDiagonals.Count do DrawSpline(FDiagonals[I-1]);
+  if ShowPartName then begin
     P1:=ConvertTo3D(MidPoint);
     Pt:=Viewport.Project(P1);
     Viewport.FontHeight:=FDimFontSize; //7
@@ -680,60 +630,48 @@ begin
     Viewport.BrushStyle:=bsClear;
     Viewport.TextOut(Pt.X - Viewport.TextWidth(Name) div 2, Pt.Y, Name);
   end;
-  if (ShowBoundingBox) and (not viewport.Printing) then
-  begin
+  if (ShowBoundingBox) and (not viewport.Printing) then begin
     Viewport.PenColor:=clBlack;
     Viewport.PenStyle:=psDot;
     Viewport.PenWidth:=1;
     Viewport.BrushStyle:=bsClear;
     Extents(Min, Max);
     Setlength(Pts, 4);
-    P1:=Min;
-    Pts[0]:=Viewport.Project(P1);
-    P1.X:=Max.X;
-    Pts[1]:=Viewport.Project(P1);
-    P1.Y:=Max.Y;
-    Pts[2]:=Viewport.Project(P1);
-    P1.X:=Min.X;
-    Pts[3]:=Viewport.Project(P1);
-    Viewport.Polygon(Pts);
+    P1:=Min;     Pts[0]:=Viewport.Project(P1);
+    P1.X:=Max.X; Pts[1]:=Viewport.Project(P1);
+    P1.Y:=Max.Y; Pts[2]:=Viewport.Project(P1);
+    P1.X:=Min.X; Pts[3]:=Viewport.Project(P1); Viewport.Polygon( Pts );
   end;
   Viewport.BrushStyle:=bsClear;
   Viewport.FontColor:=clBlack;
-
-end;{TFreeDevelopedPatch.Draw}
+end;
 
 procedure TFreeDevelopedPatch.Extents(var Min, Max: T3DCoordinate);
 var
   I: integer;
   P: T3DCoordinate;
 begin
-  if FPoints.Count = 0 then
-  begin
+  if FPoints.Count = 0 then begin
     Min.X:=-1.0;
     Min.Y:=-1.0;
     Min.Z:=0.0;
     Max.X:=1.0;
     Max.Y:=1.0;
     Max.Z:=0.0;
-  end
-  else
-    for I:=1 to FPoints.Count do
-    begin
+  end else
+  for I:=1 to FPoints.Count do begin
       P:=Point[I - 1];
-      if I = 1 then
-      begin
+      if I = 1 then begin
         Min:=P;
         Max:=Min;
       end;
       MinMax(P, Min, Max);
-      if FMirror then
-      begin
+      if FMirror then begin
         P:=MirrorPoint[I - 1];
         MinMax(P, Min, Max);
       end;
     end;
-end;{TFreeDevelopedPatch.Extents}
+end;
 
 procedure TFreeDevelopedPatch.IntersectPlane(Plane: T3DPlane; Color: TColor);
 type
@@ -741,7 +679,6 @@ type
     Point: T3DCoordinate;
     Knuckle: boolean;
   end;
-
 var
   I, J, K: integer;
   Index1: integer;
@@ -760,26 +697,21 @@ var
   NoPoints: integer;
   Dest: TFasterListTFreeSpline;
 begin
-
   ArrayLength:=10;
   Setlength(IntArray, ArrayLength);
   Dest:=TFasterListTFreeSpline.Create;
-
-  for J:=1 to FDoneList.Count do
-  begin
+  for J:=1 to FDoneList.Count do begin
     Face:=FDoneList[J - 1];
     NoPoints:=0;
     P1:=Face.Point[Face.NumberOfPoints - 1];
     Side1:=Plane.A * P1.Coordinate.x + Plane.B * P1.Coordinate.y + Plane.C *
       P1.Coordinate.z + Plane.D;
-    for K:=1 to Face.FPoints.Count do
-    begin
+    for K:=1 to Face.FPoints.Count do begin
       P2:=Face.FPoints[K - 1];
       Side2:=Plane.A * P2.Coordinate.x + Plane.B * P2.Coordinate.y +
         Plane.C * P2.Coordinate.z + Plane.D;
       if ((Side1 < -1e-5) and (Side2 > 1e-5)) or
-        ((Side1 > 1e-5) and (Side2 < -1e-5)) then
-      begin
+        ((Side1 > 1e-5) and (Side2 < -1e-5)) then begin
         // regular intersection of edge
         // add the edge to the list
         Parameter:=-side1 / (side2 - side1);
@@ -791,30 +723,18 @@ begin
           (F2DCoordinates[Index2].Coordinate.Y - F2DCoordinates[Index1].Coordinate.Y);
         Output.Z:=0.0;
         Inc(NoPoints);
-        if NoPoints > ArrayLength then
-        begin
+        if NoPoints > ArrayLength then begin
           Inc(ArrayLength, 10);
           Setlength(IntArray, ArrayLength);
         end;
-        IntArray[NoPoints - 1].Point:=Output;
+        IntArray[NoPoints-1].Point:=Output;
         Edge:=Owner.FOwner.EdgeExists(P1, P2);
-        if Edge <> nil then
-          IntArray[NoPoints - 1].Knuckle:=Edge.Crease
-        else
-          IntArray[NoPoints - 1].Knuckle:=False;
-      end
-      else
-      begin
-        // Does the edge lie entirely within the plane??
-        if ((abs(side1) <= 1e-5) and (abs(Side2) <= 1e-5)) then
-        begin
-        end
-        else if abs(Side2) < 1e-5 then
-        begin
-          Inc(NoPoints);
-          if NoPoints > ArrayLength then
-          begin
-            Inc(ArrayLength, 10);
+        if Edge <> nil then IntArray[NoPoints-1].Knuckle:=Edge.Crease
+                       else IntArray[NoPoints-1].Knuckle:=False;
+      end else begin           // Does the edge lie entirely within the plane??
+        if ((abs(side1) <= 1e-5) and (abs(Side2) <= 1e-5)) then begin  end else
+        if abs(Side2) < 1e-5 then begin Inc(NoPoints);
+          if NoPoints > ArrayLength then  begin Inc(ArrayLength, 10);
             Setlength(IntArray, ArrayLength);
           end;
           Index2:=FPoints.SortedIndexOf(P2);
@@ -827,19 +747,16 @@ begin
       P1:=P2;
       Side1:=Side2;
     end;
-    if NoPoints > 1 then
-    begin
+    if NoPoints > 1 then begin
       if DistPP3D(IntArray[0].Point, IntArray[NoPoints - 1].Point) < 1e-4 then
       begin
         Dec(NoPoints);
       end;
-      if NoPoints > 1 then
-      begin
+      if NoPoints > 1 then begin
         Spline:=TFreeSpline.Create(Owner.Surface);
         Spline.Color:=Color;
         Spline.Capacity:=NoPoints;
-        for K:=1 to NoPoints do
-        begin
+        for K:=1 to NoPoints do begin
           Spline.Add(IntArray[K - 1].Point);
           Spline.Knuckle[Spline.NumberOfPoints - 1]:=IntArray[K - 1].Knuckle;
         end;
@@ -848,19 +765,14 @@ begin
     end;
   end;
 
-  if Dest.Count > 1 then
-  begin
+  if Dest.Count > 1 then begin
     Dest.Capacity:=Dest.Count;
     JoinSplineSegments(0.01, False, Dest);
-    for I:=Dest.Count downto 1 do
-    begin
-      // Remove tiny fragments of very small length
+    for I:=Dest.Count downto 1 do begin // Remove tiny fragments of very small length
       Spline:=Dest[I - 1];
-      if Spline.NumberOfPoints > 1 then
-      begin
+      if Spline.NumberOfPoints > 1 then begin
         Parameter:=SquaredDistPP(Spline.Min, Spline.Max);
-        if Parameter < 1e-3 then
-        begin
+        if Parameter < 1e-3 then begin
           FreeAndNil(Spline);
           Dest.Delete(I - 1);
         end;

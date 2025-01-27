@@ -96,7 +96,7 @@ Function GetInteger( const S:String ): Integer;
 Function GetBoolean( const S:String ): Boolean;
 Function FloatTypeToStr( Value: TFloatType ): String;
 Procedure WestPoint;
-Function BlankOff( S:string ): string;
+Function BlankOff( S: AnsiString ): AnsiString;
 //Function Dist( A:T3DVector ): TFloatType;
 
 Implementation
@@ -212,12 +212,14 @@ Begin DefaultFormatSettings.DecimalSeparator:='.';
       DefaultFormatSettings.ShortTimeFormat:='hh:nn:ss';
       FormatSettings:=DefaultFormatSettings;
 end;
-Function BlankOff( S:string ): string; var I,J,K,L:integer;
+Function BlankOff( S: AnsiString ): AnsiString; var I,J,K,L:integer;
 begin J:=1; K:=1; L:=Length( S );       // вычистка лишних пробелов и пропусков
   for I:=1 to L do
-    if S[I]>' ' then begin S[J]:=S[I]; inc( J ); K:=J; end else
-    if (J>1) and (J=K) then begin S[J]:=' '; inc( J ); end;
-  for I:=J to L do S[I]:=' '; Result:=S;
+    if S[I]>' ' then begin S[J]:=S[I]; if I<L then inc( J ); K:=J; end else
+      if (J>1) and (J=K) then begin S[J]:=' '; if J<L then inc( J ); end;
+    //for I:=J to L do S[I]:=' ';
+    SetLength( S,J );
+    Result:=S;
 end;
 
 end.

@@ -8,11 +8,11 @@ procedure TFreeProjectSettings.FSetFreeHydrostaticCoefficients
           ( val: TFreeHydrostaticCoeff );
 var I: integer;
 begin
-  if val <> FFreeHydrostaticCoefficients then begin
+  if val<>FFreeHydrostaticCoefficients then begin
     FFreeHydrostaticCoefficients:=val;
     FreeShip.FileChanged:=True;
-    for I:=1 to FreeShip.NumberOfHydrostaticCalculations do
-      FreeShip.HydrostaticCalculation[I - 1].Calculated:=False;
+    for I:=0 to FreeShip.NumberOfHydrostaticCalculations-1 do
+      FreeShip.HydrostaticCalculation[I].Calculated:=False;
   end;
 end;
 
@@ -60,8 +60,7 @@ begin
 end;
 
 procedure TFreeProjectSettings.FSetProjectDraft(Val: TFloatType);
-var
-  I: integer;
+var I: integer;
 begin
   if abs(Val - FProjectDraft) > 1e-7 then begin
     FProjectDraft:=Val;
@@ -86,88 +85,58 @@ begin
 end;
 
 procedure TFreeProjectSettings.FSetProjectWaterDensity(Val: TFloatType);
-begin
-  if abs( Val-FProjectWaterDensity )>1e-6 then begin
-    FProjectWaterDensity:=Val; FreeShip.FileChanged:=True;
-  end;
+begin if abs( Val-FProjectWaterDensity )>1e-6 then
+      begin FProjectWaterDensity:=Val; FreeShip.FileChanged:=True; end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectWaterTemper(Val: TFloatType);
-begin
-  if abs( Val-FProjectWaterTemper )>1e-6 then begin
-    FProjectWaterTemper:=Val; FreeShip.FileChanged:=True;
-  end;
+begin if abs( Val-FProjectWaterTemper )>1e-6 then
+      begin FProjectWaterTemper:=Val; FreeShip.FileChanged:=True; end;
 end;
-
 procedure TFreeProjectSettings.FSetSavePreview(val: boolean);
-begin
-  if val <> FSavePreview then begin
-    FSavePreview:=Val; FreeShip.FileChanged:=True;
-  end;
+begin if val <> FSavePreview then
+      begin FSavePreview:=Val; FreeShip.FileChanged:=True; end;
 end;
-
 procedure TFreeProjectSettings.FSetStartDraft(Val: TFloatType);
-begin
-  if Val <> FStartDraft then begin
-    FStartdraft:=Val; FreeShip.FileChanged:=True;
-  end;
+begin if Val <> FStartDraft then
+      begin FStartdraft:=Val; FreeShip.FileChanged:=True; end;
 end;
-
 procedure TFreeProjectSettings.FSetTrim(Val: TFloatType);
-begin
-  if Val<>FTrim then begin FTrim:=Val; FreeShip.FileChanged:=True; end;
+begin if Val<>FTrim then begin FTrim:=Val; FreeShip.FileChanged:=True; end;
 end;
-
 procedure TFreeProjectSettings.FSetEndDraft(Val: TFloatType);
 begin
   if Val<>FEndDraft then begin FEnddraft:=Val; FreeShip.FileChanged:=True; end;
 end;
-
 procedure TFreeProjectSettings.FSetDraftStep(Val: TFloatType);
-begin
-  if Val<>FDraftStep then begin FDraftStep:=Val; FreeShip.FileChanged:=True; end;
+begin if Val<>FDraftStep then
+      begin FDraftStep:=Val; FreeShip.FileChanged:=True; end;
 end;
-
 procedure TFreeProjectSettings.FSetUseDefaultSplitSectionLocation(Val: boolean);
-begin
-  if val <> FUseDefaultSplitSectionLocation then begin
-    FUseDefaultSplitSectionLocation:=Val; FreeShip.FileChanged:=True;
-  end;
+begin if val<>FUseDefaultSplitSectionLocation then
+      begin FUseDefaultSplitSectionLocation:=Val; FreeShip.FileChanged:=True; end;
 end;
-
-procedure TFreeProjectSettings.FSetProjectName(Val: string);
-begin
-  if val <> FProjectName then begin
-    FProjectName:=Val; FreeShip.FileChanged:=True;
-  end;
+{
+procedure TFreeProjectSettings.FSetProjectName( Val: string );
+begin if val<>FProjectName then            // CompareStr( val,FProjectName )<>0
+      begin FProjectName:=Val; FreeShip.FileChanged:=True; end;
 end;
-
-procedure TFreeProjectSettings.FSetProjectDesigner(Val: string);
-begin
-  if val <> FProjectDesigner then begin
-    FProjectDesigner:=Val; FreeShip.FileChanged:=True;
-  end;
+procedure TFreeProjectSettings.FSetProjectDesigner( Val: string );
+begin if val<>FProjectDesigner then
+      begin FProjectDesigner:=Val; FreeShip.FileChanged:=True; end;
 end;
-
 procedure TFreeProjectSettings.FSetProjectComment(Val: string);
-begin
-  if val <> FProjectComment then begin
-    FProjectComment:=Val; FreeShip.FileChanged:=True;
-  end;
+begin if val <> FProjectComment then
+      begin FProjectComment:=Val; FreeShip.FileChanged:=True; end;
 end;
-
 procedure TFreeProjectSettings.FSetProjectFileCreatedBy(Val: string);
-begin
-  if val <> FProjectFileCreatedBy then begin
-    FProjectFileCreatedBy:=Val; FreeShip.FileChanged:=True;
-  end;
+begin if val <> FProjectFileCreatedBy then
+      begin FProjectFileCreatedBy:=Val; FreeShip.FileChanged:=True; end;
 end;
-
+}
 procedure TFreeProjectSettings.FSetProjectShadeUnderwaterShip(Val: boolean);
-begin
-  if val <> FProjectShadeUnderwaterShip then begin
-    FProjectShadeUnderwaterShip:=Val; FreeShip.FileChanged:=True;
-  end;
+begin if val <> FProjectShadeUnderwaterShip then
+      begin FProjectShadeUnderwaterShip:=Val; FreeShip.FileChanged:=True; end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectSimplifyIntersections(val: boolean);
@@ -306,12 +275,12 @@ var
 begin
   ProjectPrecision:=FreeShip.Precision;
   Dialog:=TFreeProjectSettingsDialog.Create(FreeShip);
-  Dialog.Edit1.Text:=ProjectName;
+  Dialog.Edit1.Text:=ProjectName;           //  'Project name'
+  Dialog.Edit7.Text:=ProjectDesigner;       //  'Designer'
+  Dialog.Edit9.Text:=ProjectComment;        //  'Comment'
+  Dialog.Edit10.Text:=ProjectFileCreatedBy; //  'File created by'
   Dialog.UnitBox.ItemIndex:=Ord(ProjectUnits);
   Dialog.PrecisionBox.ItemIndex:=Ord(ProjectPrecision);
-  Dialog.Edit7.Text:=ProjectDesigner;
-  Dialog.Edit9.Text:=ProjectComment;
-  Dialog.Edit10.Text:=ProjectFileCreatedBy;
   Dialog.Length:=ProjectLength;
   Dialog.Beam:=ProjectBeam;
   Dialog.Draft:=ProjectDraft;
@@ -336,14 +305,13 @@ begin
   Dialog.CheckBox9.Checked:=FreeShip.Visibility.FShowHydrostLateralArea;
   Dialog.cbSimplifyIntersections.Checked:=ProjectSimplifyIntersections;
   ShowTranslatedValues(Dialog);
+  if Dialog.Execute then begin
+    FreeShip.Edit.CreateUndoObject( 'Project settings ', True );
 
-  if Dialog.Execute then
-  begin
-    FreeShip.Edit.CreateUndoObject( 'Project settings ', True);
-    ProjectName:=Dialog.Edit1.Text;
-    ProjectDesigner:=Dialog.Edit7.Text;
-    ProjectComment:=Dialog.Edit9.Text;
-    ProjectFileCreatedBy:=Dialog.Edit10.Text;
+    FProjectName         :=BlankOff( Dialog.Edit1.Text ); //ProjectName.Trim;
+    FProjectDesigner     :=BlankOff( Dialog.Edit7.Text ); //ProjectDesigner.Trim;
+    FProjectComment      :=BlankOff( Dialog.Edit9.Text ); //ProjectComment.Trim;
+    FProjectFileCreatedBy:=BlankOff( Dialog.Edit10.Text); //ProjectFileCreatedBy.Trim;
     ProjectUnits:=TFreeUnitType(Dialog.UnitBox.ItemIndex);
     ProjectPrecision:=TFreePrecisionType(Dialog.PrecisionBox.ItemIndex);
 
@@ -401,6 +369,10 @@ begin
   Source.LoadString(FProjectComment);
   Source.LoadString(FProjectFileCreatedBy);
   FSavePreview:=false;
+                            FProjectDesigner:=BlankOff(FProjectDesigner); //???
+                                FProjectName:=BlankOff(FProjectName);
+                             FProjectComment:=BlankOff(FProjectComment);
+                       FProjectFileCreatedBy:=BlankOff(FProjectFileCreatedBy);
   if FreeShip.FileVersion >= fv210 then begin
     Source.LoadInteger(I);
     FFreeHydrostaticCoefficients:=TFreeHydrostaticCoeff(I);
@@ -452,8 +424,8 @@ var
   I: integer;
 begin
   if FreeShip.FileVersion >= fv120 then begin
-    Destination.Add(ProjectName);
-    Destination.Add(ProjectDesigner);
+    Destination.Add(BlankOff(ProjectName));
+    Destination.Add(BlankOff(ProjectDesigner));
     Destination.Add(FProjectlength);
     Destination.Add(FProjectBeam);
     Destination.Add(FProjectDraft);
@@ -468,8 +440,8 @@ begin
       Destination.Add(FProjectSplitSectionLocation);
       if FreeShip.FileVersion >= fv165 then Destination.Add(DisableModelCheck);
     end;
-    Destination.Add( FProjectComment );
-    Destination.Add( FProjectFileCreatedBy );
+    Destination.Add(BlankOff(FProjectComment));
+    Destination.Add(BlankOff(FProjectFileCreatedBy));
     if FreeShip.FileVersion >= fv210 then begin
       Destination.Add( Ord( ProjectCoefficients ) );
       Jpg:=FreeShip.FGetPreview;

@@ -1,4 +1,3 @@
-
 unit FreeProjectSettingsDlg;
 
 {$IFDEF FPC}
@@ -6,39 +5,37 @@ unit FreeProjectSettingsDlg;
 {$ENDIF}
 
 interface
-
 uses
-  SysUtils,
-  Variants,
   Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  ExtCtrls,
-  StdCtrls,
-  FreeGeometry, FreeLanguageSupport,
-  Buttons, ComCtrls, Spin, Menus;
+  Controls,  Forms,
+  Dialogs,   ExtCtrls,
+  StdCtrls,  Buttons,
+  ComCtrls,  Spin,
+  FreeGeometry,FreeLanguageSupport;
 
 type                                             { TFREEProjectSettingsDialog }
-  TFREEProjectSettingsDialog = class(TForm)
-    ColorDialog:                                TColorDialog;
-    ComboBox1,Unitbox,PrecisionBox:             TComboBox;
+  TFREEProjectSettingsDialog = class( TForm )
+    ColorDialog:                              TColorDialog;
+    ComboBox1,Unitbox,PrecisionBox:           TComboBox;
     cbSavePreviewImage,cbShadeUnderwater,cbSimplifyIntersections,
     CheckBox11,CheckBox12,CheckBox2,CheckBox5,CheckBox6,CheckBox7,
-    CheckBox8,CheckBox9,CheckBox3,CheckBox13:   TCheckBox;
-    Edit2,Edit3,Edit4,Edit5,Edit6,                                 // MainFrame
-    Edit8,Edit25,Edit26,Edit27:                 TFloatSpinEdit;
-    GroupBox1:                                  TGroupBox;
-    lbWaterDensity,Label10,Label11,Label12,Label27,Label13,Label14,
-    Label17,Label18,Label19,Label2,Label20,Label21,Label22,Label23,
-    Label24,Label25,Label26,Label3, Label4,Label5,Label6,Label9,
-    Label1,Label7,Label8,Label15,Label16:       TLabel;
+    CheckBox8,CheckBox9,CheckBox3,CheckBox13: TCheckBox;           // MainFrame
+    Edit2,Edit3,Edit4,Edit5,Edit6,
+    Edit8,Edit25,Edit26,Edit27: TFloatSpinEdit;
+    GroupBox1: TGroupBox;
+    Label1:  TLabel;  Edit1:  TEdit;  //  'Project name'
+    Label7:  TLabel;  Edit7:  TEdit;  //  'Designer'
+    Label15: TLabel;  Edit9:  TEdit;  //  'Comment'
+    Label16: TLabel;  Edit10: TEdit;  //  'File created by'
+                      Edit17: TEdit;
+    lbWaterDensity, Label2, Label10,Label11,Label12,Label27,Label13,Label14,
+    Label17,Label18,Label19,Label20,Label21,Label22,Label23,Label24,Label25,
+    Label26,Label3, Label4,Label6,Label9,Label8,Label5:              TLabel;
     Panel,Panel1,Panel2,Panel3,Panel4,Panel6,Panel7,Panel8,
     Panel5,Panel9,Panel10,Panel11,Panel12,Panel13,Panel14: TPanel;
     BitBtn1,BitBtn2:                            TSpeedButton;
     PageControl1:                               TPageControl;
     seUnderwaterOpacity:                        TSpinEdit;
-    Edit1,Edit7,Edit9,Edit10,Edit17:            TEdit;
     TabSheet1,TabSheet2,TabSheet3:              TTabSheet;
     procedure Edit2EditingDone(Sender: TObject);
     procedure Edit3EditingDone(Sender: TObject);
@@ -79,8 +76,8 @@ type                                             { TFREEProjectSettingsDialog }
     property Draft: double       read FGetDraft write FSetDraft;
     property Length: double      read FGetLength write FSetLength;
     property Mainframe: double   read FGetMainframe write FSetMainframe;
-    property YWindAreaMax: double read FGetYWindAreaMax write FSetYWindAreaMax;
-    property XWindAreaMax: double read FGetXWindAreaMax write FSetXWindAreaMax;
+    property YWindAreaMax:double read FGetYWindAreaMax write FSetYWindAreaMax;
+    property XWindAreaMax:double read FGetXWindAreaMax write FSetXWindAreaMax;
   end;
 
 var
@@ -147,16 +144,16 @@ procedure TFREEProjectSettingsDialog.FSetXWindAreaMax(Val: double);
 procedure TFREEProjectSettingsDialog.FSetUnitCaptions;
 var Str: string;
 begin
-  if UnitBox.ItemIndex = 1 then Str:=LengthStr(fuImperial)
-                           else Str:=Lengthstr(fuMetric);
+  if UnitBox.ItemIndex = 1 then Str:=LengthStr( fuImperial )
+                           else Str:=Lengthstr( fuMetric );
   Label9.Caption:=Str;
   Label10.Caption:=Str;
   Label11.Caption:=Str;
   Label14.Caption:=Str;
   Label21.Caption:=Str;
   Label23.Caption:=Str;
-  if UnitBox.ItemIndex = 1 then Str:=DensityStr(fuImperial)
-                           else Str:=DensityStr(fuMetric);
+  if UnitBox.ItemIndex = 1 then Str:=DensityStr( fuImperial )
+                           else Str:=DensityStr( fuMetric );
   lbWaterDensity.Caption:=Str;
 end;
 

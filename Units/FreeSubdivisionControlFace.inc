@@ -555,8 +555,7 @@ var
     L, Ldes: TFloatType;
   begin
     if (Viewport.ViewType = fvBodyplan) and (not Surface.DrawMirror) and
-      (P.X <= Surface.SplitSectionLocation) then
-    begin
+      (P.X <= Surface.SplitSectionLocation) then begin
       P.Y:=-P.Y;
       N.Y:=-N.Y;
     end;
@@ -593,76 +592,61 @@ var
 
   procedure ZebraStripe(Camera: T3DCoordinate;
     Point1, Point2, Point3: TFreeSubdivisionPoint; R, G, B, Zr, Zg, Zb: byte);
-  const
-    Width = 0.02;
+  const Width = 0.02;
   var
-    d1, d2, d3: TFloatType;
-    Mindp, Maxdp: TFloatType;
-    Eye, Vector: T3DCoordinate;
-    P1, P2, P3: T3DCoordinate;
-    N1, N2, N3: T3DCoordinate;
     NInt, Lo, Hi: integer;
+    d1, d2, d3, Mindp, Maxdp: TFloatType;
+    Eye, Vector,  P1, P2, P3, N1, N2, N3: T3DCoordinate;
     Pts: array of T3DCoordinate;
     I, J, Npts: integer;
 
     procedure Add(P: T3DCoordinate; Dp: TFloatType);
     begin
-      if NInt = Capacity then
-      begin
-        Inc(Capacity, 10);
+      if NInt = Capacity then begin
+        Inc( Capacity,10 );
         Setlength(Intersections, Capacity);
       end;
-      Inc(NInt);
-      Intersections[NInt - 1].P:=P;
-      Intersections[NInt - 1].DotProd:=Dp;
+      Inc( NInt );
+      Intersections[NInt-1].P:=P;
+      Intersections[NInt-1].DotProd:=Dp;
     end;
 
     procedure Process(P: T3DCoordinate; Dp: TFloatType);
     var
-      PrevDp: TFloatType;
       I, L, H: integer;
-      Val, T: TFloatType;
+      PrevDp,Val,T: TFloatType;
       PrevP, P3D: T3DCoordinate;
     begin
-      PrevDp:=Intersections[NInt - 1].DotProd;
+      PrevDp:=Intersections[NInt-1].DotProd;
       L:=Trunc(PrevDp / Width);
       H:=Trunc(Dp / Width);
-      if (H - L) > 0 then
-      begin
-        PrevP:=Intersections[NInt - 1].P;
-        for I:=L to H do
-        begin
+      if (H-L) > 0 then begin
+        PrevP:=Intersections[NInt-1].P;
+        for I:=L to H do begin
           Val:=I * Width;
-          if (Val > PrevDp) and (Val < Dp) then
-          begin
+          if (Val > PrevDp) and (Val < Dp) then begin
+            T:=(Val-PrevDp) / (Dp-PrevDp);
+            P3D.X:=PrevP.X + T * (P.X-PrevP.X);
+            P3D.Y:=PrevP.Y + T * (P.Y-PrevP.Y);
+            P3D.Z:=PrevP.Z + T * (P.Z-PrevP.Z);
+            Add(P3D, Val);
+          end;
+        end;
+        Add( P,Dp );
+      end else
+      if L - H > 0 then begin
+        PrevP:=Intersections[NInt - 1].P;
+        for I:=L downto H do begin
+          Val:=I * Width;
+          if (Val < PrevDp) and (Val > Dp) then begin
             T:=(Val - PrevDp) / (Dp - PrevDp);
             P3D.X:=PrevP.X + T * (P.X - PrevP.X);
             P3D.Y:=PrevP.Y + T * (P.Y - PrevP.Y);
             P3D.Z:=PrevP.Z + T * (P.Z - PrevP.Z);
             Add(P3D, Val);
           end;
-        end;
-        Add(P, Dp);
-      end
-      else if L - H > 0 then
-      begin
-        PrevP:=Intersections[NInt - 1].P;
-        for I:=L downto H do
-        begin
-          Val:=I * Width;
-          if (Val < PrevDp) and (Val > Dp) then
-          begin
-            T:=(Val - PrevDp) / (Dp - PrevDp);
-            P3D.X:=PrevP.X + T * (P.X - PrevP.X);
-            P3D.Y:=PrevP.Y + T * (P.Y - PrevP.Y);
-            P3D.Z:=PrevP.Z + T * (P.Z - PrevP.Z);
-            Add(P3D, Val);
-          end;
-        end;
-        Add(P, Dp);
-      end
-      else
-        Add(P, Dp);
+        end;   Add( P,Dp );
+      end else Add( P,Dp );
     end;{Process}
 
   begin
@@ -671,82 +655,53 @@ var
     P2:=Point2.FCoordinate;
     P3:=Point3.FCoordinate;
     Vector:=UnifiedNormal(P1, P2, P3);
-    if Point1.VertexType in [svRegular, svDart] then
-      N1:=Point1.Normal
-    else
-      N1:=Vector;
-    if Point2.VertexType in [svRegular, svDart] then
-      N2:=Point2.Normal
-    else
-      N2:=Vector;
-    if Point3.VertexType in [svRegular, svDart] then
-      N3:=Point3.Normal
-    else
-      N3:=Vector;
+    if Point1.VertexType in [svRegular, svDart] then N1:=Point1.Normal
+                                                else N1:=Vector;
+    if Point2.VertexType in [svRegular, svDart] then N2:=Point2.Normal
+                                                else N2:=Vector;
+    if Point3.VertexType in [svRegular, svDart] then N3:=Point3.Normal
+                                                else N3:=Vector;
     Eye:=Normalize(Subtract(Camera, P1));
-    d1:=Dotproduct(Eye, N1);
-    if d1 < 0 then
-      d1:=-d1;
+    d1:=Dotproduct(Eye, N1); if d1 < 0 then d1:=-d1;
     Eye:=Normalize(Subtract(Camera, P2));
-    d2:=Dotproduct(Eye, N2);
-    if d2 < 0 then
-      d2:=-d2;
+    d2:=Dotproduct(Eye, N2); if d2 < 0 then d2:=-d2;
     Eye:=Normalize(Subtract(Camera, P3));
-    d3:=Dotproduct(Eye, N3);
-    if d3 < 0 then
-      d3:=-d3;
+    d3:=Dotproduct(Eye, N3); if d3 < 0 then d3:=-d3;
 
     MindP:=d1;
     MaxDp:=d1;
-    if d2 < Mindp then
-      Mindp:=d2;
-    if d2 > Maxdp then
-      Maxdp:=d2;
-    if d3 < Mindp then
-      Mindp:=d3;
-    if d3 > Maxdp then
-      Maxdp:=d3;
+    if d2 < Mindp then Mindp:=d2;
+    if d2 > Maxdp then Maxdp:=d2;
+    if d3 < Mindp then Mindp:=d3;
+    if d3 > Maxdp then Maxdp:=d3;
 
     Lo:=Trunc(MinDp / Width);
-    if Lo < 0 then
-      Lo:=0;
+    if Lo < 0 then Lo:=0;
     Hi:=trunc(MaxDp / Width);
-    if Hi > Round(1 / Width) then
-      Hi:=Round(1 / Width);
-    if Lo = Hi then
-    begin
-      if not odd(Lo) then
-        Viewport.ShadeTriangle(P1, P2, P3, R, G, B, Alpha)
-      else
-        Viewport.ShadeTriangle(P1, P2, P3, Zr, Zg, Zb, Alpha);
-    end
-    else
-    begin
+    if Hi > Round(1 / Width) then Hi:=Round(1 / Width);
+    if Lo = Hi then begin
+      if not odd(Lo) then Viewport.ShadeTriangle(P1, P2, P3, R, G, B, Alpha)
+                     else Viewport.ShadeTriangle(P1, P2, P3, Zr, Zg, Zb, Alpha);
+    end else begin
       Add(P1, d1);
       Process(P2, d2);
       Process(P3, d3);
       Process(P1, d1);
       Setlength(Pts, NInt);
-      for I:=Lo to Hi + 1 do
-      begin
-        NPts:=0;
-        for J:=1 to NInt - 1 do
-        begin
+      for I:=Lo to Hi + 1 do begin NPts:=0;
+        for J:=1 to NInt - 1 do begin
           if ((Intersections[J - 1].DotProd >= (I - 1) * Width) or
             (abs(Intersections[J - 1].DotProd - (I - 1) * Width) < 1e-6)) and
             ((Intersections[J - 1].DotProd <= I * Width) or
-            (abs(Intersections[J - 1].DotProd - I * Width) < 1e-6)) then
-          begin
+            (abs(Intersections[J - 1].DotProd - I * Width) < 1e-6)) then begin
             Inc(Npts);
             Pts[NPts - 1]:=Intersections[J - 1].P;
           end;
         end;
-        for J:=3 to NPts do
-        begin
-          if odd(I) then
-            Viewport.ShadeTriangle(Pts[0], Pts[J - 2], Pts[J - 1], R, G, B, Alpha)
-          else
-            Viewport.ShadeTriangle(Pts[0], Pts[J - 2], Pts[J - 1], Zr, Zg, Zb, Alpha);
+        for J:=3 to NPts do begin
+          if odd(I)
+          then Viewport.ShadeTriangle(Pts[0],Pts[J-2],Pts[J-1],R,G,B,Alpha)
+          else Viewport.ShadeTriangle(Pts[0],Pts[J-2],Pts[J-1],Zr,Zg,Zb,Alpha);
         end;
       end;
     end;
@@ -757,73 +712,46 @@ var
       P3.Y:=-P3.Y;
       N1.Y:=-N1.Y;
       N2.Y:=-N2.Y;
-      N3.Y:=-N3.Y;
-      NInt:=0;
+      N3.Y:=-N3.Y; NInt:=0;
 
-      Eye:=Normalize(Subtract(Camera, P1));
-      d1:=Dotproduct(Eye, N1);
-      if d1 < 0 then
-        d1:=-d1;
-      Eye:=Normalize(Subtract(Camera, P2));
-      d2:=Dotproduct(Eye, N2);
-      if d2 < 0 then
-        d2:=-d2;
-      Eye:=Normalize(Subtract(Camera, P3));
-      d3:=Dotproduct(Eye, N3);
-      if d3 < 0 then
-        d3:=-d3;
+      Eye:=Normalize(Subtract(Camera,P1)); d1:=Dotproduct(Eye,N1); if d1<0 then d1:=-d1;
+      Eye:=Normalize(Subtract(Camera,P2)); d2:=Dotproduct(Eye,N2); if d2<0 then d2:=-d2;
+      Eye:=Normalize(Subtract(Camera,P3)); d3:=Dotproduct(Eye,N3); if d3<0 then d3:=-d3;
 
       MindP:=d1;
       MaxDp:=d1;
-      if d2 < Mindp then
-        Mindp:=d2;
-      if d2 > Maxdp then
-        Maxdp:=d2;
-      if d3 < Mindp then
-        Mindp:=d3;
-      if d3 > Maxdp then
-        Maxdp:=d3;
+      if d2 < Mindp then Mindp:=d2;
+      if d2 > Maxdp then Maxdp:=d2;
+      if d3 < Mindp then Mindp:=d3;
+      if d3 > Maxdp then Maxdp:=d3;
 
       Lo:=Trunc(MinDp / Width);
-      if Lo < 0 then
-        Lo:=0;
+      if Lo < 0 then Lo:=0;
       Hi:=trunc(MaxDp / Width);
-      if Hi > Round(1 / Width) then
-        Hi:=Round(1 / Width);
-      if Lo = Hi then
-      begin
-        if not odd(Lo) then
-          Viewport.ShadeTriangle(P1, P2, P3, R, G, B, Alpha)
-        else
-          Viewport.ShadeTriangle(P1, P2, P3, Zr, Zg, Zb, Alpha);
-      end
-      else
-      begin
-        Add(P1, d1);
-        Process(P2, d2);
-        Process(P3, d3);
-        Process(P1, d1);
+      if Hi > Round(1 / Width) then Hi:=Round(1 / Width);
+      if Lo = Hi then begin
+        if not odd(Lo) then Viewport.ShadeTriangle( P1,P2,P3, R,G,B,Alpha )
+                       else Viewport.ShadeTriangle( P1,P2,P3, Zr,Zg,Zb,Alpha );
+      end else begin
+        Add( P1,d1 );
+        Process(P2,d2);
+        Process(P3,d3);
+        Process(P1,d1);
         Setlength(Pts, NInt);
-        for I:=Lo to Hi + 1 do
-        begin
-          NPts:=0;
-          for J:=1 to NInt - 1 do
-          begin
-            if ((Intersections[J - 1].DotProd >= (I - 1) * Width) or
-              (abs(Intersections[J - 1].DotProd - (I - 1) * Width) < 1e-6)) and
-              ((Intersections[J - 1].DotProd <= I * Width) or
-              (abs(Intersections[J - 1].DotProd - I * Width) < 1e-6)) then
-            begin
+        for I:=Lo to Hi+1 do begin NPts:=0;
+          for J:=1 to NInt-1 do begin
+            if ((Intersections[J-1].DotProd>=(I-1)*Width) or
+            (abs(Intersections[J-1].DotProd-(I-1)*Width)<1e-6)) and
+               ((Intersections[J-1].DotProd<=I*Width) or
+            (abs(Intersections[J-1].DotProd-I*Width)<1e-6)) then begin
               Inc(Npts);
               Pts[NPts - 1]:=Intersections[J - 1].P;
             end;
           end;
-          for J:=3 to NPts do
-          begin
-            if odd(I) then
-              Viewport.ShadeTriangle(Pts[0], Pts[J - 2], Pts[J - 1], R, G, B, Alpha)
-            else
-              Viewport.ShadeTriangle(Pts[0], Pts[J - 2], Pts[J - 1], Zr, Zg, Zb, Alpha);
+          for J:=3 to NPts do begin
+            if odd(I)
+            then Viewport.ShadeTriangle(Pts[0],Pts[J-2],Pts[J-1],R,G,B,Alpha)
+            else Viewport.ShadeTriangle(Pts[0],Pts[J-2],Pts[J-1],Zr,Zg,Zb,Alpha);
           end;
         end;
       end;
@@ -831,37 +759,33 @@ var
   end;{ZebraStripe}
 
 begin
-  if Viewport.ViewportMode <> vmWireframe then begin
-    R:=GetRValue(Layer.Color);
-    G:=GetGValue(Layer.Color);
-    B:=GetBValue(Layer.Color); Alpha:=Layer.AlphaBlend;
-
+  if Viewport.ViewportMode<>vmWireframe then begin
+    R:=GetRValue( Layer.Color );
+    G:=GetGValue( Layer.Color );
+    B:=GetBValue( Layer.Color ); Alpha:=Layer.AlphaBlend;
     if Self.Selected then begin
-      R:=GetRValue(Surface.SelectedColor);
-      G:=GetGValue(Surface.SelectedColor);
-      B:=GetBValue(Surface.SelectedColor);
+       R:=GetRValue( Surface.SelectedColor );
+       G:=GetGValue( Surface.SelectedColor );
+       B:=GetBValue( Surface.SelectedColor );
     end;
-
     Viewport.BeginUpdate;
-    if (Surface.ShadeUnderWater) and (Viewport.ViewportMode = vmShade) and
-       (Layer.UseInHydrostatics) then begin
-      // Clip all triangles against the waterline plane
-      // blend layer color with underwater color
-      uwR:=GetRValue(Surface.UnderWaterColor);
-      uwG:=GetGValue(Surface.UnderWaterColor);
-      uwB:=GetGValue(Surface.UnderWaterColor);
+    if (Surface.ShadeUnderWater)
+    and (Viewport.ViewportMode = vmShade)
+    and (Layer.UseInHydrostatics) then begin  // Clip all triangles against the waterline plane blend layer color with underwater color
+      uwR:=GetRValue( Surface.UnderWaterColor );
+      uwG:=GetGValue( Surface.UnderWaterColor );
+      uwB:=GetBValue( Surface.UnderWaterColor );
       uwA:=Surface.UnderWaterColorAlpha;
       Ru:=(R * (255-uwA) +  uwR * uwA) div 255;
       Gu:=(G * (255-uwA) +  uwG * uwA) div 255;
       Bu:=(B * (255-uwA) +  uwB * uwA) div 255;
-
-      Setlength(Above, 6);
-      setlength(Below, 6);
+      Setlength( Above,6 );
+      setlength( Below,6 );
       for I:=1 to ChildCount do begin
-        Child:=Self.Child[I - 1];
-        for J:=2 to Child.NumberOfpoints - 1 do begin
+        Child:=Self.Child[I-1];
+        for J:=2 to Child.NumberOfpoints-1 do begin
           P1:=Child.Point[0].Coordinate;
-          P2:=Child.Point[J - 1].Coordinate;
+          P2:=Child.Point[J-1].Coordinate;
           P3:=Child.Point[J].Coordinate;       // Check if clipping is required
           Min:=Surface.WaterlinePlane.a * P1.x + Surface.WaterlinePlane.b *
             P1.y + Surface.WaterlinePlane.c * P1.z + Surface.WaterlinePlane.d;
@@ -874,13 +798,12 @@ begin
             P3.y + Surface.WaterlinePlane.c * P3.z + Surface.WaterlinePlane.d;
           if Tmp < Min then Min:=Tmp else
           if Tmp > Max then Max:=Tmp;
-          if Max <= 0.0 then begin                  // entirely below the plane
-            Viewport.ShadeTriangle(P1, P2, P3, Ru, Gu, Bu, Alpha);
-          end else
-          if Min >= 0.0 then begin                  // entirely above the plane
-            Viewport.ShadeTriangle(P1, P2, P3, R, G, B, Alpha);
-          end else begin                        // pierces water, clip triangle
-            ClipTriangle(P1,P2,P3, Surface.WaterlinePlane,Na,Nb,Above,Below);
+          if Max <= 0.0 then                       // entirely below the plane
+             Viewport.ShadeTriangle( P1,P2,P3,Ru,Gu,Bu,Alpha ) else
+          if Min >= 0.0 then                            // entirely above the plane
+             Viewport.ShadeTriangle( P1,P2,P3,R,G,B,Alpha ) else
+          begin                                 // pierces water, clip triangle
+            ClipTriangle( P1,P2,P3, Surface.WaterlinePlane,Na,Nb,Above,Below );
             for K:=3 to Na do
               Viewport.ShadeTriangle(Above[0],Above[K-2],Above[K-1],R,G,B,Alpha);
             for K:=3 to Nb do
@@ -1116,8 +1039,7 @@ end;
 
 procedure TFreeSubdivisionControlFace.LoadBinary(Source: TFreeFileBuffer);
 var
-  I, N: integer;
-  Index: integer;
+  I, N, Index: integer;
   P1, P2: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
   Sel: boolean;

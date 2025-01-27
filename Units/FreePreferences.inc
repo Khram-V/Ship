@@ -250,6 +250,7 @@ end;
 
 procedure TFreePreferences.ResetDirectories;
 begin
+//ConfigDirectory := ExtractFileDir( ParamStr( 0 ) );
   ConfigDirectory := ExtractFileDir( Application.ExeName );
   SetCurrentDir( ConfigDirectory );
   LanguagesDirectory:='Languages';
@@ -275,27 +276,27 @@ begin
   FGridColor    :=clSilver;
   FGridFontColor:=clGray;
   FLayerColor   :=$FFFFF0;     // Default color each layer
-  FNormalColor  :=clLime;
+  FNormalColor  :=clLime;      // color of surface normals
   FUnderwaterColor:=clGreen;
-  FUnderwaterColorAlpha:=255;  //opaque
+  FUnderwaterColorAlpha:=255;  //  Color used for shading the underwater part opaque
   FControlCurveColor:=$FF0080;
-  FEdgeColor        :=$6F6F6F;
+  FEdgeColor        :=$6F6F6F; // Color of normal edges (no crease)
   FCreaseEdgeColor  :=$32CD9A; // Color of crease control edges
   FCreaseColor      :=$999966; // color of descendants from crease controledges
-  FRegularPointColor:= $E1E1E1;
-  FCreasePointColor := $004080;
-  FCornerPointColor := $B95C00;
+  FRegularPointColor:=$E1E1E1; // Color of regular controlpoints
+  FCreasePointColor :=$004080; // Color for vertices connected to two creaseedges
+  FCornerPointColor :=$B95C00; // color of cornerpoints
   FDartPointColor   :=clFuchsia;
-  FLeakPointColor   :=clRed;
-  FSelectColor      :=clYellow;
-  FCurvaturePlotColor:=clFuchsia;
+  FLeakPointColor   :=clRed;    //~~ color of leak points
+  FSelectColor      :=clYellow; // Default color for selected items
+  FCurvaturePlotColor:=clFuchsia; // color of the curvature plot of controlcurves
   FMarkerColor      :=$8000FF;
   FStationColor     :=clBlue;
   FButtockColor     :=clGray;
   FWaterlineColor   :=clGreen;
   FDiagonalColor    :=clSkyBlue;
   FHydrostaticsFontColor:=clGreen;
-  FZebraStripeColor:=clltGray;
+  FZebraStripeColor     :=clltGray;
   FIntersectionLineWidth:=1;
   FControlEdgeLineWidth :=2;
   FInteriorEdgeLineWidth:=1;

@@ -8,7 +8,7 @@ unit FreeShipUnit; //  FreeShipUnit
 interface
 
 uses SysUtils,      // this declaration must be at the start, before the FreeGeometry unit
-  Windows,LazFileUtils,
+  Windows,LazFileUtils,LazUTF8,
   IniFiles,Interfaces,Graphics,Controls,
   Forms,Dialogs,Classes,ExtCtrls,ExtDlgs,
   ComCtrls,FreeTypes,
@@ -757,10 +757,12 @@ type
     FProjectWaterTemper: TFloatType;
     FProjectSplitSectionLocation: TFloatType;
     FUseDefaultSplitSectionLocation: boolean; // If set to true, the midship/mainframe location is set to 0.5*project length, if false then value in FProjectMainframeLocation is used
-    FProjectName: string;
-    FProjectDesigner: string;
-    FProjectComment: string;
-    FProjectFileCreatedBy: string;
+
+    FProjectName: AnsiString;
+    FProjectDesigner: AnsiString;
+    FProjectComment: AnsiString;
+    FProjectFileCreatedBy: AnsiString;
+
     FProjectShadeUnderwaterShip: boolean;
     FSavePreview: boolean;
     FProjectUnderWaterColor: TColor;
@@ -791,13 +793,15 @@ type
     function FGetProjectSplitSectionLocation: TFloatType;
     procedure FSetProjectAppendageCoefficient(Val: TFloatType);
     procedure FSetProjectBeam(Val: TFloatType);
-    procedure FSetProjectComment(Val: string);
     procedure FSetProjectDraft(Val: TFloatType);
-    procedure FSetProjectFileCreatedBy(Val: string);
     procedure FSetProjectLength(Val: TFloatType);
     procedure FSetProjectSplitSectionLocation(val: TFloatType);
-    procedure FSetProjectName(Val: string);
-    procedure FSetProjectDesigner(Val: string);
+
+//    procedure FSetProjectName(Val: AnsiString);
+//    procedure FSetProjectDesigner(Val: AnsiString);
+//    procedure FSetProjectComment(Val: AnsiString);
+//    procedure FSetProjectFileCreatedBy(Val: AnsiString);
+
     procedure FSetProjectShadeUnderwaterShip(Val: boolean);
     procedure FSetProjectSimplifyIntersections(val: boolean);
     procedure FSetProjectUnderWaterColor(Val: TColor);
@@ -829,13 +833,15 @@ type
     property ProjectAppendageCoefficient: TFloatType read FProjectAppendageCoefficient write FSetProjectAppendageCoefficient;
     property ProjectBeam: TFloatType read FProjectBeam write FSetProjectBeam;
     property ProjectCoefficients: TFreeHydrostaticCoeff read FFreeHydrostaticCoefficients write FSetFreeHydrostaticCoefficients;
-    property ProjectComment: string read FProjectComment write FSetProjectComment;
     property ProjectDraft: TFloatType read FProjectDraft write FSetProjectDraft;
-    property ProjectFileCreatedBy: string read FProjectFileCreatedBy write FSetProjectFileCreatedBy;
     property ProjectLength: TFloatType read FProjectLength write FSetProjectLength;
     property ProjectSplitSectionLocation: TFloatType read FGetProjectSplitSectionLocation write FSetProjectSplitSectionLocation;
-    property ProjectName: string read FProjectName write FSetProjectName;
-    property ProjectDesigner: string read FProjectDesigner write FSetProjectDesigner;
+
+    property ProjectName: AnsiString read FProjectName;         // write FSetProjectName;
+    property ProjectDesigner: AnsiString read FProjectDesigner; // write FSetProjectDesigner;
+    property ProjectComment: AnsiString read FProjectComment;   // write FSetProjectComment;
+    property ProjectFileCreatedBy: AnsiString read FProjectFileCreatedBy; // write FSetProjectFileCreatedBy;
+
     property ProjectShadeUnderwaterShip: boolean read FProjectShadeUnderwaterShip write FSetProjectShadeUnderwaterShip;
     property ProjectSimplifyIntersections: boolean read FProjectSimplifyIntersections write FSetProjectSimplifyIntersections;
     property ProjectUnderWaterColor: TColor read FProjectUnderWaterColor write FSetProjectUnderWaterColor;
@@ -995,7 +1001,7 @@ type
     procedure Clear;
     procedure ClearUndo;
     constructor Create(AOwner: TComponent); override;
-    procedure CreateOutputHeader(CalcHeader: string; Strings: TStrings);
+    procedure CreateOutputHeader(CalcHeader: AnsiString; Strings: TStrings);
     // Creates a header with all relevant project data
     procedure DeleteViewport(Viewport: TFreeViewport);
     // Delete a viewport from the list of viewports connected to the model

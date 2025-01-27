@@ -854,19 +854,15 @@ end;{TFreeHydrostaticCalc.AddData}
 
 procedure TFreeHydrostaticCalc.AddHeader(Strings: TStringList);
 begin
-  Strings.Add(MakeLength(Userstring(39), 21) + ' : ' +
-    Owner.ProjectSettings.ProjectName);
-  Strings.Add(MakeLength(Userstring(40), 21) + ' : ' +
-    Owner.ProjectSettings.ProjectDesigner);
+  Strings.Add(MakeLength(Userstring(39), 21) + ' : ' + Owner.ProjectSettings.ProjectName);
+  Strings.Add(MakeLength(Userstring(40), 21) + ' : ' + Owner.ProjectSettings.ProjectDesigner);
   if Owner.ProjectSettings.ProjectFileCreatedBy <> '' then
-    Strings.Add(MakeLength(Userstring(41), 21) + ' : ' +
-      Owner.ProjectSettings.ProjectFileCreatedBy);
+     Strings.Add(MakeLength(Userstring(41),21)+' : ' + Owner.ProjectSettings.ProjectFileCreatedBy);
   if Owner.ProjectSettings.ProjectComment <> '' then
-    Strings.Add(MakeLength(Userstring(42), 21) + ' : ' +
-      Owner.ProjectSettings.ProjectComment);
-  Strings.Add(MakeLength(Userstring(43), 21) + ' : ' + ChangeFileExt(
-    ExtractFilename(Owner.FileName), '.fbm'));
-  Strings.Add('');
+     Strings.Add(MakeLength(Userstring(42),21)+' : ' + Owner.ProjectSettings.ProjectComment );
+
+  Strings.Add(MakeLength(Userstring(43), 21) + ' : ' + ChangeFileExt( ExtractFilename(Owner.FileName), '.fbm'));
+  Strings.Add( '' );
   Strings.Add(MakeLength(Userstring(44), 21) + ' : ' + MakeLength(
     Owner.ProjectSettings.ProjectLength, -1, 10) + #32 + LengthStr(
     Owner.ProjectSettings.ProjectUnits));

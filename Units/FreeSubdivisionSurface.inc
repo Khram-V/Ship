@@ -1392,36 +1392,21 @@ end;
 
 procedure TFreeSubdivisionSurface.SetSubdivisionMode(val: TFreeSubdivisionMode);
 begin
-  if val <> FSubdivisionMode then
-  begin
-    FSubdivisionMode:=val;
-    Built:=False;
-  end;
-end;{TFreeSubdivisionSurface.SetSubdivisionMode}
+  if val<>FSubdivisionMode then begin FSubdivisionMode:=val; Built:=False; end;
+end;
 
 procedure TFreeSubdivisionSurface.SetShadeUnderWater(Val: boolean);
 begin
-  if val <> FShadeUnderWater then
-  begin
-    FShadeUnderWater:=val;
-    Built:=False;
-  end;
-end;{TFreeSubdivisionSurface.SetShadeUnderWater}
+  if val<>FShadeUnderWater then begin FShadeUnderWater:=val; Built:=False; end;
+end;
 
 procedure TFreeSubdivisionSurface.SetUnderwaterColorAlpha(AValue: byte);
-begin
-  if FUnderWaterColorAlpha=AValue then Exit;
-  FUnderWaterColorAlpha:=AValue;
+begin if FUnderWaterColorAlpha=AValue then Exit; FUnderWaterColorAlpha:=AValue;
 end;
 
 procedure TFreeSubdivisionSurface.SetUnderwaterColor(Val: TColor);
-begin
-  if val <> FUnderwaterColor then
-  begin
-    FUnderwaterColor:=val;
-  end;
-end;{TFreeSubdivisionSurface.SetSubdivisionMode}
-
+begin if val<>FUnderwaterColor then begin FUnderwaterColor:=val; end;
+end;
 
 function TFreeSubdivisionSurface.AddControlFace(Points: array of T3DCoordinate;
   NoPoints: integer): TFreeSubdivisionControlFace;
@@ -3047,18 +3032,18 @@ begin
   FNormalColor    :=clLime;    // color of surface normals
   FUnderwaterColor:=clGreen;   // $009933;
   FUnderwaterColorAlpha:=255;  // Color used for shading the underwater part
-  FControlCurveColor:=16711808;
+  FControlCurveColor:=$FF0080;
   FEdgeColor      :=$6F6F6F;   // Color of normal edges (no crease)
   FCreaseEdgeColor:=$32CD9A;   // Color of crease control edges
   FCreaseColor    :=$999966;   // color of descendants from crease controledges
-  FRegularPointColor:= $00E1E1E1; // Color of regular controlpoints
+  FRegularPointColor:=$E1E1E1; // Color of regular controlpoints
   FCreasePointColor:= $004080; // Color for vertices connected to two creaseedges
   FCornerPointColor:= $B95C00; // color of cornerpoints
   FDartPointColor:=clFuchsia;
   FLeakColor     :=clRed;     //~~ color of leak points
   FSelectedColor :=clYellow;  // Default color for selected items
   FCurvatureColor:=clFuchsia; //~~ color of the curvature plot of controlcurves
-  FZebraColor    := clGray;   //~~
+  FZebraColor    := clLtGray; //~~
 
   FShowCurvature:=True;
   FShowControlCurves:=True;
@@ -4181,40 +4166,37 @@ begin                                                                 // First s
 end;
 
 procedure TFreeSubdivisionSurface.Selection_Delete;
-var
-  I: integer;
-begin
-  // we will rebuild whole mesh anyway. lets cleare it before changes in control mesh
-  ClearMesh;
-  // First controlcurves, then faces, edges and finally points!
+  var I: integer;
+begin // we will rebuild whole mesh anyway. lets cleare it before changes in control mesh
+  ClearMesh;      // First controlcurves, then faces, edges and finally points!
+
   I:=NumberOfSelectedControlCurves;
   while I>=1 do begin SelectedControlCurve[I-1].Delete; Dec(I);
     if I>NumberOfSelectedControlCurves then I:=NumberOfSelectedControlCurves;
   end;
   I:=self.NumberOfSelectedControlFaces;
-  while I>=1 do begin
-    SelectedControlFace[I-1].Delete; Dec(I);
+  while I>=1 do begin SelectedControlFace[I-1].Delete; Dec(I);
     if I>NumberOfSelectedControlFaces then I:=NumberOfSelectedControlFaces;
   end;
+//
+// Security check => if an edge is deleted from one isolated patch (with all edges only attached
+// to the current face), the patch will become degenerate and therefore the patch (and the other
+// edges) will be deleted, and NumberOfSelectedControlEdges may become smaller than index I
   I:=self.NumberOfSelectedControlEdges;
   while I>=1 do begin
     SelectedControlEdge[I-1].Delete; Dec(I);
-    if I>NumberOfSelectedControlEdges then begin
-      // Security check ==> if an edge is deleted from one isolated patch (with all edges only attached
-      // to the current face), the patch will become degenerate and therefore the patch (and the other
-      // edges) will be deleted, and NumberOfSelectedControlEdges may become smaller than index I
-      I:=NumberOfSelectedControlEdges;
-    end;
+    if I>NumberOfSelectedControlEdges then I:=NumberOfSelectedControlEdges;
   end;
+/// ошибка здесь
   I:=self.NumberOfSelectedControlPoints;
   while I>=1 do begin
     if not SelectedControlPoint[I-1].Locked then SelectedControlPoint[I-1].Delete;
     Dec(I);                                                    // Same as above
     if I>NumberOfSelectedControlPoints then I:=NumberOfSelectedControlPoints;
   end;
-//  ExecuteOnChangeItem(nil);
+  //ExecuteOnChangeItem(nil);
   Built:=False;
-end;{TFreeSubdivisionSurface.Selection_Delete}
+end;
 
 procedure TFreeSubdivisionSurface.Selection_Add(item: TFreeNamedObject);
 begin

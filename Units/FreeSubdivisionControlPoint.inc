@@ -384,13 +384,10 @@ end;{TFreeSubdivisionControlPoint.Create}
 
 destructor TFreeSubdivisionControlPoint.Destroy;
 begin
-  //logger.IncreaseIndent;
-  //logger.Debug(format('TFreeSubdivisionControlPoint[%d].Destroy',[self.FID]));
-  FreeAndNil(FLinearConstrainedPoints);
-  FreeAndNil(FAnchoredPoints);
+  FreeAndNil( FLinearConstrainedPoints );
+  FreeAndNil( FAnchoredPoints);
   inherited;
-  //logger.DecreaseIndent;
-end;{TFreeSubdivisionControlPoint.Create}
+end;
 
 procedure TFreeSubdivisionControlPoint.Delete;
 var
@@ -399,56 +396,42 @@ var
   Edge: TFreesubdivisionEdge; //TFreesubdivisionControlEdge;
   EdgesToDelete: TFasterListTFreesubdivisionEdge;
   FacesToDelete: TFasterListTFreesubdivisionFace;
-begin
-//logger.IncreaseIndent;
-//logger.Debug(format('TFreeSubdivisionControlPoint[%d].Delete',[self.FID]));
-  // delete from selection;
+begin                                                 // delete from selection;
   Selected:=False;
-  if Surface.ActiveControlPoint = self then
-    Surface.ActiveControlPoint:=nil;
-
-  Surface.FSelectedControlPoints.DeleteItem(self);
-  Surface.FControlPoints.DeleteItem(self);
+  if Surface.ActiveControlPoint=self then Surface.ActiveControlPoint:=nil;
+  Surface.FSelectedControlPoints.DeleteItem( self );
+  Surface.FControlPoints.DeleteItem( self );
   Unreference;
-
   for i:=0 to Surface.FSelectedControlPointGroups.Count-1 do
-    Surface.FSelectedControlPointGroups[i].RemoveControlPoint(self);
+      Surface.FSelectedControlPointGroups[i].RemoveControlPoint( self );
   for i:=0 to Surface.FControlPointGroups.Count-1 do
-    Surface.FControlPointGroups[i].RemoveControlPoint(self);
+      Surface.FControlPointGroups[i].RemoveControlPoint( self );
 
   FacesToDelete:= TFasterListTFreesubdivisionFace.Create(true,false);
-  while FFaces.Count > 0 do
-  begin
-    Face:=FFaces[0];
-    FFaces.Delete(0);
-    FacesToDelete.Add(Face);
-    //Edge.Delete;
-  end;
-  //FacesToDelete.AddList(FFaces);
+  while FFaces.Count > 0 do begin        // for I:=0 to FFaces.Count-1 do begin
+        Face:=FFaces[0];
+        FFaces.Delete(0);
+        FacesToDelete.Add( Face );
+//      Face.Delete;                     // Edge.Delete;
+  end;                                   // FacesToDelete.AddList( FFaces );
   FFaces.Clear;
-
   EdgesToDelete:= TFasterListTFreesubdivisionEdge.Create(true,false);
-  while FEdges.Count>0 do
-    begin
-      Edge:=self.Edge[0];
-      FEdges.Delete(0);
-      EdgesToDelete.Add(Edge);
-      //Edge.Delete;
-    end;
+  while FEdges.Count>0 do begin          // for I:=0 to FEdges.Count-1 do begin
+//      Edge:=FEdges[0];
+        Edge:=self.Edge[0];
+        FEdges.Delete(0);
+        EdgesToDelete.Add( Edge );
+//      Edge.Delete;                     //??
+  end;
   FEdges.Clear;
-
-  for i:=0 to FacesToDelete.Count-1 do
-    FacesToDelete[i].Delete;
-  FreeAndNil(FacesToDelete);
-
-  for i:=0 to EdgesToDelete.Count-1 do
-    EdgesToDelete[i].Delete;
-  FreeAndNil(EdgesToDelete);
+  for I:=0 to FacesToDelete.Count-1 do FacesToDelete[i].Delete;
+  FreeAndNil( FacesToDelete );
+  for I:=0 to EdgesToDelete.Count-1 do EdgesToDelete[i].Delete;
+  FreeAndNil( EdgesToDelete );
 
   Unreference;
-  Destroy; //TODO: figure out why we do not delete Point if Edge exists
-//logger.DecreaseIndent;
-end;{TFreeSubdivisionControlPoint.Delete}
+  Destroy;
+end;
 
 procedure TFreeSubdivisionControlPoint.Draw(Viewport: TFreeViewport);
 var

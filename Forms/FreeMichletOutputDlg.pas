@@ -953,26 +953,25 @@ begin
     end;
   end;
   Viewport.PenColor:=FFreeship.Preferences.ButtockColor;
-end;{TFreeMichletOutputDialog.ViewportRedraw}
+end;
 
-procedure TFreeMichletOutputDialog.SaveToFile(Filename: string);
+procedure TFreeMichletOutputDialog.SaveToFile( Filename: string );
 var
   HydObject: TFreeHydrostaticCalc;
   Strings: TStringList;
   I, J, N: integer;
   Str: ansistring;
 begin
-  HydObject:=TFreeHydrostaticCalc.Create(FFreeship);
+  HydObject:=TFreeHydrostaticCalc.Create( FFreeship );
   HydObject.Draft:=Draft;
   HydObject.Calculate;
-  if FFreeship = nil then
-    exit;
+  if FFreeship = nil then exit;
   Strings:=TStringList.Create;
   Strings.Add('# ======================================================================');
   Strings.Add('#');
-  Strings.Add('# Project  : ' + FFreeship.ProjectSettings.ProjectName);
+  Strings.Add('# Project  : ' + FFreeship.ProjectSettings.ProjectName );
   Strings.Add('# File     : ' + FFreeship.Filename);
-  Strings.Add('# Designer : ' + FFreeship.ProjectSettings.ProjectDesigner);
+  Strings.Add('# Designer : ' + FFreeship.ProjectSettings.ProjectDesigner );
   Strings.Add('#');
   Strings.Add('# =================== INPUT FILE TYPE AND SUBTYPE ======================');
   Strings.Add('# Input File Type (0=Standard)');
@@ -988,10 +987,8 @@ begin
   Strings.Add('# Course Particulars (0=None)');
   Strings.Add('0');
   Strings.Add('# Number of Hulls (1, 2,..., or 5)');
-  if (Radiobutton2.Checked) or (Radiobutton3.Checked) then
-    NumberOfHulls:=2
-  else
-    NumberOfHulls:=1;
+  if (Radiobutton2.Checked) or (Radiobutton3.Checked) then NumberOfHulls:=2
+                                                      else NumberOfHulls:=1;
   Strings.Add(IntToStr(NumberOfHulls));
   Strings.Add('# ======================== PHYSICAL QUANTITIES =========================');
   Strings.Add('# Gravitational Acceleration (m/sec/sec) (min 9.6, max 9.9)');

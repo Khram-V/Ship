@@ -515,7 +515,7 @@ begin
   end;
 end; {TFreeShip.Create}
 
-procedure TFreeShip.CreateOutputHeader(CalcHeader: string; Strings: TStrings);
+procedure TFreeShip.CreateOutputHeader(CalcHeader: Ansistring; Strings: TStrings);
 const Separator = #32;
 const S = '          ';
 begin
@@ -1033,7 +1033,6 @@ var
         Viewport.TextOut(Pt1.X, Pt1.Y - Height+30, Str);
         Viewport.TextOut(Pt2.X - Width, Pt2.Y - Height-20, str);
       end;
-
     end;
   end;{DrawGrid}
 
@@ -1077,13 +1076,13 @@ begin
   else  // Viewport.Viewtype = fvPerspective
   begin
     if Visibility.ShowStations then
-      for I:=1 to NumberOfStations do Station[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfStations do Station[I-1].Draw(Viewport);
     if Visibility.ShowButtocks then
-      for I:=1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfButtocks do Buttock[I-1].Draw(Viewport);
     if Visibility.ShowWaterlines then
-      for I:=1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfWaterlines do Waterline[I-1].Draw(Viewport);
     if Visibility.ShowDiagonals then
-      for I:=1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfDiagonals do Diagonal[I-1].Draw(Viewport);
   end;
 
   if (Visibility.ShowMarkers) and (Viewport.ViewportMode = vmWireframe) then
@@ -1115,59 +1114,51 @@ begin
   Surface.ControlEdgeLineWidth:=Preferences.FControlEdgeLineWidth;
   Surface.InternalEdgeLineWidth:=Preferences.FInteriorEdgeLineWidth;
 
-  if ProjectSettings.ProjectShadeUnderwaterShip then
-  begin
+  if ProjectSettings.ProjectShadeUnderwaterShip then begin
     Plane.a:=0.0;
     Plane.b:=0.0;
-    Plane.c:=1.0;
+    Plane.c:=1.0; // 1.0
     Plane.d:=-(FindLowestHydrostaticsPoint + ProjectSettings.ProjectDraft);
     Surface.WaterlinePlane:=Plane;
-    R:=GetRValue(ProjectSettings.ProjectUnderWaterColor);
-    G:=GetGValue(ProjectSettings.ProjectUnderWaterColor);
-    B:=GetBValue(ProjectSettings.ProjectUnderWaterColor);
+    R:=GetRValue( ProjectSettings.ProjectUnderWaterColor );
+    G:=GetGValue( ProjectSettings.ProjectUnderWaterColor );
+    B:=GetBValue( ProjectSettings.ProjectUnderWaterColor );
     Surface.UnderWaterColor:=ProjectSettings.ProjectUnderWaterColor;
     Surface.UnderWaterColorAlpha:=ProjectSettings.ProjectUnderWaterColorAlpha;
     Surface.ShadeUnderWater:=True;
-  end
-  else
+  end else
     Surface.ShadeUnderWater:=False;
-
-  Surface.Draw( Viewport );  // Main Draw
+  Surface.Draw( Viewport );                                       // Main Draw
 
   //Viewport.AlphaBuffer.Draw;
 
-  if  (Viewport.Viewtype <> fvPerspective)
-  and (Viewport.ViewportMode <> vmWireframe)
-  and (Visibility.ShowGrid) then begin // Shaded viewport is a special case when visibility.drawgrid has been set to tru
+  if  (Viewport.Viewtype<>fvPerspective)
+  and (Viewport.ViewportMode<>vmWireframe)
+  and (Visibility.ShowGrid) then begin     // Shaded viewport is a special case when visibility.drawgrid has been set to tru
     if Visibility.ShowStations then
-      for I:=1 to NumberOfStations do Station[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfStations do Station[I-1].Draw(Viewport);
     if Visibility.ShowButtocks then
-      for I:=1 to NumberOfButtocks do Buttock[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfButtocks do Buttock[I-1].Draw(Viewport);
     if Visibility.ShowWaterlines then
-      for I:=1 to NumberOfWaterlines do Waterline[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfWaterlines do Waterline[I-1].Draw(Viewport);
     if Visibility.ShowDiagonals then
-      for I:=1 to NumberOfDiagonals do Diagonal[I - 1].Draw(Viewport);
+      for I:=1 to NumberOfDiagonals do Diagonal[I-1].Draw(Viewport);
   end;
-  if (Viewport.ViewportMode = vmWireframe) and (Visibility.ShowHydrostaticData) then
-  begin
-    // Draw hydrostatic data
+  if (Viewport.ViewportMode=vmWireframe) and (Visibility.ShowHydrostaticData)
+  then begin                                         // Draw hydrostatic data
     if FDesignHydrostatics.Draft <> ProjectSettings.ProjectDraft then
-      FDesignHydrostatics.Draft:=ProjectSettings.ProjectDraft;
+       FDesignHydrostatics.Draft:=ProjectSettings.ProjectDraft;
 
-    if not FDesignHydrostatics.Calculated then
-    begin
+    if not FDesignHydrostatics.Calculated then begin
       FDesignHydrostatics.Calculate;
       FDesignHydrostatics.CalculateGravity;
     end;
-    if FDesignHydrostatics.Errors = [] then
-    begin
-      // Center of bouyancy
+    if FDesignHydrostatics.Errors = [] then begin        // Center of bouyancy
       if Visibility.FShowHydrostDisplacement then
         DrawPoint(FDesignHydrostatics.FData.CenterOfBuoyancy, 'Displ=' +
-          FloatToStrF(FDesignHydrostatics.Data.Displacement, ffFixed, 7, 2), True);
+          FloatToStrF(FDesignHydrostatics.Data.Displacement,ffFixed,7,2),True);
       if abs(FDesignHydrostatics.Data.WaterplaneCOG.Y) < 0.01 then
-      begin
-        // Transverse metacentric height
+      begin                                    // Transverse metacentric height
         if Visibility.FShowHydrostMetacentricHeight then
           DrawPoint(Setpoint(FDesignHydrostatics.FData.CenterOfBuoyancy.X,
             0.0, FDesignHydrostatics.FData.KMtransverse), 'KM=' +
@@ -1870,7 +1861,7 @@ var
   PrevCursor: TCursor;
   I,N: integer;
 begin
-  //PrevCursor:=Screen.Cursor;
+  PrevCursor:=Screen.Cursor;
   //Screen.Cursor:=crHourGlass;
   //try
     FileVersion:=DetectMinFileVersion;
@@ -1906,8 +1897,8 @@ begin
       end;
     end;
 //finally
-    FileChanged:=False;
-    //Screen.Cursor:=PrevCursor;
+  FileChanged:=False;
+  Screen.Cursor:=PrevCursor;
 //end;
 end;
 
