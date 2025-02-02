@@ -65,7 +65,7 @@ begin
   with FreeShip1 do
   begin
     FileChanged:=True;
-    Filename:='New model.fbm';
+    Filename:='Example_Ship.ftm';
     FileVersion:=fv261;
     Precision:=fpLow;
   end;

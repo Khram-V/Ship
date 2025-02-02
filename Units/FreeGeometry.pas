@@ -43,7 +43,7 @@ const // Cursors
    crSMALLCROSS_32 = 15;
    crSMALLCROSS_48 = 16;
 }
-// Currently using 32x32 cursors. TODO use 48x48 if high res 144dpi
+// Currently using 32x32 cursors
    crRotate = 1; // Rotation cursor
    crPan = crSize; // Pan cursor
    crSetOrigin = 3; // Cursor used when setting the origin of a background image
@@ -607,9 +607,9 @@ type
     FDimFontSize: integer;
 
     function FGetShowErrorEdges: boolean;
-    function FGetMidPoint: T2DCoordinate;
     function FGetMinError: extended;
     function FGetMaxError: extended;
+    function FGetMidPoint: T2DCoordinate;
     function FGetMirrorPoint( index: integer ): T3DCoordinate;
     function FGetPoint(index: integer): T3DCoordinate;
     procedure FSetRotation(Val: TFloatType);
@@ -630,8 +630,8 @@ type
     procedure Unroll(ControlFaces: TFasterListTFreeSubdivisionControlFace);
     property MaxAreaError: extended read FMaxAreaError;
     property MaxError: extended read FGetMaxError;
-    property MidPoint: T2DCoordinate read FGetMidPoint;
     property MinError: extended read FGetMinError;
+    property MidPoint: T2DCoordinate read FGetMidPoint;
     property MirrorOnScreen: boolean read FMirrorOnScreen write FSetMirrorOnScreen;
     property Name: string read FName write FName;
     property NumberOfIterations: integer read FNoIterations;
@@ -1555,19 +1555,15 @@ type
     procedure UnreferenceControlPoint(P: TFreeSubdivisionControlPoint);
     procedure UnreferenceControlEdge(E: TFreeSubdivisionControlEdge);
     procedure UnreferenceControlFace(F: TFreeSubdivisionControlFace);
-
     procedure UnreferencePoint(P: TFreeSubdivisionPoint);
     procedure UnreferenceEdge(E: TFreeSubdivisionEdge);
     procedure UnreferenceFace(F: TFreeSubdivisionFace);
-
     function AddNewLayer: TFreeSubdivisionLayer;
     procedure AssembleFacesToPatches(Layers: TFasterListTFreeSubdivisionLayer; Mode: TFreeAssembleMode;
       var AssembledPatches: TFreeFaceArray; var NAssembled: integer);
     procedure CalculateGaussCurvature;
     // Calculate Gauss. curvature in each point of the mesh and store it in a array
-
     function CheckIntegrity:boolean;
-
     procedure Clear; override;
     procedure ClearFaces;
     procedure ClearSelection;
@@ -1595,19 +1591,19 @@ type
     function EdgeExists(P1, P2: TFreeSubdivisionPoint): TFreeSubdivisionEdge;
     procedure ExtractAllEdgeLoops(const DestinationPointLists: TFasterListTFasterListTFreeSubdivisionPoint);
     procedure ExtractPointsFromFaces(  SelectedFaces : TFasterListTFreeSubdivisionFace;
-               Points: TFasterListTFreeSubdivisionPoint; var LockedPoints: integer);
+              Points: TFasterListTFreeSubdivisionPoint; var LockedPoints: integer);
     // extracts all points that are used by the faces in the selectedfaces list
     procedure ExtractPointsFromSelection(SelectedPoints: TFasterListTFreeSubdivisionControlPoint;
-      var LockedPoints: integer);
+          var LockedPoints: integer);
     function FindLayer(AName:String): TFreeSubdivisionLayer;
     procedure ImportFEFFile(Strings: TStringList; var LineNr: integer);
     procedure ImportCoordGrid(Points: TFreeCoordinateGrid; Cols, Rows: integer;
-      Layer: TFreesubdivisionLayer);
+       Layer: TFreesubdivisionLayer);
     procedure ImportControlPointGrid(Grid: TFreeSubdivisionControlPointGrid; Cols, Rows: integer;
-      Layer: TFreesubdivisionLayer);
+       Layer: TFreesubdivisionLayer);
     procedure Initialize(PointStartIndex, EdgeStartIndex, FaceStartIndex: integer);
     function IntersectPlane(Plane: T3DPlane; HydrostaticsLayersOnly: boolean;
-      List: TFasterListTFreeSpline): boolean;
+       List: TFasterListTFreeSpline): boolean;
     procedure InsertPlane(Plane: T3DPlane; AddCurves: boolean);
     // inserts points on edges (visible edges only) that intersect the input plane
     procedure IsolateEdges(const Source:TFasterListTFreeSubdivisionEdge;
@@ -1713,12 +1709,13 @@ type
     property ZebraColor: TColor read FZebraColor write FZebraColor;
   end;
 
-  {---------------------------------------------------------------------------------------------}
-  { TFreeDestroyList                                                                            }
-  { Some objects can be split to number of new ones and destroyed after it.                     }
-  { However they cannot be destroyed right away because they are referred in a processing cycle }
-  { They should be added to this list and destroyed later.                                      }
-  {---------------------------------------------------------------------------------------------}
+  {-------------------------------------------------------------------------}
+  { TFreeDestroyList                                                        }
+  { Some objects can be split to number of new ones and destroyed after it. }
+  { However they cannot be destroyed right away because                     }
+  { they are referred in a processing cycle                                 }
+  { They should be added to this list and destroyed later.                  }
+  {-------------------------------------------------------------------------}
 
   TFreeDestroyList = class(TFasterList<TFreeSubdivisionBase>)
   public
@@ -1751,7 +1748,6 @@ function LengthStr(Units: TFreeUnitType): string;                 // Returns a s
 function MakeLength(Value: TFloatType; Decimals, DesLength: integer): string; overload;
 function MakeLength(Value: Ansistring; DesLength: integer): Ansistring; overload;
 procedure MinMax(P: T3DCoordinate; var Min, Max: T3DCoordinate);
-function Point3D(x,y,z: TFloatType): T3DCoordinate;
 function Midpoint(P1, P2: T3DCoordinate): T3DCoordinate;          // Calculate the mid-point between P1 and P2
 function Mid3point(P1, P2, P3: T3DCoordinate): T3DCoordinate;
 function MirrorPlane(P: T3DCoordinate; Plane: T3DPLane): T3DCoordinate; // mirror a point in a plane
@@ -1760,11 +1756,11 @@ function NumberOfDecimals(Value: TFloatType): integer;            // Finds out w
 function PlaneIntersectsBox(Min, Max: T3DCoordinate; Plane: T3DPlane): boolean; // Function to determine if a plane intersects a bounding box
 function PlanePointNormal(P, Normal: T3DCoordinate): T3DPlane;    // Calculates the plane with a given normal N through point P
 function PlanePPP(P1, P2, P3: T3DCoordinate): T3DPlane;           // Create a plane defined by three points
-function PointInTriangle(Int, P0, P1, P2: T3DCoordinate): boolean; // This function calculates if a point lies inside a triangle assuming it lies on the plane determined by the triangle
+function PointInTriangle(Int, P0, P1, P2: T3DCoordinate):boolean; // This function calculates if a point lies inside a triangle assuming it lies on the plane determined by the triangle
 function PoundsToNewton(InpLbs: TFloatType): TFloatType;          // converts pounds to Newton
 function ProjectPointOnLine(P, P1, P2: T3DCoordinate): T3DCoordinate; // Projects point  P on the linesegment through P1 and P2
 function ProjectPointOnPlane(P: T3DCoordinate; Plane: T3DPlane): T3DCoordinate; // Projects a point on to a plane
-function RandomColor: TColor;                                     // create a random color
+//function RandomColor: TColor;                                     // create a random color
 // GetBoolean Read a single boolean value from a string
 // GetFloat   Read a single floatingpoint value from a string
 // GetInteger Read an integer value from a string
@@ -1775,7 +1771,6 @@ function ScalePoint(Scale: TFloatType; P: T3DCoordinate): T3DCoordinate; // Scal
 function SetPlane(a, b, c, d: TFloatType): T3DPlane;
 function SetPoint(X, Y, Z: TFloatType): T3DCoordinate;
 procedure SortFloatArray(var FloatArray: TFloatArray; var N: integer); // sorts an array with floatingpoint values and removes double entries
-//function Space(Index: integer): string;                           // Outputs a string with a number of spaces
 function SquaredDistPP(P1, P2: T3DCoordinate): TFloatType;        // calculates the squared distance between two points
 function Subtract(AVec1, AVec2: T3DCoordinate): T3DCoordinate;    // subtract two vectors
 function FloatToDec(Value: TFloatType; Maxlength: integer): string; // Convert a floatingpoint to a string value with a max. number of specified decimals All trailing zeros will be removed
@@ -1789,7 +1784,6 @@ function VolumeToDisplacement(Volume, Density, AppCoeff: TFloatType;  Units: TFr
 function WeightStr(Units: TFreeUnitType): string;                 // Returns a string value with the weight units
 function DegrStr(Units: TFreeUnitType): string;                   // Returns a string value with the degr units
 function LenMMStr(Units: TFreeUnitType): string;                  // Returns a string value with the length (mm or inch) units
-
 var
   DelayedDestroyList: TFreeDestroyList;
 
@@ -1834,16 +1828,12 @@ constructor TFreeDestroyList.Create; begin inherited Create(true,false); end;
 procedure TFreeDestroyList.DestroyAll;
 var O: TObject; I: integer;
 begin
-   for I:=0 to Count-1 do if Assigned(Items[I]) then
-// try
-      Items[I].Free;
-    { while Count > 0 do begin
-        I:=Count-1;
-        O:=TObject(Items[I]);
-        if Assigned(O) then  begin  FreeAndNil(O);  Delete(I);  end;
-      end; }
-//  finally
-//  end;
+   for I:=0 to Count-1 do if Assigned( Items[I] ) then Items[I].Free;
+   { while Count > 0 do begin
+       I:=Count-1;
+       O:=TObject(Items[I]);
+       if Assigned(O) then  begin  FreeAndNil(O);  Delete(I);  end;
+     end; }
    Clear;
 end;
 
@@ -1852,7 +1842,6 @@ begin RegisterComponents( 'FreeShip', [TFreeViewport] );
 end;
 
 initialization
-  Randomize;
   DelayedDestroyList:=TFreeDestroyList.Create;
 
 end.

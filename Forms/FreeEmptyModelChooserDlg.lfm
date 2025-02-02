@@ -208,7 +208,7 @@ object FreeEmptyModelChooserDialog: TFreeEmptyModelChooserDialog
           Top = 28
           Width = 227
           BorderSpacing.Around = 2
-          Caption = 'Create new model'
+          Caption = 'Create Example Ship'
           TabOrder = 0
         end
         object RbEmptyModel: TRadioButton

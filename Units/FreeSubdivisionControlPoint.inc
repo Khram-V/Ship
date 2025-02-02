@@ -389,11 +389,11 @@ begin
   inherited;
 end;
 
-procedure TFreeSubdivisionControlPoint.Delete;
+procedure TFreeSubdivisionControlPoint.Delete;  /// здесь ошибка !!!
 var
-  Index,i: integer;
+  Index,I: integer;
   Face: TFreesubdivisionFace;
-  Edge: TFreesubdivisionEdge; //TFreesubdivisionControlEdge;
+  Edge: TFreesubdivisionEdge;                   // TFreesubdivisionControlEdge;
   EdgesToDelete: TFasterListTFreesubdivisionEdge;
   FacesToDelete: TFasterListTFreesubdivisionFace;
 begin                                                 // delete from selection;
@@ -402,19 +402,21 @@ begin                                                 // delete from selection;
   Surface.FSelectedControlPoints.DeleteItem( self );
   Surface.FControlPoints.DeleteItem( self );
   Unreference;
-  for i:=0 to Surface.FSelectedControlPointGroups.Count-1 do
-      Surface.FSelectedControlPointGroups[i].RemoveControlPoint( self );
-  for i:=0 to Surface.FControlPointGroups.Count-1 do
-      Surface.FControlPointGroups[i].RemoveControlPoint( self );
+
+  for I:=0 to Surface.FSelectedControlPointGroups.Count-1 do
+      Surface.FSelectedControlPointGroups[I].RemoveControlPoint( self );
+  for I:=0 to Surface.FControlPointGroups.Count-1 do
+      Surface.FControlPointGroups[I].RemoveControlPoint( self );
 
   FacesToDelete:= TFasterListTFreesubdivisionFace.Create(true,false);
-  while FFaces.Count > 0 do begin        // for I:=0 to FFaces.Count-1 do begin
+  while FFaces.Count>0 do begin          // for I:=0 to FFaces.Count-1 do begin
         Face:=FFaces[0];
         FFaces.Delete(0);
         FacesToDelete.Add( Face );
 //      Face.Delete;                     // Edge.Delete;
   end;                                   // FacesToDelete.AddList( FFaces );
   FFaces.Clear;
+
   EdgesToDelete:= TFasterListTFreesubdivisionEdge.Create(true,false);
   while FEdges.Count>0 do begin          // for I:=0 to FEdges.Count-1 do begin
 //      Edge:=FEdges[0];
@@ -424,13 +426,15 @@ begin                                                 // delete from selection;
 //      Edge.Delete;                     //??
   end;
   FEdges.Clear;
-  for I:=0 to FacesToDelete.Count-1 do FacesToDelete[i].Delete;
+
+  for I:=0 to FacesToDelete.Count-1 do FacesToDelete[I].Delete;
   FreeAndNil( FacesToDelete );
-  for I:=0 to EdgesToDelete.Count-1 do EdgesToDelete[i].Delete;
+  for I:=0 to EdgesToDelete.Count-1 do EdgesToDelete[I].Delete;
   FreeAndNil( EdgesToDelete );
 
   Unreference;
   Destroy;
+
 end;
 
 procedure TFreeSubdivisionControlPoint.Draw(Viewport: TFreeViewport);

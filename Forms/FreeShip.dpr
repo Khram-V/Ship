@@ -66,7 +66,7 @@ try
   Application.Run;
 except                 // Floating point operation - сбои и ошибки игнорируются
     on E: EMathError do;      // ( 'General floating-point exception caught!' )
-//  on E: EAccessViolation do;         // -- не знаю.., но и так всё же не хуже
+    on E: EAccessViolation do;    // -- не знаю.., может быть так будут не хуже
 //  on E: EIntError  do Writeln( 'General integer exception!' );
 //  on E: EDivByZero do Writeln( 'Division by zero exception!' );
 //  on E: EOverflow  do Writeln( 'Overflow exception!' );

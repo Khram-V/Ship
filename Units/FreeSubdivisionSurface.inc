@@ -219,8 +219,7 @@ begin
   FLayers.Add(Result);
   Result.FLayerID:=FRequestNewLayerID;
   ActiveLayer:=Result;
-  if assigned(FOnChangeLayerData) then
-    FOnChangeLayerData(self);
+  if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
 end;
 
 // Tries to assemble quads into as few as possible rectangular patches
@@ -1351,13 +1350,12 @@ begin
   FActiveLayer:=Val;
   if assigned(FOnChangeActiveLayer) then
     FOnChangeActiveLayer(self, FActiveLayer);
-end;{TFreeSubdivisionSurface.SetActiveLayer}
+end;
 
 procedure TFreeSubdivisionSurface.SetBuilt(Val: boolean);
-var
-  I: integer;
+var I: integer;
 begin
-  inherited SetBuilt(Val);
+  inherited SetBuilt( Val );
 
   { moved to Rebuild. because it may cause corruption if called here during rebuilding
   if not Val then begin
@@ -1368,7 +1366,7 @@ begin
     FMinGaussCurvature:=0.0;
     FMaxGaussCurvature:=0.0;
   end; }
-end;{TFreeSubdivisionSurface.SetBuild}
+end;
 
 procedure TFreeSubdivisionSurface.SetDesiredSubdivisionLevel(val: byte);
 begin
@@ -3812,21 +3810,18 @@ begin
   end;
   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
 
-  // Read index of active layer
-  Source.LoadInteger(N);
-  ActiveLayer:=self.Layer[N];
-  if assigned(FOnChangeActiveLayer) then
-    FOnChangeActiveLayer(self, self.Layer[0]);
-  // Read controlpoints
-  Source.LoadInteger(N);
+  Source.LoadInteger(N);                          // Read index of active layer
+  ActiveLayer:=self.Layer[0];                     // N];- к начальному элементу
+  if assigned( FOnChangeActiveLayer ) then        // странный разнобой справлен
+               FOnChangeActiveLayer( self,self.Layer[0] );
+  Source.LoadInteger(N);                          // Read controlpoints
   FControlPoints.Capacity:=N;
   for I:=1 to N do begin
     Point:=TFreeSubdivisionControlPoint.Create(self);
     Point.LoadBinary(Source);
-    //Point.Name:=IntToStr(I-1); //for debug. assign point numbers (as they are in file) as names
-    FControlPoints.Add(Point);
+  //Point.Name:=IntToStr(I-1); //for debug. assign point numbers (as they are in file) as names
+    FControlPoints.Add(Point);                    // Read controlEdges
   end;
-  // Read controlEdges
   Source.LoadInteger(N);
   FControlEdges.Capacity:=N;
   for I:=1 to N do begin
@@ -3845,7 +3840,7 @@ begin
     end;
   end;
 
-  Source.LoadInteger(N);                // Read controlFaces
+  Source.LoadInteger( N );              // Read controlFaces
   FControlFaces.Capacity:=N;
   for I:=1 to N do begin
     Face:=TFreeSubdivisionControlFace.Create(self);
@@ -3871,44 +3866,32 @@ var
   Face: TFreeSubdivisionControlFace;
   Layer: TFreeSubdivisionLayer;
 begin
-  FIsLoading:=true;
-  // First read layerdata
+  FIsLoading:=true;                                     // First read layerdata
   Inc(LineNr);
   Str:=Strings[LineNr];
   N :=GetInteger( Str);
-  if N <> 0 then
-  begin
-    // Delete current layers and load new ones
-    for I:=1 to NumberOfLayers do
-      self.Layer[I - 1].Destroy;
+  if N<>0 then begin                 // Delete current layers and load new ones
+    for I:=1 to NumberOfLayers do self.Layer[I-1].Destroy;
     FLayers.Clear;
     FLayers.Capacity:=N;
-    for I:=1 to N do
-    begin
+    for I:=1 to N do begin
       Layer:=AddNewLayer;
       Layer.LoadFromStream(LineNr, Strings);
     end;
-  end
-  else
-  begin
-    // No layers in the file, so keep the current default one
+  end else begin     // No layers in the file, so keep the current default one
   end;
-  if assigned(FOnChangeLayerData) then
-    FOnChangeLayerData(self);
-  // Read index of active layer
-  Inc(LineNr);
-  Str:=Strings[LineNr];
-  N:=GetInteger( Str);
+  if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+  Inc( LineNr );                                  // Read index of active layer
+  Str:=Strings[ LineNr ];
+  N:=GetInteger( Str );
   ActiveLayer:=self.Layer[N];
-  if assigned(FOnChangeActiveLayer) then
-    FOnChangeActiveLayer(self, self.Layer[0]);
+  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
 
   Inc(LineNr);
   Str:=Strings[LineNr];
   // Read controlpoints
   N:=GetInteger( Str);
-  for I:=1 to N do
-  begin
+  for I:=1 to N do begin
     Point:=TFreeSubdivisionControlPoint.Create(self);
     FControlPoints.Add(Point);
     Point.LoadFromStream(LineNr, Strings);
@@ -3918,8 +3901,7 @@ begin
   Inc(LineNr);
   Str:=Strings[LineNr];
   N:=GetInteger( Str);
-  for I:=1 to N do
-  begin
+  for I:=1 to N do begin
     Edge:=TFreeSubdivisionControlEdge.Create(self);
     Edge.FControlEdge:=True;
     FControlEdges.Add(Edge);
@@ -3929,18 +3911,15 @@ begin
   Inc(LineNr);
   Str:=Strings[LineNr];
   N:=GetInteger( Str);
-  for I:=1 to N do
-  begin
+  for I:=1 to N do begin
     Face:=TFreeSubdivisionControlFace.Create(self);
     FControlFaces.Add(Face);
     Face.LoadFromStream(LineNr, Strings);
   end;
   Built:=False;
   FInitialized:=True;
-  if assigned(FOnChangeLayerData) then
-    FOnChangeLayerData(self);
-  if assigned(FOnChangeActiveLayer) then
-    FOnChangeActiveLayer(self, self.Layer[0]);
+  if assigned(FOnChangeLayerData) then  FOnChangeLayerData(self);
+  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
   FIsLoading:=false;
 end;
 
@@ -3978,7 +3957,7 @@ end;
 function TFreeSubdivisionSurface.PointExists(P: TFreeSubdivisionControlPoint): boolean;
         begin  Result:=FControlPoints.IndexOf(P) <> -1;  end;
 
-procedure TFreeSubdivisionSurface.Rebuild;
+procedure TFreeSubdivisionSurface.Rebuild;       /// возможна ошибка !!!
 var
   I, J, K, X,V: integer; C: T3DCoordinate;
   Curve: TFreeSubdivisionControlCurve;
@@ -4002,9 +3981,7 @@ var
       end;
     end;
   end;
-
-  procedure CalcPointsExtents;
-  var i,j:integer;
+  procedure CalcPointsExtents; var i,j:integer;
   begin
     j:=0;
     for i:=0 to NumberOfControlPoints - 1 do begin
@@ -4029,8 +4006,8 @@ begin
   FMinGaussCurvature:=0.0;
   FMaxGaussCurvature:=0.0;
 
-  //if not self.CheckIntegrity
-  //  then X:=0; //ShowMessage('Before Init Model integrity corruption');
+  // if not self.CheckIntegrity
+  //    then X:=0; //ShowMessage('Before Init Model integrity corruption');
 
   if not FInitialized then Initialize( 1,1,1 );
 
@@ -4150,11 +4127,10 @@ begin
 end;
 
 procedure TFreeSubdivisionSurface.SaveToStream(Strings: TStringList);
-var
-  I: integer;
+var I: integer;
 begin                                                                 // First save layerdata
   Strings.Add(IntToStr(NumberOfLayers));
-  for I:=1 to NumberOfLayers do Layer[I-1].SaveToStream(Strings); // Save index of active layer
+  for I:=0 to NumberOfLayers-1 do Layer[I].SaveToStream(Strings); // Save index of active layer
   Strings.Add(IntToStr(ActiveLayer.LayerIndex));  // first sort controlpoints for faster acces of function (Indexof())
   FControlPoints.Sort;
   Strings.Add(IntToStr(NumberOfControlPoints));
@@ -4169,7 +4145,6 @@ procedure TFreeSubdivisionSurface.Selection_Delete;
   var I: integer;
 begin // we will rebuild whole mesh anyway. lets cleare it before changes in control mesh
   ClearMesh;      // First controlcurves, then faces, edges and finally points!
-
   I:=NumberOfSelectedControlCurves;
   while I>=1 do begin SelectedControlCurve[I-1].Delete; Dec(I);
     if I>NumberOfSelectedControlCurves then I:=NumberOfSelectedControlCurves;
@@ -4187,7 +4162,7 @@ begin // we will rebuild whole mesh anyway. lets cleare it before changes in con
     SelectedControlEdge[I-1].Delete; Dec(I);
     if I>NumberOfSelectedControlEdges then I:=NumberOfSelectedControlEdges;
   end;
-/// ошибка здесь
+/// ошибка здесь !!!
   I:=self.NumberOfSelectedControlPoints;
   while I>=1 do begin
     if not SelectedControlPoint[I-1].Locked then SelectedControlPoint[I-1].Delete;

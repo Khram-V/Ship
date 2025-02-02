@@ -291,7 +291,7 @@ begin
   FSelectColor      :=clYellow; // Default color for selected items
   FCurvaturePlotColor:=clFuchsia; // color of the curvature plot of controlcurves
   FMarkerColor      :=$8000FF;
-  FStationColor     :=clBlue;
+  FStationColor     :=$FF6464;    // =clBlue;
   FButtockColor     :=clGray;
   FWaterlineColor   :=clGreen;
   FDiagonalColor    :=clSkyBlue;

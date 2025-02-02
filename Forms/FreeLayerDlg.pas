@@ -349,8 +349,7 @@ end;
 
 procedure TFreeLayerDialog.Edit1Change(Sender: TObject);
 begin
-   if SelectedLayer<>nil then if SelectedLayer.Name<>Edit1.Text then
-   begin
+   if SelectedLayer<>nil then if SelectedLayer.Name<>Edit1.Text then begin
       SelectedLayer.Name:=Edit1.Text;
       Layerbox.Items[Layerbox.ItemIndex]:=SelectedLayer.Name;
    end;
@@ -362,11 +361,9 @@ end;
 
 procedure TFreeLayerDialog.Panel3Click(Sender: TObject);
 begin
-   if SelectedLayer<>nil then
-   begin
+   if SelectedLayer<>nil then begin
       ColorDialog.Color:=SelectedLayer.Color;
-      if ColorDialog.Execute then
-      begin
+      if ColorDialog.Execute then begin
          SelectedLayer.Color:=ColorDialog.Color;
          Panel3.Color:=ColorDialog.Color;
          FFreeShip.Redraw;
@@ -376,8 +373,8 @@ end;
 
 procedure TFreeLayerDialog.CheckBox1Click(Sender: TObject);
 begin
-   if SelectedLayer<>nil then if SelectedLayer.Developable<>Checkbox1.Checked then
-   begin
+   if SelectedLayer<>nil then
+   if SelectedLayer.Developable<>Checkbox1.Checked then begin
       SelectedLayer.Developable:=CheckBox1.Checked;
       FFreeShip.FileChanged:=true;
       FFreeShip.Redraw;
@@ -470,13 +467,9 @@ end;
 procedure TFreeLayerDialog.Edit3Exit(Sender: TObject);
 var Value:TFloatType;
 begin
-   if SelectedLayer<>nil then
-   begin
+   if SelectedLayer<>nil then begin
       Value:=Edit3.Value;
-      if Value<>SelectedLayer.Thickness then
-      begin
-         SelectedLayer.Thickness:=Value;
-      end;
+      if Value<>SelectedLayer.Thickness then SelectedLayer.Thickness:=Value;
       LayerBoxItemClick(self,Layerbox.ItemIndex);
    end;
 end;

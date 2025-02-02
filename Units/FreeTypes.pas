@@ -34,10 +34,10 @@ Type
                              rgbtGreen: BYTE;
                              rgbtRed  : BYTE; end;
 
-  pRGBTripleArray               = ^TRGBTripleArray;
-  TRGBTripleArray               = array[0..PixelCountMax-1] of TRGBTriple;
-  T3DCoordinateArray            = array of T3DCoordinate;
-  TPointArray                   = array of TPoint;
+  pRGBTripleArray              = ^TRGBTripleArray;
+  TRGBTripleArray              = array[0..PixelCountMax-1] of TRGBTriple;
+  T3DCoordinateArray           = array of T3DCoordinate;
+  TPointArray                  = array of TPoint;
   TFreePrecisionType           = (fpLow,fpMedium,fpHigh,fpVeryHigh);                  // Precision of the ship-model
   TFreeIntersectionType        = (fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal); // Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
   TFreeModelView               = (mvPort,mvBoth);                                     // Show half the hull or the entire hull
@@ -91,6 +91,7 @@ Const
   EOL                  = #13#10;
 
 Function F2S( Value: TFloatType ): TFloatType;
+function Point3D( X,Y,Z: TFloattype): T3DCoordinate;
 Function GetFloat(const S: String): TFloatType;
 Function GetInteger( const S:String ): Integer;
 Function GetBoolean( const S:String ): Boolean;
@@ -100,6 +101,10 @@ Function BlankOff( S: AnsiString ): AnsiString;
 //Function Dist( A:T3DVector ): TFloatType;
 
 Implementation
+function Point3D( X,Y,Z: TFloattype): T3DCoordinate;
+   begin Result.X:=X;
+         Result.Y:=Y;
+         Result.Z:=Z; end;
 
 operator = (c1,c2:T3DCoordinate): boolean;
 begin result:=(c1.x=c2.x) and (c1.y=c2.y) and (c1.z=c2.z); end;
@@ -215,10 +220,10 @@ end;
 Function BlankOff( S: AnsiString ): AnsiString; var I,J,K,L:integer;
 begin J:=1; K:=1; L:=Length( S );       // вычистка лишних пробелов и пропусков
   for I:=1 to L do
-    if S[I]>' ' then begin S[J]:=S[I]; if I<L then inc( J ); K:=J; end else
-      if (J>1) and (J=K) then begin S[J]:=' '; if J<L then inc( J ); end;
+    if S[I]>' ' then begin S[J]:=S[I]; inc( J ); K:=J; end else
+      if (J>1) and (J=K) then begin S[J]:=' '; inc( J ); end;
     //for I:=J to L do S[I]:=' ';
-    SetLength( S,J );
+    SetLength( S,J-1 );
     Result:=S;
 end;
 

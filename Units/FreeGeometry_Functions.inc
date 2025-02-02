@@ -743,13 +743,6 @@ begin
    }
 end;{Lines3DIntersect}
 
-function Point3D(x,y,z: TFloatType): T3DCoordinate;
-begin
-  Result.X:=x;
-  Result.Y:=y;
-  Result.Z:=z;
-end;
-
 // Calculate the mid-point between P1 and P2
 function Midpoint(P1, P2: T3DCoordinate): T3DCoordinate;
 begin
@@ -1181,12 +1174,9 @@ begin
 end;{ProjectPointOnLine}
 
 
-function RandomColor: TColor;
-const
-  base = 40;
-begin
-  Result:=RGB(Base + Random(255 - Base), Base + Random(255 - Base), Base + Random(255 - Base));
-end;{RandomColor}
+//function RandomColor: TColor; const base = 40;
+//begin Result:=RGB(Base+Random(255-Base),Base+Random(255-Base),Base+Random(255-Base));
+//end;{RandomColor}
 
 function RotateAroundPoint(P: T3DCoordinate; Center: T3DCoordinate;
   sinhx, coshx, sinhy, coshy, sinhz, coshz: TFloatType): T3DCoordinate;

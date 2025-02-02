@@ -576,7 +576,7 @@ type
     procedure Marker_Delete;    // Delete all markers from the model
     procedure Marker_Import;    // Import markers from a textfile
     procedure Model_Check(ShowResult: boolean);    // Checks the surface for inconsistent normal directions and leaks
-    function Model_New: boolean;            // Start a new model (with a predefined surface)
+    function Model_New: boolean;            // Start a Example Ship (with a predefined surface)
     procedure Model_LackenbyTransformation; // Affine hullform transformation according to Lackenby
     procedure Model_Scale(ScaleVector: T3DCoordinate; OverrideLock, AdjustMarkers: boolean); // Scale the entire model and all equivalent data such as stations etc.
     procedure Point_Collapse;          // Merge two selected edges by removing their common controlpoint.

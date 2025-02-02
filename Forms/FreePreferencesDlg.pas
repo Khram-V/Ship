@@ -136,7 +136,7 @@ begin                                                                           
     if string( ComboBoxEncoding.Items.Objects[i] ) =
                FFreeship.Preferences.FbmEncoding then break;
   if I>ComboBoxEncoding.Items.Count then I:=-1;
-  ComboBoxEncoding.ItemIndex:=I;
+       ComboBoxEncoding.ItemIndex:=I;
 end;
 
 function TFreePreferencesDialog.Execute(Freeship: TFreeShip): boolean;
@@ -149,8 +149,7 @@ begin
 end;
 
 procedure TFreePreferencesDialog.ColorPanelClick(Sender: TObject);
-var
-  Panel: TPanel;
+var Panel: TPanel;
 begin
   if (Sender.ClassType <> TPanel) then exit;
   Panel:=TPanel(Sender);

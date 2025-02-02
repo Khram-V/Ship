@@ -406,36 +406,36 @@ object MainForm: TMainForm
         Top = 0
         Action = LayerDialog
       end
-      object ColorButton1: TColorButton
-        Tag = 3
-        Left = 75
-        Height = 24
-        Hint = 'Change the color of the currently active layer.'
-        Top = 0
-        Width = 24
-        BorderWidth = 2
-        ButtonColorSize = 32
-        ButtonColor = clLime
-        OnClick = ColorButton1Click
-        ParentFont = False
-      end
       object ToolButton1: TToolButton
         Tag = 4
-        Left = 99
+        Left = 75
         Top = 0
         Action = LayerVisibilityDialog
       end
       object ToolButton26: TToolButton
         Tag = 6
-        Left = 123
+        Left = 99 
         Top = 0
         Action = IntersectionDialog
       end
       object ToolButton6: TToolButton
         Tag = 7
-        Left = 147
+        Left = 123
         Top = 0
         Action = LayerAutoGroup
+      end
+      object ColorButton1: TColorButton
+        Tag = 3
+        Left = 147
+        Height = 24
+        Hint = 'Change the color of the currently active layer.'
+        Top = 0
+        Width = 24
+        BorderWidth = 3
+        ButtonColorSize = 32
+        ButtonColor = clLime
+        OnColorChanged = ColorButton1Click
+        ParentFont = False
       end
       object LayerBox: TComboBox
         Tag = 5

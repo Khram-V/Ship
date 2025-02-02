@@ -227,23 +227,16 @@ var
   Index: integer;
 begin
   Current := ActivePatch;
-  if Val <> Current then
-  begin
-    if Val = nil then
-      Index := -1
-    else
-      Index := ListBox.Items.IndexOfObject(Val);
+  if Val <> Current then begin
+    if Val = nil then Index := -1
+                 else Index := ListBox.Items.IndexOfObject(Val);
     ListBox.ItemIndex := index;
   end;
   Val := ActivePatch;
-  if Val <> nil then
-  begin
+  if Val <> nil then begin
     Index := FPlates.IndexOf(Val);
-    if Index <> -1 then
-    begin
-      // Put it at the end of the list to ensure
-      // that it is always drawn on top
-      FPlates.Delete(Index);
+    if Index <> -1 then begin       // Put it at the end of the list to ensure
+      FPlates.Delete(Index);        // that it is always drawn on top
       FPlates.Add(Val);
     end;
   end;

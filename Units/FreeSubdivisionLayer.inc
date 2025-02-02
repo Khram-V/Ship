@@ -817,16 +817,12 @@ var
   Index: integer;
 begin
   Result:=True;
-  for I:=Count downto 1 do
-    Items[I - 1].Delete;
-  if Surface.FActiveLayer = self then
-    Surface.FActiveLayer:=nil;
+  for I:=Count downto 1 do Items[I - 1].Delete;
+  if Surface.FActiveLayer = self then Surface.FActiveLayer:=nil;
   Index:=LayerIndex;
-  if Index <> -1 then
-    Surface.FLayers.Delete(Index);
+  if Index <> -1 then Surface.FLayers.Delete(Index);
   Clear;
-  if assigned(Surface.FOnChangeLayerData) then
-    Surface.FOnChangeLayerData(self);
+  if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
   //Destroy;
   Free;
 end;

@@ -149,8 +149,7 @@ end;{TFreeDevelopedPatch.Assign}
 
 procedure TFreeDevelopedPatch.Clear;
 var
-  I: integer;
-  Spline: TFreeSpline;
+  I: integer; Spline: TFreeSpline;
 begin
   FConnectedMirror:=nil;
   FXGrid:=1;
@@ -182,32 +181,14 @@ begin
   FShadeSubmerged:=True;
   FVisible:=True;
   FMirrorOnScreen:=False;
-
   FDimFontColor:=clBlack;
   FDimFontName:='Arial';
   FDimFontSize:=6;
-
-  for I:=1 to FStations.Count do
-  begin
-    FStations[I - 1].Free;
-  end;
-  FStations.Clear;
-  for I:=1 to FButtocks.Count do
-  begin
-    FButtocks[I - 1].Free;
-  end;
-  FButtocks.Clear;
-  for I:=1 to FWaterlines.Count do
-  begin
-    FWaterlines[I - 1].Free;
-  end;
-  FWaterlines.Clear;
-  for I:=1 to FDiagonals.Count do
-  begin
-    FDiagonals[I - 1].Free;
-  end;
-  FDiagonals.Clear;
-end;{TFreeDevelopedPatch.Clear}
+  for I:=0 to FStations.Count-1   do FStations[I].Free;   FStations.Clear;
+  for I:=0 to FButtocks.Count-1   do FButtocks[I].Free;   FButtocks.Clear;
+  for I:=0 to FWaterlines.Count-1 do FWaterlines[I].Free; FWaterlines.Clear;
+  for I:=0 to FDiagonals.Count-1  do FDiagonals[I].Free;  FDiagonals.Clear;
+end;
 
 constructor TFreeDevelopedPatch.Create;
 begin
@@ -223,7 +204,7 @@ begin
   FDiagonals:=TFasterListTFreeSpline.Create;
   FCorners:=TFasterListTFreeSubdivisionPoint.Create;
   Clear;
-end;{TFreeDevelopedPatch.Create}
+end;
 
 destructor TFreeDevelopedPatch.Destroy;
 begin
@@ -240,40 +221,33 @@ begin
   FreeAndNil(FDiagonals);
   FreeAndNil(FCorners);
   inherited Destroy;
-end;{TFreeDevelopedPatch.Destroy}
+end;
 
 function TFreeDevelopedPatch.DistanceToCursor(X, Y: integer;
   Viewport: TFreeViewport): integer;
 var
-  I, S, E: integer;
+  I,S,E,Dist: integer;
   Edge: TFreeSubdivisionEdge;
   P1, P2: T3DCoordinate;
-  Dist: integer;
   Param: TFloattype;
 begin
-  Result:=1000000;
-  // check distance to all interior edges
-  for I:=1 to FEdges.Count do
-  begin
+  Result:=1000000;                      // check distance to all interior edges
+  for I:=1 to FEdges.Count do begin
     Edge:=FEdges[I - 1];
     S:=FPoints.SortedIndexOf(Edge.StartPoint);
     E:=FPoints.SortedIndexOf(Edge.EndPoint);
-    if (S <> -1) and (E <> -1) then
-    begin
+    if (S <> -1) and (E <> -1) then begin
       P1:=Point[S];
       P2:=Point[E];
-      Dist:=Round(DistanceToLine(Viewport.Project(P1), Viewport.Project(
-        P2), X, Y, Param));
-      if dist < Result then
-        Result:=Dist;
-      if FMirror then
-      begin
+      Dist:=Round(DistanceToLine( Viewport.Project(P1),
+                                  Viewport.Project(P2), X,Y, Param) );
+      if dist < Result then Result:=Dist;
+      if FMirror then begin
         P1:=MirrorPoint[S];
         P2:=MirrorPoint[E];
-        Dist:=Round(DistanceToLine(Viewport.Project(P1), Viewport.Project(
-          P2), X, Y, Param));
-        if dist < Result then
-          Result:=Dist;
+        Dist:=Round(DistanceToLine( Viewport.Project(P1),
+                                    Viewport.Project(P2), X,Y, Param) );
+        if dist < Result then Result:=Dist;
       end;
     end;
   end;
@@ -281,24 +255,18 @@ end;{TFreeDevelopedPatch.DistanceToCursor}
 
 procedure TFreeDevelopedPatch.Draw(Viewport: TFreeViewport);
 var
-  I, J, K, S, E: integer;
-  Index, Cap: integer;
+  I,J,K,S,E, Na, Nb, Index,Cap, r,g,b, PenWidthfactor: integer;
+  MinZ,MaxZ, s1,s2,s3: TFloatType;
+  P1,P2,P3, Min,Max: T3DCoordinate;
   Face: TFreeSubdivisionFace;
   Edge: TFreeSubdivisionEdge;
   Point: TFreeSubdivisionPoint;
   Pts: array of TPoint;
   Pt: TPoint;
-  P1, P2, P3: T3DCoordinate;
-  Min, Max: T3DCoordinate;
-  r, g, b: integer;
-  PenWidthfactor: integer;
   EdgeColor: TColor;
   Str: string;
   WlPlane: T3Dplane;
-  MinZ, MaxZ: TFloatType;
-  s1, s2, s3: TFloatType;
-  Above, Below: TFreeCoordinateArray;
-  Na, Nb: integer;
+  Above,Below: TFreeCoordinateArray;
 
   procedure DrawSpline(Spline: TFreeSpline);
   var
@@ -312,8 +280,7 @@ var
       Spline.Fragments:=round(sqrt(sqrt(Spline.NumberOfPoints)) * 100.0);
 
     Setlength(Pts, Spline.Fragments + 1);
-    for I:=0 to Spline.Fragments do
-    begin
+    for I:=0 to Spline.Fragments do begin
       P3D:=Spline.Value(I / Spline.Fragments);
       P2D.X:=P3D.X;
       P2D.Y:=P3D.Y;
@@ -957,34 +924,21 @@ var
   begin
     Index:=FPoints.SortedIndexOf(P);
     P3D:=Point[Index];
-    if First then
-    begin
-      Min:=P3D;
-      Max:=min;
-      First:=False;
-    end
-    else
-      MinMax(P3D, Min, Max);
-    if FMirror then
-    begin
-      P3D:=MirrorPoint[Index];
-      MinMax(P3D, Min, Max);
-    end;
+    if First then begin Min:=P3D; Max:=min; First:=False; end
+             else MinMax(P3D, Min, Max);
+    if FMirror then begin P3D:=MirrorPoint[Index]; MinMax(P3D, Min, Max); end;
   end;
-
   procedure printEdgePoint(P:TFreeSubdivisionPoint; FMirror:boolean);
   begin
-      Index:=FPoints.SortedIndexOf(P);
-      if not FMirror then P3D:=Point[Index]
-      else P3D:=MirrorPoint[Index];
-      P3D.X:=P3D.X - Min.X;
-      P3D.Y:=P3D.Y - Min.Y;
-      P3D.Z:=P3D.Z - Min.Z;
-      Strings.Add(FloatToStrF(P3D.X, ffFixed, 7, 3) + #32 + FloatToStrF(P3D.Y, ffFixed, 7, 3));
+    Index:=FPoints.SortedIndexOf(P);
+    if not FMirror then P3D:=Point[Index]
+    else P3D:=MirrorPoint[Index];
+    P3D.X:=P3D.X - Min.X;
+    P3D.Y:=P3D.Y - Min.Y;
+    P3D.Z:=P3D.Z - Min.Z;
+    Strings.Add(FloatToStrF(P3D.X,ffFixed,7,3)+#32+FloatToStrF(P3D.Y,ffFixed,7,3));
   end;
-
-begin
-  // Extract edges as polylines
+begin                                             // Extract edges as polylines
   Source:=TFasterListTFreeSubdivisionEdge.Create;
   Source.AddList(FBoundaryEdges);
   Dest:=TFasterListTFreeSubdivisionEdge.Create;
@@ -996,15 +950,13 @@ begin
   First:=True;
   Strings.Add('');
   Strings.Add('Boundary coordinates for: ' + Name);
-  for I:=1 to Dest.Count do
-  begin
+  for I:=1 to Dest.Count do begin
     Edge:=Dest[I - 1];
     getEdgeMinMax(Edge.StartPoint, Min, Max);
     getEdgeMinMax(Edge.EndPoint, Min, Max);
   end;
 
-  for I:=1 to Dest.Count do
-  begin
+  for I:=1 to Dest.Count do begin
     Edge:=Dest[I - 1];
     if I > 1 then
       Strings.Add('');
@@ -1012,8 +964,7 @@ begin
     printEdgePoint(Edge.StartPoint, FMirror);
     printEdgePoint(Edge.EndPoint, FMirror);
 
-    if FMirror then
-    begin
+    if FMirror then begin
       Strings.Add('');
       printEdgePoint(Edge.StartPoint, FMirror);
       printEdgePoint(Edge.EndPoint, FMirror);
@@ -1021,7 +972,7 @@ begin
     FreeAndNil(Source);
   end;
   FreeAndNil(Dest);
-end;{TFreeDevelopedPatch.SaveToDXF}
+end;
 
 procedure TFreeDevelopedPatch.Unroll(ControlFaces: TFasterListTFreeSubdivisionControlFace);
 type

@@ -6,29 +6,23 @@ unit Main;
 
 interface
 
-uses
-     SysUtils,      // =exception...
-     Classes,       // constructor Create
-     Graphics,
-     Controls,
-     LCLIntf,       // openDocument
-     LazFileUtils,  // дата и время файла
-     Forms,
-     Dialogs,
-     ExtCtrls,     ActnList,
-     StdCtrls,     ComCtrls,
-     FreeTypes,    FreeGeometry,
-     FreeShipUnit, FreeVersionUnit,
-     FreehullFormWindow_panel,MDIPanel,
-     FreeAboutDlg,
-     Menus,
-     StdActns,
-     Spin,
-     Interfaces,
-     FreeSplitSectionDlg, FreeLayerVisibilityDlg,
-     FreeSelectedDlg,     FreeLanguageSupport;
+uses SysUtils,    // = exception ...
+     Classes,     // constructor Create
+     LCLIntf,     // openDocument
+     LazFileUtils,// дата и время файла
+     Graphics,    Controls,
+     Forms,       Dialogs,
+     ExtCtrls,    ActnList,
+     StdCtrls,    ComCtrls,
+     Menus,       StdActns,
+     Spin,        Interfaces,
+     FreeTypes,   FreeGeometry,
+     FreeShipUnit,FreeVersionUnit,
+     FreeAboutDlg,FreehullFormWindow_panel,
+     FreeLayerVisibilityDlg,FreeLanguageSupport,
+     FreeSelectedDlg,FreeSplitSectionDlg,MDIPanel;
 type
-  TMainForm = class( TForm )                                    // TMainForm
+  TMainForm = class( TForm )                                       // TMainForm
      ToolBarCurves,
      ToolBarFaces,
      ToolBarFile,
@@ -107,6 +101,7 @@ type
      cbPrecision               : TComboBox;
      LayerBox                  : TComboBox;
      ColorButton1              : TColorButton;
+//   ColorToolButton           : TToolButton;
      FontDialog1               : TFontDialog;
      HelpAction                : THelpAction;
      LabelProgress             : TLabel;
@@ -117,26 +112,26 @@ type
      StatusPanel5              : TPanel;
      PanelMain                 : TPanel;
      ProgressBarMain           : TProgressBar;
-    FreeShip                   : TFreeShip;
-    SpinEditFontSize           : TSpinEdit;
-    StatusBar                  : TPanel;
-    MenuImages                 : TImageList;
-    MainMenu1                  : TMainMenu;
+     FreeShip                  : TFreeShip;
+     SpinEditFontSize          : TSpinEdit;
+     StatusBar                 : TPanel;
+     MenuImages                : TImageList;
+     MainMenu1                 : TMainMenu;
 
-    tbShowFreeObjects,ToolButton1,   ToolButton39,
-    ToolButtonSelect, ToolButtonRedo,ToolButtonUndo,
-    ToolButtonDelete, ToolButton2,   ToolButton5,
-    ToolButton6,      ToolButton8,   ToolButton9,
-    ToolButton10,     ToolButton13,  ToolButton16,
-    ToolButton17,     ToolButton18,  ToolButton21,
-    ToolButton22,     ToolButton23,  ToolButton24,
-    ToolButton26,     ToolButton27,  ToolButton29,
-    ToolButton30,     ToolButton31,  ToolButton32,
-    ToolButton33,     ToolButton34,  ToolButton35,
-    ToolButton36,     ToolButton37,  ToolButton40,
-    ToolButton41,     ToolButton42,  ToolButton43,
-    ToolButton44,     ToolButton45,  ToolButton46,
-    ToolButton47,     ToolButton48:  TToolButton;
+     tbShowFreeObjects,ToolButton1,   ToolButton39,
+     ToolButtonSelect, ToolButtonRedo,ToolButtonUndo,
+     ToolButtonDelete, ToolButton2,   ToolButton5,
+     ToolButton6,      ToolButton8,   ToolButton9,
+     ToolButton10,     ToolButton13,  ToolButton16,
+     ToolButton17,     ToolButton18,  ToolButton21,
+     ToolButton22,     ToolButton23,  ToolButton24,
+     ToolButton26,     ToolButton27,  ToolButton29,
+     ToolButton30,     ToolButton31,  ToolButton32,
+     ToolButton33,     ToolButton34,  ToolButton35,
+     ToolButton36,     ToolButton37,  ToolButton40,
+     ToolButton41,     ToolButton42,  ToolButton43,
+     ToolButton44,     ToolButton45,  ToolButton46,
+     ToolButton47,     ToolButton48:  TToolButton;
 
     StatusPanel2  : TPanel;
     ColorDialog   : TColorDialog;
@@ -166,7 +161,7 @@ type
     PointsLock    : TAction;     PointsLock1     : TMenuItem;
     PointsUnlock  : TAction;     Unlockpoints1   : TMenuItem;
     ImportMarkers : TAction;     Markers2        : TMenuItem;
-    PointsUnlockAll: TAction;    Unlockallpoints1: TMenuItem;
+    PointsUnlockAll:TAction;     Unlockallpoints1: TMenuItem;
     IncreaseCurvatureScale:TAction; Incrcurvaturescale1: TMenuItem;
     DecreaseCurvatureScale:TAction; Decrcurvaturescale1: TMenuItem;
     ExportArchimedes : TAction;     ArchimedesMB1 : TMenuItem;
@@ -258,7 +253,6 @@ type
     procedure AddGridPanelExecute      (Sender: TObject);
     procedure AddPointToGroupExecute   (Sender: TObject);
     procedure cbPrecisionChange        (Sender: TObject);
-    procedure ColorButton1Click        (Sender: TObject);
     procedure FormActivate             (Sender: TObject);
     procedure FormChangeBounds         (Sender: TObject);
     procedure FormDestroy              (Sender: TObject);
@@ -302,8 +296,8 @@ type
     procedure DeselectAllExecute       (Sender: TObject);
     procedure PointCollapseExecute     (Sender: TObject);
     procedure LayerBoxChange           (Sender: TObject);
-    procedure PanelActiveLayerColorClick(Sender: TObject);
     procedure ActiveLayerColorExecute  (Sender: TObject);
+    procedure ColorButton1Click        (Sender: TObject);
     procedure DeleteEmptyLayersExecute (Sender: TObject);
     procedure LayerDialogExecute       (Sender: TObject);
     procedure NewModelExecute          (Sender: TObject);
@@ -623,9 +617,6 @@ begin
 // DesignHydrostaticsExecute( TObject )
 end;
 
-procedure TMainForm.ColorButton1Click( Sender:TObject );
-    begin ActiveLayerColorExecute(self); end;
-
 procedure TMainForm.OnSelectItem( Sender:TObject );
 var Face1,Face2 : TFreeSubdivisionControlFace;
     Diff : Boolean;
@@ -634,12 +625,11 @@ begin
 { if (Sender is TFreeSubdivisionControlPoint)
      and (Sender=FreeShip.ActiveControlPoint)
      and (not FreeShip.ActiveControlPoint.Selected)
-   then
-     begin
-        // The active controlpoint was deselected, probably internally by the subdivision surface.
-        // Set the FreeShip.ActiveControlPoint to nil (which also closes the controlpoint window)
-        FreeShip.ActiveControlPoint:=nil;
-     end;
+   then begin
+   // The active controlpoint was deselected, probably internally by the subdivision surface.
+   // Set the FreeShip.ActiveControlPoint to nil (which also closes the controlpoint window)
+      FreeShip.ActiveControlPoint:=nil;
+   end;
 }
    if FreeShip.NumberOfSelectedControlFaces>0 then begin
       // set the layerbox itemindex to the index of the layer of the selected controlfaces
@@ -1298,18 +1288,16 @@ end;
 procedure TMainForm.FreeShipChangeActiveLayer(Sender: TObject;Layer: TFreeSubdivisionLayer);
 var Index : Integer;
 begin
-   if (FreeShip.NumberOfSelectedControlFaces<>0) and (FreeShip.ActiveLayer=Layer)
-   then begin end // do not switch to the active layer when controlfaces are selected
-   else begin
+   if (FreeShip.NumberOfSelectedControlFaces<>0)
+   and (FreeShip.ActiveLayer=Layer) then else
+   begin    // do not switch to the active layer when controlfaces are selected
      if Layer=nil then begin
         Index:=-1;
-        Layerbox.ItemIndex:=Index;
-        //PanelActiveLayerColor.Color:=clBtnface;
+        Layerbox.ItemIndex:=Index;                                              //PanelActiveLayerColor.Color:=clBtnface;
         ColorButton1.ButtonColor:=clBtnface;
      end else begin
         Index:=Layerbox.Items.IndexOfObject(Layer);
-        Layerbox.ItemIndex:=Index;
-        //PanelActiveLayerColor.Color:=Layer.Color;
+        Layerbox.ItemIndex:=Index;                                              //PanelActiveLayerColor.Color:=Layer.Color;
         ColorButton1.ButtonColor:=Layer.Color;
      end;
    end;
@@ -1328,13 +1316,6 @@ begin
   end;
 end;
 
-procedure TMainForm.ImportFEFExecute(Sender: TObject);
-    begin FreeShip.Edit.File_ImportFEF;
-          FOpenHullWindows;
-          SetCaption;
-          UpdateMenu;
-    end;
-
 procedure TMainForm.LayerBoxChange(Sender: TObject);
 var Layer: TFreeSubdivisionLayer; I,Index: Integer;
 begin
@@ -1344,16 +1325,13 @@ begin
    if Freeship.NumberOfSelectedControlFaces=0 then begin // change active layer
       if Layer<>FreeShip.ActiveLayer then FreeShip.ActiveLayer:=Layer;
    end else begin          // Assign all selected controlfaces to the new layer
-      for I:=FreeShip.NumberOfSelectedControlFaces downto 1
-       do FreeShip.SelectedControlFace[I-1].Layer:=Layer;
+      for I:=FreeShip.NumberOfSelectedControlFaces-1 downto 0
+       do FreeShip.SelectedControlFace[I].Layer:=Layer;
       FreeShip.FileChanged:=True;
       FreeShip.Redraw;
    end;
    UpdateMenu;
 end;
-
-procedure TMainForm.PanelActiveLayerColorClick(Sender: TObject);
-begin ActiveLayerColorExecute(self); end;
 
 procedure TMainForm.ActiveLayerColorExecute(Sender: TObject);
 begin                         // change the color of the currently active layer
@@ -1362,11 +1340,33 @@ begin                         // change the color of the currently active layer
       FreeShip.ActiveLayer.Color:=ColorDialog.Color;
       FreeShip.FileChanged:=True;
       FreeShip.Redraw;
-      FreeShipChangeActiveLayer(self,Freeship.ActiveLayer);
+      FreeShipChangeActiveLayer( self,Freeship.ActiveLayer );
       UpdateMenu;
    end;
 end;
-
+procedure TMainForm.ColorButton1Click( Sender:TObject );
+begin
+      FreeShip.ActiveLayer.Color:=ColorButton1.ButtonColor;
+      FreeShip.FileChanged:=True;
+      FreeShip.Redraw;
+      FreeShipChangeActiveLayer( self,Freeship.ActiveLayer );
+      UpdateMenu;
+end;
+(*
+object ColorButton1: TColorButton
+  Tag = 3
+  Left = 75
+  Height = 24
+  Hint = 'Change the color of the currently active layer.'
+  Top = 0
+  Width = 24
+  BorderWidth = 2
+  ButtonColorSize = 32
+  ButtonColor = clLime
+  OnClick = ColorButton1Click  -> OnColorChanged
+  ParentFont = False
+end
+*)
 procedure TMainForm.DeleteEmptyLayersExecute(Sender: TObject);
 begin Freeship.Edit.Layer_DeleteEmpty(False); UpdateMenu; end;
 
@@ -1397,7 +1397,7 @@ begin
    FreeShip := TFreeShip.Create( self );
    FreeShip.MainForm := self;
    FreeShip.FileChanged:=true;
-   FreeShip.Filename := 'New model';
+   FreeShip.Filename := 'Example Ship';
    FreeShip.FileVersion:=fv261;
    FreeShip.OnChangeCursorIncrement:=FreeShipChangeCursorIncrement;
    FreeShip.OnFileChanged          :=FreeShipFileChanged;
@@ -1566,6 +1566,13 @@ begin Freeship.Edit.File_ExportDXF_3DPolylines; UpdateMenu; end;
 
 procedure TMainForm.ExportDXFFacesExecute(Sender: TObject);
 begin Freeship.Edit.File_ExportDXF_Faces; UpdateMenu; end;
+
+procedure TMainForm.ImportFEFExecute(Sender: TObject);
+    begin FreeShip.Edit.File_ImportFEF;
+          FOpenHullWindows;
+          SetCaption;
+          UpdateMenu;
+    end;
 
 procedure TMainForm.ImportHullFileExecute(Sender: TObject);
 begin Freeship.Edit.File_ImportHull;

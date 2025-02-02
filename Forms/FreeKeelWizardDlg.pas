@@ -1665,12 +1665,9 @@ begin
   FLayerColor:=FFreeship.Preferences.LayerColor;
   LayerColorButton.ButtonColor:=FLayerColor;
   ComboBoxSubdivisionLevel.ItemIndex:=Ord(FFreeship.Precision);
-
   ComboBoxClick(self);
   ComboBoxPlanformShapeClick(self);
-
   ShowModal;
-
   FreeAndNil(FProfile);
   Result:=ModalResult = mrOk;
 end;

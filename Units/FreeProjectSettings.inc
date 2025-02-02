@@ -53,8 +53,7 @@ end;
 
 procedure TFreeProjectSettings.FSetProjectBeam(Val: TFloatType);
 begin
-  if abs(Val - FProjectBeam) > 1e-7 then begin
-    FProjectBeam:=Val;
+  if abs( Val-FProjectBeam )>1e-7 then begin FProjectBeam:=Val;
     FMainparticularsHasBeenset:=True; FreeShip.FileChanged:=True;
   end;
 end;
@@ -62,8 +61,7 @@ end;
 procedure TFreeProjectSettings.FSetProjectDraft(Val: TFloatType);
 var I: integer;
 begin
-  if abs(Val - FProjectDraft) > 1e-7 then begin
-    FProjectDraft:=Val;
+  if abs( Val-FProjectDraft )>1e-7 then begin FProjectDraft:=Val;
     FMainparticularsHasBeenset:=True; FreeShip.FileChanged:=True;
     for I:=0 to FreeShip.NumberOfFlowLines-1 do FreeShip.Flowline[I].Build:=False;
   end;
@@ -71,8 +69,7 @@ end;
 
 procedure TFreeProjectSettings.FSetProjectLength(Val: TFloatType);
 begin
-  if abs(Val - FProjectLength) > 1e-7 then begin
-    FProjectLength:=Val;
+  if abs( Val-FProjectLength )>1e-7 then begin FProjectLength:=Val;
     FMainparticularsHasBeenset:=True; FreeShip.FileChanged:=True;
   end;
 end;
@@ -306,7 +303,7 @@ begin
   Dialog.cbSimplifyIntersections.Checked:=ProjectSimplifyIntersections;
   ShowTranslatedValues(Dialog);
   if Dialog.Execute then begin
-    FreeShip.Edit.CreateUndoObject( 'Project settings ', True );
+    FreeShip.Edit.CreateUndoObject( 'Project settings ',True );
 
     FProjectName         :=BlankOff( Dialog.Edit1.Text ); //ProjectName.Trim;
     FProjectDesigner     :=BlankOff( Dialog.Edit7.Text ); //ProjectDesigner.Trim;
@@ -374,7 +371,7 @@ begin
                              FProjectComment:=BlankOff(FProjectComment);
                        FProjectFileCreatedBy:=BlankOff(FProjectFileCreatedBy);
   if FreeShip.FileVersion >= fv210 then begin
-    Source.LoadInteger(I);
+    Source.LoadInteger( I );
     FFreeHydrostaticCoefficients:=TFreeHydrostaticCoeff(I);
     Source.LoadBoolean( FSavePreview );
     if FSavePreview then begin

@@ -186,7 +186,7 @@ begin
   FEdges:=TFasterListTFreeSubdivisionEdge.Create(false,false);  // is this for speed only?
   FControlDescendantEdges:=TFasterListTFreeSubdivisionEdge.Create(false,false);
   inherited Create(Owner);
-end;{TFreeSubdivisionControlFace.Create}
+end;
 
 function TFreeSubdivisionControlFace.DistanceToCursor(X, Y: integer;
   var P: T3DCoordinate; Viewport: TFreeViewport): integer;
@@ -255,40 +255,29 @@ begin
           end;
         end;
       end else begin
-        //            Dist:=Round(DistanceToLine(Viewport.Project(P1),Viewport.Project(P2),X,Y,Param));
+        //  Dist:=Round(DistanceToLine(Viewport.Project(P1),Viewport.Project(P2),X,Y,Param));
         D:=DistanceToLine(Viewport.Project(P1), Viewport.Project(P2), X, Y, Param);
         Dist:=Round(D);
-        if I = 1 then begin
-          Result:=Dist; P:=Interpolate(P1, P2, Param);
-        end
-        else if Dist < Result then begin
-          Result:=Dist; P:=Interpolate(P1, P2, Param);
-        end;
-        if (Layer.Symmetric) and (Surface.DrawMirror) then
-        begin
+        if I=1 then begin Result:=Dist; P:=Interpolate(P1,P2,Param); end else
+        if Dist<Result then begin Result:=Dist; P:=Interpolate(P1,P2,Param); end;
+        if (Layer.Symmetric) and (Surface.DrawMirror) then begin
           P1.Y:=-P1.Y;
           P2.Y:=-P2.Y;
-          Dist:=Round(DistanceToLine(Viewport.Project(P1),
-            Viewport.Project(P2), X, Y, Param));
-          if Dist < Result then begin
-            Result:=Dist; P:=Interpolate(P1, P2, Param);
-          end;
+          Dist:=Round(DistanceToLine(Viewport.Project(P1),Viewport.Project(P2),X,Y,Param));
+          if Dist<Result then begin Result:=Dist; P:=Interpolate(P1,P2,Param); end;
         end;
       end;
     end;
   end;
-end;{TFreeSubdivisionControlFace.DistanceToCursor}
+end;
 
 function TFreeSubdivisionControlFace.PointInFace(X, Y: integer;
   var IntersectionCoord: T3DCoordinate; var Proximity:TFloatType;
   Viewport: TFreeViewport): boolean;
 var
-  I, J: integer;
+  I,J,IntSn : integer; Pt: TPoint;
   Child: TFreeSubdivisionFace;
-  Pt: TPoint;
-  P1, P2, P3, RelativeCameraLocation: T3DCoordinate;
-  ray:T3DLine;
-  intsn: integer;
+  P1,P2,P3, RelativeCameraLocation: T3DCoordinate; Ray:T3DLine;
 begin
   Result:=false;
   IntersectionCoord:=ZERO;
@@ -296,141 +285,109 @@ begin
   Pt.Y:=Y;
   RelativeCameraLocation:=Viewport.RotatedPointBack(Viewport.CameraLocation);
 
-  for I:=1 to ChildCount do
-  begin
-    Child:=Self.Child[I - 1];
-    for J:=1 to Child.NumberOfpoints - 1 do
-    begin
+  for I:=1 to ChildCount do begin Child:=Self.Child[I-1];
+    for J:=1 to Child.NumberOfpoints-1 do begin
       p1:=Child.Point[0].Coordinate;
       p2:=Child.Point[J-1].Coordinate;
       p3:=Child.Point[J].Coordinate;
       ray:=ViewPort.ProjectBackAsLine(Pt);
       intsn:=RayIntersectTriangle(ray, p1,p2,p3, IntersectionCoord);
 
-      if intsn > 0 then
-      begin
-        {ViewPort.FDebugIntersection:=IntersectionCoord;
+      if intsn > 0 then begin
+       {ViewPort.FDebugIntersection:=IntersectionCoord;
         Viewport.FDebugT1:=p1;
         Viewport.FDebugT2:=p2;
         Viewport.FDebugT3:=p3;
         Viewport.FDebugCamera:=RelativeCameraLocation;}
-        Proximity:=DistPP3D(RelativeCameraLocation, IntersectionCoord);
+        Proximity:=DistPP3D(RelativeCameraLocation,IntersectionCoord);
         result:=true;
         exit;
       end;
 
-      if (Surface.DrawMirror) and (Layer.Symmetric) then
-      begin
+      if (Surface.DrawMirror) and (Layer.Symmetric) then begin
         p1.Y:=-p1.Y;
         p2.Y:=-p2.Y;
         p3.Y:=-p3.Y;
         ray:=ViewPort.ProjectBackAsLine(Pt);
         intsn:=RayIntersectTriangle(ray, p1,p2,p3, IntersectionCoord);
 
-        if intsn > 0 then
-        begin
-          {ViewPort.FDebugIntersection:=IntersectionCoord;
+        if intsn > 0 then begin
+         {ViewPort.FDebugIntersection:=IntersectionCoord;
           Viewport.FDebugT1:=p1;
           Viewport.FDebugT2:=p2;
           Viewport.FDebugT3:=p3;
           Viewport.FDebugCamera:=RelativeCameraLocation;}
-          Proximity:=DistPP3D(RelativeCameraLocation, IntersectionCoord);
+          Proximity:=DistPP3D(RelativeCameraLocation,IntersectionCoord);
           result:=true;
           exit;
         end;
       end;
-
     end;
   end;
-end;{TFreeSubdivisionControlFace.DistanceToCursor}
-
+end;
 
 procedure TFreeSubdivisionControlFace.Delete;
 var
-  I: integer;
-  Index: integer;
+  I,Index: integer;
   Edge: TFreesubdivisionEdge;
-  P1, P2: TFreeSubdivisionPoint;
+  P1,P2:TFreeSubdivisionPoint;
 begin
-//logger.Debug(format('TFreeSubdivisionControlFace[%d].Delete',[self.FID]));
-  // delete from selection;
-  Selected:=False;
-
-  //delete children?
-  for i:=0 to FChildren.Count-1 do
-    FChildren[i].Delete;
-  FChildren.Clear;
-
+  Selected:=False;                                    // delete from selection;
+  for I:=0 to FChildren.Count-1 do FChildren[I].Delete; FChildren.Clear; //delete children?
   Unreference;
 
-  // remove from layer
-  if Layer<>nil then
-     Layer.DeleteControlFace(self);
-  //Layer:=nil;
-  Index:=Surface.FControlFaces.IndexOf(Self);
-  if Index <> -1 then
-  begin
-    Surface.FControlFaces.Delete(Index);
-    P1:=Point[NumberOfPoints - 1];
-    P1.UnreferenceFace(Self);
-    for I:=1 to NumberOfPoints do
-    begin
-      P2:=Point[I - 1];
-      Edge:=Surface.EdgeExists(P1, P2);
-      P2.UnreferenceFace(Self);
-      if Edge <> nil then
-      begin
-        Edge.UnreferenceFace(Self);
-        if Edge.NumberOfFaces = 0 then
-          Edge.Delete;
+  if Layer<>nil then Layer.DeleteControlFace( Self );      // remove from layer
+  Index:=Surface.FControlFaces.IndexOf( Self );            //Layer:=nil;
+  if Index<>-1 then begin
+    Surface.FControlFaces.Delete( Index );
+    P1:=Point[NumberOfPoints-1];
+    P1.UnreferenceFace( Self );
+    for I:=1 to NumberOfPoints do begin            //// -1
+      P2:=Point[I-1];
+      P2.UnreferenceFace( Self );
+      Edge:=Surface.EdgeExists( P1,P2 );
+      if Edge<>nil then begin Edge.UnreferenceFace( Self );
+        if Edge.NumberOfFaces=0 then Edge.Delete;
       end;
       P1:=P2;
     end;
   end;
   inherited;
   Surface.Built:=False;
-  //Clear;
-  //Destroy;
-  DelayedDestroyList.Add(Self);
-end;{TFreeSubdivisionControlFace.Delete}
+  //  Clear;
+  //  Destroy;
+  DelayedDestroyList.Add( Self );
+end;
 
 procedure TFreeSubdivisionControlFace.Unreference;
 var i: integer;
 begin
   if not IsUnreferenceEnabled then exit;
-  if InUnreference then exit; // speed up
+  if InUnreference then exit;                                       // speed up
   InUnreference:=true;
-//logger.IncreaseIndent;
-//logger.Debug(format('TFreeSubdivisionControlFace[%d].Unreference',[self.FID]));
-  if FLayer<>nil then
-     FLayer.DeleteControlFace(Self);
+  if FLayer<>nil then FLayer.DeleteControlFace(Self);
   if FChildren<>nil then
-  for i:=0 to FChildren.Count-1 do
-    FChildren[i].Unreference;
+  for i:=0 to FChildren.Count-1 do FChildren[i].Unreference;
   if FControlDescendantEdges<>nil then
-  for i:=0 to FControlDescendantEdges.Count-1 do
-    FControlDescendantEdges[i].FFaces.DeleteItem(Self);
+    for i:=0 to FControlDescendantEdges.Count-1 do
+      FControlDescendantEdges[i].FFaces.DeleteItem(Self);
   if FEdges<>nil then
-  for i:=0 to FEdges.Count-1 do
-    FEdges[i].UnreferenceFace(Self);
+    for i:=0 to FEdges.Count-1 do FEdges[i].UnreferenceFace( Self );
   if FPoints<>nil then
-  for i:=0 to FPoints.Count-1 do
-    FPoints[i].UnreferenceFace(Self);
-  if FSurface <> nil then FSurface.UnreferenceControlFace(self);
+    for i:=0 to FPoints.Count-1 do FPoints[i].UnreferenceFace( Self );
+  if FSurface<>nil then FSurface.UnreferenceControlFace(self);
   inherited;
   InUnreference:=false;
-//logger.DecreaseIndent;
 end;
 
 destructor TFreeSubdivisionControlFace.Destroy;
 var i:integer;
 begin
-  //logger.Debug(format('TFreeSubdivisionControlFace.Destroy[%d]',[self.FID]));
   FreeAndNil(FEdges);
   FreeAndNil(FControlDescendantEdges);
   FreeAndNil(FChildren);
   inherited Destroy;
-end;{TFreeSubdivisionControlFace.Destroy}
+end;
 
 function TFreeSubdivisionControlFace.CheckIntegrity: boolean;
 var  I, J: integer; IsFaceFound:boolean;
@@ -441,81 +398,41 @@ var  I, J: integer; IsFaceFound:boolean;
   Point: TFreeSubdivisionPoint;
 begin
   result:=true;
-
-  for I:=0 to FChildren.Count-1 do
-    begin
-      ChildFace:=FChildren[I];
-      if not ChildFace.CheckIntegrity then
-        begin
-//      logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: ChildFace[%d]',[FID,I]));
-        result:=false;
-        end;
-    end;
-
-  for I:=0 to FPoints.Count-1 do
-  begin
-    Point:=FPoints[i];
-//  if Point.FFaces.IndexOf(Self) = -1 then logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Self not in Point[%d]',[FID,I]));
-    if not Point.CheckIntegrity then
-      begin
-//      logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: in Point[%d]',[FID,I]));
-        result:=false;
-      end;
+  for I:=0 to FChildren.Count-1 do begin ChildFace:=FChildren[I];
+    if not ChildFace.CheckIntegrity then result:=false;
   end;
 
-  for I:=0 to FEdges.Count-1 do
-  begin
-    Edge:=FEdges[I];
+  for I:=0 to FPoints.Count-1 do begin Point:=FPoints[i];                       // if Point.FFaces.IndexOf(Self) = -1 then logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Self not in Point[%d]',[FID,I]));
+    if not Point.CheckIntegrity then result:=false;                             // logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: in Point[%d]',[FID,I]));
+  end;
 
-    if Edge = nil then
-    begin
-//    logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Edge[%d] = nil',[FID,I]));
-      result:=false;
-      continue;
+  for I:=0 to FEdges.Count-1 do begin Edge:=FEdges[I];
+    if Edge = nil then begin                                                    // logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Edge[%d] = nil',[FID,I]));
+      result:=false; continue;
     end;
-
     result:=result and Edge.CheckIntegrity;
-
-    if Edge.FFaces = nil then
-    begin
-//    logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Edge[%d].Faces = nil',[FID,I]));
-      result:=false;
-      continue;
+    if Edge.FFaces = nil then begin                                             // logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Edge[%d].Faces = nil',[FID,I]));
+      result:=false; continue;
+    end;
+    if Edge.FFaces.Count = 0 then begin                                         // logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Edge[%d].NumberOfFaces = 0',[FID,I]));
+      result:=false; continue;
     end;
 
-    if Edge.FFaces.Count = 0 then
-    begin
-//    logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Edge[%d].NumberOfFaces = 0',[FID,I]));
-      result:=false;
-      continue;
-    end;
-
-    {if Edge.FFaces.IndexOf(Self) = -1 then
-    begin
-      logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Self not in Edge[%d].Faces',[FID,I]));
-      result:=false;
-    end; }
-
+   {if Edge.FFaces.IndexOf(Self) = -1 then begin                                // logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Self not in Edge[%d].Faces',[FID,I]));
+      result:=false; end; }
   end;
 
-  for i:=0 to FControlDescendantEdges.Count - 1 do
-    begin
+  for i:=0 to FControlDescendantEdges.Count - 1 do begin
       Edge:=FControlDescendantEdges[i];
-      if Edge.NumberOfFaces = 0 then
-      begin
-//      logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: CEdge[%d].NumberOfFaces = 0',[FID,I]));
+      if Edge.NumberOfFaces = 0 then begin                                      // logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: CEdge[%d].NumberOfFaces = 0',[FID,I]));
         result:=false;
       end;
 
-      {if Edge.FFaces.IndexOf(Self) = -1 then
-      begin
-        logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Self not in CEdge[%d].Faces',[FID,I]));
-        result:=false;
-      end;}
+     {if Edge.FFaces.IndexOf(Self) = -1 then begin                              // logger.Error(Format('TFreeSubdivisionControlFace(%d).CheckIntegrity: Self not in CEdge[%d].Faces',[FID,I]));
+        result:=false; end;}
 
       result:=result and Edge.CheckIntegrity;
-    end;
-//  if not result then self.PrintDebug;
+    end;                                                                        //  if not result then self.PrintDebug;
 end;
 
 
@@ -527,25 +444,16 @@ type
   end;
 
 var
-  I, J, K, index: integer;
-  {Edge: TFreeSubdivisionEdge;
-  Child: TFreeSubdivisionFace;
-  Point: TFreeSubdivisionPoint;}
-  Edge: TFreeSubdivisionEdge;
+  I,J,K,Index,Na,Nb,Capacity: integer;
+  Edge:  TFreeSubdivisionEdge;
   Child: TFreeSubdivisionFace;
   Point: TFreeSubdivisionPoint;
 
-  P1, P2, P3: T3DCoordinate;
-  Camera: T3DCoordinate;
-  R, G, B: byte;
-  Ru, Gu, Bu: byte;
-  Alpha, uwR, uwG, uwB, uwA: byte;
-  Min, Max, Tmp: TFloatType;
-  C1, C2, C3: TFloatType;
+  P1,P2,P3,Camera: T3DCoordinate;
+  R, G, B, Ru, Gu, Bu, Alpha, uwR, uwG, uwB, uwA: byte;
+  Min, Max, Tmp, C1, C2, C3: TFloatType;
   Above, Below: TFreeCoordinateArray;
-  Na, Nb: integer;
   Intersections: array of TIntData;
-  Capacity: integer;
   Points: TFasterListTFreeSubdivisionPoint;
 
   procedure DrawNormal(P, N: T3DCoordinate; color: TColor);
@@ -563,21 +471,15 @@ var
     Viewport.PenColor:=color;
     V.X:=P.X + N.X;
     V.Y:=P.Y + N.Y;
-    V.Z:=P.Z + N.Z;
-    // Calculate the length of the normal on screen
+    V.Z:=P.Z + N.Z;             // Calculate the length of the normal on screen
     P2:=Viewport.Project(V);
     L:=sqr(P2.X - P1.X) + sqr(P2.Y - P1.Y);
-    if L >= 0 then
-      L:=Sqrt(L)
-    else
-      L:=0.0;
-    if L > 0 then
-    begin
+    if L >= 0 then L:=Sqrt(L)
+              else L:=0.0;
+    if L > 0 then begin
       Ldes:=0.0075 * Screen.Width;
-      if LDes < 10 then
-        Ldes:=10;
-      // Scale the length of the normal such that it is a fixed
-      // length relative to the screen resolution
+      if LDes < 10 then Ldes:=10; // Scale the length of the normal such that it is a fixed
+                                  // length relative to the screen resolution
       N.X:=(Ldes / L) * N.X;
       N.Y:=(Ldes / L) * N.Y;
       N.Z:=(Ldes / L) * N.Z;

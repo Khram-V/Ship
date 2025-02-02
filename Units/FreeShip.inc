@@ -232,7 +232,7 @@ begin Result:=Surface.Built; end;
 function TFreeShip.FGetFilename: string;
 var Ext: string;
 begin
-  if FFilename = '' then FFilename:='New model';
+  if FFilename = '' then FFilename:='Example Ship';
   Ext:=ExtractFileExt( FFilename );
   if (Ext = '.ftm') or (Ext = '.fbm') then Result:=FFilename
     else Result:=ChangeFileExt( FFilename,FreeShipExtention );
@@ -354,7 +354,7 @@ end;
 procedure TFreeShip.FSetFileName(Val: string);
 var Tmp: string;
 begin
-    if val = '' then val:='New model';
+    if val = '' then val:='Example Ship';
     Tmp:=ChangeFileExt( Val,FreeShipExtention );
     if FFilename <> val then FFilename:=Val;
 end;
@@ -493,6 +493,7 @@ begin
   FSurface:=TFreeSubdivisionSurface.Create(nil);
   FSurface.FreeShip:= Self;
   FSurface.LayerColor:=FPreferences.LayerColor;
+
   FViewports:=TFasterListTFreeViewPort.Create;
   FMarkers:=TFasterListTFreeMarker.Create;
   FVisibility:=TFreeVisibility.Create(self);
@@ -513,6 +514,14 @@ begin
     FControlpointForm:=TFreeControlPointForm.Create(Self);
     FControlpointForm.FreeShip:=self;
   end;
+
+
+
+  //  TFreeSubdivisionLayer.LayerIndex=0;
+  //  FSurface.Layerbox.ItemIndex=3;
+
+
+
 end; {TFreeShip.Create}
 
 procedure TFreeShip.CreateOutputHeader(CalcHeader: Ansistring; Strings: TStrings);

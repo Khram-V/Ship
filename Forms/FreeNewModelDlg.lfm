@@ -5,7 +5,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
   Width = 500
   AutoSize = True
   BorderStyle = bsDialog
-  Caption = 'New model.'
+  Caption = 'New Example Ship.'
   ClientHeight = 300
   ClientWidth = 500
   ParentFont = True
@@ -252,7 +252,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           MaxValue = 1000
           MinValue = 0.01
           TabOrder = 3
-          Value = 3.7
+          Value = 3.0
         end
         object Label5: TLabel
           Left = 10
@@ -275,7 +275,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           MaxValue = 1000
           MinValue = 0
           TabOrder = 4
-          Value = 0.5
+          Value = 1.0
         end
       end
       object Panel4: TPanel

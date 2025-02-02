@@ -19,7 +19,7 @@
   .SelectColor           clYellow        | 11    13   150 'Selected items'
   .CurvaturePlotColor    clFuchsia       | 22    23   178 'Curvature plots'
   .MarkerColor           $8000FF         | 21    33   206 'Markers'
-  .StationColor          clBlue          | 14    16   234 'Stations'
+  .StationColor          $FF6464 ~clBlue | 14    16   234 'Stations'
   .ButtockColor          clGray          | 15    17   262 'Buttocks'
   .WaterlineColor        clGreen         | 16    18   290 'Waterlines'
   .DiagonalColor         clSkyBlue       | 19    20   318 'Diagonals'
