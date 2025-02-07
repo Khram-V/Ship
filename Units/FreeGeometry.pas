@@ -5,7 +5,7 @@ interface
 uses
   LCLIntf,
   LazUTF8,
-  FasterList,
+  FasterList,MethodList,
   Messages,
   SysUtils,
   Classes,
@@ -435,10 +435,10 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: integer); override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: integer;  MousePos: TPoint): boolean; override;
   public
-    {$ifdef DrawDebug}
-    FDebugPoint:TPoint;
-    FDebug3DPoint,FDebugCamera,FDebugIntersection,FDebugT1,FDebugT2,FDebugT3:T3DCoordinate;
-    {$endif DrawDebug}
+{$ifdef DrawDebug}
+        FDebugPoint:TPoint;
+        FDebug3DPoint,FDebugCamera,FDebugIntersection,FDebugT1,FDebugT2,FDebugT3:T3DCoordinate;
+{$endif DrawDebug}
 
     constructor Create( AOwner:TComponent ); override;
     destructor Destroy; override;
@@ -844,7 +844,7 @@ type
   private
     //FSurface: TFreeSubdivisionSurface;
     InUnreference:boolean;
-    IsUnreferenceEnabled:boolean; // TODO - remove
+    IsUnreferenceEnabled:boolean; // TODO-remove
     SubdivisionLevel:integer; // for investigation
   public
     constructor Create(Owner: TFreeSubdivisionSurface); override;
@@ -1378,7 +1378,7 @@ type
     FActiveControlFace: TFreeSubdivisionControlFace;
     FChanged: boolean;                                        // Model is changed
     FIsLoading: boolean;
-    //FOnChangeActiveControlPoint: TNotifyEvent;
+//  FOnChangeActiveControlPoint: TNotifyEvent;
     FRebuildRequested: boolean;                               // Flag tells that async rebuild is requested
     FControlPoints: TFasterListTFreeSubdivisionControlPoint;  // List with controlpoints, which can be changed by the user
     FControlPointGroups: TFasterListTFreeSubdivisionControlPointGroup;
@@ -1413,12 +1413,12 @@ type
 
     FOnChangeLayerData: TNotifyEvent;              // Event which is raised when layer-data has been changed
     FOnChangeActiveLayer: TChangeActiveLayerEvent; // Event raised when the active layer is changed
-//    FOnChangeActiveControlCurveListeners: TMethodList<TNotifyEvent>;
-//    FOnChangeActiveControlEdgeListeners: TMethodList<TNotifyEvent>;
-//    FOnChangeActiveControlFaceListeners: TMethodList<TNotifyEvent>;
-//    FOnChangeActiveControlPointListeners: TMethodList<TNotifyEvent>;
-//    FOnSelectItemListeners: TMethodList<TNotifyEvent>;  // This event is raised whenever an item (such as controlpoint, controledge or controlface) is selected or deselected
-//    FOnChangeItemListeners: TMethodList<TNotifyEvent>;
+    FOnChangeActiveControlCurveListeners: TMethodList<TNotifyEvent>;
+    FOnChangeActiveControlEdgeListeners: TMethodList<TNotifyEvent>;
+    FOnChangeActiveControlFaceListeners: TMethodList<TNotifyEvent>;
+    FOnChangeActiveControlPointListeners: TMethodList<TNotifyEvent>;
+    FOnSelectItemListeners: TMethodList<TNotifyEvent>;  // This event is raised whenever an item (such as controlpoint, controledge or controlface) is selected or deselected
+    FOnChangeItemListeners: TMethodList<TNotifyEvent>;
 
     FWaterlinePlane: T3DPlane;      // This plane is used to clip the hull, and shade the underwatership in a different color
     FShadeUnderWater: boolean;      // Switch to turn under water shading on or off
@@ -1504,26 +1504,23 @@ type
     procedure SetUnderwaterColor(Val: TColor);
     procedure SetShadeUnderWater(Val: boolean);
     procedure SetUnderwaterColorAlpha(AValue: byte);
-  protected
+//protected
   public
     procedure AddControlCurve(Curve: TFreesubdivisionControlCurve);
     function AddControlEdge(P1, P2: TFreeSubdivisionControlPoint): TFreesubdivisionControlEdge; overload; virtual;
     function AddControlFace(Points: array of T3DCoordinate; NoPoints: integer): TFreeSubdivisionControlFace; overload; virtual;
     function AddControlFace(Points: TFasterListTFreeSubdivisionControlPoint; CheckEdges: boolean): TFreeSubdivisionControlFace; reintroduce; overload;
     function AddControlFace(Points: TList; CheckEdges: boolean): TFreeSubdivisionControlFace; reintroduce; overload;
-    function AddControlFace(Points: TFasterListTFreeSubdivisionControlPoint; CheckEdges: boolean;
-      Layer: TFreeSubdivisionLayer): TFreeSubdivisionControlFace; reintroduce; overload;
-    function AddControlFaceN(Points: TFasterListTFreeSubdivisionControlPoint; CheckEdges: boolean;
-      Layer: TFreeSubdivisionLayer): TFreeSubdivisionControlFace; reintroduce; overload;
-    function AddControlPoint(P: T3DCoordinate; aTolerance:double=1e-6): TFreeSubdivisionControlPoint;
-      overload; virtual;
+    function AddControlFace(Points: TFasterListTFreeSubdivisionControlPoint; CheckEdges: boolean; Layer: TFreeSubdivisionLayer): TFreeSubdivisionControlFace; reintroduce; overload;
+    function AddControlFaceN(Points: TFasterListTFreeSubdivisionControlPoint; CheckEdges: boolean; Layer: TFreeSubdivisionLayer): TFreeSubdivisionControlFace; reintroduce; overload;
+    function AddControlPoint(P: T3DCoordinate; aTolerance:double=1e-6): TFreeSubdivisionControlPoint; overload; virtual;
     procedure AddControlPoint(P: TFreeSubdivisionControlPoint); reintroduce; overload;
     function AddControlPoint: TFreeSubdivisionControlPoint; reintroduce; overload;
     // Adds a new controlpoint at 0,0,0 without checking other points
 
     function IsObjectSelected(aObject: TFreeNamedObject): boolean;
     procedure SetObjectSelected(aObject: TFreeNamedObject; aSelected: boolean);
-(*
+
     // Notifies all OnSelectItemNotificationReceivers
     procedure ExecuteOnSelectItem(Sender:TObject);
     // Adds OnSelectItemNotificationReceiver if Handler is not nil
@@ -1550,7 +1547,7 @@ type
     procedure ExecuteOnChangeActiveControlCurve(Sender:TObject);
     procedure AddOnChangeActiveControlCurveListener(aListener: TNotifyEvent);
     procedure RemoveOnChangeActiveControlCurveListener(aListener: TNotifyEvent);
-*)
+
     // Delete all object's references from related objects
     procedure UnreferenceControlPoint(P: TFreeSubdivisionControlPoint);
     procedure UnreferenceControlEdge(E: TFreeSubdivisionControlEdge);
@@ -1677,8 +1674,8 @@ type
     property NumberOfSelectedControlPointGroups: integer read FGetNumberOfSelectedControlPointGroups;
     property NumberOfSelectedLockedPoints: integer read FGetNumberOfSelectedLockedPoints;
     property OnChangeActiveLayer: TChangeActiveLayerEvent read FOnChangeActiveLayer write FOnChangeActiveLayer;
-//  property OnChangeActiveControlPoint: TNotifyEvent read FOnChangeActiveControlPoint write FOnChangeActiveControlPoint;
     property OnChangeLayerData: TNotifyEvent read FOnChangeLayerData write FOnChangeLayerData;
+//  property OnChangeActiveControlPoint: TNotifyEvent read FOnChangeActiveControlPoint write FOnChangeActiveControlPoint;
 //  property OnSelectItem: TNotifyEvent read GetOnSelectItemListener write SetOnSelectItemNotificationReceiver;
     property OnFaceRebuilt: TProgressEvent read FOnFaceRebuilt write FOnFaceRebuilt;
     property SubDivPoint[index: integer]: TFreeSubdivisionPoint read FGetpoint;
@@ -1809,9 +1806,9 @@ uses
 {$I FreeDevelopedPatch.inc}
 {$I FreeEntity.inc}
 {$I FreeSpline.inc}
+{$I FreeSubExternal.inc}
 {$I FreeNamedObject.inc}
 {$I FreeNURBSurface.inc}
-{$I FreeSubdivisionBase.inc}
 {$I FreeSubdivisionControlCurve.inc}
 {$I FreeSubdivisionLayer.inc}
 {$I FreeSubdivisionPoint.inc}
@@ -1824,6 +1821,14 @@ uses
 {$I FreeSubdivisionSurface.inc}
 
 constructor TFreeDestroyList.Create; begin inherited Create(true,false); end;
+
+constructor TFreeSubdivisionBase.Create(Owner: TFreeSubdivisionSurface);
+begin
+  inherited Create(Owner);       //  TFreeSubdivisionBase is the base class
+  FSurface:=Owner;               //  for all subdivision points, edges and faces
+  InUnreference:=false;
+  IsUnreferenceEnabled:=true;
+end;
 
 procedure TFreeDestroyList.DestroyAll;
 var O: TObject; I: integer;

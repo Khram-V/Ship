@@ -192,27 +192,18 @@ type
 //    ResistanceKaper: TAction;
 //    MichletCFD1: TMenuItem;
     StatusPanel3: TPanel;
-    PointAlign: TAction;
-    Projectline1: TMenuItem;
-    ImportMichletWaves: TAction;
+    PointAlign: TAction;            Projectline1: TMenuItem;
     N6: TMenuItem;
-    ImportMichletWaves1: TMenuItem;
-    ShowHydrostatics: TAction;
-    Hydrostaticdata1: TMenuItem;
-    MirrorFace: TAction;
+    ImportMichletWaves: TAction;    ImportMichletWaves1: TMenuItem;
+    ShowHydrostatics: TAction;      Hydrostaticdata1: TMenuItem;
+    MirrorFace: TAction;            MirrorFace1: TMenuItem;
     ransform1: TMenuItem;
-    MirrorFace1: TMenuItem;
-    ExportDXF2DPolylines: TAction;
-    DXF2DPolylines1: TMenuItem;
+    ExportDXF2DPolylines: TAction;  DXF2DPolylines1: TMenuItem;
     StatusPanel4: TPanel;
-    TransformLackenby: TAction;
-    Lackenby1: TMenuItem;
-    ExportIGES: TAction;
-    IGES1: TMenuItem;
-    ExportPart: TAction;
-    Part1: TMenuItem;
-    ImportPart: TAction;
-    Part2: TMenuItem;
+    TransformLackenby: TAction;     Lackenby1: TMenuItem;
+    ExportIGES: TAction;            IGES1: TMenuItem;
+    ExportPart: TAction;            Part1: TMenuItem;
+    ImportPart: TAction;            Part2: TMenuItem;
     LayerIntersection: TAction;
     Saveas1: TMenuItem;
     KeelRudderWizard: TAction;
@@ -484,7 +475,7 @@ begin
  if assigned(FActionListHull)
     then FreeAndNil(FActionListHull);}
  if assigned(PanelManager) then
- for i:=0 to PanelManager.PanelCount - 1 do
+ for i:=0 to PanelManager.PanelCount-1 do
    if assigned(PanelManager.Panels[i]) then begin
       thw:=TFreeHullWindow(PanelManager.Panels[i]);
       //if assigned(thw.FreeHullForm) and assigned(thw.FreeHullForm.ActionListHull)
@@ -605,16 +596,18 @@ procedure TMainForm.AddGridPanelExecute(Sender: TObject);
 procedure TMainForm.DesignHydrostaticsExecute(Sender: TObject);
 var Calculation : TFreeHydrostaticCalc;
 begin
-   Calculation:=Freeship.Edit.Hydrostatics_Calculate(Freeship.ProjectSettings.ProjectDraft,0.0,0.0);
+   Calculation:=Freeship.Edit.Hydrostatics_Calculate
+     (  Freeship.ProjectSettings.ProjectDraft,0.0,0.0  );
    if Calculation<>nil then begin FreeAndNil( Calculation ); end;
 end;
 
 procedure TMainForm.ActionCheckUpdatesExecute( Sender: TObject );
 var Calculation : TFreeHydrostaticCalc;
 begin
-   Calculation:=Freeship.Edit.Hydrostatics_Calculate(Freeship.ProjectSettings.ProjectDraft,0.0,0.0);
+   Calculation:=Freeship.Edit.Hydrostatics_Calculate
+       ( Freeship.ProjectSettings.ProjectDraft,0.0,0.0 );
    if Calculation<>nil then begin FreeAndNil( Calculation ); end;
-// DesignHydrostaticsExecute( TObject )
+// DesignHydrostaticsExecute( Sender ); //TObject )
 end;
 
 procedure TMainForm.OnSelectItem( Sender:TObject );
@@ -719,8 +712,8 @@ end;
 
 procedure TMainForm.SetCaption;
 begin if FreeShip.FileChanged
- then Caption:='«Free!Ship» :  ' + ExtractFileName( FreeShip.Filename )+'  (modified)'
- else Caption:='«Free!Ship» :  ' + ExtractFileName( FreeShip.Filename )+'  [not modified]';
+ then Caption:='«Free!Ship» :  '+ExtractFileName( FreeShip.Filename )+'  (modified)'
+ else Caption:='«Free!Ship» :  '+ExtractFileName( FreeShip.Filename )+'  [not modified]';
 end;
 (*
 procedure TMainForm.SetAllActionsEnabled( val: boolean );
@@ -783,18 +776,18 @@ begin
 
    // Show interior edges
    ShowInteriorEdges.Enabled:=FreeShip.Surface.NumberOfControlFaces
-                            + FreeShip.NumberofControlcurves>0;
+                           +FreeShip.NumberofControlcurves>0;
    ShowInteriorEdges.Checked:=FreeShip.Visibility.ShowInteriorEdges;
    // Show both sides
    BothSides.Checked:=Freeship.Visibility.ModelView=mvBoth;
    BothSides.Enabled:=FreeShip.Surface.NumberOfControlFaces>0;
    // Delete
    Delete.Enabled:=Freeship.NumberOfSelectedControlPoints
-                 + FreeShip.NumberOfSelectedControlEdges
-                 + Freeship.NumberOfSelectedControlFaces
-                 + Freeship.NumberOfSelectedControlCurves
-                 + Freeship.NumberOfSelectedFlowLines
-                 + Freeship.NumberOfselectedMarkers>0;
+                +FreeShip.NumberOfSelectedControlEdges
+                +Freeship.NumberOfSelectedControlFaces
+                +Freeship.NumberOfSelectedControlCurves
+                +Freeship.NumberOfSelectedFlowLines
+                +Freeship.NumberOfselectedMarkers>0;
    // Window menu actions
    TileWindow.Enabled:=MDIChildCount>0;
    CascadeWindow.Enabled:=MDIChildCount>0;
@@ -995,12 +988,12 @@ procedure TMainForm.SelectionDialogExecute(Sender: TObject);
 begin
   if FormSelected = nil then FormSelected:=TFormSelected.Create(Self);
      FormSelected.FreeShip:=FreeShip;
- //  FreeShip.Surface.AddOnSelectItemListener(FormSelected.onSelectionUpdate);
- //  FreeShip.Surface.AddOnChangeItemListener(FormSelected.onSelectionUpdate);
- //  FreeShip.Surface.AddOnChangeActiveControlPointListener(FormSelected.onSelectionUpdate);
- //  FreeShip.Surface.AddOnChangeActiveControlEdgeListener(FormSelected.onSelectionUpdate);
- //  FreeShip.Surface.AddOnChangeActiveControlFaceListener(FormSelected.onSelectionUpdate);
- //  FreeShip.Surface.AddOnChangeActiveControlCurveListener(FormSelected.onSelectionUpdate);
+     FreeShip.Surface.AddOnSelectItemListener(FormSelected.onSelectionUpdate);
+     FreeShip.Surface.AddOnChangeItemListener(FormSelected.onSelectionUpdate);
+     FreeShip.Surface.AddOnChangeActiveControlPointListener(FormSelected.onSelectionUpdate);
+     FreeShip.Surface.AddOnChangeActiveControlEdgeListener(FormSelected.onSelectionUpdate);
+     FreeShip.Surface.AddOnChangeActiveControlFaceListener(FormSelected.onSelectionUpdate);
+     FreeShip.Surface.AddOnChangeActiveControlCurveListener(FormSelected.onSelectionUpdate);
   FormSelected.onSelectionUpdate(Self);
   FormSelected.Show;
 end;
@@ -1055,12 +1048,12 @@ var FileExt: string; L,T,W,H: Integer;
 begin    // Initialize some data
    FreeShip.OnChangeActiveLayer:=FreeShipChangeActiveLayer;
    Freeship.OnChangeLayerData:=FreeShipChangeLayerData;
-//   FreeShip.OnSelectItem:=OnSelectItem;
-//   FreeShip.Surface.AddOnSelectItemListener(OnSelectItem);
-//   FreeShip.Surface.AddOnChangeActiveControlPointListener(OnChangeActiveControlPoint);
-//   FreeShip.Surface.AddOnChangeActiveControlEdgeListener(OnChangeActiveControlEdge);
-//   FreeShip.Surface.AddOnChangeActiveControlFaceListener(OnChangeActiveControlFace);
-//   FreeShip.Surface.AddOnChangeActiveControlCurveListener(OnChangeActiveControlCurve);
+// FreeShip.OnSelectItem:=OnSelectItem;
+   FreeShip.Surface.AddOnSelectItemListener(OnSelectItem);
+   FreeShip.Surface.AddOnChangeActiveControlPointListener(OnChangeActiveControlPoint);
+   FreeShip.Surface.AddOnChangeActiveControlEdgeListener(OnChangeActiveControlEdge);
+   FreeShip.Surface.AddOnChangeActiveControlFaceListener(OnChangeActiveControlFace);
+   FreeShip.Surface.AddOnChangeActiveControlCurveListener(OnChangeActiveControlCurve);
    FreeShip.Clear;                                             // fit to screen
    L:=Left; T:=Top; W:=Width; H:=Height;
    if self.BoundsRect.Right > Screen.Width then L:=0;
@@ -1309,10 +1302,10 @@ begin
      FreeShip.Preferences.Save;
      FDestroying:=true;
      CloseHullWindows;
-  //  FreeShip.OnChangeActiveLayer:=nil;
-  //  Freeship.OnChangeLayerData:=nil;
-  ////FreeShip.OnSelectItem:=nil;
-  //  FreeShip.Surface.RemoveOnSelectItemListener( OnSelectItem );
+      FreeShip.OnChangeActiveLayer:=nil;
+      Freeship.OnChangeLayerData:=nil;
+//    FreeShip.OnSelectItem:=nil;
+      FreeShip.Surface.RemoveOnSelectItemListener( OnSelectItem );
   end;
 end;
 
@@ -1394,10 +1387,10 @@ begin
 {$ifndef Windows}
    if self.Align = alTop then self.Top:=0;
 {$endif}                                        // Removed from LFM, moved here
-   FreeShip := TFreeShip.Create( self );
-   FreeShip.MainForm := self;
+   FreeShip:=TFreeShip.Create( self );
+   FreeShip.MainForm:=self;
    FreeShip.FileChanged:=true;
-   FreeShip.Filename := 'Example Ship';
+   FreeShip.Filename:='Example Ship';
    FreeShip.FileVersion:=fv261;
    FreeShip.OnChangeCursorIncrement:=FreeShipChangeCursorIncrement;
    FreeShip.OnFileChanged          :=FreeShipFileChanged;
@@ -1779,9 +1772,9 @@ begin Freeship.Edit.File_ExportDXF_2DPolylines; UpdateMenu; end;
 procedure TMainForm.FreeShipUpdateGeometryInfo(Sender: TObject);
 begin LabelNumbers.Caption
                  :=IntToStr(Freeship.Surface.NumberOfControlFaces) +' Faces, '
-                 + IntToStr(Freeship.Surface.NumberOfControlEdges) +' Edges, '
-                 + IntToStr(Freeship.Surface.NumberOfControlPoints)+' Points, '
-                 + IntToStr(Freeship.Surface.NumberOfControlCurves)+' Curves';
+                +IntToStr(Freeship.Surface.NumberOfControlEdges) +' Edges, '
+                +IntToStr(Freeship.Surface.NumberOfControlPoints)+' Points, '
+                +IntToStr(Freeship.Surface.NumberOfControlCurves)+' Curves';
    if Freeship.Surface.Changed then UpdateMenu;
 end;
 

@@ -69,17 +69,17 @@ begin
   ext:=''; fltr:='';
   Result:=FilterName+' (';
   for i:=0 to length(extensions)-1 do begin
-    ext += '*.' + extensions[i]+';';
+    ext += '*.'+extensions[i]+';';
     {$IF defined(LCLGtk2) or defined(LCLGtk3)}
-    fltr += '*.' + makeGTKfilter(extensions[i])+';';
+    fltr += '*.'+makeGTKfilter(extensions[i])+';';
     {$ELSE}
-    fltr += '*.' + extensions[i]+';';
+    fltr += '*.'+extensions[i]+';';
     {$ENDIF}
   end;
   ext:=LeftStr(ext, length(ext)-1);
   fltr:=LeftStr(fltr, length(fltr)-1);
-  Result += ext + ')|' + fltr;
-  if NeedsAll then Result += '|' + rsAllFiles + ' (*.*)|*.*';
+  Result += ext+')|'+fltr;
+  if NeedsAll then Result += '|'+rsAllFiles+' (*.*)|*.*';
 end;
 
 end.

@@ -350,7 +350,7 @@ begin
   // Canvas.Pen.Color:=clBlack;
   // Canvas.Brush.Color:=clWhite;
   // FDrawingBuffer.Canvas.FillRect(0,0,10,10); // to init handles
-  FBitmapFormatHelper:=TFreeBitmapFormatHelper.Create(FDrawingBuffer);        // Logger.Debug('FBitmapFormatHelper:' + FBitmapFormatHelper.AsString);
+  FBitmapFormatHelper:=TFreeBitmapFormatHelper.Create(FDrawingBuffer);
   FDrawingCanvas:=Canvas;
   FZBuffer:=TFreeZBuffer.Create;
   FZBuffer.FViewport:=self;
@@ -434,7 +434,7 @@ begin
 
   // My method via FBitmapFormatHelper
    {pRow:=FDrawingBuffer.RawImage.GetLineStart(Y);
-   pPixel:=pRow + FBitmapFormatHelper.BytesPerPixel * X;
+   pPixel:=pRow+FBitmapFormatHelper.BytesPerPixel * X;
    Pixel:=FBitmapFormatHelper.ToTRGBTriple(pPixel);
    R:=Pixel.rgbtRed;
    G:=Pixel.rgbtGreen;
@@ -489,16 +489,16 @@ begin
   //BeginUpdate;  // do not do that here otherwise background jumps blask-and-gray on movements
   // do this outside cycle that draws lines
 
-  dx:=P2.X - P1.X;
-  dy:=P2.Y - P1.Y;
+  dx:=P2.X-P1.X;
+  dy:=P2.Y-P1.Y;
   ax:=Abs(dx) shl 1;
   ay:=Abs(dy) shl 1;
   if dx >= 0 then sx:=1 else sx:=-1;
   if dy >= 0 then sy:=1 else sy:=-1;
   if ax > ay then
   begin
-    if dx = 0 then dz:=0 else dz:=(P2.Z - P1.Z) / abs(dx);
-    d:=ay - ax shr 1;
+    if dx = 0 then dz:=0 else dz:=(P2.Z-P1.Z) / abs(dx);
+    d:=ay-ax shr 1;
     while P1.X <> P2.X do begin
       if (P1.Y > 0) and (P1.Y < H) then begin
         if (P1.Y > -1) and (P1.Y < H) and (P1.X > 0) and (P1.X < W) then begin
@@ -512,14 +512,14 @@ begin
         Inc(P1.Y, sy);
         Dec(d, ax);
       end;
-      P1.Z:=P1.Z + dZ;
+      P1.Z:=P1.Z+dZ;
       Inc(P1.X, sx);
       Inc(d, ay);
     end;
   end
   else begin
-    if dy = 0 then dZ:=0 else dz:=(P2.Z - P1.Z) / abs(dy);
-    d:=ax - ay shr 1;
+    if dy = 0 then dZ:=0 else dz:=(P2.Z-P1.Z) / abs(dy);
+    d:=ax-ay shr 1;
     while P1.Y <> P2.Y do begin
       if (P1.Y > 0) and (P1.Y < H) then begin
         if (P1.Y > -1) and (P1.Y < H) and (P1.X > 0) and (P1.X < W) then begin
@@ -534,7 +534,7 @@ begin
         Dec(d, ay);
       end;
       Inc(P1.Y, sy);
-      P1.Z:=P1.Z + dZ;
+      P1.Z:=P1.Z+dZ;
       Inc(d, ax);
     end;
   end;
@@ -574,7 +574,7 @@ begin // Add margin
   // Calculate the midpoint of the boundingbox, which is used as the center of the model for rotating the model
   FMidPoint:=MidPoint( FMin3D, FMax3D );
   // Calculate the distance of the camera to the center of the model, following from the field of view from the camera
-  Tmp:=Sqrt( Sqr( FMax3D.Y-FMin3D.Y ) + Sqr( FMax3D.Z-FMin3D.Z ) );
+  Tmp:=Sqrt( Sqr( FMax3D.Y-FMin3D.Y )+Sqr( FMax3D.Z-FMin3D.Z ) );
   if Tmp = 0 then Tmp:=1e-2;
   if FViewtype = fvPerspective then begin
     if ArcTan( DegToRad( FFieldOfView ) ) <> 0 then begin
@@ -583,7 +583,7 @@ begin // Add margin
     end else FDistance:=1e5;
   end else FDistance:=1e8;
 
-  FCameraLocation.X:=FMax3D.X + FDistance;
+  FCameraLocation.X:=FMax3D.X+FDistance;
   FCameraLocation.Y:=FMidPoint.Y;
   FCameraLocation.Z:=FMidPoint.Z;
 
@@ -607,7 +607,7 @@ begin // Add margin
   P[8].X:=FMin3D.X;  P[8].Y:=FMax3D.Y;  P[8].Z:=FMax3D.Z;
   for I:=1 to 8 do begin
     P3D:=RotatedPoint( P[i] );               // apply perspective projection
-    Tmp:=FCameralocation.X - P3D.X;          // apply perspective correction
+    Tmp:=FCameralocation.X-P3D.X;          // apply perspective correction
     Projected.X:=FCameralocation.X * P3D.Y / Tmp;
     Projected.Y:=FCameralocation.X * P3D.Z / Tmp;
     if I = 1 then begin
@@ -616,8 +616,8 @@ begin // Add margin
     end;
     MinMax( Projected );
   end;
-  Width:=Max2D.X - Min2D.X;
-  Height:=Max2D.Y - Min2D.Y;
+  Width:=Max2D.X-Min2D.X;
+  Height:=Max2D.Y-Min2D.Y;
   if (abs( Width ) > 1e-7) and (abs(Height) > 1e-7) then begin
     XScale:=ClientWidth / Width;
     YScale:=ClientHeight / Height;
@@ -632,14 +632,14 @@ begin // Add margin
   FScreencenter.Y:=ClientHeight div 2;
   // Calculate correction (pan vector) to make sure
   // that the ship appears in the middle of the viewport
-  Pt1.X:=FScreencenter.X + Round( FScale * Min2D.X );
-  Pt1.Y:=FScreencenter.Y - Round( FScale * Min2D.Y );
-  Pt2.X:=FScreencenter.X + Round( FScale * Max2D.X );
-  Pt2.Y:=FScreencenter.Y - Round( FScale * Max2D.Y );
-  HorCorr:=(Pt1.X + Pt2.X) div 2 - ClientWidth div 2;
-  VertCorr:=(Pt1.Y + Pt2.Y) div 2 - ClientHeight div 2;
-  FScreencenter.X:=FScreencenter.X - HorCorr;
-  FScreencenter.Y:=FScreencenter.Y - vertCorr; // Remember the min/max values
+  Pt1.X:=FScreencenter.X+Round( FScale * Min2D.X );
+  Pt1.Y:=FScreencenter.Y-Round( FScale * Min2D.Y );
+  Pt2.X:=FScreencenter.X+Round( FScale * Max2D.X );
+  Pt2.Y:=FScreencenter.Y-Round( FScale * Max2D.Y );
+  HorCorr:=(Pt1.X+Pt2.X) div 2-ClientWidth div 2;
+  VertCorr:=(Pt1.Y+Pt2.Y) div 2-ClientHeight div 2;
+  FScreencenter.X:=FScreencenter.X-HorCorr;
+  FScreencenter.Y:=FScreencenter.Y-vertCorr; // Remember the min/max values
   if FViewtype = fvPerspective then begin        ///+++
     FScreencenter.X += ClientWidth div 16;
 //  FScreencenter.Y += ClientHeight div 16;
@@ -714,17 +714,17 @@ begin
       P[8].X:=FMin3D.X;      P[8].Y:=FMax3D.Y;      P[8].Z:=FMax3D.Z;
       for I:=1 to 8 do begin
         P3D:=RotatedPoint(P[i]);              // apply perspective projection
-        Tmp:=FCameralocation.X - P3D.X;       // apply perspective correction
-        Projected.X:=FScreenCenter.X + (FScale * FCameralocation.X * P3D.Y / Tmp);
-        Projected.Y:=FScreenCenter.Y - (FScale * FCameralocation.X * P3D.Z / Tmp);
+        Tmp:=FCameralocation.X-P3D.X;       // apply perspective correction
+        Projected.X:=FScreenCenter.X+(FScale * FCameralocation.X * P3D.Y / Tmp);
+        Projected.Y:=FScreenCenter.Y-(FScale * FCameralocation.X * P3D.Z / Tmp);
         if I = 1 then begin
           Min2D:=Projected;
           Max2D:=Projected;
         end;
         MinMax(Projected);
       end;
-      Width:=Max2D.X - Min2D.X;
-      Height:=Max2D.Y - Min2D.Y;
+      Width:=Max2D.X-Min2D.X;
+      Height:=Max2D.Y-Min2D.Y;
       if (Width <> 0) and (Height <> 0) then begin
         XScale:=CanvasWidth / Width;
         YScale:=CanvasHeight / Height;
@@ -744,7 +744,7 @@ begin
         ModelSize:=ModelSize / 12;       // size in feet
       PrintScale:=Width / ModelSize;
       if AskPrintScale then begin
-        Str:=IntToStr(Trunc(PrintScale) + 1);
+        Str:=IntToStr(Trunc(PrintScale)+1);
         if InputQuery('Print scale ','Enter the printscale 1:',Str) then begin
           NewPrintScale:=GetFloat(Str);
           if NewPrintScale < 0 then begin
@@ -772,16 +772,16 @@ begin
         end;
         MinMax(Projected);
       end;
-      ProjMidPoint.X:=round(Min2D.X + Max2D.X) div 2;
-      ProjMidPoint.Y:=round(Min2D.Y + Max2D.Y) div 2;
-      FPan.X:=(Canvaswidth div 2) - ProjMidPoint.X;
-      FPan.Y:=(CanvasHeight div 2) - ProjMidPoint.Y;
+      ProjMidPoint.X:=round(Min2D.X+Max2D.X) div 2;
+      ProjMidPoint.Y:=round(Min2D.Y+Max2D.Y) div 2;
+      FPan.X:=(Canvaswidth div 2)-ProjMidPoint.X;
+      FPan.Y:=(CanvasHeight div 2)-ProjMidPoint.Y;
       FDrawingCanvas:=Printer.Canvas;
       FPrinting:=True;
       FDestinationWidth:=CanvasWidth;
       if not AbortPrinting then begin  //  printscale factor on basis of resolutin and printsize
-        if Max2D.X - Min2D.X > Max2D.Y - Min2D.Y then Tmp:=Max2D.X - Min2D.X
-                                                 else Tmp:=Max2D.Y - Min2D.Y;
+        if Max2D.X-Min2D.X > Max2D.Y-Min2D.Y then Tmp:=Max2D.X-Min2D.X
+                                                 else Tmp:=Max2D.Y-Min2D.Y;
         FPrintScalefactor:=(PrintResolution / 200) * (Tmp / 4000);
         FDestinationHeight:=CanvasHeight;
         Printer.Title:=JobName;
@@ -812,11 +812,11 @@ var
   dX,dY:double;
 begin
   P3D:=RotatedPoint(P);
-  Dist:=FCameralocation.X - P3D.X;            // apply perspective correction
+  Dist:=FCameralocation.X-P3D.X;            // apply perspective correction
   P2D.X:=FCameralocation.X * P3D.Y / Dist;
   P2D.Y:=FCameralocation.X * P3D.Z / Dist;
-  dX:=FPan.X + FScreencenter.X + (FZoom * FScale * P2D.X);
-  dY:=FPan.Y + FScreencenter.Y - (FZoom * FScale * P2D.Y);
+  dX:=FPan.X+FScreencenter.X+(FZoom * FScale * P2D.X);
+  dY:=FPan.Y+FScreencenter.Y-(FZoom * FScale * P2D.Y);
   if dX > MAXINT then dX:=MAXINT;
   if dX < -MAXINT-1 then dX:=-MAXINT-1;
   if dY > MAXINT then dY:=MAXINT;
@@ -835,18 +835,18 @@ var
   Dist: TFloatType;
 begin
   // convert from screencoordinate to 2D world coordinate
-  P2D.X:=(P.X - FPan.X - FScreencenter.X) / (FZoom * FScale);
-  P2D.Y:=(P.Y - FPan.Y - FScreencenter.Y) / -(FZoom * FScale);
+  P2D.X:=(P.X-FPan.X-FScreencenter.X) / (FZoom * FScale);
+  P2D.Y:=(P.Y-FPan.Y-FScreencenter.Y) / -(FZoom * FScale);
 
   // Now correct for perspective projection and create a 3D ray through the screen coordinate
   P3D.X:=FMin3D.X;
-  Dist:=FCameralocation.X - P3D.X;
+  Dist:=FCameralocation.X-P3D.X;
   P3D.Y:=P2D.X * Dist / FCameralocation.X;
   P3D.Z:=P2D.Y * Dist / FCameralocation.X;
   Result.A:=RotatedPointBack(P3D);
 
   P3D.X:=FMax3D.X;
-  Dist:=FCameralocation.X - P3D.X;
+  Dist:=FCameralocation.X-P3D.X;
   P3D.Y:=P2D.X * Dist / FCameralocation.X;
   P3D.Z:=P2D.Y * Dist / FCameralocation.X;
   Result.B:=RotatedPointBack(P3D);
@@ -863,27 +863,27 @@ var
   var
     t: TFloatType;
   begin
-    t:=-((P1.X - P.X) * (P2.X - P1.X) + (P1.Y - P.Y) * (P2.Y - P1.Y) + (P2.Z - P.Z) * (P2.Z - P1.Z)) /
-      (sqr(P2.X - P1.X) + sqr(P2.Y - P1.Y) + sqr(P2.Z - P1.Z));
-    Result.X:=P1.X + T * (P2.X - P1.X);
-    Result.Y:=P1.Y + T * (P2.Y - P1.Y);
-    Result.Z:=P1.Z + T * (P2.Z - P1.Z);
+    t:=-((P1.X-P.X) * (P2.X-P1.X)+(P1.Y-P.Y) * (P2.Y-P1.Y)+(P2.Z-P.Z) * (P2.Z-P1.Z)) /
+      (sqr(P2.X-P1.X)+sqr(P2.Y-P1.Y)+sqr(P2.Z-P1.Z));
+    Result.X:=P1.X+T * (P2.X-P1.X);
+    Result.Y:=P1.Y+T * (P2.Y-P1.Y);
+    Result.Z:=P1.Z+T * (P2.Z-P1.Z);
   end;{Dist_PL_3D}
 
 begin
   // convert from screencoordinate to 2D world coordinate
-  P2D.X:=(P.X - FPan.X - FScreencenter.X) / (FZoom * FScale);
-  P2D.Y:=(P.Y - FPan.Y - FScreencenter.Y) / -(FZoom * FScale);
+  P2D.X:=(P.X-FPan.X-FScreencenter.X) / (FZoom * FScale);
+  P2D.Y:=(P.Y-FPan.Y-FScreencenter.Y) / -(FZoom * FScale);
 
   // Now correct for perspective projection and create a 3D ray through the screen coordinate
   P3D.X:=FMin3D.X;
-  Dist:=FCameralocation.X - P3D.X;
+  Dist:=FCameralocation.X-P3D.X;
   P3D.Y:=P2D.X * dist / FCameralocation.X;
   P3D.Z:=P2D.Y * Dist / FCameralocation.X;
   P1:=RotatedPointBack(P3D);
 
   P3D.X:=FMax3D.X;
-  Dist:=FCameralocation.X - P3D.X;
+  Dist:=FCameralocation.X-P3D.X;
   P3D.Y:=P2D.X * dist / FCameralocation.X;
   P3D.Z:=P2D.Y * Dist / FCameralocation.X;
   P2:=RotatedPointBack(P3D);
@@ -901,16 +901,16 @@ var
 
 begin
   // convert from screencoordinate to 2D world coordinate
-  P2D.X:=(P.X - FPan.X - FScreencenter.X) / (FZoom * FScale);
-  P2D.Y:=(P.Y - FPan.Y - FScreencenter.Y) / -(FZoom * FScale);
+  P2D.X:=(P.X-FPan.X-FScreencenter.X) / (FZoom * FScale);
+  P2D.Y:=(P.Y-FPan.Y-FScreencenter.Y) / -(FZoom * FScale);
   // convert from screencoordinate to 2D world coordinate
   P3D.X:=FMin3D.X;
-  Dist:=FCameralocation.X - P3D.X;
+  Dist:=FCameralocation.X-P3D.X;
   P3D.Y:=P2D.X * dist / FCameralocation.X;
   P3D.Z:=P2D.Y * Dist / FCameralocation.X;
   P1:=RotatedPointBack(P3D);
   P3D.X:=FMax3D.X;
-  Dist:=FCameralocation.X - P3D.X;
+  Dist:=FCameralocation.X-P3D.X;
   P3D.Y:=P2D.X * dist / FCameralocation.X;
   P3D.Z:=P2D.Y * Dist / FCameralocation.X;
   P2:=RotatedPointBack(P3D);
@@ -930,12 +930,12 @@ var
   Dist: TFloatType;
 begin
   P3D:=RotatedPoint(P);
-  Dist:=FCameralocation.X - P3D.X;
+  Dist:=FCameralocation.X-P3D.X;
   // apply perspective correction
   P2D.X:=FCameralocation.X * P3D.Y / Dist;
   P2D.Y:=FCameralocation.X * P3D.Z / Dist;
-  Result.X:=FPan.X + FScreencenter.X + Round(FZoom * FScale * P2D.X);
-  Result.Y:=FPan.Y + FScreencenter.Y - Round(FZoom * FScale * P2D.Y);
+  Result.X:=FPan.X+FScreencenter.X+Round(FZoom * FScale * P2D.X);
+  Result.Y:=FPan.Y+FScreencenter.Y-Round(FZoom * FScale * P2D.Y);
   Result.Z:=FCameralocation.X * P3D.X / Dist;
 end;
 
@@ -947,11 +947,11 @@ var
   Dist: TFloatType;
 begin
   P3D:=RotatedPoint(P);
-  Dist:=FCameralocation.X - P3D.X;            // apply perspective correction
+  Dist:=FCameralocation.X-P3D.X;            // apply perspective correction
   P2D.X:=FCameralocation.X * P3D.Y / (Dist);
   P2D.Y:=FCameralocation.X * P3D.Z / (Dist);
-  Result.X:=FPan.X + FScreencenter.X + Round(FZoom * FScale * P2D.X);
-  Result.Y:=FPan.Y + FScreencenter.Y - Round(FZoom * FScale * P2D.Y);
+  Result.X:=FPan.X+FScreencenter.X+Round(FZoom * FScale * P2D.X);
+  Result.Y:=FPan.Y+FScreencenter.Y-Round(FZoom * FScale * P2D.Y);
   Result.Z:=FCameralocation.X * Scale * P3D.X / Dist;
 end;
 
@@ -986,17 +986,17 @@ begin
   // This function takes a point from worldspace and rotates it around the midpoint
   // of the scene as specified by the viewing-parameters (angle/elevation)
   // translate midpoint back to origin
-  P.X:=P.X - FMidpoint.X;
-  P.Y:=P.Y - FMidpoint.Y;
-  P.Z:=P.Z - FMidpoint.Z;
+  P.X:=P.X-FMidpoint.X;
+  P.Y:=P.Y-FMidpoint.Y;
+  P.Z:=P.Z-FMidpoint.Z;
   // Rotate around the origin
-  Result.x:=(P.x * FCosAngle - P.y * FSinAngle) * FCosElevation + P.z * FSinElevation;
-  Result.y:=P.x * FSinAngle + P.y * FCosAngle;
-  Result.z:=-(P.x * FCosAngle - P.y * FSinAngle) * FSinElevation + P.z * FCosElevation;
+  Result.x:=(P.x * FCosAngle-P.y * FSinAngle) * FCosElevation+P.z * FSinElevation;
+  Result.y:=P.x * FSinAngle+P.y * FCosAngle;
+  Result.z:=-(P.x * FCosAngle-P.y * FSinAngle) * FSinElevation+P.z * FCosElevation;
   // Translate origin back to midpoint
-  Result.X:=Result.X + FMidPoint.X;
-  Result.Y:=Result.Y + FMidPoint.Y;
-  Result.Z:=Result.Z + FMidPoint.Z;
+  Result.X:=Result.X+FMidPoint.X;
+  Result.Y:=Result.Y+FMidPoint.Y;
+  Result.Z:=Result.Z+FMidPoint.Z;
 end;
 
 function TFreeViewport.RotatedPointBack(P: T3DCoordinate): T3DCoordinate;
@@ -1011,17 +1011,17 @@ begin
   SinAngle:=sin(DegToRad(-FAngle));
   CosElevation:=cos(DegToRad(-FElevation));
   SinElevation:=sin(DegToRad(-FElevation));
-  P.X:=P.X - FMidpoint.X;
-  P.Y:=P.Y - FMidpoint.Y;
-  P.Z:=P.Z - FMidpoint.Z;
+  P.X:=P.X-FMidpoint.X;
+  P.Y:=P.Y-FMidpoint.Y;
+  P.Z:=P.Z-FMidpoint.Z;
   // Rotate a point first around Y-axis then around the Z-axis
-  Result.x:=(P.x * CosElevation + P.z * SinElevation) * CosAngle - P.y * SinAngle;
-  Result.y:=(P.x * CosElevation + P.z * SinElevation) * SinAngle + P.y * CosAngle;
-  Result.z:=(-P.x * SinElevation + P.z * CosElevation);
+  Result.x:=(P.x * CosElevation+P.z * SinElevation) * CosAngle-P.y * SinAngle;
+  Result.y:=(P.x * CosElevation+P.z * SinElevation) * SinAngle+P.y * CosAngle;
+  Result.z:=(-P.x * SinElevation+P.z * CosElevation);
   // Translate origin back to midpoint
-  Result.X:=Result.X + FMidPoint.X;
-  Result.Y:=Result.Y + FMidPoint.Y;
-  Result.Z:=Result.Z + FMidPoint.Z;
+  Result.X:=Result.X+FMidPoint.X;
+  Result.Y:=Result.Y+FMidPoint.Y;
+  Result.Z:=Result.Z+FMidPoint.Z;
 end;
 
 procedure TFreeViewport.Paint;
@@ -1082,7 +1082,7 @@ begin
       // Reset Brush. Clear buffer
       FDrawingCanvas.Brush.Color:=Color;
       FDrawingCanvas.Brush.Style:=bsSolid;
-      FDrawingCanvas.FillRect(-1, -1, FDestinationWidth + 2, FDestinationHeight + 2);
+      FDrawingCanvas.FillRect(-1, -1, FDestinationWidth+2, FDestinationHeight+2);
 
       if BackgroundImage.Bitmap <> nil then
         BackgroundImage.Draw;
@@ -1113,7 +1113,7 @@ begin
 
     if FSelectionFrameActive then DrawSelectionFrame;
 
-    {$ifdef DrawDebug}
+{$ifdef DrawDebug}
     FDrawingCanvas.Pen.Color:=clYellow;
     FDrawingCanvas.Rectangle(FDebugPoint.X,FDebugPoint.Y,FDebugPoint.X,FDebugPoint.Y);
     FDrawingCanvas.Rectangle(FDebugPoint.X-3,FDebugPoint.Y-3,FDebugPoint.X+3,FDebugPoint.Y+3);
@@ -1151,7 +1151,7 @@ begin
     FDrawingCanvas.Ellipse(P0.X-1,P0.Y-1,P0.X+1,P0.Y+1);
     FDrawingCanvas.Ellipse(P0.X-3,P0.Y-3,P0.X+3,P0.Y+3);
     FDrawingCanvas.Ellipse(P0.X-5,P0.Y-5,P0.X+5,P0.Y+5);
-    {$endif DrawDebug}
+{$endif DrawDebug}
   end;
 end;
 
@@ -1283,7 +1283,7 @@ begin
     FLastResizeClientHeight:=ClientHeight;
     InitializeViewport(FMin3D, FMax3D);
   end;
-end;{TFreeViewport.Resize}
+end;
 
 procedure TFreeViewport.KeyPress(var Key: char);
 begin
@@ -1291,7 +1291,7 @@ begin
   if key in ['a', 'A'] then begin ZoomExtents; end else
   if key in ['i', 'I'] then begin ZoomIn; end  else
   if key in ['o', 'O'] then begin ZoomOut; end;
-end;{TFreeViewport.KeyPress}
+end;
 
 procedure TFreeViewport.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 var
@@ -1305,7 +1305,7 @@ var
   OK: boolean;
 begin
   FMouseShift:=Shift;
-  inherited;                                                                    //if(Shift <> []) then logger.Debug(format(#10'TFreeViewport.MouseDown: %d %d',[X,Y]));
+  inherited;
   FPreviousPosition.X:=X;
   FPreviousPosition.Y:=Y;
   if (BackgroundMode <> emNormal) and (BackgroundMode <> emSetFrame)
@@ -1319,25 +1319,25 @@ begin
   else if (BackgroundMode = emSetScale) and (ssLeft in Shift) then begin
     Pt:=Project(ZERO);
     if (Scale * Zoom * BackgroundImage.Scale) <> 0 then begin
-      Diff.X:=round((Pt.X - X) / (Scale * Zoom * BackgroundImage.Scale));
-      Diff.Y:=round((Pt.Y - Y) / (Scale * Zoom * BackgroundImage.Scale));
+      Diff.X:=round((Pt.X-X) / (Scale * Zoom * BackgroundImage.Scale));
+      Diff.Y:=round((Pt.Y-Y) / (Scale * Zoom * BackgroundImage.Scale));
     end else begin
-      Diff.X:=Pt.X - X;
-      Diff.Y:=Pt.Y - Y;
+      Diff.X:=Pt.X-X;
+      Diff.Y:=Pt.Y-Y;
     end;
-    //TODO - change InputQuery to a dialog with TFloatSpinEdit fields
-    Str:=FloatToDec(-BackgroundImage.Scale * Diff.X, 4) + ', ' + FloatToDec(
+    //TODO-change InputQuery to a dialog with TFloatSpinEdit fields
+    Str:=FloatToDec(-BackgroundImage.Scale * Diff.X, 4)+', '+FloatToDec(
       BackgroundImage.Scale * Diff.Y, 4);
     if InputQuery('Scale ', 'New coordinate: ', str) then begin
       Ind:=Pos(',', Str);
       if Ind <> 0 then begin
         OK:=True;
-        Tmp:=trim(Copy(Str, 1, Ind - 1));
+        Tmp:=trim(Copy(Str, 1, Ind-1));
         if Tmp <> '' then begin
           Val(Tmp, XVal, I);
           if I <> 0 then OK:=False;
         end else XVal:=0;
-        Tmp:=trim(Copy(Str, Ind + 1, Length(Str) - Ind));
+        Tmp:=trim(Copy(Str, Ind+1, Length(Str)-Ind));
         if Tmp <> '' then begin
           Val(Tmp, YVal, I);
           if I <> 0 then OK:=False;
@@ -1374,16 +1374,16 @@ begin
     Pt:=Project(ZERO);
     if (Scale * Zoom * BackgroundImage.Scale) <> 0 then
     begin
-      Diff.X:=round((Pt.X - X) / (Scale * Zoom * BackgroundImage.Scale));
-      Diff.Y:=round((Pt.Y - Y) / (Scale * Zoom * BackgroundImage.Scale));
+      Diff.X:=round((Pt.X-X) / (Scale * Zoom * BackgroundImage.Scale));
+      Diff.Y:=round((Pt.Y-Y) / (Scale * Zoom * BackgroundImage.Scale));
     end
     else
     begin
-      Diff.X:=Pt.X - X;
-      Diff.Y:=Pt.Y - Y;
+      Diff.X:=Pt.X-X;
+      Diff.Y:=Pt.Y-Y;
     end;
-    Pt.X:=BackgroundImage.FOrigin.X - Diff.X;
-    Pt.Y:=BackgroundImage.FOrigin.Y - Diff.Y;
+    Pt.X:=BackgroundImage.FOrigin.X-Diff.X;
+    Pt.Y:=BackgroundImage.FOrigin.Y-Diff.Y;
     if (Pt.X >= 0) and (Pt.X < BackgroundImage.FBitmap.Width) and
       (Pt.Y >= 0) and (Pt.Y <= BackgroundImage.FBitmap.Height) then
     begin
@@ -1423,17 +1423,17 @@ var
   bgiRect: TRect;
 begin
   if FMouseShift <> Shift then exit; // Mouse Move came before Mouse Down
-  inherited;                                                                    //if (Shift <> []) then logger.Debug(format('TFreeViewport.MouseMove: %d %d',[X,Y]));
+  inherited;
   if (Shift = [ssLeft]) and (Backgroundmode = emSetOrigin) then begin // Background image moving procedure
     Scl:=1.0;                                                       ///+++???
     if Scl <> 0 then begin
       Prev:=BackgroundImage.ImageCoordinate(FPreviousPosition.X, FPreviousPosition.Y);
       Pt:=BackgroundImage.ImageCoordinate(X, Y);
-      Pt.X:=-round((Pt.X - Prev.X) / Scl);
-      Pt.Y:=-round((Pt.Y - Prev.Y) / Scl);
+      Pt.X:=-round((Pt.X-Prev.X) / Scl);
+      Pt.Y:=-round((Pt.Y-Prev.Y) / Scl);
       if (Pt.X <> 0) or (Pt.Y <> 0) then begin
-        BackgroundImage.FOrigin.X:=BackgroundImage.FOrigin.X + Pt.X;
-        BackgroundImage.FOrigin.Y:=BackgroundImage.FOrigin.Y + Pt.Y;
+        BackgroundImage.FOrigin.X:=BackgroundImage.FOrigin.X+Pt.X;
+        BackgroundImage.FOrigin.Y:=BackgroundImage.FOrigin.Y+Pt.Y;
         if Pt.X <> 0 then FPreviousPosition.X:=X;
         if Pt.Y <> 0 then FPreviousPosition.Y:=Y;
         Refresh;
@@ -1445,25 +1445,25 @@ begin
   and (FBackgroundScaleIsMouseOnFrameSide in [fsW,fsE,fsN,fsS]) then begin // Background image scaling procedure
     Pt:=BackgroundImage.ImageCoordinate(X, Y);
     Prev:=BackgroundImage.ImageCoordinate(FPreviousPosition.X, FPreviousPosition.Y);
-    dX:=Pt.X - Prev.X;
-    dY:=Pt.Y - Prev.Y;
+    dX:=Pt.X-Prev.X;
+    dY:=Pt.Y-Prev.Y;
     X0:=BackgroundImage.FOrigin.X;
     Y0:=BackgroundImage.FOrigin.Y;
     W:=BackgroundImage.Bitmap.Width;
     H:=BackgroundImage.Bitmap.Height;
     if FBackgroundScaleIsMouseOnFrameSide = fsW then begin
-      X0:=BackgroundImage.FOrigin.X - dX;
-      Scl:=BackgroundImage.FScale * (-dX + W) / W;
+      X0:=BackgroundImage.FOrigin.X-dX;
+      Scl:=BackgroundImage.FScale * (-dX+W) / W;
     end;
     if FBackgroundScaleIsMouseOnFrameSide = fsE then begin
-      Scl:=BackgroundImage.FScale * (dX + W) / W;
+      Scl:=BackgroundImage.FScale * (dX+W) / W;
     end;
     if FBackgroundScaleIsMouseOnFrameSide = fsN then begin
-      Scl:=BackgroundImage.FScale * (-dY + H) / H;
+      Scl:=BackgroundImage.FScale * (-dY+H) / H;
     end;
     if FBackgroundScaleIsMouseOnFrameSide = fsS then begin
-      Y0:=BackgroundImage.FOrigin.Y - dY;
-      Scl:=BackgroundImage.FScale * (dY + H) / H;
+      Y0:=BackgroundImage.FOrigin.Y-dY;
+      Scl:=BackgroundImage.FScale * (dY+H) / H;
     end;
 
     if Scl > 0 then  begin
@@ -1523,17 +1523,17 @@ begin
   begin
     // rotation using Left mousebutton
     Cursor:=crRotate;
-    FAngle:=Self.FAngle + (X - FPreviousPosition.X) / 4;
-    while FAngle > 180 do FAngle:=FAngle - 360;
-    while FAngle < -180 do FAngle:=FAngle + 360;
+    FAngle:=Self.FAngle+(X-FPreviousPosition.X) / 4;
+    while FAngle > 180 do FAngle:=FAngle-360;
+    while FAngle < -180 do FAngle:=FAngle+360;
     FCosAngle:=Cos(DegToRad(FAngle));
     FSinAngle:=sin(DegToRad(FAngle));
 
-    FElevation:=FElevation + (Y - FPreviousPosition.Y) / 4;
+    FElevation:=FElevation+(Y-FPreviousPosition.Y) / 4;
     while FElevation > 180 do
-      FElevation:=FElevation - 360;
+      FElevation:=FElevation-360;
     while FElevation < -180 do
-      FElevation:=FElevation + 360;
+      FElevation:=FElevation+360;
     FCosElevation:=Cos(DegToRad(FElevation));
     FSinElevation:=sin(DegToRad(FElevation));
     if FHorScrollbar <> nil then
@@ -1552,50 +1552,31 @@ end;
 procedure TFreeViewport.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
   FMouseShift:=Shift;
-  if (BackgroundMode <> emUnsetFrame) then
-    inherited;
-//logger.Debug(format('TFreeViewport.MouseUp: %d %d'#10,[X,Y]));
-  if BackgroundMode = emSetOrigin then
-  begin
-    // Finished moving the background image
-    BackgroundMode:=emNormal;
-    // Check if origin has changed
+  if (BackgroundMode <> emUnsetFrame) then inherited;
+  if BackgroundMode = emSetOrigin then begin // Finished moving the background image
+    BackgroundMode:=emNormal;                // Check if origin has changed
     if (FBackgroundOrigin.X <> BackgroundImage.Origin.X) or
-      (FBackgroundOrigin.Y <> BackgroundImage.Origin.Y) then
-    begin
+      (FBackgroundOrigin.Y <> BackgroundImage.Origin.Y) then begin
       if assigned(FOnChangeBackgroundImage) then
         FOnChangeBackgroundImage(Owner);
     end;
-  end
-  else
-  if BackgroundMode = emSetScale then
-  begin
-    // Finished scaling the background image
-    BackgroundMode:=emNormal;
-    // Check if Scale has changed
+  end else
+  if BackgroundMode = emSetScale then begin // Finished scaling the background image
+    BackgroundMode:=emNormal;               // Check if Scale has changed
     Refresh;
-    if (FBackgroundScale <> BackgroundImage.Scale) then
-    begin
+    if (FBackgroundScale <> BackgroundImage.Scale) then begin
       if assigned(FOnChangeBackgroundImage) then
         FOnChangeBackgroundImage(Owner);
     end;
-  end
-  else
-  if (BackgroundMode = emUnsetFrame) then
-  begin
-    // Finished framing the background image
+  end else
+  if (BackgroundMode = emUnsetFrame) then begin // Finished framing the background image
     BackgroundMode:=emNormal;
     Refresh;
-  end
-  else
-  begin
-    if Assigned(FOnMouseUp) then
-      OnMouseUp(Self, Button, Shift, X, Y);
-    if Cursor <> crCross then
-      Cursor:=crCross;
+  end else begin
+    if Assigned(FOnMouseUp) then OnMouseUp(Self, Button, Shift, X, Y);
+    if Cursor <> crCross then Cursor:=crCross;
   end;
-  if not focused then
-    SetFocus;
+  if not focused then SetFocus;
 end;
 
 function TFreeViewport.DoMouseWheel(Shift: TShiftState; WheelDelta: integer;
@@ -1625,16 +1606,16 @@ begin
     Factor:=1.05;
     Mid.X:=ClientWidth div 2;
     Mid.Y:=ClientHeight div 2;
-    mouseDX:=MousePos.X - Mid.X;
-    mouseDY:=MousePos.Y - Mid.Y;
+    mouseDX:=MousePos.X-Mid.X;
+    mouseDY:=MousePos.Y-Mid.Y;
 
     if WheelDelta > 0 then
     begin
       FZoom:=FZoom * Factor;
       NewPan.X:=round(Pan.X * Factor);
       NewPan.Y:=round(Pan.Y * Factor);
-      FPan.X:=FPan.X - round((mouseDX*Factor - mouseDX) - (NewPan.X - Pan.X));
-      FPan.Y:=FPan.Y - round((mouseDY*Factor - mouseDY) - (NewPan.Y - Pan.Y));
+      FPan.X:=FPan.X-round((mouseDX*Factor-mouseDX)-(NewPan.X-Pan.X));
+      FPan.Y:=FPan.Y-round((mouseDY*Factor-mouseDY)-(NewPan.Y-Pan.Y));
       Refresh;
     end
     else
@@ -1642,8 +1623,8 @@ begin
       FZoom:=FZoom / Factor;
       NewPan.X:=round(Pan.X / Factor);
       NewPan.Y:=round(Pan.Y / Factor);
-      FPan.X:=FPan.X - round((mouseDX/Factor - mouseDX) - (NewPan.X - Pan.X));
-      FPan.Y:=FPan.Y - round((mouseDY/Factor - mouseDY) - (NewPan.Y - Pan.Y));
+      FPan.X:=FPan.X-round((mouseDX/Factor-mouseDX)-(NewPan.X-Pan.X));
+      FPan.Y:=FPan.Y-round((mouseDY/Factor-mouseDY)-(NewPan.Y-Pan.Y));
       Refresh;
     end;
   {$endif}
@@ -1674,7 +1655,7 @@ begin
   else if aIntensityRatio > 1.0 then
     aIntensityRatio:=1.0;
 
-  C:=FLightIntensity * aIntensityRatio + FAmbientIntencity;
+  C:=FLightIntensity * aIntensityRatio+FAmbientIntencity;
   if C > 1.0 then C:=1.0;
 
   ROut:=Round(R * C);
@@ -1684,30 +1665,30 @@ begin
   {
   if aIntensityRatio >= 0.80 then
   begin
-    Tmp:=5.0 - 5.0 * aIntensityRatio;
+    Tmp:=5.0-5.0 * aIntensityRatio;
     if Tmp < 0 then
       C:=0
     else
       C:=Sqrt(Tmp);
-    ROut:=Round(s255 - (s255 - aIntensityRatio * R) * C);
-    GOut:=Round(s255 - (s255 - aIntensityRatio * G) * C);
-    BOut:=Round(s255 - (s255 - aIntensityRatio * B) * C);
+    ROut:=Round(s255-(s255-aIntensityRatio * R) * C);
+    GOut:=Round(s255-(s255-aIntensityRatio * G) * C);
+    BOut:=Round(s255-(s255-aIntensityRatio * B) * C);
   end
   else
   begin
     AmbientStrength:=self.FLight.Ambient / s255;
-    aIntensityRatio:=aIntensityRatio - AmbientStrength;
+    aIntensityRatio:=aIntensityRatio-AmbientStrength;
     if aIntensityRatio < 0.0 then
       aIntensityRatio:=0.0;
-    Ap:=(0.8 - AmbientStrength);
+    Ap:=(0.8-AmbientStrength);
     if abs(Ap) < 1e-6 then Ap:=1e-6;
     C:=aIntensityRatio / Ap;
-    C:=AmbientStrength + Ap * C * C;
+    C:=AmbientStrength+Ap * C * C;
 
     C:=Sqrt(aIntensityRatio * AmbientStrength);
-    ROut:=Round(s255 - (s255 - aIntensityRatio * R) * C);
-    GOut:=Round(s255 - (s255 - aIntensityRatio * G) * C);
-    BOut:=Round(s255 - (s255 - aIntensityRatio * B) * C);
+    ROut:=Round(s255-(s255-aIntensityRatio * R) * C);
+    GOut:=Round(s255-(s255-aIntensityRatio * G) * C);
+    BOut:=Round(s255-(s255-aIntensityRatio * B) * C);
   end;
   }
 
@@ -1726,7 +1707,7 @@ var
   ZLeft, dZLeft: TFloatType;
   ZRight, dZRight: TFloatType;
 
-    {$ifdef Windows32}
+(* {$ifdef Windows32}
   procedure Swap(var A, B: integer); assembler;
   asm
            MOV     ECX,[EAX]
@@ -1734,53 +1715,38 @@ var
            MOV     [EAX],ECX
   end;{Swap}
     {$else}
-  procedure Swap(var A, B: integer);
-  var
-    X: integer;
-  begin
-    X:=A;
-    A:=B;
-    B:=X;
-  end;
-  {Swap}
-    {$endif}
+*)
+  procedure Swap( var A,B: integer );
+  var X: integer; begin X:=A; A:=B; B:=X; end; {Swap}
+// {$endif}
 
 
   procedure ShadeLine(X1, X2, Y: integer; Z1, Z2: TFloatType);
   var
-    IncZ, T: TFloatType;
-    //Row     : pRGBTripleArray;
+    IncZ, T: TFloatType; //Row: pRGBTripleArray;
     pRow, pPixel: pointer;
     Pixel: TRGBTriple;
   begin
-    if (Y < 0) or (Y > FDestinationHeight - 1) then
-      exit;
+    if (Y<0) or (Y>FDestinationHeight-1) then exit;
     X1:=X1 div 256;
     X2:=X2 div 256;
-    if X1 > X2 then
-    begin
+    if X1 > X2 then begin
       Swap(X1, X2);
       T:=Z1;
       Z1:=Z2;
       Z2:=T;
     end;
-    if X1 <> X2 then
-      IncZ:=(Z2 - Z1) / (X2 - X1)
-    else
-      IncZ:=0;
-    if (X1 > FDestinationWidth - 1) or (X2 < 0) then
-      exit;
-    if (X1 < 0) then
-    begin
-      Z1:=Z1 + abs(X1) * IncZ;
+    if X1 <> X2 then IncZ:=(Z2-Z1) / (X2-X1)
+                else IncZ:=0;
+    if (X1 > FDestinationWidth-1) or (X2 < 0) then exit;
+    if (X1 < 0) then begin
+      Z1:=Z1+abs(X1) * IncZ;
       X1:=0;
     end;
-    if X2 > FDestinationWidth - 1 then
-      X2:=FDestinationWidth - 1;
-    if X1 >= 0 then
-    begin
-      // Use scanline property for faster pixel access
-      //Row:=FDrawingBuffer.Scanline[y];
+    if X2 > FDestinationWidth-1 then X2:=FDestinationWidth-1;
+    if X1 >= 0 then begin
+               // Use scanline property for faster pixel access
+               //Row:=FDrawingBuffer.Scanline[y];
       pRow:=FDrawingBuffer.RawImage.GetLineStart(Y);
       while (X1 <= X2) do
       begin
@@ -1799,7 +1765,7 @@ var
           else
             AlphaBuffer.AddPixelData(X1, Y, R, G, B, Alpha, Z1);
         end;
-        Z1:=Z1 + IncZ;
+        Z1:=Z1+IncZ;
         Inc(X1);
       end;
     end;
@@ -1815,13 +1781,13 @@ begin
   P_3:=RotatedPoint(P_3);
   // Calculate triangle normal and center
   Normal:=UnifiedNormal(P_1, P_2, P_3);
-  Center.X:=(P_1.X + P_2.X + P_3.X) / 3;
-  Center.Y:=(P_1.Y + P_2.Y + P_3.Y) / 3;
-  Center.Z:=(P_1.Z + P_2.Z + P_3.Z) / 3;
+  Center.X:=(P_1.X+P_2.X+P_3.X) / 3;
+  Center.Y:=(P_1.Y+P_2.Y+P_3.Y) / 3;
+  Center.Z:=(P_1.Z+P_2.Z+P_3.Z) / 3;
   // Calculate light vector
-  LSourceDirection.X:=Center.X - FLight.Position.X;
-  LSourceDirection.Y:=Center.Y - FLight.Position.Y;
-  LSourceDirection.Z:=Center.Z - FLight.Position.Z;
+  LSourceDirection.X:=Center.X-FLight.Position.X;
+  LSourceDirection.Y:=Center.Y-FLight.Position.Y;
+  LSourceDirection.Z:=Center.Z-FLight.Position.Z;
   LSourceDirection:=Normalize(LSourceDirection);
   LIntensityRatio:=DotProduct(Normal, LSourceDirection);
 
@@ -1875,8 +1841,8 @@ begin
   ZLeft:=Pt1.Z;
   if Pt3.Y <> Pt1.Y then
   begin
-    dZLeft:=(Pt3.Z - Pt1.Z) / (Pt3.Y - Pt1.Y);
-    dXLeft:=(Pt3.X - Pt1.X) div (Pt3.Y - Pt1.Y);
+    dZLeft:=(Pt3.Z-Pt1.Z) / (Pt3.Y-Pt1.Y);
+    dXLeft:=(Pt3.X-Pt1.X) div (Pt3.Y-Pt1.Y);
   end
   else
   begin
@@ -1887,8 +1853,8 @@ begin
   ZRight:=Pt1.Z;
   if Pt2.Y <> Pt1.Y then
   begin
-    dZRight:=(Pt2.Z - Pt1.Z) / (Pt2.Y - Pt1.Y);
-    dXRight:=(Pt2.X - Pt1.X) div (Pt2.Y - Pt1.Y);
+    dZRight:=(Pt2.Z-Pt1.Z) / (Pt2.Y-Pt1.Y);
+    dXRight:=(Pt2.X-Pt1.X) div (Pt2.Y-Pt1.Y);
   end
   else
   begin
@@ -1905,9 +1871,9 @@ begin
     if Y < Pt2.Y then
     begin
       Inc(XLeft, dXLeft);
-      ZLeft:=ZLeft + dZLeft;
+      ZLeft:=ZLeft+dZLeft;
       Inc(XRight, dXRight);
-      ZRight:=ZRight + dZRight;
+      ZRight:=ZRight+dZRight;
     end;
     Inc(Y);
   end;
@@ -1917,17 +1883,17 @@ begin
   ZRight:=Pt2.Z;
   if Pt3.Y <> Pt2.Y then
   begin
-    dZRight:=(Pt3.Z - Pt2.Z) / (Pt3.Y - Pt2.Y);
-    dXRight:=(Pt3.X - Pt2.X) div (Pt3.Y - Pt2.Y);
+    dZRight:=(Pt3.Z-Pt2.Z) / (Pt3.Y-Pt2.Y);
+    dXRight:=(Pt3.X-Pt2.X) div (Pt3.Y-Pt2.Y);
   end;
   for Y:=Pt2.Y to Pt3.Y do
   begin
     if XRight >= XLeft then ShadeLine(XLeft, XRight, Y, ZLeft, ZRight)
                        else ShadeLine(XRight, XLeft, Y, ZRight, ZLeft);
     Inc(XLeft, dXLeft);
-    ZLeft:=ZLeft + dZLeft;
+    ZLeft:=ZLeft+dZLeft;
     Inc(XRight, dXRight);
-    ZRight:=ZRight + dZRight;
+    ZRight:=ZRight+dZRight;
   end;
 end;
 
@@ -1970,16 +1936,16 @@ var
       Left:=Right;
       Right:=Tmp;
     end;
-    if (Left.X > ClientWidth - 1) or (Right.X < 0) or (Y < 0) or (Y > ClientHeight - 1) then
+    if (Left.X > ClientWidth-1) or (Right.X < 0) or (Y < 0) or (Y > ClientHeight-1) then
       exit;
 
-    d:=Right.X - Left.X;
+    d:=Right.X-Left.X;
     if d <> 0 then
     begin
-      Delta.Z:=(Right.Z - Left.Z) / d;
-      Delta.R:=(Right.R - Left.R) div d;
-      Delta.G:=(Right.G - Left.G) div d;
-      Delta.B:=(Right.B - Left.B) div d;
+      Delta.Z:=(Right.Z-Left.Z) / d;
+      Delta.R:=(Right.R-Left.R) div d;
+      Delta.G:=(Right.G-Left.G) div d;
+      Delta.B:=(Right.B-Left.B) div d;
     end
     else
     begin
@@ -1989,18 +1955,18 @@ var
       Delta.B:=0;
     end;
 
-    //      if (Left.X>W) or (Right.X<0) then exit;
+    // if (Left.X>W) or (Right.X<0) then exit;
     if (Left.X < 0) then
     begin
-      Left.Z:=Left.Z + -Left.X * Delta.Z;
+      Left.Z:=Left.Z+-Left.X * Delta.Z;
       Inc(Left.R, -Left.X * Delta.R);
       Inc(Left.G, -Left.X * Delta.G);
       Inc(Left.B, -Left.X * Delta.B);
       Left.X:=0;
     end;
 
-    if Right.X > ClientWidth - 1 then
-      Right.X:=ClientWidth - 1;
+    if Right.X > ClientWidth-1 then
+      Right.X:=ClientWidth-1;
     if Left.X >= 0 then
     begin
       //Row:=FDrawingBuffer.Scanline[y];
@@ -2012,7 +1978,7 @@ var
         begin
           FZBuffer.FBuffer[Y][Left.X]:=Left.Z;
 
-               {pPixel:=pRow + FBitmapFormatHelper.BytesPerPixel * Left.X;
+               {pPixel:=pRow+FBitmapFormatHelper.BytesPerPixel * Left.X;
                Pixel.rgbtRed:=Left.R shr 8;
                Pixel.rgbtGreen:=Left.G shr 8;
                Pixel.rgbtBlue:=Left.B shr 8;
@@ -2022,7 +1988,7 @@ var
           //FDrawingBuffer.Canvas.Pixels[Left.X,Y]:=RGBtoColor(Left.R shr 8, Left.G shr 8, Left.B shr 8);
           SetPixel(Left.X, Y, Left.R shr 8, Left.G shr 8, Left.B shr 8);
         end;
-        Left.Z:=Left.Z + Delta.Z;
+        Left.Z:=Left.Z+Delta.Z;
         Inc(Left.R, Delta.R);
         Inc(Left.G, Delta.G);
         Inc(Left.B, Delta.B);
@@ -2041,13 +2007,13 @@ begin
   P_3:=RotatedPoint(P_3);
   // Calculate triangle normal and center
   Normal:=UnifiedNormal(P_1, P_2, P_3);
-  Center.X:=(P_1.X + P_2.X + P_3.X) / 3;
-  Center.Y:=(P_1.Y + P_2.Y + P_3.Y) / 3;
-  Center.Z:=(P_1.Z + P_2.Z + P_3.Z) / 3;
+  Center.X:=(P_1.X+P_2.X+P_3.X) / 3;
+  Center.Y:=(P_1.Y+P_2.Y+P_3.Y) / 3;
+  Center.Z:=(P_1.Z+P_2.Z+P_3.Z) / 3;
   // Calculate light vector
-  LSourceDirection.X:=Center.X - FLight.Position.X;
-  LSourceDirection.Y:=Center.Y - FLight.Position.Y;
-  LSourceDirection.Z:=Center.Z - FLight.Position.Z;
+  LSourceDirection.X:=Center.X-FLight.Position.X;
+  LSourceDirection.Y:=Center.Y-FLight.Position.Y;
+  LSourceDirection.Z:=Center.Z-FLight.Position.Z;
   LSourceDirection:=Normalize(LSourceDirection);
   LIntensityRatio:=Dotproduct(Normal, LSourceDirection);
   SetColor(V1, R1, G1, B1);
@@ -2089,38 +2055,38 @@ begin
   end;
 
   Left:=V1;
-  d:=(V3.Y - V1.Y);
+  d:=(V3.Y-V1.Y);
   if d <> 0 then
   begin
-    dLeft.Z:=(V3.Z - V1.Z) / d;
-    dLeft.X:=(V3.X - V1.X) div d;
-    dLeft.R:=(V3.R - V1.R) div d;
-    dLeft.G:=(V3.G - V1.G) div d;
-    dLeft.B:=(V3.B - V1.B) div d;
+    dLeft.Z:=(V3.Z-V1.Z) / d;
+    dLeft.X:=(V3.X-V1.X) div d;
+    dLeft.R:=(V3.R-V1.R) div d;
+    dLeft.G:=(V3.G-V1.G) div d;
+    dLeft.B:=(V3.B-V1.B) div d;
   end;
 
   Right:=V1;
-  d:=(V2.Y - V1.Y);
+  d:=(V2.Y-V1.Y);
   if d <> 0 then
   begin
-    dRight.Z:=(V2.Z - V1.Z) / d;
-    dRight.X:=(V2.X - V1.X) div d;
-    dRight.R:=(V2.R - V1.R) div d;
-    dRight.G:=(V2.G - V1.G) div d;
-    dRight.B:=(V2.B - V1.B) div d;
+    dRight.Z:=(V2.Z-V1.Z) / d;
+    dRight.X:=(V2.X-V1.X) div d;
+    dRight.R:=(V2.R-V1.R) div d;
+    dRight.G:=(V2.G-V1.G) div d;
+    dRight.B:=(V2.B-V1.B) div d;
   end;
 
   Y:=V1.Y;
   if (Y < 0) and (V2.Y > 0) then
   begin
     Inc(Left.X, -Y * dLeft.X);
-    Left.Z:=Left.Z + -Y * dLeft.Z;
+    Left.Z:=Left.Z+-Y * dLeft.Z;
     Inc(Left.R, -Y * dLeft.R);
     Inc(Left.G, -Y * dLeft.G);
     Inc(Left.B, -Y * dLeft.B);
 
     Inc(Right.X, -Y * dRight.X);
-    Right.Z:=Right.Z + -Y * dRight.Z;
+    Right.Z:=Right.Z+-Y * dRight.Z;
     Inc(Right.R, -Y * dRight.R);
     Inc(Right.G, -Y * dRight.G);
     Inc(Right.B, -Y * dRight.B);
@@ -2136,13 +2102,13 @@ begin
     if Y < V2.Y then
     begin
       Inc(Left.X, dLeft.X);
-      Left.Z:=Left.Z + dLeft.Z;
+      Left.Z:=Left.Z+dLeft.Z;
       Inc(Left.R, dLeft.R);
       Inc(Left.G, dLeft.G);
       Inc(Left.B, dLeft.B);
 
       Inc(Right.X, dRight.X);
-      Right.Z:=Right.Z + dRight.Z;
+      Right.Z:=Right.Z+dRight.Z;
       Inc(Right.R, dRight.R);
       Inc(Right.G, dRight.G);
       Inc(Right.B, dRight.B);
@@ -2153,14 +2119,14 @@ begin
     Exit;
 
   Right:=V2;
-  d:=V3.Y - V2.Y;
+  d:=V3.Y-V2.Y;
   if d <> 0 then
   begin
-    dRight.Z:=(V3.Z - V2.Z) / d;
-    dRight.X:=(V3.X - V2.X) div d;
-    dRight.R:=(V3.R - V2.R) div d;
-    dRight.G:=(V3.G - V2.G) div d;
-    dRight.B:=(V3.B - V2.B) div d;
+    dRight.Z:=(V3.Z-V2.Z) / d;
+    dRight.X:=(V3.X-V2.X) div d;
+    dRight.R:=(V3.R-V2.R) div d;
+    dRight.G:=(V3.G-V2.G) div d;
+    dRight.B:=(V3.B-V2.B) div d;
   end
   else
     Fillchar(dRight, SizeOf(dRight), 0);
@@ -2169,13 +2135,13 @@ begin
   if (Y < 0) and (V3.Y > 0) then
   begin
     Inc(Left.X, -Y * dLeft.X);
-    Left.Z:=Left.Z + -Y * dLeft.Z;
+    Left.Z:=Left.Z+-Y * dLeft.Z;
     Inc(Left.R, -Y * dLeft.R);
     Inc(Left.G, -Y * dLeft.G);
     Inc(Left.B, -Y * dLeft.B);
 
     Inc(Right.X, -Y * dRight.X);
-    Right.Z:=Right.Z + -Y * dRight.Z;
+    Right.Z:=Right.Z+-Y * dRight.Z;
     Inc(Right.R, -Y * dRight.R);
     Inc(Right.G, -Y * dRight.G);
     Inc(Right.B, -Y * dRight.B);
@@ -2190,13 +2156,13 @@ begin
     if Y <= V3.Y then
     begin
       Inc(Left.X, dLeft.X);
-      Left.Z:=Left.Z + dLeft.Z;
+      Left.Z:=Left.Z+dLeft.Z;
       Inc(Left.R, dLeft.R);
       Inc(Left.G, dLeft.G);
       Inc(Left.B, dLeft.B);
 
       Inc(Right.X, dRight.X);
-      Right.Z:=Right.Z + dRight.Z;
+      Right.Z:=Right.Z+dRight.Z;
       Inc(Right.R, dRight.R);
       Inc(Right.G, dRight.G);
       Inc(Right.B, dRight.B);
@@ -2248,16 +2214,16 @@ var
       Left:=Right;
       Right:=Tmp;
     end;
-    if (Left.X > ClientWidth - 1) or (Right.X < 0) or (Y < 0) or (Y > ClientHeight - 1) then
+    if (Left.X > ClientWidth-1) or (Right.X < 0) or (Y < 0) or (Y > ClientHeight-1) then
       exit;
 
-    d:=Right.X - Left.X;
+    d:=Right.X-Left.X;
     if d <> 0 then
     begin
-      Delta.Z:=(Right.Z - Left.Z) / d;
-      Delta.R:=(Right.R - Left.R) div d;
-      Delta.G:=(Right.G - Left.G) div d;
-      Delta.B:=(Right.B - Left.B) div d;
+      Delta.Z:=(Right.Z-Left.Z) / d;
+      Delta.R:=(Right.R-Left.R) div d;
+      Delta.G:=(Right.G-Left.G) div d;
+      Delta.B:=(Right.B-Left.B) div d;
     end
     else
     begin
@@ -2270,15 +2236,15 @@ var
     //      if (Left.X>W) or (Right.X<0) then exit;
     if (Left.X < 0) then
     begin
-      Left.Z:=Left.Z + -Left.X * Delta.Z;
+      Left.Z:=Left.Z+-Left.X * Delta.Z;
       Inc(Left.R, -Left.X * Delta.R);
       Inc(Left.G, -Left.X * Delta.G);
       Inc(Left.B, -Left.X * Delta.B);
       Left.X:=0;
     end;
 
-    if Right.X > ClientWidth - 1 then
-      Right.X:=ClientWidth - 1;
+    if Right.X > ClientWidth-1 then
+      Right.X:=ClientWidth-1;
     if Left.X >= 0 then
     begin
       //Row:=FDrawingBuffer.Scanline[y];
@@ -2289,7 +2255,7 @@ var
         if Left.Z > FZBuffer.FBuffer[Y][Left.X] then
         begin
           FZBuffer.FBuffer[Y][Left.X]:=Left.Z;
-               {pPixel:=pRow + FBitmapFormatHelper.BytesPerPixel * Left.X;
+               {pPixel:=pRow+FBitmapFormatHelper.BytesPerPixel * Left.X;
                Pixel.rgbtRed:=Left.R shr 8;
                Pixel.rgbtGreen:=Left.G shr 8;
                Pixel.rgbtBlue:=Left.B shr 8;
@@ -2300,7 +2266,7 @@ var
 
           SetPixel(Left.X, Y, Left.R shr 8, Left.G shr 8, Left.B shr 8);
         end;
-        Left.Z:=Left.Z + Delta.Z;
+        Left.Z:=Left.Z+Delta.Z;
         Inc(Left.R, Delta.R);
         Inc(Left.G, Delta.G);
         Inc(Left.B, Delta.B);
@@ -2319,13 +2285,13 @@ begin
   P_3:=RotatedPoint(P_3);
   // Calculate triangle normal and center
   Normal:=UnifiedNormal(P_1, P_2, P_3);
-  Center.X:=(P_1.X + P_2.X + P_3.X) / 3;
-  Center.Y:=(P_1.Y + P_2.Y + P_3.Y) / 3;
-  Center.Z:=(P_1.Z + P_2.Z + P_3.Z) / 3;
+  Center.X:=(P_1.X+P_2.X+P_3.X) / 3;
+  Center.Y:=(P_1.Y+P_2.Y+P_3.Y) / 3;
+  Center.Z:=(P_1.Z+P_2.Z+P_3.Z) / 3;
   // Calculate light vector
-  LSourceDirection.X:=Center.X - FLight.Position.X;
-  LSourceDirection.Y:=Center.Y - FLight.Position.Y;
-  LSourceDirection.Z:=Center.Z - FLight.Position.Z;
+  LSourceDirection.X:=Center.X-FLight.Position.X;
+  LSourceDirection.Y:=Center.Y-FLight.Position.Y;
+  LSourceDirection.Z:=Center.Z-FLight.Position.Z;
   LSourceDirection:=Normalize(LSourceDirection);
   LIntensityRatio:=Dotproduct(Normal, LSourceDirection);
   SetColor(V1, C1);
@@ -2359,35 +2325,35 @@ begin
   end;
 
   Left:=V1;
-  d:=(V3.Y - V1.Y);
+  d:=(V3.Y-V1.Y);
   if d <> 0 then begin
-    dLeft.Z:=(V3.Z - V1.Z) / d;
-    dLeft.X:=(V3.X - V1.X) div d;
-    dLeft.R:=(V3.R - V1.R) div d;
-    dLeft.G:=(V3.G - V1.G) div d;
-    dLeft.B:=(V3.B - V1.B) div d;
+    dLeft.Z:=(V3.Z-V1.Z) / d;
+    dLeft.X:=(V3.X-V1.X) div d;
+    dLeft.R:=(V3.R-V1.R) div d;
+    dLeft.G:=(V3.G-V1.G) div d;
+    dLeft.B:=(V3.B-V1.B) div d;
   end;
 
   Right:=V1;
-  d:=(V2.Y - V1.Y);
+  d:=(V2.Y-V1.Y);
   if d <> 0 then begin
-    dRight.Z:=(V2.Z - V1.Z) / d;
-    dRight.X:=(V2.X - V1.X) div d;
-    dRight.R:=(V2.R - V1.R) div d;
-    dRight.G:=(V2.G - V1.G) div d;
-    dRight.B:=(V2.B - V1.B) div d;
+    dRight.Z:=(V2.Z-V1.Z) / d;
+    dRight.X:=(V2.X-V1.X) div d;
+    dRight.R:=(V2.R-V1.R) div d;
+    dRight.G:=(V2.G-V1.G) div d;
+    dRight.B:=(V2.B-V1.B) div d;
   end;
 
   Y:=V1.Y;
   if (Y < 0) and (V2.Y > 0) then begin
     Inc(Left.X, -Y * dLeft.X);
-    Left.Z:=Left.Z + -Y * dLeft.Z;
+    Left.Z:=Left.Z+-Y * dLeft.Z;
     Inc(Left.R, -Y * dLeft.R);
     Inc(Left.G, -Y * dLeft.G);
     Inc(Left.B, -Y * dLeft.B);
 
     Inc(Right.X, -Y * dRight.X);
-    Right.Z:=Right.Z + -Y * dRight.Z;
+    Right.Z:=Right.Z+-Y * dRight.Z;
     Inc(Right.R, -Y * dRight.R);
     Inc(Right.G, -Y * dRight.G);
     Inc(Right.B, -Y * dRight.B);
@@ -2399,13 +2365,13 @@ begin
                          else ShadeLine(Right, Left, Y);
     if Y < V2.Y then begin
       Inc(Left.X, dLeft.X);
-      Left.Z:=Left.Z + dLeft.Z;
+      Left.Z:=Left.Z+dLeft.Z;
       Inc(Left.R, dLeft.R);
       Inc(Left.G, dLeft.G);
       Inc(Left.B, dLeft.B);
 
       Inc(Right.X, dRight.X);
-      Right.Z:=Right.Z + dRight.Z;
+      Right.Z:=Right.Z+dRight.Z;
       Inc(Right.R, dRight.R);
       Inc(Right.G, dRight.G);
       Inc(Right.B, dRight.B);
@@ -2414,25 +2380,25 @@ begin
   end;if V2.Y = V3.Y then Exit;
 
   Right:=V2;
-  d:=V3.Y - V2.Y;
+  d:=V3.Y-V2.Y;
   if d <> 0 then begin
-    dRight.Z:=(V3.Z - V2.Z) / d;
-    dRight.X:=(V3.X - V2.X) div d;
-    dRight.R:=(V3.R - V2.R) div d;
-    dRight.G:=(V3.G - V2.G) div d;
-    dRight.B:=(V3.B - V2.B) div d;
+    dRight.Z:=(V3.Z-V2.Z) / d;
+    dRight.X:=(V3.X-V2.X) div d;
+    dRight.R:=(V3.R-V2.R) div d;
+    dRight.G:=(V3.G-V2.G) div d;
+    dRight.B:=(V3.B-V2.B) div d;
   end else Fillchar(dRight, SizeOf(dRight), 0);
 
   Y:=V2.Y;
   if (Y < 0) and (V3.Y > 0) then begin
     Inc(Left.X, -Y * dLeft.X);
-    Left.Z:=Left.Z + -Y * dLeft.Z;
+    Left.Z:=Left.Z+-Y * dLeft.Z;
     Inc(Left.R, -Y * dLeft.R);
     Inc(Left.G, -Y * dLeft.G);
     Inc(Left.B, -Y * dLeft.B);
 
     Inc(Right.X, -Y * dRight.X);
-    Right.Z:=Right.Z + -Y * dRight.Z;
+    Right.Z:=Right.Z+-Y * dRight.Z;
     Inc(Right.R, -Y * dRight.R);
     Inc(Right.G, -Y * dRight.G);
     Inc(Right.B, -Y * dRight.B);
@@ -2443,13 +2409,13 @@ begin
                          else ShadeLine(Right, Left, Y);
     if Y <= V3.Y then begin
       Inc(Left.X, dLeft.X);
-      Left.Z:=Left.Z + dLeft.Z;
+      Left.Z:=Left.Z+dLeft.Z;
       Inc(Left.R, dLeft.R);
       Inc(Left.G, dLeft.G);
       Inc(Left.B, dLeft.B);
 
       Inc(Right.X, dRight.X);
-      Right.Z:=Right.Z + dRight.Z;
+      Right.Z:=Right.Z+dRight.Z;
       Inc(Right.R, dRight.R);
       Inc(Right.G, dRight.G);
       Inc(Right.B, dRight.B);

@@ -81,53 +81,53 @@ implementation
 
 function TFreeExtrudeDialog.FGetXValue: extended;
 begin
-  Result := FloatSpinEdit1.Value;
+  Result:=FloatSpinEdit1.Value;
 end;
 
 procedure TFreeExtrudeDialog.FSetXValue(val: extended);
 begin
-  FloatSpinEdit1.Value := Val;
+  FloatSpinEdit1.Value:=Val;
 end;
 
 function TFreeExtrudeDialog.FGetYValue: extended;
 begin
-  Result := FloatSpinEdit2.Value;
+  Result:=FloatSpinEdit2.Value;
 end;
 
 procedure TFreeExtrudeDialog.FSetYValue(val: extended);
 begin
-  FloatSpinEdit2.Value := Val;
+  FloatSpinEdit2.Value:=Val;
 end;
 
 function TFreeExtrudeDialog.FGetZValue: extended;
 begin
-  Result := FloatSpinEdit3.Value;
+  Result:=FloatSpinEdit3.Value;
 end;
 
 procedure TFreeExtrudeDialog.FSetZValue(val: extended);
 begin
-  FloatSpinEdit3.Value := Val;
+  FloatSpinEdit3.Value:=Val;
 end;
 
 function TFreeExtrudeDialog.Execute(Str: string): boolean;
 begin
-  _label3.Caption := Str;
-  _label6.Caption := Str;
-  _label9.Caption := Str;
+  _label3.Caption:=Str;
+  _label6.Caption:=Str;
+  _label9.Caption:=Str;
   ShowTranslatedValues(Self); Showmodal;
-  Result := ModalResult = mrOk;
+  Result:=ModalResult = mrOk;
 end;
 
 procedure TFreeExtrudeDialog.Edit1KeyPress(Sender: TObject; var Key: char);
 begin
   if not (Key in [#8,'1'..'9','0','.','-',#13]) then key:=#0;
-//if (Key in [#8, '1'..'9', '0', '-', #13]) or (Key = FormatSettings.DecimalSeparator) then else key := #0;
+//if (Key in [#8, '1'..'9', '0', '-', #13]) or (Key = FormatSettings.DecimalSeparator) then else key:=#0;
   if Key = #13 then Edit1Exit(self);
 end;
 
 procedure TFreeExtrudeDialog.Edit1Exit(Sender: TObject);
 begin
-  XValue := self.XValue;
+  XValue:=self.XValue;
 end;
 
 procedure TFreeExtrudeDialog.Edit1KeyDown(Sender: TObject;
@@ -139,22 +139,22 @@ end;
 procedure TFreeExtrudeDialog.Edit2Exit(Sender: TObject);
 begin
   inherited;
-  YValue := self.YValue;
+  YValue:=self.YValue;
 end;
 
 procedure TFreeExtrudeDialog.Edit3Exit(Sender: TObject);
 begin
-  ZValue := self.ZValue;
+  ZValue:=self.ZValue;
 end;
 
 procedure TFreeExtrudeDialog.OKButtonClick(Sender: TObject);
 begin
-  ModalResult := mrOk;
+  ModalResult:=mrOk;
 end;
 
 procedure TFreeExtrudeDialog.CancelButtonClick(Sender: TObject);
 begin
-  ModalResult := mrCancel;
+  ModalResult:=mrCancel;
 end;
 
 procedure TFreeExtrudeDialog.Edit2KeyPress(Sender: TObject; var Key: char);

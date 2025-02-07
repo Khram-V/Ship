@@ -113,8 +113,8 @@ begin
   if RadioButton3.Checked then begin
     MinV:=Min.Y;
     MaxV:=Max.Y; end;
-  MinV:=MinV + 1e-4;
-  MaxV:=MaxV - 1e-4;
+  MinV:=MinV+1e-4;
+  MaxV:=MaxV-1e-4;
   FloatSpinEdit1.MinValue:=MinV;
   FloatSpinEdit1.MaxValue:=MaxV;
   Edit1.Caption:=FloatToStrF(MinV, ffFixed, 7, 4);

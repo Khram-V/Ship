@@ -84,7 +84,7 @@ var
   FreePreferencesDialog: TFreePreferencesDialog;
 
 const rs_Save: String = 'Are you sure you want to reset the preferences?'
-             + #13#10 + 'The current settings will be lost.';
+            +#13#10+'The current settings will be lost.';
 
 implementation
 {$R *.lfm}
@@ -196,9 +196,9 @@ begin
   Invalidate;
   Application.ProcessMessages;
   ScreenPoint:=ButtonPanel.ClientToScreen(Point(0, 0));
-  HdrHeight:=ScreenPoint.Y - self.Top;
-  BrdWidth:=ScreenPoint.X - self.Left;
-  HdrHeight:=HdrHeight - BrdWidth;
+  HdrHeight:=ScreenPoint.Y-self.Top;
+  BrdWidth:=ScreenPoint.X-self.Left;
+  HdrHeight:=HdrHeight-BrdWidth;
 {   Tabsheet1.AdjustSize;
     Tabsheet1.Repaint;
 //  Tabsheet1.Invalidate;
@@ -212,14 +212,14 @@ begin
   TbT:=TabSheet2.ClientToParent(Point(0, 0), self).Y;
   PgT:=PageControl1.ClientToParent(Point(0, 0), self).Y;
   PnT:=Panel1.ClientToParent(Point(0, 0), self).Y;
-//TbH:=PgT - PnT - Panel1.BorderWidth - Panel1.BorderSpacing.InnerBorder;
-  PGIB :={EditImportDir}Panel42.Height * 10 + TabSheet2.ChildSizing.VerticalSpacing * 9;
-//PGIB:=PanelGlobalImportDir.Height * 10 + TabSheet2.ChildSizing.VerticalSpacing * 9;
-  TxH:=PGIB + TabSheet2.ChildSizing.TopBottomSpacing * 2 + //TbH +
-    Panel1.BorderWidth * 2 + Panel1.BorderSpacing.InnerBorder * 2 +
-    ButtonPanel.Height + HdrHeight + BrdWidth * 2;
+//TbH:=PgT-PnT-Panel1.BorderWidth-Panel1.BorderSpacing.InnerBorder;
+  PGIB :={EditImportDir}Panel42.Height * 10+TabSheet2.ChildSizing.VerticalSpacing * 9;
+//PGIB:=PanelGlobalImportDir.Height * 10+TabSheet2.ChildSizing.VerticalSpacing * 9;
+  TxH:=PGIB+TabSheet2.ChildSizing.TopBottomSpacing * 2+//TbH +
+    Panel1.BorderWidth * 2+Panel1.BorderSpacing.InnerBorder * 2 +
+    ButtonPanel.Height+HdrHeight+BrdWidth * 2;
   {if self.Constraints.MinHeight < TxH then self.Constraints.MinHeight:=TxH;}
-  result:=Rect(0,0, Width, BitBtnResetDirs.Top + BitBtnResetDirs.Height + 16);
+  result:=Rect(0,0, Width, BitBtnResetDirs.Top+BitBtnResetDirs.Height+16);
 end;
 
 procedure TFreePreferencesDialog.SpinEdit1Change(Sender: TObject);
@@ -280,25 +280,25 @@ end;
 procedure TFreePreferencesDialog.ComboBoxEncodingFillItems;
 begin
   with ComboBoxEncoding.Items do begin
-(*  AddObject('ISO_8859_1 - Central Europe', TObject(string('iso88591')));
-    AddObject('ISO_8859_15 - Western European languages',TObject(string('iso885915')));
-    AddObject('ISO_8859_2 - Eastern Europe', TObject(string('iso88592')));
-    AddObject('CP1250 -  Central Europe', TObject(string('cp1250')));
-*)  AddObject('CP1251 -  ANSI Cyrillic(Windows)', TObject(string('cp1251')));
-    AddObject('CP1252 -  ANSI Latin; Western European(Windows)', TObject(string('cp1252')));
-    AddObject( 'CP950 -  ANSI/OEM Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
-(*  AddObject('CP1253 -  Greek', TObject(string('cp1253')));
-    AddObject('CP1254 -  Turkish', TObject(string('cp1254')));
-    AddObject('CP1255 -  Hebrew', TObject(string('cp1255')));
-    AddObject('CP1256 -  Arabic', TObject(string('cp1256')));
-    AddObject('CP1257 -  Baltic', TObject(string('cp1257')));
-    AddObject('CP1258 -  Vietnam', TObject(string('cp1258')));
-    AddObject( 'CP437 -  DOS Central Europe', TObject(string('cp437')));
-    AddObject( 'CP850 -  DOS Western Europe', TObject(string('cp850')));
-    AddObject( 'CP852 -  DOS Central Europe', TObject(string('cp852')));
-    AddObject( 'CP866 -  DOS and Windows console Cyrillic', TObject(string('cp866')));
-    AddObject( 'CP874 -  Thai', TObject(string('cp874')));
-    AddObject( 'KOI8 -  Russian Cyrillic', TObject(string('koi8')));
+(*  AddObject('ISO_8859_1-Central Europe', TObject(string('iso88591')));
+    AddObject('ISO_8859_15-Western European languages',TObject(string('iso885915')));
+    AddObject('ISO_8859_2-Eastern Europe', TObject(string('iso88592')));
+    AddObject('CP1250- Central Europe', TObject(string('cp1250')));
+*)  AddObject('CP1251- ANSI Cyrillic(Windows)', TObject(string('cp1251')));
+    AddObject('CP1252- ANSI Latin; Western European(Windows)', TObject(string('cp1252')));
+    AddObject( 'CP950- ANSI/OEM Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
+(*  AddObject('CP1253- Greek', TObject(string('cp1253')));
+    AddObject('CP1254- Turkish', TObject(string('cp1254')));
+    AddObject('CP1255- Hebrew', TObject(string('cp1255')));
+    AddObject('CP1256- Arabic', TObject(string('cp1256')));
+    AddObject('CP1257- Baltic', TObject(string('cp1257')));
+    AddObject('CP1258- Vietnam', TObject(string('cp1258')));
+    AddObject( 'CP437- DOS Central Europe', TObject(string('cp437')));
+    AddObject( 'CP850- DOS Western Europe', TObject(string('cp850')));
+    AddObject( 'CP852- DOS Central Europe', TObject(string('cp852')));
+    AddObject( 'CP866- DOS and Windows console Cyrillic', TObject(string('cp866')));
+    AddObject( 'CP874- Thai', TObject(string('cp874')));
+    AddObject( 'KOI8- Russian Cyrillic', TObject(string('koi8')));
 *)end;
 end;
 

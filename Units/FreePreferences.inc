@@ -99,7 +99,7 @@ begin
     ImportDirectory   :=Dialog.EditImportDir.Text;
     ExportDirectory   :=Dialog.EditExportDir.Text;
     if Uppercase( Lang )<>Uppercase( FLanguage ) then begin // Converted from FileExists
-      LanguageFile := LanguagesDirectory+DS+Lang+'.ini';    //+ConfigDirectory
+      LanguageFile:=LanguagesDirectory+DS+Lang+'.ini';    //+ConfigDirectory
       if FileExistsUTF8( LanguageFile )then begin
         LoadLanguage( Lang,LanguageFile );
         FLanguage:=Lang;
@@ -250,8 +250,8 @@ end;
 
 procedure TFreePreferences.ResetDirectories;
 begin
-//ConfigDirectory := ExtractFileDir( ParamStr( 0 ) );
-  ConfigDirectory := ExtractFileDir( Application.ExeName );
+//ConfigDirectory:=ExtractFileDir( ParamStr( 0 ) );
+  ConfigDirectory:=ExtractFileDir( Application.ExeName );
   SetCurrentDir( ConfigDirectory );
   LanguagesDirectory:='Languages';
   ManualsDirectory  :='Manuals';
@@ -259,7 +259,7 @@ begin
   SaveDirectory     :='Save';
   ImportDirectory   :='Save\Import';
   ExportDirectory   :='Save\Export';
-  ConfigDirectory := ConfigDirectory+DirectorySeparator;
+  ConfigDirectory:=ConfigDirectory+DirectorySeparator;
 end;
 
 procedure TFreePreferences.Load; begin setDefaults; LoadFromIni; end;

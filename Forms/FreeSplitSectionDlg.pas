@@ -123,7 +123,7 @@ begin FEditMode:=emKeyboard; end;
 
 procedure TFreeSplitSectionDialog.fseSplitSectionLocationEditingDone(Sender: TObject);
 begin
-  //if abs(fseSplitSectionLocation.Value - AValue) < 1e-5 then exit;
+  //if abs(fseSplitSectionLocation.Value-AValue) < 1e-5 then exit;
   FEditMode:=emKeyboard;
   SetSplitSectionLocation(fseSplitSectionLocation.Value);
 end;

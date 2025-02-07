@@ -172,30 +172,30 @@ begin
     if ShowStations.Checked then
       for I:=1 to FFreeShip.NumberofStations do
       begin
-        Ind:=ListBox.Items.AddObject(FFreeship.Station[I - 1].Description,
-          FFreeship.Station[I - 1]);
-        ListBox.Checked[Ind]:=FFreeship.Station[I - 1].ShowCurvature;
+        Ind:=ListBox.Items.AddObject(FFreeship.Station[I-1].Description,
+          FFreeship.Station[I-1]);
+        ListBox.Checked[Ind]:=FFreeship.Station[I-1].ShowCurvature;
       end// Fill box with stations
     else if ShowButtocks.Checked then
       for I:=1 to FFreeShip.NumberofButtocks do
       begin
-        Ind:=ListBox.Items.AddObject(FFreeship.Buttock[I - 1].Description,
-          FFreeship.Buttock[I - 1]);
-        ListBox.Checked[Ind]:=FFreeship.Buttock[I - 1].ShowCurvature;
+        Ind:=ListBox.Items.AddObject(FFreeship.Buttock[I-1].Description,
+          FFreeship.Buttock[I-1]);
+        ListBox.Checked[Ind]:=FFreeship.Buttock[I-1].ShowCurvature;
       end// Fill box with buttocks
     else if ShowWaterlines.Checked then
       for I:=1 to FFreeShip.NumberofWaterlines do
       begin
-        Ind:=ListBox.Items.AddObject(FFreeship.Waterline[I - 1].Description,
-          FFreeship.Waterline[I - 1]);
-        ListBox.Checked[Ind]:=FFreeship.Waterline[I - 1].ShowCurvature;
+        Ind:=ListBox.Items.AddObject(FFreeship.Waterline[I-1].Description,
+          FFreeship.Waterline[I-1]);
+        ListBox.Checked[Ind]:=FFreeship.Waterline[I-1].ShowCurvature;
       end// Fill box with waterlines
     else
       for I:=1 to FFreeShip.NumberofDiagonals do
       begin
-        Ind:=ListBox.Items.AddObject(FFreeship.Diagonal[I - 1].Description,
-          FFreeship.Diagonal[I - 1]);
-        ListBox.Checked[Ind]:=FFreeship.Diagonal[I - 1].ShowCurvature;
+        Ind:=ListBox.Items.AddObject(FFreeship.Diagonal[I-1].Description,
+          FFreeship.Diagonal[I-1]);
+        ListBox.Checked[Ind]:=FFreeship.Diagonal[I-1].ShowCurvature;
       end// Fill box with diagonals
     ;
   finally
@@ -323,8 +323,8 @@ begin
         Dec(Index);
         if Index < 0 then
           Index:=0;
-        if Index > Listbox.Count - 1 then
-          Index:=Listbox.Count - 1;
+        if Index > Listbox.Count-1 then
+          Index:=Listbox.Count-1;
         Listbox.ItemIndex:=index;
         ListBox.Items.EndUpdate;
       end;
@@ -510,8 +510,8 @@ begin
       FFreeShip.FileChanged:=True;
       if FFreeship.Visibility.ShowCurvature then
         for I:=1 to FFreeship.NumberOfViewports do
-          if FFreeship.Viewport[I - 1].Viewportmode = vmWireframe then
-            FFreeship.Viewport[I - 1].Refresh;
+          if FFreeship.Viewport[I-1].Viewportmode = vmWireframe then
+            FFreeship.Viewport[I-1].Refresh;
     end;
   end;
 end;
@@ -532,22 +532,22 @@ begin
   if ShowStations.Checked then begin
     for I:=FFreeShip.NumberofStations-1 downto 0 do
       if GridRowSelected(sgStations,i+1) then
-        FFreeship.Station[i].Delete(I = 0);
+        FFreeship.Station[i].Delete(I=0);
   end else
   if ShowButtocks.Checked then begin
     for I:=FFreeShip.NumberofButtocks-1 downto 0 do
       if GridRowSelected(sgButtocks,i+1) then
-         FFreeship.Buttock[i].Delete(I = 0);
+         FFreeship.Buttock[i].Delete(I=0);
   end
   else if ShowWaterlines.Checked then begin
     for I:=FFreeShip.NumberofWaterlines-1 downto 0 do
       if GridRowSelected(sgWaterlines,i+1) then
-        FFreeship.Waterline[i].Delete(I = 0);
+        FFreeship.Waterline[i].Delete(I=0);
   end else
   if ShowDiagonals.Checked then begin
     for I:=FFreeShip.NumberofDiagonals downto 0 do
       if GridRowSelected(sgDiagonals,i+1) then
-        FFreeship.Diagonal[i].Delete(I = 0);
+        FFreeship.Diagonal[i].Delete(I=0);
   end;
   FillGrids;
   UpdateMenu;
@@ -659,45 +659,40 @@ begin
     Start:=0.0;
     Stop:=-0.01;
   end;
-  Index:=Trunc((Start / step) - 2);
+  Index:=Trunc((Start / step)-2);
   Start:=Index * Step;
   while Start <= Stop do begin
     if ShowStations.Checked then FFreeShip.Edit.Intersection_Add(fiStation, Start);
     if ShowButtocks.Checked then FFreeShip.Edit.Intersection_Add(fiButtock, Start);
     if ShowWaterlines.Checked then FFreeShip.Edit.Intersection_Add(fiWaterline, Start);
     if ShowDiagonals.Checked then FFreeShip.Edit.Intersection_Add(fidiagonal, Start);
-    Start:=Start + step;
+    Start:=Start+step;
   end;
   FFreeShip.Redraw;
   UpdateMenu;
   FillGrids;
 end;
 
-procedure TFreeIntersectionDialog.DeleteAllExecute(Sender: TObject);
-var
-  I: integer;
+procedure TFreeIntersectionDialog.DeleteAllExecute( Sender: TObject );
+  var I: integer;
 begin
   if ShowStations.Checked then begin
     for I:=FFreeShip.NumberofStations downto 1 do
-      FFreeship.Station[I - 1].Delete(I = 1);
-  end
+      FFreeship.Station[I-1].Delete(I=1); end
   else if ShowButtocks.Checked then begin
     for I:=FFreeShip.NumberofButtocks downto 1 do
-      FFreeship.Buttock[I - 1].Delete(I = 1);
-  end
+      FFreeship.Buttock[I-1].Delete(I=1); end
   else if ShowWaterlines.Checked then begin
     for I:=FFreeShip.NumberofWaterlines downto 1 do
-      FFreeship.Waterline[I - 1].Delete(I = 1);
-  end
+      FFreeship.Waterline[I-1].Delete(I=1); end
   else if ShowDiagonals.Checked then begin
     for I:=FFreeShip.NumberofDiagonals downto 1 do
-      FFreeship.Diagonal[I - 1].Delete(I = 1);
-  end;
+      FFreeship.Diagonal[I-1].Delete(I=1); end;
   FillGrids;
   UpdateMenu;
 end;
 
 procedure TFreeIntersectionDialog.ToolBar1Click(Sender: TObject);
-begin end;
+    begin end;
 
 end.

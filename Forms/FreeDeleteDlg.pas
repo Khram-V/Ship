@@ -111,15 +111,15 @@ var i,r,N:integer;
   M:TFreeMarker; FL:TFreeFlowline;
 begin
   N:=FreeShip.NumberOfSelectedControlPoints
-     + FreeShip.NumberOfSelectedControlPointGroups
-     + FreeShip.NumberOfSelectedControlEdges
-     + FreeShip.NumberOfSelectedControlFaces
-     + FreeShip.NumberOfSelectedControlCurves
-     + FreeShip.NumberOfselectedMarkers
-     + FreeShip.NumberOfselectedFlowlines;
+    +FreeShip.NumberOfSelectedControlPointGroups
+    +FreeShip.NumberOfSelectedControlEdges
+    +FreeShip.NumberOfSelectedControlFaces
+    +FreeShip.NumberOfSelectedControlCurves
+    +FreeShip.NumberOfselectedMarkers
+    +FreeShip.NumberOfselectedFlowlines;
   sgObjects.Clear;
   sgObjects.BeginUpdate;
-  sgObjects.RowCount:=N + 1;
+  sgObjects.RowCount:=N+1;
   lbTotalNumber.Caption:=format('Total: %d',[N]);
   r:=1;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlPoints-1 do begin

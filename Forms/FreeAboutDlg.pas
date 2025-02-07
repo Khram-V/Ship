@@ -28,7 +28,7 @@ implementation
 {$R *.lfm}
 
 procedure TFreeAboutDlg.AddInfo( sName, sValue:String );
-begin with StringGridVersionInfo do begin RowCount:=RowCount + 1;
+begin with StringGridVersionInfo do begin RowCount:=RowCount+1;
                                  Cells[ 0,RowCount-1 ]:=sName;
                                  Cells[ 1,RowCount-1 ]:=sValue; end;
 end;

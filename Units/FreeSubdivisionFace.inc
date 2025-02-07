@@ -9,42 +9,38 @@ var
   var
     ax, ay, az: TFloatType;
   begin
-    ax:=0.5 * ((P1.y - P2.y) * (P1.z + P2.z) + (P2.y - P3.y) * (P2.z + P3.z) +
-      (P3.y - P1.y) * (P3.z + P1.z));
-    ay:=0.5 * ((P1.z - P2.z) * (P1.x + P2.x) + (P2.z - P3.z) * (P2.x + P3.x) +
-      (P3.z - P1.z) * (P3.x + P1.x));
-    az:=0.5 * ((P1.x - P2.x) * (P1.y + P2.y) + (P2.x - P3.x) * (P2.y + P3.y) +
-      (P3.x - P1.x) * (P3.y + P1.y));
-    Result:=Sqrt(ax * ax + ay * ay + az * az);
+    ax:=0.5 * ((P1.y-P2.y) * (P1.z+P2.z)+(P2.y-P3.y) * (P2.z+P3.z) +
+      (P3.y-P1.y) * (P3.z+P1.z));
+    ay:=0.5 * ((P1.z-P2.z) * (P1.x+P2.x)+(P2.z-P3.z) * (P2.x+P3.x) +
+      (P3.z-P1.z) * (P3.x+P1.x));
+    az:=0.5 * ((P1.x-P2.x) * (P1.y+P2.y)+(P2.x-P3.x) * (P2.y+P3.y) +
+      (P3.x-P1.x) * (P3.y+P1.y));
+    Result:=Sqrt(ax * ax+ay * ay+az * az);
   end;{TriangleArea}
 
 begin
   Result:=0.0;
   for I:=3 to NumberOfPoints do
-    Result:=Result + TriangleArea(Point[0].Coordinate, Point[I - 2].Coordinate,
-      Point[I - 1].Coordinate);
+    Result:=Result+TriangleArea(Point[0].Coordinate, Point[I-2].Coordinate,
+      Point[I-1].Coordinate);
 end;{TFreeSubdivisionFace.FGetArea}
 
 function TFreeSubdivisionFace.FGetFaceCenter: T3DCoordinate;
-var
-  I: integer;
-  P: TFreeSubdivisionPoint;
-begin
-  Result:=ZERO;
-  if FPoints.Count > 1 then
-  begin
-    for I:=1 to FPoints.Count do
-    begin
-      P:=FPoints[I - 1];
-      Result.X:=Result.X + P.FCoordinate.X;
-      Result.Y:=Result.Y + P.FCoordinate.Y;
-      Result.Z:=Result.Z + P.FCoordinate.Z;
+var I: integer;
+    P: TFreeSubdivisionPoint;
+begin Result:=ZERO;
+  if FPoints.Count>1 then begin
+    for I:=1 to FPoints.Count do begin
+      P:=FPoints[I-1];
+      Result.X:=Result.X+P.FCoordinate.X;
+      Result.Y:=Result.Y+P.FCoordinate.Y;
+      Result.Z:=Result.Z+P.FCoordinate.Z;
     end;
     Result.X:=Result.X / FPoints.Count;
     Result.Y:=Result.Y / FPoints.Count;
     Result.Z:=Result.Z / FPoints.Count;
   end;
-end;{TFreeSubdivisionFace.FGetCentre}
+end;
 
 function TFreeSubdivisionFace.FGetFaceNormal: T3DCoordinate;
 var
@@ -52,61 +48,50 @@ var
   N, C, P: T3DCoordinate;
   P1, P2: TFreeSubdivisionPoint;
 begin
-  Result:=ZERO;
-  C:=ZERO;
-  //calculate center of the face
-  for I:=1 to NumberOfPoints do
-  begin
-    P:=Point[I - 1].Coordinate;
-    C.X:=C.X + P.X;
-    C.Y:=C.Y + P.Y;
-    C.Z:=C.Z + P.Z;
+  Result:=ZERO; C:=ZERO;                         //calculate center of the face
+  for I:=1 to NumberOfPoints do begin
+    P:=Point[I-1].Coordinate;
+    C.X:=C.X+P.X;
+    C.Y:=C.Y+P.Y;
+    C.Z:=C.Z+P.Z;
   end;
   C.X:=C.X / NumberOfPoints;
   C.Y:=C.Y / NumberOfPoints;
   C.Z:=C.Z / NumberOfPoints;
   // calculate normal
-  P1:=Point[NumberOfPoints - 1];
-  for I:=1 to NumberOfPoints do
-  begin
-    P2:=Point[I - 1];
-    N:=UnifiedNormal(C, P1.Coordinate, P2.Coordinate);
-    Result.X:=Result.X + N.X;
-    Result.Y:=Result.Y + N.Y;
-    Result.Z:=Result.Z + N.Z;
+  P1:=Point[NumberOfPoints-1];
+  for I:=1 to NumberOfPoints do begin P2:=Point[I-1];
+    N:=UnifiedNormal( C,P1.Coordinate,P2.Coordinate);
+    Result.X:=Result.X+N.X;
+    Result.Y:=Result.Y+N.Y;
+    Result.Z:=Result.Z+N.Z;
     P1:=P2;
   end;
   Result:=Normalize(Result);
 end;
 
 function TFreeSubdivisionFace.FGetNumberOfPoints;
-begin Result:=FPoints.Count; end;
+   begin Result:=FPoints.Count; end;
 
 function TFreeSubdivisionFace.FGetPoint(Index: integer): TFreeSubdivisionPoint;
-begin Result:=FPoints[Index]; end;
+   begin Result:=FPoints[Index]; end;
 
 procedure TFreeSubdivisionFace.AddPoint(Point: TFreeSubdivisionPoint);
-begin FPoints.Add(Point); Point.AddFace(self);
-end;
+    begin FPoints.Add(Point); Point.AddFace(self); end;
 
 function TFreeSubdivisionFace.CalculateFaceCenterPoint: TFreeSubdivisionPoint;
-var
-  I: integer;
-  P: T3DCoordinate;
-  Centre: T3DCoordinate;
+var I: integer;
+    P,Centre: T3DCoordinate;
 begin
   Result:=nil;
   Centre:=ZERO;
-  if (FPoints.Count > 3) or (Surface.FSubdivisionMode = fmCatmullClark) then
-  begin
-    if FPoints.Count > 0 then
-    begin
-      for I:=1 to FPoints.Count do
-      begin
-        P:=Point[I - 1].FCoordinate;
-        Centre.X:=Centre.X + P.X;
-        Centre.Y:=Centre.Y + P.Y;
-        Centre.Z:=Centre.Z + P.Z;
+  if (FPoints.Count>3) or (Surface.FSubdivisionMode=fmCatmullClark) then begin
+    if FPoints.Count > 0 then begin
+      for I:=1 to FPoints.Count do begin
+        P:=Point[I-1].FCoordinate;
+        Centre.X:=Centre.X+P.X;
+        Centre.Y:=Centre.Y+P.Y;
+        Centre.Z:=Centre.Z+P.Z;
       end;
       Centre.X:=Centre.X / FPoints.Count;
       Centre.Y:=Centre.Y / FPoints.Count;
@@ -115,27 +100,22 @@ begin
     Result:=TFreeSubdivisionPoint.Create(Surface);
     Result.FCoordinate:=Centre;
   end
-  else if FPoints.Count = 3 then begin Result:=nil; end;
+  else if FPoints.Count=3 then begin Result:=nil; end;
 //if FPoints.Count < 3 then raise Exception.Create('TFreeSubdivisionFace points count < 3');
 end;
 
 function TFreeSubdivisionFace.CheckIntegrity: boolean;
-var  I, J: integer;
-  point: TFreeSubdivisionPoint;
+var  I,J: integer; point: TFreeSubdivisionPoint;
 begin
   result:=true;
-
   if FPoints = nil then begin                                                   //  logger.Error(Format('TFreeSubdivisionFace.CheckIntegrity: FPoints = nil',[]));
-    result:=false;
-    exit;
+    result:=false; exit;
   end;
   if FPoints.Count < 1 then begin                                               //  logger.Error(Format('TFreeSubdivisionFace.CheckIntegrity: FPoints empty',[]));
-    result:=false;
-    exit;
+    result:=false; exit;
   end;
   for I:=0 to FPoints.Count-1 do
-    if FPoints[i] <> nil then begin
-      Point:=FPoints[i];
+    if FPoints[i] <> nil then begin Point:=FPoints[i];
       if Point.FFaces.IndexOf(Self) = -1 then  begin                            //  logger.Error(Format('TFreeSubdivisionFace.CheckIntegrity: not in Point[%d]',[I]));
         result:=false;
       end;
@@ -143,35 +123,28 @@ begin
     end else begin                                                              //  logger.Error(Format('TFreeSubdivisionFace.CheckIntegrity: Edge.NumberOfFaces = 0',[I]));
       result:=false;
   end;
-
 end;
 
-procedure TFreeSubdivisionFace.Clear;
-begin
-  FPoints.Clear;
-end;
+procedure TFreeSubdivisionFace.Clear; begin FPoints.Clear; end;
 
 constructor TFreeSubdivisionFace.Create(Owner: TFreeSubdivisionSurface);
 begin
-  inherited Create(Owner);
-  FPoints:=TFasterListTFreeSubdivisionPoint.Create(true,false);
+  inherited Create( Owner );
+  FPoints:=TFasterListTFreeSubdivisionPoint.Create( true,false );
   Clear;
 end;
 
 procedure TFreeSubdivisionFace.Delete;
 var
-  I: integer;
-  Index: integer;
+  I,Index: integer;
   Edge: TFreesubdivisionEdge;
   P1, P2: TFreeSubdivisionPoint;
-begin                                                                           //logger.IncreaseIndent;
-                                                                                //logger.Debug(format('TFreeSubdivisionFace[%d].Delete',[self.FID]));
-  Unreference;
+begin Unreference;
   Surface.Built:=False;
   Clear;
   Free;
   //Destroy;
-  //DelayedDestroyList.Add(Self);                                               //logger.DecreaseIndent;
+  //DelayedDestroyList.Add(Self);
 end;
 
 procedure TFreeSubdivisionFace.Unreference;
@@ -184,10 +157,9 @@ begin
     if FPoints = nil then  FID:=FID;                                   // debug
   }
   if FPoints <> nil then
-  for i:=0 to FPoints.Count-1 do
-    begin
+  for i:=0 to FPoints.Count-1 do begin
     P:=FPoints[i];
-    P.UnreferenceFace(Self);
+    P.UnreferenceFace( Self );
     {for j:=0 to FPoints[i].FEdges.Count-1 do begin
       E:=FPoints[i].FEdges[j];
       if (E<>nil)
@@ -195,36 +167,27 @@ begin
         and (E.FFaces <> nil) then E.FFaces.DeleteItem(Self);
       end;}
     end;
-  if FSurface <> nil then FSurface.UnreferenceFace(Self);
+  if FSurface<>nil then FSurface.UnreferenceFace(Self);
   InUnreference:=false;
 end;
 
 destructor TFreeSubdivisionFace.Destroy;
-begin
-  //logger.Debug(format('TFreeSubdivisionFace.Destroy[%d]',[self.FID]));
-  //Unreference;
+begin // Unreference;
   Clear;
-  FreeAndNil(FPoints);
+  FreeAndNil( FPoints );
   inherited Destroy;
 end;
 
 // Inverts the point ordering of the face
 procedure TFreeSubdivisionFace.FlipNormal;
-var
-  Mid: integer;
-  I: integer;
+var Mid,I: integer;
 begin
-  Mid:=(FPoints.Count div 2) - 1;
-  for I:=0 to Mid do
-  begin
-    FPoints.Exchange(I, FPoints.Count - I - 1);
-  end;
+  Mid:=(FPoints.Count div 2)-1;
+  for I:=0 to Mid do begin FPoints.Exchange( I,FPoints.Count-I-1 ); end;
 end;
 
 function TFreeSubdivisionFace.IndexOfPoint(P: TFreeSubdivisionPoint): integer;
-begin
-  Result:=FPoints.IndexOf(P);
-end;
+   begin Result:=FPoints.IndexOf(P); end;
 
 procedure TFreeSubdivisionFace.Subdivide(
     aOwner: TFreeSubdivisionSurface;
@@ -241,9 +204,7 @@ var
   NewFace: TFreeSubdivisionFace;
   IndexPE, IndexCE, Index0, Index1, Index2, Index3, J, X: integer;
   Pts: array[0..3] of TFreeSubdivisionPoint;
-  PrevEdge: TFreeSubdivisionEdge;
-  CurrEdge: TFreeSubdivisionEdge;
-  Edge: TFreeSubdivisionEdge;
+  PrevEdge,CurrEdge,Edge: TFreeSubdivisionEdge;
   PrevEdgePoint, CurrEdgePoint, P2Point, NewLocation: TFreeSubdivisionPoint;
 
   procedure EdgeCheck
@@ -292,11 +253,11 @@ begin
   begin
     for I:=1 to FPoints.Count do begin
       P2:=FPoints[I-1];
-      IndexPE:=(I-2 + FPoints.Count) mod FPoints.Count;
+      IndexPE:=(I-2+FPoints.Count) mod FPoints.Count;
       P1:=FPoints[IndexPE];
       PrevEdge:=aOwner.EdgeExists(P2,P1);                                   //  if PrevEdge = nil then Showmessage('Subdivision error. Previous edge not found');
 
-      IndexCE:=(I + FPoints.Count) mod FPoints.Count;
+      IndexCE:=(I+FPoints.Count) mod FPoints.Count;
       P:=FPoints[IndexCE];
       CurrEdge:=aOwner.EdgeExists(P2,FPoints[IndexCE]);                     //  if CurrEdge = nil then Showmessage('Subdivision error. Current edge not found');
 
@@ -341,10 +302,10 @@ begin
     // Special case, quadrisect triangle by connecting all three edge points
     // first process the three surrounding triangles
     for I:=1 to FPoints.Count do begin
-      P2:=FPoints[I - 1];
-      IndexPE:=(I - 2 + FPoints.Count) mod FPoints.Count;
+      P2:=FPoints[I-1];
+      IndexPE:=(I-2+FPoints.Count) mod FPoints.Count;
       PrevEdge:=aOwner.EdgeExists(P2, FPoints[IndexPE]);
-      IndexCE:=(I + FPoints.Count) mod FPoints.Count;
+      IndexCE:=(I+FPoints.Count) mod FPoints.Count;
       CurrEdge:=aOwner.EdgeExists(P2, FPoints[IndexCE]);
 
       Index0:=0;
@@ -376,11 +337,11 @@ begin
     // then process the center triangle
     for I:=1 to FPoints.Count do
     begin
-      P2:=FPoints[I - 1];
-      IndexPE:=(I - 2 + FPoints.Count) mod FPoints.Count;
+      P2:=FPoints[I-1];
+      IndexPE:=(I-2+FPoints.Count) mod FPoints.Count;
       PrevEdge:=aOwner.EdgeExists(P2, FPoints[IndexPE]);
       TmpIndex:=aRefEdges.SortedIndexOf(PrevEdge);
-      Pts[I - 1]:=aRefEdges.Objects[TmpIndex];   // PrevEdge.FNewLocation;
+      Pts[I-1]:=aRefEdges.Objects[TmpIndex];   // PrevEdge.FNewLocation;
     end;
 
     // add the new face

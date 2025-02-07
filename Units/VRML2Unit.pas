@@ -371,12 +371,12 @@ constructor TVRML2Object.Create(Scene: TVRML2Scene; Parent: TVRML2object);
              end;
              if InSQString and not InDQString then
              begin
-               W:=W + C;
+               W:=W+C;
                InSQString:=false;
              end;
              if not InSQString and InDQString then
              begin
-               W:=W + C;
+               W:=W+C;
              end;
            end
         else if C = '"' then
@@ -389,12 +389,12 @@ constructor TVRML2Object.Create(Scene: TVRML2Scene; Parent: TVRML2object);
              end;
              if not InSQString and InDQString then
              begin
-               W:=W + C;
+               W:=W+C;
                InSQString:=false;
              end;
              if InSQString and not InDQString then
              begin
-               W:=W + C;
+               W:=W+C;
              end;
            end
         else if C in [',',':','[',']','{','}'] then
@@ -404,7 +404,7 @@ constructor TVRML2Object.Create(Scene: TVRML2Scene; Parent: TVRML2object);
              Result.Add(TToken.Create(C,ln,b));
            end
         else
-           W:=W + C;
+           W:=W+C;
       end;
       if W > '' then Result.Add(TToken.Create(W,ln,i));
     end;{TVRML2Scene.Tokenize}
@@ -518,7 +518,7 @@ constructor TVRML2Object.Create(Scene: TVRML2Scene; Parent: TVRML2object);
             if Str[I] in [#9, #10, #13] then Str[I]:=#32
             else
             if Str[I] = '#' then begin                       // remove comments
-              Str:=copy(Str, 1, I - 1);
+              Str:=copy(Str, 1, I-1);
               break;
             end;
             Inc(I);
@@ -576,7 +576,7 @@ begin
     Result.Capacity:=FFaceSets.Count;
     for I:=1 to FFaceSets.Count do
     begin
-      FaceSet:=FFacesets[I - 1];
+      FaceSet:=FFacesets[I-1];
       if Faceset.Coordinates <> nil then
         Result.Add(FaceSet);
     end;
@@ -1032,9 +1032,9 @@ function TVRML2Coordinates.FGetPoint(Index: integer): T3DCoordinate;
   procedure TVRML2Coordinates.Add(P: T3DCoordinate);
   begin
     if FCount >= FCapacity then
-      Capacity:=Count + 25;
+      Capacity:=Count+25;
     Inc(FCount);
-    FCoordinates[FCount - 1]:=P;
+    FCoordinates[FCount-1]:=P;
   end;{TVRML2Coordinates.Add}
 
   procedure TVRML2Coordinates.AddFaceSet(FaceSet: TVRML2IndexedFaceSet);
@@ -1078,7 +1078,7 @@ function TVRML2Coordinates.FGetPoint(Index: integer): T3DCoordinate;
       begin
         i:=D.IndexOf('.');
         if i > -1 then
-          dc:=D.length - i - 1;
+          dc:=D.length-i-1;
         if FPrecision > power(10,-dc) then
           FPrecision:=power(10,-dc);
       end
@@ -1369,7 +1369,7 @@ function TVRML2Coordinates.FGetPoint(Index: integer): T3DCoordinate;
                     FacePoints.Clear;
                     for K:=1 to N do
                     begin
-                      Index:=Face[K - 1];
+                      Index:=Face[K-1];
                       if (Index >= 0) and (Index < Points.Count) then
                       begin
                         CtrPoint:=Points[Index] as TFreeSubdivisionControlpoint;

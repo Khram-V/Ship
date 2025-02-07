@@ -109,7 +109,7 @@ begin
     if SHGetPathFromIDList(find_context, folder) then begin
       Result:='';
       for I:=1 to length(Folder) do
-        if Folder[I - 1] = #0 then break else Result:=Result + Folder[I - 1];
+        if Folder[I-1] = #0 then break else Result:=Result+Folder[I-1];
     end
     else Result:='';
     GlobalFreePtr(find_context);
@@ -143,7 +143,7 @@ begin if Val < 1e-5 then Val:=1e-5; Edit1.Value:=Val; end;
 
 procedure TDXFExport2DDialog.FSetUnits;
 var Str: string;
-begin Str:=ComboBox1.Text + ' ';  //Label3.Caption:=Str;
+begin Str:=ComboBox1.Text+' ';  //Label3.Caption:=Str;
 end;
 
 function TDXFExport2DDialog.Execute: boolean;

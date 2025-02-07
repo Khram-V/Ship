@@ -46,7 +46,7 @@ end;
 
 procedure TFreeProjectSettings.FSetProjectAppendageCoefficient(Val: TFloatType);
 begin
-  if abs(Val - FProjectAppendageCoefficient) > 1e-7 then begin
+  if abs(Val-FProjectAppendageCoefficient) > 1e-7 then begin
     FProjectAppendageCoefficient:=Val; FreeShip.FileChanged:=True;
   end;
 end;
@@ -463,7 +463,7 @@ begin
         Destination.Add(FNoAngles);
         for I:=1 to FNoAngles do Destination.Add(FAngles[I-1]);
         Destination.Add(FNoStabTrims);
-        for I:=1 to FNoStabTrims do Destination.Add(FStabTrims[I - 1]);
+        for I:=1 to FNoStabTrims do Destination.Add(FStabTrims[I-1]);
         Destination.Add(FFreeTrim);
         Destination.Add(FVCG);
       end;

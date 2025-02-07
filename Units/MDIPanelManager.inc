@@ -67,13 +67,13 @@ begin
     if (parent is TCustomForm) and TCustomForm(parent).AutoScroll then begin
       if ((swc.HorzScrollBar<>nil) and swc.HorzScrollBar.Visible)
       or ((swc.VertScrollBar<>nil) and swc.VertScrollBar.Visible) then begin
-          MH:=MH - swc.HorzScrollBar.Size;
-          MW:=MW - swc.VertScrollBar.Size; end;
+          MH:=MH-swc.HorzScrollBar.Size;
+          MW:=MW-swc.VertScrollBar.Size; end;
     end else begin
       if (swc.HorzScrollBar<>nil) and swc.HorzScrollBar.IsScrollBarVisible then
-          MH:=MH - swc.HorzScrollBar.Size;
+          MH:=MH-swc.HorzScrollBar.Size;
       if (swc.VertScrollBar<>nil) and swc.VertScrollBar.IsScrollBarVisible then
-          MW:=MW - swc.VertScrollBar.Size;
+          MW:=MW-swc.VertScrollBar.Size;
     end
   end;
 }

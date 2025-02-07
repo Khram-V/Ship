@@ -6,13 +6,13 @@ program FreeShip;
 {$mode objfpc}{$H+}
 
 uses
-  Controls, Forms, Dialogs,
-  SysUtils, Math, LazUTF8,                  // this includes the LCL widgetset
-  DefaultTranslator, Interfaces,
-  Main                in '../Forms/Main.pas',                       {MainForm}
-  FreeTypes           in '../Units/FreeTypes.pas',
-  FreeLanguageSupport in '../Units/FreeLanguageSupport.pas',
-  FreeVersionUnit     in '../Units/FreeVersionUnit.pas';
+    Controls, Forms, Dialogs,
+    SysUtils, Math, LazUTF8,                 // this includes the LCL widgetset
+    DefaultTranslator, Interfaces,
+    Main                in '../Forms/Main.pas',                      {MainForm}
+    FreeTypes           in '../Units/FreeTypes.pas',
+    FreeLanguageSupport in '../Units/FreeLanguageSupport.pas',
+    FreeVersionUnit     in '../Units/FreeVersionUnit.pas';
 
 var ParametersHelp: boolean=false;
     sOpenFile: String='';
@@ -20,23 +20,23 @@ var ParametersHelp: boolean=false;
 
 procedure InitByParameters; var S: string; p: integer; begin
   for p:=1 to ParamCount do begin S:=ParamStr(p);
-    if S = '--help' then ParametersHelp:=True else
-    if ( lowerCase(UTF8RightStr( S,4 ) ) = '.ftm' )
-    or ( lowerCase(UTF8RightStr( S,4 ) ) = '.fbm' ) then sOpenFile:=S;
+    if S='--help' then ParametersHelp:=True else
+    if ( lowerCase(UTF8RightStr( S,4 ))='.ftm' )
+    or ( lowerCase(UTF8RightStr( S,4 ))='.fbm' ) then sOpenFile:=S;
   end;
 end;
 
 procedure PrintParametersHelp( Ans: Boolean ); begin
-  sHelp:= #10+'Usage: Free!Ship [parameter] [model]'
-        + #10+ 'Where parameter is: --help = this screen'
-        + #10+ '    model file: <Ship>.ftm or <Ship>.fbm' + #10
-        + #10+ '«Free!Ship» in Pascal.'
-        + #10+ 'Compiled at '+ ReleasedDate+' '+COMPILE_TIME
-        + #10+ 'Compiler version: '+ FPCVERSION
-        + #10+ 'Target CPU:       '+ TARGET_CPU
-        + #10+ 'Target OS:        '+ TARGET_OS
-        + #10+ 'Free!Ship version: '+ FREESHIP_VERSION
-        + ' для ['+VersionString( low(TFreeFileVersion) )+'..5.0]'
+  sHelp:=#10+'Usage: Free!Ship [parameter] [model]'
+        +#10+ 'Where parameter is: --help = this screen'
+        +#10+ '    model file: <Ship>.ftm or <Ship>.fbm'+#10
+        +#10+ '«Free!Ship» in Pascal.'
+        +#10+ 'Compiled at '+ ReleasedDate+' '+COMPILE_TIME
+        +#10+ 'Compiler version: '+ FPCVERSION
+        +#10+ 'Target CPU:       '+ TARGET_CPU
+        +#10+ 'Target OS:        '+ TARGET_OS
+        +#10+ 'Free!Ship version: '+ FREESHIP_VERSION
+        +' для ['+VersionString( low(TFreeFileVersion) )+'..5.0]'
         ;                                                // ResourceVersionInfo
     if Ans then ShowMessage( sHelp )
            else WriteLn( sHelp );
@@ -49,7 +49,6 @@ begin
   InitByParameters;
   PrintParametersHelp( false );
   RequireDerivedFormResource:=True;                                      // new
-
   Application.Initialize;
   if ParametersHelp then begin PrintParametersHelp( true ); exit; end;
 
@@ -59,8 +58,8 @@ begin
                 Mainform.Freeship.Preferences.LanguageFile );
   ShowTranslatedValues( Mainform );
   Mainform.FFileName:=sOpenFile;
-  Application.OnActivate:=MainForm.OnActivate;
 try
+  Application.OnActivate:=MainForm.OnActivate;
   SetExceptionMask(                              // Enabling FPU exception mask
   [exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
   Application.Run;

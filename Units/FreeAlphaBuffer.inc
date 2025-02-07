@@ -33,7 +33,7 @@ begin
     N:=FBuffer[Y].Pixels[X].Number;
     for i:=FBuffer[Y].Pixels[X].Number-1 downto 0 do begin
       DataU:=FBuffer[Y].Pixels[X].Data[i];
-      s:=abs(DataU.ZValue - Data.ZValue);
+      s:=abs(DataU.ZValue-Data.ZValue);
       if //(DataU.R = Data.R)and(DataU.G = Data.G)and(DataU.B = Data.B)
          (DataU.Alpha = Data.Alpha) and (s < 0.001) then inc(t);
 //    if (DataU.R <> Data.R) and (t>0) then t:=t;
@@ -67,7 +67,7 @@ var
     begin
       I:=L;
       J:=R;
-      Val:=PixData.Data[(L + R) div 2].zvalue;
+      Val:=PixData.Data[(L+R) div 2].zvalue;
       repeat while PixData.Data[I].zvalue < Val do Inc(I);
         while Val < PixData.Data[J].zvalue do Dec(J);
         if I <= J then begin Swap( I,J ); Inc(I); Dec(J); end;
@@ -84,17 +84,17 @@ var
     R, G, B: byte;
     dR, dG, dB, dA: smallint;
   begin
-    if PixData.Number > 1 then QuickSort(0, PixData.Number - 1);
+    if PixData.Number > 1 then QuickSort(0, PixData.Number-1);
 
     FViewport.GetPixel(X, Y, R, G, B);
 
-    for I:=0 to PixData.Number - 1 do begin
+    for I:=0 to PixData.Number-1 do begin
       Data:=PixData.Data[I];
       if Data.zvalue > FViewport.ZBuffer.FBuffer[Y][X] then begin
         // Use div because Negative shr 8 causes range error
-        R:=R + ((Data.Alpha * (Data.R - R)) div 256);
-        G:=G + ((Data.Alpha * (Data.G - G)) div 256);
-        B:=B + ((Data.Alpha * (Data.B - B)) div 256);
+        R:=R+((Data.Alpha * (Data.R-R)) div 256);
+        G:=G+((Data.Alpha * (Data.G-G)) div 256);
+        B:=B+((Data.Alpha * (Data.B-B)) div 256);
       end;
     end;
 
@@ -132,11 +132,11 @@ begin
     FFirstRow:=0;
     FLastRow:=-1;
     Setlength(FBuffer, FHeight);
-    for I:=0 to FHeight - 1 do begin
+    for I:=0 to FHeight-1 do begin
       SetLength(FBuffer[I].Pixels, FWidth);
       FBuffer[I].First:=MaxInt;
       FBuffer[I].Last:=-MaxInt;
-      for J:=0 to FWidth - 1 do begin
+      for J:=0 to FWidth-1 do begin
         Setlength(FBuffer[I].Pixels[J].Data, 0);
         FBuffer[I].Pixels[J].Number:=0;
         FBuffer[I].Pixels[J].Capacity:=0;
@@ -157,9 +157,9 @@ begin
      FHeight:=FViewport.FDestinationheight;
      FWidth:=FViewport.FDestinationWidth;
     Setlength(FBuffer, FHeight);
-    for i:=0 to FHeight - 1 do Setlength(FBuffer[I], FWidth);
+    for i:=0 to FHeight-1 do Setlength(FBuffer[I], FWidth);
   end;                        // initalize all pixel cells to an initial value
-  for I:=0 to FWidth - 1 do FBuffer[0][I]:=-1e10;
-  for I:=1 to FHeight - 1 do Move(FBuffer[0][0], FBuffer[I][0], FWidth * SizeOf(TFloatType));
+  for I:=0 to FWidth-1 do FBuffer[0][I]:=-1e10;
+  for I:=1 to FHeight-1 do Move(FBuffer[0][0], FBuffer[I][0], FWidth * SizeOf(TFloatType));
 end;
 

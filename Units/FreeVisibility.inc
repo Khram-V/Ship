@@ -41,7 +41,7 @@ begin
     FShowInteriorEdges:=val;
     if not val then
       for I:=FreeShip.NumberOfSelectedControlFaces downto 1 do
-        FreeShip.SelectedControlFace[I - 1].Selected:=False;
+        FreeShip.SelectedControlFace[I-1].Selected:=False;
     FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
@@ -62,9 +62,9 @@ begin
     FShowControlNet:=val;
     if not FShowControlNet then begin
       for I:=FreeShip.NumberOfSelectedControlEdges downto 1 do
-        FreeShip.SelectedControlEdge[I - 1].Selected:=False;
+        FreeShip.SelectedControlEdge[I-1].Selected:=False;
       for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do
-        FreeShip.SelectedControlPoint[I - 1].Selected:=False;
+        FreeShip.SelectedControlPoint[I-1].Selected:=False;
     end;
     FreeShip.FileChanged:=True;
     FreeShip.Redraw;
@@ -175,14 +175,13 @@ begin
 end;
 
 procedure TFreeVisibility.FSetShowControlCurves(Val: boolean);
-var
-  I: integer;
+var I: integer;
 begin
   if val <> FShowControlCurves then begin
     FShowControlCurves:=Val;
     if not val then
       for I:=FreeShip.Surface.NumberOfControlCurves downto 1 do
-        FreeShip.Surface.ControlCurve[I - 1].Selected:=False;
+        FreeShip.Surface.ControlCurve[I-1].Selected:=False;
     if FreeShip.Surface.NumberOfControlCurves > 0 then
       FreeShip.Redraw;
     FreeShip.Filechanged:=True;
@@ -234,14 +233,9 @@ begin
 end;
 
 procedure TFreeVisibility.DecreaseCurvatureScale;
-begin
-  CurvatureScale:=CurvatureScale / 1.1;
-end;
-
+    begin CurvatureScale:=CurvatureScale / 1.1; end;
 procedure TFreeVisibility.IncreaseCurvatureScale;
-begin
-  CurvatureScale:=CurvatureScale * 1.1;
-end;
+    begin CurvatureScale:=CurvatureScale * 1.1; end;
 
 procedure TFreeVisibility.LoadBinary(Source: TFreeFilebuffer);
 var

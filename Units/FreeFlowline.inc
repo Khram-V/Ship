@@ -22,7 +22,7 @@ begin
   if aValue then begin             // Only add if it is not already in the list
    if Index=-1 then FreeShip.FSelectedFlowlines.AddSorted(self); end else
    if Index<>-1 then FreeShip.FSelectedFlowlines.Delete(index);
-//                   FreeShip.Surface.ExecuteOnSelectItem(self);
+                     FreeShip.Surface.ExecuteOnSelectItem(self);
 end;
 
 procedure TFreeFlowline.FSetBuild(val: boolean);
@@ -139,7 +139,7 @@ begin
       (P3D.X < FreeShip.ProjectSettings.ProjectSplitSectionLocation) then
        P3D.Y:=-P3D.Y;
     Pt:=Viewport.Project(P3D);
-    Size:=Round(Sqrt(Viewport.Zoom) * (FreeShip.Preferences.PointSize + 1));
+    Size:=Round(Sqrt(Viewport.Zoom) * (FreeShip.Preferences.PointSize+1));
     if size < 1 then size:=1;
     Viewport.BrushStyle:=bsClear;
     if Viewport.Printing then
@@ -147,12 +147,12 @@ begin
     Viewport.PenColor:=clDkGray;
     Viewport.BrushColor:=clOlive; // clWhite;
     Viewport.BrushStyle:=bsSolid;             // Draw entire circle in white;
-    Viewport.Ellipse(Pt.X - Size, Pt.Y - Size, Pt.X + Size, Pt.Y + Size);
+    Viewport.Ellipse(Pt.X-Size, Pt.Y-Size, Pt.X+Size, Pt.Y+Size);
     if FreeShip.Visibility.ModelView = mvBoth then
     begin
       P3D.Y:=-P3D.Y;
       Pt:=Viewport.Project(P3D);              // Draw entire circle in white;
-      Viewport.Ellipse(Pt.X - Size, Pt.Y - Size, Pt.X + Size, Pt.Y + Size);
+      Viewport.Ellipse(Pt.X-Size, Pt.Y-Size, Pt.X+Size, Pt.Y+Size);
     end;
   end;
 
@@ -164,27 +164,27 @@ begin
     Param[0]:=0.0;
     Param[1]:=1.0;
     if FFlowline.IntersectPlane(Plane, Output) then begin
-      Setlength(Param, NParam + Output.NumberOfIntersections);
+      Setlength(Param, NParam+Output.NumberOfIntersections);
       for I:=1 to Output.NumberOfIntersections do begin
-        Param[NParam]:=Output.Parameters[I - 1];
+        Param[NParam]:=Output.Parameters[I-1];
         Inc(NParam);
       end;
       SortFloatArray(Param, NParam);
     end;
     for I:=2 to NParam do begin
-      P3D:=FFlowline.Value(0.5 * (Param[I - 2] + Param[I - 1]));
+      P3D:=FFlowline.Value(0.5 * (Param[I-2]+Param[I-1]));
       if P3D.X < FreeShip.ProjectSettings.ProjectSplitSectionLocation
          then Scale:=-1
          else scale:=1;
-      Fragm:=Round((Param[I - 1] - Param[I - 2]) * FFlowline.Fragments);
+      Fragm:=Round((Param[I-1]-Param[I-2]) * FFlowline.Fragments);
       if Fragm < 10 then
         Fragm:=10;
       SetLength(PArray1, Fragm);
       for J:=1 to Fragm do begin
-        T:=Param[I - 2] + (Param[I - 1] - Param[I - 2]) * (J - 1) / (Fragm - 1);
+        T:=Param[I-2]+(Param[I-1]-Param[I-2]) * (J-1) / (Fragm-1);
         P3D:=FFlowline.Value(T);
         P3D.Y:=P3D.Y * Scale;
-        PArray1[J - 1]:=Viewport.Project(P3D);
+        PArray1[J-1]:=Viewport.Project(P3D);
       end;
       Viewport.SetPenWidth(1);
       Viewport.PenColor:=FFlowline.Color;
@@ -195,9 +195,9 @@ begin
     FFlowline.Draw(Viewport);
     if FreeShip.Visibility.ModelView = mvBoth then begin
       for I:=1 to FFlowline.NumberOfPoints do begin
-        P3D:=FFlowline.Point[I - 1];
+        P3D:=FFlowline.Point[I-1];
         P3D.Y:=-P3D.Y;
-        FFlowline.Point[I - 1]:=P3D;
+        FFlowline.Point[I-1]:=P3D;
       end;
 //    try
         FFlowline.Draw(Viewport);
@@ -305,10 +305,10 @@ var
     Dir:=Zero;
     for I:=1 to NTriangles do begin
       Triangle:=Triangles[I-1];
-      S1:=Triangle.Plane.a * StartPoint.x + Triangle.Plane.b *
-            StartPoint.y + Triangle.Plane.c * StartPoint.z + Triangle.Plane.d;
-      S2:=Triangle.Plane.a * EndPoint.x + Triangle.Plane.b * EndPoint.y +
-            Triangle.Plane.c * EndPoint.z + Triangle.Plane.d;
+      S1:=Triangle.Plane.a * StartPoint.x+Triangle.Plane.b *
+            StartPoint.y+Triangle.Plane.c * StartPoint.z+Triangle.Plane.d;
+      S2:=Triangle.Plane.a * EndPoint.x+Triangle.Plane.b * EndPoint.y +
+            Triangle.Plane.c * EndPoint.z+Triangle.Plane.d;
       if ((S1<0) and (S2>0))
       or ((S1>0) and (S2<0)) then begin               // possible intersection
         if S1=S2 then T:=0.5
@@ -342,20 +342,20 @@ var
       VdotV:=Dotproduct(V,V);
       WdotU:=Dotproduct(W,U);
       WdotV:=Dotproduct(W,V);
-      s:=(UdotV * WdotV - VdotV * WdotU) / (UdotV * UdotV - UdotU * VdotV);
-      t:=(UdotV * WdotU - UdotU * WdotV) / (UdotV * UdotV - UdotU * VdotV);
-      b0:=1 - s - t;
+      s:=(UdotV * WdotV-VdotV * WdotU) / (UdotV * UdotV-UdotU * VdotV);
+      t:=(UdotV * WdotU-UdotU * WdotV) / (UdotV * UdotV-UdotU * VdotV);
+      b0:=1-s-t;
       b1:=s;
       b2:=t;
       // check
-      t:=b0 + b1 + b2;
+      t:=b0+b1+b2;
       if T = 1 then begin
         P0:=PointData[Triangle.P1].FlowDir;
         P1:=PointData[Triangle.P2].FlowDir;
         P2:=PointData[Triangle.P3].FlowDir;
-        Dir.X:=b0 * P0.X + b1 * P1.X + b2 * P2.X;
-        Dir.Y:=b0 * P0.Y + b1 * P1.Y + b2 * P2.Y;
-        Dir.Z:=b0 * P0.Z + b1 * P1.Z + b2 * P2.Z;
+        Dir.X:=b0 * P0.X+b1 * P1.X+b2 * P2.X;
+        Dir.Y:=b0 * P0.Y+b1 * P1.Y+b2 * P2.Y;
+        Dir.Z:=b0 * P0.Z+b1 * P1.Z+b2 * P2.Z;
 //      if FMethodNew then begin Dir:=Normalize(SetPoint(-1,0.1,-0.1)); end;
       end; // else Result:=Result-1+1;
     end;
@@ -387,9 +387,9 @@ var
     NextTriangle:=Triangle.Index;
     Triangle.Processed:=True;
     P1:=ProjectPointOnPlane( Intersection,Triangle.Plane );
-    P1.X:=P1.X + 0.0005 * Direction.X;
-    P1.Y:=P1.Y + 0.0005 * Direction.Y;
-    P1.Z:=P1.Z + 0.0005 * Direction.Z;
+    P1.X:=P1.X+0.0005 * Direction.X;
+    P1.Y:=P1.Y+0.0005 * Direction.Y;
+    P1.Z:=P1.Z+0.0005 * Direction.Z;
     if not PointInTriangle( P1,PointData[Triangle.P1].Coord,
       PointData[Triangle.P2].Coord, PointData[Triangle.P3].Coord )
     then P1:=ProjectPointOnPlane(Intersection, Triangle.Plane);
@@ -414,8 +414,8 @@ var
          ((Ind1=SkipInd2) and (Ind2=SkipInd1)) then begin end else
       if Lines3DIntersect(P1,P2,PointData[Ind1].Coord,PointData[Ind2].Coord,Param,Int)
       then begin
-        Distance:=Triangle.Plane.a*Int.x + Triangle.Plane.b*Int.y
-                  + Triangle.Plane.d       + Triangle.Plane.c*Int.z;
+        Distance:=Triangle.Plane.a*Int.x+Triangle.Plane.b*Int.y
+                 +Triangle.Plane.d      +Triangle.Plane.c*Int.z;
         if Distance<1e-1 then begin
           Intersection:=Int;                             // calculate direction
 {         if FMethodNew then begin
@@ -452,7 +452,7 @@ begin                   // clear any present data
       Face:=Layer.Items[J-1];
       for K:=1 to Face.ChildCount do begin
         Child:=Face.Child[K-1];
-        for L:=1 to Child.NumberOfPoints do if Child.Point[L - 1].Coordinate.Z <= WlHeight then begin // Face is (partially) submerged;
+        for L:=1 to Child.NumberOfPoints do if Child.Point[L-1].Coordinate.Z <= WlHeight then begin // Face is (partially) submerged;
           Faces.Add(Child);
           break;
         end;
@@ -539,18 +539,18 @@ begin                   // clear any present data
         else if (FFlowline.Point[FFlowline.NumberOfPoints-1].Z > WlHeight)
         and (FFlowline.Point[FFlowline.NumberOfPoints-2].Z < WlHeight)
         then begin
-          Endpoint.X:=FFlowline.Point[FFlowline.NumberOfPoints - 2].X
-                   + ( FFlowline.Point[FFlowline.NumberOfPoints - 1].X
-                     - FFlowline.Point[FFlowline.NumberOfPoints - 2].X )
-                   * ( WlHeight - FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
-                   / ( FFlowline.Point[FFlowline.NumberOfPoints - 1].Z
-                     - FFlowline.Point[FFlowline.NumberOfPoints - 2].Z );
-          Endpoint.Y:=FFlowline.Point[FFlowline.NumberOfPoints - 2].Y
-                   + ( FFlowline.Point[FFlowline.NumberOfPoints - 1].Y
-                     - FFlowline.Point[FFlowline.NumberOfPoints - 2].Y )
-                   * ( WlHeight - FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
-                   / ( FFlowline.Point[FFlowline.NumberOfPoints - 1].Z
-                     - FFlowline.Point[FFlowline.NumberOfPoints - 2].Z );
+          Endpoint.X:=FFlowline.Point[FFlowline.NumberOfPoints-2].X
+                  +( FFlowline.Point[FFlowline.NumberOfPoints-1].X
+                    -FFlowline.Point[FFlowline.NumberOfPoints-2].X )
+                   * ( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
+                   / ( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
+                    -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
+          Endpoint.Y:=FFlowline.Point[FFlowline.NumberOfPoints-2].Y
+                  +( FFlowline.Point[FFlowline.NumberOfPoints-1].Y
+                    -FFlowline.Point[FFlowline.NumberOfPoints-2].Y )
+                   * ( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
+                   / ( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
+                    -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
           EndPoint.Z:=wlHeight;
           FFlowline.Point[FFlowline.NumberOfPoints-1]:=EndPoint;
         end else break;
@@ -582,7 +582,7 @@ begin
     Source.LoadT3DCoordinate(P);
     Source.LoadBoolean(K);
     FFlowline.Add(P);
-    FFlowline.Knuckle[FFlowline.NumberOfPoints - 1]:=K;
+    FFlowline.Knuckle[FFlowline.NumberOfPoints-1]:=K;
   end;
 end;
 
@@ -597,8 +597,8 @@ begin
   Destination.Add(Selected);
   Destination.Add(FFlowline.NumberOfPoints);
   for I:=1 to FFlowline.NumberOfPoints do begin
-    Destination.Add(FFlowline.Point[I - 1]);
-    Destination.Add(FFlowline.Knuckle[I - 1]);
+    Destination.Add(FFlowline.Point[I-1]);
+    Destination.Add(FFlowline.Knuckle[I-1]);
   end;
 end;
 

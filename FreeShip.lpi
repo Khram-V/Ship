@@ -123,7 +123,7 @@
         <PackageName Value="Printer4Lazarus"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="91">
+    <Units Count="94">
       <Unit0>
         <Filename Value="Forms/FreeShip.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -544,67 +544,79 @@
         <IsPartOfProject Value="True"/>
       </Unit76>
       <Unit77>
-        <Filename Value="Units/FreeSubdivisionBase.inc"/>
+        <Filename Value="Units/FreeSubdivisionControlCurve.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit77>
       <Unit78>
-        <Filename Value="Units/FreeSubdivisionControlCurve.inc"/>
+        <Filename Value="Units/FreeUndoObject.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit78>
       <Unit79>
-        <Filename Value="Units/FreeUndoObject.inc"/>
+        <Filename Value="Units/FreeVisibility.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit79>
       <Unit80>
-        <Filename Value="Units/FreeVisibility.inc"/>
+        <Filename Value="Units/MDIPanel.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit80>
       <Unit81>
-        <Filename Value="Units/MDIPanel.inc"/>
+        <Filename Value="Units/MDIPanelManager.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit81>
       <Unit82>
-        <Filename Value="Units/MDIPanelManager.inc"/>
+        <Filename Value="Units/VRMLUnit.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit82>
       <Unit83>
-        <Filename Value="Units/VRMLUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit83>
-      <Unit84>
         <Filename Value="Forms/FreeHydrostaticsFrm.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeHydrostaticsForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit83>
+      <Unit84>
+        <Filename Value="Units/FreeGeometry_Functions.inc"/>
+        <IsPartOfProject Value="True"/>
       </Unit84>
       <Unit85>
-        <Filename Value="Units/FreeGeometry_Functions.inc"/>
+        <Filename Value="Units/VRML2Unit.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit85>
       <Unit86>
-        <Filename Value="Units/VRML2Unit.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit86>
-      <Unit87>
         <Filename Value="Forms/FreeCylinderDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeCylinderDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+      </Unit86>
+      <Unit87>
+        <Filename Value="Forms/Cursors.rc"/>
+        <IsPartOfProject Value="True"/>
       </Unit87>
       <Unit88>
-        <Filename Value="Forms/Cursors.rc"/>
+        <Filename Value="Units/FreePrinter.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit88>
       <Unit89>
-        <Filename Value="Units/FreePrinter.pas"/>
+        <Filename Value="Units/FreeMatrices.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit89>
       <Unit90>
-        <Filename Value="Units/FreeMatrices.pas"/>
+        <Filename Value="Forms/MethodList.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit90>
+      <Unit91>
+        <Filename Value="Units/FreeShip_export.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit91>
+      <Unit92>
+        <Filename Value="Units/FreeShip_import.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit92>
+      <Unit93>
+        <Filename Value="Units/FreeSubExternal.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit93>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

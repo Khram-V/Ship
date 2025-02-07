@@ -71,7 +71,7 @@ begin ModalResult:=mrCancel; end;
 procedure TFreeBackgroundBlendDialog.TrackBar1Change(Sender: TObject);
 begin
   FViewport.BackgroundImage.Alpha:=Trackbar1.Position;
-  _Label2.Caption:=IntToStr(Round(100 * (Trackbar1.Position) / Trackbar1.Max)) + '%';
+  _Label2.Caption:=IntToStr(Round(100 * (Trackbar1.Position) / Trackbar1.Max))+'%';
 end;
 
 end.

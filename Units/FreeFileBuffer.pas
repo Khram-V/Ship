@@ -153,7 +153,7 @@ var AmountToGrow: integer;
 begin
   AmountToGrow:=1024;
   if Size > AmountToGrow then AmountToGrow:=Size;
-  Capacity:=Capacity + AmountToGrow;
+  Capacity:=Capacity+AmountToGrow;
 end;
 
 function TFreeFileBuffer.FGetCapacity: integer;
@@ -163,7 +163,7 @@ procedure TFreeFileBuffer.FSetCapacity(val: integer);
 var I: integer;
 begin
   Setlength(FData, Val);
-  for I:=FCapacity + 1 to Val do FData[I - 1]:=255;
+  for I:=FCapacity+1 to Val do FData[I-1]:=255;
   FCapacity:=Val;
 end;
 
@@ -171,7 +171,7 @@ procedure TFreeFileBuffer.Add( IntegerValue: integer );
 var Size: integer;
 begin
   Size:=4; //SizeOf(Integer);
-  if Count + Size > Capacity then FGrow(Size);
+  if Count+Size > Capacity then FGrow(Size);
   Move( NtoLE(IntegerValue), FData[FCount], Size );
   Inc(FCount, Size);
 end;
@@ -203,7 +203,7 @@ var
 begin
   FVersion:=Version;
   Size:=SizeOf(Version);
-  if Count + Size > Capacity then FGrow(Size);
+  if Count+Size > Capacity then FGrow(Size);
   Move(Version, FData[FCount], Size);
   Inc(FCount, Size);
 end;
@@ -213,7 +213,7 @@ var
   Size: integer;
 begin
   Size:=SizeOf(Coordinate);
-  if Count + Size > Capacity then FGrow(Size);
+  if Count+Size > Capacity then FGrow(Size);
   Move(Coordinate, FData[FCount], Size);
   Inc(FCount, Size);
 end;
@@ -222,7 +222,7 @@ procedure TFreeFileBuffer.Add(Plane: T3DPlane);
 var Size: integer;
 begin
   Size:=SizeOf(Plane);
-  if Count + Size > Capacity then FGrow(Size);
+  if Count+Size > Capacity then FGrow(Size);
   Move(Plane, FData[FCount], Size);
   Inc(FCount, Size);
 end;
@@ -252,7 +252,7 @@ begin
   Size:=Stream.Size;
   Stream.Position:=0;
   Add(Size);
-  if Count + Size + 20 > Capacity then FGrow( Size+20 );
+  if Count+Size+20 > Capacity then FGrow( Size+20 );
   Stream.Read(FData[FCount], Size);
   Inc(FCount, Size);
   FreeAndNil(Stream);
@@ -275,7 +275,7 @@ begin
   FreeAndNil(Stream);
 end;
 
-/// !!! - на случай восстановления
+/// !!!-на случай восстановления
 
 procedure TFreeFileBuffer.LoadTFreeDelftSeriesResistanceData(var Data: TFreeDelftSeriesResistanceData);
   var bp: integer;
@@ -301,7 +301,7 @@ begin bp:=FPosition;
     LoadBoolean(EstimateWetSurf); // Structures are aligned to 2 bytes, so LoadTFreeMHSeriesResistanceData Boolean as Word
     LoadBoolean( Extract );
   end;
-  FPosition:=bp + sizeof(Data); //record data can be aligned
+  FPosition:=bp+sizeof(Data); //record data can be aligned
 end;
 
 procedure TFreeFileBuffer.LoadTFreeKAPERResistanceData(var Data: TFreeKAPERResistanceData);
@@ -319,7 +319,7 @@ begin bp:=FPosition;
     LoadTFloatType(EntranceAngle);
     LoadBoolean( Extract );
   end;
-  FPosition:=bp + sizeof( Data ); //record data can be aligned
+  FPosition:=bp+sizeof( Data ); //record data can be aligned
 end;
 
 ////////// Add
@@ -328,7 +328,7 @@ procedure TFreeFileBuffer.Add( Data: TFreeDelftSeriesResistanceData );
 var Size: integer = sizeof( Data ); bp: integer;
 begin
   bp:=FCount;
-  if Count + Size > Capacity then FGrow( Size );
+  if Count+Size > Capacity then FGrow( Size );
   with Data do begin
     Add(StartSpeed);
     Add(EndSpeed);
@@ -350,14 +350,14 @@ begin
     Add(EstimateWetSurf);
     Add(Extract);
   end;
-  FCount:=bp + Size;
+  FCount:=bp+Size;
 end;
 
 procedure TFreeFileBuffer.Add(Data: TFreeKAPERResistanceData);
 var Size: integer = sizeof( Data ); bp: integer;
 begin
   bp:=FCount;
-  if Count + Size > Capacity then FGrow(Size);
+  if Count+Size > Capacity then FGrow(Size);
   with Data do begin
     Add(Draft);
     Add(Lwl);
@@ -370,7 +370,7 @@ begin
     Add(EntranceAngle);
     Add(Extract);
   end;
-  FCount:=bp + Size;
+  FCount:=bp+Size;
 end;
 
 procedure TFreeFileBuffer.LoadString( var Output: AnsiString );
@@ -380,10 +380,10 @@ var
 begin
   Output:='';
   if (FPosition=0) and (Integer(FData[0])<>9) then exit;
-  LoadInteger( Size );               //if FPosition + Size >= FCount then exit;
+  LoadInteger( Size );               //if FPosition+Size >= FCount then exit;
   for I:=1 to Size do begin
      Ch:=char( FData[FPosition] ); Inc(FPosition);
-     Output:=Output + Ch;
+     Output:=Output+Ch;
   end;
   S:=Output;
      Output:=ConvertEncoding( S,FEncoding,'utf8' );
@@ -394,7 +394,7 @@ var
   Size: integer;
 begin
   Size:=4;
-  Output:=0;                       //if FPosition + Size >= FCount then exit;
+  Output:=0;                       //if FPosition+Size >= FCount then exit;
   Move( FData[FPosition], Output, Size );
   Output:=LEtoN(Output);
   Inc(FPosition, Size);
@@ -405,7 +405,7 @@ var
   Size: integer;
 begin
   Size:=4;
-  Output:=0;                       //if FPosition + Size >= FCount then exit;
+  Output:=0;                       //if FPosition+Size >= FCount then exit;
   Move(FData[FPosition], Output, Size);
   Output:=LEtoN(Output);
   Inc(FPosition, Size);
@@ -425,7 +425,7 @@ procedure TFreeFileBuffer.LoadTFreeFileVersion(var Output: TFreeFileVersion);
 var
   Size: integer;
 begin
-  Size:=SizeOf( Output );         //if FPosition + Size >= FCount then exit;
+  Size:=SizeOf( Output );         //if FPosition+Size >= FCount then exit;
   Move( FData[FPosition], Output,Size );
   Inc( FPosition,Size );
 end;
@@ -435,7 +435,7 @@ var
   Size: integer;
 begin
   Size:=1;
-  Output:=False;                   //if FPosition + Size >= FCount then exit;
+  Output:=False;                   //if FPosition+Size >= FCount then exit;
   Move(FData[FPosition], Output, Size);
   Inc( FPosition, Size );
 end;
@@ -465,7 +465,7 @@ var
   Size: integer;
 begin
   Size:=SizeOf(Output);
-  Output:=0.0;                     //if FPosition + Size >= FCount then exit;
+  Output:=0.0;                     //if FPosition+Size >= FCount then exit;
   Move( FData[FPosition], Output, Size );
   Inc(FPosition, Size);
 end;
@@ -475,7 +475,7 @@ var
   Size: integer;
 begin
   Size:=SizeOf(Output);
-  Output:=ZERO;                    //if FPosition + Size >= FCount then exit;
+  Output:=ZERO;                    //if FPosition+Size >= FCount then exit;
   Move(FData[FPosition], Output, Size);
   Inc(FPosition, Size);
 end;
@@ -484,7 +484,7 @@ procedure TFreeFileBuffer.LoadT3DPlane(var Output: T3DPlane);
 var
   Size: integer;
 begin
-  Size:=SizeOf( Output );            //if FPosition + Size >= FCount then exit;
+  Size:=SizeOf( Output );            //if FPosition+Size >= FCount then exit;
   Move(FData[FPosition], Output, Size);
   Inc(FPosition, Size);
 end;
@@ -506,7 +506,7 @@ var
   Size: integer;
 begin
   Size:=1;//SizeOf(BooleanValue);
-  if Count + Size > Capacity then
+  if Count+Size > Capacity then
     FGrow(Size);
   Move(BooleanValue, FData[FCount], Size);
   Inc(FCount, Size);
@@ -517,7 +517,7 @@ var
   Size: integer;
 begin
   Size:=SizeOf( FloatValue );
-  if Count + Size > Capacity then FGrow(Size);
+  if Count+Size > Capacity then FGrow(Size);
   Move(FloatValue, FData[FCount], Size);
   Inc(FCount, Size);
 end;
@@ -666,7 +666,7 @@ var I: integer; S: AnsiString;
 begin
   S:='';
   if words.Count > 0 then S:=words[0];
-  for i:=1 to words.Count-1 do S:=S + ' ' + words[i];
+  for i:=1 to words.Count-1 do S:=S+' '+words[i];
   FLines.Add(S);
   Inc(FPosition);
 end;
@@ -683,7 +683,7 @@ end;
 procedure TFreeTextBuffer.Add( NameData: TNameData );
 var S: AnsiString;
 begin
-  S:=IntToStr(NameData.N) + ' ' + NameData.Name;
+  S:=IntToStr(NameData.N)+' '+NameData.Name;
   FLines.Add(S);
   Inc(FPosition);
 end;
@@ -692,8 +692,8 @@ procedure TFreeTextBuffer.Add(LCData: TLinearConstraintData);
 var S: AnsiString;
 begin
   S:=IntToStr(LCData.N)
-    + ' ' + IntToStr(LCData.LinearConstraintPointA)
-    + ' ' + IntToStr(LCData.LinearConstraintPointB);
+   +' '+IntToStr(LCData.LinearConstraintPointA)
+   +' '+IntToStr(LCData.LinearConstraintPointB);
   FLines.Add(S);
   Inc(FPosition);
 end;
@@ -701,9 +701,9 @@ end;
 procedure TFreeTextBuffer.Add( Coordinate: T3DCoordinate );
 var S: AnsiString;
 begin
-  S:=FloatTypeToStr( Coordinate.X ) + ' '
-     + FloatTypeToStr( Coordinate.Y ) + ' '
-     + FloatTypeToStr( Coordinate.Z );
+  S:=FloatTypeToStr( Coordinate.X )+' '
+    +FloatTypeToStr( Coordinate.Y )+' '
+    +FloatTypeToStr( Coordinate.Z );
   FLines.Add(S);
   Inc(FPosition);
 end;
@@ -711,8 +711,8 @@ end;
 procedure TFreeTextBuffer.Add(Plane: T3DPlane);
 var S: AnsiString;
 begin
-  S:=FloatTypeToStr( Plane.a ) + ' ' + FloatTypeToStr( Plane.b ) + ' '
-     + FloatTypeToStr( Plane.c ) + ' ' + FloatTypeToStr( Plane.d );
+  S:=FloatTypeToStr( Plane.a )+' '+FloatTypeToStr( Plane.b )+' '
+    +FloatTypeToStr( Plane.c )+' '+FloatTypeToStr( Plane.d );
   FLines.Add(S);
   Inc(FPosition);
 end;
@@ -734,9 +734,9 @@ begin
   Stream.Position:=0;
   Add(Size);
 
-  S:=StrAlloc(Size * 2 + 2);
+  S:=StrAlloc(Size * 2+2);
   S[Size * 2]:=#0;
-  S[Size * 2 + 1]:=#0;
+  S[Size * 2+1]:=#0;
   P:=Stream.Memory;
   BinToHex(P, S, size);
   L:=StrPas(S);

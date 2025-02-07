@@ -397,14 +397,14 @@ procedure TFreeBitmapFormatHelper.SetPixel(const BM:TBitmap; X,Y: integer; R, G,
 var pRow, pPixel : pointer;
 begin
   pRow:=BM.RawImage.GetLineStart(Y);
-  pPixel:=pRow + Self.BytesPerPixel * X;
+  pPixel:=pRow+Self.BytesPerPixel * X;
   FSetPixelProc(pPixel, R, G, B, A);
 end;
 
 procedure TFreeBitmapFormatHelper.SetPixelInLine(pLineStart:pByte; X: integer; R, G, B, A: byte);
 var pPixel : pointer;
 begin
-  pPixel:=pLineStart + Self.BytesPerPixel * X;
+  pPixel:=pLineStart+Self.BytesPerPixel * X;
   FSetPixelProc(pPixel, R, G, B, A);
 end;
 
@@ -413,14 +413,14 @@ procedure TFreeBitmapFormatHelper.GetPixel(const BM:TBitmap; X,Y: integer; out R
 var pRow, pPixel : pointer;
 begin
   pRow:=BM.RawImage.GetLineStart(Y);
-  pPixel:=pRow + Self.BytesPerPixel * X;
+  pPixel:=pRow+Self.BytesPerPixel * X;
   FGetPixelProc(pPixel, R, G, B, A);
 end;
 
 procedure TFreeBitmapFormatHelper.GetPixelInLine(pLineStart:pByte; X: integer; out R, G, B, A: byte);
 var pPixel : pointer;
 begin
-  pPixel:=pLineStart + Self.BytesPerPixel * X;
+  pPixel:=pLineStart+Self.BytesPerPixel * X;
   FGetPixelProc(pPixel, R, G, B, A);
 end;
 

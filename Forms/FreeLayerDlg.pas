@@ -546,7 +546,7 @@ procedure TFreeLayerDialog.AlphaBarChange(Sender: TObject);
 var val:byte;
 begin
    if FProgrammaticalChange then exit;
-   Val:=round(255 - Alphabar.Position * 255 / 100);
+   Val:=round(255-Alphabar.Position * 255 / 100);
    if SelectedLayer<>nil then if SelectedLayer.AlphaBlend<>val then begin
       SelectedLayer.AlphaBlend:=val;
     //_label1.Caption:=FloatToStrF(100*(255-SelectedLayer.AlphaBlend)/255,ffFixed,7,1)+'%';

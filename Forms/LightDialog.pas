@@ -95,7 +95,7 @@ begin
                                +ButtonPanel.BorderSpacing.Bottom
                                +ButtonPanel.BorderSpacing.Around
                                +self.BorderWidth
-                               +(self.Height - self.ClientHeight)
+                               +(self.Height-self.ClientHeight)
                                +H;
 end;
 

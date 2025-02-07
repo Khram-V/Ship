@@ -397,7 +397,7 @@ type                                                        { TCustomMDIPanel }
       procedure Remove( APanel: TCustomMDIPanel );
       procedure Delete( Index:integer );
       function  FindActivePanel: TCustomMDIPanel;
-      procedure Show( Cascad: Boolean );  // Tile(false) + Cascade(true);
+      procedure Show( Cascad: Boolean );  // Tile(false)+Cascade(true);
 
     public
       property Panels[Index: Integer]: TCustomMDIPanel read GetMDIPanel;

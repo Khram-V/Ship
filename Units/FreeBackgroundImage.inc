@@ -186,7 +186,7 @@ begin
     FCachedBmp:=TBitmap.Create;
     //TmpBmp.Assign(FBitmap);
     FCachedBmp.SetSize(DestRect.Width, DestRect.Height); // bring bitmap to target size
-    //Make bitmap same-size with destination - draw is faster.
+    //Make bitmap same-size with destination-draw is faster.
     DestRectC:=Rect(0, 0, DestRect.Width-1, DestRect.Height-1);
     FCachedBmp.Canvas.StretchDraw(DestRectC, FBitmap);
 
@@ -210,7 +210,7 @@ begin
     Rt:=GetRValue(FTransparentColor);
     Gt:=GetGValue(FTransparentColor);
     Bt:=GetBValue(FTransparentColor);
-    TmpVal:=255 - FAlpha;
+    TmpVal:=255-FAlpha;
 
     if (Transparent) or (FAlpha<>255) then begin
       FCachedBmp.BeginUpdate(False);
@@ -218,18 +218,18 @@ begin
         //Scan:=TmpBmp.ScanLine[I];
         pRow:=FCachedBmp.RawImage.GetLineStart(I);
         for J:=0 to FCachedBmp.Width-1 do begin
-          pPixel:=pRow + BitmapFormatHelper.BytesPerPixel * J;
+          pPixel:=pRow+BitmapFormatHelper.BytesPerPixel * J;
           Pixel:=BitmapFormatHelper.ToTRGBTriple(pPixel);
           // Replace transparent pixels with the viewport color
           if Transparent and
-              (abs(Pixel.rgbtRed - Rt) <= FTolerance) and
-              (abs(Pixel.rgbtGreen - Gt) <= FTolerance) and
-              (abs(Pixel.rgbtBlue - Bt) <= FTolerance) then
+              (abs(Pixel.rgbtRed-Rt) <= FTolerance) and
+              (abs(Pixel.rgbtGreen-Gt) <= FTolerance) and
+              (abs(Pixel.rgbtBlue-Bt) <= FTolerance) then
           begin Pixel:=Backgr; end
           else if (FAlpha<>255) then begin // Blend all pixels with the viewport
-            Pixel.rgbtRed:=(Tmpval * Backgr.rgbtRed + FAlpha * Pixel.rgbtRed) shr 8;
-            Pixel.rgbtGreen:=(Tmpval * Backgr.rgbtGreen + FAlpha * Pixel.rgbtGreen) shr 8;
-            Pixel.rgbtBlue:=(Tmpval * Backgr.rgbtBlue + FAlpha * Pixel.rgbtBlue) shr 8;
+            Pixel.rgbtRed:=(Tmpval * Backgr.rgbtRed+FAlpha * Pixel.rgbtRed) shr 8;
+            Pixel.rgbtGreen:=(Tmpval * Backgr.rgbtGreen+FAlpha * Pixel.rgbtGreen) shr 8;
+            Pixel.rgbtBlue:=(Tmpval * Backgr.rgbtBlue+FAlpha * Pixel.rgbtBlue) shr 8;
           end;
           BitmapFormatHelper.FromTRGBTriple(Pixel, pPixel);
           //FCachedBmp.Canvas.Pixels[J,I]:= RGBtoColor(Pixel.rgbtRed,Pixel.rgbtGreen,Pixel.rgbtBlue);
@@ -248,8 +248,8 @@ function TFreeBackgroundImage.ImageCoordinate(X, Y: integer): TPoint;
 var Dest: TRect;
 begin
   Dest:=TargetRect;
-  Result.X:=round(((X - Dest.Left) / (Dest.Right - Dest.Left)) * FBitmap.Width);
-  Result.Y:=round(((Y - Dest.Top) / (Dest.Bottom - Dest.Top)) * FBitmap.Height);
+  Result.X:=round(((X-Dest.Left) / (Dest.Right-Dest.Left)) * FBitmap.Width);
+  Result.Y:=round(((Y-Dest.Top) / (Dest.Bottom-Dest.Top)) * FBitmap.Height);
 end;
 
 function TFreeBackgroundImage.TargetRect: TRect;
@@ -257,10 +257,10 @@ var
   Pt: TPoint;
 begin
   Pt:=FOwner.Project(ZERO);
-  Result.Left:=Pt.X - round(Owner.Scale * Owner.Zoom * FScale * FOrigin.X);
-  Result.Top:=Pt.Y - round(Owner.Scale * Owner.Zoom * FScale * FOrigin.Y);
-  Result.Right:=Result.Left + Round(Owner.Scale * Owner.Zoom * FScale * FBitmap.Width);
-  Result.Bottom:=Result.Top + Round(Owner.Scale * Owner.Zoom * FScale * FBitmap.Height);
+  Result.Left:=Pt.X-round(Owner.Scale * Owner.Zoom * FScale * FOrigin.X);
+  Result.Top:=Pt.Y-round(Owner.Scale * Owner.Zoom * FScale * FOrigin.Y);
+  Result.Right:=Result.Left+Round(Owner.Scale * Owner.Zoom * FScale * FBitmap.Width);
+  Result.Bottom:=Result.Top+Round(Owner.Scale * Owner.Zoom * FScale * FBitmap.Height);
 end;{TFreeBackgroundImage.TargetRect}
 
 procedure TFreeBackgroundImage.Open(InitialDir: string);

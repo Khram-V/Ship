@@ -168,48 +168,48 @@ begin
   Fillchar(prop, SizeOf(Prop), 0);
   for I:=1 to length(SimpsonData) do
   begin
-    Simpsondata[I - 1].Area:=0.0;
-    Simpsondata[I - 1].SF:=0.0;
-    Simpsondata[I - 1].Distance:=0.0;
+    Simpsondata[I-1].Area:=0.0;
+    Simpsondata[I-1].SF:=0.0;
+    Simpsondata[I-1].Distance:=0.0;
   end;
   for I:=1 to N do
   begin
-    Station:=Stations[I - 1];
+    Station:=Stations[I-1];
     Station.Rebuild;
     Station.CalculateArea(Wlplane, Area, COG, Mom);
-    SimpsonData[I - 1].Area:=Area;
-    SimpsonData[I - 1].Distance:=COG.X;
+    SimpsonData[I-1].Area:=Area;
+    SimpsonData[I-1].Distance:=COG.X;
   end;
 
   I:=0;
-  while I < N - 1 do
+  while I < N-1 do
   begin
-    Dist:=SimpsonData[I + 2].Distance - SimpsonData[I].Distance;
+    Dist:=SimpsonData[I+2].Distance-SimpsonData[I].Distance;
     if abs(Dist) > 1e-6 then begin
-      fie:=(SimpsonData[I + 1].Distance - SimpsonData[I].Distance) / Dist;
+      fie:=(SimpsonData[I+1].Distance-SimpsonData[I].Distance) / Dist;
       if abs(Fie) < 1e-2 then begin
         if Fie < 0 then Fie:=-1e-2
                    else Fie:=1e-2;
       end else
-      if abs(1 - Fie) < 1e-2 then Fie:=1 - 1e-2;
-      SimpsonData[I].SF:=SimpsonData[I].SF + 0.5 * Dist * ((3 * fie - 1) / fie);
-      SimpsonData[I + 1].SF:=SimpsonData[I + 1].SF + 0.5 * Dist * (1 / (fie * (1 - fie)));
-      SimpsonData[I + 2].SF:=SimpsonData[I + 2].SF + 0.5 * Dist * ((2 - 3 * fie) / (1 - fie));
+      if abs(1-Fie) < 1e-2 then Fie:=1-1e-2;
+      SimpsonData[I].SF:=SimpsonData[I].SF+0.5 * Dist * ((3 * fie-1) / fie);
+      SimpsonData[I+1].SF:=SimpsonData[I+1].SF+0.5 * Dist * (1 / (fie * (1-fie)));
+      SimpsonData[I+2].SF:=SimpsonData[I+2].SF+0.5 * Dist * ((2-3 * fie) / (1-fie));
     end;
     Inc(I, 2);
   end;
 
-  y:=0.95 * (FMax.X - FMin.X) * Topview.ClientHeight / Topview.ClientWidth;
+  y:=0.95 * (FMax.X-FMin.X) * Topview.ClientHeight / Topview.ClientWidth;
   for I:=1 to N do begin
-    Prod:=SimpsonData[I - 1].SF * SimpsonData[I - 1].Area;
+    Prod:=SimpsonData[I-1].SF * SimpsonData[I-1].Area;
     if SAC <> nil then
       if FMainArea <> 0 then
-        SAC.Add(SetPoint(SimpsonData[I - 1].Distance, y * SimpsonData[I - 1].Area / FMainArea, 0.0))
+        SAC.Add(SetPoint(SimpsonData[I-1].Distance, y * SimpsonData[I-1].Area / FMainArea, 0.0))
       else
-        SAC.Add(SetPoint(SimpsonData[I - 1].Distance, y * SimpsonData[I - 1].Area, 0.0));
-    Prop.Displacement:=Prop.Displacement + Prod;
-    Prop.LCB:=prop.LCB + Prod * SimpsonData[I - 1].Distance;
-    Prop.k:=Prop.k + Prod * SimpsonData[I - 1].Distance * SimpsonData[I - 1].Distance;
+        SAC.Add(SetPoint(SimpsonData[I-1].Distance, y * SimpsonData[I-1].Area, 0.0));
+    Prop.Displacement:=Prop.Displacement+Prod;
+    Prop.LCB:=prop.LCB+Prod * SimpsonData[I-1].Distance;
+    Prop.k:=Prop.k+Prod * SimpsonData[I-1].Distance * SimpsonData[I-1].Distance;
   end;
 
   Prop.Displacement:=Prop.Displacement / 3;
@@ -221,7 +221,7 @@ begin
     Prop.k:=0.0;
   end;
 
-  Prop.Length:=SimpsonData[N - 1].Distance - SimpsonData[0].Distance;
+  Prop.Length:=SimpsonData[N-1].Distance-SimpsonData[0].Distance;
   if MainArea <> 0 then
     Prop.Cp:=Prop.Displacement / (Prop.Length * Mainarea)
   else
@@ -240,22 +240,22 @@ end;
 
 procedure TFreeLackenbyDialog.UpdateDifferences;
 begin
-  DisplacementDiff.Value:=DisplacementNew.Value - DisplacementCurrent.Value;
+  DisplacementDiff.Value:=DisplacementNew.Value-DisplacementCurrent.Value;
   if abs(DisplacementDiff.Value) > 1e-3 then
     DisplacementDiff.Font.Color:=clred
   else
     DisplacementDiff.Font.Color:=clGreen;
-  BlockCoeffDiff.Value:=BlockCoeffNew.Value - BlockCoeffCurrent.Value;
+  BlockCoeffDiff.Value:=BlockCoeffNew.Value-BlockCoeffCurrent.Value;
   if abs(BlockCoeffDiff.Value) > 1e-4 then
     BlockCoeffDiff.Font.Color:=clred
   else
     BlockCoeffDiff.Font.Color:=clGreen;
-  PrismCoeffDiff.Value:=PrismCoeffNew.Value - PrismCoeffCurrent.Value;
+  PrismCoeffDiff.Value:=PrismCoeffNew.Value-PrismCoeffCurrent.Value;
   if abs(PrismCoeffDiff.Value) > 1e-4 then
     PrismCoeffDiff.Font.Color:=clred
   else
     PrismCoeffDiff.Font.Color:=clGreen;
-  LongCoBDiff.Value:=LongCoBNew.Value - LongCoBCurrent.Value;
+  LongCoBDiff.Value:=LongCoBNew.Value-LongCoBCurrent.Value;
   if abs(LongCoBDiff.Value) > 1e-3 then
     LongCoBDiff.Font.Color:=clred
   else
@@ -282,12 +282,12 @@ begin
   CalulateHydrostaticProperties(FWaterlinePlane, FMainArea, FForeShip,
     ForeProperties, SAC);
 
-  TotalProp.Displacement:=AftProperties.Displacement + ForeProperties.Displacement;
+  TotalProp.Displacement:=AftProperties.Displacement+ForeProperties.Displacement;
   if TotalProp.Displacement > 0 then
   begin
     TotalProp.LCB:=(AftProperties.Displacement * AftProperties.LCB +
       ForeProperties.Displacement * ForeProperties.LCB) / TotalProp.Displacement;
-    TotalProp.Length:=AftProperties.Length + ForeProperties.Length;
+    TotalProp.Length:=AftProperties.Length+ForeProperties.Length;
     if Totalprop.Length * FMainArea <> 0 then
       TotalProp.Cp:=TotalProp.Displacement / (Totalprop.Length * FMainArea)
     else
@@ -298,19 +298,19 @@ begin
       ProjectWaterDensity, ProjectAppendageCoefficient, ProjectUnits);
   DisplacementCurrent.DecimalPlaces:=NumberOfDecimals(DisplacementCurrent.Value);
   ////   BlockCoeffCurrent.Value:=Totalprop.Displacement/((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
-  BlockCoeffCurrent.Value:=Totalprop.Displacement / ((FMax.X - FMin.X) * (FMax.Y - FMin.Y) * FMax.Z);
+  BlockCoeffCurrent.Value:=Totalprop.Displacement / ((FMax.X-FMin.X) * (FMax.Y-FMin.Y) * FMax.Z);
   PrismCoeffCurrent.Value:=Totalprop.Cp;
   LongCoBCurrent.Value:=TotalProp.LCB;
   Label4.Caption:=WeightStr(FFreeship.ProjectSettings.ProjectUnits);
   Label9.Caption:=LengthStr(FFreeship.ProjectSettings.ProjectUnits);
-  _Label12.Caption:=': ' + FloatToStrF(AftProperties.Cp, ffFixed, 7, 4);
-  _Label14.Caption:=': ' + FloatToStrF(ForeProperties.Cp, ffFixed, 7, 4);
+  _Label12.Caption:=': '+FloatToStrF(AftProperties.Cp, ffFixed, 7, 4);
+  _Label14.Caption:=': '+FloatToStrF(ForeProperties.Cp, ffFixed, 7, 4);
   MaxDispl:=VolumeToDisplacement(Totalprop.Length * FMainArea,
     FFreeship.ProjectSettings.ProjectWaterDensity,
     FFreeship.ProjectSettings.ProjectAppendageCoefficient,
     FFreeship.ProjectSettings.ProjectUnits);
-  _Label16.Caption:=': ' + FloatToStrF(MaxDispl, ffFixed, 7, NumberOfDecimals(MaxDispl)) +
-    #32 + WeightStr(FFreeship.ProjectSettings.ProjectUnits);
+  _Label16.Caption:=': '+FloatToStrF(MaxDispl, ffFixed, 7, NumberOfDecimals(MaxDispl)) +
+    #32+WeightStr(FFreeship.ProjectSettings.ProjectUnits);
 end;
 
 procedure TFreeLackenbyDialog.ExtractStations(Dest: TFasterListTFreeSpline);
@@ -321,23 +321,23 @@ var
   Spline: TFreeSpline;
 begin
   for I:=1 to Dest.Count do begin
-    Spline:=Dest[I - 1];
+    Spline:=Dest[I-1];
     FreeAndNil(Spline);
   end;
   Dest.Clear;
 
   for I:=1 to FFreeship.NumberofStations do begin
-    Station:=FFreeship.Station[I - 1];
+    Station:=FFreeship.Station[I-1];
     if not Station.Built then Station.Rebuild;
     for J:=1 to Station.Count do begin
       Spline:=TFreeSpline.Create(FFreeship.Surface);
-      Spline.Assign(Station.Items[J - 1]);
+      Spline.Assign(Station.Items[J-1]);
       if Spline.Max.X <= FFreeship.ProjectSettings.ProjectSplitSectionLocation then
       begin
         for K:=1 to Spline.NumberOfPoints do begin
-          P:=Spline.Point[K - 1];
+          P:=Spline.Point[K-1];
           P.Y:=-P.Y;
-          Spline.Point[K - 1]:=P;
+          Spline.Point[K-1]:=P;
         end;
       end;
       Dest.Add(Spline);
@@ -354,7 +354,7 @@ var
 begin
   for I:=1 to Dest.Count do
   begin
-    Spline:=Dest[I - 1];
+    Spline:=Dest[I-1];
     FreeAndNil(Spline);
   end;
   Dest.Clear;
@@ -363,7 +363,7 @@ begin
   Plane.a:=0.0;
   Plane.b:=0.0;
   Plane.c:=1.0;
-  Plane.d:=-(self.FMin.Z + FFreeship.ProjectSettings.ProjectDraft);
+  Plane.d:=-(self.FMin.Z+FFreeship.ProjectSettings.ProjectDraft);
   Waterline.Plane:=Plane;
   if not Waterline.Built then Waterline.Rebuild;
   for J:=1 to Waterline.Count do begin
@@ -402,9 +402,9 @@ var
 
   procedure InitializeData(var Prop: TBodyProp);
   begin
-    Prop.A:=Prop.Cp * (1 - 2 * Prop.LCB) - Prop.p * (1 - Prop.Cp);
-    Prop.B:=(Prop.Cp * (2 * Prop.LCB - 3 * Prop.k * Prop.k - Prop.p * (1 - 2 * Prop.LCB)) / Prop.A);
-    Prop.C:=(Prop.B * (1 - Prop.Cp) - Prop.Cp * (1 - 2 * Prop.LCB)) / (1 - Prop.P);
+    Prop.A:=Prop.Cp * (1-2 * Prop.LCB)-Prop.p * (1-Prop.Cp);
+    Prop.B:=(Prop.Cp * (2 * Prop.LCB-3 * Prop.k * Prop.k-Prop.p * (1-2 * Prop.LCB)) / Prop.A);
+    Prop.C:=(Prop.B * (1-Prop.Cp)-Prop.Cp * (1-2 * Prop.LCB)) / (1-Prop.P);
   end;{InitializeData}
 
 begin
@@ -413,12 +413,12 @@ begin
   Points:=TFasterListTFreeSubdivisionControlPoint.Create;
   LockedPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
   for I:=1 to Layerbox.Count do begin
-    if Layerbox.Checked[I - 1] then begin
-      Layer:=Layerbox.Items.Objects[I - 1] as TFreeSubdivisionLayer;
+    if Layerbox.Checked[I-1] then begin
+      Layer:=Layerbox.Items.Objects[I-1] as TFreeSubdivisionLayer;
       for J:=1 to Layer.Count do begin
-        Face:=Layer.Items[J - 1];
+        Face:=Layer.Items[J-1];
         for K:=1 to Face.NumberOfpoints do begin
-          Point:=Face.Point[K - 1] as TFreeSubdivisionControlPoint;
+          Point:=Face.Point[K-1] as TFreeSubdivisionControlPoint;
           if Points.SortedIndexOf(Point) = -1 then begin
             Points.AddSorted(Point);
             if Point.Locked then begin
@@ -464,11 +464,11 @@ begin
       CalulateHydrostaticProperties(FWaterlinePlane,FMainArea,FAftShip,AftProperties,nil);
       CalulateHydrostaticProperties(FWaterlinePlane,FMainArea,FForeShip,ForeProperties,nil);
       // perform a check
-      TotalProp.Displacement:=AftProperties.Displacement + ForeProperties.Displacement;
+      TotalProp.Displacement:=AftProperties.Displacement+ForeProperties.Displacement;
       if TotalProp.Displacement > 0 then begin
         TotalProp.LCB:=(AftProperties.Displacement * AftProperties.LCB +
           ForeProperties.Displacement * ForeProperties.LCB) / TotalProp.Displacement;
-        TotalProp.Length:=AftProperties.Length + ForeProperties.Length;
+        TotalProp.Length:=AftProperties.Length+ForeProperties.Length;
         TotalProp.Cp:=TotalProp.Displacement / (Totalprop.Length * FMainArea);
         ////////////////// TEMPORARILY SET TO ZERO!!!!!!!!!
         AftProperties.p:=0;
@@ -479,64 +479,64 @@ begin
         DesiredData.Displacement:=NewDispl;
         DesiredData.Cp:=DesiredData.Displacement / (DesiredData.Length * FMainArea);
         Desireddata.LCB:=LongCoBNew.Value;
-        DisplError:=abs((DesiredData.Displacement - TotalProp.Displacement) /
+        DisplError:=abs((DesiredData.Displacement-TotalProp.Displacement) /
           DesiredData.Displacement);
-        if abs(Desireddata.LCB - TotalProp.LCB) <= 2e-3
-           then LCBError:=MaxLCBError - 1e-6
-           else LCBError:=abs((Desireddata.LCB - TotalProp.LCB) / Totalprop.Length);
+        if abs(Desireddata.LCB-TotalProp.LCB) <= 2e-3
+           then LCBError:=MaxLCBError-1e-6
+           else LCBError:=abs((Desireddata.LCB-TotalProp.LCB) / Totalprop.Length);
         if (DisplError<=MaxDisplError) and (LCBError<=MaxLCBError) then begin
             Iteration:=Iteration+1-1;            // Job is done, interrupt
         end else begin                           // Make all data dimensionless
           with AftProperties do begin
-            Displacement:=Displacement / (Length * (FMax.Y - FMin.Y) * FFreeship.ProjectSettings.ProjectDraft);
-            LCB:=(MainLoc - LCB) / Length;
-            k:=(MainLoc - k) / Length;
+            Displacement:=Displacement / (Length * (FMax.Y-FMin.Y) * FFreeship.ProjectSettings.ProjectDraft);
+            LCB:=(MainLoc-LCB) / Length;
+            k:=(MainLoc-k) / Length;
           end;
           with ForeProperties do begin
-            Displacement:=Displacement / (Length * (FMax.Y - FMin.Y) * FFreeship.ProjectSettings.ProjectDraft);
-            LCB:=(LCB - MainLoc) / Length;
-            k:=(k - MainLoc) / Length;
+            Displacement:=Displacement / (Length * (FMax.Y-FMin.Y) * FFreeship.ProjectSettings.ProjectDraft);
+            LCB:=(LCB-MainLoc) / Length;
+            k:=(k-MainLoc) / Length;
           end;
           with Desireddata do begin
-            Displacement:=Displacement / (Length * (FMax.Y - FMin.Y) * FFreeship.ProjectSettings.ProjectDraft);
+            Displacement:=Displacement / (Length * (FMax.Y-FMin.Y) * FFreeship.ProjectSettings.ProjectDraft);
             LCB:=LCB / Length;
-            dCp:=Cp - TotalProp.Cp;
+            dCp:=Cp-TotalProp.Cp;
           end;
           InitializeData(AftProperties);
           InitializeData(ForeProperties);
-          TotalProp.z:=(TotalProp.LCB - 0.5 * TotalProp.Length) / (0.5 * TotalProp.Length);
-          DesiredData.z:=(DesiredData.LCB - 0.5) / 0.5; // Fraction of Half length of total ship
-          dz:=DesiredData.z - TotalProp.z;
+          TotalProp.z:=(TotalProp.LCB-0.5 * TotalProp.Length) / (0.5 * TotalProp.Length);
+          DesiredData.z:=(DesiredData.LCB-0.5) / 0.5; // Fraction of Half length of total ship
+          dz:=DesiredData.z-TotalProp.z;
           ConvFactor:=power(ConvFactor, 0.9);
           dz:=ConvFactor * dz;  // multiply for faster convergence of iteration process
           AftProperties.dCp :=
-            (2 * (DesiredData.dCp * (ForeProperties.B - TotalProp.z) - dz *
-            (Totalprop.Cp + DesiredData.dCp)) - ForeProperties.C * ForeProperties.dp +
-            AftProperties.C * AftProperties.dp) / (Foreproperties.B + Aftproperties.B);
+            (2 * (DesiredData.dCp * (ForeProperties.B-TotalProp.z)-dz *
+            (Totalprop.Cp+DesiredData.dCp))-ForeProperties.C * ForeProperties.dp +
+            AftProperties.C * AftProperties.dp) / (Foreproperties.B+Aftproperties.B);
           ForeProperties.dCp :=
-            (2 * (DesiredData.dCp * (AftProperties.B + TotalProp.z) + dz *
-            (Totalprop.Cp + DesiredData.dCp)) + ForeProperties.C * ForeProperties.dp -
-            AftProperties.C * AftProperties.dp) / (Foreproperties.B + Aftproperties.B);
+            (2 * (DesiredData.dCp * (AftProperties.B+TotalProp.z)+dz *
+            (Totalprop.Cp+DesiredData.dCp))+ForeProperties.C * ForeProperties.dp -
+            AftProperties.C * AftProperties.dp) / (Foreproperties.B+Aftproperties.B);
           for I:=1 to Points.Count do begin
-            Point:=Points[I - 1];
+            Point:=Points[I-1];
             if Point.Coordinate.X < MainLoc then begin // Point is part of the aftship
                                                        // make dimensionless
               P3D:=Point.Coordinate;
-              x:=(MainLoc - P3D.X) / AftProperties.Length;
-              dx:=(1 - x) * (AftProperties.dp / (1 - AftProperties.p) +
-                (x - AftProperties.p) / Aftproperties.A * (Aftproperties.dCp - Aftproperties.dp *
-                (1 - Aftproperties.Cp) / (1 - Aftproperties.p)));
-              x:=x + dX;
-              P3D.X:=MainLoc - x * AftProperties.Length;
+              x:=(MainLoc-P3D.X) / AftProperties.Length;
+              dx:=(1-x) * (AftProperties.dp / (1-AftProperties.p) +
+                (x-AftProperties.p) / Aftproperties.A * (Aftproperties.dCp-Aftproperties.dp *
+                (1-Aftproperties.Cp) / (1-Aftproperties.p)));
+              x:=x+dX;
+              P3D.X:=MainLoc-x * AftProperties.Length;
               Point.Coordinate:=P3D;
             end else begin                             // Point is part of the foreship make dimensionless
               P3D:=Point.Coordinate;
-              x:=(P3D.X - MainLoc) / ForeProperties.Length;
-              dx:=(1 - x) * (ForeProperties.dp / (1 - ForeProperties.p) +
-                (x - ForeProperties.p) / Foreproperties.A * (Foreproperties.dCp - Foreproperties.dp *
-                (1 - Foreproperties.Cp) / (1 - Foreproperties.p)));
-              x:=x + dX;
-              P3D.X:=x * ForeProperties.Length + Mainloc;
+              x:=(P3D.X-MainLoc) / ForeProperties.Length;
+              dx:=(1-x) * (ForeProperties.dp / (1-ForeProperties.p) +
+                (x-ForeProperties.p) / Foreproperties.A * (Foreproperties.dCp-Foreproperties.dp *
+                (1-Foreproperties.Cp) / (1-Foreproperties.p)));
+              x:=x+dX;
+              P3D.X:=x * ForeProperties.Length+Mainloc;
               Point.Coordinate:=P3D;
             end;
           end;
@@ -558,7 +558,7 @@ begin
                       else Undo.Accept;
       if LockedPoints.Count > 0 then begin
         for I:=1 to LockedPoints.Count do begin
-          Point:=LockedPoints[I - 1];
+          Point:=LockedPoints[I-1];
           Point.Locked:=True;
         end;
       end;
@@ -580,10 +580,10 @@ begin
       Layerbox.Clear;
 //    try
         for I:=1 to FFreeship.NumberOfLayers do begin
-          Layer:=FFreeship.Layer[I - 1];
+          Layer:=FFreeship.Layer[I-1];
           if Layer.Count > 0 then begin
             Index:=LayerBox.Items.AddObject(Layer.Name, Layer);
-            Layerbox.Checked[index]:=TmpLayerInfo[I - 1];
+            Layerbox.Checked[index]:=TmpLayerInfo[I-1];
           end;
         end;
 //    finally
@@ -730,10 +730,10 @@ begin
   FreeAndNil(Station);
 
   FAftShip:=TFasterListTFreeIntersection.Create;
-  FAftShip.Capacity:=NStations + 1;
+  FAftShip.Capacity:=NStations+1;
   for I:=0 to NStations do
   begin
-    Value:=(FMin.X + (I / NStations) * (MidshipLocation - FMin.X));
+    Value:=(FMin.X+(I / NStations) * (MidshipLocation-FMin.X));
     Station:=TFreeIntersection.Create(FFreeship);
     Station.IntersectionType:=fiStation;
     Station.UseHydrostaticsSurfacesOnly:=True;
@@ -746,10 +746,10 @@ begin
   end;
 
   FForeship:=TFasterListTFreeIntersection.Create;
-  FForeship.Capacity:=NStations + 1;
+  FForeship.Capacity:=NStations+1;
   for I:=0 to NStations do
   begin
-    Value:=(MidshipLocation + (I / NStations) * (FMax.X - MidshipLocation));
+    Value:=(MidshipLocation+(I / NStations) * (FMax.X-MidshipLocation));
     Station:=TFreeIntersection.Create(FFreeship);
     Station.IntersectionType:=fiStation;
     Station.UseHydrostaticsSurfacesOnly:=True;
@@ -774,34 +774,34 @@ begin
 
   // Clean up intersections
   for I:=1 to FAftShip.Count do begin
-    Station:=FAftShip[I - 1];
+    Station:=FAftShip[I-1];
     FreeAndNil(Station);
   end;
   FreeAndNil(FAftShip);
   for I:=1 to FForeShip.Count do begin
-    Station:=FForeShip[I - 1];
+    Station:=FForeShip[I-1];
     FreeAndNil(Station);
   end;
   FreeAndNil(FForeShip);
   for I:=1 to FOriginalStations.Count do begin
-    Spline:=FOriginalStations[I - 1];
+    Spline:=FOriginalStations[I-1];
     FreeAndNil(Spline);
   end;
   FreeAndNil(FOriginalStations);
   for I:=1 to FNewStations.Count do begin
-    Spline:=FNewStations[I - 1];
+    Spline:=FNewStations[I-1];
     FreeAndNil(Spline);
   end;
   FreeAndNil(FNewStations);
   FreeAndNil(FOriginalSectionalAreaCurve);
   FreeAndNil(FNewSectionalAreaCurve);
   for I:=1 to FOriginalWaterline.Count do begin
-    Spline:=ForiginalWaterline[I - 1];
+    Spline:=ForiginalWaterline[I-1];
     FreeAndNil(Spline);
   end;
   FreeAndNil(FOriginalWaterline);
   for I:=1 to FNewWaterline.Count do begin
-    Spline:=FNewWaterline[I - 1];
+    Spline:=FNewWaterline[I-1];
     FreeAndNil(Spline);
   end;
   FreeAndNil(FNewWaterline);
@@ -847,8 +847,8 @@ begin
       NewDispl:=DisplacementToVolume(DisplacementNew.Value, ProjectWaterDensity,
         ProjectAppendageCoefficient, ProjectUnits);
     ////      BlockCoeffNew.Value:=NewDispl/((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
-    BlockCoeffNew.Value:=NewDispl / ((FMax.X - FMin.X) * (FMax.Y - FMin.Y) * FMax.Z);
-    PrismCoeffNew.Value:=NewDispl / (FMainArea * (FMax.X - FMin.X));
+    BlockCoeffNew.Value:=NewDispl / ((FMax.X-FMin.X) * (FMax.Y-FMin.Y) * FMax.Z);
+    PrismCoeffNew.Value:=NewDispl / (FMainArea * (FMax.X-FMin.X));
   end
   else
   begin
@@ -863,12 +863,12 @@ var
   NewDispl: TFloatType;
 begin
   ////   NewDispl:=BlockCoeffNew.Value*((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
-  NewDispl:=BlockCoeffNew.Value * ((FMax.X - FMin.X) * (FMax.Y - FMin.Y) * FMax.Z);
+  NewDispl:=BlockCoeffNew.Value * ((FMax.X-FMin.X) * (FMax.Y-FMin.Y) * FMax.Z);
   DisplacementNew.Value:=VolumeToDisplacement(
     NewDispl, FFreeship.ProjectSettings.ProjectWaterDensity,
     FFreeship.ProjectSettings.ProjectAppendageCoefficient,
     FFreeship.ProjectSettings.ProjectUnits);
-  PrismCoeffNew.Value:=NewDispl / (FMainArea * (FMax.X - FMin.X));
+  PrismCoeffNew.Value:=NewDispl / (FMainArea * (FMax.X-FMin.X));
   UpdateDifferences;
 end;
 
@@ -876,13 +876,13 @@ procedure TFreeLackenbyDialog.Input3AfterSetValue(Sender: TObject);
 var
   NewDispl: TFloatType;
 begin
-  NewDispl:=PrismCoeffNew.Value * FMainArea * (FMax.X - FMin.X);
+  NewDispl:=PrismCoeffNew.Value * FMainArea * (FMax.X-FMin.X);
   DisplacementNew.Value:=VolumeToDisplacement(
     NewDispl, FFreeship.ProjectSettings.ProjectWaterDensity,
     FFreeship.ProjectSettings.ProjectAppendageCoefficient,
     FFreeship.ProjectSettings.ProjectUnits);
   ////   BlockCoeffNew.Value:=NewDispl/((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
-  BlockCoeffNew.Value:=NewDispl / ((FMax.X - FMin.X) * (FMax.Y - FMin.Y) * FMax.Z);
+  BlockCoeffNew.Value:=NewDispl / ((FMax.X-FMin.X) * (FMax.Y-FMin.Y) * FMax.Z);
   UpdateDifferences;
 end;
 
@@ -899,12 +899,12 @@ begin
   First:=True;
 
   for I:=1 to FFreeship.NumberOfLayers do begin
-    Layer:=FFreeship.Layer[I - 1];
+    Layer:=FFreeship.Layer[I-1];
     if Layer.ShowInLinesplan then
       for J:=1 to Layer.Count do begin
-        Face:=Layer.Items[J - 1];
+        Face:=Layer.Items[J-1];
         for K:=1 to Face.ControlDescendantEdgeCount do begin
-          Edge:=Face.ControlDescendantEdge[K - 1];
+          Edge:=Face.ControlDescendantEdge[K-1];
           if Edge.Crease then begin
             if First then begin
               Min:=Edge.StartPoint.Coordinate;
@@ -926,7 +926,7 @@ begin
 
   for I:=1 to FOriginalStations.Count do
   begin
-    Spline:=FOriginalStations[I - 1];
+    Spline:=FOriginalStations[I-1];
     if Spline.NumberOfPoints > 0 then begin
       if First then begin
         Min:=Spline.Min;
@@ -953,19 +953,19 @@ begin
     Viewport.PenColor:=clDkGray;
     Viewport.PenStyle:=psSolid;
     for I:=1 to FFreeship.NumberOfLayers do begin
-      Layer:=FFreeship.Layer[I - 1];
+      Layer:=FFreeship.Layer[I-1];
       if Layer.ShowInLinesplan then
         for J:=1 to Layer.Count do
         begin
-          Face:=Layer.Items[J - 1];
+          Face:=Layer.Items[J-1];
           for K:=1 to Face.ControlDescendantEdgeCount do
-            if Face.ControlDescendantEdge[K - 1].Crease then
-              Face.ControlDescendantEdge[K - 1].Draw(False, Viewport);
+            if Face.ControlDescendantEdge[K-1].Crease then
+              Face.ControlDescendantEdge[K-1].Draw(False, Viewport);
         end;
     end;
     for I:=1 to FNewStations.Count do
     begin
-      Spline:=FNewStations[I - 1];
+      Spline:=FNewStations[I-1];
       Spline.Color:=clRed;
       Spline.PenStyle:=psDot;
       Spline.ShowCurvature:=False;
@@ -974,7 +974,7 @@ begin
     end;
     for I:=1 to FOriginalStations.Count do
     begin
-      Spline:=FOriginalStations[I - 1];
+      Spline:=FOriginalStations[I-1];
       Spline.PenStyle:=psSolid;
       Spline.Color:=clBlack;
       Spline.ShowCurvature:=False;
@@ -1004,14 +1004,14 @@ begin
   First:=True;
   for I:=1 to FFreeship.NumberOfLayers do
   begin
-    Layer:=FFreeship.Layer[I - 1];
+    Layer:=FFreeship.Layer[I-1];
     if Layer.ShowInLinesplan then
       for J:=1 to Layer.Count do
       begin
-        Face:=Layer.Items[J - 1];
+        Face:=Layer.Items[J-1];
         for K:=1 to Face.ControlDescendantEdgeCount do
         begin
-          Edge:=Face.ControlDescendantEdge[K - 1];
+          Edge:=Face.ControlDescendantEdge[K-1];
           if Edge.Crease then
           begin
             if First then
@@ -1044,12 +1044,12 @@ begin
       FNewSectionalAreaCurve.Extents(Min, Max);
     for I:=1 to FOriginalWaterline.Count do
     begin
-      Spline:=ForiginalWaterline[I - 1];
+      Spline:=ForiginalWaterline[I-1];
       Spline.Extents(Min, Max);
     end;
     for I:=1 to FNewWaterline.Count do
     begin
-      Spline:=FNewWaterline[I - 1];
+      Spline:=FNewWaterline[I-1];
       Spline.Extents(Min, Max);
     end;
   end
@@ -1081,14 +1081,14 @@ begin
       Topview.PenColor:=clDkGray;
       for I:=1 to FFreeship.NumberOfLayers do
       begin
-        Layer:=FFreeship.Layer[I - 1];
+        Layer:=FFreeship.Layer[I-1];
         if Layer.ShowInLinesplan then
           for J:=1 to Layer.Count do
           begin
-            Face:=Layer.Items[J - 1];
+            Face:=Layer.Items[J-1];
             for K:=1 to Face.ControlDescendantEdgeCount do
-              if Face.ControlDescendantEdge[K - 1].Crease then
-                Face.ControlDescendantEdge[K - 1].Draw(False, TopView);
+              if Face.ControlDescendantEdge[K-1].Crease then
+                Face.ControlDescendantEdge[K-1].Draw(False, TopView);
           end;
       end;
       Topview.PenStyle:=psDot;
@@ -1108,7 +1108,7 @@ begin
 
       for I:=1 to FNewWaterline.Count do
       begin
-        Spline:=FNewWaterline[I - 1];
+        Spline:=FNewWaterline[I-1];
         Spline.Color:=clRed;
         Spline.PenStyle:=psDot;
         Spline.ShowCurvature:=False;
@@ -1126,7 +1126,7 @@ begin
       end;
       for I:=1 to FOriginalWaterline.Count do
       begin
-        Spline:=ForiginalWaterline[I - 1];
+        Spline:=ForiginalWaterline[I-1];
         Spline.Color:=clBlack;
         Spline.ShowCurvature:=False;
         Spline.Fragments:=400;

@@ -518,7 +518,7 @@ begin
       if (TFreeShip(FreeShip).NumberOfSelectedControlPoints>0) then
       begin
          // SAP change all selected points
-         for I:=0 to TFreeShip(FreeShip).NumberOfSelectedControlPoints-1 do
+         for I:=0 to TFreeShip(FreeShip).NumberOfSelectedControlPoints - 1 do
          begin
             P:=TFreeShip(FreeShip).SelectedControlPoint[I].Coordinate;
             //if abs(P.X-Val)>1e-5 then

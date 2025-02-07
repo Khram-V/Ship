@@ -60,8 +60,8 @@ begin
   ComboBox2.Clear;
 //  try
     for I:=1 to ComboBox1.Items.Count do begin
-      Layer:=ComboBox1.Items.Objects[I - 1] as TFreeSubdivisionLayer;
-      if I - 1 <> ComboBox1.ItemIndex then
+      Layer:=ComboBox1.Items.Objects[I-1] as TFreeSubdivisionLayer;
+      if I-1 <> ComboBox1.ItemIndex then
         ComboBox2.Items.AddObject(Layer.Name, Layer);
     end;
 //  finally
@@ -81,7 +81,7 @@ begin
   ComboBox1.Clear;
 //try
     for I:=1 to Layers.Count do begin
-      Layer:=Layers[I - 1];
+      Layer:=Layers[I-1];
       ComboBox1.Items.AddObject(Layer.Name,Layer);
     end;
 //finally

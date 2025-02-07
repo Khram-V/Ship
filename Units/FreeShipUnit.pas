@@ -26,7 +26,7 @@ uses SysUtils,      // this declaration must be at the start, before the FreeGeo
 const
   FreeShipExtention='.ftm'; // Default extention for hull model files
   SelectDistance = 3;       // Max. distance in pixels between an item and the cursor in order to be selected
-  Threshold = 3;            // The distance that the cursor has to be moved before a controlpoint starts moving
+//Threshold = 3;            // The distance that the cursor has to be moved before a controlpoint starts moving
   FontheightFactor = 140;   // used for calculating fontheight
 
 resourcestring
@@ -34,7 +34,6 @@ resourcestring
   rsPointLinearConstraintChanged = 'ControlPoint Linear Constraint Changed';
   rsPointAnchorConstraintChanged = 'ControlPoint Anchor Constraint Changed';
   rsTextFile = 'Text file';
-//rsAuroraHullFile = 'Aurora+Hull Vessel(db)file';
   rsAutocadDxfFile = 'Autocad dxf file';
   rsFREEShipExchangeFormat = 'FREE!ship Exchange Format';
   rsGHSFiles = 'GHS files';
@@ -52,8 +51,6 @@ resourcestring
   rsFREEShipGeometryPart = 'FREE!ship geometry part';
   rsCarlssonHullFiles = 'Carlsson Hull files';
   rsFREEShipExchangeFormatFile = 'FREE!ship Exchange Format file';
-  rsWavefrontFile_NC = 'Wavefront export subdivided surface';   // 1
-  rsWavefrontFile_CN = 'Wavefront export the controlnet only';  // 2
   rsArchimedesMBMultiBodyHullData = 'ArchimedesMB multi body hull data';
   rsArchimedesSingleBodyHullData = 'Archimedes single body hull data';
 
@@ -90,7 +87,6 @@ type
     LateralArea: TFloatType;
     LateralCOG: T3DCoordinate;
 
-
     PrismCoefficient: TFloatType;        // Prismatic coefficient
     VertPrismCoefficient: TFloatType;    // Prismatic coefficient
     SAC: array of T2DCoordinate;         // Sectional areas
@@ -110,7 +106,7 @@ type
     QBBAngle: TFloatType;                           // Angle between BL and QBB
     Z_min_board: TFloatType;
     Y_c_half: TFloatType; // Y coordinate of waterplane area for left hull half
-    // Results of resistance calculation
+// Results of resistance calculation
 {   Wt: TFloatType;
     T0: TFloatType;
     EtaR: TFloatType;
@@ -137,17 +133,12 @@ type
 (*
   TFreeCrosscurvesData = record
     WaterlinePlane: T3DPlane;
-    AbsoluteDraft: TFloatType;
-    // Depth of the lowest point of the hull beneath the waterplane
-    // The following properties are always calculated
-    Volume: TFloatType;
-    // Displaced volume of the hull
-    Displacement: TFloatType;
-    // Displacement
-    CenterOfBuoyancy: T3DCoordinate;
-    // Center of gravity of displaced volume
-    // Stability data
-    KNSinPhi: TFloatType;
+    AbsoluteDraft: TFloatType; // Depth of the lowest point of the hull beneath the waterplane
+    Volume: TFloatType;       // The following properties are always calculated
+    Displacement: TFloatType;                   // Displaced volume of the hull
+    CenterOfBuoyancy: T3DCoordinate;                // Displacement
+                                       // Center of gravity of displaced volume
+    KNSinPhi: TFloatType;              // Stability data
   end;
 *)
   {-----------------------------------------------------------------}
@@ -928,7 +919,7 @@ type
     procedure SetActiveControlCurve(AValue: TFreeSubdivisionControlCurve);
     procedure SetActiveControlEdge(AValue: TFreeSubdivisionControlEdge);
     procedure SetActiveControlFace(AValue: TFreeSubdivisionControlFace);
- // function GetOnChangeActiveControlPoint: TNotifyEvent;
+//  function GetOnChangeActiveControlPoint: TNotifyEvent;
     procedure SetActiveControlPoint(aControlPoint: TFreeSubdivisionControlPoint);
     function FGetBackgroundImage(Index: integer): TFreeBackgroundImageData;
     function FGetBuilt: boolean;
@@ -954,7 +945,7 @@ type
     function FGetNumberOfWaterlines: integer;
     function FGetOnChangeActiveLayer: TChangeActiveLayerEvent;
     function FGetOnChangeLayerData: TNotifyEvent;
- // function FGetOnSelectItem: TNotifyEvent;
+//  function FGetOnSelectItem: TNotifyEvent;
     function FGetSelectedControlPoint(Index: integer): TFreeSubdivisionControlPoint;
     function FGetSelectedControlPointGroup(Index: integer): TFreeSubdivisionControlPointGroup;
     function FGetSelectedControlEdge(Index: integer): TFreeSubdivisionControlEdge;
@@ -985,11 +976,11 @@ type
     function FGetNumberOfselectedMarkers: integer;
     procedure FSetOnChangeActiveLayer(val: TChangeActiveLayerEvent);
     procedure FSetOnChangeLayerData(Val: TNotifyEvent);
- // procedure FSetOnSelectItem(Val: TNotifyEvent);
+//  procedure FSetOnSelectItem(Val: TNotifyEvent);
     procedure FSetPrecision(Val: TFreePrecisionType);
     function FGetPreview: TJPEGImage;
     procedure SetObjectSelected(aObject: TFreeNamedObject; aSelected: boolean);
- // procedure SetOnChangeActiveControlPoint(AValue: TNotifyEvent);
+//  procedure SetOnChangeActiveControlPoint(AValue: TNotifyEvent);
   protected   { Protected declarations }
     procedure ViewportRequestExtents(Sender: TObject; var Min, Max: T3DCoordinate);
   public      { Public declarations }
@@ -1096,8 +1087,8 @@ type
     property NumberofWaterlines: integer read FGetNumberOfWaterlines;
     property OnChangeActiveLayer: TChangeActiveLayerEvent read FGetOnChangeActiveLayer write FSetOnChangeActiveLayer;
     property OnChangeLayerData: TNotifyEvent read FGetOnChangeLayerData write FSetOnChangeLayerData;
- // property OnSelectItem: TNotifyEvent read FGetOnSelectItem write FSetOnSelectItem;
- // property OnChangeActiveControlPoint: TNotifyEvent read GetOnChangeActiveControlPoint write SetOnChangeActiveControlPoint;
+//  property OnSelectItem: TNotifyEvent read FGetOnSelectItem write FSetOnSelectItem;
+//  property OnChangeActiveControlPoint: TNotifyEvent read GetOnChangeActiveControlPoint write SetOnChangeActiveControlPoint;
     property SelectedControlCurve[index: integer]: TFreeSubdivisionControlCurve read FGetSelectedControlCurve;
     property SelectedControlPoint[index: integer]: TFreeSubdivisionControlPoint read FGetSelectedControlPoint;
     property SelectedControlPointGroup[index: integer]: TFreeSubdivisionControlPointGroup read FGetSelectedControlPointGroup;
@@ -1195,6 +1186,8 @@ uses Math,
 {$I FreePreferences.inc}
 {$I FreeProjectSettings.inc}
 {$I FreeShip.inc}
+{$I FreeShip_export.inc}
+{$I FreeShip_import.inc}
 
 procedure Register;
 begin RegisterComponents( 'FreeShip', [TFreeShip] );

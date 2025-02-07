@@ -348,11 +348,11 @@ var N,i:integer;
   CC: TFreeSubdivisionControlCurve;
 begin
   N:=FreeShip.NumberOfSelectedControlPoints
-     + FreeShip.NumberOfSelectedControlEdges
-     + FreeShip.NumberOfSelectedControlFaces
-     + FreeShip.NumberOfSelectedControlCurves
-     + FreeShip.NumberOfselectedMarkers
-     + FreeShip.NumberOfselectedFlowlines;
+    +FreeShip.NumberOfSelectedControlEdges
+    +FreeShip.NumberOfSelectedControlFaces
+    +FreeShip.NumberOfSelectedControlCurves
+    +FreeShip.NumberOfselectedMarkers
+    +FreeShip.NumberOfselectedFlowlines;
 
   lvPoints.Clear;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlPoints-1 do
@@ -403,8 +403,8 @@ begin
   end;
 
   (* TODO
-  + FreeShip.NumberOfselectedMarkers
-  + FreeShip.NumberOfselectedFlowlines;
+ +FreeShip.NumberOfselectedMarkers
+ +FreeShip.NumberOfselectedFlowlines;
   *)
 end;
 

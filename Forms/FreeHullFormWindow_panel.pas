@@ -265,7 +265,7 @@ begin
       if FFreeShip<>nil then begin // Connect to Freeship component
          FFreeShip.AddViewport(Viewport);
       end;
-   end;  // FreeHullForm.FreeShip := FreeShip;
+   end;  // FreeHullForm.FreeShip:=FreeShip;
 end;
 
 procedure TFreeHullWindow.UpdateMenu;
@@ -296,10 +296,10 @@ begin  // Update all menuitems and action
                          and (Viewport.BackgroundImage.Visible)
                          and (Viewport.BackgroundImage.ShowInView=Viewport.ViewType);
    BackgroundTransparentColor.Enabled:= BackgroundOrigin.Enabled;
-   BackgroundScale.Enabled           := BackgroundOrigin.Enabled;
-   BackgroundBlending.Enabled        := BackgroundOrigin.Enabled;
-   BackgroundExport.Enabled          := BackgroundOrigin.Enabled;
-   BackgroundFrame.Enabled           := BackgroundBlending.Enabled;
+   BackgroundScale.Enabled          :=BackgroundOrigin.Enabled;
+   BackgroundBlending.Enabled       :=BackgroundOrigin.Enabled;
+   BackgroundExport.Enabled         :=BackgroundOrigin.Enabled;
+   BackgroundFrame.Enabled          :=BackgroundBlending.Enabled;
    BackgroundTolerance.Enabled:=(Viewport.ViewType<>fvPerspective) and
                                 (Viewport.BackgroundImage.Bitmap<>nil) and
                                 (Viewport.BackgroundImage.Visible) and
@@ -314,8 +314,8 @@ begin
    if FreeShip<>nil then begin
       Freeship.Extents( Min,Max );
       if Viewport.ViewType=fvBodyPlan then //Min.Y:= -Max.Y;
-        if -Min.Y > Max.y then Max.Y := -Min.Y
-                          else Min.Y := -Max.Y;
+        if -Min.Y > Max.y then Max.Y:=-Min.Y
+                          else Min.Y:=-Max.Y;
    end;
 end;
 
@@ -342,7 +342,7 @@ procedure TFreeHullWindow.SetLightExecute(Sender: TObject);
 begin
   if not assigned(LightDialog) then begin
     LightDialog:=TLightDialog.Create(self);
-    LightDialog.ViewPort := self.Viewport;
+    LightDialog.ViewPort:=self.Viewport;
     LightDialog.Show;
   end else begin
     if not LightDialog.IsVisible then LightDialog.Show;
@@ -358,52 +358,52 @@ end;
 
 procedure TFreeHullWindow.CreateFreeViewport();
 begin
-  Viewport := TFreeViewport.Create( Self );
+  Viewport:=TFreeViewport.Create( Self );
   with Viewport do begin
-    Parent := Self;                               // redirected to ClientPanel;
-    Cursor := crCross;
-    Left := 0;
-    Height := 270;
-    Top := 0;
-    Width := 425;
-    Angle := 20;
-    Align := alClient;
-    BackgroundImage.Alpha := 255;
-    BackgroundImage.Owner := Viewport;
-    BackgroundImage.Quality := 100;
-    BackgroundImage.Scale := 1;
-    BackgroundImage.ShowInView := fvBodyplan;
-    BackgroundImage.Tolerance := 5;
-    BackgroundImage.Transparent := False;
-    BackgroundImage.TransparentColor := clBlack;
-    BackgroundImage.Visible := True;
-    BevelInner := bvNone;
-    BevelOuter := bvNone;
-    BorderStyle := bsNone;                                         // bsSingle;
-    BorderWidth := 0;
-    CameraType := ftStandard;                             // Color := 10461087;
-    ParentColor := true;
-    DoubleBuffer := True;
-    Elevation := 20;
-//    HorScrollbar := ScrollBar1;
-    Margin := 1;
-    PopupMenuHull := PopupMenuHull;
-//    VertScrollbar := ScrollBar2;
-    ViewType      := fvPerspective;  // fvBodyplan;    //
-    ViewportMode  := vmWireFrame;    // vmShade; //
+    Parent:=Self;                               // redirected to ClientPanel;
+    Cursor:=crCross;
+    Left:=0;
+    Height:=270;
+    Top:=0;
+    Width:=425;
+    Angle:=20;
+    Align:=alClient;
+    BackgroundImage.Alpha:=255;
+    BackgroundImage.Owner:=Viewport;
+    BackgroundImage.Quality:=100;
+    BackgroundImage.Scale:=1;
+    BackgroundImage.ShowInView:=fvBodyplan;
+    BackgroundImage.Tolerance:=5;
+    BackgroundImage.Transparent:=False;
+    BackgroundImage.TransparentColor:=clBlack;
+    BackgroundImage.Visible:=True;
+    BevelInner:=bvNone;
+    BevelOuter:=bvNone;
+    BorderStyle:=bsNone;                                         // bsSingle;
+    BorderWidth:=0;
+    CameraType:=ftStandard;                             // Color:=10461087;
+    ParentColor:=true;
+    DoubleBuffer:=True;
+    Elevation:=20;
+//    HorScrollbar:=ScrollBar1;
+    Margin:=1;
+    PopupMenuHull:=PopupMenuHull;
+//    VertScrollbar:=ScrollBar2;
+    ViewType     :=fvPerspective;  // fvBodyplan;    //
+    ViewportMode :=vmWireFrame;    // vmShade; //
 
-    OnChangeBackground := @ViewportChangeBackground;
-    OnChangeViewType   := @ViewportChangeViewType;
-    OnKeyPress         := @ViewportKeyPress;
-    OnKeyDown          := @ViewportKeyDown;
-    OnKeyUp            := @ViewportKeyUp;
-    OnMouseDown        := @ViewportMouseDown;
-    OnMouseUp          := @ViewportMouseUp;
-    OnMouseMove        := @ViewportMouseMove;
-    OnMouseLeave       := @ViewportMouseLeave;
-    OnRedraw           := @ViewportRedraw;
-    OnRequestBackgroundImage := @ViewportRequestBackgroundImage;
-    OnRequestExtents := @ViewportRequestExtents;
+    OnChangeBackground:=@ViewportChangeBackground;
+    OnChangeViewType  :=@ViewportChangeViewType;
+    OnKeyPress        :=@ViewportKeyPress;
+    OnKeyDown         :=@ViewportKeyDown;
+    OnKeyUp           :=@ViewportKeyUp;
+    OnMouseDown       :=@ViewportMouseDown;
+    OnMouseUp         :=@ViewportMouseUp;
+    OnMouseMove       :=@ViewportMouseMove;
+    OnMouseLeave      :=@ViewportMouseLeave;
+    OnRedraw          :=@ViewportRedraw;
+    OnRequestBackgroundImage:=@ViewportRequestBackgroundImage;
+    OnRequestExtents:=@ViewportRequestExtents;
   end;
 end;
 
@@ -416,7 +416,7 @@ begin
 //   CreateComponents;
 //   ScrollBar1.Position:=Round(Viewport.Angle);
 //   ScrollBar2.Position:=Round(Viewport.Elevation);
-//   if ScrollBar1.OnEnter = nil then ScrollBar1.OnEnter := @ScrollBar1Enter;
+//   if ScrollBar1.OnEnter = nil then ScrollBar1.OnEnter:=@ScrollBar1Enter;
    FAllowPanOrZoom:=False;
    FreeShip:=GlobalFreeShip;
    o:=self.PopupMenuHull;
@@ -598,8 +598,8 @@ begin
      fvPerspective  : vpt:='_Perspective';
      else vpt:='';
   end;
-  Str:=Freeship.Preferences.ExportDirectory + DirectorySeparator
-     + ChangeFileExt( ExtractFilename( Freeship.Filename )+vpt,'.png' );
+  Str:=Freeship.Preferences.ExportDirectory+DirectorySeparator
+    +ChangeFileExt( ExtractFilename( Freeship.Filename )+vpt,'.png' );
   Viewport.SaveAsBitmap( Str,true );
 end;
 

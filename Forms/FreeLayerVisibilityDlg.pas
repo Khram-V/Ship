@@ -31,16 +31,13 @@ type
     procedure CheckBox2Click(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure sgLayersCheckboxToggled(sender: TObject; aCol, aRow: Integer;
-      aState: TCheckboxState);
-    procedure sgLayersGetCellHint(Sender: TObject; ACol, ARow: Integer;
-      var HintText: String);
+    procedure sgLayersCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
+    procedure sgLayersGetCellHint(Sender: TObject; ACol, ARow: Integer; var HintText: String);
   private
     FFreeShip : TFreeShip;
     FOnChange: TNotifyEvent;
     Layers   : specialize TFasterList<TFreeSubdivisionLayer>;
     procedure UpdateMenu;
-
   public
     procedure FillLayers;
     property FreeShip:TFreeShip read FFreeShip write FFreeShip;
@@ -65,8 +62,7 @@ begin
   begin
     FFreeShip.Visibility.ShowFreeObjects:=cbFreeStanding.Checked;
     FFreeShip.FileChanged:=true;
-    if FOnChange <> nil then
-     FOnChange(Self);
+    if FOnChange <> nil then FOnChange(Self);
     FFreeShip.Redraw;
   end;
 end;
@@ -76,8 +72,7 @@ var i:integer; C: char; S: TCheckboxState;
 begin
   if CheckBox1.Checked then C:='1' else C:='0';
   if CheckBox1.Checked then S:=cbChecked else S:=cbUnChecked;
-  for i:=1 to sgLayers.RowCount-1 do
-    begin
+  for i:=1 to sgLayers.RowCount-1 do begin
     sgLayers.Cells[0,i]:=C;
     sgLayersCheckboxToggled(Sender, 0, i, S);
     end;
@@ -98,7 +93,7 @@ end;
 procedure TFreeLayerVisibilityDialog.FormResize(Sender: TObject);
 begin
   with sgLayers do
-    ColWidths[2]:=ClientWidth - ColWidths[0] - ColWidths[1] - 2 * GridLineWidth;
+    ColWidths[2]:=ClientWidth-ColWidths[0]-ColWidths[1]-2 * GridLineWidth;
 end;
 
 procedure TFreeLayerVisibilityDialog.FormShow(Sender: TObject);
@@ -124,8 +119,7 @@ begin
    begin
    Layer.SurfaceVisible:=chk;
    FFreeShip.FileChanged:=true;
-   if FOnChange <> nil then
-     FOnChange(Self);
+   if FOnChange <> nil then FOnChange(Self);
    FFreeShip.Redraw;
    end;
 
@@ -133,8 +127,7 @@ begin
    begin
    Layer.ControlNetVisible:=chk;
    FFreeShip.FileChanged:=true;
-   if FOnChange <> nil then
-     FOnChange(Self);
+   if FOnChange <> nil then FOnChange(Self);
    FFreeShip.Redraw;
    end;
 
@@ -159,13 +152,13 @@ begin
   so:=sgLayers.SortOrder;
   sgLayers.Clear;
   sgLayers.BeginUpdate;
-  sgLayers.RowCount:=FFreeShip.NumberOfLayers + 1;
+  sgLayers.RowCount:=FFreeShip.NumberOfLayers+1;
 //try
-    for I:=0 to FFreeShip.NumberOfLayers - 1 do begin
+    for I:=0 to FFreeShip.NumberOfLayers-1 do begin
       Layer:=FFreeShip.Layer[I];
       if Layer.SurfaceVisible then S:='1' else S:='0';
       if Layer.ControlNetVisible then C:='1' else C:='0';
-      r:=i + 1;
+      r:=i+1;
       sgLayers.Cells[0,r]:=S;
       sgLayers.Cells[1,r]:=C;
       sgLayers.Cells[2,r]:=Layer.Name;

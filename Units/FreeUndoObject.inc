@@ -9,10 +9,10 @@
 // calculates the amount of bytes used for each undo object
 function TFreeUndoObject.FGetMemory: integer;
 begin
-  Result:=4 +              // pointer to self
-    4 +                      // pointer to owner
-    length( Undotext ) +     // length of string
-    length( FFilename ) +    // length of filename string
+  Result:=4+             // pointer to self
+    4+                     // pointer to owner
+    length( Undotext )+    // length of string
+    length( FFilename )+   // length of filename string
     FUndoData.Count;         // Actual saved data
 end;
 
@@ -28,11 +28,11 @@ begin
 //try
     // Add the undo data to the undolist
     if Owner.UndoCount > 0 then
-      if Owner.UndoObject[Owner.UndoCount - 1].FIsTempRedoObject then
-        Owner.UndoObject[Owner.UndoCount - 1].Delete;
+      if Owner.UndoObject[Owner.UndoCount-1].FIsTempRedoObject then
+        Owner.UndoObject[Owner.UndoCount-1].Delete;
     // delete all undo objects after the current one
-    for I:=FOwner.FUndoObjects.Count downto Owner.FUndoPosition + 1 do
-      Owner.UndoObject[I - 1].Delete;
+    for I:=FOwner.FUndoObjects.Count downto Owner.FUndoPosition+1 do
+      Owner.UndoObject[I-1].Delete;
     Owner.FUndoObjects.Add(self);
     Owner.FUndoPosition:=Owner.FUndoObjects.Count;
     while (FOwner.UndoMemory / (1024 * 1024) > Owner.Preferences.MaxUndoMemory)

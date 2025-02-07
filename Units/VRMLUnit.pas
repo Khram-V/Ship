@@ -166,7 +166,7 @@ begin
   end;
   if N <> 0 then
   begin
-    Delete(Input, Length(Input) - N + 1, N);
+    Delete(Input, Length(Input)-N+1, N);
   end;
   Result:=input;
 end;
@@ -195,7 +195,7 @@ begin
     Index:=Pos(#32, Input);
     if Index <> 0 then
     begin
-      Tmp:=Copy(Input, 1, Index - 1);
+      Tmp:=Copy(Input, 1, Index-1);
       if Tmp <> '' then
         Output.Add(Tmp);
       Delete(Input, 1, index);
@@ -241,17 +241,17 @@ begin
         if Ch = #32 then
         begin
           if Objectname <> '' then
-            ObjectName:=ObjectName + ch;
+            ObjectName:=ObjectName+ch;
         end
         else
-          Objectname:=Objectname + Ch;
+          Objectname:=Objectname+Ch;
         //and (Ch<>#32) then Objectname:=Objectname+Ch;
       end;
 
       if ch = '[' then
       begin
         if level <> 0 then
-          Str:=Str + Ch;
+          Str:=Str+Ch;
         Inc(level);
 
       end
@@ -264,7 +264,7 @@ begin
           break;
         end
         else
-          Str:=Str + Ch;
+          Str:=Str+Ch;
       end
       else
 
@@ -272,7 +272,7 @@ begin
       begin
         Inc(NumberOfObjects);
         if Level <> 0 then
-          Str:=Str + Ch;
+          Str:=Str+Ch;
         Inc(Level);
       end
       else if Ch = '}' then
@@ -284,10 +284,10 @@ begin
           break;
         end
         else
-          Str:=Str + Ch;
+          Str:=Str+Ch;
       end
       else if Level <> 0 then
-        Str:=Str + Ch;
+        Str:=Str+Ch;
       Inc(Index);
     end;
     if Str <> '' then
@@ -303,7 +303,7 @@ begin
       if level = 0 then begin
         if objectname <> '' then
           if Objectname[length(Objectname)] <> #32 then
-            objectname:=objectname + #32;
+            objectname:=objectname+#32;
       end;
       Inc(LineNr);
     end;
@@ -355,7 +355,7 @@ begin
   I:=1;
   while I <= ToDo.Count do
   begin
-    Current:=TStringList(ToDo[I - 1]);
+    Current:=TStringList(ToDo[I-1]);
     Line:=0;
     while Line < Current.Count do
     begin
@@ -433,7 +433,7 @@ var
   I: integer;
 begin
   for I:=1 to Count do
-    Items[I - 1].Destroy;
+    Items[I-1].Destroy;
   FObjects.Clear;
   inherited Clear;
 end;{TVRMLSeparator.Clear}
@@ -524,9 +524,9 @@ end;{TVRMLCoordinate3.FSetCapacity}
 procedure TVRMLCoordinate3.Add(P: T3DCoordinate);
 begin
   if FCount >= FCapacity then
-    Capacity:=Count + 25;
+    Capacity:=Count+25;
   Inc(FCount);
-  FCoordinates[FCount - 1]:=P;
+  FCoordinates[FCount-1]:=P;
 end;{TVRMLCoordinate3.Add}
 
 procedure TVRMLCoordinate3.AddFaceSet(FaceSet: TVRMLIndexedFaceSet);
@@ -575,7 +575,7 @@ var
     begin
       i:=D.IndexOf('.');
       if i > -1 then
-        dc:=D.length - i - 1;
+        dc:=D.length-i-1;
       if FPrecision > power(10,-dc) then
         FPrecision:=power(10,-dc);
     end
@@ -599,7 +599,7 @@ begin
     S:=-1;
     F:=-1;
     L:=Length(Data);
-    I:=Index + 1;
+    I:=Index+1;
     while I <= L do
     begin
       Ch:=Data[I];
@@ -615,7 +615,7 @@ begin
     if OK then
     begin
       Points:=TStringList.Create;
-      ProcessString(Copy(Data, S + 1, F - S - 2), Points);
+      ProcessString(Copy(Data, S+1, F-S-2), Points);
       if Points.Count mod 3 = 0 then
       begin
         Capacity:=Points.Count div 3;
@@ -625,9 +625,9 @@ begin
           P:=ZERO;
           OK:=True;
 
-          detectPrecision(Points[I - 1]);
+          detectPrecision(Points[I-1]);
 
-          Val(Points[I - 1], P.X, Flag);
+          Val(Points[I-1], P.X, Flag);
           if Flag <> 0 then
             OK:=False;
 
@@ -635,7 +635,7 @@ begin
           if Flag <> 0 then
             OK:=False;
 
-          Val(Points[I + 1], P.Z, Flag);
+          Val(Points[I+1], P.Z, Flag);
           if Flag <> 0 then
             OK:=False;
 
@@ -695,7 +695,7 @@ begin
     S:=-1;
     F:=-1;
     L:=Length(Data);
-    I:=Index + 1;
+    I:=Index+1;
     while I <= L do
     begin
       Ch:=Data[I];
@@ -710,14 +710,14 @@ begin
     OK:=(S <> -1) and (F <> -1);
     if OK then
     begin
-      Data:=Copy(Data, S + 1, F - S - 2);
+      Data:=Copy(Data, S+1, F-S-2);
       Faces:=TStringList.Create;
       ProcessString(Data, Faces);
       Setlength(Tmp, Faces.Count);
       N:=0;
       for I:=1 to faces.Count do
       begin
-        Val(Faces[I - 1], Index, Flag);
+        Val(Faces[I-1], Index, Flag);
         if Flag = 0 then
         begin
           if Index = -1 then
@@ -725,7 +725,7 @@ begin
             if N > 2 then
             begin
               if FCount >= Capacity then
-                Capacity:=FCount + 25;
+                Capacity:=FCount+25;
               setlength(FFaces[FCount], N);
               Move(Tmp[0], FFaces[FCount][0], N * SizeOf(integer));
               Inc(FCount);
@@ -775,7 +775,7 @@ procedure TVRMLList.Clear;
 var
   I: integer;
 begin
-  for I:=0 to Count - 1 do
+  for I:=0 to Count-1 do
     begin FObjects[I].Free; FObjects[I]:=nil; end;
   FObjects.Clear;
   FFaceSets.Clear;
@@ -810,7 +810,7 @@ begin
     Result.Capacity:=FFaceSets.Count;
     for I:=1 to FFaceSets.Count do
     begin
-      FaceSet:=FFacesets[I - 1];
+      FaceSet:=FFacesets[I-1];
       if Faceset.Coordinates <> nil then
         Result.Add(FaceSet);
     end;
@@ -985,7 +985,7 @@ begin
         // Assemble coordinate sets
         for I:=1 to Data.Count do
         begin
-          FaceInfo:=Data[I - 1];
+          FaceInfo:=Data[I-1];
           if AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates) = -1 then
             AddedCtrlPts.Add(FaceInfo.Coordinates);
         end;
@@ -1007,7 +1007,7 @@ begin
         FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
         for I:=1 to Data.Count do
         begin
-          FaceInfo:=Data[I - 1];
+          FaceInfo:=Data[I-1];
           Index:=AddedCtrlPts.IndexOf(FaceInfo.Coordinates);
           if Index <> -1 then
           begin
@@ -1015,14 +1015,14 @@ begin
             Layer:=SubdivisionSurface.AddNewLayer;
             for J:=1 to FaceInfo.Count do
             begin
-              Face:=FaceInfo.Face[J - 1];
+              Face:=FaceInfo.Face[J-1];
               if Face <> nil then
               begin
                 N:=length(Face);
                 FacePoints.Clear;
                 for K:=1 to N do
                 begin
-                  Index:=Face[K - 1];
+                  Index:=Face[K-1];
                   if (Index >= 0) and (Index < Points.Count) then
                   begin
                     CtrPoint:=Points[Index] as TFreeSubdivisionControlpoint;
@@ -1040,7 +1040,7 @@ begin
 
         for I:=1 to AddedCtrlPts.Count do
         begin
-          Points:=TFasterListTFreeSubdivisionControlPoint(AddedCtrlPts.Objects[I - 1]);
+          Points:=TFasterListTFreeSubdivisionControlPoint(AddedCtrlPts.Objects[I-1]);
           FreeAndNil(Points);
         end;
         FreeAndNil(AddedCtrlPts);
@@ -1048,13 +1048,13 @@ begin
         // delete empty layers
         for I:=SubdivisionSurface.NumberOfLayers downto 1 do
         begin
-          if (SubdivisionSurface.Layer[I - 1].Count = 0)
+          if (SubdivisionSurface.Layer[I-1].Count = 0)
             and (SubdivisionSurface.NumberOfLayers > 1)
           then
-            SubdivisionSurface.Layer[I - 1].Delete;
+            SubdivisionSurface.Layer[I-1].Delete;
         end;
         SubdivisionSurface.ActiveLayer:=
-          SubdivisionSurface.Layer[SubdivisionSurface.NumberOfLayers - 1];
+          SubdivisionSurface.Layer[SubdivisionSurface.NumberOfLayers-1];
 //    finally
         SubdivisionSurface.Built:=False;
         FreeAndNil(Data);

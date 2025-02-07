@@ -3,81 +3,48 @@
 {------------------------------------------------------------------------------}
 
 function TFreeSubdivisionControlPointGroup.FGetIndex: integer;
-begin
-  Result:=Surface.FControlPointGroups.IndexOf(Self);
-end;{TFreeSubdivisionControlPoint.FGetIndex}
-
+begin Result:=Surface.FControlPointGroups.IndexOf(Self); end;
 function TFreeSubdivisionControlPointGroup.FGetSelected: boolean;
-begin
-  Result:=Surface.FSelectedControlPointGroups.IndexOf(self) <> -1;
-end;{TFreeSubdivisionControlPoint.FGetSelected}
+begin Result:=Surface.FSelectedControlPointGroups.IndexOf(self) <> -1; end;
 
 function TFreeSubdivisionControlPointGroup.FGetVisible: boolean;
-var
-  I: integer;
-  CFace: TFreeSubdivisionControlFace;
-begin
-  // a controlpoint group is visible if at least one of it's controlpoints
-  //is visible
+var  I: integer;  CFace: TFreeSubdivisionControlFace;
+begin // a controlpoint group is visible if at least one of it's controlpoints is visible
   Result:=False;
   for i:=0 to FControlPoints.Count-1 do
-    if FControlPoints[I].visible then
-    begin
-      Result:=True;
-      exit;
-    end;
-end;{TFreeSubdivisionControlPoint.FGetVisible}
+    if FControlPoints[I].visible then begin Result:=True; exit; end;
+end;
 
 procedure TFreeSubdivisionControlPointGroup.FSetSelected(val: boolean);
-var
-  index, i: integer;
+  var index, i: integer;
 begin
   Index:=Surface.FSelectedControlPointGroups.IndexOf(self);
-
   if (Index >= 0) and Val then exit;
   if (Index < 0) and not Val then exit;
-
-  for i:=0 to FControlPoints.Count-1 do
-     FControlPoints[i].Selected:=val;
-
-  if Val then
-      Surface.FSelectedControlPointGroups.Add(self)
-  else
-      Surface.FSelectedControlPointGroups.Delete(index);
-
-//  Surface.ExecuteOnSelectItem(Self);
-end;{TFreeSubdivisionControlPoint.FSetSelected}
+  for i:=0 to FControlPoints.Count-1 do FControlPoints[i].Selected:=val;
+  if Val then Surface.FSelectedControlPointGroups.Add(self)
+         else Surface.FSelectedControlPointGroups.Delete(index);
+  Surface.ExecuteOnSelectItem(Self);
+end;
 
 procedure TFreeSubdivisionControlPointGroup.FSetLocked(val: boolean);
-begin
-  if Val <> FLocked then
-  begin
-    FLocked:=Val;
-  end;
-end;{TFreeSubdivisionControlPoint.FSetLocked}
+begin if Val <> FLocked then begin FLocked:=Val; end; end;
 
 constructor TFreeSubdivisionControlPointGroup.Create(Owner: TFreeSubdivisionSurface);
 begin
   inherited Create(Owner);
-  if Owner = nil then
-     Owner:=nil;
+  if Owner = nil then Owner:=nil;
   FControlPoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
-end;{TFreeSubdivisionControlPoint.Create}
+end;
 
 procedure TFreeSubdivisionControlPointGroup.AddControlPoint(cp:TFreeSubdivisionControlPoint);
-begin
- FControlPoints.Add(cp);
-end;
+    begin FControlPoints.Add( cp ); end;
 
 procedure TFreeSubdivisionControlPointGroup.RemoveControlPoint(cp:TFreeSubdivisionControlPoint);
-begin
- FControlPoints.DeleteItem(cp);
-end;
+    begin FControlPoints.DeleteItem( cp ); end;
 
 procedure TFreeSubdivisionControlPointGroup.BreakGroup;
-begin
- FControlPoints.Clear;
-end;
+    begin FControlPoints.Clear; end;
 
 procedure TFreeSubdivisionControlPointGroup.Delete;
 var
@@ -89,7 +56,7 @@ begin
   Surface.FControlPointGroups.DeleteItem(self);
   FControlPoints.Clear;
   Destroy;
-end;{TFreeSubdivisionControlPoint.Delete}
+end;
 
 function TFreeSubdivisionControlPointGroup.CalculateCenterPoint: T3DCoordinate;
 var
@@ -99,45 +66,40 @@ begin
   Result:=ZERO;
   Centre:=ZERO;
   C:=FControlPoints.Count;
-  for I:=0 to C-1 do
-    begin
+  for I:=0 to C-1 do begin
       P:=FControlPoints[i].FCoordinate;
-      Centre.X:=Centre.X + P.X;
-      Centre.Y:=Centre.Y + P.Y;
-      Centre.Z:=Centre.Z + P.Z;
-    end;
+      Centre.X:=Centre.X+P.X;
+      Centre.Y:=Centre.Y+P.Y;
+      Centre.Z:=Centre.Z+P.Z;
+  end;
   Centre.X:=Centre.X / C;
   Centre.Y:=Centre.Y / C;
   Centre.Z:=Centre.Z / C;
   Result:=Centre;
-end;{CalculateCenterPoint}
+end;
 
 procedure TFreeSubdivisionControlPointGroup.Draw(Viewport: TFreeViewport);
 var
+  I: integer;
+  MFL: TFloatType;
   P, PA,PB: TPoint;
   Pz: TShadePoint;
-  I: integer;
   P3D: T3DCoordinate;
-  MFL: TFloatType;
 begin
-  if Viewport.ViewportMode = vmWireframe then
-  begin
-    if (FName > '') then
-    begin
+  if Viewport.ViewportMode = vmWireframe then begin
+    if (FName > '') then begin
       P3D:=CalculateCenterPoint;
-
       if (Viewport.ViewType = fvBodyplan) then
-      if P3D.X <= Surface.SplitSectionLocation then P3D.Y:=-P3D.Y;
+        if P3D.X <= Surface.SplitSectionLocation then P3D.Y:=-P3D.Y;
       P:=Viewport.Project( P3D );
       if FControlPoints.Count>0 then Viewport.FontColor:=FControlPoints[0].Color;
       ViewPort.PenColor:=Viewport.FontColor;
-      ViewPort.Ellipse(P.X - 2, P.Y - 2, P.X + 2, P.Y + 2);
-      ViewPort.Ellipse(P.X - 4, P.Y - 4, P.X + 4, P.Y + 4);
-      ViewPort.TextOut(P.X + 2, P.Y + 2, FName);
-
+      ViewPort.Ellipse(P.X-2, P.Y-2, P.X+2, P.Y+2);
+      ViewPort.Ellipse(P.X-4, P.Y-4, P.X+4, P.Y+4);
+      ViewPort.TextOut(P.X+2, P.Y+2, FName);
     end;
   end;
-end;{TFreeSubdivisionControlPoint.Draw}
+end;
 
 procedure TFreeSubdivisionControlPointGroup.LoadBinary(Source: TFreeFileBuffer);
 var
@@ -152,7 +114,7 @@ begin
     FControlPoints.Add( Surface.FControlPoints[CPN] );
   end;
   SS.Free;
-end;{TFreeSubdivisionControlPoint.LoadBinary}
+end;
 
 procedure TFreeSubdivisionControlPointGroup.LoadFromStream(
   var LineNr: integer; Strings: TStringList);
@@ -167,13 +129,12 @@ begin
   Str:=Strings[LineNr];
   Strs:=Str.Split([#32]);
   N:= length(Strs);
-  for i:=0 to N-1 do
-    begin
+  for i:=0 to N-1 do begin
     //CPN:=ReadIntFromStr(LineNr, Str);
     CPN:=GetInteger( Strs[i] );
     FControlPoints.Add(Surface.FControlPoints[CPN]);
-    end;
-end;{TFreeSubdivisionControlPoint.LoadFromStream}
+  end;
+end;
 
 procedure TFreeSubdivisionControlPointGroup.SaveBinary(Destination: TFreeFileBuffer);
 var I,N,CPN: integer;  SS:TStrings;
@@ -181,14 +142,13 @@ begin
   Destination.Add(FName);
   //Destination.Add(FControlPoints.Count);
   SS:=TStringList.Create;
-  for i:=0 to FControlPoints.Count-1 do
-    begin
+  for i:=0 to FControlPoints.Count-1 do begin
     CPN:=Surface.FControlPoints.IndexOf(FControlPoints[i]);
     SS.Add(IntToStr(CPN));
-    end;
+  end;
   Destination.Add(SS);
   SS.Free;
-end;{TFreeSubdivisionControlPoint.SaveBinary}
+end;
 
 procedure TFreeSubdivisionControlPointGroup.SaveToStream(Strings: TStringList);
 var I,N,CPN: integer;
@@ -197,12 +157,11 @@ begin
   Strings.Add(FName);
   CPN:=Surface.FControlPoints.IndexOf(FControlPoints[0]);
   Str:=IntToStr(CPN);
-  for i:=1 to FControlPoints.Count-1 do
-    begin
+  for i:=1 to FControlPoints.Count-1 do begin
     CPN:=Surface.FControlPoints.IndexOf(FControlPoints[i]);
     Str:=Str+#32+IntToStr(CPN);
-    end;
+  end;
   Strings.Add(Str);
-end;{TFreeSubdivisionControlPoint.SaveToStream}
+end;
 
 

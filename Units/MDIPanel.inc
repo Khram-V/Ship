@@ -208,7 +208,7 @@ begin
     Color:=clInactiveCaption;
     Font.Color:=clCaptionText;
     Font.Style:=[fsBold];
-    Height:=SCH; // Font.Height + 8;
+    Height:=SCH; // Font.Height+8;
     ParentColor:=False;
     ParentFont:=False;
     TabStop:=False;
@@ -239,7 +239,7 @@ begin  // exit;
   if aVal=FCaptionButtons then exit; FCaptionButtons:=aVal;
 
 //IconSize:=deriveCaptionIconHeight-4;
-//IconSizeString:=IntToStr(IconSize) + 'x' + IntToStr(IconSize);
+//IconSizeString:=IntToStr(IconSize)+'x'+IntToStr(IconSize);
 //IconSizeString:='X';
 (*
   if not (cbSystemMenu in FCaptionButtons) and assigned(FSystemButton) then FreeAndNil(FSystemButton);
@@ -478,10 +478,10 @@ begin
    // with FSystemButton do begin setDefaultSystemIcon; end;
   Invalidate;
   FCaptionPanel.AdjustSize;
-  H:=FCaptionPanel.Height + 2*BorderWidth;
-  if BevelInner<>bvNone then H:=H + 2*BevelWidth;
-  if BevelOuter<>bvNone then H:=H + 2*BevelWidth;
-  Constraints.MinHeight:=H + 4; // +4 - to prevent lower border disappear
+  H:=FCaptionPanel.Height+2*BorderWidth;
+  if BevelInner<>bvNone then H:=H+2*BevelWidth;
+  if BevelOuter<>bvNone then H:=H+2*BevelWidth;
+  Constraints.MinHeight:=H+4; // +4-to prevent lower border disappear
   Constraints.MinWidth :=200;
 end;
 
@@ -589,7 +589,7 @@ begin
       FWindowResizingSide:=wrszsNW;
       Cursor:=crSizeNW;
     end
-    else if Y >= Height - FCornerSize then begin
+    else if Y >= Height-FCornerSize then begin
       FWindowResizingSide:=wrszsSW;
       Cursor:=crSizeSW;
     end else begin
@@ -597,12 +597,12 @@ begin
       Cursor:=crSizeWE;
     end;
   end
-  else if X >= Width - FCornerSize then begin
+  else if X >= Width-FCornerSize then begin
     if Y <= FCornerSize then begin
       FWindowResizingSide:=wrszsNE;
       Cursor:=crSizeNE;
     end
-    else if Y >= Height - FCornerSize then begin
+    else if Y >= Height-FCornerSize then begin
       FWindowResizingSide:=wrszsSE;
       Cursor:=crSizeSE;
     end else begin
@@ -614,7 +614,7 @@ begin
       FWindowResizingSide:=wrszsN;
       Cursor:=crSizeNS;
     end
-    else if Y >= Height - FCornerSize then begin
+    else if Y >= Height-FCornerSize then begin
       FWindowResizingSide:=wrszsS;
       Cursor:=crSizeNS;
     end else begin
@@ -631,8 +631,8 @@ begin
   if (Button = mbLeft) and (Shift = [ssLeft]) then begin
     WindowPositionState:=wpsResizing;
     TL:=Parent.ClientToScreen(BoundsRect.TopLeft);                            //writeln('d:',Mouse.CursorPos.X, ':', Mouse.CursorPos.Y);
-    WindowCaptionMouseX:=Mouse.CursorPos.X - TL.X;
-    WindowCaptionMouseY:=Mouse.CursorPos.Y - TL.Y;
+    WindowCaptionMouseX:=Mouse.CursorPos.X-TL.X;
+    WindowCaptionMouseY:=Mouse.CursorPos.Y-TL.Y;
     setActive(True);
   end;
 end;
@@ -648,27 +648,27 @@ begin
     H:=Height;
     case FWindowResizingSide of
       wrszsNW: begin
-        SL:=Point(Mouse.CursorPos.X - WindowCaptionMouseX,
-          Mouse.CursorPos.Y - WindowCaptionMouseY);
+        SL:=Point(Mouse.CursorPos.X-WindowCaptionMouseX,
+          Mouse.CursorPos.Y-WindowCaptionMouseY);
         TL:=Parent.ScreenToClient(SL);
-        H:=H - (TL.Y - T);
-        W:=W - (TL.X - L);
+        H:=H-(TL.Y-T);
+        W:=W-(TL.X-L);
         L:=TL.X;
         T:=TL.Y;
       end;
       wrszsN: begin
-        SL:=Point(Mouse.CursorPos.X - WindowCaptionMouseX,
-          Mouse.CursorPos.Y - WindowCaptionMouseY);
+        SL:=Point(Mouse.CursorPos.X-WindowCaptionMouseX,
+          Mouse.CursorPos.Y-WindowCaptionMouseY);
         TL:=Parent.ScreenToClient(SL);
-        H:=H - (TL.Y - T);
+        H:=H-(TL.Y-T);
         T:=TL.Y;
       end;
       wrszsNE: begin
         W:=X;
-        SL:=Point( Mouse.CursorPos.X - WindowCaptionMouseX,
-                     Mouse.CursorPos.Y - WindowCaptionMouseY );
+        SL:=Point( Mouse.CursorPos.X-WindowCaptionMouseX,
+                     Mouse.CursorPos.Y-WindowCaptionMouseY );
         TL:=Parent.ScreenToClient(SL);
-        H:=H - (TL.Y - T);
+        H:=H-(TL.Y-T);
         T:=TL.Y;
       end;
       wrszsE:  W:=X;
@@ -676,17 +676,17 @@ begin
       wrszsS:  H:=Y;
       wrszsSW: begin
         H:=Y;
-        SL:=Point(Mouse.CursorPos.X - WindowCaptionMouseX,
-              Mouse.CursorPos.Y - WindowCaptionMouseY);
+        SL:=Point(Mouse.CursorPos.X-WindowCaptionMouseX,
+              Mouse.CursorPos.Y-WindowCaptionMouseY);
         TL:=Parent.ScreenToClient(SL);
-        W:=W - (TL.X - L);
+        W:=W-(TL.X-L);
         L:=TL.X;
       end;
       wrszsW: begin
-        SL:=Point(Mouse.CursorPos.X - WindowCaptionMouseX,
-          Mouse.CursorPos.Y - WindowCaptionMouseY);
+        SL:=Point(Mouse.CursorPos.X-WindowCaptionMouseX,
+          Mouse.CursorPos.Y-WindowCaptionMouseY);
         TL:=Parent.ScreenToClient(SL);
-        W:=W - (TL.X - L);
+        W:=W-(TL.X-L);
         L:=TL.X;
       end;
     end;              // writeln('setBounds(', L, ',', T, ',', W, ',', H, ')');
@@ -709,8 +709,8 @@ begin
     //TL:=ClientToScreen(TPanel(TPanel(Sender).Parent).BoundsRect.TopLeft);
     TL:=Parent.ClientToScreen( BoundsRect.TopLeft );
     //writeln('d:',Mouse.CursorPos.X, ':', Mouse.CursorPos.Y);
-    WindowCaptionMouseX:=Mouse.CursorPos.X - TL.X;
-    WindowCaptionMouseY:=Mouse.CursorPos.Y - TL.Y;
+    WindowCaptionMouseX:=Mouse.CursorPos.X-TL.X;
+    WindowCaptionMouseY:=Mouse.CursorPos.Y-TL.Y;
     setActive(True);
   end;
 end;
@@ -724,8 +724,8 @@ begin
   begin
     //writeln('m:',Mouse.CursorPos.X, ':', Mouse.CursorPos.Y);
     FCaptionLabel.Cursor:=crSizeAll;
-    SL:=Point(Mouse.CursorPos.X - WindowCaptionMouseX,
-                Mouse.CursorPos.Y - WindowCaptionMouseY);
+    SL:=Point(Mouse.CursorPos.X-WindowCaptionMouseX,
+                Mouse.CursorPos.Y-WindowCaptionMouseY);
     TL:=Parent.ScreenToClient(SL);
     Left:=TL.X;
     Top:=TL.Y;
@@ -764,7 +764,7 @@ end;
 procedure TCustomMDIPanel.DoMinimize;
 var L,H,W: Integer;
 begin L:=PanelManager.MList.IndexOf( Self );
-//    H:=FCaptionPanel.Height + BevelWidth*2; // fvPerspectuve -> error
+//    H:=FCaptionPanel.Height+BevelWidth*2; // fvPerspectuve -> error
       W:=Parent.ClientWidth div 5;
       H:=(2*W) div 3;
   if FWindowState=wsNormal then FNormalBounds:=Self.BoundsRect;
@@ -861,7 +861,7 @@ var
   C: TControl;
 begin
   if not assigned(Parent) then exit;
-  for i:=0 to Parent.ControlCount - 1 do begin
+  for i:=0 to Parent.ControlCount-1 do begin
     C:=Parent.Controls[i];
     if (C is TCustomMDIPanel) and (C<>Self) then TCustomMDIPanel(C).setActive(False);
   end;
@@ -951,7 +951,7 @@ var
 begin
   if not assigned(Ctrl) then exit;
   if Ctrl is TWinControl then
-    for i:=0 to TWinControl(Ctrl).ControlCount - 1 do
+    for i:=0 to TWinControl(Ctrl).ControlCount-1 do
     begin
       C:=TWinControl(Ctrl).Controls[i];
       unsetMouseClickProxiesRecursively(C);
@@ -980,7 +980,7 @@ begin
   if not assigned(Ctrl) then exit;
   setProxyFor(Ctrl);
   if Ctrl is TWinControl then
-    for i:=0 to TWinControl(Ctrl).ControlCount - 1 do
+    for i:=0 to TWinControl(Ctrl).ControlCount-1 do
     begin
       C:=TWinControl(Ctrl).Controls[i];
       setMouseClickProxiesRecursively(C);
@@ -1005,7 +1005,7 @@ var
   C: TControl;
   L: TMouseClickProxy;
 begin
-  for i:=0 to FClickProxies.Count - 1 do
+  for i:=0 to FClickProxies.Count-1 do
   begin
     L:=TMouseClickProxy(FClickProxies[i]);
     if assigned(L) and assigned(L.FOwner) then
