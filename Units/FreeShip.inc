@@ -277,7 +277,7 @@ begin
     if Index>=NumberOfViewports then Index:=NumberOfViewports-1;
 //  if (Index >= 0) and (Index < NumberOfViewports) then
     Result:=FViewports[index]
-//else raise Exception.Create('Invalid viewport index!');
+//else WriteLn('Invalid viewport index!');
 end;
 
 procedure TFreeShip.FSetActiveControlPoint(Val: TFreeSubdivisionControlPoint);

@@ -397,33 +397,6 @@ begin
   Result:=(U.X * V.X)+(U.Y * V.Y)+(U.Z * V.Z);
 end;{DotProduct}
 
-// find nearest DXF color corresponding to a windows color
-function FindDXFColorIndex(Color: TColor): integer;
-var
-  R, G, B: byte;
-  R1, G1, B1: byte;
-  I: integer;
-  Dist, Tmp: single;
-begin
-  Result:=1;
-  R:=GetRValue(Color);
-  G:=GetGValue(Color);
-  B:=GetBValue(Color);
-  Dist:=1e30;
-  for I:=1 to 255 do
-  begin
-    R1:=GetRValue(DXFLayerColors[I]);
-    G1:=GetGValue(DXFLayerColors[I]);
-    B1:=GetBValue(DXFLayerColors[I]);
-    Tmp:=Sqrt(Sqr(R1-R)+Sqr(G1-G)+Sqr(B1-B));
-    if Tmp < Dist then
-    begin
-      Dist:=Tmp;
-      Result:=I;
-    end;
-  end;
-end;{FindDXFColorIndex}
-
 procedure FillColor(Parameter: TFloatType; var R, G, B: byte);
 // Calculate color on basis of wavelength (0.0-1.0)
 var
@@ -433,17 +406,11 @@ var
   wavelength: single;
 
   function Adjust(Color: single): integer;
-  begin
-    if color <= 0.0 then
-      Result:=0
-    else
-    if Color >= 1.0 then
-      Result:=255
-    else
-    begin
-      Result:=Round(255 * Power(Color, 0.8));
-      //if result<0 then result:=0 else if result>255 then result:=255;
-    end;
+  begin if color <= 0.0 then Result:=0 else
+        if Color >= 1.0 then Result:=255 else begin
+           Result:=Round(255 * Power(Color, 0.8));
+           //if result<0 then result:=0 else if result>255 then result:=255;
+         end;
   end;{Adjust}
 
 begin
@@ -1330,12 +1297,9 @@ end;{MakeLength}
 
 procedure MinMax(P: T3DCoordinate; var Min, Max: T3DCoordinate);
 begin
-  if P.X < Min.X then Min.X:=P.X;
-  if P.Y < Min.Y then Min.Y:=P.Y;
-  if P.Z < Min.Z then Min.Z:=P.Z;
-  if P.X > Max.X then Max.X:=P.X;
-  if P.Y > Max.Y then Max.Y:=P.Y;
-  if P.Z > Max.Z then Max.Z:=P.Z;
+  if P.X < Min.X then Min.X:=P.X else if P.X > Max.X then Max.X:=P.X;
+  if P.Y < Min.Y then Min.Y:=P.Y else if P.Y > Max.Y then Max.Y:=P.Y;
+  if P.Z < Min.Z then Min.Z:=P.Z else if P.Z > Max.Z then Max.Z:=P.Z;
 end;{MinMax}
 
 function UnifiedNormal(P1, P2, P3: T3DCoordinate): T3DCoordinate;
@@ -1349,7 +1313,7 @@ begin
   Result.X:=Result.X / L;
   Result.y:=Result.y / L;
   Result.z:=Result.z / L;
-end;{UnifiedNormal}
+end;
 
 function UnitVector(P: T3DCoordinate): T3DCoordinate;
 var L: TFloatType;

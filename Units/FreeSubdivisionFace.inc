@@ -101,7 +101,7 @@ begin
     Result.FCoordinate:=Centre;
   end
   else if FPoints.Count=3 then begin Result:=nil; end;
-//if FPoints.Count < 3 then raise Exception.Create('TFreeSubdivisionFace points count < 3');
+//if FPoints.Count < 3 then WriteLn('TFreeSubdivisionFace points count < 3');
 end;
 
 function TFreeSubdivisionFace.CheckIntegrity: boolean;

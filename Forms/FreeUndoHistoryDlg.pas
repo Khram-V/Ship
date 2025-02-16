@@ -1,32 +1,15 @@
-
-
 unit FreeUndoHistoryDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
+{$MODE Delphi}
 
 interface
-
 uses
-     SysUtils,
-     Classes,
-     Graphics,
-     Controls,
-     Forms,
-     Dialogs,
-     StdCtrls,
-     ExtCtrls,
-     FreeShipUnit, FreeVersionUnit,
-     FreeTypes,
-     FreeGeometry,FreeLanguageSupport,
-     Buttons;
-
+     Graphics, Forms,
+     Controls, Buttons,
+     StdCtrls, ExtCtrls,
+     FreeShipUnit, FreeVersionUnit, FreeTypes,
+     FreeGeometry, FreeLanguageSupport;
 type
-
-{ TFreeUndoHistoryDialog }
-
-  TFreeUndoHistoryDialog   = class(TForm)
+  TFreeUndoHistoryDialog = class(TForm)              { TFreeUndoHistoryDialog }
     Panel: TPanel;
     Panel1: TPanel;
     UndoBox: TListBox;
@@ -52,18 +35,12 @@ type
 var FreeUndoHistoryDialog: TFreeUndoHistoryDialog;
 
 implementation
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 procedure TFreeUndoHistoryDialog.CreateFreeShip;
 begin
   FreeShip1:= TFreeShip.Create(Self);
-  with FreeShip1 do
-  begin
+  with FreeShip1 do begin
     FileChanged:=True;
     Filename:='Example_Ship.ftm';
     FileVersion:=fv261;
@@ -75,8 +52,7 @@ procedure TFreeUndoHistoryDialog.CreateViewPort;
 begin
   Viewport:=TFreeViewport.Create(Self);
   Viewport.Parent:=Panel1;
-  with Viewport do
-  begin
+  with Viewport do begin
     Left:=264;
     Height:=392;
     Top:=9;
@@ -106,9 +82,9 @@ begin
 end;
 
 function TFreeUndoHistoryDialog.Execute(Freeship:TFreeShip):Boolean;
-var I,Max : Integer;
-    Undo : TFreeUndoObject;
-    Str  : string;
+var I,Max: Integer;
+    Undo: TFreeUndoObject;
+    Str: AnsiString;
 begin
    CreateFreeShip;
    CreateViewPort;
@@ -142,9 +118,8 @@ end;
 procedure TFreeUndoHistoryDialog.UndoBoxClick(Sender: TObject);
 var Undo:TFreeUndoObject;
 begin
-   if UndoBox.ItemIndex<>-1 then
-   begin
-      Undo:=UndoBox.Items.Objects[UndoBox.ItemIndex] as TFreeUndoObject;;
+   if UndoBox.ItemIndex<>-1 then begin
+      Undo:=UndoBox.Items.Objects[UndoBox.ItemIndex] as TFreeUndoObject;
       Freeship1.LoadProject(Undo.Undodata);
       Viewport.ZoomExtents;
    end;
@@ -163,9 +138,8 @@ procedure TFreeUndoHistoryDialog.SpeedButton2Click(Sender: TObject);
 begin ModalResult:=mrCancel; end;
 
 procedure TFreeUndoHistoryDialog.FormResize(Sender: TObject);
-begin
-   Speedbutton1.Left:=Panel.Width-132;
-   Speedbutton2.Left:=Speedbutton1.Left+SpeedButton1.Width+2;
+begin Speedbutton1.Left:=Panel.Width-132;
+      Speedbutton2.Left:=Speedbutton1.Left+SpeedButton1.Width+2;
 end;
 
 end.

@@ -5,7 +5,7 @@ unit FreeTypes;
 {$mode objfpc}
 
 Interface
-Uses Classes, SysUtils;
+Uses Classes, SysUtils, Graphics;
 Const PixelCountMax=32768; // used for faster pixel acces when shading to viewport
 
 Type
@@ -16,6 +16,9 @@ Type
   T3DLine      = record A,B:T3DCoordinate; end; // 3D line type
   T3DPlane     = record a,b,c,d:TFloatType;end; // Description of a 3D plane: a*x+b*y+c*z -d = 0.0;
   T3DVector    = record X,Y,Z:TFloatType; end;  // 3D coordinate type
+
+
+
 
   operator =  (c1, c2:T3DCoordinate): boolean;
   operator <> (c1, c2:T3DCoordinate): boolean;
@@ -89,6 +92,10 @@ Type
 Const
   ZERO : T3DCoordinate = (X:0.0;Y:0.0;Z:0.0);
   EOL                  = #13#10;
+//Var
+//  FUnderWaterColor: TColor; // Default color used for shading underwaterpart of the vessel
+//  FUnderWaterColorAlpha: byte;
+
 
 Function F2S( Value: TFloatType ): TFloatType;
 function Point3D( X,Y,Z: TFloattype): T3DCoordinate;
@@ -101,6 +108,14 @@ Function BlankOff( S: AnsiString ): AnsiString;
 //Function Dist( A:T3DVector ): TFloatType;
 Function Distance2D( P1,P2: T2DCoordinate ): extended;
 Function Distance3D( P1,P2: T3DCoordinate ): extended;
+//function GetUnderwaterColor: TColor;
+//function GetUnderwaterColorAlpha: byte;
+//procedure SetUnderwaterColor(Val: TColor);
+//procedure SetUnderwaterColorAlpha(AValue: byte);
+//property UnderWaterColor: TColor read GetUnderWaterColor write SetUnderwaterColor;
+//property UnderWaterColorAlpha: byte read GetUnderWaterColorAlpha write SetUnderwaterColorAlpha;
+
+
 
 Implementation
 function Point3D( X,Y,Z: TFloattype): T3DCoordinate;
@@ -242,6 +257,20 @@ begin J:=1; K:=1; L:=Length( S );       // вычистка лишних про�
     SetLength( S,J-1 );
     Result:=S;
 end;
+(*
+function GetUnderwaterColor: TColor;
+begin Result:=(FUnderWaterColor and $FFFFFF) or (FUnderWaterColorAlpha shl 24 );
+end;
+function GetUnderwaterColorAlpha: byte;
+begin Result:=FUnderWaterColorAlpha; end; // shr 24; end;
 
+procedure SetUnderwaterColorAlpha( AValue: byte );
+begin FUnderWaterColor:=(FUnderWaterColor and $FFFFFF) or (AValue shl 24 );  ///***???
+      FUnderWaterColorAlpha:=AValue;
+end;
+procedure SetUnderwaterColor( Val: TColor );
+begin FUnderWaterColor:=(Val and $FFFFFF) or (FUnderWaterColorAlpha shl 24 );
+end;
+*)
 end.
 

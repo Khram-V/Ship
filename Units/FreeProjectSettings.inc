@@ -149,18 +149,15 @@ begin
                 FreeShip.HydrostaticCalculation[I-1].Calculated:=False;
   end;
 end;
-
+{
 procedure TFreeProjectSettings.FSetProjectUnderWaterColor(Val: TColor);
-begin
-  if Val <> FProjectUnderWaterColor then begin
-    FProjectUnderWaterColor:=Val; FreeShip.FileChanged:=True;
-  end;
+begin if Val <> FProjectUnderWaterColor then begin
+          FProjectUnderWaterColor:=Val; FreeShip.FileChanged:=True; end;
 end;
-
 procedure TFreeProjectSettings.FSetProjectUnderWaterColorAlpha(Val: byte);
 begin FProjectUnderWaterColorAlpha:=Val;
 end;
-
+}
 procedure TFreeProjectSettings.FSetProjectUnits(Val: TFreeUnitType);
 var
   UnitConversionFactor: double;
@@ -210,8 +207,8 @@ begin
   FMainparticularsHasBeenset:=False;
   FProjectShadeUnderwaterShip:=True;
   // Shades the underwaterpart of the hull in a different color
-  FProjectUnderWaterColor:=FreeShip.Preferences.UnderWaterColor;
-  FProjectUnderWaterColorAlpha:=FreeShip.Preferences.UnderWaterColorAlpha;
+  ProjectUnderWaterColor:=FreeShip.Preferences.UnderWaterColor;
+  ProjectUnderWaterColorAlpha:=FreeShip.Preferences.UnderWaterColorAlpha;
   FProjectUnits:=TFreeUnitType(0); // Default is metric units
   FUseDefaultSplitSectionLocation:=True;
   FProjectSplitSectionLocation:=0.0;
@@ -294,7 +291,6 @@ begin
   Dialog.CheckBox13.Checked:=EnableModelAutoMove;
 //Dialog.CheckBox14.Checked:=EnableBonjeanSAC;
   Dialog.ComboBox1.ItemIndex:=Ord(ProjectCoefficients);
-
   Dialog.CheckBox5.Checked:=FreeShip.Visibility.FShowHydrostDisplacement;
   Dialog.CheckBox6.Checked:=FreeShip.Visibility.FShowHydrostSectionalAreas;
   Dialog.CheckBox7.Checked:=FreeShip.Visibility.FShowHydrostMetacentricHeight;
@@ -328,7 +324,6 @@ begin
 //  EnableBonjeanSAC:=Dialog.CheckBox14.Checked;
     SavePreview:=Dialog.cbSavePreviewImage.Checked;
     ProjectCoefficients:=TFreeHydrostaticCoeff(Dialog.ComboBox1.ItemIndex);
-
     FreeShip.Visibility.FShowHydrostDisplacement:=Dialog.CheckBox5.Checked;
     FreeShip.Visibility.FShowHydrostSectionalAreas:=Dialog.CheckBox6.Checked;
     FreeShip.Visibility.FShowHydrostMetacentricHeight:=Dialog.CheckBox7.Checked;
@@ -344,7 +339,7 @@ end;
 
 procedure TFreeProjectSettings.LoadBinary(Source: TFreeFilebuffer; Image: TJPegImage);
 var
-  I: integer; Jpg: TJPEGImage;        FEnableBonjeanSAC: boolean; // == отменён
+  I:integer; Jpg:TJPEGImage; FEnableBonjeanSAC:boolean; // == отменён
 begin
   Clear;
   Source.LoadString(FProjectName);
@@ -357,7 +352,9 @@ begin
   //   Source.LoadTFloatType(FProjectWaterTemper);
   Source.LoadTFloatType(FProjectAppendageCoefficient);
   Source.LoadBoolean(FProjectShadeUnderwaterShip);
-  Source.LoadTColor(FProjectUnderWaterColor);
+  Source.LoadTColor(ProjectUnderWaterColor);
+     ProjectUnderWaterColorAlpha:=255-Byte( ProjectUnderWaterColor shr 24 );
+     ProjectUnderWaterColor:=ProjectUnderWaterColor and $FFFFFF;
   Source.LoadInteger(I);
   FProjectUnits:=TFreeUnitType(I);
   Source.LoadBoolean(FUseDefaultSplitSectionLocation);
@@ -387,38 +384,33 @@ begin
       Source.LoadTFloatType(FStartdraft);
       Source.LoadTFloatType(FEndDraft);
       Source.LoadTFloatType(FDraftStep);
-      Source.LoadTFloatType(FTrim);
-      // Crosscurves settings
+      Source.LoadTFloatType(FTrim);                     // Crosscurves settings
       Source.LoadInteger(FNoDisplacements);
       Setlength(FDisplacements, FNoDisplacements);
-      for I:=1 to FNoDisplacements do Source.LoadTFloatType(FDisplacements[I-1]);
+      for I:=0 to FNoDisplacements-1 do Source.LoadTFloatType(FDisplacements[I]);
       Source.LoadTFloatType(FMinimumDisplacement);
       Source.LoadTFloatType(FMaximumDisplacement);
       Source.LoadTFloatType(FDisplIncrement);
       Source.LoadBoolean(FUseDisplIncrements);
       Source.LoadInteger(FNoAngles);
       Setlength(FAngles, FNoAngles);
-      for I:=1 to FNoAngles do Source.LoadTFloatType(FAngles[I-1]);
+      for I:=0 to FNoAngles-1 do Source.LoadTFloatType(FAngles[I]);
       Source.LoadInteger(FNoStabTrims);
       Setlength(FStabTrims, FNoStabTrims);
-      for I:=1 to FNoStabTrims do Source.LoadTFloatType(FStabTrims[I-1]);
+      for I:=0 to FNoStabTrims-1 do Source.LoadTFloatType(FStabTrims[I]);
       Source.LoadBoolean(FFreeTrim);
       Source.LoadTFloatType(FVCG);
     end;
     if FreeShip.Fileversion >= fv317 then Source.LoadBoolean(FEnableModelAutoMove);
     if FreeShip.Fileversion >= fv332 then Source.LoadBoolean(FEnableBonjeanSAC);
-    FProjectUnderWaterColorAlpha:=FreeShip.Preferences.UnderWaterColorAlpha; // = fv210
-    if FreeShip.Fileversion >= fv500 then begin
-      Source.LoadInteger( I );
-      FProjectUnderWaterColorAlpha:=byte(I);
-      end;
+    if FreeShip.Fileversion >= fv500 then
+    begin Source.LoadInteger( I ); ProjectUnderWaterColorAlpha:=byte(I); end;
   end;
 end;
 
 procedure TFreeProjectSettings.SaveBinary(Destination: TFreeFileBuffer);
 var
-  Jpg: TJPegImage;
-  I: integer;
+  Jpg: TJPegImage; I: integer;
 begin
   if FreeShip.FileVersion >= fv120 then begin
     Destination.Add(BlankOff(ProjectName));
@@ -430,7 +422,8 @@ begin
     Destination.Add(FProjectWaterDensity); // Destination.Add(FProjectWaterTemper);
     Destination.Add(FProjectAppendageCoefficient);
     Destination.Add(FProjectShadeUnderwaterShip);
-    Destination.Add(FProjectUnderWaterColor);
+    Destination.Add( (ProjectUnderWaterColor and $FFFFFF)
+                  or (TColor( 255-ProjectUnderWaterColorAlpha ) shl 24) );
     Destination.Add(Ord(FProjectUnits));
     if FreeShip.FileVersion >= fv160 then begin
       Destination.Add(FUseDefaultSplitSectionLocation);
@@ -444,10 +437,7 @@ begin
       Jpg:=FreeShip.FGetPreview;
       FSetSavePreview( Jpg<>nil );
       Destination.Add( FSavePreview );
-      if FSavePreview then begin
-         Destination.Add( Jpg );
-         FreeAndNil( Jpg );
-      end;
+      if FSavePreview then begin Destination.Add( Jpg ); FreeAndNil( Jpg ); end;
       if FreeShip.FileVersion >= fv230 then Destination.Add(FProjectSimplifyIntersections);
       if FreeShip.Fileversion >= fv250 then begin // save settings for hydrostatics
         Destination.Add(FStartdraft);
@@ -467,11 +457,14 @@ begin
         Destination.Add(FFreeTrim);
         Destination.Add(FVCG);
       end;
-      if FreeShip.Fileversion>=fv317 then Destination.Add(EnableModelAutoMove);
+//    if FreeShip.Fileversion>=fv317 then Destination.Add(EnableModelAutoMove);
 //    if FreeShip.Fileversion>=fv332 then Destination.Add(EnableBonjeanSAC); !!
-      if FreeShip.Fileversion>=fv332 then Destination.Add( false );
-      if FreeShip.Fileversion>=fv500 then Destination.Add( FProjectUnderWaterColorAlpha );
+//    if FreeShip.Fileversion>=fv332 then Destination.Add( false );
+//    if FreeShip.Fileversion>=fv500 then Destination.Add( FProjectUnderWaterColorAlpha );
     end;
   end;
 end;
+
+//writeln( 'ready: C=$'+HexStr( FProjectUnderWaterColor,8 )
+//             +', A=$'+HexStr( FProjectUnderWaterColorAlpha,8 ) );
 

@@ -1,76 +1,61 @@
-
 unit FreeMatrices;
 {$mode objfpc}{$H+}
-
-// Skip translation
-
 interface
-
-uses //Grids,
-     Dialogs,
-     Classes,
-     SysUtils;
+uses Classes,SysUtils;
 
 const Singulier=True;
       Regulier=false;
       MatrixError = 1e-5;
+type
+TFreeMatrixType = Single;
+TFreeMatrixRow = Array of TFreeMatrixType;
+TFreeMatrix = class( TObject )
+private
+   FRows: array of TFreeMatrixRow;
+   FNoRows,FNoColumns: integer;
+   function FGetSquare: Boolean;
+   function FGetValue(Row,Col:Integer):TFreeMatrixType;
+   procedure FSetValue(Row,Col:Integer;Value:TFreeMatrixType);
+public
+   constructor Create;
+   destructor Destroy; override;
+   procedure Add(Matrix:TFreeMatrix);
+   procedure Assign(Matrix:TFreeMatrix);
+   procedure Clear;
+   function  Copy:TFreeMatrix;
+   procedure CreateIdentity;
+// procedure DumpToFile(Filename:string;Length,Digits:Integer);
+   procedure Fill(Value:TFreeMatrixType);
+   function  Invert:TFreeMatrix;
+   function  Multiply(Matrix:TFreeMatrix):TFreeMatrix;
+   procedure SetSize(Cols,Rows:Integer);
+   procedure Save(Strings:TStringList;Description:string);
+   function  Solve(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
+   function  Gauss(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
+   function  GaussJordan(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
+   procedure Subtract(Matrix:TFreeMatrix);
+   procedure Transpose;
+   property  ColCount: integer read FNoColumns;
+   property  Square  : Boolean read FGetSquare;
+   property  RowCount: integer read FNoRows;
+   property  Value[Row,Col:Integer]: TFreeMatrixType read FGetValue write FSetValue;
+end;
 
-type TFreeMatrixError= class(Exception);
-     TFreeMatrixType = Single;
-     TFreeMatrixRow  = Array of TFreeMatrixType;
-     TFreeMatrix     = class(TObject)
-                          private
-                             FRows        : array of TFreeMatrixRow;
-                             FNoRows      : integer;
-                             FNoColumns   : integer;
-                             function FGetSquare:Boolean;
-                             function FGetValue(Row,Col:Integer):TFreeMatrixType;
-                             procedure FSetValue(Row,Col:Integer;Value:TFreeMatrixType);
-                          public
-                             procedure    Add(Matrix:TFreeMatrix);
-                             procedure    Assign(Matrix:TFreeMatrix);
-                             procedure    Clear;
-                             function     Copy:TFreeMatrix;
-                             constructor  Create;
-                             procedure    CreateIdentity;
-                             destructor   Destroy; override;
-//                           procedure    DumpToFile(Filename:string;Length,Digits:Integer);
-                             procedure    Fill(Value:TFreeMatrixType);
-                             function     Invert:TFreeMatrix;
-                             function     Multiply(Matrix:TFreeMatrix):TFreeMatrix;
-                             procedure    SetSize(Cols,Rows:Integer);
-                             procedure    Save(Strings:TStringList;Description:string);
-                             function     Solve(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
-                             function     Gauss(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
-                             function     GaussJordan(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
-                             procedure    Subtract(Matrix:TFreeMatrix);
-                             procedure    Transpose;
-                             property     ColCount                : integer read FNoColumns;
-                             property     Square                  : Boolean read FGetSquare;
-                             property     RowCount                : integer read FNoRows;
-                             property     Value[Row,Col:Integer]  : TFreeMatrixType read FGetValue write FSetValue;
-                        end;
+implementation { ####################### TFreeMatrix ######################## }
 
-implementation
-
-{ ######################### TFreeMatrix ######################### }
 procedure TFreeMatrix.Add(Matrix:TFreeMatrix);
-var Source  : TFreeMatrixRow;
-    Target  : TFreeMatrixRow;
-    I,J     : integer;
+var Source,Target: TFreeMatrixRow; I,J: integer;
 begin
    Target:=nil;
    Source:=nil;
-   if (Matrix.RowCount=RowCount) and (Matrix.ColCount=ColCount) then
-   begin
-      for I:=0 to RowCount-1 do
-      begin
+   if (Matrix.RowCount=RowCount) and (Matrix.ColCount=ColCount) then begin
+      for I:=0 to RowCount-1 do begin
          Source:=Matrix.FRows[I];
          Target:=FRows[I];
          for J:=0 to ColCount-1 do Target[J]:=Target[J]+Source[J];
       end;
-   end else Raise TFreeMatrixError.Create('Matrix size does not match in Add');
-end;{TFreeMatrix.Add}
+   end else WriteLn('Matrix size does not match in Add');
+end;
 
 procedure TFreeMatrix.Assign(Matrix:TFreeMatrix);
 var I,Size:Integer;
@@ -78,68 +63,44 @@ begin
    SetSize(Matrix.ColCount,Matrix.RowCount);
    Size:=ColCount*SizeOf(TFreeMatrixType);
    for I:=0 to RowCount-1 do Move(Matrix.FRows[I][0],FRows[I][0],Size);
-end;{TFreeMatrix.Assign}
+end;
 
 function TFreeMatrix.FGetSquare:Boolean;
-begin
-   Result:=(ColCount=RowCount) and (ColCount>0);
-end;{TFreeMatrix.FGetSquare}
+begin Result:=(ColCount=RowCount) and (ColCount>0); end;
 
 function TFreeMatrix.FGetValue(Row,Col:Integer):TFreeMatrixType;
 begin
    if (Col>=0) and (Col<FNoColumns) and
-      (Row>=0) and (Row<FNoRows) then Result:=FRows[Row][Col] else
-   begin
-      Raise TFreeMatrixError.Create('Error in accesing matrix');
-   end;
-end;{TFreeMatrix.FGetValue}
+      (Row>=0) and (Row<FNoRows) then Result:=FRows[Row][Col]
+   else WriteLn('Error in accesing matrix');
+end;
 
 procedure TFreeMatrix.FSetValue(Row,Col:Integer;Value:TFreeMatrixType);
-begin
-   if (Col>=0) and (Col<FNoColumns) and
-      (Row>=0) and (Row<FNoRows) then
-      begin
-         FRows[Row][Col]:=Value;
-      end else Raise TFreeMatrixError.Create('Error in accesing matrix');
-end;{TFreeMatrix.FSetValue}
+begin if (Col>=0) and (Col<FNoColumns) and
+         (Row>=0) and (Row<FNoRows) then FRows[Row][Col]:=Value
+      else WriteLn('Error in accesing matrix');
+end;
 
 procedure TFreeMatrix.Clear;
-begin
-   SetLength(FRows,0);
-   FNoRows:=0;
-   FNoColumns:=0;
-end;{TFreeMatrix.Clear}
+begin SetLength(FRows,0); FNoRows:=0; FNoColumns:=0; end;
 
 function TFreeMatrix.Copy:TFreeMatrix;
-begin
-   Result:=TFreeMatrix.Create;
-   Result.Assign(Self);
-end;{TFreeMatrix.Copy}
+begin Result:=TFreeMatrix.Create; Result.Assign(Self); end;
 
 constructor TFreeMatrix.Create;
 begin
-   inherited Create;
-   SetLength(FRows,0);
-   FNoRows:=0;
-   FNoColumns:=0;
-   Clear;
-end;{TFreeMatrix.Create}
+   inherited Create; SetLength(FRows,0); FNoRows:=0; FNoColumns:=0; Clear;
+end;
 
 procedure TFreeMatrix.CreateIdentity;
 var i : integer;
-begin
-   if (RowCount=ColCount) and (RowCount>0) then
-   begin
-      Fill(0.0);
-      for I:=0 to RowCount-1 do Value[I,I]:=1.0;
-   end else Raise TFreeMatrixError.Create('Matrix must be square to create identity');
-end;{TFreeMatrix.CreateIdentity}
+begin if (RowCount=ColCount) and (RowCount>0) then begin Fill(0.0);
+         for I:=0 to RowCount-1 do Value[I,I]:=1.0;
+      end else WriteLn('Matrix must be square to create identity');
+end;
 
 destructor TFreeMatrix.Destroy;
-begin
-   Clear;
-   inherited Destroy;
-end;{TFreeMatrix.Destroy}
+begin Clear; inherited Destroy; end;
 (*
 procedure TFreeMatrix.DumpToFile(Filename:string;Length,Digits:Integer);
 var I,J:Integer;
@@ -148,8 +109,7 @@ begin
    AssignFile(FFile,Filename);
    rewrite(FFile);
    Writeln(FFile);
-   for I:=0 to RowCount-1 do
-   begin
+   for I:=0 to RowCount-1 do begin
       For J:=0 to ColCount-1 do Write(FFile,Value[I,J]:Length:Digits);
       Writeln(FFile);
    end;
@@ -157,48 +117,37 @@ begin
 end;
 *)
 procedure TFreeMatrix.Fill(Value:TFreeMatrixType);
-var i,j  : integer;
-    Size : Integer;
-    Row  : TFreeMatrixRow;
-    Row0 : TFreeMatrixRow;
+var i,j, Size : Integer;
+    Row, Row0 : TFreeMatrixRow;
 begin
    Size:=1;
-   for I:=0 to RowCount-1 do
-   begin
+   for I:=0 to RowCount-1 do begin
       Row:=FRows[I];
-      if I=0 then
-      begin
+      if I=0 then begin
          for J:=0 to ColCount-1 do Row[J]:=Value;
          Size:=ColCount*SizeOf(TFreeMatrixType);
          Row0:=Row;
-      end else
-      begin
-         // Copy entire contents of row[0] to row[I]
+      end else begin                // Copy entire contents of row[0] to row[I]
          Move(Row0[0],Row[0],Size);
       end;
    end;
-end;{TFreeMatrix.Fill}
+end;
 
 function TFreeMatrix.Invert:TFreeMatrix;
-var I,J,K,L,N : integer;
+var I,J,K,L,N, IMax: integer;
     Factor  : extended;
     amax,h  : Double;
     State   : Boolean;
-    IMax    : Integer;
-    Det     :Extended;
-    Inverted:TFreeMatrix;
-    Back:TFreeMatrix;
+    Det     : Extended;
+    Inverted,Back: TFreeMatrix;
 begin
    Result:=nil;
-   if Square then
-   begin
-      if ColCount=RowCount then
-      begin
+   if Square then begin
+      if ColCount=RowCount then begin
          Back:=Copy;
          Inverted:=TFreeMatrix.Create;
          Inverted.SetSize(ColCount,RowCount);
          Inverted.CreateIdentity;
-
          State:=Regulier;
          N:=ColCount;
          I:=0;
@@ -207,38 +156,30 @@ begin
             Inc(I);
             IMax:=I;
             AMax:=abs(Value[I-1,I-1]);
-            if I<>N then for K:=I+1 to N do if Abs(Value[K-1,I-1])>AMax then
-            begin
+            if I<>N then for K:=I+1 to N do if Abs(Value[K-1,I-1])>AMax then begin
                IMax:=K;
                AMax:=abs(Value[K-1,I-1]);
             end;
             if AMax<MatrixError then State:=Singulier;
-            if State=Regulier then
-            begin
-               if I<>Imax then // Swap rows if necessary
-               begin
+            if State=Regulier then begin
+               if I<>Imax then begin                  // Swap rows if necessary
                   Det:=-Det;
-                  for L:=I to N do
-                  begin
+                  for L:=I to N do begin
                      H:=Value[I-1,L-1];
                      Value[I-1,L-1]:=Value[IMax-1,L-1];
                      Value[IMax-1,L-1]:=H;
                   end;
-                  for L:=1 to N do
-                  begin
+                  for L:=1 to N do begin
                      H:=Inverted.Value[I-1,L-1];
                      Inverted.Value[I-1,L-1]:=Inverted.Value[IMax-1,L-1];
                      Inverted.Value[IMax-1,L-1]:=H;
                   end;
                end;
-               // Sweep column clear
-               if I<>N then
-               begin
-                  for K:=I+1 to N do if abs(Value[K-1,I-1])>MatrixError then
-                  begin
+                                                          // Sweep column clear
+               if I<>N then begin
+                  for K:=I+1 to N do if abs(Value[K-1,I-1])>MatrixError then begin
                      Factor:=Value[k-1,I-1]/Value[I-1,I-1];
-                     if Factor<>0 then
-                     begin
+                     if Factor<>0 then begin
                         for L:=I to N do Value[K-1,L-1]:=Value[K-1,L-1]-Factor*Value[I-1,L-1];
                         for L:=1 to N do Inverted.Value[K-1,L-1]:=Inverted.Value[K-1,L-1]-Factor*Inverted.Value[I-1,L-1];
                      end;
@@ -247,8 +188,7 @@ begin
                if I<>1 then for K:=I-1 downto 1 do if abs(Value[K-1,I-1])>MatrixError then
                begin
                   Factor:=Value[K-1,I-1]/Value[I-1,I-1];
-                  if Factor<>0 then
-                  begin
+                  if Factor<>0 then begin
                      for L:=I to N do Value[K-1,L-1]:=Value[K-1,L-1]-Factor*Value[I-1,L-1];
                      for L:=1 to N do Inverted.Value[K-1,L-1]:=Inverted.Value[K-1,L-1]-Factor*Inverted.Value[I-1,L-1];
                   end;
@@ -256,120 +196,92 @@ begin
             end;
          until (I=N) or (State=Singulier);
          if abs (Value[N-1,N-1])<MatrixError then State:=Singulier;
-         if State=Regulier then
-         begin
-            for I:=1 to N do
-            begin
+         if State=Regulier then begin
+            for I:=1 to N do begin
                Det:=Det*Value[I-1,I-1];
                Factor:=Value[I-1,I-1];
                Value[I-1,I-1]:=1.0;
-               for J:=1 to N do
-               begin
+               for J:=1 to N do begin
                   Inverted.Value[I-1,J-1]:=Inverted.Value[I-1,J-1]/Factor;
                end;
             end;
             Result:=Inverted;
-         end else
-         begin
-            //MessageDlg('Matrix could not be solved.',mtError,[mbok],0);
+         end else begin               //WriteLn('Matrix could not be solved.');
             Inverted.Destroy;
          end;
          Assign(Back);
          Back.Destroy;
-      end else MessageDlg('Matrix size must match to be solved',mtError,[mbOk],0);
-   end else MessageDlg('Matrix must be square to invert',mtError,[mbOK],0);
-end;{TFreeMatrix.Invert}
+      end else WriteLn('Matrix size must match to be solved');
+   end else WriteLn('Matrix must be square to invert');
+end;
 
 function TFreeMatrix.Multiply(Matrix:TFreeMatrix):TFreeMatrix;
 var i,j,k : integer;
 begin
-   if ColCount<>Matrix.RowCount then raise TFreeMatrixError.Create('Matrix size do not match in multiply') else
-   begin
-      Result:=TFreeMatrix.Create;
-      Result.SetSize(Matrix.ColCount,RowCount);
-
-      for I:=0 to Result.RowCount-1 do
-      begin
-         for J:=0 to Result.ColCount-1 do
-         begin
-            for K:=0 to ColCount-1 do
-               Result.Value[I,J]:=Result.Value[I,J]+
-                  Value[I,K]*Matrix.Value[K,J];
-         end;
-      end;
+   if ColCount<>Matrix.RowCount
+   then WriteLn('Matrix size do not match in multiply') else begin
+     Result:=TFreeMatrix.Create;
+     Result.SetSize(Matrix.ColCount,RowCount);
+     for I:=0 to Result.RowCount-1 do begin
+        for J:=0 to Result.ColCount-1 do begin
+           for K:=0 to ColCount-1 do
+           Result.Value[I,J]:=Result.Value[I,J]+Value[I,K]*Matrix.Value[K,J];
+        end;
+     end;
    end;
-end;{TFreeMatrix.Multiply}
+end;
 
 procedure TFreeMatrix.SetSize(Cols,Rows:Integer);
-var i    : integer;
-begin
-   SetLength(FRows,Rows);
-   FNoRows:=Rows;
-   FNoColumns:=Cols;
-   for I:=0 to RowCount-1 do Setlength(FRows[I],Colcount);
-   // set all values to zero
-   Fill(0.0);
-end;{TFreeMatrix.SetSize}
+var I: integer;
+begin SetLength(FRows,Rows);
+      FNoRows:=Rows;
+      FNoColumns:=Cols;
+      for I:=0 to RowCount-1 do Setlength(FRows[I],Colcount); // set all values to zero
+      Fill( 0.0 );
+end;
 
-procedure TFreeMatrix.Save(Strings:TStringList;Description:string);
+procedure TFreeMatrix.Save( Strings:TStringList; Description:string );
 var I,J:Integer;
     V:Single;
     Str,Tmp:String;
 begin
    Strings.Add(Description);
-   for I:=1 to RowCount do
-   begin
-     Str:='';
-     for J:=1 to ColCount do
-     begin
+   for I:=1 to RowCount do begin Str:='';
+     for J:=1 to ColCount do begin
         V:=Value[I-1,J-1];
-        Tmp:=FloatToStrF(V,ffFixed,7,5);
+        Tmp:=FloatToStrF( V,ffFixed,7,5 );
         while length(Tmp)<9 do Tmp:=#32+Tmp;
         Str:=Str+#32+Tmp;
      end;
      Strings.Add(Str);
    end;
-end;{TFreeMatrix.Save}
+end;
 
 function TFreeMatrix.Solve(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
 const Singulier=True;
       Regulier=false;
-var I,J,K,L,N : integer;
+var I,J,K,L,N,IMax: integer;
     Factor  : extended;
     amax,h  : Double;
     State   : Boolean;
-    IMax    : Integer;
     Row     : TFreeMatrixRow;
 begin
    Result:=False;
    Solution:=nil;
-   if Square then
-   begin
-      if Matrix.RowCount=RowCount then
-      begin
-         N:=FNoRows;
+   if Square then begin
+      if Matrix.RowCount=RowCount then begin N:=FNoRows;
          State:=Regulier;
-         for I:=1 to N-1 do
-         begin
-            IMax:=I;
+         for I:=1 to N-1 do begin IMax:=I;
             AMax:=abs(Value[I-1,I-1]);
-
-            for K:=I+1 to N do
-            begin
-               if abs(Value[I-1,K-1])>AMax then
-               begin
-                  IMax:=K;
+            for K:=I+1 to N do begin
+               if abs(Value[I-1,K-1])>AMax then begin IMax:=K;
                   AMax:=abs(Value[I-1,K-1]);
                end;
             end;
-
             if abs(AMax)<MatrixError then State:=Singulier;
-            if State=regulier then
-            begin
-               if I<>Imax then
-               begin
-                  for L:=I to N do
-                  begin
+            if State=regulier then begin
+               if I<>Imax then begin
+                  for L:=I to N do begin
                      H:=Value[L-1,I-1];
                      Value[L-1,I-1]:=Value[L-1,IMax-1];
                      Value[L-1,Imax-1]:=H;
@@ -378,52 +290,39 @@ begin
                   Matrix.FRows[I-1]:=Matrix.FRows[IMax-1];
                   Matrix.FRows[IMax-1]:=Row;
                end;
-
-               for K:=I+1 to N do if abs(Value[I-1,K-1])>MatrixError then
-               begin
+               for K:=I+1 to N do if abs(Value[I-1,K-1])>MatrixError then begin
                   Factor:=Value[I-1,K-1]/Value[I-1,I-1];
                   for L:=1 to N do Value[L-1,K-1]:=Value[L-1,K-1]-factor*Value[L-1,I-1];
-                  for L:=1 to Matrix.ColCount do
-                  begin
+                  for L:=1 to Matrix.ColCount do begin
                      Matrix.Value[L-1,K-1]:=Matrix.Value[L-1,K-1]-Factor*Matrix.Value[L-1,I-1];
                   end;
                end;
-            end else
-            begin
-            end;
+            end else begin end;
          end;
 
          if abs(Value[N-1,N-1])<MatrixError then State:=singulier;
 
-         if State=regulier then
-         begin
-
+         if State=regulier then begin
             Solution:=TFreeMatrix.Create;
             Solution.SetSize(Matrix.ColCount,N);
-            for K:=0 to Solution.ColCount-1 do
-            begin
-               {
-               Solution.Value[K,N-1]:=Matrix.Value[K,N-1]/Value[N-1,N-1];
-               for L:=N-1 downto 1 do
-               begin
+            for K:=0 to Solution.ColCount-1 do begin
+            {  Solution.Value[K,N-1]:=Matrix.Value[K,N-1]/Value[N-1,N-1];
+               for L:=N-1 downto 1 do begin
                   Solution.Value[K,L-1]:=(1/Value[L-1,L-1])*(Matrix.Value[K,L-1]-Value[L-1,L-1+1]*Solution.Value[K,L-1+1]);
                end;
-               }
-               // According to testbook:
+            }                                         // According to testbook:
                Solution.Value[K,N-1]:=Matrix.Value[K,N-1]/Value[N-1,N-1];
-               for L:=N-1 downto 1 do
-               begin
+               for L:=N-1 downto 1 do begin
                   Solution.Value[K,L-1]:=Matrix.Value[K,L-1];
                   for J:=L+1 to N do Solution.Value[K,L-1]:=Solution.Value[K,L-1]-Value[J-1,L-1]*Solution.Value[K,J-1];
                   Solution.Value[K,L-1]:=Solution.Value[K,L-1]/Value[L-1,L-1];
                end;
-
             end;
             Result:=True;
-         end else MessageDlg('Matrix could not be solved.',mtError,[mbok],0);
-      end else MessageDlg('Matrix size must match to be solved',mtError,[mbOk],0);
-   end else MessageDlg('Matrix must be square to be solved',mtError,[mbOk],0);
-end;{TFreeMatrix.Solve}
+         end else WriteLn('Matrix could not be solved.');
+      end else WriteLn('Matrix size must match to be solved');
+   end else WriteLn('Matrix must be square to be solved');
+end;
 
 function TFreeMatrix.Gauss(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
 const Singulier=True;
@@ -437,33 +336,25 @@ var I,J,K,L,N : integer;
 begin
    Result:=False;
    Solution:=nil;
-   if Square then
-   begin
-      if Matrix.RowCount=RowCount then
-      begin
-         N:=FNoRows;
+   if Square then begin
+      if Matrix.RowCount=RowCount then begin N:=FNoRows;
          State:=Regulier;
          I:=0;
          Repeat
             Inc(I);
             IMax:=I;
             AMax:=abs(Value[I-1,I-1]);
-            for K:=I+1 to N do
-            begin
-               if abs(Value[K-1,I-1])>AMax then
-               begin
+            for K:=I+1 to N do begin
+               if abs(Value[K-1,I-1])>AMax then begin
                   IMax:=K;
                   AMax:=abs(Value[K-1,I-1]);
                end;
             end;
 
             if AMax<MatrixError then State:=Singulier;
-            if State=regulier then
-            begin
-               if I<>Imax then
-               begin
-                  for L:=I to N do
-                  begin
+            if State=regulier then begin
+               if I<>Imax then begin
+                  for L:=I to N do begin
                      H:=Value[I-1,L-1];
                      Value[I-1,L-1]:=Value[IMax-1,L-1];
                      Value[Imax-1,L-1]:=H;
@@ -473,11 +364,9 @@ begin
                   Matrix.FRows[IMax-1]:=Row;
                end;
 
-               for K:=I+1 to N do if abs(Value[K-1,I-1])>MatrixError then
-               begin
+               for K:=I+1 to N do if abs(Value[K-1,I-1])>MatrixError then begin
                   Factor:=Value[K-1,I-1]/Value[I-1,I-1];
-                  if Factor<>0 then
-                  begin
+                  if Factor<>0 then begin
                      for L:=I to N do Value[K-1,L-1]:=Value[K-1,L-1]-factor*Value[I-1,L-1];
                      for L:=1 to Matrix.ColCount do Matrix.Value[L-1,K-1]:=Matrix.Value[L-1,K-1]-Factor*Matrix.Value[L-1,I-1];
                   end;
@@ -487,26 +376,21 @@ begin
 
          if abs(Value[N-1,N-1])<MatrixError then State:=singulier;
 
-         if State=regulier then
-         begin
+         if State=regulier then begin
             Solution:=TFreeMatrix.Create;
             Solution.SetSize(Matrix.ColCount,N);
-            for K:=0 to Solution.ColCount-1 do
-            begin
-               // According to testbook:
+            for K:=0 to Solution.ColCount-1 do begin  // According to testbook:
                Solution.Value[N-1,K]:=Matrix.Value[N-1,K]/Value[N-1,N-1];
-               for L:=N-1 downto 1 do
-               begin
+               for L:=N-1 downto 1 do begin
                   Solution.Value[L-1,K]:=Matrix.Value[L-1,K];
                   for J:=L+1 to N do Solution.Value[L-1,K]:=Solution.Value[L-1,K]-Value[L-1,J-1]*Solution.Value[J-1,K];
                   Solution.Value[L-1,K]:=Solution.Value[L-1,K]/Value[L-1,L-1];
                end;
-            end;
-            Result:=True;
-         end else MessageDlg('Matrix could not be solved.',mtError,[mbok],0);
-      end else MessageDlg('Matrix size must match to be solved',mtError,[mbOk],0);
-   end else MessageDlg('Matrix must be square to be solved',mtError,[mbOk],0);
-end;{TFreeMatrix.Gauss}
+            end;  Result:=True;
+         end else WriteLn('Matrix could not be solved.');
+      end else WriteLn('Matrix size must match to be solved');
+   end else WriteLn('Matrix must be square to be solved');
+end;
 
 function TFreeMatrix.GaussJordan(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
 var I,J,K,N  : integer;
@@ -514,11 +398,9 @@ var I,J,K,N  : integer;
 begin
    Result:=False;
    Solution:=nil;
-   if Square then
-   begin
+   if Square then begin
       Inverted:=Self.Invert;
-      if Inverted<>nil then
-      begin
+      if Inverted<>nil then begin
          N:=RowCount;
          Solution:=TFreeMatrix.Create;
          Solution.SetSize(Matrix.ColCount,Matrix.RowCount);
@@ -527,24 +409,20 @@ begin
          Result:=True;
          Inverted.Destroy;
       end;
-   end else MessageDlg('Matrix must be square to be solved',mtError,[mbOk],0);
-end;{TFreeMatrix.GaussJordan}
+   end else WriteLn('Matrix must be square to be solved');
+end;
 
 procedure TFreeMatrix.Subtract(Matrix:TFreeMatrix);
-var Source  : TFreeMatrixRow;
-    Target  : TFreeMatrixRow;
-    I,J     : integer;
+var Source,Target: TFreeMatrixRow; I,J     : integer;
 begin
-   if (Matrix.RowCount=RowCount) and (Matrix.ColCount=ColCount) then
-   begin
-      for I:=0 to RowCount-1 do
-      begin
+   if (Matrix.RowCount=RowCount) and (Matrix.ColCount=ColCount) then begin
+      for I:=0 to RowCount-1 do begin
          Source:=Matrix.FRows[I];
          Target:=FRows[I];
          for J:=0 to ColCount-1 do Target[J]:=Target[J]-Source[J];
       end;
-   end else Raise TFreeMatrixError.Create('Matrix size does not match in Subtract');
-end;{TFreeMatrix.Subtract}
+   end else WriteLn('Matrix size does not match in Subtract');
+end;
 
 procedure TFreeMatrix.Transpose;
 var I,J:Integer;
@@ -552,13 +430,11 @@ var I,J:Integer;
 begin
    Tmp:=TFreeMatrix.Create;
    Tmp.SetSize(RowCount,ColCount);
-   for I:=0 to ColCount-1 do
-   begin
+   for I:=0 to ColCount-1 do begin
       for J:=0 to RowCount-1 do Tmp.Value[I,J]:=Value[J,I];
    end;
    Assign(Tmp);
    Tmp.Destroy;
-end;{TFreeMatrix.Transpose}
+end;
 
 end.
-

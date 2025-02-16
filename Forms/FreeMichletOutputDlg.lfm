@@ -2,10 +2,10 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
   Left = 581
   Height = 600
   Top = 158
-  Width = 800
+  Width = 600
   Caption = 'Michlet file generator.'
   ClientHeight = 600
-  ClientWidth = 800
+  ClientWidth = 600
   OnResize = FormResize
   Position = poMainFormCenter
   LCLVersion = '2.0.2.0'
@@ -13,12 +13,12 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
     Left = 0
     Height = 24
     Top = 0
-    Width = 800
+    Width = 600
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 24
-    ClientWidth = 800
+    ClientWidth = 600
     TabOrder = 0
     object OKbutton: TSpeedButton
       Left = 718
@@ -123,17 +123,17 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
     Left = 0
     Height = 563
     Top = 24
-    Width = 800
+    Width = 600
     Align = alClient
     BevelOuter = bvLowered
     ClientHeight = 563
-    ClientWidth = 800
+    ClientWidth = 600
     TabOrder = 1
     object PageControl1: TPageControl
       Left = 1
       Height = 561
       Top = 1
-      Width = 798
+      Width = 598
       ActivePage = TabSheet4
       Align = alClient
       TabIndex = 3
@@ -141,12 +141,12 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
       object TabSheet1: TTabSheet
         Caption = 'Hull geometry'
         ClientHeight = 528
-        ClientWidth = 792
+        ClientWidth = 592
         object Panel4: TPanel
           Left = 0
           Height = 173
           Top = 0
-          Width = 792
+          Width = 592
           Align = alTop
           AutoSize = True
           BevelOuter = bvNone
@@ -156,7 +156,7 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 2
           ClientHeight = 173
-          ClientWidth = 792
+          ClientWidth = 592
           TabOrder = 0
           object Panel9: TPanel
             Left = 0
@@ -425,49 +425,24 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
           Left = 0
           Height = 355
           Top = 173
-          Width = 792
+          Width = 592
           Align = alClient
           BevelOuter = bvNone
           ClientHeight = 355
-          ClientWidth = 792
+          ClientWidth = 592
           TabOrder = 1
-          object ScrollBar1: TScrollBar
-            Left = 0
-            Height = 15
-            Top = 340
-            Width = 792
-            Align = alBottom
-            Max = 180
-            Min = -180
-            PageSize = 0
-            Position = 20
-            TabOrder = 0
-          end
-          object ScrollBar2: TScrollBar
-            Left = 777
-            Height = 340
-            Top = 0
-            Width = 15
-            Align = alRight
-            Kind = sbVertical
-            Max = 180
-            Min = -180
-            PageSize = 0
-            Position = 20
-            TabOrder = 1
-          end
         end
       end
       object TabSheet3: TTabSheet
         Caption = 'Environment'
         ClientHeight = 528
-        ClientWidth = 792
+        ClientWidth = 592
         ImageIndex = 2
         object Panel7: TPanel
           Left = 0
           Height = 528
           Top = 0
-          Width = 792
+          Width = 592
           Align = alClient
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 10
@@ -475,7 +450,7 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
           ClientHeight = 528
-          ClientWidth = 792
+          ClientWidth = 592
           TabOrder = 0
           object Panel11: TPanel
             Left = 10
@@ -626,13 +601,13 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
       object TabSheet2: TTabSheet
         Caption = 'Resistance'
         ClientHeight = 528
-        ClientWidth = 792
+        ClientWidth = 592
         ImageIndex = 1
         object Panel5: TPanel
           Left = 0
           Height = 528
           Top = 0
-          Width = 792
+          Width = 592
           Align = alClient
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 10
@@ -640,7 +615,7 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
           ChildSizing.Layout = cclLeftToRightThenTopToBottom
           ChildSizing.ControlsPerLine = 1
           ClientHeight = 528
-          ClientWidth = 792
+          ClientWidth = 592
           TabOrder = 0
           object Panel12: TPanel
             Left = 10
@@ -831,13 +806,13 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
       object TabSheet4: TTabSheet
         Caption = 'Waves'
         ClientHeight = 528
-        ClientWidth = 792
+        ClientWidth = 592
         ImageIndex = 3
         object Panel8: TPanel
           Left = 0
           Height = 528
           Top = 0
-          Width = 792
+          Width = 592
           Align = alClient
           BevelOuter = bvNone
           ChildSizing.LeftRightSpacing = 10
@@ -847,7 +822,7 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
           ChildSizing.Layout = cclTopToBottomThenLeftToRight
           ChildSizing.ControlsPerLine = 2
           ClientHeight = 528
-          ClientWidth = 792
+          ClientWidth = 592
           TabOrder = 0
           object GroupBox1: TGroupBox
             Left = 10
@@ -1538,7 +1513,7 @@ object FreeMichletOutputDialog: TFreeMichletOutputDialog
     Left = 0
     Height = 13
     Top = 587
-    Width = 800
+    Width = 600
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2

@@ -165,41 +165,25 @@ begin
   Result:=False;
   // this procedure was only tested to TRACE regular quad edges
   // and regular/irregular CREASE edges for dxf export
-  if (NumberOfFaces = 5) and (NumberOfEdges = 5) then
-  begin
-    // boundary of quad and triangle
+  if (NumberOfFaces = 5) and (NumberOfEdges = 5) then begin // boundary of quad and triangle
+    N:=0;
+    for I:=1 to NumberOfFaces do if Face[I-1].NumberOfPoints = 3 then Inc(N);
+    if (N=3) then Result:=True;
+  end else
+  if (NumberOfFaces = 6) and (NumberOfEdges = 6) then begin // regular point with all triangles
     N:=0;
     for I:=1 to NumberOfFaces do
-      if Face[I-1].NumberOfPoints = 3 then
-        Inc(N);
-    if (N = 3) then
-      Result:=True;
-  end
-  else if (NumberOfFaces = 6) and (NumberOfEdges = 6) then
-  begin
-    // regular point with all triangles
-    N:=0;
-    for I:=1 to NumberOfFaces do
-      if Face[I-1].NumberOfPoints = 3 then
-        Inc(N);
-    if (N = 6) then
-      Result:=True;
-  end
-  else if (NumberOfFaces = 4) and (NumberOfEdges = 4) then
-  begin
-    // regular point with all quads
+      if Face[I-1].NumberOfPoints = 3 then Inc(N);
+    if (N = 6) then Result:=True;
+  end else
+  if (NumberOfFaces = 4) and (NumberOfEdges = 4) then begin // regular point with all quads
     Result:=True;
-  end
-  else //if (NumberOfEdges=3) and (NumberOfFaces=2) then
-  begin
-    // regular quad boundary edge
+  end else //if (NumberOfEdges=3) and (NumberOfFaces=2) then
+  begin    // regular quad boundary edge
     N:=0;
     for I:=1 to NumberOfEdges do
-      if Edge[I-1].NumberOfFaces = 1 then
-        Inc(N);
-    // test for regular point on boundaryedge
-    if (N = 2) and (NumberOfEdges = 3) then
-      Result:=True;
+      if Edge[I-1].NumberOfFaces = 1 then Inc(N); // test for regular point on boundaryedge
+    if (N = 2) and (NumberOfEdges = 3) then Result:=True;
   end;
 end;{TFreeSubdivisionPoint.FGetRegularPoint}
 
@@ -210,12 +194,10 @@ var
   Face: TFreeSubdivisionFace;
   Edge: TFreeSubdivisionEdge;
 begin
-  if VertexType in [svDart, svRegular] then
-  begin
+  if VertexType in [svDart, svRegular] then begin
     Result:=ZERO;
     N:=NumberOfFaces;
-    for I:=1 to NumberOfFaces do
-    begin
+    for I:=1 to NumberOfFaces do begin
       Face:=FFaces[I-1];
       Ind:=Face.IndexOfPoint(self);
       P30:=Face.Point[(Ind+1) mod Face.Numberofpoints];
@@ -228,111 +210,68 @@ begin
     Result.X:=Result.X / NN;
     Result.Y:=Result.Y / NN;
     Result.Z:=Result.Z / NN;
-  end
-  else if VertexType = svCrease then
-  begin
+  end else
+  if VertexType = svCrease then begin
     P30:=nil;
     P33:=nil;
-    for I:=1 to NumberOfEdges do
-    begin
+    for I:=1 to NumberOfEdges do begin
       Edge:=FEdges[I-1];
-      if Edge.Crease then
-      begin
-        if Edge.StartPoint = self then
-          P:=Edge.EndPoint
-        else
-          P:=Edge.StartPoint;
-        if P30 = nil then
-          P30:=P
-        else
-          P33:=P;
+      if Edge.Crease then begin
+        if Edge.StartPoint = self then P:=Edge.EndPoint
+                                  else P:=Edge.StartPoint;
+        if P30 = nil then P30:=P
+                     else P33:=P;
       end;
     end;
-    if (P30 <> nil) and (P33 <> nil) then
-    begin
+    if (P30 <> nil) and (P33 <> nil) then begin
       Result.X:=(P30.Coordinate.X+4.0 * FCoordinate.X+P33.Coordinate.X) / 6.0;
       Result.Y:=(P30.Coordinate.Y+4.0 * FCoordinate.Y+P33.Coordinate.Y) / 6.0;
       Result.Z:=(P30.Coordinate.Z+4.0 * FCoordinate.Z+P33.Coordinate.Z) / 6.0;
-    end
-    else
-    begin
-    //  MessageDlg(rs_Could_not_calculate_limitpoint {UserString[199]}+'!', mtError, [mbOK], 0);
+    end else begin //  MessageDlg(rs_Could_not_calculate_limitpoint {UserString[199]}+'!', mtError, [mbOK], 0);
       Result:=FCoordinate;
     end;
-  end
-  else
-    Result:=FCoordinate;
-end;{TFreeSubdivisionPoint.FGetLimitPoint}
+  end else Result:=FCoordinate;
+end;
 
 function TFreeSubdivisionPoint.IsRegularNURBSPoint(Faces: TFasterListTFreeSubdivisionFace): boolean;
-var
-  I, Ind, N: integer;
-  Boundary: boolean;
+var I,Ind,N: integer;
+    Boundary: boolean;
 begin
-  if VertexType in [svRegular, svdart] then
-    Result:=NumberOfFaces = 4
-  else
-  if VertexType in [svCrease] then
-  begin
-    //Faces:=nil;
-    if Faces <> nil then
-    begin
+  if VertexType in [svRegular, svdart] then Result:=NumberOfFaces=4 else
+  if VertexType in [svCrease] then begin //Faces:=nil;
+    if Faces <> nil then begin
       N:=0;
-      for I:=1 to NumberOfFaces do
-      begin
+      for I:=1 to NumberOfFaces do begin
         Ind:=Faces.SortedIndexOf(face[I-1]);
-        if Ind <> -1 then
-          Inc(N);
+        if Ind <> -1 then Inc(N);
       end;
       Result:=N = 2;
       if (N = 2) and (NumberOfFaces <> 4) then
-      begin
-        Result:=True;
-      end;
-    end
-    else
-    begin
-      // boundary edge ?
+      begin Result:=True; end;
+    end else begin                      // boundary edge ?
       Boundary:=False;
       for I:=1 to NumberOfEdges do
         Boundary:=Boundary or (Edge[I-1].NumberOfFaces = 1);
-      if Boundary then
-        Result:=NumberOfFaces = 2
-      else
-        Result:=NumberOfFaces = 4;
+      if Boundary then Result:=NumberOfFaces = 2
+                  else Result:=NumberOfFaces = 4;
     end;
-  end
-  else
-    Result:=False;
-end;{TFreeSubdivisionPoint.IsRegularNURBSPoint}
+  end else Result:=False;
+end;
 
 procedure TFreeSubdivisionPoint.FSetCoordinate(Val: T3DCoordinate);
-begin
-  FCoordinate:=Val;
-end;{TFreeSubdivisionPoint.FSetCoordinate}
+begin FCoordinate:=Val; end;
 
 procedure TFreeSubdivisionPoint.AddEdge(Edge: TFreeSubdivisionEdge);
-begin
-  if FEdges.IndexOf(Edge) = -1 then
-  begin
-    FEdges.Add(Edge);
-  end;
-end;{TFreeSubdivisionPoint.AddEdge}
+begin if FEdges.IndexOf(Edge) = -1 then begin FEdges.Add(Edge); end; end;
 
 procedure TFreeSubdivisionPoint.AddFace(Face: TFreeSubdivisionFace);
-begin
-  if FFaces.IndexOf(Face) = -1 then
-  begin
-    FFaces.Add(Face);
-  end;
-end;{TFreeSubdivisionPoint.AddFace}
-
+begin if FFaces.IndexOf(Face) = -1 then begin FFaces.Add(Face); end;
+end;
 
 function TFreeSubdivisionPoint.Averaging: T3DCoordinate;
 const  Pi = 3.1415926535897932385; // instead of system.py() func
 const  AA : array[1..8] of TFloatType =
-   (
-      5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 1)),
+   (  5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 1)),
       5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 2)),
       5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 3)),
       5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 4)),
@@ -343,72 +282,51 @@ const  AA : array[1..8] of TFloatType =
     );
 var
   I, J, Nt, Nq, NoP: integer;
-  a: TFloatType;
-  Weight, TotalWeight: TFloatType;
+  A, Weight, TotalWeight: TFloatType;
   Center: T3DCoordinate;
   Face: TFreeSubdivisionFace;
   Edge: TFreeSubdivisionEdge;
   P: TFreeSubdivisionPoint;
 begin
   Result:=FCoordinate;
-  if (NumberOfedges = 0) or (FVertexType = svCorner) then
-    Result:=FCoordinate
-  else
-  begin
-    if FVertexType = svCrease then
-    begin
+  if (NumberOfedges = 0) or (FVertexType = svCorner) then Result:=FCoordinate
+  else begin
+    if FVertexType = svCrease then begin
       Result.X:=FCoordinate.X * 0.50;
       Result.Y:=FCoordinate.Y * 0.50;
       Result.Z:=FCoordinate.Z * 0.50;
-      for I:=0 to FEdges.Count-1 do
-      begin
+      for I:=0 to FEdges.Count-1 do begin
         Edge:=FEdges[I];
-        if (Edge.FFaces.Count = 1) or (Edge.FCrease) then
-        begin
-          if Edge.FStartPoint = self then
-            P:=Edge.FEndPoint
-          else
-            P:=Edge.FStartpoint;
+        if (Edge.FFaces.Count = 1) or (Edge.FCrease) then begin
+          if Edge.FStartPoint = self then P:=Edge.FEndPoint
+                                     else P:=Edge.FStartpoint;
           Result.X:=Result.X+0.25 * P.FCoordinate.X;
           Result.Y:=Result.Y+0.25 * P.FCoordinate.Y;
           Result.Z:=Result.Z+0.25 * P.FCoordinate.Z;
         end;
       end;
-    end
-    else
-    begin
+    end else begin
       TotalWeight:=0.0;
       Result:=ZERO;
       Nt:=0;
-      for I:=1 to FFaces.Count do
-      begin
+      for I:=1 to FFaces.Count do begin
         Face:=FFaces[I-1];
         NoP:=Face.NumberOfpoints;
-        if (NoP<3) or (NoP>4) then
-          NoP:=NoP;
+        if (NoP<3) or (NoP>4) then NoP:=NoP;
         Center:=ZERO;
-        if Face.NumberOfpoints = 3 then
-        begin
-          Inc(Nt);
-          // Calculate centerpoint
-          for j:=1 to Face.NumberOfpoints do
-          begin
+        if Face.NumberOfpoints = 3 then begin Inc(Nt); // Calculate centerpoint
+          for j:=1 to Face.NumberOfpoints do begin
             P:=Face.FPoints[J-1];
-            if P = self then
-              Weight:=1 / 4
-            else
-              Weight:=3 / 8;
+            if P = self then Weight:=1 / 4
+                        else Weight:=3 / 8;
             Center.X:=Center.X+Weight * P.FCoordinate.X;
             Center.Y:=Center.Y+Weight * P.FCoordinate.Y;
             Center.Z:=Center.Z+Weight * P.FCoordinate.Z;
           end;
           Weight:=Pi / 3;
-        end
-        else if Face.NumberOfpoints = 4 then
-        begin
-          // Calculate centerpoint
-          for j:=1 to Face.NumberOfpoints do
-          begin
+        end else
+        if Face.NumberOfpoints = 4 then begin          // Calculate centerpoint
+          for j:=1 to Face.NumberOfpoints do begin
             P:=Face.FPoints[J-1];
             Weight:=1 / 4;
             Center.X:=Center.X+Weight * P.FCoordinate.X;
@@ -416,48 +334,32 @@ begin
             Center.Z:=Center.Z+Weight * P.FCoordinate.Z;
           end;
           Weight:=Pi / 2;
-        end
-        else
-          raise Exception.Create('Invalid number of points in TFreeSubdivisionPoint.Averaging');
+        end;
+//      else WriteLn('Invalid number of points in TFreeSubdivisionPoint.Averaging');
         Result.X:=Result.X+Weight * Center.X;
         Result.Y:=Result.Y+Weight * Center.Y;
         Result.Z:=Result.Z+Weight * Center.Z;
         TotalWeight:=TotalWeight+Weight;
       end; // for I:=1 to FFaces.Count
 
-      if TotalWeight <> 0 then
-      begin
+      if TotalWeight <> 0 then begin
         Result.X:=Result.X / TotalWeight;
         Result.Y:=Result.Y / TotalWeight;
         Result.Z:=Result.Z / TotalWeight;
       end;
       Nq:=FFaces.Count-Nt;
 
-      if Nt = FFaces.Count then
-      begin
-        // apply averaging in case of vertex surrounded by triangles
-        if FFaces.Count <= 8 then
-          a:=AA[FFaces.Count]
-        else
-          a:=5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / FFaces.Count));
+      if Nt = FFaces.Count then begin // apply averaging in case of vertex surrounded by triangles
+        if FFaces.Count <= 8 then a:=AA[FFaces.Count]
+                             else a:=5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / FFaces.Count));
       end
-      else if Nq = FFaces.Count then
-      begin
-        // apply averaging in case of vertex surrounded by quads
+      else if Nq = FFaces.Count then begin // apply averaging in case of vertex surrounded by quads
         a:=4 / FFaces.Count;
-      end
-      else
-      begin
-        // apply averaging in case of vertex on boundary of quads and triangles
-        if (Nq = 0) and (Nt = 3) then
-        begin
-          a:=1.5;
-        end
-        else
-          a:=12 / (3 * Nq+2 * Nt);
+      end else begin // apply averaging in case of vertex on boundary of quads and triangles
+        if (Nq = 0) and (Nt = 3) then begin a:=1.5; end
+                                 else a:=12 / (3 * Nq+2 * Nt);
       end;
-      if a <> 1.0 then
-      begin
+      if a <> 1.0 then begin
         Result.X:=FCoordinate.X+a * (Result.X-FCoordinate.X);
         Result.Y:=FCoordinate.Y+a * (Result.Y-FCoordinate.Y);
         Result.Z:=FCoordinate.Z+a * (Result.Z-FCoordinate.Z);
@@ -474,9 +376,9 @@ end;{TFreeSubdivisionPoint.Averaging}
 // translated to surfacial by MM: P' = Sum((4P+Pe)/6)by e,
 //   where Pe is opposite point of edge e P also belongs to.
 {
-C.X:=(PrevPoint.FCoordinate.X+4.0*C.X+NextPoint.FCoordinate.X)/6.0 ;
-C.Y:=(PrevPoint.FCoordinate.Y+4.0*C.Y+NextPoint.FCoordinate.Y)/6.0 ;
-C.Z:=(PrevPoint.FCoordinate.Z+4.0*C.Z+NextPoint.FCoordinate.Z)/6.0 ;
+  C.X:=(PrevPoint.FCoordinate.X+4.0*C.X+NextPoint.FCoordinate.X)/6.0 ;
+  C.Y:=(PrevPoint.FCoordinate.Y+4.0*C.Y+NextPoint.FCoordinate.Y)/6.0 ;
+  C.Z:=(PrevPoint.FCoordinate.Z+4.0*C.Z+NextPoint.FCoordinate.Z)/6.0 ;
 }
 function TFreeSubdivisionPoint.LastAveraging:T3DCoordinate;
 var
@@ -521,7 +423,43 @@ begin
     end
   end;
 end;
-
+{
+function TFreeSubdivisionPoint.ReverseAveraging: T3DCoordinate;
+var
+  I, J, Nt, Nq, NoP: integer;
+  a: TFloatType;
+  Weight, TotalWeight: TFloatType;
+  Center: T3DCoordinate;
+  Face: TFreeSubdivisionFace;
+  Edge: TFreeSubdivisionEdge;
+  P: TFreeSubdivisionPoint;
+begin
+  Result:=FCoordinate;
+  if (NumberOfEdges = 0) or (FVertexType = svCorner) then Result:=FCoordinate
+  else begin
+    if FVertexType = svCrease then begin
+      Center:=ZERO;
+      for I:=0 to FEdges.Count-1 do
+      begin
+        Edge:=FEdges[I];
+        if (Edge.FFaces.Count = 1) or (Edge.FCrease) then
+        begin
+          if Edge.FStartPoint = Self then
+            P:=Edge.FEndPoint
+          else
+            P:=Edge.FStartpoint;
+          Center.X:=Center.X+P.FCoordinate.X;
+          Center.Y:=Center.Y+P.FCoordinate.Y;
+          Center.Z:=Center.Z+P.FCoordinate.Z;
+        end;
+      end;
+      Result.X:=Result.X * FEdges.Count-Center.X;
+      Result.Y:=Result.Y * FEdges.Count-Center.Y;
+      Result.Z:=Result.Z * FEdges.Count-Center.Z;
+    end
+  end;
+end;
+}
 function TFreeSubdivisionPoint.CalculateVertexPoint: TFreeSubdivisionPoint;
 var
   Point: T3DCoordinate;

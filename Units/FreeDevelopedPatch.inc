@@ -440,7 +440,7 @@ begin
           if Index <> -1 then begin
             P1:=self.Point[index];
             Pts[J-1]:=Viewport.Project(P1);
-          end;                                                                  // else raise Exception.Create('Unrolled point could not be found!');
+          end;           // else WriteLn('Unrolled point could not be found!');
         end;
         Viewport.Polygon(Pts);
       end;
@@ -450,7 +450,7 @@ begin
           if Index <> -1 then begin
             P1:=MirrorPoint[index];
             Pts[J-1]:=Viewport.Project(P1);
-          end;                                                                  // else raise Exception.Create('Unrolled point could not be found!');
+          end;         // WriteLn('Unrolled point could not be found!');
         end;
         Viewport.Polygon(Pts);
       end;
@@ -758,124 +758,15 @@ var
   Mid: T2DCoordinate;
   P2: T2DCoordinate;
 begin
-  Mid:=MidPoint;
-  // translate to origin
+  Mid:=MidPoint;                    // translate to origin
   P2.X:=P.X-Mid.X;
-  P2.Y:=P.Y-Mid.Y;
-  // rotate around origin
+  P2.Y:=P.Y-Mid.Y;                  // rotate around origin
   P.x:=P2.x * FCos-P2.y * FSin;
-  P.y:=P2.x * FSin+P2.y * FCos;
-  // Translate back again
+  P.y:=P2.x * FSin+P2.y * FCos;     // Translate back again
   Result.X:=P.X+Mid.X+FTranslation.X;
   Result.Y:=P.Y+Mid.Y+FTranslation.Y;
   Result.Z:=0.0;
-end;{TFreeDevelopedPatch.ConvertTo3D}
-
-procedure TFreeDevelopedPatch.SaveToDXF(Strings: TStringList);
-var
-  I, J: integer;
-  Col: integer;
-  Index: integer;
-  P: TFreeSubdivisionPoint;
-  P3D: T3DCoordinate;
-  Layer: string;
-  Source: TFasterListTFreeSubdivisionEdge;
-  Dest: TFasterListTFreeSubdivisionFace;
-  Edge:TFreeSubdivisionEdge;
-  Face:TFreeSubdivisionFace;
-
-  procedure ExportSpline(Spline: TFreeSpline; Layername: string);
-  var
-    I, Col: integer;
-    P2D: T2DCoordinate;
-    P3D: T3DCoordinate;
-  begin
-    Col:=FindDXFColorIndex(Spline.Color);
-    Strings.Add('0'+EOL+'POLYLINE');
-    Strings.Add('8'+EOL+LayerName);   // layername
-    Strings.Add('62'+EOL+IntToStr(Col));  // color by layer
-    Strings.Add('66'+EOL+'1');    // vertices follow
-    for I:=0 to Spline.Fragments do
-    begin
-      P3D:=Spline.Value(I / Spline.Fragments);
-      P2D.X:=P3D.X;
-      P2D.Y:=P3D.Y;
-
-      if (FMirrorOnScreen) and not (FMirror) then
-        P2D.Y:=-P2D.Y;
-
-      P3D:=ConvertTo3D(P2D);
-      Strings.Add('0'+EOL+'VERTEX');
-      Strings.Add('8'+EOL+Layername);
-      Strings.Add('10'+EOL+FloatToDec(P3D.X, 4));
-      Strings.Add('20'+EOL+FloatToDec(P3D.Y, 4));
-    end;
-    Strings.Add('0'+EOL+'SEQEND');
-  end;{ExportSpline}
-
-begin
-  // Extract edges as polylines
-  Source:=TFasterListTFreeSubdivisionEdge.Create;
-  Source.AddList(FBoundaryEdges);
-  Dest:=TFasterListTFreeSubdivisionFace.Create; // use face as list of points
-  Owner.Surface.IsolateEdges(Source, Dest);
-
-  FreeAndNil(Source);
-  Col:=FindDXFColorIndex(Owner.Color);
-  Layer:=Owner.Name;
-
-  for I:=1 to Dest.Count do
-  begin
-    Face:=Dest[I-1];
-    // Save data as 2D polyline
-    Strings.Add('0'+EOL+'POLYLINE');
-    Strings.Add('8'+EOL+Layer);               // layername
-    Strings.Add('62'+EOL+IntToStr(Col));      // color by layer
-    Strings.Add('66'+EOL+'1');                // vertices follow
-    for J:=0 to Face.Points.Count-1 do
-    begin
-      P:=Face.Points[J];
-      Index:=FPoints.SortedIndexOf(P);
-      P3D:=Point[Index];
-      Strings.Add('0'+EOL+'VERTEX');
-      Strings.Add('8'+EOL+Layer);
-      Strings.Add('10'+EOL+FloatToDec(P3D.X, 4));
-      Strings.Add('20'+EOL+FloatToDec(P3D.Y, 4));
-    end;
-    Strings.Add('0'+EOL+'SEQEND');
-    if FMirror then
-    begin
-      Strings.Add('0'+EOL+'POLYLINE');
-      Strings.Add('8'+EOL+Layer);            // layername
-      Strings.Add('62'+EOL+IntToStr(Col));   // color by layer
-      Strings.Add('66'+EOL+'1');             // vertices follow
-
-      begin
-        P:=Face.Points[J];
-        Index:=FPoints.SortedIndexOf(P);
-        P3D:=MirrorPoint[Index];
-        Strings.Add('0'+EOL+'VERTEX');
-        Strings.Add('8'+EOL+Layer);
-        Strings.Add('10'+EOL+FloatToDec(P3D.X, 4));
-        Strings.Add('20'+EOL+FloatToDec(P3D.Y, 4));
-      end;
-      Strings.Add('0'+EOL+'SEQEND');
-    end;
-  end;
-  if ShowStations then
-    for I:=1 to FStations.Count do
-      ExportSpline(FStations[I-1], 'stations');
-  if ShowButtocks then
-    for I:=1 to FButtocks.Count do
-      ExportSpline(FButtocks[I-1], 'buttocks');
-  if ShowWaterlines then
-    for I:=1 to FWaterlines.Count do
-      ExportSpline(FWaterlines[I-1], 'waterlines');
-  if ShowDiagonals then
-    for I:=1 to FDiagonals.Count do
-      ExportSpline(FDiagonals[I-1], 'diagonals');
-  FreeAndNil(Dest);
-end;{TFreeDevelopedPatch.SaveToDXF}
+end;
 
 procedure TFreeDevelopedPatch.SaveToTextFile(Strings: TStringList);
 var

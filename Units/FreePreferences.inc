@@ -7,10 +7,11 @@ const iniFileName: String = 'FreeShip.ini';
 const G: String = 'Graphic';
 const D: String = 'Directories';
 
-procedure TFreePreferences.FSetViewportColor(Val: TColor);
+procedure TFreePreferences.FSetViewportColor( Val: TColor );
 var I: integer;
 begin FViewportColor:=Val;
-  for I:=1 to Owner.NumberOfViewports do Owner.Viewport[I-1].Color:=FViewportColor;
+  for I:=0 to Owner.NumberOfViewports-1 do
+              Owner.Viewport[I].Color:=FViewportColor;
 end;
 
 procedure TFreePreferences.Clear;
@@ -164,31 +165,31 @@ begin
 
   FPointSize           :=params.ReadInteger(G,'PointSize', FPointSize);
   FFontSize            :=params.ReadInteger(G,'FontSize', FFontSize);
-  FButtockColor        :=params.ReadColor  (G,'ButtockColor', FButtockColor);
-  FWaterlineColor      :=params.ReadColor  (G,'WaterlineColor', FWaterlineColor);
-  FStationColor        :=params.ReadColor  (G,'StationColor', FStationColor);
-  FCreaseColor         :=params.ReadColor  (G,'CreaseColor', FCreaseColor);
-  FCreaseEdgeColor     :=params.ReadColor  (G,'CreaseEdgeColor', FCreaseEdgeColor);
-  FGridColor           :=params.ReadColor  (G,'GridColor', FGridColor);
-  FGridFontColor       :=params.ReadColor  (G,'GridFontColor', FGridFontColor);
-  FEdgeColor           :=params.ReadColor  (G,'EdgeColor', FEdgeColor);
-  FCreasePointColor    :=params.ReadColor  (G,'CreasePointColor',FCreasePointColor);
-  FRegularPointColor   :=params.ReadColor  (G,'RegularPointColor',FRegularPointColor);
-  FCornerPointColor    :=params.ReadColor  (G,'CornerPointColor',FCornerPointColor);
-  FDartPointColor      :=params.ReadColor  (G,'DartPointColor', FDartPointColor);
-  FSelectColor         :=params.ReadColor  (G,'SelectColor', FSelectColor);
-  FLayerColor          :=params.ReadColor  (G,'LayerColor', FLayerColor);
-  FUnderWaterColor     :=params.ReadColor  (G,'UnderWaterColor', FUnderWaterColor);
-  FUnderWaterColorAlpha:=params.ReadInteger(G,'UnderWaterColorAlpha',FUnderWaterColorAlpha);
-  FNormalColor         :=params.ReadColor  (G,'NormalColor', FNormalColor);
-  FViewportColor       :=params.ReadColor  (G,'ViewportColor', FViewportColor);
-  FDiagonalColor       :=params.ReadColor  (G,'DiagonalColor', FDiagonalColor);
-  FLeakPointColor      :=params.ReadColor  (G,'LeakPointColor', FLeakPointColor);
-  FMarkerColor         :=params.ReadColor  (G,'MarkerColor', FMarkerColor);
-  FCurvaturePlotColor  :=params.ReadColor  (G,'CurvaturePlotColor',FCurvaturePlotColor);
-  FControlCurveColor   :=params.ReadColor  (G,'ControlCurveColor',FControlCurveColor);
-  FHydrostaticsFontColor:=params.ReadColor (G,'HydrostaticsFontColor',FHydrostaticsFontColor);
-  FZebraStripeColor    :=params.ReadColor  (G,'ZebraStripeColor',FZebraStripeColor);
+  StationColor        :=params.ReadColor  (G,'StationColor', StationColor);
+  ButtockColor        :=params.ReadColor  (G,'ButtockColor', ButtockColor);
+  WaterlineColor      :=params.ReadColor  (G,'WaterlineColor',WaterlineColor);
+  DiagonalColor       :=params.ReadColor  (G,'DiagonalColor', DiagonalColor);
+  UnderWaterColor     :=params.ReadColor  (G,'UnderWaterColor',UnderWaterColor);
+  UnderWaterColorAlpha:=params.ReadInteger(G,'UnderWaterColorAlpha',UnderWaterColorAlpha);
+  CreaseColor         :=params.ReadColor  (G,'CreaseColor', CreaseColor);
+  CreaseEdgeColor     :=params.ReadColor  (G,'CreaseEdgeColor', CreaseEdgeColor);
+  GridColor           :=params.ReadColor  (G,'GridColor', GridColor);
+  GridFontColor       :=params.ReadColor  (G,'GridFontColor', GridFontColor);
+  EdgeColor           :=params.ReadColor  (G,'EdgeColor', EdgeColor);
+  CreasePointColor    :=params.ReadColor  (G,'CreasePointColor',CreasePointColor);
+  RegularPointColor   :=params.ReadColor  (G,'RegularPointColor',RegularPointColor);
+  CornerPointColor    :=params.ReadColor  (G,'CornerPointColor',CornerPointColor);
+  DartPointColor      :=params.ReadColor  (G,'DartPointColor', DartPointColor);
+  SelectColor         :=params.ReadColor  (G,'SelectColor', SelectColor);
+  LayerColor          :=params.ReadColor  (G,'LayerColor', LayerColor);
+  NormalColor         :=params.ReadColor  (G,'NormalColor', NormalColor);
+  LeakPointColor      :=params.ReadColor  (G,'LeakPointColor', LeakPointColor);
+  MarkerColor         :=params.ReadColor  (G,'MarkerColor', MarkerColor);
+  CurvaturePlotColor  :=params.ReadColor  (G,'CurvaturePlotColor',CurvaturePlotColor);
+  ControlCurveColor   :=params.ReadColor  (G,'ControlCurveColor',ControlCurveColor);
+  HydrostaticsFontColor:=params.ReadColor (G,'HydrostaticsFontColor',HydrostaticsFontColor);
+  ZebraStripeColor    :=params.ReadColor  (G,'ZebraStripeColor',ZebraStripeColor);
+  FViewportColor      :=params.ReadColor  (G,'ViewportColor', FViewportColor );
 
   FIntersectionLineWidth:= params.ReadInteger(G,'IntersectionLineWidth', FIntersectionLineWidth);
   FControlEdgeLineWidth:=params.ReadInteger(G,'ControlEdgeLineWidth', FControlEdgeLineWidth);
@@ -218,10 +219,8 @@ begin
     if H > Screen.Height then H:=Screen.WorkAreaHeight;
     case TWindowState( S ) of
       wsNormal: MainForm.SetBounds( L,T,W,H );
-      wsMinimized: begin
-        MainForm.WindowState:=wsNormal;
-        MainForm.SetBounds( L,T,W,H );
-      end;
+      wsMinimized: begin MainForm.WindowState:=wsNormal;
+                         MainForm.SetBounds( L,T,W,H ); end;
       wsMaximized: MainForm.WindowState:=wsMaximized;
     end;
   end;
@@ -243,7 +242,7 @@ begin
   FFontSize   :=8;
   FLanguage   :='English';
   FFbmEncoding:='cp1251';
-  FMaxUndoMemory:= 32;
+  FMaxUndoMemory:=32;
   ResetDirectories;
   ResetColors;
 end;
@@ -273,30 +272,30 @@ end;
 procedure TFreePreferences.ResetColors; // Расцветка по умолчанию
 begin
   FViewportColor:=clWhite;
-  FGridColor    :=clSilver;
-  FGridFontColor:=clGray;
-  FLayerColor   :=$FFFFF0;     // Default color each layer
-  FNormalColor  :=clLime;      // color of surface normals
-  FUnderwaterColor:=clGreen;
-  FUnderwaterColorAlpha:=255;  //  Color used for shading the underwater part opaque
-  FControlCurveColor:=$FF0080;
-  FEdgeColor        :=$6F6F6F; // Color of normal edges (no crease)
-  FCreaseEdgeColor  :=$32CD9A; // Color of crease control edges
-  FCreaseColor      :=$999966; // color of descendants from crease controledges
-  FRegularPointColor:=$E1E1E1; // Color of regular controlpoints
-  FCreasePointColor :=$004080; // Color for vertices connected to two creaseedges
-  FCornerPointColor :=$B95C00; // color of cornerpoints
-  FDartPointColor   :=clFuchsia;
-  FLeakPointColor   :=clRed;    //~~ color of leak points
-  FSelectColor      :=clYellow; // Default color for selected items
-  FCurvaturePlotColor:=clFuchsia; // color of the curvature plot of controlcurves
-  FMarkerColor      :=$8000FF;
-  FStationColor     :=$FF6464;    // =clBlue;
-  FButtockColor     :=clGray;
-  FWaterlineColor   :=clGreen;
-  FDiagonalColor    :=clSkyBlue;
-  FHydrostaticsFontColor:=clGreen;
-  FZebraStripeColor     :=clltGray;
+  GridColor    :=clSilver;
+  GridFontColor:=clGray;
+  LayerColor   :=$FFFFF0;     // Default color each layer
+  NormalColor  :=clLime;      // color of surface normals
+   StationColor     :=$FF6464;    // =clBlue;
+   ButtockColor     :=clGray;
+   WaterlineColor   :=clGreen;
+   DiagonalColor    :=clSkyBlue;
+   UnderwaterColor:=clGreen;
+   UnderwaterColorAlpha:=255;  //  Color used for shading the underwater part opaque
+  ControlCurveColor:=$FF0080;
+  EdgeColor        :=$6F6F6F; // Color of normal edges (no crease)
+  CreaseEdgeColor  :=$32CD9A; // Color of crease control edges
+  CreaseColor      :=$999966; // color of descendants from crease controledges
+  RegularPointColor:=$E1E1E1; // Color of regular controlpoints
+  CreasePointColor :=$004080; // Color for vertices connected to two creaseedges
+  CornerPointColor :=$B95C00; // color of cornerpoints
+  DartPointColor   :=clFuchsia;
+  LeakPointColor   :=clRed;    //~~ color of leak points
+  SelectColor      :=clYellow; // Default color for selected items
+  CurvaturePlotColor:=clFuchsia; // color of the curvature plot of controlcurves
+  MarkerColor      :=$8000FF;
+  HydrostaticsFontColor:=clGreen;
+  ZebraStripeColor     :=clltGray;
   FIntersectionLineWidth:=1;
   FControlEdgeLineWidth :=2;
   FInteriorEdgeLineWidth:=1;
@@ -330,30 +329,30 @@ begin
   params.WriteInteger( G,'PointSize',            FPointSize);
   params.WriteInteger( G,'FontSize',             FFontSize);
   params.WriteColor  ( G,'ViewportColor',        FViewportColor);
-  params.WriteColor  ( G,'GridColor',            FGridColor);
-  params.WriteColor  ( G,'GridFontColor',        FGridFontColor);
-  params.WriteColor  ( G,'LayerColor',           FLayerColor);
-  params.WriteColor  ( G,'NormalColor',          FNormalColor);
-  params.WriteColor  ( G,'UnderWaterColor',      FUnderWaterColor);
-  params.WriteInteger( G,'UnderWaterColorAlpha', FUnderWaterColorAlpha);
-  params.WriteColor  ( G,'ControlCurveColor',    FControlCurveColor);
-  params.WriteColor  ( G,'EdgeColor',            FEdgeColor);
-  params.WriteColor  ( G,'CreaseEdgeColor',      FCreaseEdgeColor);
-  params.WriteColor  ( G,'CreaseColor',          FCreaseColor);
-  params.WriteColor  ( G,'RegularPointColor',    FRegularPointColor);
-  params.WriteColor  ( G,'CreasePointColor',     FCreasePointColor);
-  params.WriteColor  ( G,'CornerPointColor',     FCornerPointColor);
-  params.WriteColor  ( G,'DartPointColor',       FDartPointColor);
-  params.WriteColor  ( G,'LeakPointColor',       FLeakPointColor);
-  params.WriteColor  ( G,'SelectColor',          FSelectColor);
-  params.WriteColor  ( G,'CurvaturePlotColor',   FCurvaturePlotColor);
-  params.WriteColor  ( G,'MarkerColor',          FMarkerColor);
-  params.WriteColor  ( G,'StationColor',         FStationColor);
-  params.WriteColor  ( G,'ButtockColor',         FButtockColor);
-  params.WriteColor  ( G,'WaterlineColor',       FWaterlineColor);
-  params.WriteColor  ( G,'DiagonalColor',        FDiagonalColor);
-  params.WriteColor  ( G,'HydrostaticsFontColor',FHydrostaticsFontColor);
-  params.WriteColor  ( G,'ZebraStripeColor',     FZebraStripeColor);
+  params.WriteColor  ( G,'GridColor',            GridColor);
+  params.WriteColor  ( G,'GridFontColor',        GridFontColor);
+  params.WriteColor  ( G,'LayerColor',           LayerColor);
+  params.WriteColor  ( G,'NormalColor',          NormalColor);
+  params.WriteColor  ( G,'UnderWaterColor',      UnderWaterColor);
+  params.WriteInteger( G,'UnderWaterColorAlpha', UnderWaterColorAlpha);
+  params.WriteColor  ( G,'ControlCurveColor',    ControlCurveColor);
+  params.WriteColor  ( G,'EdgeColor',            EdgeColor);
+  params.WriteColor  ( G,'CreaseEdgeColor',      CreaseEdgeColor);
+  params.WriteColor  ( G,'CreaseColor',          CreaseColor);
+  params.WriteColor  ( G,'RegularPointColor',    RegularPointColor);
+  params.WriteColor  ( G,'CreasePointColor',     CreasePointColor);
+  params.WriteColor  ( G,'CornerPointColor',     CornerPointColor);
+  params.WriteColor  ( G,'DartPointColor',       DartPointColor);
+  params.WriteColor  ( G,'LeakPointColor',       LeakPointColor);
+  params.WriteColor  ( G,'SelectColor',          SelectColor);
+  params.WriteColor  ( G,'CurvaturePlotColor',   CurvaturePlotColor);
+  params.WriteColor  ( G,'MarkerColor',          MarkerColor);
+  params.WriteColor  ( G,'StationColor',         StationColor);
+  params.WriteColor  ( G,'ButtockColor',         ButtockColor);
+  params.WriteColor  ( G,'WaterlineColor',       WaterlineColor);
+  params.WriteColor  ( G,'DiagonalColor',        DiagonalColor);
+  params.WriteColor  ( G,'HydrostaticsFontColor',HydrostaticsFontColor);
+  params.WriteColor  ( G,'ZebraStripeColor',     ZebraStripeColor);
   params.WriteInteger( G,'IntersectionLineWidth',FIntersectionLineWidth);
   params.WriteInteger( G,'ControlEdgeLineWidth', FControlEdgeLineWidth);
   params.WriteInteger( G,'InteriorEdgeLineWidth',FInteriorEdgeLineWidth);

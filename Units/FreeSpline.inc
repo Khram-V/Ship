@@ -53,7 +53,7 @@ begin
   Result:=FKnuckles[Index];
 { // will capture with debugger
   if (Index >= 0) and (Index < FNoPoints) then Result:=FKnuckles[Index]
-  else raise Exception.Create('List index out of bounds in '+ClassName+'.FGetKnuckle. ('+IntToStr(Index)+').');
+  else WriteLn('List index out of bounds in '+ClassName+'.FGetKnuckle. ('+IntToStr(Index)+').');
 }
 end;
 
@@ -62,7 +62,7 @@ begin
   FKnuckles[Index]:=Value;
   Built:=False;
 { if (Index >= 0) and (Index < FNoPoints) then begin FKnuckles[Index]:=Value; Built:=False; end
-  else raise Exception.Create('List index out of bounds in '+ClassName+'.FSetKnuckle. ('+IntToStr(Index)+').');
+  else WriteLn('List index out of bounds in '+ClassName+'.FSetKnuckle. ('+IntToStr(Index)+').');
 }
 end;
 
@@ -71,7 +71,7 @@ begin
   FPoints[index]:=P;
   Built:=False;
 { if (Index >= 0) and (Index < NumberOfPoints) then begin FPoints[index]:=P; Built:=False; end
-  else raise Exception.Create('Point index out of bounds!');
+  else WriteLn('Point index out of bounds!');
 }
 end;
 
@@ -82,7 +82,7 @@ begin
 { if (Index >= 0) and (Index < FNoPoints) then begin
     if not Built then rebuild; Result:=FParameters[Index];
   end
-  else raise Exception.Create('List index out of bounds in '+ClassName+'.FGetParameter. ('+IntToStr(Index)+').');
+  else WriteLn('List index out of bounds in '+ClassName+'.FGetParameter. ('+IntToStr(Index)+').');
 }
 end;
 
@@ -90,7 +90,7 @@ function TFreeSpline.FGetPoint(Index: integer): T3DCoordinate;
 begin
   Result:=FPoints[index];
 { if (Index >= 0) and (Index < NumberOfPoints) then Result:=FPoints[index]
-  else raise Exception.Create('Point index out of bounds!'); }
+  else WriteLn('Point index out of bounds!'); }
 end;
 
 procedure TFreeSpline.Rebuild;
@@ -606,7 +606,7 @@ begin
     Built:=False;
   end;
 //  else
-//  raise Exception.Create('Index out of range'+EOL+IntToStr(Index)+#32+IntToStr(FNoPoints));
+//  WriteLn('Index out of range'+EOL+IntToStr(Index)+#32+IntToStr(FNoPoints));
 end;
 
 // Get all points of the spline, also embeds knuckles
@@ -941,64 +941,6 @@ begin
   end;
 end;
 
-procedure TFreeSpline.SaveToDXF(Strings: TStringList; Layername: string; SendMirror: boolean);
-var
-  P: T3DCoordinate;
-  I, J, Ind: integer;
-  NParams: integer;
-  Params: TFloatArray;
-begin
-  Ind:=FindDXFColorIndex(Color);
-  NParams:=0;
-  Setlength( Params,NumberOfPoints );          // count number of knucklepoints
-  if not Built then Rebuild;
-  for I:=2 to NumberOfPoints-1 do begin
-    if Knuckle[I-1] then begin
-      Params[NParams]:=Parameter[I-1];
-      Inc(NParams);
-    end;
-  end;
-  Setlength(Params, NParams+Fragments);
-  for I:=1 to Fragments do begin
-    Params[NParams]:=(I-1) / (Fragments-1);
-    Inc(NParams);
-  end;
-  SortFloatArray(Params, NParams);
-  Strings.Add('0'+EOL+'POLYLINE');
-  Strings.Add('8'+EOL+LayerName);          // layername
-  Strings.Add('62'+EOL+IntToStr(Ind));     // color by layer
-  Strings.Add('70'+EOL+'10');              // not closed
-  Strings.Add('66'+EOL+'1');               // vertices follow
-  for J:=1 to NParams do begin
-    P:=Value(Params[J-1]);
-    Strings.Add('0'+EOL+'VERTEX');
-    Strings.Add('8'+EOL+LayerName);
-    Strings.Add('10'+EOL+FloatToDec(P.X, 4));
-    Strings.Add('20'+EOL+FloatToDec(P.Y, 4));
-    Strings.Add('30'+EOL+FloatToDec(P.Z, 4));
-    Strings.Add('70'+EOL+'32');            // 3D polyline mesh vertex
-  end;
-  Strings.Add('0'+EOL+'SEQEND');
-  if SendMirror then begin              // send starboard side of the ship also
-    Strings.Add('0'+EOL+'POLYLINE');
-    Strings.Add('8'+EOL+LayerName);        // layername
-    Strings.Add('62'+EOL+IntToStr(Ind));   // color by layer
-    Strings.Add('70'+EOL+'10');            // not closed
-    Strings.Add('66'+EOL+'1');             // vertices follow
-    for J:=1 to NParams do begin
-      P:=Value(Params[J-1]);
-      P.Y:=-P.Y;
-      Strings.Add('0'+EOL+'VERTEX');
-      Strings.Add('8'+EOL+LayerName);
-      Strings.Add('10'+EOL+FloatToDec(P.X, 4));
-      Strings.Add('20'+EOL+FloatToDec(P.Y, 4));
-      Strings.Add('30'+EOL+FloatToDec(P.Z, 4));
-      Strings.Add('70'+EOL+'32');          // 3D polyline mesh vertex
-    end;
-    Strings.Add('0'+EOL+'SEQEND');
-  end;
-end;
-
 procedure TFreeSpline.Clear;
 begin
   Setlength(FDerivatives, 0);
@@ -1065,15 +1007,15 @@ begin
   end;
 
 (*// MM: debug
-  if (Hi > (FNoPoints-1)) or (Hi < 0) then raise Exception.Create('Hi is out of range'+EOL+IntToStr(Hi)+' out of 0:'+IntToStr(FNoPoints));
-  if (Lo > (FNoPoints-1)) or (Hi < 0) then raise Exception.Create('Lo is out of range'+EOL+IntToStr(Hi)+' out of 0:'+IntToStr(FNoPoints));
-  if (length(FParameters) < FNoPoints ) then raise Exception.Create('length(FParameters)<FNoPoints'+EOL+IntToStr( length(FParameters))+' '+IntToStr(FNoPoints));
-  if (length(FDerivatives) < FNoPoints) then raise Exception.Create('length(FDerivatives)<FNoPoints'+EOL+IntToStr( length(FParameters))+' '+IntToStr(FNoPoints));
+  if (Hi > (FNoPoints-1)) or (Hi < 0) then WriteLn('Hi is out of range'+EOL+IntToStr(Hi)+' out of 0:'+IntToStr(FNoPoints));
+  if (Lo > (FNoPoints-1)) or (Hi < 0) then WriteLn('Lo is out of range'+EOL+IntToStr(Hi)+' out of 0:'+IntToStr(FNoPoints));
+  if (length(FParameters) < FNoPoints ) then WriteLn('length(FParameters)<FNoPoints'+EOL+IntToStr( length(FParameters))+' '+IntToStr(FNoPoints));
+  if (length(FDerivatives) < FNoPoints) then WriteLn('length(FDerivatives)<FNoPoints'+EOL+IntToStr( length(FParameters))+' '+IntToStr(FNoPoints));
   // MM: end debug
 *)
   H:=FParameters[Hi]-FParameters[Lo];
 
-  if abs(H) < 1e-6 then begin  //Raise exception.Create('Invalid cspline');
+  if abs(H) < 1e-6 then begin  //WriteLn('Invalid cspline');
     Result:=FPoints[Hi];
   end
   else

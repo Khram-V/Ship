@@ -1145,9 +1145,7 @@ begin
   end;
   if FLayer <> nil then
     FLayer.AddControlFace(self)
-  else
-    raise Exception.Create(
-      'Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadBinary!');
+  else WriteLn('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadBinary!');
 
   Source.LoadBoolean(Sel);
   if sel then
@@ -1204,19 +1202,12 @@ begin
   // Read layer-index
  // Index:=ReadIntFromStr(LineNr, Str);
   if (Index >= 0) and (Index < Surface.FLayers.Count) then
-  begin
-    FLayer:=Surface.Layer[Index];
-  end
-  else
-  begin
-    FLayer:=Surface.Layer[0];
-    // Reference to an invalid layer. Assign to owners default layer
+  begin FLayer:=Surface.Layer[Index];
+  end else begin
+    FLayer:=Surface.Layer[0]; // Reference to an invalid layer. Assign to owners default layer
   end;
-  if FLayer <> nil then
-    FLayer.AddControlFace(self)
-  else
-    raise Exception.Create(
-      'Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadFromStream!');
+  if FLayer <> nil then FLayer.AddControlFace(self)
+  else WriteLn('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadFromStream!');
 
   if Str <> '' then
   begin
@@ -1274,125 +1265,6 @@ begin
   Destination.Add(Selected);
 end;{TFreeSubdivisionControlFace.SaveBinary}
 
-procedure TFreeSubdivisionControlFace.SaveToDXF(Strings: TStringList);
-var
-  I, J, K: integer;
-  Cols, Rows: integer;
-  Child: TFreeSubdivisionFace;
-  LayerName: string;
-  ColorIndex: integer;
-  P: T3DCoordinate;
-  Grid: TFreeSubdivisionPointGrid;
-  FaceData: TFreeFaceGrid;
-begin
-  LayerName:=self.Layer.Name;
-  ColorIndex:=FindDXFColorIndex(Layer.Color);
-  if NumberOfpoints = 4 then
-  begin
-    // create one polymesh for all childfaces
-    FaceData.NCols:=1;
-    FaceData.NRows:=1;
-    Setlength(FaceData.Faces, FaceData.NRows);
-    Setlength(FaceData.Faces[0], FaceData.NCols);
-    FaceData.Faces[0][0]:=Self;
-    Surface.ConvertToGrid(FaceData, Cols, Rows, Grid);
-    if (Rows > 0) and (Cols > 0) then
-    begin
-      Strings.Add('0'+EOL+'POLYLINE');
-      Strings.Add('8'+EOL+LayerName);
-      Strings.Add('62'+EOL+IntToStr(ColorIndex));
-      Strings.Add('66'+EOL+'1');
-      Strings.Add('70'+EOL+'16');
-      Strings.Add('71'+EOL+IntToStr(Cols));
-      Strings.Add('72'+EOL+IntToStr(Rows));
-      for I:=1 to Rows do
-      begin
-        for J:=1 to Cols do
-        begin
-          P:=Grid[I-1][J-1].FCoordinate;
-          Strings.Add('0'+EOL+'VERTEX');
-          Strings.Add('8'+EOL+LayerName);
-          Strings.Add('10'+EOL+FloatToDec(P.X, 4));
-          Strings.Add('20'+EOL+FloatToDec(P.Y, 4));
-          Strings.Add('30'+EOL+FloatToDec(P.Z, 4));
-          Strings.Add('70'+EOL+'64');    // polygon mesh vertex
-        end;
-      end;
-      Strings.add('0'+EOL+'SEQEND');
-      if (Layer.Symmetric) and (Surface.DrawMirror) then
-      begin
-        Strings.Add('0'+EOL+'POLYLINE');
-        Strings.Add('8'+EOL+LayerName);
-        Strings.Add('62'+EOL+IntToStr(ColorIndex));
-        Strings.Add('66'+EOL+'1');
-        Strings.Add('70'+EOL+'16');
-        Strings.Add('71'+EOL+IntToStr(Cols));
-        Strings.Add('72'+EOL+IntToStr(Rows));
-        for I:=1 to Rows do
-        begin
-          for J:=1 to Cols do
-          begin
-            P:=Grid[I-1][J-1].FCoordinate;
-            Strings.Add('0'+EOL+'VERTEX');
-            Strings.Add('8'+EOL+LayerName);
-            Strings.Add('10'+EOL+FloatToDec(P.X, 4));
-            Strings.Add('20'+EOL+FloatToDec(-P.Y, 4));
-            Strings.Add('30'+EOL+FloatToDec(P.Z, 4));
-            Strings.Add('70'+EOL+'64');    // polygon mesh vertex
-          end;
-        end;
-        Strings.add('0'+EOL+'SEQEND');
-      end;
-    end;
-  end
-  else
-  begin
-    // send all child faces as 3D faces
-    for J:=1 to ChildCount do
-    begin
-      Child:=self.Child[J-1];
-      Strings.Add('0'+EOL+'3DFACE');
-      Strings.Add('8'+EOL+LayerName);
-      Strings.Add('62'+EOL+IntToStr(ColorIndex));
-      for K:=1 to Child.NumberOfpoints do
-      begin
-        P:=Child.Point[K-1].Coordinate;
-        Strings.Add(IntToStr(10+K-1)+EOL+FloatToDec(P.X, 4));
-        Strings.Add(IntToStr(20+K-1)+EOL+FloatToDec(P.Y, 4));
-        Strings.Add(IntToStr(30+K-1)+EOL+FloatToDec(P.Z, 4));
-      end;
-      if Child.NumberOfpoints = 3 then
-      begin
-        // 4th point is same as third
-        Strings.Add(IntToStr(13)+EOL+FloatToDec(P.X, 4));
-        Strings.Add(IntToStr(23)+EOL+FloatToDec(P.Y, 4));
-        Strings.Add(IntToStr(33)+EOL+FloatToDec(P.Z, 4));
-      end;
-      if (Layer.Symmetric) and (Surface.DrawMirror) then
-      begin
-        // send starboard side also
-        Strings.Add('0'+EOL+'3DFACE');
-        Strings.Add('8'+EOL+LayerName);
-        Strings.Add('62'+EOL+IntToStr(ColorIndex));
-        for K:=Child.NumberOfpoints downto 1 do
-        begin
-          P:=Child.Point[K-1].Coordinate;
-          P.Y:=-P.Y;
-          Strings.Add(IntToStr(10+K-1)+EOL+FloatToDec(P.X, 4));
-          Strings.Add(IntToStr(20+K-1)+EOL+FloatToDec(P.Y, 4));
-          Strings.Add(IntToStr(30+K-1)+EOL+FloatToDec(P.Z, 4));
-        end;
-        if Child.NumberOfpoints = 3 then
-        begin
-          // 4th point is same as third
-          Strings.Add(IntToStr(13)+EOL+FloatToDec(P.X, 4));
-          Strings.Add(IntToStr(23)+EOL+FloatToDec(P.Y, 4));
-          Strings.Add(IntToStr(33)+EOL+FloatToDec(P.Z, 4));
-        end;
-      end;
-    end;
-  end;
-end;{TFreeSubdivisionControlFace.SaveToDXF}
 
 procedure TFreeSubdivisionControlFace.SaveToStream(Strings: TStringList);
 var

@@ -152,17 +152,17 @@ type
   TFreeUndoObject = class
   private
     FOwner: TFreeShip;
-    FUndoText: string;
+    FUndoText: AnsiString;
     FUndoData: TFreeFileBuffer;                 // some other data to be stored
     FFileChanged: boolean;
     FFilenameSet: boolean;
-    FFilename: string;
+    FFilename: AnsiString;
     FEditMode: TFreeEditMode;
     FTime: TDateTime;
     FIsTempRedoObject: boolean;
     function FGetMemory: integer; // calculates the amount of bytes used for each undo object
-    function FGetTime: string;
-    function FGetUndoText: string;
+    function FGetTime: AnsiString;
+    function FGetUndoText: AnsiString;
   public
     procedure Accept;
     constructor Create(Owner: TFreeShip);
@@ -171,9 +171,9 @@ type
     procedure Restore;
     property Memory: integer read FGetMemory; // calculates the amount of bytes used for each undo object
     property Owner: TFreeShip read FOwner;
-    property Time: string read FGetTime;
+    property Time: AnsiString read FGetTime;
     property UndoData: TFreeFileBuffer read FUndoData;
-    property UndoText: string read FGetUndoText;
+    property UndoText: AnsiString read FGetUndoText;
 
   end;
 
@@ -240,7 +240,7 @@ type
     FMidshipSection: TFreeIntersection;
     FMidshipLocation: TFloatType;
     FBulbSection: TFreeIntersection;
-//  function FGetErrorString: string;
+//  function FGetErrorString: AnsiString;
     function FGetTrimAngle: TFloatType;
     function FGetWlPlane: T3DPlane;
     procedure FSetCalculated(val: boolean);
@@ -271,7 +271,7 @@ type
     property Data: TFreeHydrostaticsData read FData;
     property Draft: TFloatType read FDraft write FSetDraft;
     property Errors: TFreeHydrostaticErrors read FErrors write FSetErrors;
-//  property ErrorString: string read FGetErrorString;
+//  property ErrorString: AnsiString read FGetErrorString;
     property HeelingAngle: TFloatType read FHeelingAngle write FSetHeelingAngle;
     property HydrostaticType: TFreeHydrostaticType read FHydrostaticType write FSetHydrostaticType;
     // Determines how calculations are performed: short, extensive etc.
@@ -304,7 +304,7 @@ type
     function FGetDistance: TFloatType;
     function FGetPlane: T3DPlane;
     function FGetCount: integer;
-    function FGetDescription: string;
+    function FGetDescription: AnsiString;
     function FGetItem(Index: integer): TFreeSpline;
     procedure FSetBuilt(Val: boolean);
     procedure FSetDistance(val: TFloatType);
@@ -329,7 +329,7 @@ type
     property Built: boolean read FBuilt write FSetBuilt;
     property Color: TColor read FGetColor;
     property Count: integer read FGetCount;
-    property Description: string read FGetDescription;
+    property Description: AnsiString read FGetDescription;
     property Distance: TFloatType read FGetDistance write FSetDistance;
     property IntersectionType: TFreeIntersectionType read FIntersectionType write FIntersectionType;
     property Items[index: integer]: TFreeSpline read FGetItem;
@@ -484,17 +484,17 @@ type
     PreviewFrm: TForm;
     PreviewImg: TImage;
     FProgressBar: TProgressBar;
-    function FGetRecentFile(Index: integer): string;
+    function FGetRecentFile(Index: integer): AnsiString;
     function FGetRecentFileCount: integer;
 //  procedure SaveDialogTypeChange(Sender: TObject);
   public
-    procedure AddToRecentFiles( Filename: string );            // Takes a filename and adds it to the list with recent files
+    procedure AddToRecentFiles( Filename: AnsiString );            // Takes a filename and adds it to the list with recent files
     procedure BackgroundImage_Delete(Viewport: TFreeViewport); // Delete the backgrundimage associated with this view
     procedure BackgroundImage_Open(Viewport: TFreeViewport);   // browse for and open a backgroundimage
     function CheckIfChangedAndAskToSave():boolean;
     constructor Create(FreeShip: TFreeShip);
     function CreateRedoObject: TFreeUndoObject; // Creates redo data before an undo is done
-    function CreateUndoObject(UndoText: string; Accept: boolean): TFreeUndoObject; // Creates undodata just prior to modifications
+    function CreateUndoObject(UndoText: AnsiString; Accept: boolean): TFreeUndoObject; // Creates undodata just prior to modifications
     procedure Curve_Add;                  // Add a new controlcurve
     destructor Destroy; override;
     procedure Edge_Collapse;              // Remove an edge by replacing the two connected faces by one controlface
@@ -531,19 +531,19 @@ type
     procedure File_ExportOffsets;         // Exports all intersections to a textfile as 3D points
     procedure File_ExportSTL;             // Export the surface to a STL file
     procedure File_ImportSTL;             // Imoprt the surface to a Standard Triangle STL file
-    procedure File_ImportSTLtext(FileName: string); // Import the surface from a STL text file
-    procedure File_ImportSTLbin(FileName: string);  // Import the surface from a STL binary file
+    procedure File_ImportSTLtext(FileName: AnsiString); // Import the surface from a STL text file
+    procedure File_ImportSTLbin(FileName: AnsiString);  // Import the surface from a STL binary file
     procedure File_ImportCarene;          // imports a Carene XYZ file and creates a multichine boat with developable surfaces
     procedure File_ImportChines;          // Import chines from a textfile and fit a surface through them
     procedure File_ImportFEF;             // Import a Freeship Exchange Format (FEF) file
     procedure File_ImportHull; overload; virtual; // Imports a file created with Carlssons's Hulls program
-    procedure File_ImportHull(Filename: string; Quiet: boolean); reintroduce; overload;    // Imports a file created with Carlssons's Hulls program
+    procedure File_ImportHull(Filename: AnsiString; Quiet: boolean); reintroduce; overload;    // Imports a file created with Carlssons's Hulls program
     procedure File_ImportPart;            // Import a partfile and add it to the current geometry
     procedure File_ImportPolycad;         // Imports a PolyCad file
     procedure File_ImportSurface;         // Imports a number of curves and fits a surface
     procedure File_ImportVRML;            // Import a VRML 1.0 file
     procedure File_Load; overload; virtual; // Load a FREE!ship file by showing an opendialog
-    procedure File_Load( FileName: string ); reintroduce; overload; // Loads the given filename quietly
+    procedure File_Load( FileName: AnsiString ); reintroduce; overload; // Loads the given filename quietly
     function File_Save:boolean;             // save as FREE!ship file without prompting for a filename (must already been set)
     function File_SaveAs:boolean;           // Ask for filename and save as FREE!ship file
     function File_SaveCheck( Check:boolean ):word; // с запроосом необходимости -> mrOk,mrNo,mrCancel
@@ -598,14 +598,14 @@ type
     procedure Undo; // Restores the state of the model as it was before the last modification
     procedure Undo_Clear;    // Clear the undo history
     procedure Undo_ShowHistory; //Show the undo history
- // procedure OnFilePreview(Sender: TObject; filename: string);
+ // procedure OnFilePreview(Sender: TObject; filename: AnsiString);
     procedure OnFaceRebuilt (Sender: TObject; current:integer; total:integer);
     property FreeShip: TFreeShip read FFreeShip write FFreeShip;
     property ProgressBar:TProgressBar read FProgressBar write FProgressBar;
     property RecentFiles: TStringList read FRecentFiles write FRecentFiles;
-    property RecentFile[index: integer]: string read FGetRecentFile; // retrieve a filename from the recently used file list
+    property RecentFile[index: integer]: AnsiString read FGetRecentFile; // retrieve a filename from the recently used file list
     property RecentFileCount: integer read FGetRecentFileCount;    // The number of files in the recently used file list
-    function getPreviewImage(aFileName: string): TJPegImage;
+    function getPreviewImage(aFileName: AnsiString): TJPegImage;
   end;
 
   {--------------------------------------------------------------}
@@ -620,35 +620,11 @@ type
     FOwner: TFreeShip;
     FMainForm: TForm;
     FPointSize: integer;
+    FViewportColor: TColor;
     // Half width of controlpoints in pixels when drawn on screen
     // Colors
-    FUnderWaterColorAlpha: byte;
-    FButtockColor,
-    FWaterlineColor,
-    FStationColor,
-    FDiagonalColor,
-    FEdgeColor,        // Color of normal edges
-    FCreaseColor,      // color of crease edges
-    FCreaseEdgeColor,  // color of crease control-edges
-    FGridColor,        // Color of gridlines
-    FGridFontColor,    // Color of font with gridlines
-    FCreasePointColor, // Color of crease vertices
-    FRegularPointColor,
-    FCornerPointColor, // Color of cornerpoints and points with at least 3 crease edges
-    FDartPointColor,
-    FSelectColor,      // Color of selected items
-    FLayerColor,       // Default color for new layers
-    FNormalColor,      // color of surface normals
-    FUnderWaterColor,  // Default color used for shading underwaterpart of the vessel
-    FViewportColor,
-    FLeakPointColor,
-    FMarkerColor,
-    FCurvaturePlotColor,
-    FControlCurveColor,
-    FHydrostaticsFontColor,
-    FZebraStripeColor: TColor;
 
-    FFbmEncoding: string; //encoding that is used to convert national strings from/to FBM files
+    FFbmEncoding: AnsiString; //encoding that is used to convert national strings from/to FBM files
     FMaxUndoMemory, // Max. amount of allowable undo memory in megabytes
 
     FIntersectionLineWidth,
@@ -656,9 +632,32 @@ type
     FInteriorEdgeLineWidth,
     FAuxEdgeLineWidth,
     FHydrostaticLineWidth: integer;
-
     procedure FSetViewportColor( Val: TColor );
   public
+    EdgeColor,        // Color of normal edges
+    CreaseColor,      // color of crease edges
+    CreaseEdgeColor,  // color of crease control-edges
+    GridColor,        // Color of gridlines
+    GridFontColor,    // Color of font with gridlines
+    CreasePointColor, // Color of crease vertices
+    RegularPointColor,
+    CornerPointColor, // Color of cornerpoints and points with at least 3 crease edges
+    DartPointColor,
+    SelectColor,      // Color of selected items
+    LayerColor,       // Default color for new layers
+    NormalColor,      // color of surface normals
+    LeakPointColor,
+    MarkerColor,
+    CurvaturePlotColor,
+    ControlCurveColor,
+    HydrostaticsFontColor,
+    ZebraStripeColor,
+    StationColor,
+    ButtockColor,
+    WaterlineColor,
+    DiagonalColor,
+    UnderWaterColor:TColor; // Default color used for shading underwaterpart of vessel
+    UnderWaterColorAlpha: byte;
 
     ConfigDirectory,    // Default directory where users FreeShip.ini file is stored
     ManualsDirectory,   // Manuals directory
@@ -673,10 +672,10 @@ type
 //  FInitDirectory,    // Default directory where freeship.exe started
 //  FUserDataDirectory,// Default directory where users FreeShip r/w data (projects etc) stored
 //  FUserAppDataDirectory, // Default directory where users FreeShip programs and r/o resource files stored
-    FLanguage: string;
+    FLanguage: AnsiString;
 
-//  function FullName( const N: string ): string; // --
-    function OnlyName( const S: string ): string; // имя внутри/вне директории
+//  function FullName( const N: AnsiString ): AnsiString; // --
+    function OnlyName( const S: AnsiString ): AnsiString; // имя внутри/вне директории
 
     procedure Clear;
     constructor Create(Owner: TFreeShip);
@@ -687,46 +686,18 @@ type
     procedure ResetDirectories;
     procedure SetDefaults;
     procedure Save;
-//  procedure LoadFromDta(Filename: string);
-//  procedure SaveToDta;
     property  Owner: TFreeShip read FOwner write FOwner;
     property  MainForm: TForm read FMainForm write FMainForm;
   published
-    // General options
+// General options
     property PointSize: integer read FPointSize write FPointSize;
     property FontSize: integer read FFontSize write FFontSize;
-    // Color settings
-    property ButtockColor: TColor read FButtockColor write FButtockColor;
-    property ControlCurveColor: TColor read FControlCurveColor write FControlCurveColor;
-    property CornerPointColor: TColor read FCornerPointColor write FCornerPointColor;
-    property CreaseColor: TColor read FCreaseColor write FCreaseColor;
-    property CreaseEdgeColor: TColor read FCreaseEdgeColor write FCreaseEdgeColor;
-    property CurvaturePlotColor: TColor read FCurvaturePlotColor write FCurvaturePlotColor;
-    property DiagonalColor: TColor read FDiagonalColor write FDiagonalColor;
-    property GridColor: TColor read FGridColor write FGridColor;
-    property GridFontColor: TColor read FGridFontColor write FGridFontColor;
-    property HydrostaticsFontColor: TColor read FHydrostaticsFontColor write FHydrostaticsFontColor;
-    property EdgeColor: TColor read FEdgecolor write FEdgeColor;
-
-    property CreasePointColor: TColor read FCreasePointColor write FCreasePointColor;
-    property Language      : string read FLanguage write FLanguage;
-//  property LanguageFile  : string read FLanguageFile write FLanguageFile;
-    property LayerColor    : TColor read FLayerColor write FLayerColor;
-    property LeakPointColor: TColor read FLeakPointColor write FLeakPointColor;
-    property MarkerColor   : TColor read FMarkerColor write FMarkerColor;
+    property Language      : AnsiString read FLanguage write FLanguage;
+//  property LanguageFile  : AnsiString read FLanguageFile write FLanguageFile;
     property MaxUndoMemory : integer read FMaxUndoMemory write FMaxUndoMemory;
-    property NormalColor   : TColor read FNormalColor write FNormalColor;
-
-    property StationColor: TColor read FStationColor write FStationColor;
-    property UnderWaterColor: TColor read FUnderWaterColor write FUnderWaterColor;
-    property UnderWaterColorAlpha: byte read FUnderWaterColorAlpha write FUnderWaterColorAlpha;
-    property RegularPointColor: TColor read FRegularPointColor write FRegularPointColor;
-    property DartPointColor: TColor read FDartPointColor write FDartPointColor;
-    property SelectColor: TColor read FSelectColor write FSelectColor;
+//  Color settings
     property ViewportColor: TColor read FViewportColor write FSetViewportColor;
-    property WaterlineColor: TColor read FWaterlineColor write FWaterlineColor;
-    property ZebraStripeColor: TColor read FZebraStripeColor write FZebraStripeColor;
-    property FbmEncoding: string read FFbmEncoding write FFbmEncoding;
+    property FbmEncoding: AnsiString read FFbmEncoding write FFbmEncoding;
   end;
   {------------------------------------------------------------}
   {                                       TFreeProjectSettings }
@@ -743,20 +714,16 @@ type
     FProjectBeam: TFloatType;
     FProjectDraft: TFloatType;
     FProjectLength: TFloatType;
-    FProjectUnderWaterColorAlpha: byte;
     FProjectWaterDensity: TFloatType;
     FProjectWaterTemper: TFloatType;
     FProjectSplitSectionLocation: TFloatType;
     FUseDefaultSplitSectionLocation: boolean; // If set to true, the midship/mainframe location is set to 0.5*project length, if false then value in FProjectMainframeLocation is used
-
     FProjectName: AnsiString;
     FProjectDesigner: AnsiString;
     FProjectComment: AnsiString;
     FProjectFileCreatedBy: AnsiString;
-
     FProjectShadeUnderwaterShip: boolean;
     FSavePreview: boolean;
-    FProjectUnderWaterColor: TColor;
     FProjectUnits: TFreeUnitType;
     FProjectPrecision: TFreePrecisionType;
     FProjectSimplifyIntersections: boolean;
@@ -787,16 +754,8 @@ type
     procedure FSetProjectDraft(Val: TFloatType);
     procedure FSetProjectLength(Val: TFloatType);
     procedure FSetProjectSplitSectionLocation(val: TFloatType);
-
-//    procedure FSetProjectName(Val: AnsiString);
-//    procedure FSetProjectDesigner(Val: AnsiString);
-//    procedure FSetProjectComment(Val: AnsiString);
-//    procedure FSetProjectFileCreatedBy(Val: AnsiString);
-
     procedure FSetProjectShadeUnderwaterShip(Val: boolean);
     procedure FSetProjectSimplifyIntersections(val: boolean);
-    procedure FSetProjectUnderWaterColor(Val: TColor);
-    procedure FSetProjectUnderWaterColorAlpha(Val: byte);
     procedure FSetProjectUnits(Val: TFreeUnitType);
     procedure FSetProjectWaterDensity(Val: TFloatType);
     procedure FSetProjectWaterTemper(Val: TFloatType);
@@ -807,6 +766,9 @@ type
     procedure FSetTrim(Val: TFloatType);
     procedure FSetUseDefaultSplitSectionLocation(Val: boolean);
   public
+    ProjectUnderWaterColorAlpha: byte;
+    ProjectUnderWaterColor: TColor;
+
     procedure Clear;
     constructor Create(Owner: TFreeShip);
     procedure Edit; // User input of mainparticulars and project setting
@@ -835,8 +797,6 @@ type
 
     property ProjectShadeUnderwaterShip: boolean read FProjectShadeUnderwaterShip write FSetProjectShadeUnderwaterShip;
     property ProjectSimplifyIntersections: boolean read FProjectSimplifyIntersections write FSetProjectSimplifyIntersections;
-    property ProjectUnderWaterColor: TColor read FProjectUnderWaterColor write FSetProjectUnderWaterColor;
-    property ProjectUnderWaterColorAlpha: byte read FProjectUnderWaterColorAlpha write FSetProjectUnderWaterColorAlpha;
     property ProjectUnits: TFreeUnitType read FProjectUnits write FSetProjectUnits;
     property ProjectPrecision: TFreePrecisionType read FProjectPrecision write FProjectPrecision;
     property ProjectWaterDensity: TFloatType read FProjectWaterDensity write FSetProjectWaterDensity;
@@ -869,7 +829,7 @@ type
     FActiveControlPoint    : TFreeSubdivisionControlPoint; // The last selected controlpoint (still selected)
     FFileChanged           : boolean; // Flag to keep track of modifications to the file
     FSurface               : TFreeSubdivisionSurface;
-    FFilename              : string; // Filename of the current project;
+    FFilename              : AnsiString; // Filename of the current project;
     FEdit                  : TFreeEdit;  // Containerclass for all editing commands
     FStations              : TFasterListTFreeIntersection;
     FButtocks              : TFasterListTFreeIntersection;
@@ -927,7 +887,7 @@ type
     function FGetControlCurve(Index: integer): TFreeSubdivisionControlCurve;
     function FGetDiagonal(Index: integer): TFreeIntersection;
     function FGetFlowline(Index: integer): TFreeFlowline;
-    function FGetFilename: string;
+    function FGetFilename: AnsiString;
     function FGetHydrostaticCalculation(Index: integer): TFreeHydrostaticCalc;
     function FGetNumberOfLayers: integer;
     function FGetLayer(Index: integer): TFreeSubdivisionLayer;
@@ -964,7 +924,7 @@ type
     procedure FSetBuilt(Val: boolean);
     procedure FSetEditMode(Val: TFreeEditMode);
     procedure FSetFileChanged(Val: boolean);
-    procedure FSetFileName(Val: string);
+    procedure FSetFileName(Val: AnsiString);
     procedure FSetFileVersion( Val: TFreeFileVersion );
     function FGetNumberOfSelectedControlCurves: integer;
     function FGetNumberOfSelectedControlEdges: integer;
@@ -1003,7 +963,7 @@ type
     procedure Extents(var Min, Max: T3DCoordinate);
     // calculate the bounding box coordinates of the model
     function FindLowestHydrostaticsPoint: TFloatType;
-    function FindByName(aName:String):TFreeNamedObject;
+    function FindByName(aName:AnsiString):TFreeNamedObject;
     function GetAllNamedPoints:TStringList;
     procedure ImportChines(Np: integer; Chines: TFasterListTFreeSpline);
     // imports a number of longitudinally lines and creates developable surfaces between each two subsequent chines
@@ -1015,7 +975,7 @@ type
 //  procedure LoadControlPointLinearConstraints(Source:TFreeFileBuffer);
 //  procedure LoadControlPointGroups(Source:TFreeFileBuffer);   // fv430
 //  procedure LoadControlPointAnchors(Source:TFreeFileBuffer);  // fv462
-    procedure LoadPreview(Filename: string; Image: TJPegImage); // loads the preview image from a file
+    procedure LoadPreview(Filename: AnsiString; Image: TJPegImage); // loads the preview image from a file
     procedure RebuildAsync(Data: PtrInt);
     procedure RebuildModel; // Force to rebuild the entire ship and recalculate all data
     procedure RebuildModelIfRequired;
@@ -1109,7 +1069,7 @@ type
     property Surface: TFreeSubdivisionSurface read FSurface;
   published   { Published declarations }
     property FileChanged: boolean read FFileChanged write FSetFileChanged;
-    property Filename: string read FGetFilename write FSetFileName;
+    property Filename: AnsiString read FGetFilename write FSetFileName;
     property FileVersion: TFreeFileVersion read FFileVersion write FSetFileVersion;
     property LinesplanFrame: TFrame read FFreeLinesplanFrme write FFreeLinesplanFrme;
     property OnChangeCursorIncrement: TNotifyEvent read FOnChangeCursorIncrement write FOnChangeCursorIncrement;
@@ -1126,8 +1086,8 @@ type
 
   TColorIniFile = class(TIniFile)
   public
-    function ReadColor(const Section, Ident: string; Default: TColor): TColor; virtual;
-    procedure WriteColor(const Section, Ident: string; Value: TColor); virtual;
+    function ReadColor(const Section, Ident: AnsiString; Default: TColor): TColor; virtual;
+    procedure WriteColor(const Section, Ident: AnsiString; Value: TColor); virtual;
   end;
 
 // function to find the corresponding water viscosity based on the density
@@ -1170,7 +1130,7 @@ uses Math,
 //  FreeResistance_DelftDlg,
 //  FreeCrosscurvesDlg,
   Main,
-  freehullformwindow_panel,
+  FreeHullFormWindow_Panel,
   FreeGridDlg,
   FreeDeleteDlg;
 

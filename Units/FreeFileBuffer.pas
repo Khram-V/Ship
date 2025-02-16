@@ -196,7 +196,6 @@ begin
   Add(LCData.LinearConstraintPointB);
 end;
 
-
 procedure TFreeFileBuffer.Add(Version: TFreeFileVersion);
 var
   Size: integer;
@@ -240,6 +239,7 @@ begin
    end;
 end;
 }
+
 procedure TFreeFileBuffer.Add(JPegImage: TJPEGImage);
 var
   Stream: TMemoryStream;
@@ -575,10 +575,7 @@ begin
 end;
 
 // reset the data before reading
-procedure TFreeFileBuffer.Reset;
-begin
-  FPosition:=0;
-end;{TFreeFileBuffer.Reset}
+procedure TFreeFileBuffer.Reset; begin FPosition:=0; end;
 
 function TFreeFileBuffer.SaveToFile(Filename: AnsiString):boolean;
 var
@@ -907,3 +904,23 @@ end;
 function TFreeTextBuffer.GetPosition:integer; begin Result:=FPosition; end;
 
 end.
+
+(*
+procedure Add(ColorValue: TColor); overload; virtual;
+procedure Add(ColorValue: TColor); overload; virtual;
+procedure TFreeFileBuffer.Add( ColorValue: TColor );
+var Size: integer;
+begin
+  Size:=4; //SizeOf(TColor);
+  if Count+Size > Capacity then FGrow(Size);
+  Move( ColorValue,FData[FCount],Size );
+  Inc(FCount, Size);
+end;
+procedure TFreeTextBuffer.Add( ColorValue: TColor );
+var S: AnsiString;
+begin
+  S:='$'+HexStr(ColorValue,8); FLines.Add(S); Inc(FPosition);
+end;
+procedure LoadColor(var Output: TColor); virtual;
+procedure LoadColor(var Output: TColor); virtual;  StringToColor(...
+*)

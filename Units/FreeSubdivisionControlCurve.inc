@@ -703,16 +703,6 @@ begin
   Destination.Add(Selected);
 end;
 
-procedure TFreeSubdivisionControlCurve.SaveToDXF(Strings: TStringList);
-var
-  Layer: string;
-begin
-  Layer:='Control_curves';
-  FSpline.Fragments:=FSpline.NumberOfPoints;
-  FSpline.SaveToDXF(Strings, Layer, Surface.DrawMirror);
-end;
-
-
 procedure TFreeSubdivisionControlCurve.LastAveragePoint(
   PrevPoint, Point, NextPoint:TFreeSubdivisionPoint );
 var

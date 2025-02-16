@@ -1,27 +1,15 @@
-
-
 unit FreeHydrostaticsResultsDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
+{$MODE Delphi}
 
 interface
 
 uses LCLIntf,
-     PrintersDlgs, FreePrinter,
-     SysUtils,
-     Classes,
-     Graphics,
-     Controls,
-     Forms,
-     Dialogs,
-     Grids,
-     ExtCtrls,
-     StdCtrls,
-     Printers,
-     Buttons,FreeLanguageSupport;
-
+     SysUtils, Classes,
+     Graphics, Grids,
+     Controls, Forms,
+     Dialogs,  Buttons,
+     ExtCtrls, StdCtrls,
+     Printers,PrintersDlgs,FreePrinter,FreeLanguageSupport;
 type                                         { TFreeHydrostaticsResultsDialog }
  TFreeHydrostaticsResultsDialog  = class(TForm)
     Panel1, Panel2: TPanel;
@@ -50,7 +38,7 @@ implementation
 
 procedure TFreeHydrostaticsResultsDialog.GridDrawCell(Sender: TObject;ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
 var W    : Integer;
-    Str  : string;
+    Str  : AnsiString;
     Back : TColor;
 begin
    if (ACol=0) or (ARow in [0,1]) then begin
@@ -80,18 +68,16 @@ begin
 end;
 
 function TFreeHydrostaticsResultsDialog.Execute:Boolean;
-var I : Integer;
-begin // Store the column width for resizing purposes
+var I: Integer;
+begin                           // Store the column width for resizing purposes
    setlength(ColWidths,Grid.ColCount);
-   for I:=1 to Grid.ColCount do ColWidths[I-1]:=Grid.ColWidths[I-1];
+   for I:=0 to Grid.ColCount-1 do ColWidths[I]:=Grid.ColWidths[I];
    ShowTranslatedValues(Self); ShowModal;
    Result:=modalresult=mrOK;
 end;
 
 procedure TFreeHydrostaticsResultsDialog.FormResize(Sender: TObject);
-var I,Total : Integer;
-    remain  : Integer;
-    NewW    : Integer;
+var I,Total,remain,NewW: Integer;
     Fraction: Double;
 begin
    ButtonClose.Left:=Panel1.Width-ButtonClose.Width-5;
@@ -108,9 +94,7 @@ begin
 end;
 
 procedure TFreeHydrostaticsResultsDialog.ButtonCloseClick(Sender: TObject);
-begin
-   ModalResult:=mrOK;
-end;
+    begin ModalResult:=mrOK; end;
 
 procedure TFreeHydrostaticsResultsDialog.ButtonSaveClick(Sender: TObject);
 var Strings    : TStringList;
@@ -140,9 +124,7 @@ begin
          end;
          Strings.Add(Str);
       end;
-      // Skip translation
-      Strings.SaveToFile(ChangeFileExt(SaveDialog.Filename,'.txt'));
-      // End Skip translation
+      Strings.SaveToFile( ChangeFileExt(SaveDialog.Filename,'.txt') );
       FreeAndNil(Strings);
    end;
 end;
@@ -154,20 +136,18 @@ var PrintText : TextFile;
     Str,Tmp   : Ansistring;
 begin
    if PrintDialog.Execute then begin
-      AssignPrn(PrintText);
-      Rewrite(PrintText);
-      Printer.Canvas.Font.Assign(Header.Font);
-      for I:=1 to Header.Lines.Count do Writeln(PrintText,#32,Header.Lines[I-1]);
+      AssignPrn( PrintText ); Rewrite( PrintText );
+      Printer.Canvas.Font.Assign( Header.Font );
+      for I:=0 to Header.Lines.Count-1 do Writeln(PrintText,#32,Header.Lines[I]);
       Setlength(MaxWidth,Grid.ColCount);
-      for I:=1 to Grid.ColCount do begin
-         MaxWidth[I-1]:=0;
+      for I:=1 to Grid.ColCount do begin MaxWidth[I-1]:=0;
          for J:=1 to Grid.RowCount do begin
             L:=Length(Grid.Cells[I-1,J-1]);
             if L>MaxWidth[I-1] then MaxWidth[I-1]:=L;
          end;
       end;
-      Writeln(PrintText);
-      Writeln(PrintText);
+      Writeln( PrintText );
+      Writeln( PrintText );
       Printer.Canvas.Font.Size:=Printer.Canvas.Font.Size-1;
       for I:=1 to Grid.RowCount do begin Str:='';
          for J:=1 to Grid.ColCount do begin
@@ -177,9 +157,9 @@ begin
             if J=1 then Str:=Tmp
                    else Str:=Str+#32+Tmp;
          end;
-         Writeln(PrintText,#32#32,Str);
+         Writeln( PrintText,#32#32,Str );
       end;
-      CloseFile(PrintText);
+      CloseFile( PrintText );
    end;
 end;
 

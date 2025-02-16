@@ -1,22 +1,12 @@
-
 unit FreeHydrostaticsDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
+{$MODE Delphi}
 
 interface
-
 uses
-  LResources, Classes, SysUtils, LCLType,
-  PrintersDlgs, FreePrinter, Printers,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
-  ExtCtrls,FreeLanguageSupport;
-
+  LResources, LCLType, Classes, SysUtils,
+  PrintersDlgs, Printers, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, Buttons,
+  FreePrinter,FreeLanguageSupport;
 type                                                { TFreeHydrostaticsDialog }
   TFreeHydrostaticsDialog = class(TForm)
     Panel1: TPanel;
@@ -41,18 +31,15 @@ implementation
 
 {$R *.lfm}
 
-procedure TFreeHydrostaticsDialog.ButtonCloseClick(Sender: TObject);
+procedure TFreeHydrostaticsDialog.ButtonCloseClick( Sender: TObject );
 begin Close; end;
 
-procedure TFreeHydrostaticsDialog.ButtonPrintClick(Sender: TObject);
-var
-  PrintText: TextFile;
-  Str: ansistring;
-  I: integer;
+procedure TFreeHydrostaticsDialog.ButtonPrintClick( Sender: TObject );
+var PrintText: TextFile; Str: ansistring; I: integer;
 begin
   if PrintDialog.Execute then begin
-    AssignPrn(PrintText);
-    Rewrite(PrintText);
+    AssignPrn(PrintText);             //  Assign( PrintText,Printer.FileName )?
+    Rewrite( PrintText );
     Printer.Canvas.Font.Assign( Edit.Font );
     for I:=1 to Edit.Lines.Count do begin
       Str:=Edit.Lines[I-1];

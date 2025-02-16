@@ -6,9 +6,9 @@ procedure TFreeViewport.FSetAngle(Val: TFloatType);
 begin
   if Val <> FAngle then begin
     FAngle:=Val;
-    FCosAngle:=cos(DegToRad(FAngle));
-    FSinAngle:=sin(DegToRad(FAngle));
-    FHorScrollbarChange(self);
+    FCosAngle:=cos( DegToRad( FAngle ) );
+    FSinAngle:=sin( DegToRad( FAngle ) );
+//  FHorScrollbarChange( self );
     InitializeViewport( FMin3D,FMax3D );
   end;
 end;
@@ -20,8 +20,7 @@ begin
     emSetOrigin: Cursor:=crSetOrigin;
     emSetScale: Cursor:=crSetScale;
     emSetTransparentColor: Cursor:=crTranspCol;
-    else
-      Cursor:=crCross;
+    else Cursor:=crCross;
   end;
 end;
 
@@ -37,9 +36,8 @@ function TFreeViewport.FGetPenWidth: integer;
 begin Result:=FDrawingCanvas.Pen.Width; end;
 
 function TFreeViewport.FGetPrinting: boolean;
-begin
-  if Printer = nil then Result:=False
-  else Result:=FPrinting and (FDrawingcanvas = printer.Canvas);
+begin if Printer = nil then Result:=False
+      else Result:=FPrinting and (FDrawingcanvas = printer.Canvas);
 end;
 
 function TFreeViewport.FGetBrushStyle: TBrushStyle;
@@ -99,7 +97,7 @@ begin
     FElevation:=Val;
     FCosElevation:=cos(DegToRad(FElevation));
     FSinElevation:=sin(DegToRad(FElevation));
-    FVertScrollbarChange( self );
+//  FVertScrollbarChange( self );
     InitializeViewport( FMin3D,FMax3D );
   end;
 end;
@@ -116,26 +114,24 @@ begin
 end;
 
 procedure TFreeViewport.FSetPan(Val: TPoint);
-begin
-  if (FPan.X <> Val.X) or (FPan.Y <> Val.Y) then begin FPan:=Val; Refresh; end;
+begin if (FPan.X<>Val.X) or (FPan.Y<>Val.Y) then begin FPan:=Val; Refresh; end;
 end;
 
 procedure TFreeViewport.FSetPenColor(Val: TColor);
-begin if FDrawingcanvas.Pen.Color <> val then FDrawingcanvas.Pen.Color:=Val;
+begin if FDrawingcanvas.Pen.Color<>val then FDrawingcanvas.Pen.Color:=Val;
 end;
 
 procedure TFreeViewport.FSetBrushColor(Val: TColor);
-begin if FDrawingcanvas.Brush.Color <> val then FDrawingcanvas.Brush.Color:=Val;
+begin if FDrawingcanvas.Brush.Color<>val then FDrawingcanvas.Brush.Color:=Val;
 end;
 
 procedure TFreeViewport.FSetFontColor(Val: TColor);
-begin if FDrawingcanvas.Font.Color <> val then FDrawingcanvas.Font.Color:=Val;
+begin if FDrawingcanvas.Font.Color<>val then FDrawingcanvas.Font.Color:=Val;
 end;
 
 procedure TFreeViewport.FSetFontName(val: string);
-begin
-  if Uppercase(FDrawingcanvas.Font.Name) <> uppercase(Name) then
-    FDrawingcanvas.Font.Name:=Name;
+begin if Uppercase(FDrawingcanvas.Font.Name)<>uppercase(Name) then
+      FDrawingcanvas.Font.Name:=Name;
 end;
 
 procedure TFreeViewport.FSetFontSize(val: integer);
@@ -152,20 +148,20 @@ var
   Height: TFloatType;
   CurrentHeight: integer;
 begin
-  if FDrawingCanvas.Font.Height <> val then
-     FDrawingCanvas.Font.Height:=val;
-  // Sets the fontheight to a height in modelspace
-  {Height:=val*Self.Scale*Self.Zoom;
-  FSetFontSize(8);
-  CurrentHeight:=FDrawingCanvas.TextHeight('Xy');
-  while CurrentHeight>Height do
-  begin
-    FDrawingCanvas.Font.Size:=FDrawingCanvas.Font.Size-1;
-    CurrentHeight:=FDrawingCanvas.TextHeight('Xy');
-    if FDrawingCanvas.Font.Size<3 then break;
-  end; }
+   if FDrawingCanvas.Font.Height <> val then
+      FDrawingCanvas.Font.Height:=val;
+// Sets the fontheight to a height in modelspace
+   {Height:=val*Self.Scale*Self.Zoom;
+   FSetFontSize(8);
+   CurrentHeight:=FDrawingCanvas.TextHeight('Xy');
+   while CurrentHeight>Height do
+   begin
+     FDrawingCanvas.Font.Size:=FDrawingCanvas.Font.Size-1;
+     CurrentHeight:=FDrawingCanvas.TextHeight('Xy');
+     if FDrawingCanvas.Font.Size<3 then break;
+   end; }
 end;
-
+{
 procedure TFreeViewport.FSetHorScrollbar(val: TScrollbar);
 begin
   if FHorScrollbar <> nil then FHorScrollbar.OnChange:=nil;
@@ -180,7 +176,21 @@ begin
     FHorScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
   end;
 end;
-
+procedure TFreeViewport.FSetVertScrollbar(val: TScrollbar);
+begin
+  if FVertScrollbar <> nil then FVertScrollbar.OnChange:=nil;
+  FVertScrollbar:=Val;
+  if FVertScrollbar <> nil then begin
+    FOriginalVertScrollbarChange:=val.OnChange;
+    FVertScrollbar.OnChange:=FVertScrollbarChange;
+    FVertScrollbar.Min:=-180;
+    FVertScrollbar.Max:=180;
+    if FVertScrollbar.Position <> round(Elevation) then
+       FVertScrollbar.Position:=Round(Elevation);
+    FVertScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
+  end;
+end;
+}
 procedure TFreeViewport.SetSelectionFrameRect(Rect: TRect);
 begin FSelectionFrameRect:=Rect;
    if FSelectionFrameActive then refresh;
@@ -197,21 +207,6 @@ begin
   FDrawingcanvas.Pen.Style:= psDash;    // psInsideframe;
   FDrawingcanvas.Pen.Color:=clOlive; // clYellow; // clWhite;
   FDrawingcanvas.Frame(FSelectionFrameRect);
-end;
-
-procedure TFreeViewport.FSetVertScrollbar(val: TScrollbar);
-begin
-  if FVertScrollbar <> nil then FVertScrollbar.OnChange:=nil;
-  FVertScrollbar:=Val;
-  if FVertScrollbar <> nil then begin
-    FOriginalVertScrollbarChange:=val.OnChange;
-    FVertScrollbar.OnChange:=FVertScrollbarChange;
-    FVertScrollbar.Min:=-180;
-    FVertScrollbar.Max:=180;
-    if FVertScrollbar.Position <> round(Elevation) then
-       FVertScrollbar.Position:=Round(Elevation);
-    FVertScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
-  end;
 end;
 
 procedure TFreeViewport.FSetMargin(Val: TFloatType);
@@ -249,6 +244,7 @@ begin
       fvPlan:        begin FAngle:=90; FElevation:=90; end;
       fvPerspective: begin FAngle:=20; FElevation:=20; end;
     end;
+{
     if FHorScrollbar <> nil then begin
       FHorScrollbar.Position:=round(Angle);
       FHorScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
@@ -259,6 +255,7 @@ begin
       FVertScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
       if FVertScrollbar.Position <> round(Elevation) then FVertScrollbar.Position:=Round(Elevation);
     end;
+}
     if assigned(FOnRequestBackgroundImage) then FOnRequestBackgroundImage(self);
     if assigned(FOnRequestExtents) then FOnRequestExtents( self,FMin3D,FMax3D );
     InitializeViewport( FMin3D,FMax3D );
@@ -272,7 +269,7 @@ end;
 procedure TFreeViewport.FSetViewportMode(Val: TFreeViewportMode);
 begin if Val <> FViewportMode then begin FViewportmode:=Val; Refresh; end;
 end;
-
+{
 procedure TFreeViewport.FHorScrollbarChange(Sender: TObject);
 begin
   if FHorScrollbar <> nil then begin
@@ -280,7 +277,6 @@ begin
     if @FOriginalHorScrollbarChange <> nil then FOriginalHorScrollbarChange(Sender);
   end;
 end;
-
 procedure TFreeViewport.FVertScrollbarChange(Sender: TObject);
 begin
   if FVertScrollbar <> nil then begin
@@ -288,7 +284,7 @@ begin
     if @FOriginalVertScrollbarChange <> nil then FOriginalVertScrollbarChange(Sender);
   end;
 end;
-
+}
 procedure TFreeViewport.FSetZoom(val: TFloatType);
 begin if FZoom = val then exit; FZoom:=val; end;
 
@@ -310,7 +306,6 @@ constructor TFreeViewport.Create(AOwner: TComponent);
 var curRes:string;
 begin
   inherited Create( AOwner );
-
   BevelOuter:=bvNone;
   BevelInner:=bvNone;
   BevelWidth:=1;
@@ -329,12 +324,12 @@ begin
   FPan.Y:=0;
   FOnRequestBackgroundImage:=nil;
   FCameraType:=ftStandard; // Standard 50mm. lens, field of view= 35/50 =35 degrees.
-  FFieldOfView:=RadToDeg(ArcTan(35 / 50));
+  FFieldOfView:=RadToDeg( ArcTan( 35/50 ) );
   FViewType:=fvPerspective;
   FDoubleBuffer:=True;
   FBackgroundImage:=TFreeBackgroundImage.Create( Self );
-  FHorScrollbar:=nil;
-  FVertScrollbar:=nil;
+//FHorScrollbar:=nil;
+//FVertScrollbar:=nil;
 
   // Inherited create(AOwner);
   FDrawingBuffer:=TBitmap.Create;
@@ -451,7 +446,7 @@ begin
 end;
 
 procedure TFreeViewport.SetPixel(X, Y: integer; R, G, B: byte);
-//var Row           : pRGBTripleArray;
+//var Row : pRGBTripleArray;
 begin
   //BeginUpdate;   //do it on higher level
 
@@ -472,12 +467,10 @@ end;
 
 procedure TFreeViewport.DrawLineToZBuffer(Point1, Point2: T3DCoordinate; R,G,B: byte);
 var
-  D: integer;
+  D, ax,ay, sx,sy, dx,dy, W,H: integer;
   P1, P2: TShadePoint;
-  ax, ay, sx, sy: integer;
-  dx, dy, W, H: integer;
   dZ: TFloatType;
-  //Row           : pRGBTripleArray;
+//Row : pRGBTripleArray;
   pRow, pPixel: pointer;
   Pixel: TRGBTriple;
 begin
@@ -485,18 +478,15 @@ begin
   W:=ClientWidth;
   H:=ClientHeight;
   P2:=self.ProjectToZBuffer(ZBufferScaleFactor, Point2);
-
-  //BeginUpdate;  // do not do that here otherwise background jumps blask-and-gray on movements
+  // BeginUpdate;  // do not do that here otherwise background jumps blask-and-gray on movements
   // do this outside cycle that draws lines
-
   dx:=P2.X-P1.X;
   dy:=P2.Y-P1.Y;
   ax:=Abs(dx) shl 1;
   ay:=Abs(dy) shl 1;
   if dx >= 0 then sx:=1 else sx:=-1;
   if dy >= 0 then sy:=1 else sy:=-1;
-  if ax > ay then
-  begin
+  if ax > ay then begin
     if dx = 0 then dz:=0 else dz:=(P2.Z-P1.Z) / abs(dx);
     d:=ay-ax shr 1;
     while P1.X <> P2.X do begin
@@ -546,18 +536,11 @@ procedure TFreeViewport.InitializeViewport( Min, Max: T3DCoordinate );
 // that the model completely fills the viewport
 var
   P: array[1..8] of T3DCoordinate;
-  Projected: T2DCoordinate;
-  Min2D, Max2D: T2DCoordinate;
-  P3D:      T3DCoordinate;
-  I:        integer;
-  VertCorr: integer;
-  HorCorr:  integer;
-  Width, Height: TFloatType;
-  Tmp:      TFloatType;
-  XScale:   TFloatType;
-  YScale:   TFloatType;
+  Projected, Min2D, Max2D: T2DCoordinate;
+  Diff,P3D: T3DCoordinate;
+  I,VertCorr,HorCorr:  integer;
+  Width,Height, Tmp,XScale,YScale: TFloatType;
   Pt1, Pt2: TPoint;
-  Diff:     T3DCoordinate;
 
   procedure MinMax( P: T2DCoordinate ); begin
     if P.X < Min2D.X then Min2D.X:=P.X;
@@ -606,8 +589,8 @@ begin // Add margin
   P[7].X:=FMax3D.X;  P[7].Y:=FMax3D.Y;  P[7].Z:=FMax3D.Z;
   P[8].X:=FMin3D.X;  P[8].Y:=FMax3D.Y;  P[8].Z:=FMax3D.Z;
   for I:=1 to 8 do begin
-    P3D:=RotatedPoint( P[i] );               // apply perspective projection
-    Tmp:=FCameralocation.X-P3D.X;          // apply perspective correction
+    P3D:=RotatedPoint( P[i] );                  // apply perspective projection
+    Tmp:=FCameralocation.X-P3D.X;               // apply perspective correction
     Projected.X:=FCameralocation.X * P3D.Y / Tmp;
     Projected.Y:=FCameralocation.X * P3D.Z / Tmp;
     if I = 1 then begin
@@ -651,39 +634,26 @@ begin // Add margin
   Invalidate;
 end;
 
-procedure TFreeViewport.Print(Units: TFreeUnitType; AskPrintScale: boolean; Jobname: string);
+procedure TFreeViewport.Print( Units: TFreeUnitType;
+                               AskPrintScale: boolean;
+                               Jobname: string );
 var
-  CanvasWidth: integer;
-  CanvasHeight: integer;
-  Resolution: integer;
-  I: integer;
-  PrintScale: extended;
-  NewPrintScale: extended;
-  XScale: extended;
-  OldZoom: extended;
-  YScale: extended;
-  Scale, Tmp: extended;
-  Width, Height: extended;
-  ModelSize: extended;
-  OldScale: extended;
-  OldPan: TPoint;
+  CanvasWidth,CanvasHeight,Resolution,I: integer;
+  PrintScale,NewPrintScale,XScale,OldZoom,YScale: extended;
+  Scale, Tmp, Width, Height, ModelSize, OldScale: extended;
   OldCanvas: TCanvas;
-  OldCenter: TPoint;
+  OldCenter,OldPan,ProjMidPoint: TPoint;
   P: array[1..8] of T3DCoordinate;
   P3D: T3DCoordinate;
-  Projected: T2DCoordinate;
-  Min2D, Max2D: T2DCoordinate;
-  ProjMidPoint: TPoint;
+  Projected, Min2D, Max2D: T2DCoordinate;
   AbortPrinting: boolean;
-  Str: ansistring;
-
+  Str: AnsiString;
   procedure MinMax(P: T2DCoordinate); begin
     if P.X < Min2D.X then Min2D.X:=P.X;
     if P.Y < Min2D.Y then Min2D.Y:=P.Y;
     if P.X > Max2D.X then Max2D.X:=P.X;
     if P.Y > Max2D.Y then Max2D.Y:=P.Y;
   end;
-
 begin
   if Printer <> nil then begin                              // Backup settings;
     OldScale:=FScale;
@@ -691,7 +661,7 @@ begin
     OldCanvas:=FDrawingCanvas;
     OldCenter:=FScreencenter;
     OldZoom:=FZoom;
-//    try
+//  try
       CanvasWidth:=Printer.PageWidth;
       CanvasHeight:=Printer.PageHeight;
       Resolution:=Printer.XDPI; // GetDeviceCaps(Printer.Handle, LogPixelsX);
@@ -702,8 +672,8 @@ begin
       FPan.Y:=0;
       FScreencenter.X:=Canvaswidth div 2;
       FScreencenter.Y:=Canvasheight div 2;
-      // project all 8 cornerpoints of the bounding box to 2D
-      // in order to determin the min. and max. 2D coordinates of the 2D viewport.
+   // project all 8 cornerpoints of the bounding box to 2D
+   // in order to determin the min. and max. 2D coordinates of the 2D viewport.
       P[1].X:=FMin3D.X;      P[1].Y:=FMin3D.Y;      P[1].Z:=FMin3D.Z;
       P[2].X:=FMax3D.X;      P[2].Y:=FMin3D.Y;      P[2].Z:=FMin3D.Z;
       P[3].X:=FMax3D.X;      P[3].Y:=FMax3D.Y;      P[3].Z:=FMin3D.Z;
@@ -713,8 +683,8 @@ begin
       P[7].X:=FMax3D.X;      P[7].Y:=FMax3D.Y;      P[7].Z:=FMax3D.Z;
       P[8].X:=FMin3D.X;      P[8].Y:=FMax3D.Y;      P[8].Z:=FMax3D.Z;
       for I:=1 to 8 do begin
-        P3D:=RotatedPoint(P[i]);              // apply perspective projection
-        Tmp:=FCameralocation.X-P3D.X;       // apply perspective correction
+        P3D:=RotatedPoint(P[i]);                // apply perspective projection
+        Tmp:=FCameralocation.X-P3D.X;           // apply perspective correction
         Projected.X:=FScreenCenter.X+(FScale * FCameralocation.X * P3D.Y / Tmp);
         Projected.Y:=FScreenCenter.Y-(FScale * FCameralocation.X * P3D.Z / Tmp);
         if I = 1 then begin
@@ -734,14 +704,11 @@ begin
       // Set max. scale
       //         Scale:=0.99*Scale;
       FScale:=Scale;
-
-      // Calculate the size at modelspace
-      ModelSize:=Round(Width * FScale);  // Size in pixels
+                                            // Calculate the size at modelspace
+      ModelSize:=Round(Width * FScale);     // Size in pixels
       ModelSize:=ModelSize / Resolution;    // size in inches
-      if Units = fuMetric then
-        ModelSize:=ModelSize * 0.01 * 2.54 // size in meters
-      else
-        ModelSize:=ModelSize / 12;       // size in feet
+      if Units=fuMetric then ModelSize:=ModelSize*0.01*2.54 // size in meters
+                        else ModelSize:=ModelSize/12;       // size in feet
       PrintScale:=Width / ModelSize;
       if AskPrintScale then begin
         Str:=IntToStr(Trunc(PrintScale)+1);
@@ -781,15 +748,17 @@ begin
       FDestinationWidth:=CanvasWidth;
       if not AbortPrinting then begin  //  printscale factor on basis of resolutin and printsize
         if Max2D.X-Min2D.X > Max2D.Y-Min2D.Y then Tmp:=Max2D.X-Min2D.X
-                                                 else Tmp:=Max2D.Y-Min2D.Y;
+                                             else Tmp:=Max2D.Y-Min2D.Y;
         FPrintScalefactor:=(PrintResolution / 200) * (Tmp / 4000);
         FDestinationHeight:=CanvasHeight;
         Printer.Title:=JobName;
         Printer.BeginDoc;
+                          { Printer.Canvas.Pixels[0,0]:=clWhite; // init canvas
+                            Self.Paint; }    // или - две строки вместо refresh
         refresh;
         Printer.EndDoc;
       end;
-//    finally                            // Restore settings;
+//  finally                                  // Restore settings;
       FPrinting:=False;
       FPrintResolution:=1;
       FPrintScaleFactor:=1.0;
@@ -799,9 +768,8 @@ begin
       FZoom:=OldZoom;
       FScreencenter:=OldCenter;
       Refresh;
-//    end;
-  end
-  else MessageDlg( 'No printer assigned!',mtError,[mbOK],0 );
+//  end;
+  end else ShowMessage( 'No printer assigned!' );
 end;
 
 function TFreeViewport.Project(P: T3DCoordinate): TPoint;
@@ -1536,13 +1504,11 @@ begin
       FElevation:=FElevation+360;
     FCosElevation:=Cos(DegToRad(FElevation));
     FSinElevation:=sin(DegToRad(FElevation));
-    if FHorScrollbar <> nil then
-      if FHorScrollbar.Position <> round(angle) then
-        FHorScrollbar.Position:=Round(Angle);
+{   if FHorScrollbar <> nil then
+      if FHorScrollbar.Position <> round(angle) then FHorScrollbar.Position:=Round(Angle);
     if FVertScrollbar <> nil then
-      if FVertScrollbar.Position <> round(Elevation) then
-        FVertScrollbar.Position:=Round(Elevation);
-    InitializeViewport(FMin3D, FMax3D);
+      if FVertScrollbar.Position <> round(Elevation) then FVertScrollbar.Position:=Round(Elevation);
+}   InitializeViewport(FMin3D, FMax3D);
   end else if ssRight in shift then Cursor:=crPan;
   FPreviousPosition.X:=X;
   FPreviousPosition.Y:=Y;

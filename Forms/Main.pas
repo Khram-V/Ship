@@ -384,7 +384,7 @@ type
 //  procedure CrossCurvesExecute       (Sender: TObject);
     procedure SelectLeakPointsExecute  (Sender: TObject);
     procedure LoadMostRecentFile;
-//  procedure LoadNamedFile(FileName:string);
+//  procedure LoadNamedFile(FileName:AnsiString);
     procedure InitiallyLoadModel;
    private                                             { Private declarations }
       FAllToolbarsControlsWidth,
@@ -398,7 +398,7 @@ type
       FToolBarCurvesControlsWidth : integer;
       FDestroying: boolean;
       FSplitSectionDialog: TFreeSplitSectionDialog;
-      function  Load_and_Scale( FileName: String ): Boolean;
+      function  Load_and_Scale( FileName: AnsiString ): Boolean;
       procedure FLoadRecentFile(sender:TObject);
       procedure FreeLayerVisibilityDialogChange(Sender: TObject);
       procedure FreeShipChangeLayerData(Sender: TObject);
@@ -417,7 +417,7 @@ type
       procedure CloseHullWindows;
       procedure FOpenHullWindows;  // Creates 4 different views on the hullform
    public     { Public declarations }
-      FFileName : string;
+      FFileName : AnsiString;
       FModelInitallyLoaded : boolean;
 ///+++ {$IFDEF FPC}
       function  ActiveMDIChild: TFreeHullWindow; reintroduce;
@@ -526,7 +526,7 @@ begin // this is just to kick toolbar to autoresize
 end;
 
 procedure TMainForm.InitiallyLoadModel;
-var FileExt: string; Est: Boolean;
+var FileExt: AnsiString; Est: Boolean;
 begin
   if FFileName='' then LoadMostRecentFile;                  // default if no recent file defined
   if (FFileName='') and not FreeShip.ModelIsLoaded then NewModelExecute(Self) else
@@ -902,7 +902,9 @@ begin
 end;
 
 procedure TMainForm.RecentFilesDialogActivate( Sender: TObject );
-var dlg: TTileDialog; i:integer; vFileName,sTime:string; jpg:TJPEGImage;
+var dlg: TTileDialog; i:integer;
+    vFileName,sTime: AnsiString;
+    jpg:TJPEGImage;
     pic:TPicture;
 begin
   dlg:=Sender as TTileDialog;
@@ -931,7 +933,7 @@ end;
 
 procedure TMainForm.ShowRecentFilesDialog;
 var dlg: TTileDialog; i:integer; Answer: Word;
-    vFileName,sTime:string;
+    vFileName,sTime: AnsiString;
     jpg:TJPEGImage;
     pic:TPicture;
 begin
@@ -960,18 +962,8 @@ begin FOpenHullWindows;
                                   else FreeShip.Edit.File_Load;
 end;
 
-procedure TMainForm.ExitProgramExecute(Sender: TObject); begin
-  UpdateMenu;
-{ if FileExists('Resist.dat')   then DeleteFile('Resist.dat');
-  if FileExists('RESISTp.dat')  then DeleteFile('RESISTp.dat');
-  if FileExists('Vint1.dat')    then DeleteFile('Vint1.dat');
-  if FileExists('SAC.tmp')      then DeleteFile('SAC.tmp');
-  if FileExists('SACs.txt')     then DeleteFile('SACs.txt');
-  if FileExists('Bonjean.txt')  then DeleteFile('Bonjean.txt');
-  if FileExists('Weights.txt')  then DeleteFile('Weights.txt');
-  if FileExists('Sterns.txt')   then DeleteFile('Sterns.txt');
-} Close;
-end;
+procedure TMainForm.ExitProgramExecute(Sender: TObject);
+begin UpdateMenu; Close; end;
 
 procedure TMainForm.LayerBoxPanelClick(Sender: TObject); begin end;
 
@@ -1044,7 +1036,7 @@ procedure TMainForm.FreeLayerVisibilityDialogChange( Sender:TObject );
 begin UpdateMenu; end;
 
 procedure TMainForm.FormShow( Sender: TObject );
-var FileExt: string; L,T,W,H: Integer;
+var FileExt: AnsiString; L,T,W,H: Integer;
 begin    // Initialize some data
    FreeShip.OnChangeActiveLayer:=FreeShipChangeActiveLayer;
    Freeship.OnChangeLayerData:=FreeShipChangeLayerData;
@@ -1188,7 +1180,7 @@ procedure TMainForm.FileSaveasExecute(Sender: TObject);
 procedure TMainForm.LayerAutoGroupExecute(Sender: TObject);
     begin FreeShip.Edit.Layer_AutoGroup; UpdateMenu; end;
 
-function TMainForm.Load_and_Scale( FileName: String ): Boolean;
+function TMainForm.Load_and_Scale( FileName: AnsiString ): Boolean;
 begin Result:=false;
   if FileExists( Filename ) then begin
      FOpenHullWindows;
@@ -1210,7 +1202,7 @@ resourcestring
 
 procedure TMainForm.FLoadRecentFile(sender:TObject);
 var Menu    : TMenuItem;
-    Filename: string;
+    Filename: AnsiString;
     N       : Integer;
     Answer  : word;
 begin
@@ -1236,7 +1228,7 @@ end;
 
 procedure TMainForm.LoadMostRecentFile;
 var Menu    : TMenuItem;
-    Filename: string;
+    Filename: AnsiString;
     N       : Integer;
     Answer  : word;
 begin
@@ -1246,7 +1238,7 @@ begin
   Load_and_Scale( FileName );
 end;
 {
-procedure TMainForm.LoadNamedFile( FileName:string );
+procedure TMainForm.LoadNamedFile( FileName:AnsiString );
 var Menu    : TMenuItem;
     N       : Integer;
     Answer  : word;
@@ -1443,7 +1435,7 @@ begin
 end;
 
 procedure TMainForm.Help1Click(Sender: TObject);   // begin correction Victor T
-var FileToFind,FManDirectory,FLang,man : string;
+var FileToFind,FManDirectory,FLang,man : AnsiString;
 begin
   FLang:=Freeship.Preferences.Language;
   FManDirectory:=Freeship.Preferences.ManualsDirectory; //+ConfigDirectory
@@ -1482,7 +1474,7 @@ end;
 
 procedure TMainForm.ImportVRMLExecute(Sender: TObject);
 //var DateTime : TDateTime;
-//    str_1,str_2 : string;
+//    str_1,str_2 : AnsiString;
 begin
    //   DateTime:=Time;  // store the current date and time
    //   str_1:=TimeToStr(DateTime); // convert the time into a string

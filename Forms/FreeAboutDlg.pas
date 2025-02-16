@@ -35,11 +35,11 @@ end;
 
 procedure TFreeAboutDlg.FormCreate(Sender: TObject);
 begin
-  AddInfo('FREE!ship version',FREESHIP_VERSION);
-  AddInfo('Compiler version ',{$I %FPCVERSION%});
-  AddInfo('Target CPU ',TARGET_CPU);
-  AddInfo('Target OS  ',TARGET_OS);
-  AddInfo('Build date ',ReleasedDate+' '+COMPILE_TIME);
+  AddInfo('FREE!ship version',FREESHIP_VERSION );
+  AddInfo('Compiler version ',FPCVERSION ); //{$I %FPCVERSION%});
+  AddInfo('Target CPU ',      TARGET_CPU );
+  AddInfo('Target OS  ',      TARGET_OS );
+  AddInfo('Build date ',ReleasedDate+' '+COMPILE_TIME );
   AddInfo('© 2005, Martijn van Engeland, DelftShip','Marine software developer, Netherlands' );
   AddInfo('© 2007-2012 Виктор Фёдорович Тимошенко','Николавский кораблестроительный институт' );
   AddInfo('© 2015 Mark Malakanov','FreePascal Lazarus, Woodbridge, Canada' );

@@ -16,10 +16,8 @@ interface
 type
   generic TFasterList<TItemType> = class
   private
-    FCount: integer;
-    FCapacity: integer;
-    FSorted: boolean;
-    FUnique: boolean;                // MM 2019-05-03 : added to exclude duplications for some types of items
+    FCount,FCapacity: integer;
+    FSorted,FUnique: boolean;        // MM 2019-05-03 : added to exclude duplications for some types of items
     FUseUserData: boolean;
     FList: array of TItemType;
     FData: array of Pointer;         // TItemTypes to any user specified object

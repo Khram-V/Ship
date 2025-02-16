@@ -1,20 +1,14 @@
 unit FreeSelectedDlg;
-
 {$mode objfpc}{$H+}
-
 interface
-
 uses
-  Classes, SysUtils, Forms, Controls, Dialogs, ExtCtrls, ComCtrls,
-  Buttons, StdCtrls, Spin, ActnList, Menus,
-  FreeShipUnit,
-  FreeGeometry
-;
+  SysUtils, Forms,
+  ExtCtrls, ComCtrls,
+  Buttons,  StdCtrls,
+  Spin,     ActnList,
+  Menus,   FreeShipUnit, FreeGeometry;
 
-type
-
-  { TFormSelected }
-
+type  { TFormSelected }
   TFormSelected = class(TForm)
     aClose: TAction;
     ActionList1: TActionList;
@@ -103,14 +97,10 @@ type
     tsFaces: TTabSheet;
     tsPoints: TTabSheet;
     procedure aCloseExecute(Sender: TObject);
-    procedure lvCurvesSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
-    procedure lvEdgesSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
-    procedure lvFacesSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
-    procedure lvPointsSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
+    procedure lvCurvesSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+    procedure lvEdgesSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+    procedure lvFacesSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+    procedure lvPointsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure miUnselectClick(Sender: TObject);
   private
     FFreeShip:TFreeShip;
@@ -165,47 +155,37 @@ begin
 
   CheckBoxAnchorHard.Checked:=false;
   EditAnchorPoint.Text:='';
-  if (CP.AnchorPoint<>nil) then
-  begin
+  if (CP.AnchorPoint<>nil) then begin
     CheckBoxAnchorHard.Checked:=CP.IsAnchorHard;
-    if (CP.AnchorPoint.Name > '') then
-     EditAnchorPoint.Text:=CP.AnchorPoint.Name
+    if (CP.AnchorPoint.Name>'') then EditAnchorPoint.Text:=CP.AnchorPoint.Name
      else EditAnchorPoint.Text:='Point['+IntToStr(CP.AnchorPoint.Id)+']';
   end;
-
   lvPointGroups.Clear;
-  for i:=0 to FreeShip.Surface.ControlPointGroups.Count-1 do
-  begin
+  for i:=0 to FreeShip.Surface.ControlPointGroups.Count-1 do begin
     cpG:=FreeShip.Surface.ControlPointGroups[i];
-    if cpG.ControlPoints.IndexOf(CP) >=0 then
-    begin
+    if cpG.ControlPoints.IndexOf(CP) >=0 then begin
        item:=lvPointGroups.Items.Add;
        item.Caption:=IntToStr(cpG.Id);
        item.Subitems.Add(cpG.Name);
        item.Data:=cpG;
     end;
   end;
-
   lvPointFaces.Clear;
-  for i:=0 to CP.Faces.Count-1 do
-  begin
+  for i:=0 to CP.Faces.Count-1 do begin
     cpF:=CP.Faces[i];
     item:=lvPointFaces.Items.Add;
     item.Caption:=IntToStr(cpF.Id);
     item.Subitems.Add(cpF.Name);
     item.Data:=cpF;
   end;
-
   lvPointEdges.Clear;
-  for i:=0 to CP.Edges.Count-1 do
-  begin
+  for i:=0 to CP.Edges.Count-1 do begin
     cpE:=CP.Edges[i];
     item:=lvPointEdges.Items.Add;
     item.Caption:=IntToStr(cpE.Id);
     item.Subitems.Add(cpE.Name);
     item.Data:=cpE;
   end;
-
 end;
 
 procedure TFormSelected.miUnselectClick(Sender: TObject);
@@ -217,41 +197,29 @@ var
   CC: TFreeSubdivisionControlCurve;
 begin
   if (PageControl1.ActivePage = tsPoints)
-    and lvPoints.Focused and (lvPoints.Selected <> nil)
-  then
-    begin
+  and lvPoints.Focused and (lvPoints.Selected <> nil) then begin
     item:=lvPoints.Selected;
     CP:=TFreeSubdivisionControlPoint(item.Data);
     CP.Selected:=false;
-    end;
-
+  end;
   if (PageControl1.ActivePage = tsEdges)
-    and lvEdges.Focused and (lvEdges.Selected <> nil)
-  then
-    begin
+  and lvEdges.Focused and (lvEdges.Selected <> nil) then begin
     item:=lvEdges.Selected;
     CE:=TFreeSubdivisionControlEdge(item.Data);
     CE.Selected:=false;
-    end;
-
+  end;
   if (PageControl1.ActivePage = tsFaces)
-    and lvFaces.Focused and (lvFaces.Selected <> nil)
-  then
-    begin
+  and lvFaces.Focused and (lvFaces.Selected <> nil) then begin
     item:=lvFaces.Selected;
     CF:=TFreeSubdivisionControlFace(item.Data);
     CF.Selected:=false;
-    end;
-
+  end;
   if (PageControl1.ActivePage = tsCurves)
-    and lvCurves.Focused and (lvCurves.Selected <> nil)
-  then
-    begin
+  and lvCurves.Focused and (lvCurves.Selected <> nil) then begin
     item:=lvCurves.Selected;
     CC:=TFreeSubdivisionControlCurve(item.Data);
     CC.Selected:=false;
     end;
-
 end;
 
 procedure TFormSelected.lvEdgesSelectItem(Sender: TObject; Item: TListItem;
@@ -261,29 +229,21 @@ var i:integer;
   cpF: TFreeSubdivisionFace;
 begin
   if not Selected then exit;
-
   CE:=TFreeSubdivisionControlEdge(Item.Data);
-
   eEdgeName.Text:=CE.Name;
   cbEdgeIsCrease.Checked:=CE.Crease;
-
   lvEdgeFaces.Clear;
-  for i:=0 to CE.Faces.Count-1 do
-  begin
+  for i:=0 to CE.Faces.Count-1 do begin
     cpF:=CE.Faces[i];
     item:=lvEdgeFaces.Items.Add;
     item.Caption:=IntToStr(cpF.Id);
     item.Subitems.Add(cpF.Name);
     item.Data:=cpF;
   end;
-
   eEdgeCurve.Text:='';
   if CE.Curve <> nil then
-    if CE.Curve.Name<>'' then
-      eEdgeCurve.Text:=CE.Curve.Name
-    else
-      eEdgeCurve.Text:=format('Curve[%d]',[CE.Curve.Id]);
-
+    if CE.Curve.Name<>'' then eEdgeCurve.Text:=CE.Curve.Name
+       else eEdgeCurve.Text:=format('Curve[%d]',[CE.Curve.Id]);
 end;
 
 procedure TFormSelected.lvFacesSelectItem(Sender: TObject; Item: TListItem;
@@ -293,24 +253,18 @@ var i:integer;
   cpF: TFreeSubdivisionPoint;
 begin
   if not Selected then exit;
-
   CF:=TFreeSubdivisionControlFace(Item.Data);
-
   eFaceName.Text:=CF.Name;
-
   lvFacePoints.Clear;
-  for i:=0 to CF.Points.Count-1 do
-  begin
+  for i:=0 to CF.Points.Count-1 do begin
     cpF:=CF.Points[i];
     item:=lvFacePoints.Items.Add;
     item.Caption:=IntToStr(cpF.Id);
     item.Subitems.Add(cpF.Name);
     item.Data:=cpF;
   end;
-
   eFaceLayer.Text:='';
   if CF.Layer <> nil then eFaceLayer.Text:=CF.Layer.Name;
-
 end;
 
 procedure TFormSelected.aCloseExecute(Sender: TObject); begin Close; end;
@@ -322,21 +276,16 @@ var i:integer;
   cpF: TFreeSubdivisionPoint;
 begin
   if not Selected then exit;
-
   CC:=TFreeSubdivisionControlCurve(Item.Data);
-
   eCurveName.Text:=CC.Name;
-
   lvFacePoints.Clear;
-  for i:=0 to CC.ControlPoints.Count-1 do
-  begin
+  for i:=0 to CC.ControlPoints.Count-1 do begin
     cpF:=CC.ControlPoints[i];
     item:=lvCurvePoints.Items.Add;
     item.Caption:=IntToStr(cpF.Id);
     item.Subitems.Add(cpF.Name);
     item.Data:=cpF;
   end;
-
 end;
 
 procedure TFormSelected.Reload;
@@ -355,51 +304,43 @@ begin
     +FreeShip.NumberOfselectedFlowlines;
 
   lvPoints.Clear;
-  for i:=0 to FreeShip.Surface.NumberOfSelectedControlPoints-1 do
-  begin
+  for i:=0 to FreeShip.Surface.NumberOfSelectedControlPoints-1 do begin
     CP:=FFreeShip.Surface.SelectedControlPoint[i];
     item:=lvPoints.Items.Add;
     item.Caption:=IntToStr(CP.Id);
     item.Subitems.Add(CP.Name);
     item.Data:=CP;
-    if CP = FreeShip.Surface.ActiveControlPoint then
-      item.Selected:=true;
+    if CP = FreeShip.Surface.ActiveControlPoint then item.Selected:=true;
   end;
 
   lvEdges.Clear;
-  for i:=0 to FreeShip.Surface.NumberOfSelectedControlEdges-1 do
-  begin
+  for i:=0 to FreeShip.Surface.NumberOfSelectedControlEdges-1 do begin
     CE:=FFreeShip.Surface.SelectedControlEdge[i];
     item:=lvEdges.Items.Add;
     item.Caption:=IntToStr(CE.Id);
     item.Subitems.Add(CE.Name);
     item.Data:=CE;
-    if CE = FreeShip.Surface.ActiveControlEdge then
-      item.Selected:=true;
+    if CE = FreeShip.Surface.ActiveControlEdge then item.Selected:=true;
   end;
 
   lvFaces.Clear;
-  for i:=0 to FreeShip.Surface.NumberOfSelectedControlFaces-1 do
-  begin
+  for i:=0 to FreeShip.Surface.NumberOfSelectedControlFaces-1 do begin
     CF:=FFreeShip.Surface.SelectedControlFace[i];
     item:=lvFaces.Items.Add;
     item.Caption:=IntToStr(CF.Id);
     item.Subitems.Add(CF.Name);
     item.Data:=CF;
-    if CF = FreeShip.Surface.ActiveControlFace then
-      item.Selected:=true;
+    if CF = FreeShip.Surface.ActiveControlFace then item.Selected:=true;
   end;
 
   lvCurves.Clear;
-  for i:=0 to FreeShip.Surface.NumberOfSelectedControlCurves-1 do
-  begin
+  for i:=0 to FreeShip.Surface.NumberOfSelectedControlCurves-1 do begin
     CC:=FFreeShip.Surface.SelectedControlCurve[i];
     item:=lvCurves.Items.Add;
     item.Caption:=IntToStr(CC.Id);
     item.Subitems.Add(CC.Name);
     item.Data:=CC;
-    if CC = FreeShip.Surface.ActiveControlCurve then
-      item.Selected:=true;
+    if CC = FreeShip.Surface.ActiveControlCurve then item.Selected:=true;
   end;
 
   (* TODO
@@ -408,17 +349,13 @@ begin
   *)
 end;
 
-procedure TFormSelected.onSelectionUpdate(Sender: TObject);
+procedure TFormSelected.onSelectionUpdate( Sender: TObject );
 begin
   Reload;
-  if Sender is TFreeSubdivisionControlPoint then
-     PageControl1.ActivePage:=tsPoints;
-  if Sender is TFreesubdivisionControlEdge then
-     PageControl1.ActivePage:=tsEdges;
-  if Sender is TFreesubdivisionControlFace then
-     PageControl1.ActivePage:=tsFaces;
-  if Sender is TFreesubdivisionControlCurve then
-     PageControl1.ActivePage:=tsCurves;
+  if Sender is TFreeSubdivisionControlPoint then PageControl1.ActivePage:=tsPoints;
+  if Sender is TFreesubdivisionControlEdge then PageControl1.ActivePage:=tsEdges;
+  if Sender is TFreesubdivisionControlFace then PageControl1.ActivePage:=tsFaces;
+  if Sender is TFreesubdivisionControlCurve then PageControl1.ActivePage:=tsCurves;
 end;
 
 end.

@@ -1,7 +1,7 @@
 
-{ FREE!ship }
 
-program FreeShip;
+
+program FreeShip;                                                 { FREE!ship }
 
 {$mode objfpc}{$H+}
 
@@ -15,10 +15,10 @@ uses
     FreeVersionUnit     in '../Units/FreeVersionUnit.pas';
 
 var ParametersHelp: boolean=false;
-    sOpenFile: String='';
-    sHelp: String;
+    sOpenFile: AnsiString='';
+    sHelp: AnsiString;
 
-procedure InitByParameters; var S: string; p: integer; begin
+procedure InitByParameters; var S: AnsiString; p: integer; begin
   for p:=1 to ParamCount do begin S:=ParamStr(p);
     if S='--help' then ParametersHelp:=True else
     if ( lowerCase(UTF8RightStr( S,4 ))='.ftm' )

@@ -276,7 +276,447 @@ begin
   end;
   FreeAndNil(SaveDialog);
 end;
+//
+//  DXF AutoCAD ++
+//
+procedure TFreeIntersection.SaveToDXF(Strings: TStringList);
+var
+  I: integer;
+  Layer: string;
+  Spline: TFreeSpline;
+begin
+  if not Built then Rebuild;
+  for I:=1 to Count do begin
+    Spline:=Items[I-1];
+    case IntersectionType of
+      fiStation: layer :='Stations ';
+      fiButtock: layer :='Buttocks ';
+      fiWaterline:layer:='Waterlines ';
+      fiDiagonal: layer:='Diagonals ';
+      else        Layer:='Layer_0';
+    end;
+    case FreeShip.Precision of
+      fpLow     : Spline.Fragments:=50;
+      fpMedium  : Spline.Fragments:=100;
+      fpHigh    : Spline.Fragments:=150;
+      fpVeryHigh: Spline.Fragments:=500; else Spline.Fragments:=100;
+    end;
+    Spline.SaveToDXF( Strings,Layer,FreeShip.Visibility.ModelView=mvBoth );
+  end;
+end;
 
+procedure TFreeSpline.SaveToDXF
+( Strings: TStringList;
+  Layername: AnsiString;
+  SendMirror: boolean );
+var
+  I,J,Ind,NParams: integer; P: T3DCoordinate; Params: TFloatArray;
+begin
+  Ind:=FindDXFColorIndex( Color );
+  NParams:=0;
+  Setlength( Params,NumberOfPoints );          // count number of knucklepoints
+  if not Built then Rebuild;
+  for I:=2 to NumberOfPoints-1 do
+   if Knuckle[I-1] then begin Params[NParams]:=Parameter[I-1]; Inc(NParams); end;
+  Setlength(Params, NParams+Fragments);
+  for I:=1 to Fragments do begin Params[NParams]:=(I-1)/(Fragments-1); Inc(NParams); end;
+  SortFloatArray(Params,NParams);
+  Strings.Add('0'+EOL+'POLYLINE');
+  Strings.Add('8'+EOL+LayerName);          // layername
+  Strings.Add('62'+EOL+IntToStr(Ind));     // color by layer
+  Strings.Add('70'+EOL+'10');              // not closed
+  Strings.Add('66'+EOL+'1');               // vertices follow
+  for J:=1 to NParams do begin P:=Value(Params[J-1]);
+    Strings.Add('0'+EOL+'VERTEX');
+    Strings.Add('8'+EOL+LayerName);
+    Strings.Add('10'+EOL+FloatToDec(P.X, 4));
+    Strings.Add('20'+EOL+FloatToDec(P.Y, 4));
+    Strings.Add('30'+EOL+FloatToDec(P.Z, 4));
+    Strings.Add('70'+EOL+'32');            // 3D polyline mesh vertex
+  end;
+  Strings.Add('0'+EOL+'SEQEND');
+  if SendMirror then begin              // send starboard side of the ship also
+    Strings.Add('0'+EOL+'POLYLINE');
+    Strings.Add('8'+EOL+LayerName);      // layername
+    Strings.Add('62'+EOL+IntToStr(Ind)); // color by layer
+    Strings.Add('70'+EOL+'10');          // not closed
+    Strings.Add('66'+EOL+'1');           // vertices follow
+    for J:=1 to NParams do begin
+      P:=Value(Params[J-1]);
+      P.Y:=-P.Y;
+      Strings.Add('0'+EOL+'VERTEX');
+      Strings.Add('8'+EOL+LayerName);
+      Strings.Add('10'+EOL+FloatToDec(P.X, 4));
+      Strings.Add('20'+EOL+FloatToDec(P.Y, 4));
+      Strings.Add('30'+EOL+FloatToDec(P.Z, 4));
+      Strings.Add('70'+EOL+'32');          // 3D polyline mesh vertex
+    end;
+    Strings.Add('0'+EOL+'SEQEND');
+  end;
+end;
+
+// Export all intersections to an individual DXF file as 2D polylines
+
+procedure TFreeEdit.File_ExportDXF_2DPolylines;
+var
+  I: integer;
+  Strings: TStringList;
+  Dialog: TDXFExport2DDialog;
+  ScaleFactor: double;
+  SegLength: double;
+  PrevCursor: TCursor;
+  Filename, Layername: string;
+  Intersections: TFasterListTFreeIntersection;
+  CreateIndividualLayers: Boolean;
+
+  function getLayerName(IntersectionType:TFreeIntersectionType):String;
+  begin
+    Result:='';
+    case IntersectionType of
+      fiStation:      Result:=Userstring(62);
+      fiButtock:      Result:=Userstring(63);
+      fiWaterline:    Result:=Userstring(64);
+      fiDiagonal:     Result:=Userstring(65);
+//    else begin Messagedlg(Userstring(66)+'!',mtError,[mbOK],0); exit; end;
+    end;
+  end;
+  procedure DefineLayers(Stringlist: TStringList; LayerPrefix:string;
+    StartLayer,LayerNumbers:integer);
+  var I:integer;
+  begin
+    Stringlist.add('0');
+    Stringlist.add('SECTION');
+    Stringlist.add('2');
+    Stringlist.add('TABLES');
+    Stringlist.add('0');
+    Stringlist.add('TABLE');
+    Stringlist.add('2');
+    Stringlist.add('LTYPE');
+    Stringlist.add('70');
+    Stringlist.add('1');
+    Stringlist.add('0');
+    Stringlist.add('LTYPE');
+    Stringlist.add('2');
+    Stringlist.add('CONTINUOUS');
+    Stringlist.add('70');
+    Stringlist.add('64');
+    Stringlist.add('3');
+    Stringlist.add('Solid line');
+    Stringlist.add('72');
+    Stringlist.add('65');
+    Stringlist.add('73');
+    Stringlist.add('0');
+    Stringlist.add('40');
+    Stringlist.add('0.000000');
+    Stringlist.add('0');
+    Stringlist.add('ENDTAB');
+
+    Stringlist.add('0');
+    Stringlist.add('TABLE');
+    Stringlist.add('2');
+    Stringlist.add('LAYER');
+    Stringlist.add('70');
+    Stringlist.add('6');
+    for I:=StartLayer to LayerNumbers do begin
+      Stringlist.add('0');
+      Stringlist.add('LAYER');
+      Stringlist.add('2');
+      Stringlist.add( format(LayerPrefix+'%.2d', [I]) );
+      Stringlist.add('70');
+      Stringlist.add('64');
+      Stringlist.add('62');
+      Stringlist.add('7');
+      Stringlist.add('6');
+      Stringlist.add('CONTINUOUS');
+    end;
+    Stringlist.add('0');
+    Stringlist.add('ENDTAB');
+    Stringlist.add('0');
+    Stringlist.add('TABLE');
+    Stringlist.add('2');
+    Stringlist.add('STYLE');
+    Stringlist.add('70');
+    Stringlist.add('0');
+    Stringlist.add('0');
+    Stringlist.add('ENDTAB');
+    Stringlist.add('0');
+    Stringlist.add('ENDSEC');
+  end;
+
+  procedure CreateDXFData(Intersection: TFreeIntersection; IntersectionNumber:integer;
+    Stringlist: TStringList; Scale: double; var Filename: string);
+  var
+    I, N: integer;
+    Layername: string;
+
+    procedure SaveSpline(Spline: TFreeSpline; Strings: TStringList;
+      IntersectionType: TFreeIntersectiontype);
+    var
+      I,Ind,NParams,Cap, Pn,Pn1,Pn2: integer;
+      Params: TFloatArray;
+      SplineLength,T: double;
+      P1, P2, Pkn: T3DCoordinate;
+      SplineValues: T3DCoordinateArray;
+
+      procedure SaveVertex(P:T3DCoordinate); // port side
+      begin
+        Strings.Add('0'+EOL+'VERTEX');
+        Strings.Add('8'+EOL+LayerName);
+        case IntersectionType of
+          fiStation: begin
+            Strings.Add('10'+EOL+FloatToDec(Scale * P.Y, 5));
+            Strings.Add('20'+EOL+FloatToDec(Scale * P.Z, 5)); end;
+          fiButtock: begin
+            Strings.Add('10'+EOL+FloatToDec(Scale * P.X, 5));
+            Strings.Add('20'+EOL+FloatToDec(Scale * P.Z, 5)); end;
+          fiWaterline: begin
+            Strings.Add('10'+EOL+FloatToDec(Scale * P.X, 5));
+            Strings.Add('20'+EOL+FloatToDec(Scale * P.Y, 5)); end;
+        end;
+      end;
+      procedure SaveVertexSB(P:T3DCoordinate); // starboard side
+      begin
+        Strings.Add('0'+EOL+'VERTEX');
+        Strings.Add('8'+EOL+LayerName);
+        case IntersectionType of
+          fiStation: begin
+            Strings.Add('10'+EOL+FloatToDec(Scale * -P.Y, 5));
+            Strings.Add('20'+EOL+FloatToDec(Scale * P.Z, 5)); end;
+          fiWaterline: begin
+            Strings.Add('10'+EOL+FloatToDec(Scale * P.X, 5));
+            Strings.Add('20'+EOL+FloatToDec(Scale * -P.Y, 5)); end;
+        end;
+      end;
+    begin
+      Ind:=FindDXFColorIndex(Spline.Color);
+      NParams:=0;
+      Setlength(Params,Spline.NumberOfPoints); // count number of knucklepoints
+      //if not Spline.Built then
+      Spline.Rebuild;
+      for I:=2 to Spline.NumberOfPoints-1 do
+        if Spline.Knuckle[I-1] then begin
+          Params[NParams]:=Spline.Parameter[I-1];
+          Inc(NParams);
+        end;
+
+      (* // Calculate the SplineLength of the spline
+      SplineLength:=0.0;
+      P1:=Spline.Value(0.0);
+      for I:=1 to 150 do
+      begin
+        P2:=Spline.Value(I / 150);
+        SplineLength:=SplineLength+DistPP3D(P1, P2);
+        P1:=P2;
+      end;  *)
+      SplineLength:=Spline.TotalLength;
+      SplineLength:=SplineLength * ScaleFactor;
+
+      if SplineLength > 0 then begin
+        N:=Round(SplineLength / (SegLength));
+        if N < 2*Spline.NumberOfPoints then N:=2*Spline.NumberOfPoints;
+        if N > 3500 then N:=3500;
+        Spline.Fragments:=N;
+        (*
+        Cap:=NParams+100;
+        Setlength(Params, Cap);
+        Inc(Nparams);
+        Params[NParams-1]:=0.0;
+        Inc(Nparams);
+        Params[NParams-1]:=1.0;
+
+        for I:=1 to Spline.Fragments do
+        begin
+          T:=Spline.ChordlengthApproximation(I * SegLength / SplineLength);
+          if NParams >= Cap then
+          begin
+            Inc(Cap, 50);
+            Setlength(Params, Cap);
+          end;
+          Inc(NParams);
+          Params[NParams-1]:=T;
+        end;
+
+        SortFloatArray(Params, NParams);
+        *)
+        // now export the actual calculated points
+        Strings.Add('0'+EOL+'POLYLINE');
+        Strings.Add('8'+EOL+LayerName);   // layername
+        Strings.Add('62'+EOL+IntToStr(Ind));  // color by layer
+        Strings.Add('66'+EOL+'1');    // vertices follow
+        (*
+        Pn:=0;
+        for I:=0 to NParams-1 do
+        begin
+          P1:=Spline.Value(Params[I], Pn1, Pn2);
+          if (Pn <> Pn1) and Spline.Knuckle[Pn1] then
+          begin
+            Pn:=Pn1;
+            Pkn:=Spline.Point[Pn1];
+            SaveVertex(Pkn);
+          end;
+          SaveVertex(P1);
+        end;
+        *)
+        //MM: 2020-06-12 just use GetValues. no tricks. Knuckle processing is embedded there.
+        SplineValues:=Spline.GetValues;
+        for i:=0 to Length(SplineValues)-1 do begin
+          P1:=SplineValues[i];
+          SaveVertex(P1);
+        end;
+
+        Strings.Add('0'+EOL+'SEQEND');
+        if (Intersectiontype in [fiStation,fiWaterline])
+        and (FreeShip.Visibility.ModelView=mvBoth) then begin // send the other half
+          Strings.Add('0'+EOL+'POLYLINE');
+          Strings.Add('8'+EOL+LayerName);                // layername
+          Strings.Add('62'+EOL+IntToStr(Ind));           // color by layer
+          Strings.Add('66'+EOL+'1');                     // vertices follow
+          (*
+          Pn:=0;
+          for I:=0 to NParams-1 do
+          begin
+            P1:=Spline.Value(Params[I], Pn1, Pn2);
+            if (Pn <> Pn1) and Spline.Knuckle[Pn1] then
+            begin
+              Pn:=Pn1;
+              Pkn:=Spline.Point[Pn1];
+              SaveVertexSB(Pkn);
+            end;
+            SaveVertexSB(P1);
+          end;
+          *)
+          for i:=0 to Length(SplineValues)-1 do begin
+            P1:=SplineValues[i];
+            SaveVertexSB(P1);
+          end;
+          Strings.Add( '0'+EOL+'SEQEND' );
+        end;
+      end;
+    end; {SaveSpline}
+  begin
+    //if not Intersection.Built then
+    Intersection.Rebuild;
+    if intersection.Count > 0 then begin
+      Layername:=getLayerName(Intersection.IntersectionType);
+      if CreateIndividualLayers then
+        Layername:=format(Layername+'%.2d',[IntersectionNumber]);
+      Filename:=FreeShip.Preferences.ExportDirectory+Intersection.Description+'.dxf';
+      for I:=1 to Intersection.Count do begin
+        Intersection.Items[I-1].Color:=Intersection.Color;
+        SaveSpline(Intersection.Items[I-1], Strings, Intersection.IntersectionType);
+      end;
+    end;
+  end;
+begin
+  Dialog:=TDXFExport2DDialog.Create(FreeShip);
+  ShowTranslatedValues(Dialog);
+  Dialog.ExportDirectory:=FreeShip.Preferences.ExportDirectory;
+  if FreeShip.ProjectSettings.ProjectUnits = fuMetric
+  then Dialog.ComboBox1.ItemIndex:=0
+  else if FreeShip.ProjectSettings.ProjectUnits = fuImperial
+       then Dialog.ComboBox1.ItemIndex:=3;
+
+  if Dialog.Execute then begin
+    FreeShip.Preferences.ExportDirectory:=Dialog.ExportDirectory;
+    if Length(FreeShip.Preferences.ExportDirectory) > 0 then
+      if FreeShip.Preferences.ExportDirectory[Length(
+        FreeShip.Preferences.ExportDirectory)] <> DirectorySeparator then
+        FreeShip.Preferences.ExportDirectory:=FreeShip.Preferences.ExportDirectory+DirectorySeparator;
+
+    ScaleFactor:=1.0;
+    SegLength:=Dialog.SegmentLength;
+    if FreeShip.ProjectSettings.ProjectUnits = fuMetric then
+      case Dialog.ComboBox1.ItemIndex of
+        0: ScaleFactor:=1.0;         // Scale from meters to meters
+        1: ScaleFactor:=100;         // Scale from meters to centimeters
+        2: ScaleFactor:=1000;        // Scale from meters to millimeters
+        3: ScaleFactor:=1/Foot;      // Scale from meters to feet
+        4: ScaleFactor:=12/Foot;     // Scale from meters to inches
+      end
+    else if FreeShip.ProjectSettings.ProjectUnits = fuImperial then
+      case Dialog.ComboBox1.ItemIndex of
+        0: ScaleFactor:=Foot;        // Scale from feet to meters
+        1: ScaleFactor:=100*foot;    // Scale from feet to centimeters
+        2: ScaleFactor:=1000*foot;   // Scale from feet to millimeters
+        3: ScaleFactor:=1.0;         // Scale from feet to feet
+        4: ScaleFactor:=12;          // Scale from feet to inches
+      end;
+    Strings:=TStringList.Create;
+    PrevCursor:=Screen.Cursor;
+    Screen.Cursor:=crHourGlass;
+//    try
+      CreateIndividualLayers:=Dialog.cbCreateIndividualLayers.Checked;
+      if Dialog.cbCreateIndividualFiles.Checked then begin        // send each intersection to an individual dxf file
+        Intersections:=TFasterListTFreeIntersection.Create;
+        if FreeShip.Visibility.ShowStations then Intersections.AddList(FreeShip.FStations);
+        if FreeShip.Visibility.ShowButtocks then Intersections.AddList(FreeShip.FButtocks);
+        if FreeShip.Visibility.ShowWaterlines then Intersections.AddList(FreeShip.FWaterlines);
+        for I:=1 to Intersections.Count do begin
+          Strings.Clear;
+          Layername:=getLayerName(Intersections[I-1].IntersectionType);
+          DefineLayers(Strings, Layername, I, 1);
+          Strings.Add('0'+EOL+'SECTION');
+          Strings.Add('2'+EOL+'ENTITIES');
+          CreateDXFData(Intersections[I-1], I, Strings, ScaleFactor, Filename);
+          Strings.Add('0'+EOL+'ENDSEC');
+          Strings.Add('0'+EOL+'EOF');
+          Strings.SaveToFile(Filename);
+        end;
+        FreeAndNil(Intersections);
+      end else begin
+        if (FreeShip.Visibility.ShowStations) and (FreeShip.NumberofStations > 0) then
+        begin
+          Strings.Clear;
+          Layername:=getLayerName(fiStation);
+          DefineLayers(Strings, Layername, 1, FreeShip.NumberofStations);
+          Strings.Add('0'+EOL+'SECTION');
+          Strings.Add('2'+EOL+'ENTITIES');
+          for I:=1 to FreeShip.NumberofStations do
+            CreateDXFData(FreeShip.Station[I-1], I, Strings, ScaleFactor, Filename);
+          Strings.Add('0'+EOL+'ENDSEC');
+          Strings.Add('0'+EOL+'EOF');
+          Filename:=FreeShip.Preferences.ExportDirectory+'stations.dxf';
+          Strings.SaveToFile(Filename);
+        end;
+        if (FreeShip.Visibility.ShowButtocks)
+        and (FreeShip.NumberofButtocks > 0) then begin
+          Strings.Clear;
+          Layername:=getLayerName(fiButtock);
+          DefineLayers(Strings, Layername, 1, FreeShip.NumberofButtocks);
+          Strings.Add('0'+EOL+'SECTION');
+          Strings.Add('2'+EOL+'ENTITIES');
+          for I:=1 to FreeShip.NumberofButtocks do
+            CreateDXFData(FreeShip.Buttock[I-1], I, Strings, ScaleFactor, Filename);
+          Strings.Add('0'+EOL+'ENDSEC');
+          Strings.Add('0'+EOL+'EOF');
+          Filename:=FreeShip.Preferences.ExportDirectory+'buttocks.dxf';
+          Strings.SaveToFile(Filename);
+        end;
+        if (FreeShip.Visibility.ShowWaterlines)
+        and (FreeShip.NumberofWaterlines > 0) then begin
+          Strings.Clear;
+          Layername:=getLayerName(fiWaterline);
+          DefineLayers(Strings, Layername, 1, FreeShip.NumberofWaterlines);
+          Strings.Add('0'+EOL+'SECTION');
+          Strings.Add('2'+EOL+'ENTITIES');
+          for I:=1 to FreeShip.NumberofWaterlines do
+            CreateDXFData(FreeShip.Waterline[I-1], I, Strings, ScaleFactor, Filename);
+          Strings.Add('0'+EOL+'ENDSEC');
+          Strings.Add('0'+EOL+'EOF');
+          Filename:=FreeShip.Preferences.ExportDirectory+'waterlines.dxf';
+          Strings.SaveToFile(Filename);
+        end;
+      end;
+//    finally
+      FreeAndNil(Strings);
+      Screen.Cursor:=PrevCursor;
+//    end;
+  end;
+  FreeAndNil(Dialog);
+end;
+//
+// Appendage Hydrostatics Generator
+//
 procedure TFreeEdit.File_ExportArchimedes;
 var
   Frames: TFasterListTFreeSpline;
@@ -474,7 +914,7 @@ begin
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
     Assignfile(FFile, ChangeFileExt(SaveDialog.FileName, '.txt'));
-      {$I-}
+{$I-}
     Rewrite(FFile);
 {$I+}
     if IOResult=0 then begin
@@ -502,384 +942,6 @@ begin
   FreeAndNil(SaveDialog);
 
 end;{TFreeEdit.File_ExportCoordinates}
-
-// Export all intersections to an individual DXF file as 2D polylines
-procedure TFreeEdit.File_ExportDXF_2DPolylines;
-var
-  I: integer;
-  Strings: TStringList;
-  Dialog: TDXFExport2DDialog;
-  ScaleFactor: double;
-  SegLength: double;
-  PrevCursor: TCursor;
-  Filename, Layername: string;
-  Intersections: TFasterListTFreeIntersection;
-  CreateIndividualLayers: Boolean;
-
-  function getLayerName(IntersectionType:TFreeIntersectionType):String;
-  begin
-    Result:='';
-    case IntersectionType of
-      fiStation:      Result:=Userstring(62);
-      fiButtock:      Result:=Userstring(63);
-      fiWaterline:    Result:=Userstring(64);
-      fiDiagonal:     Result:=Userstring(65);
-      else begin
-        Messagedlg(Userstring(66)+'!', mtError, [mbOK], 0); exit;
-      end;
-    end;
-  end;
-  procedure DefineLayers(Stringlist: TStringList; LayerPrefix:string;
-    StartLayer,LayerNumbers:integer);
-  var I:integer;
-  begin
-    Stringlist.add('0');
-    Stringlist.add('SECTION');
-    Stringlist.add('2');
-    Stringlist.add('TABLES');
-    Stringlist.add('0');
-    Stringlist.add('TABLE');
-    Stringlist.add('2');
-    Stringlist.add('LTYPE');
-    Stringlist.add('70');
-    Stringlist.add('1');
-    Stringlist.add('0');
-    Stringlist.add('LTYPE');
-    Stringlist.add('2');
-    Stringlist.add('CONTINUOUS');
-    Stringlist.add('70');
-    Stringlist.add('64');
-    Stringlist.add('3');
-    Stringlist.add('Solid line');
-    Stringlist.add('72');
-    Stringlist.add('65');
-    Stringlist.add('73');
-    Stringlist.add('0');
-    Stringlist.add('40');
-    Stringlist.add('0.000000');
-    Stringlist.add('0');
-    Stringlist.add('ENDTAB');
-
-    Stringlist.add('0');
-    Stringlist.add('TABLE');
-    Stringlist.add('2');
-    Stringlist.add('LAYER');
-    Stringlist.add('70');
-    Stringlist.add('6');
-    for I:=StartLayer to LayerNumbers do begin
-      Stringlist.add('0');
-      Stringlist.add('LAYER');
-      Stringlist.add('2');
-      Stringlist.add( format(LayerPrefix+'%.2d', [I]) );
-      Stringlist.add('70');
-      Stringlist.add('64');
-      Stringlist.add('62');
-      Stringlist.add('7');
-      Stringlist.add('6');
-      Stringlist.add('CONTINUOUS');
-    end;
-    Stringlist.add('0');
-    Stringlist.add('ENDTAB');
-    Stringlist.add('0');
-    Stringlist.add('TABLE');
-    Stringlist.add('2');
-    Stringlist.add('STYLE');
-    Stringlist.add('70');
-    Stringlist.add('0');
-    Stringlist.add('0');
-    Stringlist.add('ENDTAB');
-    Stringlist.add('0');
-    Stringlist.add('ENDSEC');
-  end;
-
-  procedure CreateDXFData(Intersection: TFreeIntersection; IntersectionNumber:integer;
-    Stringlist: TStringList; Scale: double; var Filename: string);
-  var
-    I, N: integer;
-    Layername: string;
-
-    procedure SaveSpline(Spline: TFreeSpline; Strings: TStringList;
-      IntersectionType: TFreeIntersectiontype);
-    var
-      NParams: integer;
-      Cap: integer;
-      Params: TFloatArray;
-      I, Ind: integer;
-      SplineLength: double;
-      T: double;
-      P1, P2, Pkn: T3DCoordinate;
-      Pn, Pn1, Pn2: integer;
-      SplineValues: T3DCoordinateArray;
-
-      procedure SaveVertex(P:T3DCoordinate); // port side
-      begin
-        Strings.Add('0'+EOL+'VERTEX');
-        Strings.Add('8'+EOL+LayerName);
-        case IntersectionType of
-          fiStation:
-          begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * P.Y, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * P.Z, 5));
-          end;
-          fiButtock:
-          begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * P.X, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * P.Z, 5));
-          end;
-          fiWaterline:
-          begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * P.X, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * P.Y, 5));
-          end;
-        end;
-      end;
-      procedure SaveVertexSB(P:T3DCoordinate); // starboard side
-      begin
-        Strings.Add('0'+EOL+'VERTEX');
-        Strings.Add('8'+EOL+LayerName);
-        case IntersectionType of
-          fiStation: begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * -P.Y, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * P.Z, 5)); end;
-          fiWaterline: begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * P.X, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * -P.Y, 5)); end;
-        end;
-      end;
-    begin
-      Ind:=FindDXFColorIndex(Spline.Color);
-      NParams:=0;
-      Setlength(Params, Spline.NumberOfPoints);
-      // count number of knucklepoints
-      //if not Spline.Built then
-      Spline.Rebuild;
-      for I:=2 to Spline.NumberOfPoints-1 do
-        if Spline.Knuckle[I-1] then
-        begin
-          Params[NParams]:=Spline.Parameter[I-1];
-          Inc(NParams);
-        end;
-
-      (* // Calculate the SplineLength of the spline
-      SplineLength:=0.0;
-      P1:=Spline.Value(0.0);
-      for I:=1 to 150 do
-      begin
-        P2:=Spline.Value(I / 150);
-        SplineLength:=SplineLength+DistPP3D(P1, P2);
-        P1:=P2;
-      end;  *)
-      SplineLength:=Spline.TotalLength;
-      SplineLength:=SplineLength * ScaleFactor;
-
-
-      if SplineLength > 0 then begin
-        N:=Round(SplineLength / (SegLength));
-        if N < 2*Spline.NumberOfPoints then N:=2*Spline.NumberOfPoints;
-        if N > 3500 then N:=3500;
-        Spline.Fragments:=N;
-        (*
-        Cap:=NParams+100;
-        Setlength(Params, Cap);
-        Inc(Nparams);
-        Params[NParams-1]:=0.0;
-        Inc(Nparams);
-        Params[NParams-1]:=1.0;
-
-        for I:=1 to Spline.Fragments do
-        begin
-          T:=Spline.ChordlengthApproximation(I * SegLength / SplineLength);
-          if NParams >= Cap then
-          begin
-            Inc(Cap, 50);
-            Setlength(Params, Cap);
-          end;
-          Inc(NParams);
-          Params[NParams-1]:=T;
-        end;
-
-        SortFloatArray(Params, NParams);
-        *)
-
-        // now export the actual calculated points
-        Strings.Add('0'+EOL+'POLYLINE');
-        Strings.Add('8'+EOL+LayerName);   // layername
-        Strings.Add('62'+EOL+IntToStr(Ind));  // color by layer
-        Strings.Add('66'+EOL+'1');    // vertices follow
-        (*
-        Pn:=0;
-        for I:=0 to NParams-1 do
-        begin
-          P1:=Spline.Value(Params[I], Pn1, Pn2);
-          if (Pn <> Pn1) and Spline.Knuckle[Pn1] then
-          begin
-            Pn:=Pn1;
-            Pkn:=Spline.Point[Pn1];
-            SaveVertex(Pkn);
-          end;
-          SaveVertex(P1);
-        end;
-        *)
-        //MM: 2020-06-12 just use GetValues. no tricks. Knuckle processing is embedded there.
-        SplineValues:=Spline.GetValues;
-        for i:=0 to Length(SplineValues)-1 do begin
-          P1:=SplineValues[i];
-          SaveVertex(P1);
-        end;
-
-        Strings.Add('0'+EOL+'SEQEND');
-        if (Intersectiontype in [fiStation,fiWaterline]) and
-           (FreeShip.Visibility.ModelView=mvBoth) then begin // send the other half
-          Strings.Add('0'+EOL+'POLYLINE');
-          Strings.Add('8'+EOL+LayerName);                // layername
-          Strings.Add('62'+EOL+IntToStr(Ind));           // color by layer
-          Strings.Add('66'+EOL+'1');                     // vertices follow
-          (*
-          Pn:=0;
-          for I:=0 to NParams-1 do
-          begin
-            P1:=Spline.Value(Params[I], Pn1, Pn2);
-            if (Pn <> Pn1) and Spline.Knuckle[Pn1] then
-            begin
-              Pn:=Pn1;
-              Pkn:=Spline.Point[Pn1];
-              SaveVertexSB(Pkn);
-            end;
-            SaveVertexSB(P1);
-          end;
-          *)
-          for i:=0 to Length(SplineValues)-1 do begin
-            P1:=SplineValues[i];
-            SaveVertexSB(P1);
-          end;
-
-          Strings.Add('0'+EOL+'SEQEND');
-        end;
-      end;
-    end;{SaveSpline}
-
-  begin
-    //if not Intersection.Built then
-    Intersection.Rebuild;
-    if intersection.Count > 0 then begin
-      Layername:=getLayerName(Intersection.IntersectionType);
-      if CreateIndividualLayers then
-        Layername:=format(Layername+'%.2d',[IntersectionNumber]);
-      Filename:=FreeShip.Preferences.ExportDirectory+Intersection.Description+'.dxf';
-      for I:=1 to Intersection.Count do begin
-        Intersection.Items[I-1].Color:=Intersection.Color;
-        SaveSpline(Intersection.Items[I-1], Strings, Intersection.IntersectionType);
-      end;
-    end;
-  end;
-
-begin
-  Dialog:=TDXFExport2DDialog.Create(FreeShip);
-  ShowTranslatedValues(Dialog);
-  Dialog.ExportDirectory:=FreeShip.Preferences.ExportDirectory;
-  if FreeShip.ProjectSettings.ProjectUnits = fuMetric
-  then Dialog.ComboBox1.ItemIndex:=0
-  else if FreeShip.ProjectSettings.ProjectUnits = fuImperial
-       then Dialog.ComboBox1.ItemIndex:=3;
-
-  if Dialog.Execute then begin
-    FreeShip.Preferences.ExportDirectory:=Dialog.ExportDirectory;
-    if Length(FreeShip.Preferences.ExportDirectory) > 0 then
-      if FreeShip.Preferences.ExportDirectory[Length(
-        FreeShip.Preferences.ExportDirectory)] <> DirectorySeparator then
-        FreeShip.Preferences.ExportDirectory:=FreeShip.Preferences.ExportDirectory+DirectorySeparator;
-
-    ScaleFactor:=1.0;
-    SegLength:=Dialog.SegmentLength;
-    if FreeShip.ProjectSettings.ProjectUnits = fuMetric then
-      case Dialog.ComboBox1.ItemIndex of
-        0: ScaleFactor:=1.0;         // Scale from meters to meters
-        1: ScaleFactor:=100;         // Scale from meters to centimeters
-        2: ScaleFactor:=1000;        // Scale from meters to millimeters
-        3: ScaleFactor:=1/Foot;      // Scale from meters to feet
-        4: ScaleFactor:=12/Foot;     // Scale from meters to inches
-      end
-    else if FreeShip.ProjectSettings.ProjectUnits = fuImperial then
-      case Dialog.ComboBox1.ItemIndex of
-        0: ScaleFactor:=Foot;        // Scale from feet to meters
-        1: ScaleFactor:=100*foot;    // Scale from feet to centimeters
-        2: ScaleFactor:=1000*foot;   // Scale from feet to millimeters
-        3: ScaleFactor:=1.0;         // Scale from feet to feet
-        4: ScaleFactor:=12;          // Scale from feet to inches
-      end;
-    Strings:=TStringList.Create;
-    PrevCursor:=Screen.Cursor;
-    Screen.Cursor:=crHourGlass;
-//    try
-      CreateIndividualLayers:=Dialog.cbCreateIndividualLayers.Checked;
-      if Dialog.cbCreateIndividualFiles.Checked then begin        // send each intersection to an individual dxf file
-        Intersections:=TFasterListTFreeIntersection.Create;
-        if FreeShip.Visibility.ShowStations then Intersections.AddList(FreeShip.FStations);
-        if FreeShip.Visibility.ShowButtocks then Intersections.AddList(FreeShip.FButtocks);
-        if FreeShip.Visibility.ShowWaterlines then Intersections.AddList(FreeShip.FWaterlines);
-        for I:=1 to Intersections.Count do begin
-          Strings.Clear;
-          Layername:=getLayerName(Intersections[I-1].IntersectionType);
-          DefineLayers(Strings, Layername, I, 1);
-          Strings.Add('0'+EOL+'SECTION');
-          Strings.Add('2'+EOL+'ENTITIES');
-          CreateDXFData(Intersections[I-1], I, Strings, ScaleFactor, Filename);
-          Strings.Add('0'+EOL+'ENDSEC');
-          Strings.Add('0'+EOL+'EOF');
-          Strings.SaveToFile(Filename);
-        end;
-        FreeAndNil(Intersections);
-      end else begin
-        if (FreeShip.Visibility.ShowStations) and (FreeShip.NumberofStations > 0) then
-        begin
-          Strings.Clear;
-          Layername:=getLayerName(fiStation);
-          DefineLayers(Strings, Layername, 1, FreeShip.NumberofStations);
-          Strings.Add('0'+EOL+'SECTION');
-          Strings.Add('2'+EOL+'ENTITIES');
-          for I:=1 to FreeShip.NumberofStations do
-            CreateDXFData(FreeShip.Station[I-1], I, Strings, ScaleFactor, Filename);
-          Strings.Add('0'+EOL+'ENDSEC');
-          Strings.Add('0'+EOL+'EOF');
-          Filename:=FreeShip.Preferences.ExportDirectory+'stations.dxf';
-          Strings.SaveToFile(Filename);
-        end;
-        if (FreeShip.Visibility.ShowButtocks)
-        and (FreeShip.NumberofButtocks > 0) then begin
-          Strings.Clear;
-          Layername:=getLayerName(fiButtock);
-          DefineLayers(Strings, Layername, 1, FreeShip.NumberofButtocks);
-          Strings.Add('0'+EOL+'SECTION');
-          Strings.Add('2'+EOL+'ENTITIES');
-          for I:=1 to FreeShip.NumberofButtocks do
-            CreateDXFData(FreeShip.Buttock[I-1], I, Strings, ScaleFactor, Filename);
-          Strings.Add('0'+EOL+'ENDSEC');
-          Strings.Add('0'+EOL+'EOF');
-          Filename:=FreeShip.Preferences.ExportDirectory+'buttocks.dxf';
-          Strings.SaveToFile(Filename);
-        end;
-        if (FreeShip.Visibility.ShowWaterlines)
-        and (FreeShip.NumberofWaterlines > 0) then begin
-          Strings.Clear;
-          Layername:=getLayerName(fiWaterline);
-          DefineLayers(Strings, Layername, 1, FreeShip.NumberofWaterlines);
-          Strings.Add('0'+EOL+'SECTION');
-          Strings.Add('2'+EOL+'ENTITIES');
-          for I:=1 to FreeShip.NumberofWaterlines do
-            CreateDXFData(FreeShip.Waterline[I-1], I, Strings, ScaleFactor, Filename);
-          Strings.Add('0'+EOL+'ENDSEC');
-          Strings.Add('0'+EOL+'EOF');
-          Filename:=FreeShip.Preferences.ExportDirectory+'waterlines.dxf';
-          Strings.SaveToFile(Filename);
-        end;
-      end;
-//    finally
-      FreeAndNil(Strings);
-      Screen.Cursor:=PrevCursor;
-//    end;
-  end;
-  FreeAndNil(Dialog);
-end;
 
 // Exports all intersections to a textfile as 3D points
 
@@ -1045,7 +1107,7 @@ begin
       Strings.Add('0'+EOL+'SECTION');
       Strings.Add('2'+EOL+'ENTITIES');
       for i:=0 to FreeShip.Surface.NumberOfLayers-1 do
-        FreeShip.Surface.Layer[i].SaveToDXF(Strings);
+        FreeShip.Surface.Layer[i].SaveToDXF( Strings );
       Strings.Add('0'+EOL+'ENDSEC');
       Strings.Add('0'+EOL+'EOF');
 //    try
@@ -1471,7 +1533,7 @@ var
       Grid[2][2]:=Grid[2][1];
 //      for I:=1 to Rows do
 //        for J:=1 to cols do
-//          if grid[I-1][j-1] = nil then raise Exception.Create(Userstring(98));
+//          if grid[I-1][j-1] = nil then WriteLn(Userstring(98));
     end
     else
       MessageDlg(Userstring(99), mtError, [mbOK], 0);
@@ -1669,23 +1731,15 @@ var
       NURB.SetUniformRowKnotvector;
 
       // Insert knots to force the patch to interpolate start and endknots
-      for I:=1 to Nurb.ColDegree do
-        Nurb.InsertColKnot(Nurb.Colknotvector[Nurb.ColDegree]);
-      for I:=1 to Nurb.ColDegree do
-        Nurb.InsertColKnot(Nurb.Colknotvector[Nurb.ColCount]);
-      for I:=1 to Nurb.RowDegree do
-        Nurb.InsertRowKnot(Nurb.Rowknotvector[Nurb.RowDegree]);
-      for I:=1 to Nurb.RowDegree do
-        Nurb.InsertRowKnot(Nurb.Rowknotvector[Nurb.RowCount]);
+      for I:=1 to Nurb.ColDegree do Nurb.InsertColKnot(Nurb.Colknotvector[Nurb.ColDegree]);
+      for I:=1 to Nurb.ColDegree do Nurb.InsertColKnot(Nurb.Colknotvector[Nurb.ColCount]);
+      for I:=1 to Nurb.RowDegree do Nurb.InsertRowKnot(Nurb.Rowknotvector[Nurb.RowDegree]);
+      for I:=1 to Nurb.RowDegree do Nurb.InsertRowKnot(Nurb.Rowknotvector[Nurb.RowCount]);
       // Delete old startpoints
-      for I:=1 to Nurb.ColDegree do
-        Nurb.DeleteColumn(0);
-      for I:=1 to Nurb.ColDegree do
-        Nurb.DeleteColumn(Nurb.ColCount-1);
-      for I:=1 to Nurb.RowDegree do
-        Nurb.DeleteRow(0);
-      for I:=1 to Nurb.RowDegree do
-        Nurb.DeleteRow(Nurb.RowCount-1);
+      for I:=1 to Nurb.ColDegree do Nurb.DeleteColumn(0);
+      for I:=1 to Nurb.ColDegree do Nurb.DeleteColumn(Nurb.ColCount-1);
+      for I:=1 to Nurb.RowDegree do Nurb.DeleteRow(0);
+      for I:=1 to Nurb.RowDegree do Nurb.DeleteRow(Nurb.RowCount-1);
       // Set knotvectors to open-knot vector type (standard interpolating form)
       Nurb.SetDefaultColKnotvector;
       Nurb.SetDefaultRowKnotvector;
@@ -1709,8 +1763,7 @@ var
       Nurb.Point[Cols+1, Rows+1]:=Grid[Rows-1][Cols-1].LimitPoint;
       IGESList.Add_Entity_128(NURB, ColorInd);
       if (FreeShip.Visibility.ModelView = mvBoth)
-         and LayerIsSymmetric then
-      begin
+      and LayerIsSymmetric then begin
         NURB2:=TFreeNURBsurface.Create(FreeShip.Surface);
         NURB2.SetCapacity(Nurb.ColCount, Nurb.RowCount);
         NURB2.ColCount:=Nurb2.ColCapacity;
@@ -1718,8 +1771,7 @@ var
         NURB2.ColDegree:=Nurb.ColDegree;
         NURB2.RowDegree:=Nurb.RowDegree;
         for I:=Nurb.ColCount downto 1 do
-          for J:=Nurb.RowCount downto 1 do
-          begin
+          for J:=Nurb.RowCount downto 1 do begin
             P:=NURB.Point[I-1, J-1];
             P.Y:=-P.Y;
             NURB2.Point[NURB2.Colcount-I, Nurb2.RowCount-J]:=P;
@@ -1749,8 +1801,7 @@ begin
 //  try
       FreeShip.Surface.DesiredSubdivisionLevel:=1;
       FreeShip.Surface.SubdivisionMode:=fmCatmullClark;
-      if not FreeShip.Surface.Built then
-        FreeShip.Surface.Rebuild;
+      if not FreeShip.Surface.Built then FreeShip.Surface.Rebuild;
       FreeShip.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
       IGESList:=TFreeIGESList.Create;
       IGESList.IGESUnits:=FreeShip.ProjectSettings.ProjectUnits;
@@ -1764,8 +1815,7 @@ begin
           Layers.Add(FreeShip.Layer[I]);
       Layers.Sort;
       Setlength(ColorIndices, Layers.Count);
-      for I:=0 to Layers.Count-1 do
-      begin
+      for I:=0 to Layers.Count-1 do begin
         Layer:=Layers[I];
         ColorIndices[I]:=IGESList.Add_Entity_314(Layer.Color);
       end;
@@ -1783,29 +1833,22 @@ begin
             if ((FaceData.NCols > 1) and (FaceData.NRows >= 1)) or
               ((FaceData.NCols >= 1) and (FaceData.NRows > 1)) or
               ((FaceData.NCols = 1) and (FaceData.NRows = 1) and
-              (FaceData.Faces[0][0].NumberOfPoints = 4)) then
-            begin
+              (FaceData.Faces[0][0].NumberOfPoints = 4)) then begin
               CtrlFace:=FaceData.Faces[0][0];
               LI:=Layers.SortedIndexOf(Ctrlface.Layer);
               ColorIndex:=ColorIndices[LI];
               FreeShip.Surface.ConvertToGrid(FaceData, Cols, Rows, Grid);
               ProcessGrid(Cols, Rows, Grid, ColorIndex, Ctrlface.Layer.Symmetric);
-            end
-            else
-            begin
+            end else begin
               CtrlFace:=FaceData.Faces[0][0];
-              if Layers.SortedIndexOf(Ctrlface.Layer) <> -1 then
-                ColorIndex:=ColorIndices[Layers.SortedIndexOf(Ctrlface.Layer)]
-              else
-                Colorindex:=0;
-              if (CtrlFace.NumberOfpoints = 3) and (SendTriangles) then
-              begin
+              if Layers.SortedIndexOf(Ctrlface.Layer) <> -1
+              then ColorIndex:=ColorIndices[Layers.SortedIndexOf(Ctrlface.Layer)]
+              else Colorindex:=0;
+              if (CtrlFace.NumberOfpoints = 3) and (SendTriangles) then begin
                 AssembleTriangle(Cols, Rows, Grid, CtrlFace);
                 if (Cols > 0) and (Rows > 0) then
                   ProcessGrid(Cols, Rows, Grid, ColorIndex, Ctrlface.Layer.Symmetric);
-              end
-              else
-              begin
+              end else begin
                 Cols:=2;
                 Rows:=2;
                 Setlength(Grid, 2);
@@ -1824,17 +1867,13 @@ begin
             end;
         end;
         FreeAndNil(CheckFaces);
-      end
-      else
-        for I:=1 to FreeShip.Surface.NumberOfControlFaces do
-        begin
+      end else
+        for I:=1 to FreeShip.Surface.NumberOfControlFaces do begin
           CtrlFace:=FreeShip.Surface.ControlFace[I-1];
-          if Layers.SortedIndexOf(Ctrlface.Layer) <> -1 then
-            ColorIndex:=ColorIndices[Layers.SortedIndexOf(Ctrlface.Layer)]
-          else
-            Colorindex:=0;
-          if CtrlFace.NumberOfpoints = 4 then
-          begin
+          if Layers.SortedIndexOf(Ctrlface.Layer) <> -1
+          then ColorIndex:=ColorIndices[Layers.SortedIndexOf(Ctrlface.Layer)]
+          else Colorindex:=0;
+          if CtrlFace.NumberOfpoints = 4 then begin
             FaceData.NCols:=1;
             FaceData.NRows:=1;
             Setlength(FaceData.Faces, 1);
@@ -1842,16 +1881,13 @@ begin
             FaceData.Faces[0][0]:=Ctrlface;
             FreeShip.Surface.ConvertToGrid(FaceData, Cols, Rows, Grid);
             ProcessGrid(Cols, Rows, Grid, ColorIndex, Ctrlface.Layer.Symmetric);
-          end
-          else
-          begin
+          end else begin
             Cols:=2;
             Rows:=2;
             Setlength(Grid, 2);
             Setlength(Grid[0], 2);
             Setlength(Grid[1], 2);
-            for J:=1 to CtrlFace.ChildCount do
-            begin
+            for J:=1 to CtrlFace.ChildCount do begin
               Face:=CtrlFace.Child[J-1];
               Grid[0][1]:=Face.Point[0];
               Grid[0][0]:=Face.Point[1];
@@ -1861,14 +1897,10 @@ begin
             end;
           end;
         end;
-      if NSurfaces > 0 then
-      begin
-        IGESList.SaveToFile(ChangeFileExt(Dialog.Filename, '.igs'));
-        MessageDlg('Exported '+IntToStr(NSurfaces)+' surfaces.',
-          mtInformation, [mbOK], 0);
-      end
-      else
-        MessageDlg(Userstring(100), mtInformation, [mbOK], 0);
+      if NSurfaces > 0 then begin
+        IGESList.SaveToFile( ChangeFileExt(Dialog.Filename,'.igs') );
+        MessageDlg('Exported '+IntToStr(NSurfaces)+' surfaces.',mtInformation,[mbOK],0);
+      end else MessageDlg(Userstring(100), mtInformation, [mbOK], 0);
       FreeAndNil(IGESList);
       FreeAndNil(Layers);
 //  finally
@@ -1939,7 +1971,4 @@ begin
     if UndoObject <> nil then UndoObject.Restore;
 //end;
 end;
-
-
-
 

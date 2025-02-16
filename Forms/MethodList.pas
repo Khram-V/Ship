@@ -1,91 +1,89 @@
 unit MethodList;
-
 {$mode objfpc}{$H+}
 
-interface
-
-//uses SysUtils;
-// simple not sorted generic list
+interface                                     // simple not sorted generic list
 // TItemType can be procedure of object type, double pointer, like TNotifyEvent
 type generic TMethodList<TItemType> = class
 private
-  FCount: integer;
-  FCapacity: integer;
-  FList: array of TItemType;
-  function FGet(Index: integer): TItemType;
-  function FGetMemory: integer;
+  FCount,FCapacity: integer; FList: array of TItemType;
+  function FGet( Index:integer ): TItemType;
+  function IndexOf( Item: TItemType ): integer;        // normal TList function
+  procedure Add( Item: TItemType );
   procedure FGrow;
-  procedure FSet(Index: integer; Item: TItemType);
-  procedure FSetCapacity(NewCapacity: integer);
-public
-  procedure Add(Item: TItemType);
-  constructor Create;
+  procedure FSet( Index: integer; Item: TItemType );
+  procedure FSetCapacity( NewCapacity: integer );
+  procedure Delete( Index: integer );
   procedure Clear; virtual;
+public
+  constructor Create;
   destructor Destroy; override;
-  procedure Delete(Index: integer);
-  procedure DeleteItem(Item: TItemType);  // deletes all instances of the item
-                                          // deletes all instances of the aList from Self
-  function IndexOf(Item: TItemType): integer;  // normal TList function
-  procedure Insert(Index: integer; Item: TItemType);
-
-  property Capacity: integer read FCapacity write FSetCapacity;
+  procedure DeleteItem( Item: TItemType ); // deletes all instances of the item
+                                // deletes all instances of the aList from Self
   property Count: integer read FCount;
   property Items[Index: integer]: TItemType read FGet write FSet; default;
-  property Memory: integer read FGetMemory;
 end;
 
 implementation
 
 constructor TMethodList.Create;
 begin inherited Create; FList:=nil; FCount:=0; FCapacity:=0; end;
-
 destructor TMethodList.Destroy; begin Clear; inherited Destroy; end;
+procedure TMethodList.Clear; begin FSetCapacity(0); end;
 
 procedure TMethodList.Add(Item: TItemType);
 var I:integer;
 begin if FCount=FCapacity then FGrow; FList[FCount]:=Item; Inc( FCount );
 end;
-procedure TMethodList.Clear; begin FSetCapacity(0); end;
 procedure TMethodList.Delete(Index: integer);
 begin
-  if Index<0 then Index:=0 else if Index>=FCount then Index:=FCount-1;
-  Dec(FCount);
-  if Index < FCount then  begin
-    Move( FList[Index+1],FList[Index], (FCount-Index)*SizeOf(TItemType));
+  if Index<0 then Index:=0 else if Index>=FCount then Index:=FCount-1; Dec(FCount);
+  if Index<FCount then
+  begin Move( FList[Index+1],FList[Index], (FCount-Index)*SizeOf(TItemType));
   end;
 end;
-procedure TMethodList.DeleteItem(Item: TItemType);
-var i: integer;
+procedure TMethodList.DeleteItem(Item: TItemType); var I: integer;
 begin
-  i:=IndexOf( Item ); while i>=0 do begin Delete(i); i:=IndexOf(Item); end;
+  I:=IndexOf( Item ); while I>=0 do begin Delete( I ); I:=IndexOf( Item ); end;
 end;
 function TMethodList.FGet(Index: integer): TItemType;
 begin if (Index >= 0) and (Index < FCount) then Result:=FList[Index]
                                            else Result:=nil;
 end;
-function TMethodList.FGetMemory: integer;
-begin
-  Result:=SizeOf(Pointer)+  // self        : TItemType
-    SizeOf(integer)+          // FCapacity   : integer
-    SizeOf(integer)+          // fcount      : integer
-    SizeOf(TItemType) * FCapacity;
-end;
 procedure TMethodList.FGrow;
 var Delta: integer;
-begin
-  if FCapacity > 64 then begin
-    Delta:=FCapacity div SizeOf(TItemType);
-    if Delta > 1024 then Delta:=1024;
-  end else
-  if FCapacity > 8 then Delta:=16 else Delta:=4;
-  FSetCapacity( FCapacity+Delta );
+begin if FCapacity > 64 then begin Delta:=FCapacity div SizeOf( TItemType );
+      if Delta > 1024 then Delta:=1024; end else
+      if FCapacity > 8 then Delta:=16 else Delta:=4;
+      FSetCapacity( FCapacity+Delta );
 end;
 function TMethodList.IndexOf(Item: TItemType): integer;
-var I: integer;
+  var I: integer;
 begin Result:=-1;
-      for I:=0 to FCount-1 do begin
-        if FList[I] = Item then begin Result:=I; break; end;
-      end;
+  for I:=0 to FCount-1 do if FList[I]=Item then begin Result:=I; break; end;
+end;
+procedure TMethodList.FSet(Index: integer; Item: TItemType);
+begin if Index<0 then Index:=0 else if Index>=FCount then Index:=FCount-1;
+      FList[Index]:=Item;
+end;
+procedure TMethodList.FSetCapacity(NewCapacity: integer);
+begin if FCapacity=NewCapacity then exit;
+      Setlength( FList,NewCapacity );
+      FCapacity:=NewCapacity;
+      if FCapacity<FCount then FCount:=Fcapacity;
+end;
+end.
+{ // событийные процессы
+  function FGetMemory: integer;
+  procedure Insert( Index: integer; Item: TItemType );
+  property Capacity: integer read FCapacity write FSetCapacity;
+  property Memory: integer read FGetMemory;
+===
+function TMethodList.FGetMemory: integer;
+begin
+  Result:=SizeOf(Pointer)+    // self      : TItemType
+    SizeOf(integer)+          // FCapacity : integer
+    SizeOf(integer)+          // fcount    : integer
+    SizeOf(TItemType) * FCapacity;
 end;
 procedure TMethodList.Insert(Index: integer; Item: TItemType);
 begin
@@ -97,16 +95,8 @@ begin
   FList[Index]:=Item;
   Inc(FCount);
 end;
-procedure TMethodList.FSet(Index: integer; Item: TItemType);
-begin
-  if Index<0 then Index:=0 else if Index>=FCount then Index:=FCount-1;
-  FList[Index]:=Item;
-end;
-procedure TMethodList.FSetCapacity(NewCapacity: integer);
-begin if FCapacity = NewCapacity then exit;
-      Setlength(FList, NewCapacity);
-      FCapacity:=NewCapacity;
-     if FCapacity < FCount then FCount:=Fcapacity;
-end;
-end.
+}
+
+
+
 

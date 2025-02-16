@@ -3,26 +3,15 @@ unit FreeGeometry;
 
 interface
 uses
-  LCLIntf,
-  LazUTF8,
+  LCLIntf,  LazUTF8,
+  Classes,  Messages,
+  SysUtils, StrUtils,
+  Graphics, Math,
+  Controls, Forms,
+  Dialogs,  ExtDlgs,
+  ExtCtrls, Printers,
   FasterList,MethodList,
-  Messages,
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Math,
-  Dialogs,
-  StdCtrls,
-  Printers,
-  StrUtils,
-  FreeTypes,
-  FreeVersionUnit,
-  FreeFileBuffer,
-  ExtCtrls,
-  ExtDlgs,
-  FreeBitmapFormatHelper,
+  FreeTypes, FreeVersionUnit, FreeFileBuffer, FreeBitmapFormatHelper,
   FreeLanguageSupport;
 
 const // Cursors
@@ -64,34 +53,6 @@ const
   PixelCountMax = 32768;  // used for faster pixel acces when shading to viewport
   ZBufferScaleFactor=1.004; // Offset for hidden-line drawing when drawing ontop of shaded triangles
   Zoomfactor = 1.02;
-
-  DXFLayerColors: array[1..255] of TColor =
-   ($0000FF, $00FFFF, $00FF00, $FFFF00, $FF0000, $FF00FF, $000000, $808080, $C0C0C0, $0000FF,
-    $7F7FFF, $0000A5, $5252A5, $00007F, $3F3F7F, $00004C, $26264C, $000026, $131326, $003FFF,
-    $7F9FFF, $0029A5, $5267A5, $001F7F, $3F4F7F, $00134C, $262F4C, $000926, $131726, $007FFF,
-    $7FBFFF, $0052A5, $527CA5, $003F7F, $3F5F7F, $00264C, $26394C, $001326, $131C26, $00BFFF,
-    $7FDFFF, $007CA5, $5291A5, $005F7F, $3F6F7F, $00394C, $26424C, $001C26, $132126, $00FFFF,
-    $7FFFFF, $00A5A5, $52A5A5, $007F7F, $3F7F7F, $004C4C, $264C4C, $002626, $132626, $00FFBF,
-    $7FFFDF, $00A57C, $52A591, $007F5F, $3F7F6F, $004C39, $264C42, $00261C, $132621, $00FF7F,
-    $7FFFBF, $00A552, $52A57C, $007F3F, $3F7F5F, $004C26, $264C39, $002613, $13261C, $00FF3F,
-    $7FFF9F, $00A529, $52A567, $007F1F, $3F7F4F, $004C13, $264C2F, $002609, $132617, $00FF00,
-    $7FFF7F, $00A500, $52A552, $007F00, $3F7F3F, $004C00, $264C26, $002600, $132613, $3FFF00,
-    $9FFF7F, $29A500, $67A552, $1F7F00, $4F7F3F, $134C00, $2F4C26, $092600, $172613, $7FFF00,
-    $BFFF7F, $52A500, $7CA552, $3F7F00, $5F7F3F, $264C00, $394C26, $132600, $1C2613, $BFFF00,
-    $DFFF7F, $7CA500, $91A552, $5F7F00, $6F7F3F, $394C00, $424C26, $1C2600, $212613, $FFFF00,
-    $FFFF7F, $A5A500, $A5A552, $7F7F00, $7F7F3F, $4C4C00, $4C4C26, $262600, $262613, $FFBF00,
-    $FFDF7F, $A57C00, $A59152, $7F5F00, $7F6F3F, $4C3900, $4C4226, $261C00, $262113, $FF7F00,
-    $FFBF7F, $A55200, $A57C52, $7F3F00, $7F5F3F, $4C2600, $4C3926, $261300, $261C13, $FF3F00,
-    $FF9F7F, $A52900, $A56752, $7F1F00, $7F4F3F, $4C1300, $4C2F26, $260900, $261713, $FF0000,
-    $FF7F7F, $A50000, $A55252, $7F0000, $7F3F3F, $4C0000, $4C2626, $260000, $261313, $FF003F,
-    $FF7F9F, $A50029, $A55267, $7F001F, $7F3F4F, $4C0013, $4C262F, $260009, $261317, $FF007F,
-    $FF7FBF, $A50052, $A5527C, $7F003F, $7F3F5F, $4C0026, $4C2639, $260013, $26131C, $FF00BF,
-    $FF7FDF, $A5007C, $A55291, $7F005F, $7F3F6F, $4C0039, $4C2642, $26001C, $261321, $FF00FF,
-    $FF7FFF, $A500A5, $A552A5, $7F007F, $7F3F7F, $4C004C, $4C264C, $260026, $261326, $BF00FF,
-    $DF7FFF, $7C00A5, $9152A5, $5F007F, $6F3F7F, $39004C, $42264C, $1C0026, $211326, $7F00FF,
-    $BF7FFF, $5200A5, $7C52A5, $3F007F, $5F3F7F, $26004C, $39264C, $130026, $1C1326, $3F00FF,
-    $9F7FFF, $2900A5, $6752A5, $1F007F, $4F3F7F, $13004C, $2F264C, $090026, $171326, $000000,
-    $2D2D2D, $5B5B5B, $898989, $B7B7B7, $B3B3B3);
 type
   TShadePoint = record                         // Used for drawing to the Z-buffer
     X, Y: integer;
@@ -368,20 +329,17 @@ type
     FZBuffer: TFreeZBuffer;
     FAlphaBuffer: TFreeAlphaBuffer;
     FLight: TFreeLight;
-    FHorScrollbar: TScrollBar;
-    FVertScrollbar: TScrollBar;
-
+//  FHorScrollbar: TScrollBar;
+//  FVertScrollbar: TScrollBar;
     FSelectionFrameRect: TRect;
     FSelectionFrameActive: boolean;
-
     FUpdating: boolean;
-
     FLastResizeWidth:integer;
     FLastResizeHeight:integer;
     FLastResizeClientWidth:integer;
     FLastResizeClientHeight:integer;
-    FOriginalVertScrollbarChange:TNotifyEvent;
-    FOriginalHorScrollbarChange:TNotifyEvent;
+//  FOriginalVertScrollbarChange:TNotifyEvent;
+//  FOriginalHorScrollbarChange:TNotifyEvent;
 
     function FGetBrushColor: TColor;
     function FGetBrushStyle: TBrushStyle;
@@ -404,8 +362,8 @@ type
     procedure FSetFontName(val: string);
     procedure FSetFontSize(val: integer);
     procedure FSetFontHeight(val: integer);
-    procedure FSetHorScrollbar(val: TScrollbar);
-    procedure FSetVertScrollbar(val: TScrollbar);
+//  procedure FSetHorScrollbar(val: TScrollbar);
+//  procedure FSetVertScrollbar(val: TScrollbar);
     procedure FSetMargin(Val: TFloatType);
     procedure FSetPan(Val: TPoint);
     procedure FSetPenColor(Val: TColor);
@@ -417,9 +375,9 @@ type
     procedure SetSelectionFrameActive(Val: boolean);
     procedure FSetViewType(Val: TFreeViewType);
     procedure FSetViewportMode(Val: TFreeViewportMode);
-    procedure FVertScrollbarChange(Sender: TObject);
+//  procedure FVertScrollbarChange(Sender: TObject);
+//  procedure FHorScrollbarChange(Sender: TObject);
     procedure FSetZoom(val: TFloatType);
-    procedure FHorScrollbarChange(Sender: TObject);
     procedure WMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure WMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
   private
@@ -531,10 +489,10 @@ type
     property DestinationHeight: integer read FDestinationHeight write FDestinationHeight;
     property DoubleBuffer: boolean read FDoubleBuffer write FDoubleBuffer;
     property Elevation: TFloatType read FElevation write FSetElevation;
-    property HorScrollbar: TScrollBar read FHorScrollbar write FSetHorScrollbar;
+//  property HorScrollbar: TScrollBar read FHorScrollbar write FSetHorScrollbar;
+//  property VertScrollbar: TScrollBar read FVertScrollbar write FSetVertScrollbar;
     property Margin: TFloatType read FMargin write FSetMargin;
     property PopupMenu;
-    property VertScrollbar: TScrollBar read FVertScrollbar write FSetVertScrollbar;
     property Visible;
     property ViewType: TFreeViewtype read FViewType write FSetViewType;
     property ViewportMode: TFreeViewportMode read FViewportMode write FSetViewportMode;
@@ -766,19 +724,17 @@ type
     procedure Insert(Index: integer; P: T3DCoordinate);
     procedure InsertSpline(Index: integer; Invert, DuplicatePoint: boolean; Source: TFreeSpline);
     function IntersectPlane(Plane: T3DPlane; var Output: TFreeIntersectionData): boolean;
-    procedure InvertDirection;    // invert the direction of the controlpoints and knuckles
+    procedure InvertDirection; // invert the direction of the controlpoints and knuckles
     procedure LoadBinary(Source: TFreeFileBuffer); virtual;
     procedure Rebuild; override;
     procedure SaveBinary(Destination: TFreeFileBuffer); virtual;
-    procedure SaveToDXF(Strings: TStringList; Layername: string; SendMirror: boolean);
+    procedure SaveToDXF(Strings: TStringList; Layername: AnsiString; SendMirror: boolean);
     function SecondDerive(Parameter: TFloatType): T3DCoordinate;
     function Simplify(Criterium: TFloatType): boolean;
     // Remove points that do not contribute significantly to the shape
-
     // PointNo1, PointNo2 are points the Parameter is between
     function Value(Parameter: extended): T3DCoordinate; overload;
     function Value(Parameter: extended; var PointNo1, PointNo2: integer): T3DCoordinate; overload;
-
     property Capacity: integer read FCapacity write FSetCapacity;
     property CurvatureColor: TColor read FCurvatureColor write FCurvatureColor;
     property CurvatureScale: TFloatType read FCurvatureScale write FCurvatureScale;
@@ -872,8 +828,7 @@ type
     function GetControlPoint(Index: integer): TFreeSubdivisionControlPoint;
     function FGetSelected: boolean; override;
     function GetVisible: boolean;
-    procedure LastAveragePoint(PrevPoint, Point,
-      NextPoint: TFreeSubdivisionPoint);
+    procedure LastAveragePoint(PrevPoint,Point,NextPoint: TFreeSubdivisionPoint);
     procedure SetBuilt(Val: boolean);
     procedure FSetSelected(val: boolean); override;
     procedure SubdivideFreeStanding(level: integer);
@@ -900,24 +855,16 @@ type
     procedure ReplaceVertexPoint(Old, New: TFreeSubdivisionPoint);
     procedure SaveBinary(Destination: TFreeFileBuffer);
     procedure SaveToDXF(Strings: TStringList);
-    property Built: boolean
-      read FBuilt write SetBuilt;
-    property Color: TColor
-      read GetColor;
-    property Spline: TFreeSpline
-      read FSpline;
-    property SubdividedPoints: TFasterListTFreeSubdivisionPoint
-      read FSubdividedPoints;
-    property ControlPoints: TFasterListTFreeSubdivisionControlPoint
-      read FControlPoints;
-    property NumberOfControlPoints: integer
-      read GetNumberOfControlPoints;
-    property ControlPoint[index: integer]:
-      TFreeSubdivisionControlPoint read GetControlPoint;
+    property Built: boolean      read FBuilt write SetBuilt;
+    property Color: TColor       read GetColor;
+    property Spline: TFreeSpline read FSpline;
+    property SubdividedPoints: TFasterListTFreeSubdivisionPoint read FSubdividedPoints;
+    property ControlPoints: TFasterListTFreeSubdivisionControlPoint read FControlPoints;
+    property NumberOfControlPoints: integer read GetNumberOfControlPoints;
+    property ControlPoint[index: integer]: TFreeSubdivisionControlPoint read GetControlPoint;
     property Selected: boolean read FGetSelected write FSetSelected;
     // Property to see if this edge has been selected by the user
-    property Visible: boolean
-      read GetVisible write FVisible;
+    property Visible: boolean read GetVisible write FVisible;
   end;
 
   {--------------------------------------------------------}
@@ -1037,6 +984,7 @@ type
     procedure AddFace(Face: TFreeSubdivisionFace);
     function Averaging: T3DCoordinate;
     function LastAveraging: T3DCoordinate;
+//  function ReverseAveraging: T3DCoordinate;
     function CalculateVertexPoint:TFreeSubdivisionPoint;virtual;
     function CheckIntegrity: boolean;
     procedure Clear;
@@ -1610,6 +1558,7 @@ type
     procedure LoadVRMLFile(Filename: string);
     function PointExists(P: TFreeSubdivisionControlPoint): boolean;
     procedure Average;
+//  procedure ReverseAverage;
     procedure Rebuild; override;
     procedure SaveBinary(Destination: TFreeFileBuffer);
     procedure SaveToStream(Strings: TStringList);

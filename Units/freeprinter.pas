@@ -1,8 +1,7 @@
 unit FreePrinter;                    // ...недоразумение какое-то
-interface
-uses LResources,Printers;
-     procedure AssignPrn( var f:TextFile );
+interface uses Printers;
+procedure AssignPrn( var F:TextFile );
 implementation
-     procedure AssignPrn( var f:TextFile ); begin Assign( f,Printer.FileName ); end;
+procedure AssignPrn( var F:TextFile ); begin Assign( F,Printer.FileName ); end;
 end.
 

@@ -229,7 +229,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           MaxValue = 1000
           MinValue = 0.01
           TabOrder = 2
-          Value = 12
+          Value = 16
         end
         object Label4: TLabel
           Left = 10

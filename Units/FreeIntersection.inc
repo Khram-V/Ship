@@ -334,7 +334,7 @@ begin
         fiStation: DeltaA:=0.5 * (P2.Y+P1.Y) * (P2.Z-P1.Z);
         fiButtock: DeltaA:=0.5 * (P2.X+P1.X) * (P2.Z-P1.Z);
         fiWaterline: DeltaA:=0.5 * (P2.X+P1.X) * (P2.Y-P1.Y);
-//    else raise Exception.Create('Unknown intersection type!');
+//    else WriteLn('Unknown intersection type!');
       end;
       Area:=Area+DeltaA;
       P1:=P2;
@@ -719,33 +719,6 @@ begin
     for I:=1 to Count do
       self.Items[I-1].Simplify(2.0);
   Built:=True;
-end;
-
-procedure TFreeIntersection.SaveToDXF(Strings: TStringList);
-var
-  I: integer;
-  Layer: string;
-  Spline: TFreeSpline;
-begin
-  if not Built then Rebuild;
-  for I:=1 to Count do begin
-    Spline:=Items[I-1];
-    case IntersectionType of
-      fiStation: layer :='Stations ';
-      fiButtock: layer :='Buttocks ';
-      fiWaterline:layer:='Waterlines ';
-      fiDiagonal: layer:='Diagonals ';
-      else        Layer:='Layer_0';
-    end;
-    case FreeShip.Precision of
-      fpLow     : Spline.Fragments:=50;
-//    fpMedium  : Spline.Fragments:=100;
-      fpHigh    : Spline.Fragments:=150;
-      fpVeryHigh: Spline.Fragments:=500;
-      else        Spline.Fragments:=100;
-    end;
-    Spline.SaveToDXF( Strings,Layer,FreeShip.Visibility.ModelView=mvBoth );
-  end;
 end;
 
 procedure TFreeIntersection.SaveBinary(Destination: TFreeFileBuffer);

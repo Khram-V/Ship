@@ -1,5 +1,4 @@
 
-
 unit Free2DDXFExportDlg;
 
 {$IFDEF FPC}
@@ -9,19 +8,12 @@ unit Free2DDXFExportDlg;
 interface
 
 uses
-  SysUtils,
-  Classes,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
-  ExtCtrls,
-  Spin,
-  LazFileUtils,FreeShipUnit,FreeLanguageSupport;
-type
-
-  { TDXFExport2DDialog }
+  SysUtils,Forms,
+  Controls,Dialogs,
+  StdCtrls,Buttons,
+  ExtCtrls,Spin,
+  LazFileUtils, FreeLanguageSupport;
+type                                                     { TDXFExport2DDialog }
 
   TDXFExport2DDialog = class(TForm)
     cbCreateIndividualFiles: TCheckBox;
@@ -43,15 +35,15 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
-  private   { Private declarations }
+  private                                              { Private declarations }
     function FGetExportDirectory: string;
     procedure FSetExportDirectory(val: string);
     function FGetSegmentLength: double;
     procedure FSetSegmentLength(val: double);
     procedure FSetUnits;
-  public    { Public declarations }
-    function BrowseForFolder(
-      const browseTitle: PAnsiChar; initialFolder: string = ''): string;
+  public                                                { Public declarations }
+    function BrowseForFolder
+           ( const browseTitle: PAnsiChar; initialFolder: string = ''): string;
     function Execute: boolean;
     property ExportDirectory: string
       read FGetExportDirectory write FSetExportDirectory;
@@ -62,7 +54,6 @@ type
 var DXFExport2DDialog: TDXFExport2DDialog;
 
 implementation
-
   {$R *.lfm}
 
 var lg_StartFolder: string;
@@ -125,8 +116,7 @@ begin
   dlg:=TSelectDirectoryDialog.Create(Self);
   dlg.Title:=browseTitle;
   dlg.InitialDir:=initialFolder;
-  if dlg.Execute then Result:=dlg.FileName
-                 else Result:='';
+  if dlg.Execute then Result:=dlg.FileName else Result:='';
 end;
 
 function TDXFExport2DDialog.FGetExportDirectory: string;
@@ -153,12 +143,11 @@ begin
   Result:=ModalResult = mrOk;
 end;
 
-procedure TDXFExport2DDialog.SpeedButton1Click(Sender: TObject);
+procedure TDXFExport2DDialog.SpeedButton1Click( Sender: TObject );
 var Tmp: string;
 begin
   Tmp:=BrowseForFolder( 'Choose a directory where you want to save the dxf files to: ', ExportDirectory);
-  if DirectoryExistsUTF8(Tmp) { *Converted from DirectoryExists* }
-     then self.ExportDirectory:=Tmp;
+  if DirectoryExistsUTF8(Tmp) then self.ExportDirectory:=Tmp; { *Converted from DirectoryExists* }
 end;
 procedure TDXFExport2DDialog.BitBtn1Click(Sender: TObject);
     begin ModalResult:=mrOk; end;

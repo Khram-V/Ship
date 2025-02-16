@@ -213,10 +213,9 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsVRMLFiles, ['wrl', 'vrml']);
+  OpenDialog.Filter:=createDialogFilter(rsVRMLFiles, ['wrl','vrml']);
   Opendialog.Options:=[ofHideReadOnly];
-  if OpenDialog.Execute then
-  begin
+  if OpenDialog.Execute then begin
     Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
     PrevCursor:=Screen.Cursor;

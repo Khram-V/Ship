@@ -9,36 +9,18 @@ unit FreeExpanedPlatesDlg;
 interface
 
 uses
-{$IFnDEF FPC}
-  Windows,
-{$ELSE}
-  LCLIntf, LCLType,
-  PrintersDlgs,
-{$ENDIF}
-  //Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  ExtCtrls,
-  FreeTypes,
-  FreeGeometry,
-  StdCtrls,
-  ActnList,
-  ComCtrls,
-  FreeShipUnit,
-  Printers,
-  Math,
-  CheckLst, Spin,
-  FreeStringUtils, FreeLanguageSupport;
+  LCLIntf, PrintersDlgs,
+  SysUtils,Classes,
+  Graphics,Controls,
+  Forms,   Dialogs,
+  ExtCtrls,FreeTypes,
+  StdCtrls,FreeGeometry,
+  ActnList,ComCtrls,
+  Printers,Math,
+  CheckLst,Spin,
+  FreeShipUnit,FreeStringUtils,FreeLanguageSupport;
 
-type
-
-  { TFreeExpanedplatesDialog }
-
+type                                               { TFreeExpanedplatesDialog }
   TFreeExpanedplatesDialog = class(TForm)
     CheckBox1: TCheckBox;
     CloseDialog: TAction;
@@ -190,23 +172,14 @@ var
   FreeExpanedplatesDialog: TFreeExpanedplatesDialog;
 
 implementation
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-
-{$ELSE}
   {$R *.lfm}
-{$ENDIF}
 
 function GetGridSpacing(OveralSize: TFloatType): TFloatType;
-var
-  I: TFloatType;
-  Tmp: TFloatType;
+var I,Tmp: TFloatType;
 begin
   OveralSize:=Abs(OveralSize);
-  if OveralSize < 1e-6 then
-    OveralSize:=1e-6;
-  I:=Ln(OveralSize) / 2.30258;
+  if OveralSize < 1e-6 then  OveralSize:=1e-6;
+  I:=Ln( OveralSize ) / 2.30258;
   Tmp:=Power(10, round(I-1));
   while OveralSize / Tmp < 5 do Tmp:=Tmp / 2;
   while OveralSize / Tmp > 20 do Tmp:=Tmp * 2;
@@ -215,10 +188,9 @@ begin
 end;
 
 function TFreeExpanedplatesDialog.FGetActivePatch: TFreeDevelopedPatch;
-begin
-  Result:=nil;
-  if ListBox.ItemIndex <> -1 then
-    Result:=Listbox.Items.Objects[ListBox.ItemIndex] as TFreeDevelopedPatch;
+begin Result:=nil;
+      if ListBox.ItemIndex <> -1 then
+      Result:=Listbox.Items.Objects[ListBox.ItemIndex] as TFreeDevelopedPatch;
 end;
 
 procedure TFreeExpanedplatesDialog.FSetActivePatch(Val: TFreeDevelopedPatch);
@@ -250,8 +222,7 @@ begin
   RotateCW1.Enabled:=Val <> nil;
   RotateCW5.Enabled:=Val <> nil;
   RotateCW90.Enabled:=Val <> nil;
-  if Val = nil then
-  begin
+  if Val = nil then begin
     _Label2.Caption:='';
     _Label4.Caption:='';
     _Label6.Caption:='';
@@ -260,9 +231,7 @@ begin
     _Label18.Caption:='';
     FloatSpinEdit1.Value:=0;
     Checkbox1.Checked:=False;
-  end
-  else
-  begin
+  end else begin
     _Label2.Caption:=': '+FloatToStrF(Val.MinError, ffFixed, 7, 5);
     _Label4.Caption:=': '+FloatToStrF(Val.MaxError, ffFixed, 7, 5);
     _Label16.Caption:=': '+FloatToStrF(Val.MaxAreaError, ffFixed, 7, 6);
@@ -282,8 +251,7 @@ var
 begin
   ListBox.Items.BeginUpdate;
   ListBox.Clear;
-  for I:=1 to FPlates.Count do
-  begin
+  for I:=1 to FPlates.Count do begin
     Patch:=FPlates[I-1];
     Index:=ListBox.Items.AddObject(Patch.Name, Patch);
     ListBox.Checked[index]:=Patch.Visible;
@@ -298,13 +266,10 @@ var
   I, N: integer;
   Patch: TFreeDevelopedPatch;
 begin
-  if FPlates <> nil then begin
-    N:=1;
-    for I:=1 to FPlates.Count do begin
-      Patch:=FPlates[I-1];
-      if Patch.Visible then begin
-        Patch.Extents(FMin, FMax);
-        if N = 1 then begin // this is the first visible patch
+  if FPlates <> nil then begin N:=1;
+    for I:=1 to FPlates.Count do begin Patch:=FPlates[I-1];
+      if Patch.Visible then begin Patch.Extents( FMin,FMax );
+        if N = 1 then begin                  // this is the first visible patch
           Min:=FMin;
           Max:=FMax;
         end;
@@ -706,7 +671,7 @@ var
   Strings: TStringList;
   Patch: TFreeDevelopedPatch;
   SaveDialog: TSaveDialog;
-  Str: string;
+  Str: AnsiString;
 begin
   SaveDialog:=TSaveDialog.Create(Owner);
   SaveDialog.InitialDir:=FFreeship.Preferences.ExportDirectory;

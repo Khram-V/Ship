@@ -1,27 +1,19 @@
 unit TileDialog;
-
 {$mode objfpc}{$H+}
-
 interface
-
 uses
-{$IFDEF LCLGTK2}
-  Gtk2,
-{$ENDIF}
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, ActnList, Menus;
-
+  Classes,Forms,Controls,Graphics,ExtCtrls,
+  Buttons,StdCtrls,ActnList,Menus;
 type
-
   TTile = class(TPanel)
   private
     FImage: TImage;
     FLabel: TLabel;
-    FFileName:string;
+    FFileName:AnsiString;
   public
     constructor Create(TheOwner: TComponent); override;
   published
-    property FileName:string read FFileName write FFileName;
+    property FileName:AnsiString read FFileName write FFileName;
     property Image: TImage read FImage write FImage;
     property CaptionLabel: TLabel read FLabel write FLabel;
   end;
@@ -55,17 +47,17 @@ type
     FFileList: TStringList;
     FTileWidth: integer;
     FTileHeight: integer;
-    FSelectedFileName: string;
+    FSelectedFileName: AnsiString;
     FSelectedTile: TTile;
   protected
     procedure SetCursor(Value: TCursor); override;
   public
     constructor Create(AOwner: TComponent); override;
     procedure setTileSize(aWidth, aHeight: integer);
-    procedure addTile(aPicture:TPicture; aCaption:string; aFileName:string);
-    property FileName:string read FSelectedFileName;
+    procedure addTile(aPicture:TPicture; aCaption: AnsiString; aFileName:AnsiString);
+    property FileName:AnsiString read FSelectedFileName;
     property FileList:TStringList read FFileList write FFileList;
-    //procedure add(aFileName:string);
+    //procedure add(aFileName:AnsiString);
   end;
 
 var
@@ -137,7 +129,7 @@ procedure TTileDialog.setTileSize( aWidth,aHeight: integer );
    FTileHeight:=aHeight;
  end;
 
-procedure TTileDialog.addTile( aPicture: TPicture; aCaption,aFileName:string );
+procedure TTileDialog.addTile( aPicture: TPicture; aCaption,aFileName:AnsiString );
  var vtile:TTile; fpc:TFlowPanelControl; i:integer;
  begin
    vtile:=TTile.Create(Self);

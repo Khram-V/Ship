@@ -641,7 +641,7 @@ begin
               Index:=Points.IndexOf(P2);
               if Index = -1 then Points.Add(P2);
             end;
-//          else raise Exception.Create(Userstring(85));
+//          else WriteLn(Userstring(85));
           end;
           if Points.Count > 2 then begin
             NewFace:=Face.Surface.AddControlFace(Points, False);
@@ -846,16 +846,14 @@ end;
 
 procedure TFreeEdit.Face_Scale;
 var
-  I: integer;
-  Nlocked: integer;
+  I,Nlocked: integer;
   Points: TFasterListTFreeSubdivisionControlPoint;
   PrevCursor: TCursor;
   SelectDlg: TFreeSelectLayersDialog;
   Point: TFreeSubdivisionControlPoint;
-  Proceed: boolean;
+  Proceed,Markers: boolean;
   Dialog: TFreeRotateDialog;
   Scale, NewP: T3DCoordinate;
-  Markers: boolean;
 begin
   Points:=TFasterListTFreeSubdivisionControlPoint.Create;
   if FreeShip.ActiveControlPoint <> nil then
@@ -892,11 +890,11 @@ begin
 //      try
           Scale.X:=Dialog.XValue;
           Scale.Y:=Dialog.YValue;
-          Scale.Z:=Dialog.ZValue;
-          if Points.Count = FreeShip.Surface.NumberOfControlPoints then begin // Scale the entire model
+          Scale.Z:=Dialog.ZValue;                     // Scale the entire model
+          if Points.Count = FreeShip.Surface.NumberOfControlPoints then begin
             Markers:=FreeShip.AdjustMarkers;
-            Model_Scale(Scale, False, Markers);
-          end else begin                                // only a selected part of the model must be scaled
+            Model_Scale( Scale,False,Markers );
+          end else begin    // only a selected part of the model must be scaled
             for I:=1 to Points.Count do begin
               Point:=Points[I-1];
               if not Point.Locked then begin
@@ -2438,29 +2436,24 @@ var
 begin
   for I:=1 to FreeShip.Surface.NumberOfControlPoints do begin
     Point:=FreeShip.Surface.ControlPoint[I-1];
-    if (not Point.Locked) or (OverrideLock) then begin
-      P:=Point.Coordinate;
+    if (not Point.Locked) or (OverrideLock) then begin P:=Point.Coordinate;
       P.X:=P.X * ScaleVector.X;
       P.Y:=P.Y * ScaleVector.Y;
       P.Z:=P.Z * ScaleVector.Z;
       if Point.Locked then begin Point.Locked:=False;
-//    try
         Point.Coordinate:=P;
-//    finally
         Point.Locked:=True;
-//    end;
       end else Point.Coordinate:=P;
     end;
-  end;
-  // Update Mainparticulars
+  end;                                                // Update Mainparticulars
   FreeShip.ProjectSettings.ProjectLength:=abs(FreeShip.ProjectSettings.ProjectLength * Scalevector.X);
   FreeShip.ProjectSettings.ProjectBeam:=abs(FreeShip.ProjectSettings.ProjectBeam * Scalevector.Y);
   FreeShip.ProjectSettings.ProjectDraft:=abs(FreeShip.ProjectSettings.ProjectDraft * Scalevector.Z);
   if not FreeShip.ProjectSettings.FUseDefaultSplitSectionLocation then
-    FreeShip.ProjectSettings.ProjectSplitSectionLocation:=abs(FreeShip.ProjectSettings.ProjectSplitSectionLocation * ScaleVector.X);
+   FreeShip.ProjectSettings.ProjectSplitSectionLocation
+   :=abs( FreeShip.ProjectSettings.ProjectSplitSectionLocation*ScaleVector.X );
 
-  // Update markers
-  if AdjustMarkers then
+  if AdjustMarkers then                                       // Update markers
     for I:=0 to FreeShip.NumberOfMarkers-1 do begin Marker:=FreeShip.Marker[I];
       for j:=0 to Marker.NumberOfPoints-1 do begin P:=Marker.Point[J];
         P.X:=P.X*Scalevector.X;
@@ -2481,19 +2474,24 @@ begin
 
   Freeship.InvalidateIntersections;
 
-  // Refresh controlpoint data
-  FreeShip.ActiveControlPoint:=FreeShip.ActiveControlPoint;
-  // Reset any present hydrostatic calculations
+  for I:=0 to Freeship.NumberOfFlowlines-1 do with Freeship.Flowline[I] do begin
+    FProjectionPoint.X := FProjectionPoint.X*Scalevector.X;
+    FProjectionPoint.Y := FProjectionPoint.Y*Scalevector.Z;
+    for J:=0 to FFlowline.NumberOfPoints-1 do begin
+      P:=FFlowline.Point[J]; P.X:=P.X*Scalevector.X;
+                             P.Y:=P.Y*Scalevector.Y;
+                             P.Z:=P.Z*Scalevector.Z; FFlowline.Point[J]:=P;
+    end;
+  end;                                             // Refresh controlpoint data
+  FreeShip.ActiveControlPoint:=FreeShip.ActiveControlPoint; // Reset any present hydrostatic calculations
   for I:=1 to FreeShip.NumberOfHydrostaticCalculations do begin
     FreeShip.HydrostaticCalculation[I-1].Draft:=abs(FreeShip.HydrostaticCalculation[I-1].Draft * ScaleVector.Z);
     FreeShip.HydrostaticCalculation[I-1].Trim:=FreeShip.HydrostaticCalculation[I-1].Trim * ScaleVector.Z;
     FreeShip.HydrostaticCalculation[I-1].Calculated:=False;
-  end;
-
-  // Initialize all other data
-  FreeShip.Built:=False;                                           // Redraw
+  end;                                             // Initialize all other data
+  FreeShip.Built:=False;                                              // Redraw
   FreeShip.FileChanged:=True;
-  FreeShip.Draw;
+  FreeShip.ReDraw;
 end;
 
 // Merge two selected edges by removing their common controlpoint.
@@ -2519,8 +2517,7 @@ begin
       Inc(N);
     end;
   end;
-  if N > 0 then begin
-    vUndo.Accept;
+  if N > 0 then begin vUndo.Accept;
     FreeShip.Built:=False;
     Freeship.RebuildModel;
     FreeShip.FileChanged:=True;
@@ -2540,21 +2537,16 @@ begin
   vUndo:=CreateUndoObject(Userstring(161), False);
   for I:=FreeShip.Surface.NumberOfControlPoints downto 1 do begin
     Point:=FreeShip.Surface.ControlPoint[I-1];
-    if Point.NumberOfFaces = 0 then begin
-      Point.Delete;
-      Inc(N);
-    end;
+    if Point.NumberOfFaces = 0 then begin Point.Delete; Inc(N); end;
   end;
   if N > 0 then begin
     vUndo.Accept;
     FreeShip.Built:=False;
     Freeship.RebuildModel;
     FreeShip.FileChanged:=True;
-    if Assigned(FreeShip.OnUpdateGeometryInfo) then
-      FreeShip.OnUpdateGeometryInfo(self);
-    MessageDlg(IntToStr(N)+#32+Userstring(162), mtInformation, [mbOK], 0);
-  end
-  else vUndo.Delete;
+    if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
+    MessageDlg( IntToStr(N)+#32+Userstring(162),mtInformation,[mbOK],0 );
+  end else vUndo.Delete;
 end;
 
 // Finds all intersection of VISIBLE edges and a 3D plane, and inserts a point on each of these edges
@@ -2581,8 +2573,7 @@ begin
       Freeship.RebuildModel;
       if Assigned(FreeShip.OnUpdateGeometryInfo) then
         FreeShip.OnUpdateGeometryInfo(self);
-    end
-    else vUndo.Delete; // nothis has been changed
+    end else vUndo.Delete;                           // nothis has been changed
   end;
   FreeAndNil(Dialog);
 end;
@@ -2597,35 +2588,29 @@ var
 begin
   Layers:=TFasterListTFreeSubdivisionLayer.Create;
   for I:=1 to FreeShip.NumberOfLayers do
-    if FreeShip.Layer[I-1].Count > 0 then
-      Layers.Add(FreeShip.Layer[I-1]);
-  if Layers.Count > 1 then
-  begin
+    if FreeShip.Layer[I-1].Count > 0 then Layers.Add(FreeShip.Layer[I-1]);
+  if Layers.Count > 1 then begin
     Dialog:=TFreeIntersectLayerDialog.Create(FreeShip);
     ShowTranslatedValues(Dialog);
     if Dialog.Execute(Layers) then
-      if assigned(Dialog.Layer1) and assigned(Dialog.Layer2) then
-      begin
-        vUndo:=CreateUndoObject(Userstring(164), False);
-        if Dialog.Layer1.CalculateIntersectionPoints(Dialog.Layer2) then
-        begin
-          vUndo.Accept;
-          FreeShip.FileChanged:=True;
-          FreeShip.Built:=False;
-          Freeship.RebuildModel;
-          if Assigned(FreeShip.OnUpdateGeometryInfo) then
-            FreeShip.OnUpdateGeometryInfo(self);
-        end
-        else
-        begin
-          vUndo.Delete;
-          MessageDlg(Userstring(165), mtInformation, [mbOK], 0);
-        end;
+    if assigned(Dialog.Layer1) and assigned(Dialog.Layer2) then
+    begin
+      vUndo:=CreateUndoObject(Userstring(164), False);
+      if Dialog.Layer1.CalculateIntersectionPoints(Dialog.Layer2) then begin
+         vUndo.Accept;
+         FreeShip.FileChanged:=True;
+         FreeShip.Built:=False;
+         Freeship.RebuildModel;
+         if Assigned(FreeShip.OnUpdateGeometryInfo) then
+           FreeShip.OnUpdateGeometryInfo(self);
+      end else begin
+         vUndo.Delete;
+         MessageDlg( Userstring(165),mtInformation,[mbOK],0 );
       end;
+    end;
     FreeAndNil(Dialog);
   end
-  else
-    MessageDlg(Userstring(166), mtError, [mbOK], 0);
+  else MessageDlg(Userstring(166), mtError, [mbOK], 0);
   FreeAndNil(Layers);
 end;
 
@@ -2647,11 +2632,9 @@ end;
 
 // Unlocks all selected locked points
 procedure TFreeEdit.Point_Unlock;
-var
-  I: integer;
+var I: integer;
 begin
-  if FreeShip.NumberOfSelectedLockedPoints > 0 then
-  begin
+  if FreeShip.NumberOfSelectedLockedPoints > 0 then begin
     self.CreateUndoObject(Userstring(168), True);
     for I:=1 to FreeShip.NumberOfSelectedControlPoints do
       FreeShip.SelectedControlPoint[I-1].Locked:=False;
@@ -2663,11 +2646,9 @@ end;
 
 // Unlocks all locked points
 procedure TFreeEdit.Point_UnlockAll;
-var
-  I, N: integer;
+var I,N: integer;
 begin
-  if FreeShip.NumberOfLockedPoints > 0 then
-  begin
+  if FreeShip.NumberOfLockedPoints > 0 then begin
     CreateUndoObject(Userstring(169), True);
     N:=FreeShip.NumberOfLockedPoints;
     for I:=1 to FreeShip.Surface.NumberOfControlPoints do
@@ -2683,10 +2664,8 @@ end;
 function TFreeEdit.ProceedWhenLockedPoints: boolean;
 begin
   if FreeShip.NumberOfLockedPoints > 0 then
-    Result:=MessageDlg(Userstring(86)+EOL+Userstring(87),
-      mtWarning, [mbYes, mbNo], 0) = mrYes
-  else
-    Result:=True;
+    Result:=MessageDlg(Userstring(86)+EOL+Userstring(87),mtWarning,[mbYes,mbNo],0)=mrYes
+  else Result:=True;
 end;
 
 // Add a new point to the model with no edges/faces attached
@@ -2700,8 +2679,7 @@ begin
   FreeShip.Surface.Selection_Add(Result);
   FreeShip.FileChanged:=True;
   Freeship.ReDraw; // we do not rebuild model because no impact on subdivision yet
-  if Assigned(FreeShip.OnUpdateGeometryInfo) then
-    FreeShip.OnUpdateGeometryInfo(self);
+  if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
 end;
 
 // Add a new point with XYZ to the model with no edges/faces attached
@@ -2729,37 +2707,25 @@ var
   P: T3DCoordinate;
   vUndo: TFreeUndoObject;
 begin
-  if FreeShip.NumberOfSelectedControlPoints > 1 then
-  begin
+  if FreeShip.NumberOfSelectedControlPoints > 1 then begin
     NLocked:=0;
     for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do
-      if FreeShip.SelectedControlPoint[I].Locked then
-        Inc(NLocked);
+      if FreeShip.SelectedControlPoint[I].Locked then Inc(NLocked);
     // Number of lovked points must be smaller then NumberOfSelectedControlPoints-2
     if NLocked < FreeShip.NumberOfSelectedControlPoints-1 then begin
       P1:=FreeShip.SelectedControlPoint[0];
       vUndo:=CreateUndoObject(rsPointAnchorConstraintChanged, False);
       NChanged:=0;
-      for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do
-      begin
+      for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do begin
         Point:=FreeShip.SelectedControlPoint[I];
-        if not Point.Locked then
-        begin
-          Point.AnchorPoint:=P1;
-          Inc(NChanged);
-        end;
+        if not Point.Locked then begin Point.AnchorPoint:=P1; Inc(NChanged); end;
       end;
-      if NChanged > 0 then
-      begin
+      if NChanged > 0 then begin
         vUndo.Accept;
         FreeShip.FileChanged:=True;
         Freeship.RebuildModel;
-      end
-      else
-        vUndo.Delete;
-    end
-    else
-      MessageDlg(Userstring(172)+'.', mtError, [mbOK], 0);
+      end else vUndo.Delete;
+    end else MessageDlg( Userstring(172)+'.',mtError,[mbOK],0 );
   end;
 end;
 
@@ -2774,64 +2740,49 @@ var
   P: T3DCoordinate;
   vUndo: TFreeUndoObject;
 begin
-  if FreeShip.NumberOfSelectedControlPoints > 1 then
-  begin
+  if FreeShip.NumberOfSelectedControlPoints>1 then begin
     NLocked:=0;
     // Determine if the number of points to be moved does not conatin locked
     // or hard anchored controlpoints.
     // However the first and last points (determining the linesegment) are
     // allowed to be locked or hard anchored
     NLocked:=0;
-    for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do
-      begin
+    for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do begin
       Point:=FreeShip.SelectedControlPoint[I];
-      if Point.Locked or ((Point.AnchorPoint<>nil) and Point.IsAnchorHard)
-        then
-        Inc(NLocked);
-      end;
+      if Point.Locked or ((Point.AnchorPoint<>nil)
+      and Point.IsAnchorHard) then Inc(NLocked);
+    end;
     // Number of locked or hard anchored points must be smaller then NumberOfSelectedControlPoints-2
-    if NLocked < FreeShip.NumberOfSelectedControlPoints-1 then
-    begin
+    if NLocked < FreeShip.NumberOfSelectedControlPoints-1 then begin
       P1:=FreeShip.SelectedControlPoint[0];
       vUndo:=CreateUndoObject(rsPointAnchorConstraintChanged, False);
       NChanged:=0;
-      for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do
-      begin
+      for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do begin
         Point:=FreeShip.SelectedControlPoint[I];
         if not Point.Locked
-          and not((Point.AnchorPoint<>nil) and Point.IsAnchorHard) then
-        begin
+        and not((Point.AnchorPoint<>nil) and Point.IsAnchorHard) then begin
           Point.Coordinate:=P1.Coordinate;
           Inc(NChanged);
         end;
       end;
-      if NChanged > 0 then
-      begin
-        vUndo.Accept;
+      if NChanged > 0 then begin vUndo.Accept;
         FreeShip.FileChanged:=True;
         Freeship.RebuildModel;
-      end
-      else
-        vUndo.Delete;
-    end
-    else
-      MessageDlg(Userstring(172)+'.', mtError, [mbOK], 0);
+      end else vUndo.Delete;
+    end else MessageDlg( Userstring(172)+'.',mtError,[mbOK],0 );
   end;
 end;
 
 // Project all selected points onto a straight line through the first and last selected points
 procedure TFreeEdit.Point_ProjectStraightLine;
 var
-  I: integer;
-  NLocked: integer;
-  NChanged: integer;
+  I,NLocked,NChanged: integer;
   Point: TFreeSubdivisionControlPoint;
   P1, P2: TFreeSubdivisionControlPoint;
   P: T3DCoordinate;
   vUndo: TFreeUndoObject;
 begin
-  if FreeShip.NumberOfSelectedControlPoints > 2 then
-  begin
+  if FreeShip.NumberOfSelectedControlPoints > 2 then begin
     // Determine if the number of points to be moved does not conatin locked
     // or hard anchored controlpoints.
     // However the first and last points (determining the linesegment) are
@@ -2851,7 +2802,7 @@ begin
       for I:=2 to FreeShip.NumberOfSelectedControlPoints-1 do begin
         Point:=FreeShip.SelectedControlPoint[I-1];
         if not Point.Locked
-          and not((Point.AnchorPoint<>nil) and Point.IsAnchorHard) then begin
+        and not((Point.AnchorPoint<>nil) and Point.IsAnchorHard) then begin
           P:=ProjectPointOnline(Point.Coordinate, P1.Coordinate, P2.Coordinate);
           if DistPP3D(P, Point.Coordinate) > 1e-7 then begin
             Point.Coordinate:=P;
@@ -2864,9 +2815,7 @@ begin
         FreeShip.FileChanged:=True;
         Freeship.RebuildModel;
       end else vUndo.Delete;
-    end
-    else
-      MessageDlg(Userstring(172)+'.', mtError, [mbOK], 0);
+    end else MessageDlg( Userstring(172)+'.',mtError,[mbOK],0 );
   end;
 end;
 
@@ -2881,16 +2830,14 @@ var
   P: T3DCoordinate;
   vUndo: TFreeUndoObject;
 begin
-  if FreeShip.NumberOfSelectedControlPoints > 2 then
-  begin
+  if FreeShip.NumberOfSelectedControlPoints > 2 then begin
     // Determine if the number of points to be moved does not conatin locked controlpoints only
     // however the first and last points (determining the linesegment) are allowed to be locked
     NLocked:=0;
     for I:=2 to FreeShip.NumberOfSelectedControlPoints-1 do
       if FreeShip.SelectedControlPoint[I-1].Locked then Inc(NLocked);
     // Number of lovked points must be smaller then NumberOfSelectedControlPoints-2
-    if NLocked < FreeShip.NumberOfSelectedControlPoints-2 then
-    begin
+    if NLocked < FreeShip.NumberOfSelectedControlPoints-2 then begin
       P1:=FreeShip.SelectedControlPoint[0];
       P2:=FreeShip.SelectedControlPoint[FreeShip.NumberOfSelectedControlPoints-1];
       vUndo:=CreateUndoObject(rsPointLinearConstraintChanged, False);
@@ -2903,8 +2850,7 @@ begin
           Inc(NChanged);
         end;
       end;
-      if NChanged > 0 then begin
-        vUndo.Accept;
+      if NChanged > 0 then begin vUndo.Accept;
         FreeShip.FileChanged:=True;
         Freeship.RebuildModel;
       end else vUndo.Delete;
@@ -2951,8 +2897,8 @@ begin
     +FreeShip.NumberOfSelectedControlFaces
     +FreeShip.NumberOfSelectedControlCurves
     +FreeShip.NumberOfselectedMarkers
-    +FreeShip.NumberOfselectedFlowlines;                                      // if MessageDlg(Userstring(173)+#32+IntToStr(N)+#32+Userstring( 174)+'?', mtWarning, [mbYes, mbNo], 0) = mrYes then
-
+    +FreeShip.NumberOfselectedFlowlines;
+           // if MessageDlg(Userstring(173)+#32+IntToStr(N)+#32+Userstring(174)+'?',mtWarning,[mbYes,mbNo],0)=mrYes then
    if (MR = mrAbort) and (N > 0) then begin
       CreateUndoObject( Userstring(175),True );
       for I:=FreeShip.NumberOfselectedFlowlines downto 1
@@ -2962,13 +2908,10 @@ begin
       FreeShip.Surface.Selection_Delete;
       FreeShip.ActiveControlPoint:=nil;
       FreeShip.FileChanged:=True;
-      FreeShip.Built:=False;
-
-   // Freeship.ReDraw;
+      FreeShip.Built:=False;                                // Freeship.ReDraw;
       if Assigned(FreeShip.OnUpdateGeometryInfo) then
          FreeShip.OnUpdateGeometryInfo(self);
    end;
-
 end;
 
 // Select all visible items
@@ -3014,8 +2957,7 @@ end;
 
 
 procedure TFreeEdit.Selection_SelectLeakPoints;
-var
-  I: integer;
+var I: integer;
 begin
   for I:=0 to FreeShip.Surface.NumberOfControlPoints-1 do
     FreeShip.Surface.ControlPoint[I].Selected:=FreeShip.Surface.ControlPoint[I].IsLeak;
@@ -3029,27 +2971,21 @@ var
 begin
   if FreeShip.FUndoObjects.Count > 0 then begin
     Preview:=FreeShip.ProjectSettings.SavePreview;
-//  try
-      if FreeShip.FUndoPosition = FreeShip.UndoCount then
-        if FreeShip.UndoObject[FreeShip.UndoCount-1].FIsTempRedoObject then
-        //??
-        else CreateRedoObject;
-      if FreeShip.FPreviousUndoPosition < FreeShip.FUndoPosition then
-        Dec(FreeShip.FUndoPosition);
-      FreeShip.FPreviousUndoPosition:=FreeShip.FUndoPosition;
+    if FreeShip.FUndoPosition = FreeShip.UndoCount then
+      if FreeShip.UndoObject[FreeShip.UndoCount-1].FIsTempRedoObject then //??
+      else CreateRedoObject;
+    if FreeShip.FPreviousUndoPosition < FreeShip.FUndoPosition then
       Dec(FreeShip.FUndoPosition);
-      UndoObject:=FreeShip.FUndoObjects[FreeShip.FUndoPosition];
-      UndoObject.Restore;
-//  finally
-      FreeShip.ProjectSettings.SavePreview:=Preview;
-//  end;
+    FreeShip.FPreviousUndoPosition:=FreeShip.FUndoPosition;
+    Dec(FreeShip.FUndoPosition);
+    UndoObject:=FreeShip.FUndoObjects[FreeShip.FUndoPosition];
+    UndoObject.Restore;
+    FreeShip.ProjectSettings.SavePreview:=Preview;
   end;
 end;
 
 // Clear the undo history
-procedure TFreeEdit.Undo_Clear;
-begin  FreeShip.ClearUndo;
-end;
+procedure TFreeEdit.Undo_Clear; begin  FreeShip.ClearUndo; end;
 
 // Show the undo history
 procedure TFreeEdit.Undo_ShowHistory;
@@ -3068,7 +3004,6 @@ begin
       vRedo:=CreateRedoObject;
       Dec(FreeShip.FUndoPosition);
     end;
-
   if Dialog.Execute(FreeShip) then begin
     if Dialog.UndoBox.ItemIndex <> -1 then begin
       vUndo:=Dialog.UndoBox.Items.Objects[Dialog.UndoBox.ItemIndex] as

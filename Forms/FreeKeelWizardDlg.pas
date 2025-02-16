@@ -750,8 +750,8 @@ type
     Panel8: TPanel;
     Panel9: TPanel;
     PopupMenu1: TPopupMenu;
-    ScrollBar1: TScrollBar;
-    ScrollBar2: TScrollBar;
+//    ScrollBar1: TScrollBar;
+//    ScrollBar2: TScrollBar;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
     TrackBar2: TTrackBar;
@@ -1628,9 +1628,9 @@ begin
     Color:=clGray; //FFreeship.Preferences.ViewportColor;
     DoubleBuffer:=True;
     Elevation:=20;
-    HorScrollbar:=ScrollBar1;
+//    HorScrollbar:=ScrollBar1;
+//    VertScrollbar:=ScrollBar2;
     Margin:=0;
-    VertScrollbar:=ScrollBar2;
     ViewType:=fvPerspective;
     ViewportMode:=vmWireFrame;
     OnMouseDown:=ViewportMouseDown;
