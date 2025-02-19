@@ -1,67 +1,39 @@
 
 unit FreeNewModelDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
+{$MODE Delphi}
 
 interface
-
 uses
-{$IFnDEF FPC}
-  Windows,
-{$ELSE}
-  LCLIntf,
-{$ENDIF}
-  SysUtils,
-  Forms,
-  Controls,
-  StdCtrls,
-  Buttons,
-  ExtCtrls, Spin, FreeLanguageSupport;
-
-type TFreeNewModelDialog = class(TForm)
-    FloatSpinEdit1: TFloatSpinEdit;
-    FloatSpinEdit2: TFloatSpinEdit;
-    FloatSpinEdit3: TFloatSpinEdit;
-    Panel2: TPanel;
-    Panel3: TPanel;
-    BitBtn1: TSpeedButton;
-    BitBtn2: TSpeedButton;
-    Panel1: TPanel;
-    Label1,Label2,Label3,Label4,Label5,Label6: TLabel;
+    Controls, Forms,
+    StdCtrls, Buttons,
+    ExtCtrls, Spin, FreeLanguageSupport;
+type TFreeNewModelDialog = class( TForm )
     ComboBox1: TComboBox;
-    Panel4: TPanel;
-    Panel5: TPanel;
-    SpinEdit1: TSpinEdit;
-    SpinEdit2: TSpinEdit;
-    procedure BitBtn1Click(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
+    FloatSpinEdit1,FloatSpinEdit2,FloatSpinEdit3: TFloatSpinEdit;
+    Label1,Label2,Label3,Label4,Label5,Label6: TLabel;
+    Panel2,Panel3,Panel1,Panel4,Panel5: TPanel;
+    SpinEdit1,SpinEdit2: TSpinEdit;
+    BitBtn1,BitBtn2: TSpeedButton;
+    procedure BitBtn1Click( Sender: TObject );
+    procedure BitBtn2Click( Sender: TObject );
   private
-    function FGetBreadth: single;
-    function FGetDraft: single;
-    function FGetLength: single;
-    function FGetNCols: integer;
-    function FGetNRows: integer;
-    procedure FSetBreadth(Val: single);
-    procedure FSetDraft(Val: single);
-    procedure FSetLength(Val: single);
-    procedure FSetNCols(Val: integer);
-    procedure FSetNRows(Val: integer);
+    function FGetBreadth: single;     procedure FSetBreadth(Val: single);
+    function FGetDraft: single;       procedure FSetDraft(Val: single);
+    function FGetLength: single;      procedure FSetLength(Val: single);
+    function FGetNCols: integer;      procedure FSetNCols(Val: integer);
+    function FGetNRows: integer;      procedure FSetNRows(Val: integer);
   public
-    function Execute: boolean;
     property Breadth:single read FGetBreadth write FSetBreadth;
     property Draft:  single read FGetDraft write FSetDraft;
     property Length: single read FGetLength write FSetLength;
     property NCols: integer read FGetNCols write FSetNCols;
     property NRows: integer read FGetNRows write FSetNRows;
+    function Execute: boolean;
   end;
 
-var
-  FreeNewModelDialog: TFreeNewModelDialog;
+var FreeNewModelDialog: TFreeNewModelDialog;
 
 implementation
-
 {$R *.lfm}
 
 function TFreeNewModelDialog.FGetLength: single;

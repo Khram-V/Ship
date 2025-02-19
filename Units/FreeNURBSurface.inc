@@ -41,11 +41,11 @@ var
   I, L: integer;
   No: integer;
 begin
-  if FColDegree > FColCount-1 then
-    FColDegree:=FColCount-1;
-  L:=FColCount+FColDegree+1;
+  if FColDegree > ColCount-1 then
+    FColDegree:=ColCount-1;
+  L:=ColCount+FColDegree+1;
   Setlength(FColKnots, L);
-  No:=(FColCount+FColDegree+1)-2 * FColDegree;
+  No:=(ColCount+FColDegree+1)-2 * FColDegree;
   for I:=1 to FColDegree do
     FColKnots[I-1]:=0.0;
   for I:=1 to No do
@@ -66,11 +66,10 @@ var
   I, L: integer;
   No: integer;
 begin
-  if FRowDegree > FRowCount-1 then
-    FRowDegree:=FRowCount-1;
-  L:=FRowCount+FRowDegree+1;
+  if FRowDegree > RowCount-1 then FRowDegree:=RowCount-1;
+  L:=RowCount+FRowDegree+1;
   Setlength(FRowKnots, L);
-  No:=(FRowCount+FRowDegree+1)-2 * FRowDegree;
+  No:=(RowCount+FRowDegree+1)-2 * FRowDegree;
   for I:=1 to FRowDegree do
     FRowKnots[I-1]:=0.0;
   for I:=1 to No do
@@ -90,9 +89,9 @@ procedure TFreeNURBSurface.SetUniformColKnotvector;
 var
   I, L: integer;
 begin
-  if FColDegree > FColCount-1 then
-    FColDegree:=FColCount-1;
-  L:=FColCount+FColDegree+1;
+  if FColDegree > ColCount-1 then
+    FColDegree:=ColCount-1;
+  L:=ColCount+FColDegree+1;
   Setlength(FColKnots, L);
   for I:=1 to L do
   begin
@@ -109,9 +108,8 @@ procedure TFreeNURBSurface.SetUniformRowKnotvector;
 var
   I, L: integer;
 begin
-  if FRowDegree > FRowCount-1 then
-    FRowDegree:=FRowCount-1;
-  L:=FRowCount+FRowDegree+1;
+  if FRowDegree > RowCount-1 then FRowDegree:=RowCount-1;
+  L:=RowCount+FRowDegree+1;
   Setlength(FRowKnots, L);
   for I:=1 to L do
   begin
@@ -155,8 +153,8 @@ begin
   Built:=False;
   inherited Clear;
   SetCapacity(0, 0);
-  FColCount:=0;
-  FRowCount:=0;
+  ColCount:=0;
+  RowCount:=0;
   FColDegree:=3;
   FRowDegree:=3;
   Setlength(FColKnots, 0);
@@ -167,12 +165,11 @@ procedure TFreeNURBSurface.DeleteColumn(Col: integer);
 var
   I: integer;
 begin
-  for I:=1 to Rowcount do
-  begin
+  for I:=1 to Rowcount do begin
     Move(FControlpoints[I-1][Col+1], FControlpoints[I-1][Col],
       (Colcount-Col-1) * SizeOf(T3DCoordinate));
   end;
-  Dec(FColCount);
+  Dec(ColCount);
   Built:=False;
 end;
 
@@ -182,7 +179,7 @@ var
 begin
   for I:=Row+1 to Rowcount-1 do
     Move(FControlpoints[I][0], FControlpoints[I-1][0], (Colcount) * SizeOf(T3DCoordinate));
-  Dec(FRowCount);
+  Dec(RowCount);
   Built:=False;
 end;
 
@@ -211,7 +208,7 @@ begin
   if Index <> -1 then
   begin
     I:=index;
-    N:=FColcount;
+    N:=Colcount;
     ;
     k:=FColdegree+1;
     Setlength(Alpha, N+1);
@@ -260,17 +257,17 @@ begin
     for I:=1 to Rowcount do
     begin
       I1:=I-1;
-      setlength(FControlpoints[I1], FColcount+1);
+      setlength(FControlpoints[I1],Colcount+1);
       Move(Newpoints[I1][0], FControlpoints[I1][0],
-        (FColcount+1) * SizeOf(T3DCoordinate));
+        (Colcount+1) * SizeOf(T3DCoordinate));
     end;
     // create new knotvector
     X:=length(FColknots);
     Setlength(FColknots, X+1);
     Move(FColknots[index], FColknots[index+1], (X-Index) * SizeOf(TFloatType));
     FColknots[index+1]:=U;
-    FColCapacity:=FColcount;
-    Inc(FColcount);
+    FColCapacity:=Colcount;
+    Inc(Colcount);
   end;
 end;
 
@@ -300,7 +297,7 @@ begin
   if Index <> -1 then
   begin
     I:=index;
-    N:=FRowcount;
+    N:=Rowcount;
     k:=FRowdegree+1;
     Setlength(Alpha, N+1);
     Setlength(Newpoints, RowCount+1);
@@ -347,16 +344,16 @@ begin
     Setlength(FControlpoints, Rowcount+1);
     for I:=0 to Rowcount do
     begin
-      setlength(FControlpoints[I], FColcount);
-      Move(Newpoints[I][0], FControlpoints[I][0], (FColcount) * SizeOf(T3DCoordinate));
+      setlength(FControlpoints[I],Colcount);
+      Move(Newpoints[I][0], FControlpoints[I][0], (Colcount) * SizeOf(T3DCoordinate));
     end;
     // create the new new knotvector
     X:=length(FRowknots);
     Setlength(FRowknots, X+1);
     Move(FRowknots[index], FRowknots[index+1], (X-Index) * SizeOf(TFloatType));
     FRowknots[index+1]:=V;
-    Inc(FRowcount);
-    FRowCapacity:=FRowcount;
+    Inc(Rowcount);
+    FRowCapacity:=Rowcount;
   end;
 end;
 
@@ -400,8 +397,8 @@ begin
   if FIsBuilding then exit;
   FIsBuilding:=true;
   FBuilt:=False;
-  if FColDegree > FColcount-1 then FColDegree:=FColcount-1;
-  if FRowDegree > FRowcount-1 then FRowDegree:=FRowcount-1;
+  if FColDegree > Colcount-1 then FColDegree:=Colcount-1;
+  if FRowDegree > Rowcount-1 then FRowDegree:=Rowcount-1;
   SetDefaultColKnotVector;
   SetDefaultRowKnotVector;
   Built:=True;

@@ -1169,10 +1169,9 @@ procedure TMainForm.BothSidesExecute(Sender: TObject);
     begin if FreeShip.Visibility.ModelView=mvBoth
             then FreeShip.Visibility.ModelView:=mvPort
             else FreeShip.Visibility.ModelView:=mvBoth; UpdateMenu; end;
-
-{ //moved to TFREEProjectSettingsDialog
-procedure TMainForm.PrecisionBoxChange(Sender: TObject);
-begin FreeShip.Precision:=TFreePrecisionType(PrecisionBox.ItemIndex); UpdateMenu;
+{                                         //moved to TFREEProjectSettingsDialog
+procedure TMainForm.PrecisionBoxChange(Sender:TObject);
+begin FreeShip.Precision:=TFreePrecisionType(PrecisionBox.ItemIndex);UpdateMenu;
 end;
 }
 procedure TMainForm.FileSaveasExecute(Sender: TObject);
@@ -1476,14 +1475,14 @@ procedure TMainForm.ImportVRMLExecute(Sender: TObject);
 //var DateTime : TDateTime;
 //    str_1,str_2 : AnsiString;
 begin
-   //   DateTime:=Time;  // store the current date and time
-   //   str_1:=TimeToStr(DateTime); // convert the time into a string
+   //   DateTime:=Time;                      // store the current date and time
+   //   str_1:=TimeToStr(DateTime);           // convert the time into a string
    FreeShip.Edit.File_ImportVRML;
    FOpenHullWindows;
    Application.ProcessMessages;
    FreeShip.ZoomFitAllViewports;
-   //   DateTime:=Time;  // store the current date and time
-   //   str_2:=TimeToStr(DateTime); // convert the time into a string
+   //   DateTime:=Time;                      // store the current date and time
+   //   str_2:=TimeToStr(DateTime);           // convert the time into a string
    //   MessageDlg(('Time import='+str_2+' - '+str_1),mtInformation,[mbOK],0);
    UpdateMenu;
 end;
@@ -1499,6 +1498,9 @@ begin FreeShip.Edit.Face_RotateM; UpdateMenu; end;
 
 procedure TMainForm.ScaleModelExecute(Sender: TObject);
 begin FreeShip.Edit.Face_Scale; UpdateMenu; end;
+
+procedure TMainForm.MoveModelExecute(Sender: TObject);
+begin FreeShip.Edit.Face_Move; UpdateMenu; end;
 
 procedure TMainForm.ShowGridExecute(Sender: TObject);
 begin
@@ -1567,9 +1569,6 @@ end;
 
 procedure TMainForm.ExportOffsetsExecute(Sender: TObject);
 begin Freeship.Edit.File_ExportOffsets; UpdateMenu; end;
-
-procedure TMainForm.MoveModelExecute(Sender: TObject);
-begin FreeShip.Edit.Face_Move; UpdateMenu; end;
 
 procedure TMainForm.AddPointExecute(Sender: TObject);
 begin Freeship.EditMode:=emAddPoint;

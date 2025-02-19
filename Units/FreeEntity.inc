@@ -26,9 +26,9 @@ begin
   FBuilt:=False;
   FMin:=ZERO;
   FMax:=ZERO; // The min/max boundary coordinates of the entity after it has been Built
-  FPenWidth:=1;        // Pen thickness to use when drawing
-  FColor:=clBlack;     // Color when drawing
-  FPenstyle:=psSolid;  // Pen style for drawing the line
+  PenWidth:=1;        // Pen thickness to use when drawing
+  Color:=clBlack;     // Color when drawing
+  Penstyle:=psSolid;  // Pen style for drawing the line
 end;
 
 procedure TFreeEntity.Clear;
@@ -36,9 +36,9 @@ begin
   Built:=False;
   FMin:=ZERO;
   FMAx:=ZERO;
-  FColor:=clBlack;
-  FPenwidth:=1;
-  FPenStyle:=psSolid;
+  Color:=clBlack;
+  Penwidth:=1;
+  PenStyle:=psSolid;
 end;
 
 destructor TFreeEntity.Destroy; begin inherited Destroy; end;

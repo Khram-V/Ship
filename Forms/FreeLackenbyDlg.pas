@@ -419,8 +419,8 @@ begin
         Face:=Layer.Items[J-1];
         for K:=1 to Face.NumberOfpoints do begin
           Point:=Face.Point[K-1] as TFreeSubdivisionControlPoint;
-          if Points.SortedIndexOf(Point) = -1 then begin
-            Points.AddSorted(Point);
+          if Points.IndexOf(Point) = -1 then begin
+            Points.Add(Point);
             if Point.Locked then begin
               LockedPoints.Add(Point);
               Point.Locked:=False;

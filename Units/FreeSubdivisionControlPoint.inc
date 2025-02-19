@@ -175,12 +175,12 @@ begin
       Points:=TFasterListTFreeSubdivisionPoint.Create;
       for j:=0 to Face.FPoints.Count-1 do
         if Face.FPoints[j]<>self then Points.Add( Face.FPoints[j] );
-      FSurface.AddControlFace( TFasterList(Points),False,Face.Layer );
+      Surface.AddControlFace( TFasterList(Points),False,Face.Layer );
       FreeAndNil(Points);
       Face.Delete;
     end;
     if EdgeCollapse then begin
-      Edge1:=FSurface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
+      Edge1:=Surface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
       if Edge1 <> nil then begin
         Edge1.Crease:=Crease;// or (Edge1.NumberOfFaces=1);
       end;
@@ -199,29 +199,27 @@ begin
       for J:=1 to Face.FPoints.Count do begin
         P2:=face.FPoints[J-1] as TFreeSubdivisionControlPoint;
         if (P1 <> self) and (P2 <> self) then begin
-          Edge1:=FSurface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
+          Edge1:=Surface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
           if Edge1 <> nil then
             if Edges.IndexOf(Edge1) = -1 then Edges.Add(Edge1);
         end;
         P1:=P2;
       end;
-    end;
-    // sort edges in correct order and add new face
+    end;                        // sort edges in correct order and add new face
     if Edges.Count > 2 then begin
       SortedPointLists:=TFasterListTFreeSubdivisionFace.Create;
-      FSurface.IsolateEdges(Edges, SortedPointLists);
+      Surface.IsolateEdges( Edges,SortedPointLists );
       FreeAndNil(Edges);
-      for i:=0 to SortedPointLists.Count-1 do begin
-        // was Points:=Sorted[I-1]; ??? Points:=ControlEdges?
+      for i:=0 to SortedPointLists.Count-1 do begin // was Points:=Sorted[I-1]; ??? Points:=ControlEdges?
         sPointList:=SortedPointLists[i];
         Points:= sPointList.FPoints;
         if Points.Count > 2 then begin
-          Face:=FSurface.AddControlFace(TFasterList(Points), False);
+          Face:=Surface.AddControlFace(TFasterList(Points), False);
           if Face <> nil then begin
             P1:=Face.FPoints[Face.FPoints.Count-1] as TFreeSubdivisionControlPoint;
             for j:=0 to Face.FPoints.Count-1 do begin
               P2:=face.FPoints[j] as TFreeSubdivisionControlPoint;
-              // Edge1:=FSurface.EdgeExists(p1,p2) as TFreesubdivisionControlEdge;
+              // Edge1:=Surface.EdgeExists(p1,p2) as TFreesubdivisionControlEdge;
               // if edge1<>nil then begin
               // { Cur:=Edge.FFaces.IndexOf(self);
               //   if Cur=-1 then Edge.Crease:=Edge.NumberOfFaces<2
@@ -283,8 +281,8 @@ end;
 constructor TFreeSubdivisionControlPoint.Create(Owner: TFreeSubdivisionSurface);
 begin
   inherited Create(Owner);
-  FLinearConstrainedPoints:=TFasterListTFreeSubdivisionControlPoint.Create(false,false);
-  FAnchoredPoints:=TFasterListTFreeSubdivisionControlPoint.Create(false,false);
+  FLinearConstrainedPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
+  FAnchoredPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
 end;
 
 destructor TFreeSubdivisionControlPoint.Destroy;
@@ -313,7 +311,7 @@ begin                                                 // delete from selection;
   for I:=Surface.FControlPointGroups.Count-1 downto 0 do
       Surface.FControlPointGroups[I].RemoveControlPoint( self );
 
-  FacesToDelete:= TFasterListTFreesubdivisionFace.Create(true,false);
+  FacesToDelete:= TFasterListTFreesubdivisionFace.Create;
   while FFaces.Count>0 do begin          // for I:=0 to FFaces.Count-1 do begin
         Face:=FFaces[0];
         FFaces.Delete(0);
@@ -322,7 +320,7 @@ begin                                                 // delete from selection;
   end;                                   // FacesToDelete.AddList( FFaces );
   FFaces.Clear;
 
-  EdgesToDelete:= TFasterListTFreesubdivisionEdge.Create(true,false);
+  EdgesToDelete:= TFasterListTFreesubdivisionEdge.Create;
   while FEdges.Count>0 do begin          // for I:=0 to FEdges.Count-1 do begin
 //      Edge:=FEdges[0];
         Edge:=self.Edge[0];
@@ -424,9 +422,9 @@ begin
     end;}
     //end;
   end;
-  if (FName > '') then begin
+  if (Name > '') then begin
     Viewport.FontColor:=Color;
-    ViewPort.TextOut(P.X+2, P.Y+2, FName);
+    ViewPort.TextOut( P.X+2,P.Y+2,Name );
   end;
 end;
 
@@ -658,7 +656,7 @@ begin
     end;
   if FAnchorPoint <> nil then
      FAnchorPoint.FAnchoredPoints.DeleteItem(Self);
-  if FSurface <> nil then FSurface.UnreferenceControlPoint(Self);
+  if Surface <> nil then Surface.UnreferenceControlPoint(Self);
   inherited;
 end;
 

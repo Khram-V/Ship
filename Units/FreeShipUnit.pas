@@ -1103,6 +1103,7 @@ var
 implementation
 
 uses Math,
+  Main,
   FreeIGESUnit,
   FreeHydrostaticsDlg,
   FreeIntersectionDlg,
@@ -1129,7 +1130,6 @@ uses Math,
 //  FreeResistance_KaperDlg,
 //  FreeResistance_DelftDlg,
 //  FreeCrosscurvesDlg,
-  Main,
   FreeHullFormWindow_Panel,
   FreeGridDlg,
   FreeDeleteDlg;

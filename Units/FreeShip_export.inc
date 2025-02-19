@@ -370,8 +370,7 @@ var
   CreateIndividualLayers: Boolean;
 
   function getLayerName(IntersectionType:TFreeIntersectionType):String;
-  begin
-    Result:='';
+  begin Result:='';
     case IntersectionType of
       fiStation:      Result:=Userstring(62);
       fiButtock:      Result:=Userstring(63);
@@ -1486,11 +1485,10 @@ var
       for J:=1 to Child.NumberOfpoints do
       begin
         P:=Child.Point[J-1];
-        if Points.SortedIndexOf(P) = -1 then
-          Points.AddSorted(P);
+        if Points.IndexOf(P) = -1 then Points.Add(P);
       end;
     end;
-    Faces.Sort;
+//    Faces.Sort;
     // Try to isolate the interior point
     InteriorPoint:=nil;
     for I:=1 to Points.Count do
@@ -1499,21 +1497,14 @@ var
       // check how many of the childfaces are connected (interior point must have 3)
       N:=0;
       for J:=1 to P.NumberOfFaces do
-        if Faces.SortedIndexOf(P.Face[J-1]) <> -1 then
-          Inc(N);
-      if N = 3 then
-      begin
-        InteriorPoint:=P;
-        break;
-      end;
+        if Faces.IndexOf(P.Face[J-1]) <> -1 then Inc(N);
+      if N = 3 then begin InteriorPoint:=P; break; end;
     end;
-    if Interiorpoint <> nil then
-    begin
+    if Interiorpoint <> nil then begin
       Cols:=3;
       Rows:=3;
       Setlength(Grid, Rows);
-      for I:=1 to Rows do
-      begin
+      for I:=1 to Rows do begin
         Setlength(Grid[I-1], Cols);
         for J:=1 to Cols do
           Grid[I-1][J-1]:=nil;
@@ -1813,7 +1804,7 @@ begin
       for I:=0 to FreeShip.NumberOfLayers-1 do
         if (FreeShip.Layer[I].SurfaceVisible) and (FreeShip.Layer[I].Count > 0) then
           Layers.Add(FreeShip.Layer[I]);
-      Layers.Sort;
+//    Layers.Sort;
       Setlength(ColorIndices, Layers.Count);
       for I:=0 to Layers.Count-1 do begin
         Layer:=Layers[I];
@@ -1835,14 +1826,14 @@ begin
               ((FaceData.NCols = 1) and (FaceData.NRows = 1) and
               (FaceData.Faces[0][0].NumberOfPoints = 4)) then begin
               CtrlFace:=FaceData.Faces[0][0];
-              LI:=Layers.SortedIndexOf(Ctrlface.Layer);
+              LI:=Layers.IndexOf(Ctrlface.Layer);
               ColorIndex:=ColorIndices[LI];
               FreeShip.Surface.ConvertToGrid(FaceData, Cols, Rows, Grid);
               ProcessGrid(Cols, Rows, Grid, ColorIndex, Ctrlface.Layer.Symmetric);
             end else begin
               CtrlFace:=FaceData.Faces[0][0];
-              if Layers.SortedIndexOf(Ctrlface.Layer) <> -1
-              then ColorIndex:=ColorIndices[Layers.SortedIndexOf(Ctrlface.Layer)]
+              if Layers.IndexOf(Ctrlface.Layer) <> -1
+              then ColorIndex:=ColorIndices[Layers.IndexOf(Ctrlface.Layer)]
               else Colorindex:=0;
               if (CtrlFace.NumberOfpoints = 3) and (SendTriangles) then begin
                 AssembleTriangle(Cols, Rows, Grid, CtrlFace);
@@ -1870,8 +1861,8 @@ begin
       end else
         for I:=1 to FreeShip.Surface.NumberOfControlFaces do begin
           CtrlFace:=FreeShip.Surface.ControlFace[I-1];
-          if Layers.SortedIndexOf(Ctrlface.Layer) <> -1
-          then ColorIndex:=ColorIndices[Layers.SortedIndexOf(Ctrlface.Layer)]
+          if Layers.IndexOf(Ctrlface.Layer) <> -1
+          then ColorIndex:=ColorIndices[Layers.IndexOf(Ctrlface.Layer)]
           else Colorindex:=0;
           if CtrlFace.NumberOfpoints = 4 then begin
             FaceData.NCols:=1;

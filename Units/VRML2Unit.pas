@@ -1123,16 +1123,16 @@ begin
   if IndexedFaceSets=nil then
      begin ShowMessage('No_meshdata_VRML-2_could_be_imported.'); exit; end;
   SubdivisionSurface.IsLoading:=true; Clear;
-  AddedCtrlPts:=TFasterListTVRML2Coordinates.Create(true,false);
+  AddedCtrlPts:=TFasterListTVRML2Coordinates.Create;
   AddedCtrlPts.Capacity:=IndexedFaceSets.Count;     // Assemble coordinate sets
   for I:=0 to IndexedFaceSets.Count-1 do begin
     FaceInfo:=IndexedFaceSets[I];
-    if AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates)=-1
+    if AddedCtrlPts.IndexOf(FaceInfo.Coordinates)=-1
     then AddedCtrlPts.Add(FaceInfo.Coordinates);
   end;                                          // now add actual controlPoints
   for I:=0 to AddedCtrlPts.Count-1 do begin
     CoordInfo:=AddedCtrlPts[I];
-    Points:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+    Points:=TFasterListTFreeSubdivisionControlPoint.Create;
     Points.Capacity:=CoordInfo.Count;
     AddedCtrlPts.Objects[I]:=Points;
     for J:=0 to CoordInfo.Count-1 do begin
@@ -1141,7 +1141,7 @@ begin
       Points.Add(CtrPoint);
     end;
   end;                                                      // Add controlfaces
-  FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+  FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create;
   for I:=0 to IndexedFaceSets.Count-1 do begin
     FaceInfo:=IndexedFaceSets[I];
     Index:=AddedCtrlPts.IndexOf(FaceInfo.Coordinates);

@@ -41,11 +41,10 @@ implementation
 procedure TFreePointGroupForm.LoadGroups;
 var i:integer;
 begin
-  for i:=0 to FFreeShip.Surface.NumberOfControlPointGroups-1 do
-  begin
+  for i:=0 to FFreeShip.Surface.NumberOfControlPointGroups-1 do begin
     CheckListBoxGroups.AddItem(
-      FFreeShip.Surface.ControlPointGroup[i].Name,
-      FFreeShip.Surface.ControlPointGroup[i]);
+    FFreeShip.Surface.ControlPointGroup[i].Name,
+    FFreeShip.Surface.ControlPointGroup[i]);
   end;
   CheckListBoxGroups.Sorted:=true;
 end;

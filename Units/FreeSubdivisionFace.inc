@@ -130,7 +130,7 @@ procedure TFreeSubdivisionFace.Clear; begin FPoints.Clear; end;
 constructor TFreeSubdivisionFace.Create(Owner: TFreeSubdivisionSurface);
 begin
   inherited Create( Owner );
-  FPoints:=TFasterListTFreeSubdivisionPoint.Create( true,false );
+  FPoints:=TFasterListTFreeSubdivisionPoint.Create;
   Clear;
 end;
 
@@ -167,7 +167,7 @@ begin
         and (E.FFaces <> nil) then E.FFaces.DeleteItem(Self);
       end;}
     end;
-  if FSurface<>nil then FSurface.UnreferenceFace(Self);
+  if Surface<>nil then Surface.UnreferenceFace(Self);
   InUnreference:=false;
 end;
 
@@ -262,22 +262,22 @@ begin
       CurrEdge:=aOwner.EdgeExists(P2,FPoints[IndexCE]);                     //  if CurrEdge = nil then Showmessage('Subdivision error. Current edge not found');
 
       Index0:=(I-1) mod 4;
-      TmpIndex:=aRefVertices.SortedIndexOf(P2);
+      TmpIndex:=aRefVertices.IndexOf(P2);
       Pts[Index0]:=aRefVertices.Objects[TmpIndex];  // P2.FNewLocation;         if Pts[Index0] = nil then Showmessage('Subdivision error. Point 0 not found');
       P2Point:=Pts[Index0];
 
       Index1:=(Index0+1) mod 4;
-      TmpIndex:=aRefEdges.SortedIndexOf(CurrEdge);
+      TmpIndex:=aRefEdges.IndexOf(CurrEdge);
       Pts[index1]:=aRefEdges.Objects[TmpIndex];     //CurrEdge.FNewLocation;    if Pts[Index1] = nil then Showmessage('Subdivision error. Point 1 not found');
       CurrEdgePoint:=Pts[index1];
 
       Index2:=(Index1+1) mod 4;
-      TmpIndex:=aRefFaces.SortedIndexOf(self);
+      TmpIndex:=aRefFaces.IndexOf(self);
       Pts[index2]:=aRefFaces.Objects[TmpIndex];     //self.FNewLocation;        if Pts[Index2-1] = nil then Showmessage('Subdivision error. Point 2 (face center) not found');// else
       NewLocation:=Pts[index2];
 
       Index3:=(Index2+1) mod 4;
-      TmpIndex:=aRefEdges.SortedIndexOf(PrevEdge);
+      TmpIndex:=aRefEdges.IndexOf(PrevEdge);
       Pts[index3]:=aRefEdges.Objects[TmpIndex];    // PrevEdge.FNewLocation;    if Pts[Index3] = nil then Showmessage('Subdivision error. Point 3 not found');
       PrevEdgePoint:=Pts[index3];
 
@@ -309,13 +309,13 @@ begin
       CurrEdge:=aOwner.EdgeExists(P2, FPoints[IndexCE]);
 
       Index0:=0;
-      TmpIndex:=aRefEdges.SortedIndexOf(PrevEdge);
+      TmpIndex:=aRefEdges.IndexOf(PrevEdge);
       Pts[Index0]:=aRefEdges.Objects[tmpindex];       // PrevEdge.FNewLocation;
       Index1:=1;
-      TmpIndex:=aRefVertices.SortedIndexOf(P2);
+      TmpIndex:=aRefVertices.IndexOf(P2);
       Pts[index1]:=aRefVertices.Objects[Tmpindex];    // P2.FNewLocation;
       Index2:=2;
-      TmpIndex:=aRefEdges.SortedIndexOf(CurrEdge);
+      TmpIndex:=aRefEdges.IndexOf(CurrEdge);
       Pts[index2]:=aRefEdges.Objects[Tmpindex];       // CurrEdge.FNewLocation;
 
       // add the new face
@@ -340,7 +340,7 @@ begin
       P2:=FPoints[I-1];
       IndexPE:=(I-2+FPoints.Count) mod FPoints.Count;
       PrevEdge:=aOwner.EdgeExists(P2, FPoints[IndexPE]);
-      TmpIndex:=aRefEdges.SortedIndexOf(PrevEdge);
+      TmpIndex:=aRefEdges.IndexOf(PrevEdge);
       Pts[I-1]:=aRefEdges.Objects[TmpIndex];   // PrevEdge.FNewLocation;
     end;
 

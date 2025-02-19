@@ -148,9 +148,9 @@ end;{TFreeSubdivisionControlFace.ClearChildren}
 constructor TFreeSubdivisionControlFace.Create(Owner: TFreeSubdivisionSurface);
 begin
   FLayer:=nil;
-  FChildren:=TFasterListTFreeSubdivisionFace.Create(false,false);
-  FEdges:=TFasterListTFreeSubdivisionEdge.Create(false,false);  // is this for speed only?
-  FControlDescendantEdges:=TFasterListTFreeSubdivisionEdge.Create(false,false);
+  FChildren:=TFasterListTFreeSubdivisionFace.Create;
+  FEdges:=TFasterListTFreeSubdivisionEdge.Create;  // is this for speed only?
+  FControlDescendantEdges:=TFasterListTFreeSubdivisionEdge.Create;
   inherited Create(Owner);
 end;{TFreeSubdivisionControlFace.Create}
 
@@ -397,7 +397,7 @@ begin
   for i:=0 to FEdges.Count-1 do FEdges[i].UnreferenceFace(Self);
   if FPoints<>nil then
   for i:=0 to FPoints.Count-1 do FPoints[i].UnreferenceFace(Self);
-  if FSurface <> nil then FSurface.UnreferenceControlFace(self);
+  if Surface <> nil then Surface.UnreferenceControlFace(self);
   inherited;
   InUnreference:=false;
 end;
@@ -893,11 +893,11 @@ begin
           P3:=Child.Point[J].Coordinate;
           if Viewport.ViewportMode <> vmShade then
           begin
-            Index:=Surface.FPoints.SortedIndexOf(Child.Point[0]);
+            Index:=Surface.FPoints.IndexOf(Child.Point[0]);
             C1:=Surface.FGausCurvature[index];
-            Index:=Surface.FPoints.SortedIndexOf(Child.Point[J-1]);
+            Index:=Surface.FPoints.IndexOf(Child.Point[J-1]);
             C2:=Surface.FGausCurvature[index];
-            Index:=Surface.FPoints.SortedIndexOf(Child.Point[J]);
+            Index:=Surface.FPoints.IndexOf(Child.Point[J]);
             C3:=Surface.FGausCurvature[index];
             Viewport.ShadeTriangle(P1, P2, P3, C1, C2, C3);
             if (Surface.DrawMirror) and (Layer.Symmetric) then
@@ -955,15 +955,14 @@ begin
     begin
       // Draw normals
       // First assemble all points within this controlface
-      Points:=TFasterListTFreeSubdivisionPoint.Create(false,true);
+      Points:=TFasterListTFreeSubdivisionPoint.Create;
       for I:=1 to ChildCount do
       begin
         Child:=Self.Child[I-1];
         for J:=1 to Child.NumberOfpoints-1 do
         begin
           Point:=Child.Point[J-1];
-          if Points.SortedIndexOf(Point) = -1 then
-            Points.AddSorted(Point);
+          if Points.IndexOf(Point) = -1 then Points.Add(Point);
         end;
       end;
       for I:=1 to Points.Count do
@@ -1030,15 +1029,15 @@ begin
     for J:=2 to ChildPointsCnt-1 do
     begin
       P1:=Child.Point[0].Coordinate;
-      Index:=Surface.FPoints.SortedIndexOf(Child.Point[0]);
+      Index:=Surface.FPoints.IndexOf(Child.Point[0]);
       Curv:=Surface.FGausCurvature[index];
       FillColor(Fragment(Curv), R1, G1, B1);
       P2:=Child.Point[J-1].Coordinate;
-      Index:=Surface.FPoints.SortedIndexOf(Child.Point[J-1]);
+      Index:=Surface.FPoints.IndexOf(Child.Point[J-1]);
       Curv:=Surface.FGausCurvature[index];
       FillColor(Fragment(Curv), R2, G2, B2);
       P3:=Child.Point[J].Coordinate;
-      Index:=Surface.FPoints.SortedIndexOf(Child.Point[J]);
+      Index:=Surface.FPoints.IndexOf(Child.Point[J]);
       Curv:=Surface.FGausCurvature[index];
       FillColor(Fragment(Curv), R3, G3, B3);
       Viewport.ShadeTriangle(P1, P2, P3, R1, G1, B1, R2, G2, B2, R3, G3, B3);
@@ -1100,11 +1099,11 @@ begin
       Delete; // delete the current face because it is split into two new faces
       IsFaceDeleted:=true;
     end;
-    Result:=FSurface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
+    Result:=Surface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
     if Result <> nil then
       Result.Crease:=False;
   except
-    Result:=FSurface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
+    Result:=Surface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
   end;
 end;{TFreeSubdivisionControlFace.InsertEdge}
 
@@ -1240,7 +1239,7 @@ begin
   begin
     P2:=FPoints[I-1];
     P2.UnreferenceFace(self);
-    Edge:=FSurface.EdgeExists(P1, P2);
+    Edge:=Surface.EdgeExists(P1, P2);
     if Edge <> nil then
     begin
       Edge.UnreferenceFace(self);
@@ -1255,7 +1254,7 @@ var
 begin
   Destination.Add(NumberOfPoints);
   for I:=1 to NumberOfPoints do
-    Destination.Add(Surface.FControlPoints.SortedIndexOf(Point[I-1]));
+    Destination.Add(Surface.FControlPoints.IndexOf(Point[I-1]));
   // Add layer index
   if Layer <> nil then
     Index:=Surface.FLayers.IndexOf(Layer)
@@ -1273,7 +1272,7 @@ var
 begin
   Str:=IntToStr(NumberOfPoints);
   for I:=1 to NumberOfPoints do
-    Str:=Str+#32+IntToStr(Surface.FControlPoints.SortedIndexOf(Point[I-1]));
+    Str:=Str+#32+IntToStr(Surface.FControlPoints.IndexOf(Point[I-1]));
   // Add layer index
   if Layer <> nil then
     Index:=Surface.FLayers.IndexOf(Layer)
@@ -1299,7 +1298,7 @@ var
   ChildFace: TFreeSubdivisionFace;
   NewControlEdges:TFasterListTFreeSubdivisionEdge; // MM: not really control edges, just children of them
 begin
-  NewControlEdges:=TFasterListTFreeSubdivisionEdge.Create(false,false);
+  NewControlEdges:=TFasterListTFreeSubdivisionEdge.Create;
 
   //if not CheckIntegrity
   //     then X:=0;
@@ -1317,9 +1316,9 @@ begin
   end
   else
   begin
-    TmpFaces:=TFasterListTFreeSubdivisionFace.Create(false,false);
+    TmpFaces:=TFasterListTFreeSubdivisionFace.Create;
     TmpFaces.Capacity:=4 * ChildCount;
-    TmpEdges:=TFasterListTFreeSubdivisionEdge.Create(false,false);
+    TmpEdges:=TFasterListTFreeSubdivisionEdge.Create;
     I:=Round(Power(2, aOwner.FCurrentSubdivisionLevel));
     TmpEdges.Capacity:=2 * (I * (I-1));
 
@@ -1366,12 +1365,11 @@ begin
   FControlDescendantEdges.Clear;
   FControlDescendantEdges.Capacity:=NewControlEdges.Count;
   aControlEdges.Capacity:=aControlEdges.Count+FControlDescendantEdges.Count;
-  aControlEdges.Sort;
-  for I:=0 to NewControlEdges.Count-1 do
-  begin
-    if aControlEdges.SortedIndexOf(NewControlEdges[I]) = -1 then
+//aControlEdges.Sort;
+  for I:=0 to NewControlEdges.Count-1 do begin
+    if aControlEdges.IndexOf(NewControlEdges[I]) = -1 then
       begin
-      aControlEdges.AddSorted(NewControlEdges[I]);
+      aControlEdges.Add(NewControlEdges[I]);
       FControlDescendantEdges.Add(NewControlEdges[I]);
       end;
   end;
@@ -1434,7 +1432,7 @@ begin
       if (Face <> self) and (Face.Selected <> self.Selected) then
         ToDoList.Add(Layer.Items[I-1]);
     end;
-    ToDoList.Sort;
+//  ToDoList.Sort;
     FindAttachedFaces(ToDoList, self);
     FreeAndNil(ToDoList);
   finally

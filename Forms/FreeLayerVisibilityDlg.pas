@@ -142,7 +142,7 @@ begin
 end;
 
 procedure TFreeLayerVisibilityDialog.FillLayers;
-var I,N,r     , sc: Integer;
+var I,N,r,sc: Integer;
     Layer   : TFreeSubdivisionLayer;
     S,C : char;
     so: TSortOrder;

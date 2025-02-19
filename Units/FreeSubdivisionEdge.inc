@@ -59,7 +59,7 @@ begin
       if N = 2 then FEndpoint.VertexType:=svCrease else
       if N > 2 then FEndpoint.VertexType:=svCorner;
     end;
-    FStartPoint.FSurface.Built:=False;
+    FStartPoint.Surface.Built:=False;
   end;
 end;
 
@@ -196,7 +196,7 @@ end;
 constructor TFreeSubdivisionEdge.Create(Owner: TFreeSubdivisionSurface);
 begin
   inherited Create(Owner);
-  FFaces:=TFasterListTFreeSubdivisionFace.Create(false,false);
+  FFaces:=TFasterListTFreeSubdivisionFace.Create;
   Clear;
 end;
 
@@ -319,7 +319,7 @@ begin
   if FCurve <> nil then
      FCurve.DeleteEdge(Self as TFreeSubdivisionControlEdge);
   }
-  if FSurface <> nil then FSurface.UnreferenceEdge(Self);
+  if Surface <> nil then Surface.UnreferenceEdge(Self);
 
   InUnreference:=false;
 end;

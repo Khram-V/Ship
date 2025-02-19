@@ -511,17 +511,17 @@ begin
     Self.LoadFromFile( Filename );
     Data:=Self.ExtractFaceSetData;
     if Data<>nil then begin Clear;
-      AddedCtrlPts:=TFasterListTVRMLCoordinate3.Create(true,false);
+      AddedCtrlPts:=TFasterListTVRMLCoordinate3.Create;
       AddedCtrlPts.Capacity:=Data.Count;
                                                     // Assemble coordinate sets
       for I:=1 to Data.Count do begin FaceInfo:=Data[I-1];
-        if AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates) = -1 then
+        if AddedCtrlPts.IndexOf(FaceInfo.Coordinates) = -1 then
            AddedCtrlPts.Add(FaceInfo.Coordinates);
       end;
                                                 // now add actual controlPoints
       for I:=0 to AddedCtrlPts.Count-1 do begin
         CoordInfo:=AddedCtrlPts[I];
-        Points:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+        Points:=TFasterListTFreeSubdivisionControlPoint.Create;
         Points.Capacity:=CoordInfo.Count;
         AddedCtrlPts.Objects[I]:=Points;
         for J:=0 to CoordInfo.Count-1 do begin
@@ -531,7 +531,7 @@ begin
         end;
       end;
                                                             // Add controlfaces
-      FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+      FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create;
       for I:=1 to Data.Count do begin
         FaceInfo:=Data[I-1];
         Index:=AddedCtrlPts.IndexOf(FaceInfo.Coordinates);

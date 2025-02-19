@@ -322,8 +322,7 @@ var
 
   procedure DrawLineAtt(Attachpoint, P1, P2: T3DCoordinate; Text: string; CenterText: boolean);
   var
-    Proj1: T3DCoordinate;
-    Proj2: T3DCoordinate;
+    Proj1,Proj2: T3DCoordinate;
     Pts: array[0..1] of TPoint;
     W: integer;
   begin
@@ -447,7 +446,10 @@ var
     end;
   end;{DrawLine}
 
-  procedure DrawSpline(Spline: TFreeSpline; Views: TLinesplanViews; Style: TPenStyle);
+  procedure DrawSpline
+  ( Spline: TFreeSpline;
+    Views: TLinesplanViews;
+    Style: TPenStyle );
   var
     I,YSign: integer;
     P, Pr: T3DCoordinate;
@@ -455,16 +457,29 @@ var
     Pts: array of TPoint;
   begin
     VPs:=Spline.GetValues;
-    Setlength(Pts, length(VPs));
-    if lvProfile in views then begin
+    Setlength( Pts,length(VPs) );
+    if lvProfile in views then begin                 // батоксы и рыбины здесь?
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];
           Pr:=Point3D(FProfileOrigin.X+P.X, FProfileOrigin.Y+P.Z, 0);
           Pts[i]:=Viewport.Project(Pr);
         end; Viewport.Polyline( Pts );
     end;
-
+(* ///***??? ++
+    if lvPlan in views then begin                    // ватерлинии левого борта
+      for i:=0 to length(VPs)-1 do begin P:=VPs[i];
+          Pr:=Point3D( FPlanOrigin.X+P.X,FPlanOrigin.Y+P.Y,0 );
+          Pts[i]:=Viewport.Project(Pr);
+      end; Viewport.Polyline( Pts );
+    end;
+    if (lvPlan in views) and (MirrorPlanview.Checked) then begin
+      for i:=0 to length(VPs)-1 do begin P:=VPs[i]; // ватерлинии правого борта
+          Pr:=Point3D( FPlanOrigin.X+P.X,FPlanOrigin.Y-P.Y,0 );
+          Pts[i]:=Viewport.Project(Pr);
+      end; Viewport.Polyline( Pts );
+    end;
+///+++??? *)
     if (lvAftBody in views) and (Spline.Max.X <= MidshipLocation) then begin
-      for YSign:=-1 to +1 do
+      for YSign:=-1 to +1 do                                  // корпус - корма
         if YSign <> 0 then begin
           for i:=0 to length(VPs)-1 do begin P:=VPs[i];
               Pr:=Point3D(FAftOrigin.X+YSign * P.Y, FAftOrigin.Y+P.Z, 0);
@@ -472,49 +487,43 @@ var
            end; Viewport.Polyline(Pts);
         end;
     end;
-
     if (lvFrontBody in views) and (Spline.Min.X >= MidshipLocation) then begin
+      for YSign:=-1 to +1 do                                    // корпус - нос
+      if YSign <> 0 then begin
+        for i:=0 to length(VPs)-1 do begin P:=VPs[i];
+            Pr:=Point3D(FFrontOrigin.X+YSign * P.Y, FFrontOrigin.Y+P.Z, 0);
+            Pts[i]:=Viewport.Project(Pr);
+        end; Viewport.Polyline(Pts);
+      end;
+    end;                                            // Viewport.PenColor:=clred;
+    if lvPLan in views then begin                                 // ватерлинии
       for YSign:=-1 to +1 do
-        if YSign <> 0 then begin
-          for i:=0 to length(VPs)-1 do begin P:=VPs[i];
-              Pr:=Point3D(FFrontOrigin.X+YSign * P.Y, FFrontOrigin.Y+P.Z, 0);
-              Pts[i]:=Viewport.Project(Pr);
+      if (YSign=1) or ((YSign=-1)
+      and (Freeship.NumberofDiagonals=0)
+      and (MirrorPlanview.Checked)) then begin
+        for i:=0 to length(VPs)-1 do begin P:=VPs[i];
+          Pr:=Point3D( FPlanOrigin.X+P.X,FPlanOrigin.Y+YSign*P.Y,0 );
+            Pts[i]:=Viewport.Project(Pr);
           end; Viewport.Polyline(Pts);
-       end;
-    end;
-
-    if lvPLan in views then begin
-      for YSign:=-1 to +1 do
-        if (YSign=1)
-          or ((YSign=0) and (Freeship.NumberofDiagonals = 0)
-             and (MirrorPlanview.Checked))
-        then begin
-          for i:=0 to length(VPs)-1 do begin P:=VPs[i];
-              Pr:=Point3D(FPlanOrigin.X+YSign * P.Y, FPlanOrigin.Y+P.Y, 0);
-              Pts[i]:=Viewport.Project(Pr);
-            end; Viewport.Polyline(Pts);
-        end;
-    end;
+      end;
+    end;                                          // Viewport.PenColor:=clgray;
   end;{DrawSpline}
 
-  procedure DrawIntersection(Intersection: TFreeIntersection;
-    Views: TLinesplanViews; Style: TPenStyle);
-  var
-    I: integer;
+  procedure DrawIntersection
+  (Intersection: TFreeIntersection; Views: TLinesplanViews; Style: TPenStyle );
+  var I: integer;
   begin
-    if not Intersection.Built then
-      Intersection.Rebuild;
-    for I:=1 to Intersection.Count do
-      DrawSpline(Intersection.Items[I-1], Views, Style);
-  end;{DrawIntersection}
+    if not Intersection.Built then Intersection.Rebuild;
+    for I:=0 to Intersection.Count-1 do
+      DrawSpline( Intersection.Items[I],Views,Style );
+  end;
 
-  procedure AddTriangle(P1, P2, P3: T3DCoordinate; Color: TColor;
-  var Destination: TriangleArray; Symmetric: boolean);
-  var
-    C: T3DCoordinate;
+  procedure AddTriangle
+  ( P1,P2,P3: T3DCoordinate; Color: TColor;
+    var Destination: TriangleArray; Symmetric: boolean );
+  var C: T3DCoordinate;
   begin
-    if Destination.Count = Destination.Capacity then
-    begin
+    if Destination.Count = Destination.Capacity then begin
       Destination.Capacity:=Destination.Capacity+50;
       Setlength(Destination.Triangles, Destination.Capacity);
     end;
@@ -532,47 +541,32 @@ var
 
   procedure ProcessFace(Face: TFreeSubdivisionFace; Color: TColor; Symmetric: boolean);
   var
-    I, J: integer;
-    Nabove: integer;
-    Nbelow: integer;
-    AbovePoints: TFreeCoordinateArray;
-    BelowPoints: TFreeCoordinateArray;
+    I,J,Nabove,Nbelow: integer;
+    AbovePoints,BelowPoints: TFreeCoordinateArray;
   begin
-    for I:=3 to Face.NumberOfpoints do
-    begin
+    for I:=3 to Face.NumberOfpoints do begin
       ClipTriangle(Face.Point[0].Coordinate,
         Face.Point[I-2].Coordinate,
         Face.Point[I-1].Coordinate,
-        WlPlane, Nabove, Nbelow, AbovePoints, BelowPoints);
-      // proces submerged area
+        WlPlane, Nabove, Nbelow, AbovePoints, BelowPoints); // proces submerged area
       for J:=3 to NBelow do
         AddTriangle(BelowPoints[0], BelowPoints[J-2], BelowPoints[J-1], SubmColor, Below, Symmetric);
       for J:=3 to NAbove do
         AddTriangle(AbovePoints[0], AbovePoints[J-2], AbovePoints[J-1], Color, Above, Symmetric);
     end;
   end;{Processface}
-
+(*
   procedure SortTriangles(var Triangles: TriangleArray; SortType: byte);
-  // Sorttype 1=X, 2=Y, 3=Z
-
-    procedure QuickSort(L, R: integer);
-    var
-      I, J: integer;
-      T1: TriangleData;
-
-      procedure Swap(I, J: integer);
-      var
-        Tmp: TriangleData;
-      begin
-        Tmp:=Triangles.Triangles[I];
-        Triangles.Triangles[I]:=Triangles.Triangles[J];
-        Triangles.Triangles[J]:=Tmp;
+    procedure QuickSort(L, R: integer);           // Sorttype 1=X, 2=Y, 3=Z
+    var I, J: integer;
+        T1: TriangleData;
+      procedure Swap( I,J: integer); var Tmp: TriangleData;
+      begin Tmp:=Triangles.Triangles[I];
+            Triangles.Triangles[I]:=Triangles.Triangles[J];
+            Triangles.Triangles[J]:=Tmp;
       end;{swap two triangles}
-
     begin
-      I:=L;
-      J:=R;
-      T1:=Triangles.Triangles[(L+R) div 2];
+      I:=L; J:=R; T1:=Triangles.Triangles[(L+R) div 2];
       repeat
         if SortType = 1 then begin
           while Triangles.Triangles[I].Center.X < T1.Center.X do Inc(I);
@@ -590,12 +584,10 @@ var
       if L < J then QuickSort(L,J);
       if I < R then QuickSort(I,R);
     end; {QuickSort}
-
   begin
-    if Triangles.Count > 1 then
-      QuickSort(0, Triangles.Count-1);
+    if Triangles.Count > 1 then QuickSort(0, Triangles.Count-1);
   end;{SortTriangles}
-
+*)
   procedure DrawTriangles(Triangles: TriangleArray; Views: TLinesplanViews);
   var
     I: integer;
@@ -614,29 +606,22 @@ var
     begin
       N:=UnifiedNormal(Triangle.P1, Triangle.P2, Triangle.P3);
       Dp:=DotProduct(N, L);
-      if Dp < 0.0 then
-        Dp:=-Dp;
-
+      if Dp < 0.0 then Dp:=-Dp;
       Dp:=Power(Dp, Contrast);
       Dp:=(DpScale-1.0)+DpScale * Dp;
-      if Dp > 1.0 then
-        Dp:=1.0;
+      if Dp > 1.0 then Dp:=1.0;
       R:=Round(Dp * GetRValue(Triangle.Color));
       G:=Round(Dp * GetGValue(Triangle.Color));
       B:=Round(Dp * GetBValue(Triangle.Color));
       Result:=RGB(R, G, B);
-      { Viewport.ShadedColor(Dp,GetRValue(Triangle.Color),GetGValue(Triangle.Color),GetBValue(Triangle.Color),R,G,B);
-          Result:=RGB(R,G,B);
-      }
+    { Viewport.ShadedColor(Dp,GetRValue(Triangle.Color),GetGValue(Triangle.Color),GetBValue(Triangle.Color),R,G,B);
+        Result:=RGB(R,G,B);
+    }
     end;{GetColor}
-
   begin
-    if lvAftBody in views then
-    begin
-      P.Z:=0.0;
-      L:=SetPoint(-1.0, 0.0, 0.0);
-      for I:=Triangles.Count downto 1 do
-      begin
+    if lvAftBody in views then begin P.Z:=0.0;
+      L:=SetPoint(-1.0,0.0,0.0);
+      for I:=Triangles.Count downto 1 do begin
         Triangle:=Triangles.Triangles[I-1];
         if not UseLights.Checked then begin
           Viewport.BrushColor:=Triangle.Color;
@@ -645,8 +630,7 @@ var
           Col:=GetColor(L, 1.4, 1.0, Triangle);
           Viewport.BrushColor:=Col;
           Viewport.PenColor:=Col;
-        end;
-        // Draw in aft view
+        end;                                                // Draw in aft view
         P.X:=FAftOrigin.X-Triangle.P1.Y;
         P.Y:=FAftOrigin.Y+Triangle.P1.Z;
         Pts[0]:=Viewport.Project(P);
@@ -696,7 +680,6 @@ var
           Pts[2]:=Viewport.Project(P);
           Viewport.Polygon(Pts);
         end;
-
         if lvFrontBody in views then begin
           L:=SetPoint(1.0, 0.0, 0.0);
           if not UseLights.Checked then begin
@@ -706,8 +689,7 @@ var
             Col:=GetColor(L, 1.4, 1.0, Triangle);
             Viewport.BrushColor:=Col;
             Viewport.PenColor:=Col;
-          end;
-          // Draw in Front view
+          end;                                            // Draw in Front view
           P.X:=FFrontOrigin.X-Triangle.P1.Y;
           P.Y:=FFrontOrigin.Y+Triangle.P1.Z;
           Pts[0]:=Viewport.Project(P);
@@ -740,8 +722,7 @@ var
             Col:=GetColor(L, 1.1, 1.5, Triangle);
             Viewport.BrushColor:=Col;
             Viewport.PenColor:=Col;
-          end;
-          // Draw portside in plan view
+          end;                                    // Draw portside in plan view
           P.X:=FPlanOrigin.X+Triangle.P1.X;
           P.Y:=FPlanOrigin.Y+Triangle.P1.Y;
           Pts[0]:=Viewport.Project(P);
@@ -774,19 +755,16 @@ var
   var
     Height: integer;
     CurrentHeight: integer;
-  begin
-    // Sets the fontheight to a height in modelspace
+  begin                        // Sets the fontheight to a height in modelspace
     Height:=round(DesiredHeight * Viewport.Scale * Viewport.Zoom);
     CurrentHeight:=Viewport.FontHeight;
     if CurrentHeight <> Height then Viewport.FontHeight:=Height;
-
-    // below code causes loop redraw and 100% CPU.
-    // Changed to above code with direct set of required Font.Height
+                // below code causes loop redraw and 100% CPU.
+               // Changed to above code with direct set of required Font.Height
       {Height:=DesiredHeight*Viewport.Scale*Viewport.Zoom;
       Viewport.Font.Size:=8;
       CurrentHeight:=Viewport.TextHeight('X');
-      while CurrentHeight>Height do
-      begin
+      while CurrentHeight>Height do begin
          Viewport.Font.Size:=Viewport.Font.Size-1;
          CurrentHeight:=Viewport.TextHeight('X');
          if Viewport.Font.Size<6 then break;
@@ -822,7 +800,7 @@ begin
   Screen.Cursor:=crHourglass;
   Viewport.PenColor:=clSilver;
 
-  Viewport.FontName:='Arial';
+  Viewport.FontName:='Times';
   Viewport.FontColor:=clBlack;
   // calculate and set fontheight
   //SetFontHeight(DistPP3D(FMin3D,FMax3D)/FontheightFactor * FFontheightScale);
@@ -831,12 +809,10 @@ begin
   //Viewport.FontColor:=Font.Color;
   //Viewport.FontHeight:=Font.Height;
   //Viewport.FontSize:=Font.Size;
-  if Viewport.DrawingCanvas.Font = nil then
-     Viewport.DrawingCanvas.Font:=TFont.Create;
-  Viewport.DrawingCanvas.Font.Name:='Arial';
+  if Viewport.DrawingCanvas.Font=nil then Viewport.DrawingCanvas.Font:=TFont.Create;
+  Viewport.DrawingCanvas.Font.Name:='Times';
   Viewport.DrawingCanvas.Font.Color:=clBlack;
   Viewport.DrawingCanvas.Font.Size:=FFontSize;
-
 //try
     if (not ShowMonochrome.Checked) and (ShowFillcolor.Checked) then begin
       for I:=1 to Freeship.Surface.NumberOfLayers do
@@ -845,13 +821,11 @@ begin
            if Freeship.ProjectSettings.ProjectShadeUnderwaterShip
              then SubmColor:=Freeship.ProjectSettings.ProjectUnderWaterColor
              else SubmColor:=Layer.Color;
-          for j:=1 to Layer.Count do begin
-            Face:=Layer.Items[J-1];
+          for j:=1 to Layer.Count do begin Face:=Layer.Items[J-1];
             Done:=False;
             if Face.Max.Z < Freeship.Surface.Min.Z +
             Freeship.ProjectSettings.ProjectDraft then begin
-              for N:=1 to Face.ChildCount do begin
-                Child:=Face.Child[N-1];
+              for N:=1 to Face.ChildCount do begin Child:=Face.Child[N-1];
                 for K:=3 to Child.NumberOfpoints do
                   AddTriangle(Child.Point[0].Coordinate, Child.Point[K-2].Coordinate,
                     Child.Point[K-1].Coordinate, SubmColor, Below, Layer.Symmetric);
@@ -860,8 +834,7 @@ begin
             end
             else if Face.Min.Z > Freeship.Surface.Min.Z+Freeship.ProjectSettings.ProjectDraft
             then begin
-              for N:=1 to Face.ChildCount do begin
-                Child:=Face.Child[N-1];
+              for N:=1 to Face.ChildCount do begin Child:=Face.Child[N-1];
                 for K:=3 to Child.NumberOfpoints do
                   AddTriangle(Child.Point[0].Coordinate, Child.Point[K-2].Coordinate,
                     Child.Point[K-1].Coordinate, Layer.Color, Above, Layer.Symmetric);
@@ -873,18 +846,18 @@ begin
           end;
         end;
 
-      SortTriangles(Below, 2);
-      SortTriangles(Above, 2);
+//    SortTriangles(Below, 2);
+//    SortTriangles(Above, 2);
       DrawTriangles(Below, [lvProfile]);
       DrawTriangles(Above, [lvProfile]);
-      SortTriangles(Below, 1);
-      SortTriangles(Above, 1);                                  // Aft bodyplan
+//    SortTriangles(Below, 1);
+//    SortTriangles(Above, 1);                                  // Aft bodyplan
       DrawTriangles(Below, [lvAftBody]);
       DrawTriangles(Above, [lvAftBody]);               // frontview on bodyplan
       DrawTriangles(Below, [lvFrontBody]);
       DrawTriangles(Above, [lvFrontBody]);                         // plan view
-      SortTriangles(Below, 3);
-      SortTriangles(Above, 3);
+//    SortTriangles(Below, 3);
+//    SortTriangles(Above, 3);
       DrawTriangles(Below, [lvPlan]);
       DrawTriangles(Above, [lvPlan]);
                       // Draw dwl as a white band in profile and bodyplan views
@@ -894,16 +867,16 @@ begin
       Viewport.BrushStyle:=bsClear;                      // draw dwl in profile
       DrawLineAtt(FProfileOrigin, SetPoint(FMin3D.X-Space, FMin3D.Z +
         FFreeship.ProjectSettings.ProjectDraft, 0), SetPoint(
-        FMax3D.X+Space, FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft, 0), '', False);
+        FMax3D.X+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),'',False);
                                                     // draw dwl in aft bodyplan
       Space:=CalculateSpace(textspace, FMin3D.Y, FMax3D.Y);
       DrawLineAtt(FAftOrigin, SetPoint(-FMax3D.Y-Space, FMin3D.Z +
         FFreeship.ProjectSettings.ProjectDraft, 0), SetPoint(
-        FMax3D.Y+Space, FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft, 0), '', False);
+        FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),'',False);
                                                   // draw dwl in front bodyplan
       DrawLineAtt(FFrontOrigin, SetPoint(-FMax3D.Y-Space, FMin3D.Z +
         FFreeship.ProjectSettings.ProjectDraft, 0), SetPoint(
-        FMax3D.Y+Space, FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft, 0), '', False);
+        FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),'',False);
     end;
                                                                    // Draw grid
     if ShowMonochrome.Checked then Viewport.PenColor:=clSilver
@@ -961,9 +934,9 @@ begin
     Viewport.SetPenWidth(PenwidthFactor);
     for I:=1 to FFreeship.NumberofWaterlines do begin
       Tmp:=-FFreeship.Waterline[I-1].Plane.D;
-      Str:=ConvertDimension(Tmp, Freeship.ProjectSettings.ProjectUnits);
-      DrawLineAtt(FAftOrigin, SetPoint(-FMax3D.Y-Space, Tmp, 0),
-        SetPoint(FMax3D.Y+Space, Tmp, 0), Str, False);
+      Str:=ConvertDimension( Tmp,Freeship.ProjectSettings.ProjectUnits );
+      DrawLineAtt(FAftOrigin,SetPoint(-FMax3D.Y-Space,Tmp,0),
+                             SetPoint(FMax3D.Y+Space,Tmp,0),Str,False );
     end;
     Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);
     for I:=1 to FFreeship.NumberofButtocks do begin
@@ -971,8 +944,8 @@ begin
       Str:=ConvertDimension(Tmp, Freeship.ProjectSettings.ProjectUnits);
       DrawLineAtt(FAftOrigin, SetPoint(Tmp, FMin3D.Z-space, 0), SetPoint(
         Tmp, FMax3D.Z+space, 0), Str, True);
-      DrawLineAtt(FAftOrigin, SetPoint(-Tmp, FMin3D.Z-space, 0),
-        SetPoint(-Tmp, FMax3D.Z+space, 0), Str, True);
+      DrawLineAtt( FAftOrigin,SetPoint(-Tmp,FMin3D.Z-space, 0),
+                              SetPoint(-Tmp,FMax3D.Z+space, 0), Str, True);
     end;
     // draw grid in front body view
     Viewport.SetPenWidth(2 * PenwidthFactor);
@@ -997,9 +970,9 @@ begin
     Viewport.SetPenWidth(PenwidthFactor);
     for I:=1 to FFreeship.NumberofWaterlines do begin
       Tmp:=-FFreeship.Waterline[I-1].Plane.D;
-      Str:=ConvertDimension(Tmp, Freeship.ProjectSettings.ProjectUnits);
-      DrawLineAtt(FFrontOrigin, SetPoint(-FMax3D.Y-Space, Tmp, 0),
-        SetPoint(FMax3D.Y+Space, Tmp, 0), Str, False);
+      Str:=ConvertDimension( Tmp,Freeship.ProjectSettings.ProjectUnits );
+      DrawLineAtt( FFrontOrigin,SetPoint(-FMax3D.Y-Space,Tmp,0),
+                                SetPoint(FMax3D.Y+Space,Tmp,0),Str,False );
     end;
     Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);
     for I:=1 to FFreeship.NumberofButtocks do begin
@@ -1039,8 +1012,7 @@ begin
         DrawLineAtt(FPlanOrigin, SetPoint(Tmp, -FDiagonalWidth-space, 0), SetPoint(
           Tmp, FMax3D.Y+space, 0), Str, True);
     end;
-
-    // draw knuckle-lines
+    //   draw knuckle-lines
     //if not ShowFillColor.checked then
     begin
       if ShowFillColor.Checked then Viewport.SetPenWidth(1 * PenwidthFactor)
@@ -1064,6 +1036,11 @@ begin
 
     Viewport.SetPenWidth(PenwidthFactor);
     MidshipLocation:=Freeship.ProjectSettings.ProjectSplitSectionLocation;
+    // Draw Waterlines
+    if ShowMonochrome.Checked then Viewport.PenColor:=clBlack
+                 else Viewport.PenColor:=Freeship.Preferences.WaterlineColor;
+    for i:=1 to Freeship.NumberofWaterlines do
+        DrawIntersection(Freeship.Waterline[I-1],[lvPlan],psSolid);
     // Draw stations
     if ShowMonochrome.Checked then Viewport.PenColor:=clBlack
                    else Viewport.PenColor:=Freeship.Preferences.StationColor;
@@ -1073,65 +1050,47 @@ begin
     if ShowMonochrome.Checked then Viewport.PenColor:=clBlack
                    else Viewport.PenColor:=Freeship.Preferences.ButtockColor;
     for i:=1 to Freeship.NumberofButtocks do
-        DrawIntersection(Freeship.Buttock[I-1], [lvProfile], psSolid);
-    // Draw Waterlines
-    if ShowMonochrome.Checked then Viewport.PenColor:=clBlack
-                 else Viewport.PenColor:=Freeship.Preferences.WaterlineColor;
-    for i:=1 to Freeship.NumberofWaterlines do
-        DrawIntersection(Freeship.Waterline[I-1], [lvPlan], psSolid);
-
+        DrawIntersection(Freeship.Buttock[I-1],[lvProfile],psSolid);
     // Draw diagonals
     Viewport.PenWidth:=PenwidthFactor;
     for I:=1 to Freeship.NumberofDiagonals do begin
       Diagonal:=Freeship.Diagonal[I-1];
       Plane.a:=0.0;
-      Plane.b:=1 / Sqrt(2);
-      Plane.c:=-1 / sqrt(2);
+      Plane.b:=1/Sqrt(2);
+      Plane.c:=-1/sqrt(2);
       Plane.d:=-Diagonal.Plane.d;
       if not Diagonal.Built then Diagonal.Rebuild;
       for J:=1 to Diagonal.Count do begin
         Viewport.SetPenWidth(1);
         if ShowMonochrome.Checked then Viewport.PenColor:=clBlack
-               else Viewport.PenColor:=Freeship.Preferences.DiagonalColor;
-
+           else Viewport.PenColor:=Freeship.Preferences.DiagonalColor;
         Spline:=Diagonal.Items[J-1];
         Spline.Fragments:=Steps;
         Pts3D:=Spline.GetValues;
         Setlength(Pts, length(Pts3D));
-
         Min:=0;
         Max:=0;
         L:=0; Pn:=0;
-        for K:=0 to length(Pts3D)-1 do begin
-          P:=Pts3D[K];
-          Tmp:=abs(Plane.A * P.x+Plane.B * P.y+Plane.C * P.z+Plane.D);
+        for K:=0 to length(Pts3D)-1 do begin P:=Pts3D[K];
+          Tmp:=abs( Plane.A * P.x+Plane.B * P.y+Plane.C * P.z+Plane.D );
           if K = 0 then begin Min:=Tmp; Max:=Tmp; end else begin
             if Tmp < min then Min:=Tmp;
             if Tmp > max then Max:=Tmp;
           end;
-          P:=Point3D(FPlanOrigin.X+P.X, FPlanOrigin.Y-abs(Tmp), 0.0);
+          P:=Point3D( FPlanOrigin.X+P.X,FPlanOrigin.Y-abs(Tmp),0.0 );
           Pts[K]:=Viewport.Project(P);
         end;
        {  // changed to above
-        for K:=0 to steps do
-        begin
+        for K:=0 to steps do begin
           P:=Spline.Value(K / steps, Pn1, Pn2);
-          if (Pn<>Pn1) and Spline.Knuckle[Pn1] then // add knuckle
-          begin
+          if (Pn<>Pn1) and Spline.Knuckle[Pn1] then begin // add knuckle
             Pkn:=Spline.Point[Pn1];
             Pn:=Pn1;
             Tmp:=abs(Plane.A * Pkn.x+Plane.B * Pkn.y+Plane.C * Pkn.z+Plane.D);
-            if K = 0 then
-            begin
-              Min:=Tmp;
-              Max:=Tmp;
-            end
-            else
-            begin
-              if Tmp < min then
-                Min:=Tmp;
-              if Tmp > max then
-                Max:=Tmp;
+            if K = 0 then begin Min:=Tmp; Max:=Tmp;
+            end else begin
+              if Tmp < min then Min:=Tmp;
+              if Tmp > max then Max:=Tmp;
             end;
             P:=Point3D(FPlanOrigin.X+Pkn.X, FPlanOrigin.Y-abs(Tmp), 0.0);
             Pts[L]:=Viewport.Project(P);
@@ -1139,17 +1098,10 @@ begin
           end;
 
           Tmp:=abs(Plane.A * P.x+Plane.B * P.y+Plane.C * P.z+Plane.D);
-          if K = 0 then
-          begin
-            Min:=Tmp;
-            Max:=Tmp;
-          end
-          else
-          begin
-            if Tmp < min then
-              Min:=Tmp;
-            if Tmp > max then
-              Max:=Tmp;
+          if K = 0 then begin Min:=Tmp; Max:=Tmp;
+          end else begin
+            if Tmp < min then Min:=Tmp;
+            if Tmp > max then Max:=Tmp;
           end;
           P:=Point3D(FPlanOrigin.X+P.X, FPlanOrigin.Y-abs(Tmp), 0.0);
           Pts[L]:=Viewport.Project(P);
@@ -1157,7 +1109,6 @@ begin
         end;
         SetLength(Pts, L);
         }
-
         Viewport.Polyline(Pts);               // draw as grid in bodyplan views
         Viewport.SetPenWidth(PenwidthFactor);
         if ShowMonochrome.Checked then Viewport.PenColor:=clBlack

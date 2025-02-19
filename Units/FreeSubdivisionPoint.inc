@@ -242,7 +242,7 @@ begin
     if Faces <> nil then begin
       N:=0;
       for I:=1 to NumberOfFaces do begin
-        Ind:=Faces.SortedIndexOf(face[I-1]);
+        Ind:=Faces.IndexOf(face[I-1]);
         if Ind <> -1 then Inc(N);
       end;
       Result:=N = 2;
@@ -519,8 +519,8 @@ end;
 constructor TFreeSubdivisionPoint.Create(aSurface: TFreeSubdivisionSurface);
 begin
   inherited Create(aSurface);
-  FFaces:=TFasterListTFreeSubdivisionFace.Create(false,false);
-  FEdges:=TFasterListTFreeSubdivisionEdge.Create(false,false);
+  FFaces:=TFasterListTFreeSubdivisionFace.Create;
+  FEdges:=TFasterListTFreeSubdivisionEdge.Create;
   Clear;
 end;
 
@@ -566,7 +566,7 @@ begin
     if E.EndPoint = Self then E.EndPoint:=nil;
   end;
   for i:=0 to FFaces.Count-1 do FFaces[i].FPoints.DeleteItem(Self);
-  if FSurface <> nil then FSurface.UnreferencePoint(Self);
+  if Surface <> nil then Surface.UnreferencePoint(Self);
   InUnreference:=false;
 end;
 

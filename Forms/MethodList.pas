@@ -31,7 +31,6 @@ destructor TMethodList.Destroy; begin Clear; inherited Destroy; end;
 procedure TMethodList.Clear; begin FSetCapacity(0); end;
 
 procedure TMethodList.Add(Item: TItemType);
-var I:integer;
 begin if FCount=FCapacity then FGrow; FList[FCount]:=Item; Inc( FCount );
 end;
 procedure TMethodList.Delete(Index: integer);

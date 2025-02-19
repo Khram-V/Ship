@@ -392,9 +392,9 @@ procedure TFreeSpline.Assign(Spline: TFreeSpline);
 begin
   FMin:=Spline.FMin;
   FMax:=Spline.FMax;
-  FPenWidth:=Spline.FPenwidth;
-  FColor:=Spline.FColor;
-  FPenstyle:=Spline.FPenStyle;
+  PenWidth:=Spline.Penwidth;
+  Color:=Spline.Color;
+  Penstyle:=Spline.PenStyle;
   Capacity:=Spline.NumberOfPoints;
   // Copy controlpoints
   Move(Spline.FPoints[0], FPoints[0], Spline.NumberOfPoints * SizeOf(T3DCoordinate));
@@ -406,9 +406,9 @@ begin
   FFragments:=Spline.Fragments;
   if FFragments < FNoPoints-1 then FFragments:=FNoPoints-1;
 
-  FShowCurvature:=Spline.ShowCurvature;
-  FCurvatureScale:=Spline.FCurvatureScale;
-  FCurvatureColor:=Spline.FCurvatureColor;
+  ShowCurvature:=Spline.ShowCurvature;
+  CurvatureScale:=Spline.CurvatureScale;
+  CurvatureColor:=Spline.CurvatureColor;
   Built:=False;
 end;
 
@@ -701,44 +701,35 @@ begin
       end;
       SetLength(PArray1, J);
       SetLength(PArray2, J);
-      Viewport.SetPenWidth(FPenWidth);
+      Viewport.SetPenWidth(PenWidth);
       Viewport.PenColor:=CurvatureColor;
       for I:=0 to J-1 do
-        if (I mod 4 = 0) or (I = 1) or (I = Fragments) then
-        begin
-          Viewport.MoveTo(PArray1[I].X, PArray1[I].Y);
-          Viewport.LineTo(PArray2[I].X, PArray2[I].Y);
-        end;
+      if (I mod 4 = 0) or (I = 1) or (I = Fragments) then begin
+        Viewport.MoveTo(PArray1[I].X, PArray1[I].Y);
+        Viewport.LineTo(PArray2[I].X, PArray2[I].Y);
+      end;
       Viewport.Polyline(PArray2);
-    end
-    else
-    begin
+    end else begin
       PArray1:=GetValuesProjected(Viewport);
     end;
-    Viewport.SetPenWidth(FPenWidth);
+    Viewport.SetPenWidth(PenWidth);
     Viewport.PenColor:=Color;
-    Viewport.PenStyle:=FPenstyle;
+    Viewport.PenStyle:=Penstyle;
     Viewport.Polyline(PArray1);
 
-    if ShowPoints then
-    begin
+    if ShowPoints then begin
       Viewport.Fontname:='small fonts';
       Viewport.FontSize:=7;
       Viewport.FontColor:=clBlack;
       Viewport.BrushStyle:=bsClear;
-      for I:=1 to NumberOfPoints do
-      begin
+      for I:=1 to NumberOfPoints do begin
         Pt:=Viewport.Project(Point[I-1]);
         Viewport.Ellipse(Pt.X-2, Pt.Y-2, Pt.X+2, Pt.Y+2);
         Viewport.TextOut(Pt.X+2, Pt.Y, IntToStr(I));
       end;
     end;
-  end
-  else
-  begin
-    // draw to z-buffer
-    if not Built then
-      Rebuild;
+  end else begin                                            // draw to z-buffer
+    if not Built then Rebuild;
     R:=GetRValue(Color);
     G:=GetGValue(Color);
     B:=GetBValue(Color);
@@ -754,8 +745,7 @@ begin
     end;
     }
     PArray3dc:=self.GetValues;
-    for I:=1 to length(PArray3dc)-1 do
-    begin
+    for I:=1 to length(PArray3dc)-1 do begin
       P1:=PArray3dc[i-1];
       P2:=PArray3dc[i];
       Viewport.DrawLineToZBuffer(P1, P2, R, G, B);
@@ -914,8 +904,8 @@ var
   P: T3DCoordinate;
   K: boolean;
 begin
-  Source.LoadBoolean(FShowCurvature);
-  Source.LoadTFloatType(FCurvatureScale);
+  Source.LoadBoolean(ShowCurvature);
+  Source.LoadTFloatType(CurvatureScale);
   Source.LoadInteger(N);
   Capacity:=N;
   for I:=1 to N do
@@ -931,8 +921,8 @@ procedure TFreeSpline.SaveBinary(Destination: TFreeFileBuffer);
 var
   I: integer;
 begin
-  Destination.Add(FShowCurvature);
-  Destination.Add(FCurvatureScale);
+  Destination.Add(ShowCurvature);
+  Destination.Add(CurvatureScale);
   Destination.Add(NumberOfPoints);
   for I:=1 to NumberOfPoints do
   begin
@@ -953,10 +943,10 @@ begin
   FCapacity:=0;
   FNoPoints:=0;
   FFragments:=0;
-  FShowCurvature:=False;
-  FCurvatureScale:=0.10;
-  FCurvatureColor:=clFuchsia;
-  FShowPoints:=False;
+  CurvatureScale:=0.10;
+  CurvatureColor:=clFuchsia;
+  ShowCurvature:=False;
+  ShowPoints:=False;
 end;
 
 function TFreeSpline.Value(Parameter: extended): T3DCoordinate;
@@ -967,8 +957,7 @@ end;
 
 function TFreeSpline.Value(Parameter: extended; var PointNo1, PointNo2: integer): T3DCoordinate;
 var
-  Lo, Hi: integer;
-  K: integer;
+  K, Lo, Hi: integer;
   H, a, b, a3, b3, h2: TFloatType;
 begin
   Result.X:=0;
@@ -976,32 +965,23 @@ begin
   Result.Z:=0;
   PointNo1:=0;
   PointNo2:=0;
-  if not FBuilt then
-    Rebuild;
-  if FNoPoints < 2 then
-    Rebuild;
-  if (length(FParameters) < FNoPoints) then
-    Rebuild;
-  if (length(FDerivatives) < FNoPoints) then
-    Rebuild;
+  if not FBuilt then Rebuild;
+  if FNoPoints < 2 then Rebuild;
+  if (length(FParameters) < FNoPoints) then Rebuild;
+  if (length(FDerivatives) < FNoPoints) then Rebuild;
 
   PointNo1:=0; PointNo2:=0;
   if FNoPoints < 2 then exit;
   if FNoPoints = 2 then begin
     Lo:=0;
     Hi:=1;
-  end
-  else begin
+  end else begin
     if (length(FParameters) < FNoPoints) then Rebuild;
     Lo:=0;
     Hi:=FNoPoints-1;
     repeat
       K:=(Lo+Hi) div 2;
-//    try
-        if FParameters[K] < Parameter then Lo:=K else Hi:=K;
-//    except
-//      FParameters[K]:=FParameters[K]-1+1;
-//    end;
+      if FParameters[K] < Parameter then Lo:=K else Hi:=K;
       if (length(FParameters) < FNoPoints) then Rebuild;
     until Hi-Lo <= 1;
   end;

@@ -136,7 +136,6 @@ type
   TFasterListTFreeDevelopedPatch = TFasterList<TFreeDevelopedPatch>;
   {---------------------------------------------------------------------------------------------------}
 
-
   TFreeFaceGrid = record
     Faces: array of array of
     TFreeSubdivisionControlFace;
@@ -190,10 +189,10 @@ type
 
   TProgressEvent = procedure(Sender: TObject; current:integer; total:integer) of object;
 
-  {---------------------------------------------------------------------------------------------------}
-  {                                           TFreeAlphaBuffer                                        }
-  { Alpha-buffer class used in the shading algorithm                                                  }
-  {---------------------------------------------------------------------------------------------------}
+  {------------------------------------------------------------}
+  {                                           TFreeAlphaBuffer }
+  { Alpha-buffer class used in the shading algorithm           }
+  {------------------------------------------------------------}
   TFreeAlphaBuffer = class
   private
     FViewport: TFreeViewport;
@@ -210,10 +209,10 @@ type
     procedure Draw;
   end;
 
-  {---------------------------------------------------------------------------------------------------}
-  {                                           TFreeZBuffer                                            }
-  { Z-buffer class used in the shading algorithm                                                      }
-  {---------------------------------------------------------------------------------------------------}
+  {--------------------------------------------------------}
+  {                                           TFreeZBuffer }
+  { Z-buffer class used in the shading algorithm           }
+  {--------------------------------------------------------}
   TFreeZBuffer = class
   private
     FViewport: TFreeViewport;
@@ -224,14 +223,13 @@ type
     procedure Initialize;
   end;
 
-  {---------------------------------------------------------------------------------------------------}
-  {                                           TFreeBackgroundImage                                    }
-  { Background image properties for use in a viewport                                                 }
-  {---------------------------------------------------------------------------------------------------}
+  {----------------------------------------------------------------}
+  {                                           TFreeBackgroundImage }
+  { Background image properties for use in a viewport              }
+  {----------------------------------------------------------------}
   TFreeBackgroundImage = class(TPersistent)
   private
-    FOwner: TFreeViewport;
-    FBitmap: TBitmap;
+//  FOwner: TFreeViewport;
     FOrigin: TPoint;
     FScale: TFloatType;
     FTransparent: boolean;
@@ -241,6 +239,7 @@ type
     FQuality: byte;
     FAlpha: byte;
     FTolerance: byte;
+//  FBitmap: TBitmap;
     FCachedBmp: TBitmap;
     procedure FSetAlpha(val: byte);
     procedure FSetOrigin(val: TPoint);
@@ -249,6 +248,8 @@ type
     procedure FSetTransparentColor(val: TColor);
     procedure FSetVisible(val: boolean);
   public
+    Owner: TFreeViewport;
+    Bitmap: TBitmap;
     procedure AssignData(Image: TGraphic;
       View: TFreeViewType; Origin: TPoint; Scale: TFloatType; Transp: boolean;
       TranspCol: TColor; Alpha, Quality, Tolerance: byte; Quiet: boolean);
@@ -266,8 +267,8 @@ type
     property Origin: TPoint read FOrigin write FSetOrigin;
   published
     property Alpha: byte read FAlpha write FSetAlpha;
-    property Bitmap: TBitmap read FBitmap write FBitmap;
-    property Owner: TFreeViewport read FOwner write FOwner;
+//  property Bitmap: TBitmap read FBitmap write FBitmap;
+//  property Owner: TFreeViewport read FOwner write FOwner;
     property Quality: byte read FQuality write FQuality;
     property Scale: TFloatType read FScale write FScale;
     property ShowInView: TFreeViewType read FShowInView write FShowInView;
@@ -627,18 +628,14 @@ type
   TFreeNamedObject = class
   private
     FId:integer;
-    FName:string;
-    FSurface: TFreeSubdivisionSurface;
   protected
     function FGetSelected: boolean; virtual;
     procedure FSetSelected(AValue: boolean); virtual;
   public
+    Name:AnsiString;
+    Surface: TFreeSubdivisionSurface;
     constructor Create(Owner: TFreeSubdivisionSurface); virtual;
-    property Surface: TFreeSubdivisionSurface read FSurface write FSurface;
-    //property Surface: TFreeSubdivisionSurface read FSurface write FSurface;
-    //procedure PrintDebug; virtual;
     property Id: Integer read FId;
-    property Name: String read FName write FName;
     property Selected:boolean read FGetSelected write FSetSelected;
   end;
 
@@ -650,16 +647,14 @@ type
   private
     FBuilt: boolean; // Flag to check if the entity has already been built
     FIsBuilding: boolean; // Flag to check if the entity structure is building to exclude double entrance to building
-    FMin, FMax: T3DCoordinate;
-    // The min/max boundary coordinates of the entity after it has been build
-    FPenWidth: byte;    // Pen thickness to use when drawing
-    FColor: TColor; // Color when drawing
-    //FName:string;
-    FPenstyle: TPenStyle;  // Pen style for drawing the line
+    FMin, FMax: T3DCoordinate; // The min/max boundary coordinates of the entity after it has been build
     function GetMin: T3DCoordinate; virtual;
     function GetMax: T3DCoordinate; virtual;
     procedure SetBuilt(Val: boolean); virtual;
   public
+    Color: TColor;         // Color when drawing
+    Penstyle: TPenStyle;   // Pen style for drawing the line
+    PenWidth: byte;        // Pen thickness to use when drawing
     constructor Create(Owner: TFreeSubdivisionSurface); override;
     procedure Clear; virtual;
     destructor Destroy; override;
@@ -667,12 +662,9 @@ type
     procedure Draw(Viewport: TFreeViewport); virtual;
     procedure Rebuild; virtual;
     property Built: boolean read FBuilt write SetBuilt;
-    property Color: TColor  read FColor write FColor;
     property IsBuilding: boolean read FIsBuilding;
     property Min: T3DCoordinate  read GetMin;
     property Max: T3DCoordinate  read GetMax;
-    property PenStyle: TPenStyle read FPenStyle write FPenStyle;  // Pen style
-    property PenWidth: byte read FPenWidth write FPenWidth; // Pen thickness when drawing on screen
   end;
 
   {--------------------------------------------------------------------}
@@ -684,13 +676,13 @@ type
   { interpolation and to accept knuckles in the controlpoints          }
   {--------------------------------------------------------------------}
   TFreeSpline = class(TFreeEntity)
-    FCapacity: integer;    // Number of points for which memory has been allocated
-    FNoPoints: integer;    // Actual number of points present
+    FCapacity,    // Number of points for which memory has been allocated
+    FNoPoints,    // Actual number of points present
     FFragments: integer;   // Number of straight-line segments used when drawing the curve
-    FShowCurvature: boolean;
-    FShowPoints: boolean;
-    FCurvatureScale: TFloatType; // scale factor used to increase or decrease the scale of the curvature plot
-    FCurvatureColor: TColor;     // Color used for draing the curvature plot
+    ShowCurvature,
+    ShowPoints: boolean;
+    CurvatureScale: TFloatType; // scale factor used to increase or decrease the scale of the curvature plot
+    CurvatureColor: TColor;     // Color used for draing the curvature plot
     FTotalLength: TFloatType;
     FPoints: TFreeCoordinateArray; // Array containing all controlpoints
     FKnuckles: array of boolean;
@@ -705,7 +697,6 @@ type
     procedure FSetFragments(Val: integer);
     procedure FSetKnuckle(Index: integer; Value: boolean);
     procedure FSetPoint(Index: integer; P: T3DCoordinate);
-
   public
     procedure Add(P: T3DCoordinate);
     procedure AddKnuckle(P: T3DCoordinate); // add a new point to the curve
@@ -728,7 +719,7 @@ type
     procedure LoadBinary(Source: TFreeFileBuffer); virtual;
     procedure Rebuild; override;
     procedure SaveBinary(Destination: TFreeFileBuffer); virtual;
-    procedure SaveToDXF(Strings: TStringList; Layername: AnsiString; SendMirror: boolean);
+    procedure SaveToDXF( Strings: TStringList; Layername: AnsiString; SendMirror: boolean );
     function SecondDerive(Parameter: TFloatType): T3DCoordinate;
     function Simplify(Criterium: TFloatType): boolean;
     // Remove points that do not contribute significantly to the shape
@@ -736,15 +727,11 @@ type
     function Value(Parameter: extended): T3DCoordinate; overload;
     function Value(Parameter: extended; var PointNo1, PointNo2: integer): T3DCoordinate; overload;
     property Capacity: integer read FCapacity write FSetCapacity;
-    property CurvatureColor: TColor read FCurvatureColor write FCurvatureColor;
-    property CurvatureScale: TFloatType read FCurvatureScale write FCurvatureScale;
     property Fragments: integer read FGetFragments write FSetFragments;
     property Knuckle[Index: integer]: boolean read FGetKnuckle write FSetKnuckle;
     property NumberOfPoints: integer read FNoPoints;
     property Parameter[Index: integer]: TFloatType read FGetParameter;
     property Point[Index: integer]: T3DCoordinate read FGetPoint write FSetPoint;
-    property ShowCurvature: boolean read FShowCurvature write FShowCurvature;
-    property ShowPoints: boolean read FShowPoints write FShowPoints;
     property TotalLength: TFloatType read FTotalLength;
   end;
   {------------------------------------------------------------}
@@ -752,8 +739,6 @@ type
   {------------------------------------------------------------}
   TFreeNURBSurface = class(TFreeEntity)
   private
-    FColCount: integer;
-    FRowCount: integer;
     FColCapacity: integer;
     FRowCapacity: integer;
     FColDegree: integer;
@@ -769,6 +754,7 @@ type
     procedure FSetRowCapacity(Val: integer);
   protected
   public
+    ColCount,RowCount: integer;
     procedure Clear; override;
     procedure DeleteColumn(Col: integer);
     procedure DeleteRow(Row: integer);
@@ -782,37 +768,34 @@ type
     procedure SetUniformColKnotvector;
     procedure SetUniformRowKnotvector;
     property ColCapacity: integer read FColCapacity write FSetColCapacity;
-    property ColCount: integer read FColCount write FColCount;
     property ColDegree: integer read FColDegree write FSetColDegree;
     property ColKnotVector: TFloatArray read FColknots;
     property Point[Col, Row: integer]: T3DCoordinate read FGetpoint write FSetPoint;
     property RowCapacity: integer read FRowCapacity write FSetRowCapacity;
-    property RowCount: integer read FRowCount write FRowCount;
     property RowDegree: integer read FRowDegree write FSetRowDegree;
     property RowKnotVector: TFloatArray read FRowknots;
   end;
 
-  {---------------------------------------------------------------------------------------------------}
-  {                                           TFreeSubdivisionBase                                    }
-  { TFreeSubdivisionBase is the base class for all subdivision points, edges and faces                }
-  {---------------------------------------------------------------------------------------------------}
+  {----------------------------------------------------------------}
+  {                                           TFreeSubdivisionBase }
+  { TFreeSubdivisionBase is the base class                         }
+  { for all subdivision points, edges and faces                    }
+  {----------------------------------------------------------------}
   TFreeSubdivisionBase = class(TFreeNamedObject)
   private
-    //FSurface: TFreeSubdivisionSurface;
     InUnreference:boolean;
-    IsUnreferenceEnabled:boolean; // TODO-remove
-    SubdivisionLevel:integer; // for investigation
+    IsUnreferenceEnabled:boolean;     // TODO-remove
+    SubdivisionLevel:integer;         // for investigation
   public
     constructor Create(Owner: TFreeSubdivisionSurface); override;
-    //property Surface: TFreeSubdivisionSurface read FSurface write FSurface;
-    //procedure PrintDebug; override;
   end;
 
-  {---------------------------------------------------------------------------------------------------}
-  {                                           TFreeSubdivisionControlCurve                            }
-  { Controlcurves are curves that can be added to the controlnet an are subdivide with the surface.   }
-  { The resulting curve therefore lies on the surface, and can be used in the fairing process         }
-  {---------------------------------------------------------------------------------------------------}
+  {-------------------------------------------------------------------------}
+  {                                           TFreeSubdivisionControlCurve  }
+  { Controlcurves are curves that can be added to the controlnet an         }
+  { are subdivide with the surface. The resulting curve therefore lies      }
+  { on the surface, and can be used in the fairing process                  }
+  {-------------------------------------------------------------------------}
   TFreeSubdivisionControlCurve = class(TFreeSubdivisionBase)
   private
     FVisible: boolean;
@@ -848,7 +831,6 @@ type
     procedure InsertEdgePoint(P1, P2, New: TFreeSubdivisionPoint);
     function IsFreeStanding:boolean;
     procedure LoadBinary(Source: TFreeFileBuffer);
-//    procedure PrintDebug; override;
     procedure Rebuild;
     procedure RebuildSpline;
     procedure RebuildFreeStanding;
@@ -877,10 +859,9 @@ type
   TFreeSubdivisionLayer = class
     // color, visibility, symmetric, calc intersections/part of hull
   private
-    FOwner: TFreeSubdivisionSurface;
-    // Pointer to the subdivisionsurface
-    FLayerID: integer; // Unique identification number for internal references
-    FColor: TColor;  // Color of this layer
+    FOwner: TFreeSubdivisionSurface;       // Pointer to the subdivisionsurface
+    FLayerID: integer;  // Unique identification number for internal references
+    FColor: TColor;     // Color of this layer
 
     FSurfaceVisible: boolean;  // Visibility switch for subdivided mesh/surface
     FControlNetVisible: boolean; // Visibility switch for Control Net
@@ -1067,13 +1048,13 @@ type
     property Visible: boolean read FGetVisible;
   end;
 
-  {---------------------------------------------------------------------------------------------------}
-  {                                           TFreeSubdivisionControlPointGroup                       }
-  { TFreeSubdivisionBase is the base class for all subdivision points, edges and faces                }
-  {---------------------------------------------------------------------------------------------------}
+  {---------------------------------------------}
+  {           TFreeSubdivisionControlPointGroup }
+  { TFreeSubdivisionBase is the base class      }
+  { for all subdivision points, edges and faces }
+  {---------------------------------------------}
   TFreeSubdivisionControlPointGroup = class(TFreeNamedObject)
   private
-    //FSurface: TFreeSubdivisionSurface;
     FControlPoints: TFasterListTFreeSubdivisionControlPoint;
     FLocked: boolean;
     function CalculateCenterPoint: T3DCoordinate;
@@ -1093,10 +1074,7 @@ type
     procedure LoadFromStream(var LineNr: integer; Strings: TStringList);
     procedure SaveBinary(Destination: TFreeFileBuffer);
     procedure SaveToStream(Strings: TStringList);
-
     property ControlPoints:TFasterListTFreeSubdivisionControlPoint read FControlPoints;
-    property Surface: TFreeSubdivisionSurface read FSurface write FSurface;
-    //procedure PrintDebug; virtual;
     property Locked: boolean read FLocked write FSetLocked;
     property Selected: boolean read FGetSelected write FSetSelected;
     property Visible: boolean read FGetVisible;
@@ -1120,7 +1098,6 @@ type
     procedure FSetCrease(Val: boolean); virtual;
     function FGetPreviousEdge: TFreeSubdivisionEdge;
     function FGetNextEdge: TFreeSubdivisionEdge;
-//    procedure PrintDebug; override;
     procedure SetCurve(AValue: TFreeSubdivisionControlCurve);
     procedure SetStartPoint(aPoint:TFreeSubdivisionPoint);
     procedure SetEndPoint(aPoint:TFreeSubdivisionPoint);
@@ -1138,7 +1115,6 @@ type
     function DistanceToCursor(X, Y: integer; var P: T3DCoordinate; Viewport: TFreeViewport): integer; virtual;
     procedure Draw(DrawMirror: boolean; Viewport: TFreeViewport); virtual;
     procedure SwapData;
-    //function getPoints:TFasterListTFreeSubdivisionPoint;
     property Crease: boolean read FCrease write FSetCrease;
     property Curve: TFreeSubdivisionControlCurve read FCurve write SetCurve;
     property EdgeIndex: integer read FGetIndex;
@@ -1150,7 +1126,6 @@ type
     property NumberOfFaces: integer read FGetNumberOfFaces;
     property PreviousEdge: TFreeSubdivisionEdge read FGetPreviousEdge;
     property StartPoint: TFreeSubdivisionPoint read FStartPoint write SetStartPoint;
-    //property Points:TFasterListTFreeSubdivisionPoint read getPoints;
   end;
 
   {--------------------------------------------------------------------------------------------------}
@@ -1212,19 +1187,17 @@ type
     procedure Delete; virtual;
     procedure Unreference; virtual;
     destructor Destroy; override;
-    procedure FlipNormal;
-    // Inverts the point ordering of the face
+    procedure FlipNormal;             // Inverts the point ordering of the face
     function IndexOfPoint( P: TFreeSubdivisionPoint): integer;
-//    procedure PrintDebug; override;
-    procedure Subdivide(
-      aOwner: TFreeSubdivisionSurface;
+    procedure Subdivide
+    ( aOwner: TFreeSubdivisionSurface;
       aIsControlFace: boolean;
       aRefVertices:TFasterListTFreeSubdivisionPoint;
       aRefEdges:TFasterListTFreeSubdivisionEdge;
       aRefFaces:TFasterListTFreeSubdivisionFace;
       aInteriorEdges:TFasterListTFreeSubdivisionEdge;
       aControlDescendandEdges:TFasterListTFreeSubdivisionEdge;
-      aNewFaces: TFasterListTFreeSubdivisionFace);
+      aNewFaces: TFasterListTFreeSubdivisionFace );
     property Area: TFloatType        read FGetArea;
     property FaceCenter:             T3DCoordinate read FGetFaceCenter;
     property FaceNormal:             T3DCoordinate read FGetFaceNormal;
@@ -1240,11 +1213,10 @@ type
   private
     FLayer: TFreeSubdivisionLayer;
     FChildren: TFasterListTFreeSubdivisionFace;
-    FMin, FMax: T3DCoordinate;
+    FMin,FMax: T3DCoordinate;
     FEdges: TFasterListTFreeSubdivisionEdge;
     FControlDescendantEdges: TFasterListTFreeSubdivisionEdge; // here can be real ControlEdges and divided "children" of them. Do not why.
-    function FGetChild(Index: integer):
-      TFreeSubdivisionFace;
+    function FGetChild(Index: integer): TFreeSubdivisionFace;
     function FGetChildCount: integer;
     function FGetColor: TColor;
     function FGetControlDescendantEdge(Index: integer): TFreeSubdivisionEdge;
@@ -1277,13 +1249,11 @@ type
     function InsertEdge( P1, P2: TFreeSubdivisionControlPoint;
                          var IsFaceDeleted:boolean): TFreesubdivisionControlEdge;
     procedure LoadBinary(Source: TFreeFileBuffer);
-    procedure LoadFromStream(
-      var LineNr: integer; Strings: TStringList);
+    procedure LoadFromStream( var LineNr: integer; Strings: TStringList );
     procedure RemoveReferences;
     procedure SaveBinary(Destination: TFreeFileBuffer);
     procedure SaveToDXF(Strings: TStringList);
-    procedure SaveToStream(Strings: TStringList);
-      virtual;
+    procedure SaveToStream(Strings: TStringList); virtual;
     procedure Subdivide(
       aOwner: TFreeSubdivisionSurface;
       aControlFace: boolean;
@@ -1368,12 +1338,12 @@ type
     FOnSelectItemListeners: TMethodList<TNotifyEvent>;  // This event is raised whenever an item (such as controlpoint, controledge or controlface) is selected or deselected
     FOnChangeItemListeners: TMethodList<TNotifyEvent>;
 
-    FWaterlinePlane: T3DPlane;      // This plane is used to clip the hull, and shade the underwatership in a different color
-    FShadeUnderWater: boolean;      // Switch to turn under water shading on or off
-    FShowNormals: boolean;          // show normals of selected controlfaces
+    FWaterlinePlane: T3DPlane; // This plane is used to clip the hull, and shade the underwatership in a different color
+    FShadeUnderWater: boolean; // Switch to turn under water shading on or off
+    FShowNormals: boolean;     // show normals of selected controlfaces
     FControlPointSize: integer;
 
-    FUnderWaterColorAlpha: byte;    // Color used for shading the underwater part
+    FUnderWaterColorAlpha: byte; // Color used for shading the underwater part
     FCreaseColor,           // color of descendants from creaseedges
     FCreaseEdgeColor,       // Color of crease controledges
     FUnderWaterColor,
@@ -1388,24 +1358,24 @@ type
     FLeakColor,             // color of leak points
     FCurvatureColor,        // color of the curvature plot of controlcurves
     FControlCurveColor,
-    FZebraColor:       TColor;
+    FZebraColor: TColor;
 
-    FControlEdgeLineWidth: integer;
+    FControlEdgeLineWidth,
     FInternalEdgeLineWidth: integer;
 
-    FShowCurvature: boolean;
+    FShowCurvature,
     FShowControlCurves: boolean;
-    FCurvatureScale: TFloatType;
-    FGausCurvature: TFloatArray;    // list with precalculated values of gauss. curvature in each point, used for shading
-    FMinGaussCurvature: TFloatType;
+    FCurvatureScale,
+    FMinGaussCurvature,
     FMaxGaussCurvature: TFloatType;
+    FGausCurvature: TFloatArray;    // list with precalculated values of gauss. curvature in each point, used for shading
     FSplitSectionLocation: single;
     FOnFaceRebuilt: TProgressEvent;
-    InUnreferenceControlFace:boolean;
-    InUnreferenceControlEdge:boolean;
-    InUnreferenceControlPoint:boolean;
-    InUnreferenceFace:boolean;
-    InUnreferenceEdge:boolean;
+    InUnreferenceControlFace,
+    InUnreferenceControlEdge,
+    InUnreferenceControlPoint,
+    InUnreferenceFace,
+    InUnreferenceEdge,
     InUnreferencePoint:boolean;
     procedure ClearCurvesSubdivision;
     function FGetControlPoint(Index: integer): TFreeSubdivisionControlPoint;
@@ -1452,7 +1422,6 @@ type
     procedure SetUnderwaterColor(Val: TColor);
     procedure SetShadeUnderWater(Val: boolean);
     procedure SetUnderwaterColorAlpha(AValue: byte);
-//protected
   public
     procedure AddControlCurve(Curve: TFreesubdivisionControlCurve);
     function AddControlEdge(P1, P2: TFreeSubdivisionControlPoint): TFreesubdivisionControlEdge; overload; virtual;
@@ -1769,12 +1738,12 @@ uses
 {$I FreeSubdivisionControlFace.inc}
 {$I FreeSubdivisionSurface.inc}
 
-constructor TFreeDestroyList.Create; begin inherited Create(true,false); end;
+constructor TFreeDestroyList.Create; begin inherited Create; end;
 
 constructor TFreeSubdivisionBase.Create(Owner: TFreeSubdivisionSurface);
 begin
   inherited Create(Owner);       //  TFreeSubdivisionBase is the base class
-  FSurface:=Owner;               //  for all subdivision points, edges and faces
+  Surface:=Owner;               //  for all subdivision points, edges and faces
   InUnreference:=false;
   IsUnreferenceEnabled:=true;
 end;

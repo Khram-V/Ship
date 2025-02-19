@@ -3,19 +3,19 @@
 {---------------------------------------------------------------------------------------------------}
 function TFreeMarker.FGetSelected: boolean;
 begin
-  Result:=Owner.FSelectedMarkers.SortedIndexOf(self) <> -1;
+  Result:=Owner.FSelectedMarkers.IndexOf(self) <> -1;
 end;
 
 procedure TFreeMarker.FSetSelected(AValue: boolean);
 var
   Index: integer;
 begin
-  Index:=Owner.FSelectedMarkers.SortedIndexOf(self);
+  Index:=Owner.FSelectedMarkers.IndexOf(self);
   if (Index >= 0) and AValue then exit;
   if (Index < 0) and not AValue then exit;
   if AValue then begin            // Only add if it is not already in the list
     if Index = -1 then
-      Owner.FSelectedMarkers.AddSorted(self);
+      Owner.FSelectedMarkers.Add(self);
   end
   else
   if Index <> -1 then
@@ -92,7 +92,7 @@ procedure TFreeMarker.Delete;
 var
   Index: integer;
 begin
-  Index:=Owner.FSelectedMarkers.SortedIndexOf(Self);
+  Index:=Owner.FSelectedMarkers.IndexOf(Self);
   if Index <> -1 then
     Owner.FSelectedMarkers.Delete(Index);
   Index:=Owner.FMarkers.IndexOf(Self);
@@ -217,7 +217,7 @@ begin
   Source.LoadBoolean(FVisible);
   if Owner.FileVersion >= fv261 then begin
     Source.LoadBoolean(Sel);
-    if sel then Owner.FSelectedMarkers.AddSorted(self);
+    if sel then Owner.FSelectedMarkers.Add(self);
   end;
   inherited LoadBinary( Source );
 end;

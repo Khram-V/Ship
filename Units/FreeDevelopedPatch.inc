@@ -234,8 +234,8 @@ begin
   Result:=1000000;                      // check distance to all interior edges
   for I:=1 to FEdges.Count do begin
     Edge:=FEdges[I-1];
-    S:=FPoints.SortedIndexOf(Edge.StartPoint);
-    E:=FPoints.SortedIndexOf(Edge.EndPoint);
+    S:=FPoints.IndexOf(Edge.StartPoint);
+    E:=FPoints.IndexOf(Edge.EndPoint);
     if (S <> -1) and (E <> -1) then begin
       P1:=Point[S];
       P2:=Point[E];
@@ -397,11 +397,11 @@ begin
 
       if FShadeSubmerged then begin
         for J:=3 to Face.NumberOfpoints do begin
-          Index:=FPoints.SortedIndexOf(Face.Point[0]);
+          Index:=FPoints.IndexOf(Face.Point[0]);
           if Index <> -1 then P1:=self.Point[index];
-          Index:=FPoints.SortedIndexOf(Face.Point[J-2]);
+          Index:=FPoints.IndexOf(Face.Point[J-2]);
           if Index <> -1 then P2:=self.Point[index];
-          Index:=FPoints.SortedIndexOf(Face.Point[J-1]);
+          Index:=FPoints.IndexOf(Face.Point[J-1]);
           if Index <> -1 then P3:=self.Point[index];
 
           // Check if clipping is required
@@ -436,7 +436,7 @@ begin
         end;
       end else begin
         for J:=1 to Face.NumberOfpoints do begin
-          Index:=FPoints.SortedIndexOf(Face.Point[J-1]);
+          Index:=FPoints.IndexOf(Face.Point[J-1]);
           if Index <> -1 then begin
             P1:=self.Point[index];
             Pts[J-1]:=Viewport.Project(P1);
@@ -446,7 +446,7 @@ begin
       end;
       if FMirror then begin
         for J:=1 to Face.NumberOfpoints do begin
-          Index:=FPoints.SortedIndexOf(Face.Point[J-1]);
+          Index:=FPoints.IndexOf(Face.Point[J-1]);
           if Index <> -1 then begin
             P1:=MirrorPoint[index];
             Pts[J-1]:=Viewport.Project(P1);
@@ -463,8 +463,8 @@ begin
     Viewport.PenWidth:=1 * PenwidthFactor;
     for I:=1 to FBoundaryEdges.Count do begin
       Edge:=FBoundaryEdges[I-1];
-      S:=FPoints.SortedIndexOf(Edge.StartPoint);
-      E:=FPoints.SortedIndexOf(Edge.EndPoint);
+      S:=FPoints.IndexOf(Edge.StartPoint);
+      E:=FPoints.IndexOf(Edge.EndPoint);
       if (S <> -1) and (E <> -1) then begin
         Pt:=Viewport.Project(self.Point[S]);
         Viewport.MoveTo(Pt.X, Pt.Y);
@@ -498,8 +498,8 @@ begin
       Edge:=FBoundaryEdges[I-1];
       if (not FMirror) or (FMirror and (abs(Edge.FStartPoint.Coordinate.Y)>1e-3)
       and (abs(Edge.FEndPoint.Coordinate.Y) > 1e-3)) then begin
-        S:=FPoints.SortedIndexOf(Edge.StartPoint);
-        E:=FPoints.SortedIndexOf(Edge.EndPoint);
+        S:=FPoints.IndexOf(Edge.StartPoint);
+        E:=FPoints.IndexOf(Edge.EndPoint);
         if (S <> -1) and (E <> -1) then begin
           DrawDimension(self.Point[S], self.Point[E]);
           if FMirror then DrawDimension(MirrorPoint[S], MirrorPoint[E]);
@@ -508,7 +508,7 @@ begin
     end;
     for I:=1 to FCorners.Count do begin
       Point:=FCorners[I-1];
-      S:=FPoints.SortedIndexOf(Point);
+      S:=FPoints.IndexOf(Point);
       P1:=Self.Point[S];
       Str:='('+ConvertDimension(P1.X, Units)+' / '+ConvertDimension(P1.Y, Units)+')';
       Pt:=Viewport.Project(P1);
@@ -529,8 +529,8 @@ begin
         if FEdgeErrors[I-1] > 0 then Viewport.PenColor:=clRed
                                 else Viewport.PenColor:=clBlue;
         Edge:=Fedges[I-1];
-        S:=FPoints.SortedIndexOf(Edge.StartPoint);
-        E:=FPoints.SortedIndexOf(Edge.EndPoint);
+        S:=FPoints.IndexOf(Edge.StartPoint);
+        E:=FPoints.IndexOf(Edge.EndPoint);
         if (S <> -1) and (E <> -1) then begin
           Pt:=Viewport.Project(self.Point[S]);
           Viewport.MoveTo(Pt.X, Pt.Y);
@@ -650,8 +650,8 @@ begin
         // regular intersection of edge
         // add the edge to the list
         Parameter:=-side1 / (side2-side1);
-        Index1:=FPoints.SortedIndexOf(P1);
-        Index2:=FPoints.SortedIndexOf(P2);
+        Index1:=FPoints.IndexOf(P1);
+        Index2:=FPoints.IndexOf(P2);
         Output.X:=F2DCoordinates[Index1].Coordinate.X+Parameter *
           (F2DCoordinates[Index2].Coordinate.X-F2DCoordinates[Index1].Coordinate.X);
         Output.Y:=F2DCoordinates[Index1].Coordinate.Y+Parameter *
@@ -672,7 +672,7 @@ begin
           if NoPoints > ArrayLength then  begin Inc(ArrayLength, 10);
             Setlength(IntArray, ArrayLength);
           end;
-          Index2:=FPoints.SortedIndexOf(P2);
+          Index2:=FPoints.IndexOf(P2);
           IntArray[NoPoints-1].Point.X:=F2DCoordinates[Index2].Coordinate.X;
           IntArray[NoPoints-1].Point.Y:=F2DCoordinates[Index2].Coordinate.Y;
           IntArray[NoPoints-1].Point.Z:=0.0;
@@ -781,7 +781,7 @@ var
 
   procedure getEdgeMinMax(P:TFreeSubdivisionPoint; var Min, Max: T3DCoordinate);
   begin
-    Index:=FPoints.SortedIndexOf(P);
+    Index:=FPoints.IndexOf(P);
     P3D:=Point[Index];
     if First then begin Min:=P3D; Max:=min; First:=False; end
              else MinMax(P3D, Min, Max);
@@ -789,7 +789,7 @@ var
   end;
   procedure printEdgePoint(P:TFreeSubdivisionPoint; FMirror:boolean);
   begin
-    Index:=FPoints.SortedIndexOf(P);
+    Index:=FPoints.IndexOf(P);
     if not FMirror then P3D:=Point[Index]
     else P3D:=MirrorPoint[Index];
     P3D.X:=P3D.X-Min.X;
@@ -1009,7 +1009,7 @@ var
     Error:=False;
     setlength(Indices, face.NumberOfpoints);
     for I:=1 to Face.NumberOfpoints do begin
-      Index1:=FPoints.SortedIndexOf(Face.Point[I-1]);
+      Index1:=FPoints.IndexOf(Face.Point[I-1]);
       Indices[I-1]:=Processed[Index1];
     end;
     // find two succ. calculated points
@@ -1028,23 +1028,23 @@ var
     if (S <> -1) and (E <> -1) then begin
       for I:=3 to Face.NumberOfpoints do begin
         P1:=Face.Point[S];
-        Index1:=FPoints.SortedIndexOf(P1);
+        Index1:=FPoints.IndexOf(P1);
         E:=(S+I-2) mod face.NumberOfpoints;
         P2:=Face.Point[E];
-        Index2:=FPoints.SortedIndexOf(P2);
+        Index2:=FPoints.IndexOf(P2);
         E:=(S+I-1) mod face.NumberOfpoints;
         P3:=Face.Point[E];
-        Index3:=FPoints.SortedIndexOf(P3);
+        Index3:=FPoints.IndexOf(P3);
         ProcessTriangle(P1, P2, P3, Index1, Index2, index3);
       end;
     end else begin
       for I:=3 to Face.NumberOfpoints do begin
         P1:=Face.Point[0];
-        Index1:=FPoints.SortedIndexOf(P1);
+        Index1:=FPoints.IndexOf(P1);
         P2:=Face.Point[I-2];
-        Index2:=FPoints.SortedIndexOf(P2);
+        Index2:=FPoints.IndexOf(P2);
         P3:=Face.Point[I-1];
-        Index3:=FPoints.SortedIndexOf(P3);
+        Index3:=FPoints.IndexOf(P3);
         ProcessTriangle( P1,P2,P3, Index1,Index2,index3 );
       end;
     end;
@@ -1102,69 +1102,51 @@ var
     end;
     ToDoList:=TFasterListTFreeSubdivisionFace.Create;       // Assemble all faces to be developed in a list
     ToDoList.AddList(FFaces);
-    ToDoList.Sort;
+//  ToDoList.Sort;
     FDoneList.Clear;
     FDoneList.Capacity:=ToDoList.Count;
 
     First:=True;
-    while ToDoList.Count > 0 do
-    begin
-      if SeedFace = nil then
-      begin
-        // Find a new seedface, this layer has multiple areas
+    while ToDoList.Count > 0 do begin
+      if SeedFace = nil then begin // Find a new seedface, this layer has multiple areas
         SeedFace:=ToDoList[0];
       end;
       FDoneList.Add(SeedFace);
-      Index:=ToDoList.SortedIndexOf(Seedface);
-      if Index <> -1 then
-        ToDoList.Delete(Index);
+      Index:=ToDoList.IndexOf(Seedface);
+      if Index <> -1 then ToDoList.Delete(Index);
       I:=1;
-      while I <= FDoneList.Count do
-      begin
+      while I <= FDoneList.Count do begin
         Face:=FDoneList[I-1];
         Unroll2D(Face, I = 1, Temp);
-        if (temp) and (ErrorIndex = -1) then
-          ErrorIndex:=I-1;
+        if (temp) and (ErrorIndex = -1) then ErrorIndex:=I-1;
         P1:=Face.Point[Face.NumberOfPoints-1];
-        for J:=1 to Face.NumberOfpoints do
-        begin
+        for J:=1 to Face.NumberOfpoints do begin
           P2:=Face.Point[J-1];
           Edge:=Owner.FOwner.EdgeExists(P1, P2);
-          if Edge <> nil then
-          begin
-            for K:=1 to Edge.NumberOfFaces do
-            begin
+          if Edge <> nil then begin
+            for K:=1 to Edge.NumberOfFaces do begin
               Child:=Edge.Face[K-1];
-              Index:=ToDoList.SortedIndexOf(Child);
-              if Index <> -1 then
-              begin
+              Index:=ToDoList.IndexOf(Child);
+              if Index <> -1 then begin
                 FDoneList.Add(Child);
                 ToDoList.Delete(Index);
               end;
             end;
-          end;
-          P1:=P2;
-        end;
-        Inc(I);
-      end;
-      SeedFace:=nil;
-    end;
-    FreeAndNil(ToDoList);
-
-    // Calculate diff. in area of all faces
+          end; P1:=P2;
+        end; Inc(I);
+      end; SeedFace:=nil;
+    end; FreeAndNil(ToDoList);
+                                        // Calculate diff. in area of all faces
     FMaxAreaerror:=0.0;
     FTotalAreaError:=0.0;
-    for I:=1 to FDoneList.Count do
-    begin
+    for I:=1 to FDoneList.Count do begin
       Face:=FDoneList[I-1];
       _2DArea:=0.0;
-      _3DArea:=Face.Area;
-      // calculate 2D area
-      S:=FPoints.SortedIndexOf(Face.Point[0]);
-      for J:=3 to Face.NumberOfpoints do
-      begin
-        E:=FPoints.SortedIndexOf(Face.Point[J-2]);
-        P:=FPoints.SortedIndexOf(Face.Point[J-1]);
+      _3DArea:=Face.Area;                                  // calculate 2D area
+      S:=FPoints.IndexOf(Face.Point[0]);
+      for J:=3 to Face.NumberOfpoints do begin
+        E:=FPoints.IndexOf(Face.Point[J-2]);
+        P:=FPoints.IndexOf(Face.Point[J-1]);
         _2DArea:=_2DArea+TriangleArea(F2DCoordinates[S].Coordinate,
           F2DCoordinates[E].Coordinate, F2DCoordinates[P].Coordinate);
       end;
@@ -1179,8 +1161,8 @@ var
     for I:=1 to FEdges.Count do
     begin
       Edge:=FEdges[I-1];
-      S:=FPoints.SortedIndexOf(Edge.StartPoint);
-      E:=FPoints.SortedIndexOf(Edge.EndPoint);
+      S:=FPoints.IndexOf(Edge.StartPoint);
+      E:=FPoints.IndexOf(Edge.EndPoint);
       if (S <> -1) and (E <> -1) then
       begin
         // original distance in 3D
@@ -1206,7 +1188,7 @@ begin
   begin
     Ctrlface:=ControlFaces[K-1];
     FFaces.AddList(Ctrlface.FChildren);
-    FFaces.Sort;
+//  FFaces.Sort;
     for I:=1 to Ctrlface.ChildCount do
     begin
       Child:=Ctrlface.Child[I-1];
@@ -1215,13 +1197,11 @@ begin
       begin
         P2:=Child.Point[J-1];
         // Add this point
-        if FPoints.SortedIndexOf(P2) = -1 then
-          FPoints.AddSorted(P2);
+        if FPoints.IndexOf(P2) = -1 then FPoints.Add(P2);
         // add this edge
         Edge:=Owner.Surface.EdgeExists(P1, P2);
         if Edge <> nil then
-          if FEdges.SortedIndexOf(Edge) = -1 then
-            FEdges.AddSorted(Edge);
+          if FEdges.IndexOf(Edge) = -1 then FEdges.Add(Edge);
         P1:=P2;
       end;
     end;
@@ -1236,24 +1216,17 @@ begin
   SeedFaces:=TFasterListTFreeSubdivisionFace.Create;
   SeedFace:=nil;
   SeedArea:=0;
-  for I:=1 to FPoints.Count do
-  begin
+  for I:=1 to FPoints.Count do begin
     P1:=FPoints[I-1];
     N:=0;
-    for J:=1 to P1.FFaces.Count do
-    begin
-      if FFaces.SortedIndexOf(P1.FFaces[J-1]) <> -1 then
-        Inc(N);
+    for J:=1 to P1.FFaces.Count do begin
+      if FFaces.IndexOf(P1.FFaces[J-1]) <> -1 then Inc(N);
     end;
-    if N = 1 then
-    begin
-      for J:=1 to P1.FFaces.Count do
-      begin
-        if FFaces.SortedIndexOf(P1.FFaces[J-1]) <> -1 then
-        begin
+    if N = 1 then begin
+      for J:=1 to P1.FFaces.Count do begin
+        if FFaces.IndexOf(P1.FFaces[J-1]) <> -1 then begin
           Area:=P1.Face[J-1].Area;
-          if (Area > SeedArea) or (SeedFace = nil) then
-          begin
+          if (Area > SeedArea) or (SeedFace = nil) then begin
             SeedFace:=P1.FFaces[J-1];
             SeedArea:=Area;
           end;
@@ -1341,23 +1314,17 @@ begin
       // Only edges with 1 attached face in the ffaces list are valid
       N:=0;
       for J:=1 to Edge.NumberOfFaces do
-        if FFaces.SortedIndexOf(Edge.Face[J-1]) <> -1 then
-          Inc(N);
-      if N = 1 then
-        FBoundaryEdges.Add(Edge);
+        if FFaces.IndexOf(Edge.Face[J-1]) <> -1 then Inc(N);
+      if N = 1 then FBoundaryEdges.Add(Edge);
     end;
     FBoundaryEdges.Capacity:=FBoundaryEdges.Count;
 
     // calculate min/max coordinates in 2D
-    for I:=1 to FPoints.Count do
-    begin
-      if I = 1 then
-      begin
+    for I:=1 to FPoints.Count do begin
+      if I = 1 then begin
         FMin2D:=F2DCoordinates[I-1].Coordinate;
         FMax2D:=FMin2D;
-      end
-      else
-      begin
+      end else begin
         if F2DCoordinates[I-1].Coordinate.X < FMin2D.X then
           FMin2D.X:=F2DCoordinates[I-1].Coordinate.X;
         if F2DCoordinates[I-1].Coordinate.Y < FMin2D.Y then
@@ -1373,8 +1340,7 @@ begin
     // area of the bounding box is minimal
     OptArea:=0;
     OptAngle:=0;
-    for I:=0 to 180 do
-    begin
+    for I:=0 to 180 do begin
       Rotation:=I / 2;
       Extents(Min, Max);
       Area:=(Max.X-Min.X) * (Max.Y-Min.Y);
@@ -1459,35 +1425,32 @@ begin
                 end;
                 if P1 <> P2 then
                 begin
-                  BestIndex:=FPoints.SortedIndexOf(P1);
+                  BestIndex:=FPoints.IndexOf(P1);
                   P3D1.X:=F2DCoordinates[BestIndex].Coordinate.X;
                   P3D1.Y:=F2DCoordinates[BestIndex].Coordinate.Y;
                   P3D1.Z:=0.0;
-                  BestIndex:=FPoints.SortedIndexOf(P2);
+                  BestIndex:=FPoints.IndexOf(P2);
                   P3D2.X:=F2DCoordinates[BestIndex].Coordinate.X;
                   P3D2.Y:=F2DCoordinates[BestIndex].Coordinate.Y;
                   P3D2.Z:=0.0;
-                  for J:=2 to 1 do
-                  begin
+                  for J:=2 to 1 do begin
                     if J=1 then P3:=Edge.StartPoint else P3:=Edge.EndPoint;
-                    BestIndex:=FPoints.SortedIndexOf(P3);
+                    BestIndex:=FPoints.IndexOf(P3);
                     P3D3.X:=F2DCoordinates[BestIndex].Coordinate.X;
                     P3D3.Y:=F2DCoordinates[BestIndex].Coordinate.Y;
                     P3D3.Z:=0.0;
                     Dist:=DistancepointToLine(P3D1, P3D2, P3D3);
-                    if Dist > 1e-3 then
-                    begin
+                    if Dist > 1e-3 then begin
                       FMirror:=False;
                       break;
                     end;
                   end;
-                  if FMirror then
-                  begin
-                    J:=FPoints.SortedIndexOf(P1);
+                  if FMirror then begin
+                    J:=FPoints.IndexOf(P1);
                     P3D1.X:=F2DCoordinates[J].Coordinate.X;
                     P3D1.Y:=F2DCoordinates[J].Coordinate.Y;
                     P3D1.Z:=0.0;
-                    J:=FPoints.SortedIndexOf(P2);
+                    J:=FPoints.IndexOf(P2);
                     P3D2.X:=F2DCoordinates[J].Coordinate.X;
                     P3D2.Y:=F2DCoordinates[J].Coordinate.Y;
                     P3D2.Z:=0.0;
@@ -1497,19 +1460,13 @@ begin
                     FMirrorPlane:=PlanePPP(P3D1, P3D2, P3D3);
 
                     // calculate min/max coordinates in 2D of the mirror part
-                    for J:=1 to FPoints.Count do
-                    begin
-                      P3D2 :=
-                        SetPoint(F2DCoordinates[J-1].Coordinate.X, F2DCoordinates[J-1].Coordinate.Y, 0.0);
+                    for J:=1 to FPoints.Count do begin
+                      P3D2:=SetPoint(F2DCoordinates[J-1].Coordinate.X, F2DCoordinates[J-1].Coordinate.Y, 0.0);
                       P3D1:=MirrorPlane(P3D2, FMirrorplane);
-                      if P3D1.X < FMin2D.X then
-                        FMin2D.X:=P3D1.X
-                      else if P3D1.X > FMax2D.X then
-                        FMax2D.X:=P3D1.X;
-                      if P3D1.Y < FMin2D.Y then
-                        FMin2D.Y:=P3D1.Y
-                      else if P3D1.Y > FMax2D.Y then
-                        FMax2D.Y:=P3D1.Y;
+                      if P3D1.X < FMin2D.X then FMin2D.X:=P3D1.X else
+                      if P3D1.X > FMax2D.X then FMax2D.X:=P3D1.X;
+                      if P3D1.Y < FMin2D.Y then FMin2D.Y:=P3D1.Y else
+                      if P3D1.Y > FMax2D.Y then FMax2D.Y:=P3D1.Y;
                     end;
                   end;
                 end;
@@ -1528,18 +1485,10 @@ begin
       P1:=FPoints[I-1];
       N:=0;
       for J:=1 to P1.NumberOfFaces do
-        if FFaces.SortedIndexOf(P1.Face[J-1]) <> -1 then
-        begin
-          Inc(N);
-        end;
-      if (N = 1) or (P1.VertexType = svCorner) then
-      begin
-        FCorners.Add(P1);
-      end;
+        if FFaces.IndexOf(P1.Face[J-1]) <> -1 then begin Inc(N); end;
+      if (N = 1) or (P1.VertexType = svCorner) then begin FCorners.Add(P1); end;
     end;
-  end
-  else
-    MessageDlg('Seed could not be found!', mtError, [mbOK], 0);
+  end else WriteLn('UnRoll: Seed could not be found!');
   {Seedfaces.Destroy;
   Seedfaces:=nil;
   FreeAndNil(FFaces);

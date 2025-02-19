@@ -95,7 +95,7 @@ begin
 //    try
         SubdivisionSurface:=FreeShip.Surface;
         SubdivisionSurface.IsLoading:=true;
-        FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+        FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create;
         LineNr:=1; SolidNr:=0; FacetNr:=0; VertexNr:=0;
         while not EOF(FFile) do begin
           Readln( FFile,Str );                   // if EOF( FFile ) then break;
@@ -165,7 +165,7 @@ begin
 //      try
         SubdivisionSurface:=FreeShip.Surface;
         SubdivisionSurface.IsLoading:=true;
-        FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+        FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create;
         SolidNr:=0; FacetNr:=1;
         r:=FileStream.Read( STLheader,80 );
         Str:=String.Create( STLheader );                        inc( SolidNr );

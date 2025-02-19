@@ -21,8 +21,8 @@ var
   Faces: TStringList;
   Vindex: array of AnsiString;
 begin
-  CPoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
-  FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+  CPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
+  FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create;
   Faces:=TStringList.Create;
   Self.IsLoading:=true;
   for I:=0 to Strings.Count-1 do begin
@@ -67,7 +67,7 @@ begin
     if not Built then rebuild;
            // first sort subdiv points for faster acces of function (Indexof())
     Strings.Add( '# FREE!ship subdivided surface' );
-    FPoints.Sort;                                 // Create points for portside
+//  FPoints.Sort;                                 // Create points for portside
     Tmp:=TFasterListTFreeSubdivisionPoint.Create;
     Tmp.Capacity:=NumberOfSubDivPoints;
     for I:=1 to NumberOfSubDivPoints do begin
@@ -76,7 +76,7 @@ begin
       if C3d.y>0 then Tmp.Add(SubDivPoint[I-1]);  /// ????
     end;
     if DrawMirror then begin                      // Create points for portside
-      Tmp.Sort;                                   // лишний болрт для картинки
+//    Tmp.Sort;                                   // лишний болрт для картинки
       for I:=1 to Tmp.Count do begin
         P:=Tmp[I-1]; C3d:=P.Coordinate;
         Strings.Add(format('v %07.04f %07.04f %07.04f',[C3d.x,C3d.z,-C3d.y])); //(-Y)!
@@ -89,7 +89,7 @@ begin
           Str:='f';
           Child:=CFace.Child[J-1];
           for k:=1 to Child.FPoints.Count do begin
-            Index:=FPoints.SortedIndexOf(Child.FPoints[K-1]);
+            Index:=FPoints.IndexOf(Child.FPoints[K-1]);
             if Index <> -1 then Str:=Str+#32+IntToStr(index+1);
           end;
           Strings.Add(Str);
@@ -98,9 +98,9 @@ begin
             Child:=CFace.Child[J-1];
             for k:=Child.FPoints.Count downto 1 do begin
               if Child.Point[K-1].Coordinate.Y > 0 then begin
-                Index:=Tmp.SortedIndexOf(Child.Point[K-1])+NumberOfSubDivPoints;
+                Index:=Tmp.IndexOf(Child.Point[K-1])+NumberOfSubDivPoints;
               end else
-                Index:=FPoints.SortedIndexOf(Child.FPoints[K-1]);
+                Index:=FPoints.IndexOf(Child.FPoints[K-1]);
               Str:=Str+#32+IntToStr( index+1 );
             end;
             Strings.Add(Str);
@@ -113,7 +113,7 @@ begin
     if not Built then rebuild;
            // first sort controlpoints for faster acces of function (Indexof())
     Strings.Add( '# FREE!ship controlnet' );
-    FControlPoints.Sort;                   // Create ControlPoints for portside
+//  FControlPoints.Sort;                   // Create ControlPoints for portside
     Tmp:=TFasterListTFreeSubdivisionPoint.Create;
     Tmp.Capacity:=NumberOfControlPoints;
     for I:=0 to NumberOfControlPoints-1 do begin
@@ -124,7 +124,7 @@ begin
       if ControlPoint[I].Coordinate.y>0 then Tmp.Add( ControlPoint[I] );
     end;
     if DrawMirror then begin               // Create ControlPoints for portside
-      Tmp.Sort;
+//    Tmp.Sort;
       for I:=0 to Tmp.Count-1 do begin P:=Tmp[I];
         Strings.Add( 'v '+FloatToStrF( P.Coordinate.x,ffFixed,7,4 )+#32
                          +FloatToStrF( P.Coordinate.z,ffFixed,7,4 )+#32
@@ -136,7 +136,7 @@ begin
       if CFace.Layer.SurfaceVisible then begin                      // portside
         Str:='f';
         for k:=1 to Cface.FPoints.Count do begin
-          Index:=FControlPoints.SortedIndexOf(Cface.Point[K-1]);
+          Index:=FControlPoints.IndexOf(Cface.Point[K-1]);
           if Index <> -1 then Str:=Str+#32+IntToStr(index+1);
         end;
         Strings.Add(Str);
@@ -144,9 +144,9 @@ begin
           Str:='f';
           for k:=Cface.FPoints.Count downto 1 do begin
             if Cface.Point[K-1].Coordinate.Y>0 then begin
-              Index:=Tmp.SortedIndexOf(Cface.Point[K-1])+NumberOfControlPoints;
+              Index:=Tmp.IndexOf(Cface.Point[K-1])+NumberOfControlPoints;
             end else
-              Index:=FControlPoints.SortedIndexOf(Cface.Point[K-1]);
+              Index:=FControlPoints.IndexOf(Cface.Point[K-1]);
             Str:=Str+#32+IntToStr( index+1 );
           end;
           Strings.Add(Str);
@@ -483,7 +483,7 @@ begin
     Strings.Add('66'+EOL+'1');                // vertices follow
     for J:=0 to Face.Points.Count-1 do begin
       P:=Face.Points[J];
-      Index:=FPoints.SortedIndexOf(P);
+      Index:=FPoints.IndexOf(P);
       P3D:=Point[Index];
       Strings.Add('0'+EOL+'VERTEX');
       Strings.Add('8'+EOL+Layer);
@@ -498,7 +498,7 @@ begin
       Strings.Add('66'+EOL+'1');             // vertices follow
       begin
         P:=Face.Points[J];
-        Index:=FPoints.SortedIndexOf(P);
+        Index:=FPoints.IndexOf(P);
         P3D:=MirrorPoint[Index];
         Strings.Add('0'+EOL+'VERTEX');
         Strings.Add('8'+EOL+Layer);
@@ -546,7 +546,7 @@ begin                                                 // Add layer information
       FloatToStrF(Layer[I].MaterialDensity, ffFixed, 10, 8)+#32 +
       FloatToStrF(Layer[I].Thickness, ffFixed, 10, 8));
   end;     // first sort controlpoints for faster acces of function (Indexof())
-  FControlPoints.Sort;
+//FControlPoints.Sort;
   Strings.Add(IntToStr(NumberOfControlPoints));
   for I:=1 to NumberOfControlPoints do ControlPoint[I-1].SaveToStream(Strings);
   Strings.Add(IntToStr(NumberOfControlEdges));

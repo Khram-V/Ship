@@ -829,7 +829,7 @@ begin
     Owner.Built:=False;
     Owner.Redraw;
 //finally                                          // Refresh controlpoint data
-    if Points.SortedIndexOf(Owner.ActiveControlPoint) <> -1 then
+    if Points.IndexOf(Owner.ActiveControlPoint) <> -1 then
       Owner.ActiveControlPoint:=Owner.ActiveControlPoint;
     Screen.Cursor:=PrevCursor;
 //end;

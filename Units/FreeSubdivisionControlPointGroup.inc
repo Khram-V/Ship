@@ -34,7 +34,7 @@ constructor TFreeSubdivisionControlPointGroup.Create(Owner: TFreeSubdivisionSurf
 begin
   inherited Create(Owner);
   if Owner = nil then Owner:=nil;
-  FControlPoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+  FControlPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
 end;
 
 procedure TFreeSubdivisionControlPointGroup.AddControlPoint(cp:TFreeSubdivisionControlPoint);
@@ -87,7 +87,7 @@ var
   P3D: T3DCoordinate;
 begin
   if Viewport.ViewportMode = vmWireframe then begin
-    if (FName > '') then begin
+    if ( Name>'' ) then begin
       P3D:=CalculateCenterPoint;
       if (Viewport.ViewType = fvBodyplan) then
         if P3D.X <= Surface.SplitSectionLocation then P3D.Y:=-P3D.Y;
@@ -96,7 +96,7 @@ begin
       ViewPort.PenColor:=Viewport.FontColor;
       ViewPort.Ellipse(P.X-2, P.Y-2, P.X+2, P.Y+2);
       ViewPort.Ellipse(P.X-4, P.Y-4, P.X+4, P.Y+4);
-      ViewPort.TextOut(P.X+2, P.Y+2, FName);
+      ViewPort.TextOut(P.X+2, P.Y+2, Name);
     end;
   end;
 end;
@@ -106,7 +106,7 @@ var
   I, N, CPN: integer; SS:TStrings;
   Sel: boolean;
 begin
-  Source.LoadString( FName );
+  Source.LoadString( Name );
   SS:=TStringList.Create;
   Source.LoadTStrings( SS );
   for i:=0 to SS.Count-1 do begin
@@ -124,7 +124,7 @@ var
   sel: boolean;
 begin
   Inc(LineNr);
-  FName:=Strings[LineNr];
+  Name:=Strings[LineNr];
   Inc(LineNr);
   Str:=Strings[LineNr];
   Strs:=Str.Split([#32]);
@@ -139,7 +139,7 @@ end;
 procedure TFreeSubdivisionControlPointGroup.SaveBinary(Destination: TFreeFileBuffer);
 var I,N,CPN: integer;  SS:TStrings;
 begin
-  Destination.Add(FName);
+  Destination.Add(Name);
   //Destination.Add(FControlPoints.Count);
   SS:=TStringList.Create;
   for i:=0 to FControlPoints.Count-1 do begin
@@ -154,7 +154,7 @@ procedure TFreeSubdivisionControlPointGroup.SaveToStream(Strings: TStringList);
 var I,N,CPN: integer;
   Str: string;
 begin
-  Strings.Add(FName);
+  Strings.Add(Name);
   CPN:=Surface.FControlPoints.IndexOf(FControlPoints[0]);
   Str:=IntToStr(CPN);
   for i:=1 to FControlPoints.Count-1 do begin

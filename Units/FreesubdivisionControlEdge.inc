@@ -156,74 +156,7 @@ begin
           Swap(Ind3, Ind4);
         end;
 
-        (* // Remove all references to Face1
-        for I:=1 to Face1.NumberOfpoints do
-          Face1.Point[I-1].UnreferenceFace(Face1);
-        // Remove all references to Face2
-        for I:=1 to Face2.NumberOfpoints do
-          Face2.Point[I-1].UnreferenceFace(Face2);
-        // Add the new face}
-
-        //NewFace:=TFreeSubdivisionControlFace.Create(Surface);
-        //NewFace.FLayer:=Layer;
-        {
-        Surface.FControlFaces.Add(NewFace);
-        for I:=0 to Ind1 do
-        begin
-          if NewFace.FPoints.IndexOf(Face1.Point[I]) = -1 then
-          begin
-            NewFace.AddPoint(Face1.Point[I]);
-          end;
-        end;
-        begin
-          for I:=Ind4 to Face2.NumberOfpoints-1 do
-          begin
-            if NewFace.FPoints.IndexOf(Face2.Point[I]) = -1 then
-            begin
-              NewFace.AddPoint(Face2.Point[I]);
-            end;
-          end;
-          for I:=0 to Ind3 do
-          begin
-            if NewFace.FPoints.IndexOf(Face2.Point[I]) = -1 then
-            begin
-              NewFace.AddPoint(Face2.Point[I]);
-            end;
-          end;
-        end;
-        for I:=Ind2 to Face1.NumberOfpoints-1 do
-        begin
-          if NewFace.FPoints.IndexOf(Face1.Point[I]) = -1 then
-          begin
-            NewFace.AddPoint(Face1.Point[I]);
-          end;
-        end;
-        // Check if all appropriate points are added
-        if Newface.NumberOfpoints <> Face1.NumberOfpoints+Face2.NumberOfpoints-2 then
-          messageDlg(rs_Not_all_points_could_be_added_while_collapsing_edge {UserString[200]}+#32+IntToStr(self.EdgeIndex), mtError, [mbOK], 0);
-
-        P1:=NewFace.Point[Newface.NumberOfPoints-1];
-        for I:=1 to Newface.NumberOfPoints do
-        begin
-          P2:=NewFace.Point[I-1];
-          Edge:=Surface.EdgeExists(P1, P2);
-          if Edge <> nil then
-          begin
-            Ind1:=Edge.FFaces.IndexOf(Face1);
-            if Ind1 <> -1 then
-              Edge.FFaces.Delete(Ind1);
-            Ind1:=Edge.FFaces.IndexOf(Face2);
-            if Ind1 <> -1 then
-              Edge.FFaces.Delete(Ind1);
-            Edge.AddFace(NewFace);
-            if Edge.NumberOfFaces < 2 then
-              Edge.Crease:=True;
-          end;
-          P1:=p2;
-        end;
-        *)
-
-        NewPoints:=TFasterListTFreeSubdivisionControlPoint.Create(true,false);
+        NewPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
 
         //make "cycled" list 1
         Ln:=Face1.Points.Count+1;
@@ -521,13 +454,13 @@ begin
   ds:=DistPP3D(P, FStartPoint.Coordinate);
   de:=DistPP3D(P, FEndPoint.Coordinate);
   if (abs(ds)<1e-4) or (abs(de)<1e-4) then exit;            //such point exists
-  Result:=TFreeSubdivisionControlpoint.Create(FSurface);
+  Result:=TFreeSubdivisionControlpoint.Create(Surface);
   Result.FCoordinate:=P;
   if FCurve <> nil then begin       // insert the new point in the controlcurve
     FCurve.InsertControlPoint(TFreeSubdivisionControlPoint(
       FStartPoint), TFreeSubdivisionControlPoint(FEndPoint), Result);
   end;
-  FSurface.FControlPoints.Add(Result);
+  Surface.FControlPoints.Add(Result);
   for I:=1 to NumberOfFaces do begin
     Face:=FFaces[I-1];
     I1:=Face.FPoints.IndexOf(FStartPoint);
@@ -541,7 +474,7 @@ begin
     end;
   end;
   FEndpoint.UnreferenceEdge(self);
-  Edge:=FSurface.AddControlEdge(Result, FEndPoint as TFreeSubdivisionControlPoint);
+  Edge:=Surface.AddControlEdge(Result, FEndPoint as TFreeSubdivisionControlPoint);
   Edge.FCrease:=FCrease;
   Edge.FCurve:=FCurve;
   if FCrease then Result.FVertexType:=svCrease;
@@ -606,16 +539,16 @@ end;
 
 procedure TFreesubdivisionControlEdge.SaveBinary(Destination: TFreeFileBuffer);
 begin
-  Destination.Add(Surface.FControlPoints.SortedIndexOf(FStartpoint as TFreesubdivisionControlPoint) );
-  Destination.Add(Surface.FControlPoints.SortedIndexOf(FEndpoint as TFreesubdivisionControlPoint) );
+  Destination.Add(Surface.FControlPoints.IndexOf(FStartpoint as TFreesubdivisionControlPoint) );
+  Destination.Add(Surface.FControlPoints.IndexOf(FEndpoint as TFreesubdivisionControlPoint) );
   Destination.Add(FCrease);
   Destination.Add(Selected);
 end;
 
 procedure TFreesubdivisionControlEdge.SaveToStream(Strings: TStringList);
 begin
-  Strings.Add(IntToStr(Surface.FControlPoints.SortedIndexOf(FStartpoint as TFreesubdivisionControlPoint))+#32 +
-    IntToStr(Surface.FControlPoints.SortedIndexOf(FEndpoint as TFreesubdivisionControlPoint))+' ' +
+  Strings.Add(IntToStr(Surface.FControlPoints.IndexOf(FStartpoint as TFreesubdivisionControlPoint))+#32 +
+    IntToStr(Surface.FControlPoints.IndexOf(FEndpoint as TFreesubdivisionControlPoint))+' ' +
     IntToStr(Ord(FCrease))+' '+BoolToStr(Selected));
 end;
 

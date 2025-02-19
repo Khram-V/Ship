@@ -8,7 +8,7 @@ begin if Selected then Result:=FreeShip.Preferences.SelectColor else
 end;
 
 function TFreeFlowline.FGetSelected: boolean;
-begin Result:=FreeShip.FSelectedFlowlines.SortedIndexOf(self)<>-1; end;
+begin Result:=FreeShip.FSelectedFlowlines.IndexOf(self)<>-1; end;
 
 function TFreeFlowline.FGetVisible: boolean;
 begin Result:=FreeShip.Visibility.ShowFlowlines; end;
@@ -16,11 +16,11 @@ begin Result:=FreeShip.Visibility.ShowFlowlines; end;
 procedure TFreeFlowline.FSetSelected(aValue: boolean);
 var Index: integer;
 begin
-  Index:=FreeShip.FSelectedFlowlines.SortedIndexOf( self );
+  Index:=FreeShip.FSelectedFlowlines.IndexOf( self );
 //if (Index>=0) and aValue then exit;
 //if (Index<0) and not aValue then exit;
   if aValue then begin             // Only add if it is not already in the list
-   if Index=-1 then FreeShip.FSelectedFlowlines.AddSorted(self); end else
+   if Index=-1 then FreeShip.FSelectedFlowlines.Add(self); end else
    if Index<>-1 then FreeShip.FSelectedFlowlines.Delete(index);
                      FreeShip.Surface.ExecuteOnSelectItem(self);
 end;
@@ -48,7 +48,7 @@ end;
 
 procedure TFreeFlowline.Delete;
   var Index: integer;
-begin Index:=FreeShip.FSelectedFlowlines.SortedIndexOf( Self );
+begin Index:=FreeShip.FSelectedFlowlines.IndexOf( Self );
    if Index <> -1 then FreeShip.FSelectedFlowlines.Delete( Index );
       Index:=FreeShip.FFlowLines.IndexOf( Self );
    if Index <> -1 then FreeShip.FFlowlines.Delete( Index );
@@ -260,11 +260,11 @@ var
     end;
     Triangles[NTriangles].Index:=NTriangles;
     Triangles[NTriangles].Processed:=False;
-    Triangles[NTriangles].P1:=Points.SortedIndexOf(P1);
+    Triangles[NTriangles].P1:=Points.IndexOf(P1);
     AddTriangleToPoint(PointData[Triangles[NTriangles].P1],NTriangles);
-    Triangles[NTriangles].P2:=Points.SortedIndexOf(P2);
+    Triangles[NTriangles].P2:=Points.IndexOf(P2);
     AddTriangleToPoint(PointData[Triangles[NTriangles].P2],NTriangles);
-    Triangles[NTriangles].p3:=Points.SortedIndexOf(P3);
+    Triangles[NTriangles].p3:=Points.IndexOf(P3);
     AddTriangleToPoint(PointData[Triangles[NTriangles].P3],NTriangles);
     Triangles[NTriangles].Plane:=PlanePPP(P1.Coordinate,P2.Coordinate,P3.Coordinate);
     Inc(NTriangles);
@@ -466,10 +466,10 @@ begin                   // clear any present data
       Child:=TFreeSubdivisionFace(Faces[I-1]);
       for J:=1 to Child.NumberOfpoints do begin
         Point:=Child.Point[J-1];
-        if Points.SortedIndexOf(Point)=-1 then Points.AddSorted(Point);
+        if Points.IndexOf(Point)=-1 then Points.Add(Point);
       end;
     end;
-    Points.Sort;
+//  Points.Sort;
     Setlength(PointData,Points.Count);
     for I:=1 to Points.Count do begin
 //    Point:=Points[I-1];
@@ -575,7 +575,7 @@ begin
   FProjectionView:=TFreeviewType(I);
   Source.LoadBoolean(FBuild);
   Source.LoadBoolean(K);
-  if K then FreeShip.FSelectedFlowlines.AddSorted(self);
+  if K then FreeShip.FSelectedFlowlines.Add(self);
   Source.LoadInteger(N);
   FFlowline.Capacity:=N;
   for I:=1 to N do begin

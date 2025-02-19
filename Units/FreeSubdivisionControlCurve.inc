@@ -42,7 +42,7 @@ var i,j:integer; P:TFreeSubdivisionPoint;
 begin
   //if self.IsFreeStanding then
   begin
-    edgesToDel:=TFasterListTFreeSubdivisionEdge.Create(true,true);
+    edgesToDel:=TFasterListTFreeSubdivisionEdge.Create;
     for i:=0 to FSubdividedPoints.Count-1 do begin
       P:=FSubdividedPoints[i];
       if not (P is TFreeSubdivisionControlPoint)
@@ -697,7 +697,7 @@ begin
   for I:=1 to NumberOfControlPoints do
   begin
     P:=FControlPoints[I-1];
-    Ind:=Surface.FControlPoints.SortedIndexOf(P);
+    Ind:=Surface.FControlPoints.IndexOf(P);
     Destination.Add(Ind);
   end;
   Destination.Add(Selected);

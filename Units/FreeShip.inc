@@ -1579,11 +1579,9 @@ begin
 end;
 
 procedure TFreeShip.RebuildModel;
-var
-  PrevCursor: TCursor;
-begin
-//MessageDlg( 'ReBuild?',mtInformation,[mbYes,mbNo],0 );
-//Writeln( 'ReBuildModel? '+InttoStr( Ord( Precision )+1 ) );
+var PrevCursor: TCursor;
+begin                  //MessageDlg( 'ReBuild?',mtInformation,[mbYes,mbNo],0 );
+                  //Writeln( 'ReBuildModel? '+InttoStr( Ord( Precision )+1 ) );
   PrevCursor:=Screen.Cursor;
   if Screen.Cursor <> crHourglass then Screen.Cursor:=crHourglass;
 //try
@@ -1866,15 +1864,15 @@ begin
     Curves:=TFasterListTFreeSubdivisionControlCurve.Create;
     for I:=1 to Faces.Count do begin WestPoint;
       Face:=Faces[I-1];
-      if Layers.SortedIndexOf(Face.Layer) = -1 then
-         Layers.AddSorted(Face.Layer);
+      if Layers.IndexOf(Face.Layer) = -1 then
+         Layers.Add(Face.Layer);
       P1:=Face.Point[Face.NumberOfPoints-1] as TFreeSubdivisionControlPoint;
       for J:=1 to face.NumberOfpoints do begin
         P2:=Face.Point[J-1] as TFreeSubdivisionControlPoint;
-        if Points.SortedIndexOf(P2) = -1 then Points.AddSorted(P2);
+        if Points.IndexOf(P2) = -1 then Points.Add(P2);
         Edge:=P1.Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
         if Edge <> nil then
-          if Edges.SortedIndexOf(Edge) = -1 then Edges.AddSorted(Edge);
+          if Edges.IndexOf(Edge) = -1 then Edges.Add(Edge);
         P1:=P2;
       end;
     end;
@@ -1890,10 +1888,8 @@ begin
         P1:=Curve.ControlPoint[J-2];
         P2:=Curve.ControlPoint[J-1];
         Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-        if Edge <> nil then
-        begin
-          if Edges.SortedIndexOf(Edge) = -1 then
-            AddCurve:=False;
+        if Edge <> nil then begin
+          if Edges.IndexOf(Edge) = -1 then AddCurve:=False;
         end
         else
           AddCurve:=False;
@@ -1902,8 +1898,8 @@ begin
         Curves.Add(Curve);
     end;
 
-    Curves.Sort;
-    Layers.Sort;
+//    Curves.Sort;
+//    Layers.Sort;
 
     PartFile:=TFreeFileBuffer.Create;
     PartFile.Version:=CurrentVersion;
@@ -1933,9 +1929,9 @@ begin
       Partfile.Add(Edges.Count);
       for I:=1 to Edges.Count do begin
         Edge:=Edges[I-1];
-        Index:=Points.SortedIndexOf(Edge.StartPoint);
+        Index:=Points.IndexOf(Edge.StartPoint);
         Partfile.Add(Index);
-        Index:=Points.SortedIndexOf(Edge.EndPoint);
+        Index:=Points.IndexOf(Edge.EndPoint);
         Partfile.Add(Index);
         Partfile.Add(Edge.Crease);
       end;
@@ -1945,10 +1941,10 @@ begin
         Face:=Faces[I-1];
         Partfile.Add(Face.NumberOfpoints);
         for J:=1 to Face.NumberOfPoints do begin
-          Index:=Points.SortedIndexOf(Face.Point[J-1]);
+          Index:=Points.IndexOf(Face.Point[J-1]);
           Partfile.Add(Index);
         end;
-        Index:=Layers.SortedIndexOf(Face.Layer);
+        Index:=Layers.IndexOf(Face.Layer);
         Partfile.Add(Index);
       end;
       // Save controlcurves
@@ -1958,7 +1954,7 @@ begin
         Partfile.Add(Curve.NumberOfControlPoints);
         for J:=1 to Curve.NumberOfControlPoints do begin
           P2:=Curve.ControlPoint[j-1];
-          Index:=points.SortedIndexOf(P2);
+          Index:=points.IndexOf(P2);
           Partfile.Add(Index);
         end;
       end;
