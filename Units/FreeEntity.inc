@@ -2,12 +2,12 @@
 {                                           TFreeEntity    }
 { This is the base class of all 3D entities in the project }
 {----------------------------------------------------------}
-function TFreeEntity.GetMin: T3DCoordinate;
+function TFreeEntity.GetMin: T3DVector;
 begin
   if not Built then Rebuild; Result:=FMin;
 end;
 
-function TFreeEntity.GetMax: T3DCoordinate;
+function TFreeEntity.GetMax: T3DVector;
 begin
   if not Built then Rebuild; Result:=FMax;
 end;
@@ -43,7 +43,7 @@ end;
 
 destructor TFreeEntity.Destroy; begin inherited Destroy; end;
 
-procedure TFreeEntity.Extents(var Min, Max: T3DCoordinate);
+procedure TFreeEntity.Extents(var Min, Max: T3DVector);
 begin
   if not Built then Rebuild;
   MinMax(FMin, Min, Max);

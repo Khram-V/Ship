@@ -328,7 +328,7 @@ function TFreeSubdivisionControlCurve.DistanceToCursor(X, Y: integer;
 var
   I, Tmp: integer;
   Pt, P1, P2: TPoint;
-  V1, V2: T3DCoordinate;
+  V1, V2: T3DVector;
   Param: TFloatType;
 begin
   if (Viewport.ViewType = fvBodyPlan) and (not Surface.DrawMirror) then
@@ -400,8 +400,8 @@ var
   Output: TFreeIntersectionData;
   PArray1: array of TPoint;
   PArray2: array of TPoint;
-  P3D, P3D2: T3DCoordinate;
-  Normal: T3DCoordinate;
+  P3D, P3D2: T3DVector;
+  Normal: T3DVector;
   C, T, C2, L: TFloatType;
   iP1, iP2: TFreeSubdivisionPoint;
   p02, p01: TPoint;
@@ -706,7 +706,7 @@ end;
 procedure TFreeSubdivisionControlCurve.LastAveragePoint(
   PrevPoint, Point, NextPoint:TFreeSubdivisionPoint );
 var
-  C:T3DCoordinate;
+  C:T3DVector;
 begin
   if Point.Faces.Count>0 then
   begin
@@ -736,7 +736,7 @@ end;
 procedure TFreeSubdivisionControlCurve.AveragePoint(
   PrevPoint, Point, NextPoint:TFreeSubdivisionPoint );
 var
-  C:T3DCoordinate;
+  C:T3DVector;
 begin
   if Point.Faces.Count>0 then
   begin
@@ -789,7 +789,7 @@ var i:integer;
   E0,E1,E2: TFreeSubdivisionEdge;
 
   function CreateCenterPoint(SP, EP: TFreeSubdivisionPoint): TFreeSubdivisionPoint;
-  var Point: T3DCoordinate;
+  var Point: T3DVector;
   begin
     Point.X:=0.5 * (SP.FCoordinate.X+EP.FCoordinate.X);
     Point.Y:=0.5 * (SP.FCoordinate.Y+EP.FCoordinate.Y);

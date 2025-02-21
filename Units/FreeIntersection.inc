@@ -73,16 +73,16 @@ begin FItems.Add(Item); end;
 
 
 procedure TFreeIntersection.CalculateArea(Plane: T3DPlane; var Area: TFloatType;
-  var COG: T3DCoordinate; var MomentOfInertia: T2DCoordinate);
+  var COG: T3DVector; var MomentOfInertia: T2DCoordinate);
 var
   I: integer;
   TmpArea: TFloatType;
-  TmpCOG: T3DCoordinate;
-  MomI: T3DCoordinate;
+  TmpCOG: T3DVector;
+  MomI: T3DVector;
   isymm: integer;
 
   procedure CalculateSplineArea(Spline: TFreeSpline; var SplineArea: TFloatType;
-  var SplineCOG, MomInertia: T3DCoordinate);
+  var SplineCOG, MomInertia: T3DVector);
   var
     ClosedSpline: boolean;
     IntersectionData: TFreeIntersectionData;
@@ -91,11 +91,11 @@ var
     NoPoints: integer;
     T1, T2, T, Side: TFloatType;
     DeltaA: TFloatType;
-    P: T3DCoordinate;
+    P: T3DVector;
     P1, P2, C: T2DCoordinate;
     MomI: T2DCoordinate;
 
-    function ProjectTo2D(P: T3DCoordinate): T2DCoordinate;
+    function ProjectTo2D(P: T3DVector): T2DCoordinate;
     begin
       case IntersectionType of
         fiStation:
@@ -304,7 +304,7 @@ procedure TFreeIntersection.CreateStarboardPart;
 var
   I, J: integer;
   Spline: TFreeSpline;
-  P1, P2: T3DCoordinate;
+  P1, P2: T3DVector;
   Area,DeltaA: TFloatType;
 begin
   if self.IntersectionType <> fiButtock then begin
@@ -406,7 +406,7 @@ procedure TFreeIntersection.Draw(Viewport: TFreeViewport);
 var
   I, J, frags: integer;
   Spline, SplineSB: TFreeSpline;
-  P, P2, N: T3DCoordinate;
+  P, P2, N: T3DVector;
   Pts: array of TPoint;
   CPts: array of TPoint;
   Curv: TFloatType;
@@ -651,7 +651,7 @@ begin
   for I:=1 to FreeShip.NumberOfViewports do Draw(FreeShip.Viewport[I-1]);
 end;
 
-procedure TFreeIntersection.Extents(var Min, Max: T3DCoordinate);
+procedure TFreeIntersection.Extents(var Min, Max: T3DVector);
 var I: integer;
 begin
   if not Built then Rebuild;
@@ -662,7 +662,7 @@ procedure TFreeIntersection.LoadBinary(Source: TFreeFileBuffer);
 var
   I, J, M, N: integer;
   Spline: TFreeSpline;
-  P: T3DCoordinate;
+  P: T3DVector;
   Bool: boolean;
 begin
   Source.LoadInteger(I);
@@ -698,9 +698,9 @@ begin
           Source.LoadTFloatType(P.Y);
           P.Z:=-FPlane.d;
         end
-        else Source.LoadT3DCoordinate(P);
+        else Source.LoadT3DVector(P);
       end
-      else Source.LoadT3DCoordinate(P);
+      else Source.LoadT3DVector(P);
       Spline.Add(P);
       Source.LoadBoolean(Bool);
       Spline.Knuckle[J-1]:=Bool;
@@ -725,7 +725,7 @@ procedure TFreeIntersection.SaveBinary(Destination: TFreeFileBuffer);
 var
   I, J: integer;
   Spline: TFreeSpline;
-  P: T3DCoordinate;
+  P: T3DVector;
 begin
   Destination.Add(Ord(FIntersectionType));
   if FreeShip.FileVersion >= fv191 then

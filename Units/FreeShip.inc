@@ -124,7 +124,7 @@ var
   Intersection: TFreeIntersection;
   Spline: TFreeSpline;
   Min: TFloatType;
-  P: T3DCoordinate;
+  P: T3DVector;
   TmpList: TFasterListTFreeSpline;
 begin
   Min:=0.0;
@@ -514,37 +514,26 @@ begin
     FControlpointForm:=TFreeControlPointForm.Create(Self);
     FControlpointForm.FreeShip:=self;
   end;
-
-
-
   //  TFreeSubdivisionLayer.LayerIndex=0;
   //  FSurface.Layerbox.ItemIndex=3;
-
-
-
 end; {TFreeShip.Create}
-
-procedure TFreeShip.CreateOutputHeader(CalcHeader: Ansistring; Strings: TStrings);
+(* ///***
+procedure TFreeShip.CreateOutputHeader( CalcHeader: Ansistring; Strings: TStrings );
 const Separator = #32;
 const S = '          ';
 begin
   Strings.Add('');
   Strings.Add(CalcHeader);
   Strings.Add('');
-  Strings.Add(Makelength( S+Userstring(39), 31)+' : ' +
-    Separator+ProjectSettings.ProjectName);
-  Strings.Add(Makelength( S+Userstring(40), 31)+' : ' +
-    Separator+ProjectSettings.ProjectDesigner);
+  Strings.Add(Makelength( S+Userstring(39), 31)+' : ' + Separator+ProjectSettings.ProjectName);
+  Strings.Add(Makelength( S+Userstring(40), 31)+' : ' + Separator+ProjectSettings.ProjectDesigner);
   if ProjectSettings.ProjectFileCreatedBy <> '' then
-    Strings.Add(Makelength( S+Userstring(41), 31)+' : ' +
-      Separator+ProjectSettings.ProjectFileCreatedBy);
+    Strings.Add(Makelength( S+Userstring(41), 31)+' : ' + Separator+ProjectSettings.ProjectFileCreatedBy);
   if ProjectSettings.ProjectComment <> '' then
-    Strings.Add(Makelength( S+Userstring(42), 31)+' : ' +
-      Separator+ProjectSettings.ProjectComment);
-  Strings.Add(Makelength( S+Userstring(43), 31)+' : ' +
-    Separator+ChangeFileExt(ExtractFilename(FileName), '.fbm'));
+    Strings.Add(Makelength( S+Userstring(42), 31)+' : ' + Separator+ProjectSettings.ProjectComment);
+  Strings.Add(Makelength( S+Userstring(43), 31)+' : ' + Separator+ChangeFileExt(ExtractFilename(FileName), '.fbm'));
   Strings.Add('');
-  if ProjectSettings.MainparticularsHasBeenset then
+//if ProjectSettings.MainparticularsHasBeenset then
   begin
     Strings.Add(MakeLength(S+Userstring(44), 31)+' : ' +
       MakeLength(ProjectSettings.ProjectLength, -1, 10)+#32 +
@@ -569,7 +558,7 @@ begin
   Strings.Add(Makelength(S+Userstring(182), 19)+' : '+TimeToStr(Time));
   Strings.Add('');
 end;
-
+*)
 procedure TFreeShip.DeleteViewport(Viewport: TFreeViewport);
 var Index: integer;
 begin
@@ -738,7 +727,7 @@ var
   I, Size: integer;
   Plane: T3DPlane;
   Curve: TFreeSpline;
-  P: T3DCoordinate;
+  P: T3DVector;
   Pt: TPoint;
   Str: string;
   LegendHeight: integer;
@@ -749,7 +738,7 @@ var
   R, G, B: byte;
   Tmp: TFloatType;
 
-  procedure DrawPoint(P: T3DCoordinate; Text: string; CompensateHeight: boolean);
+  procedure DrawPoint(P: T3DVector; Text: string; CompensateHeight: boolean);
   var
     Pt: TPoint;
     Size: integer;
@@ -785,11 +774,11 @@ var
     DrawButtocks: boolean;
     DrawWaterlines: boolean;
     DrawDiagonals: boolean;
-    Min, Max: T3DCoordinate;
+    Min, Max: T3DVector;
     Position: TFloatType;
     I, J, N: integer;
     Height, Width: integer;
-    P1, P2, Diff: T3DCoordinate;
+    P1, P2, Diff: T3DVector;
     Pt1, Pt2: TPoint;
     Str: string;
     Pts: array of TPoint;
@@ -826,10 +815,10 @@ var
     DrawWaterlines:=Viewport.ViewType <> fvPlan;
     DrawDiagonals :=Viewport.ViewType = fvBodyplan;
     // Blowup the boundary box by 3%
-    Diff:=ScalePoint(0.03, Subtract(Viewport.Max3D, Viewport.Min3D));
-    Min:=Subtract(Viewport.Min3D, Diff);
-    Diff:=ScalePoint(-1.0, Diff);
-    Max:=Subtract(Viewport.Max3D, diff);
+    Diff := 0.03*( Viewport.Max3D-Viewport.Min3D );
+    Min  :=Viewport.Min3D-Diff;
+    Diff := -1.0*Diff;
+    Max  :=Viewport.Max3D-diff;
     if DrawStations or DrawButtocks or DrawWaterlines or DrawDiagonals then
     begin
       Viewport.PenColor:=Preferences.GridColor;
@@ -991,45 +980,37 @@ var
         Viewport.LineTo(Pt2.X, Pt2.Y);
         Width:=Viewport.TextWidth(Str);
         Viewport.TextOut(Pt1.X, Pt1.Y-Height, Str);
-        Viewport.TextOut(Pt2.X-Width, Pt2.Y-Height, str);
-
-        // Draw dwl
-        if ProjectSettings.FMainParticularsHasBeenSet then
-        begin
+        Viewport.TextOut(Pt2.X-Width, Pt2.Y-Height, str);           // Draw dwl
+//      if ProjectSettings.FMainParticularsHasBeenSet then begin
           //Viewport.FontColor:=clBlue;
           //Viewport.PenColor:=clBlue;
           //Viewport.PenWidth:=2;
           P1:=Min;
           P2:=Max;
           Position:=Surface.Min.Z+ProjectSettings.FProjectDraft;
-          Str:=Userstring(185)+#32+ConvertDimension(
-            Position, ProjectSettings.ProjectUnits);
+          Str:=Userstring(185)+#32+ConvertDimension(Position,ProjectSettings.ProjectUnits);
           P1.Z:=Position;
           P2.Z:=P1.Z;
           Pt1:=Viewport.Project(P1);
           Pt2:=Viewport.Project(P2);
-
-          Viewport.PenColor:=clGreen;
-          //I do not know why, but without changing color PenWith becomes 1
+          Viewport.PenColor:=clGreen; //I do not know why, but without changing color PenWith becomes 1
           Viewport.PenColor:=clBlue;
           Viewport.PenStyle:=psSolid;
           Viewport.PenWidth:=2;
           Viewport.MoveTo(Pt1.X, Pt1.Y);
           Viewport.LineTo(Pt2.X, Pt2.Y);
-
           Width:=Viewport.TextWidth(Str);
           Viewport.TextOut(Pt1.X-Width div 2, Pt1.Y-Height, Str);
           Viewport.TextOut(Pt2.X-Width div 2, Pt2.Y-Height, str);
-        end;
+//      end;
       end;
-
       // Draw Split Section (formerly Mainframe)
       if not (Viewport.Viewtype in [fvBodyplan,fvPerspective]) then begin
         Viewport.FontColor:=clBlue;
         Viewport.PenColor:=clBlue;
         Viewport.PenWidth:=1;
-        P1:=Point3D(Surface.SplitSectionLocation, Min.Y, Min.Z);
-        P2:=Point3D(Surface.SplitSectionLocation, Max.Y, Max.Z);;
+        P1:=SetPoint(Surface.SplitSectionLocation, Min.Y, Min.Z);
+        P2:=SetPoint(Surface.SplitSectionLocation, Max.Y, Max.Z);;
         Position:=Surface.SplitSectionLocation;
         Str:=rsSplitSection +':'+ConvertDimension(Position, ProjectSettings.ProjectUnits);
         Pt1:=Viewport.Project( P1 );
@@ -1282,7 +1263,7 @@ begin
   end;
 end;
 
-procedure TFreeShip.Extents(var Min, Max: T3DCoordinate);
+procedure TFreeShip.Extents(var Min, Max: T3DVector);
 // calculate the bounding box coordinates of the model
 var
   I: integer;
@@ -1971,14 +1952,14 @@ begin
   FreeAndNil(SaveDialog);
 end;
 
-procedure TFreeShip.SubmergedHullExtents(Wlplane: T3DPlane; var Min, Max: T3DCoordinate);
+procedure TFreeShip.SubmergedHullExtents(Wlplane: T3DPlane; var Min, Max: T3DVector);
 var
   I, J, K, L: integer;
   FirstPoint: boolean;
   vLayer: TFreeSubdivisionLayer;
   Face: TFreeSubdivisionControlFace;
   Child: TFreeSubdivisionFace;
-  P1, P2, P: T3DCoordinate;
+  P1, P2, P: T3DVector;
   s1, s2, T: TFloatType;
 begin
   FirstPoint:=True;
@@ -2031,7 +2012,7 @@ const
 var
   vViewport: TFreeViewport;
   Point: TFreeSubdivisionControlPoint;
-  P: T3DCoordinate;
+  P: T3DVector;
 begin
   if Sender is TFreeViewport then
      vViewport:=Sender as TFreeViewport;
@@ -2167,7 +2148,7 @@ procedure TFreeShip.DoSelectItems
   var ItemSelected: boolean );
 var
   I,J,Tmp: integer; Dist,MinDistance: TFloatType; P: TPoint;
-  P3D,FDebug3DPoint: T3DCoordinate;
+  P3D,FDebug3DPoint: T3DVector;
   Point: TFreeSubdivisionControlPoint;
   Edge:  TFreeSubdivisionControlEdge;
   Curve: TFreeSubdivisionControlCurve;
@@ -2360,7 +2341,7 @@ procedure TFreeShip.DoAddPoint(const Viewport: TFreeViewport; const X, Y: intege
 var Select  : Boolean = False;
   P:TPoint;
   P2D:T2DCoordinate;
-  P3D:T3DCoordinate;
+  P3D:T3DVector;
 begin
   P.X:=X; P.Y:=Y; P2D:=Viewport.ProjectBackTo2D( P );
   if (Visibility.ModelView=mvBoth) and (Viewport.ViewType=fvBodyplan)
@@ -2412,7 +2393,7 @@ procedure TFreeShip.MouseMove
         ( Viewport: TFreeViewport; Shift: TShiftState;  X,Y: integer);          ///***???
 var
   I,J: integer;
-  P2D: T2DCoordinate; P,oP,gP: T3DCoordinate; Pt: TPoint;
+  P2D: T2DCoordinate; P,oP,gP: T3DVector; Pt: TPoint;
   Point, gPoint: TFreeSubdivisionControlPoint;
   dX,dY,dZ: TFloatType;
 begin
@@ -2502,7 +2483,7 @@ end;
 procedure TFreeShip.MouseUp(Viewport: TFreeViewport; Shift: TShiftState; X, Y: integer);
 begin
   if FCurrentlyMoving and FPointHasBeenMoved then begin
-     Edit.CreateUndoObject(rsPointMove,True);
+     Edit.CreateUndoObject( rsPointMove,True );
      Built:=False;
      FileChanged:=True;
      Redraw;
@@ -2514,7 +2495,7 @@ end;
 { not sure why it should belong to an external window if this communication
   is between TFreeShip and TFreeViewPort. Lets assign it in AddViewPort.
   Sender here is TFreeViewPort }
-procedure TFreeShip.ViewportRequestExtents(Sender: TObject; var Min, Max: T3DCoordinate);
+procedure TFreeShip.ViewportRequestExtents(Sender: TObject; var Min, Max: T3DVector);
 begin
   Self.Extents(Min, Max);
   if assigned(Sender) and (Sender is TFreeViewPort)

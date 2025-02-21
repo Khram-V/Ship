@@ -106,10 +106,10 @@ type
     procedure Input2AfterSetValue(Sender: TObject);
     procedure Input3AfterSetValue(Sender: TObject);
     procedure ViewportRequestExtents(Sender: TObject;
-      var Min, Max: T3DCoordinate);
+      var Min, Max: T3DVector);
     procedure ViewportRedraw(Sender: TObject);
     procedure TopViewRequestExtents(Sender: TObject;
-      var Min, Max: T3DCoordinate);
+      var Min, Max: T3DVector);
     procedure TopViewRedraw(Sender: TObject);
   private   { Private declarations }
     FFreeship: TFreeship;
@@ -121,7 +121,7 @@ type
     FNewWaterline: TFasterListTFreeSpline;
     FWaterlinePlane: T3DPlane;
     FMainArea: TFloatType;
-    FMin, FMax: T3DCoordinate;
+    FMin, FMax: T3DVector;
     FModified: boolean;
     FOriginalSectionalAreaCurve: TFreeSpline;
     FNewSectionalAreaCurve: TFreeSpline;
@@ -159,7 +159,7 @@ var
   Station: TFreeIntersection;
   SimpsonData: array of TSimpsonData;
   Area, Prod: TFloatType;
-  COG: T3DCoordinate;
+  COG: T3DVector;
   Mom: T2DCoordinate;
   Dist, fie, Y: TFloatType;
 begin
@@ -316,7 +316,7 @@ end;
 procedure TFreeLackenbyDialog.ExtractStations(Dest: TFasterListTFreeSpline);
 var
   I, J, K: integer;
-  P: T3DCoordinate;
+  P: T3DVector;
   Station: TFreeIntersection;
   Spline: TFreeSpline;
 begin
@@ -378,7 +378,7 @@ procedure TFreeLackenbyDialog.Transform(NewDispl: TFloatType;
   MaxIterations: integer; UpdateWindows: boolean; var Succeeded: boolean);
 var
   Point: TFreeSubdivisionControlPoint;
-  P3D: T3DCoordinate;
+  P3D: T3DVector;
   MainLoc: TFloatType;
   Iteration: integer;
   I, J, K, Index: integer;
@@ -678,7 +678,7 @@ var
   MidshipLocation: TFloatType;
   Station: TFreeIntersection;
   Plane: T3DPlane;
-  P: T3DCoordinate;
+  P: T3DVector;
   P2D: T2DCoordinate;
   Layer: TFreeSubdivisionLayer;
   Spline: TFreeSpline;
@@ -887,7 +887,7 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.ViewportRequestExtents(Sender: TObject;
-  var Min, Max: T3DCoordinate);
+  var Min, Max: T3DVector);
 var
   I, J, K: integer;
   Spline: TFreeSpline;
@@ -991,7 +991,7 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.TopViewRequestExtents(Sender: TObject;
-  var Min, Max: T3DCoordinate);
+  var Min, Max: T3DVector);
 var
   I, J, K: integer;
   Spline: TFreeSpline;

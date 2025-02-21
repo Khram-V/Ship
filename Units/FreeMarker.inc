@@ -30,7 +30,7 @@ function TFreeMarker.DistanceToCursor(X, Y: integer; Viewport: TFreeViewport): i
 var
   I, Tmp: integer;
   Pt, P1, P2: TPoint;
-  V1, V2: T3DCoordinate;
+  V1, V2: T3DVector;
   Param: TFloatType;
 begin
   Result:=1000000;
@@ -110,8 +110,8 @@ var
   Output: TFreeIntersectionData;
   Param: TFloatArray;
   NParam: integer;
-  P3D, P2: T3DCoordinate;
-  Normal: T3DCoordinate;
+  P3D, P2: T3DVector;
+  Normal: T3DVector;
   PArray1: array of TPoint;
   PArray2: array of TPoint;
   Fragm: integer;

@@ -139,7 +139,7 @@ end;
 
 function TFreeSubdivisionEdge.CalculateEdgeCenterPoint: TFreeSubdivisionPoint;
 var
-  Point: T3DCoordinate;
+  Point: T3DVector;
   SP, EP: TFreeSubdivisionPoint;
 begin
   SP:=FStartpoint;
@@ -334,10 +334,10 @@ begin
 end;
 
 function TFreeSubdivisionEdge.DistanceToCursor(X, Y: integer;
-  var P: T3DCoordinate; Viewport: TFreeViewport): integer;
+  var P: T3DVector; Viewport: TFreeViewport): integer;
 var
   Pt, Pt1, Pt2: TPoint;
-  P1, P2, M: T3DCoordinate;
+  P1, P2, M: T3DVector;
   Param: TFloatType;
   Tmp: integer;
 begin
@@ -431,7 +431,7 @@ end;{TFreeSubdivisionEdge.DistanceToCursor}
 
 procedure TFreeSubdivisionEdge.Draw(DrawMirror: boolean; Viewport: TFreeViewport);
 var
-  P1, P2, M: T3DCoordinate;
+  P1, P2, M: T3DVector;
   Pt1, Pt2: TPoint;
 begin
   P1:=StartPoint.FCoordinate;

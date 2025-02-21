@@ -129,7 +129,7 @@ type
 //   procedure ScrollBar2Change(Sender: TObject);
 //   procedure ScrollBar2Enter(Sender: TObject);
    procedure SetLightExecute(Sender: TObject);
-   procedure ViewportRequestExtents(Sender: TObject; var Min,Max: T3DCoordinate);
+   procedure ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
    procedure ViewportRedraw(Sender: TObject);
    procedure FormActivate(Sender: TObject);
    procedure FormCreate(Sender: TObject);
@@ -309,7 +309,7 @@ begin  // Update all menuitems and action
    BackgroundVisible.Enabled:=(Viewport.ViewType<>fvPerspective) and (Viewport.BackgroundImage.Bitmap<>nil) and (Viewport.BackgroundImage.ShowInView=Viewport.ViewType);
 end;
 
-procedure TFreeHullWindow.ViewportRequestExtents(Sender: TObject; var Min,Max: T3DCoordinate);
+procedure TFreeHullWindow.ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
 begin
    if FreeShip<>nil then begin
       Freeship.Extents( Min,Max );
@@ -461,7 +461,7 @@ procedure TFreeHullWindow.ZoomOutExecute(Sender: TObject);
 
 procedure TFreeHullWindow.ViewportMouseDown
 ( Sender:TObject; Button:TMouseButton; Shift:TShiftState; X,Y:Integer );
-var Select:Boolean=False; P:T2DCoordinate; Point:T3DCoordinate;
+var Select:Boolean=False; P:T2DCoordinate; Point:T3DVector;
 begin
    FInitialPosition.X:=X;
    FInitialPosition.Y:=Y;
@@ -488,7 +488,7 @@ end;
 procedure TFreeHullWindow.ViewportMouseMove(Sender: TObject;Shift: TShiftState; X, Y: Integer);
 var P    : TPoint;
     P2D  : T2DCoordinate;
-    P3D  : T3DCoordinate;
+    P3D  : T3DVector;
     Str  : string='';
 begin
 // if (Shift <> []) then => ошибка

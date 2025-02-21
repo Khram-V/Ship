@@ -125,7 +125,7 @@ var K1,K2,M1,M2   : Integer;
     Param         : TStringList;
     PROP          : array[1..10] of integer;
     EntityStr     : AnsiString;
-    P             : T3DCoordinate;
+    P             : T3DVector;
     U0,U1,V0,V1   : TFloatType;
 
     function CreateKnotvector( N,Degree:Integer; knots:TFloatArray ): AnsiString;

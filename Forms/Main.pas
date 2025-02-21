@@ -759,9 +759,7 @@ begin
    ExportGHS.Enabled:=FreeShip.NumberofStations>0;
 // ExportPAM.Enabled:=FreeShip.NumberofStations>0;
 // Detect existance of external modules
-// FExecDirectory:=Freeship.Preferences.ExecDirectory;
-   ExportMichlet.Enabled:=(Freeship.Surface.NumberOfControlFaces>0) and (Freeship.ProjectSettings.MainparticularsHasBeenset);
-
+   ExportMichlet.Enabled:=(Freeship.Surface.NumberOfControlFaces>0);
    RecentFiles.Enabled:=RecentFiles.Count>0;
    ExportCoordinates.Enabled:=Freeship.Surface.NumberOfControlPoints>0;
    ExportPart.Enabled:=(Freeship.Surface.NumberOfControlFaces>0);
@@ -859,8 +857,7 @@ begin
    ShowControlCurves.Checked:=FreeShip.Visibility.ShowControlCurves;
    ShowControlCurves.Enabled:=Freeship.Surface.NumberOfControlCurves>0;
    ShowHydrostatics.Checked:=Freeship.Visibility.ShowHydrostaticData;
-   ShowHydrostatics.Enabled:=(Freeship.Surface.NumberOfControlFaces>2)
-                         and (Freeship.ProjectSettings.MainparticularsHasBeenset);
+   ShowHydrostatics.Enabled:=(Freeship.Surface.NumberOfControlFaces>2);
    ShowFlowlines.Checked:=Freeship.Visibility.ShowFlowlines;
    ShowFlowlines.Enabled:=Freeship.NumberOfFlowLines>0;
 
@@ -1593,8 +1590,6 @@ var I          : Integer;
     AlreadyOpen: Boolean;
     Form       : TFreeLinesplanForm;
 begin
-   if not Freeship.ProjectSettings.MainParticularsHasBeenset
-   then begin MessageDlg( 'First to set the dimensions! ',mtWarning,[mbOk],0); exit; end;
    AlreadyOpen:=False;
    for I:=1 to MDIChildCount
    do if MDIChildren[I-1] is TFreeLinesplanForm then begin

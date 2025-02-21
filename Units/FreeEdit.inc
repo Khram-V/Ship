@@ -320,7 +320,7 @@ procedure TFreeEdit.Point_Extrude;
 var
   Dialog: TFreeExtrudeDialog;
   Point: TFreeSubdivisionControlPoint;
-  Vector: T3DCoordinate;
+  Vector: T3DVector;
   Points, NewPoints: TFasterListTFreeSubdivisionControlPoint;
   I: integer;
   Str: string;
@@ -369,7 +369,7 @@ procedure TFreeEdit.Edge_Extrude;
 var
   Dialog: TFreeExtrudeDialog;
   Edge: TFreeSubdivisionControlEdge;
-  Vector: T3DCoordinate;
+  Vector: T3DVector;
   Edges: TFasterListTFreeSubdivisionEdge;
   I: integer;
   Str: string;
@@ -491,7 +491,7 @@ end;
 procedure TFreeEdit.Face_DeleteNegative;
 var
   IsPlus,isZero,isMinus: Boolean; Str: AnsiString;
-  I,J, RemovedF, RemovedP: integer; P3D: T3DCoordinate;
+  I,J, RemovedF, RemovedP: integer; P3D: T3DVector;
   Face: TFreeSubdivisionControlFace;
   Point: TFreeSubdivisionControlPoint;
   PrevCursor: TCursor;
@@ -849,7 +849,7 @@ var
   Point: TFreeSubdivisionControlPoint;
   Proceed,Markers: boolean;
   Dialog: TFreeRotateDialog;
-  Scale, NewP: T3DCoordinate;
+  Scale, NewP: T3DVector;
 begin
   Points:=TFasterListTFreeSubdivisionControlPoint.Create;
   if FreeShip.ActiveControlPoint<>nil then Points.Add(FreeShip.ActiveControlPoint);
@@ -929,7 +929,7 @@ var
   Point: TFreeSubdivisionControlPoint;
   Proceed: boolean;
   Dialog: TFreeRotateDialog;
-  P, Translate: T3DCoordinate;
+  P, Translate: T3DVector;
   Marker: TFreeMarker;
 begin
   Points:=TFasterListTFreeSubdivisionControlPoint.Create;
@@ -1411,9 +1411,9 @@ end;
 
 procedure TFreeEdit.Geometry_AddCylinder;
 var
-  StartPoint: T3DCoordinate;
-  EndPoint: T3DCoordinate;
-  P1, P2: T3DCoordinate;
+  StartPoint: T3DVector;
+  EndPoint: T3DVector;
+  P1, P2: T3DVector;
   I,J, NPoints, Ne: integer;
   Points: TFreeCoordinateGrid;
   CPoints:TFasterListTFreeSubdivisionControlPoint;
@@ -1466,7 +1466,7 @@ begin
       P1.x:=StartPoint.x+Sin(Angle) * Radius;
       P1.y:=StartPoint.y+Cos(Angle) * Radius;
       P1.z:=StartPoint.z;
-      P2:=RotatePointAroundVector(P1, StartPoint, Subtract(EndPoint, StartPoint));
+      P2:=RotatePointAroundVector( P1,StartPoint,EndPoint-StartPoint );
       OrgPts.Value[I+1, 0]:=P2.X;
       OrgPts.Value[I+1, 1]:=P2.Y;
       OrgPts.Value[I+1, 2]:=P2.Z;
@@ -1521,9 +1521,9 @@ end;
 
 procedure TFreeEdit.Geometry_AddGridPanel;
 var
-  StartPoint: T3DCoordinate;
-  Point: T3DCoordinate;
-  P1, P2: T3DCoordinate;
+  StartPoint: T3DVector;
+  Point: T3DVector;
+  P1, P2: T3DVector;
   I,J, Cols,Rows, Plane, Ne: integer;
   CPoints:TFasterListTFreeSubdivisionControlPoint;
   SizeA,SizeB, x,y,z, dX,dY,dZ: TFloatType;
@@ -1565,7 +1565,7 @@ begin
             z:=StartPoint.Z+j * SizeB / Rows;
             end;
         end;
-        Point:=Point3D(x,y,z);
+        Point:=SetPoint(x,y,z);
         Grid[I][J]:=FreeShip.Surface.AddControlPoint(Point);
       end;
     end;
@@ -1579,17 +1579,13 @@ end;
 function TFreeEdit.Hydrostatics_Calculate
 ( Draft,AngleOfHeel,Trim: TFloatType): TFreeHydrostaticCalc;
 begin
-  if not FreeShip.ProjectSettings.FMainParticularsHasBeenset then begin
-     MessageDlg( UserString(196),mtError,[mbOK],0 ); Result:=nil;
-  end else begin                            // Check model for inconsistencies
-    if not FreeShip.ProjectSettings.DisableModelCheck then Model_Check(False);
-    Result:=TFreeHydrostaticCalc.Create(FreeShip);
-    Result.Trim:=Trim;
-    Result.HeelingAngle:=AngleOfHeel;
-    Result.Draft:=Draft;
-    Result.Calculate;
-    Result.ShowData( fhSingleCalculation );
-  end;
+  if not FreeShip.ProjectSettings.DisableModelCheck then Model_Check(False);
+  Result:=TFreeHydrostaticCalc.Create(FreeShip);
+  Result.Trim:=Trim;
+  Result.HeelingAngle:=AngleOfHeel;
+  Result.Draft:=Draft;
+  Result.Calculate;
+  Result.ShowData( fhSingleCalculation );
 end;
 (*
 // Opens the dialog to calculate crosscurves
@@ -1948,7 +1944,7 @@ var
   Leaks: TFasterListTFreeSubdivisionControlPoint;
   Swap: boolean;
   NewLayer: TFreeSubdivisionLayer;
-  Normal, Tmp: T3DCoordinate;
+  Normal, Tmp: T3DVector;
   Z_min: single;
 
   procedure FindConnectedFaces(DoneList, ToDoList: TFasterListTFreeSubdivisionFace);
@@ -2242,8 +2238,8 @@ end;
 function TFreeEdit.Model_New: boolean;
 var
   Answer: word; I,J,Cols,Rows: integer;
-  L,B,D: TFloatType; P: T3DCoordinate;
-  Default: array[0..6, 0..4] of T3DCoordinate; // Default ship has 7 columns of 5 points(or rows)
+  L,B,D: TFloatType; P: T3DVector;
+  Default: array[0..6, 0..4] of T3DVector; // Default ship has 7 columns of 5 points(or rows)
   Spline1,Spline2: TFreeSpline;
   TrvSplines: TFasterListTFreeSpline;
   TrvPoints: TFasterListTFreeSubdivisionControlPoint;
@@ -2264,41 +2260,41 @@ begin
     L:=FreeNewModelDialog.Length;
     B:=FreeNewModelDialog.Breadth;
     D:=FreeNewModelDialog.Draft/2;
-    Default[0,0]:=Point3D(0.06, 0,   0   );   // station 0, stern
-    Default[0,1]:=Point3D(0.04, 0.0, 1.8 );
-    Default[0,2]:=Point3D(0,    0.01,2   );
-    Default[0,3]:=Point3D(-0.005,0.3,2.6 );
-    Default[0,4]:=Point3D(-0.01,0.3, 3.6 );
-    Default[1,0]:=Point3D(0.2,  0,   0   );   // station 1
-    Default[1,1]:=Point3D(0.18, 0.15,0.9 );
-    Default[1,2]:=Point3D(0.17, 0.34,1.2 );
-    Default[1,3]:=Point3D(0.16, 0.44,2   );
-    Default[1,4]:=Point3D(0.16, 0.42,3.45);
-    Default[2,0]:=Point3D(0.4,  0,   0   );   // station 2
-    Default[2,1]:=Point3D(0.4,  0.32,0.3 );
-    Default[2,2]:=Point3D(0.4,  0.45,0.6 );
-    Default[2,3]:=Point3D(0.4,  0.5, 2   );
-    Default[2,4]:=Point3D(0.4,  0.45,3.4 );
-    Default[3,0]:=Point3D(0.6,  0,   0   );   // station 3
-    Default[3,1]:=Point3D(0.6,  0.32,0.3 );
-    Default[3,2]:=Point3D(0.6,  0.45,0.6 );
-    Default[3,3]:=Point3D(0.6,  0.5, 2.1 );
-    Default[3,4]:=Point3D(0.6,  0.45,3.5 );
-    Default[4,0]:=Point3D(0.8,  0,   0   );   // station 4
-    Default[4,1]:=Point3D(0.8,  0.12,0.5 );
-    Default[4,2]:=Point3D(0.8,  0.2 ,1   );
-    Default[4,3]:=Point3D(0.8,  0.36,2.3 );
-    Default[4,4]:=Point3D(0.8,  0.42,3.8 );
-    Default[5,0]:=Point3D(0.92, 0,   0.15);   // station 5
-    Default[5,1]:=Point3D(0.92, 0.05,0.95);
-    Default[5,2]:=Point3D(0.92, 0.1, 1.9 );
-    Default[5,3]:=Point3D(0.92, 0.18,2.85);
-    Default[5,4]:=Point3D(0.94, 0.26,3.95);
-    Default[6,0]:=Point3D(1,    0,   1   );   // station 6, stem
-    Default[6,1]:=Point3D(0.99, 0,   1.75);
-    Default[6,2]:=Point3D(0.983,0,   2.5 );
-    Default[6,3]:=Point3D(0.98, 0,   3.25);
-    Default[6,4]:=Point3D(0.98, 0,   4   );
+    Default[0,0]:=SetPoint(0.06, 0,   0   );   // station 0, stern
+    Default[0,1]:=SetPoint(0.04, 0.0, 1.8 );
+    Default[0,2]:=SetPoint(0,    0.01,2   );
+    Default[0,3]:=SetPoint(-0.005,0.3,2.6 );
+    Default[0,4]:=SetPoint(-0.01,0.3, 3.6 );
+    Default[1,0]:=SetPoint(0.2,  0,   0   );   // station 1
+    Default[1,1]:=SetPoint(0.18, 0.15,0.9 );
+    Default[1,2]:=SetPoint(0.17, 0.34,1.2 );
+    Default[1,3]:=SetPoint(0.16, 0.44,2   );
+    Default[1,4]:=SetPoint(0.16, 0.42,3.45);
+    Default[2,0]:=SetPoint(0.4,  0,   0   );   // station 2
+    Default[2,1]:=SetPoint(0.4,  0.32,0.3 );
+    Default[2,2]:=SetPoint(0.4,  0.45,0.6 );
+    Default[2,3]:=SetPoint(0.4,  0.5, 2   );
+    Default[2,4]:=SetPoint(0.4,  0.45,3.4 );
+    Default[3,0]:=SetPoint(0.6,  0,   0   );   // station 3
+    Default[3,1]:=SetPoint(0.6,  0.32,0.3 );
+    Default[3,2]:=SetPoint(0.6,  0.45,0.6 );
+    Default[3,3]:=SetPoint(0.6,  0.5, 2.1 );
+    Default[3,4]:=SetPoint(0.6,  0.45,3.5 );
+    Default[4,0]:=SetPoint(0.8,  0,   0   );   // station 4
+    Default[4,1]:=SetPoint(0.8,  0.12,0.5 );
+    Default[4,2]:=SetPoint(0.8,  0.2 ,1   );
+    Default[4,3]:=SetPoint(0.8,  0.36,2.3 );
+    Default[4,4]:=SetPoint(0.8,  0.42,3.8 );
+    Default[5,0]:=SetPoint(0.92, 0,   0.15);   // station 5
+    Default[5,1]:=SetPoint(0.92, 0.05,0.95);
+    Default[5,2]:=SetPoint(0.92, 0.1, 1.9 );
+    Default[5,3]:=SetPoint(0.92, 0.18,2.85);
+    Default[5,4]:=SetPoint(0.94, 0.26,3.95);
+    Default[6,0]:=SetPoint(1,    0,   1   );   // station 6, stem
+    Default[6,1]:=SetPoint(0.99, 0,   1.75);
+    Default[6,2]:=SetPoint(0.983,0,   2.5 );
+    Default[6,3]:=SetPoint(0.98, 0,   3.25);
+    Default[6,4]:=SetPoint(0.98, 0,   4   );
     FreeShip.Clear;
     FreeShip.ProjectSettings.ProjectUnits :=
       TFreeUnitType(FreeNewModelDialog.ComboBox1.ItemIndex);
@@ -2391,9 +2387,6 @@ var
   I: integer;
   Modified: boolean;
 begin
-  if not FreeShip.ProjectSettings.FMainparticularsHasBeenset then begin
-     MessageDlg( Userstring(96),mtError,[mbOK],0 ); exit;
-  end;
   Dialog:=TFreeLackenbyDialog.Create(FreeShip);
   ShowTranslatedValues(Dialog);
   vUndo:=CreateUndoObject(Userstring(159), False);
@@ -2415,12 +2408,12 @@ end;
 // Scale the entire model and all equivalent data such as stations etc.
 
 procedure TFreeEdit.Model_Scale
-( ScaleVector: T3DCoordinate; OverrideLock, AdjustMarkers: boolean
+( ScaleVector: T3DVector; OverrideLock, AdjustMarkers: boolean
 );
 var
   I, J: integer;
   Point: TFreeSubdivisionControlPoint;
-  P: T3DCoordinate;
+  P: T3DVector;
   Marker: TFreeMarker;
 begin
   for I:=1 to FreeShip.Surface.NumberOfControlPoints do begin
@@ -2542,7 +2535,7 @@ end;
 procedure TFreeEdit.Point_InsertPlane;
 var
   Dialog: TFreeInsertPlaneDialog;
-  Min, Max: T3DCoordinate;
+  Min, Max: T3DVector;
   vUndo: TFreeUndoObject;
   N: integer;
 begin
@@ -2672,7 +2665,7 @@ begin
 end;
 
 // Add a new point with XYZ to the model with no edges/faces attached
-function TFreeEdit.Point_New(coord:T3DCoordinate): TFreeSubdivisionControlPoint;
+function TFreeEdit.Point_New(coord:T3DVector): TFreeSubdivisionControlPoint;
 begin
   Result:=TFreeSubdivisionControlPoint.Create(FreeShip.Surface);
   FreeShip.Surface.AddControlPoint(Result);
@@ -2693,7 +2686,7 @@ var
   NChanged: integer;
   Point: TFreeSubdivisionControlPoint;
   P1, P2: TFreeSubdivisionControlPoint;
-  P: T3DCoordinate;
+  P: T3DVector;
   vUndo: TFreeUndoObject;
 begin
   if FreeShip.NumberOfSelectedControlPoints > 1 then begin
@@ -2726,7 +2719,7 @@ var
   NChanged: integer;
   Point: TFreeSubdivisionControlPoint;
   P1, P2: TFreeSubdivisionControlPoint;
-  P: T3DCoordinate;
+  P: T3DVector;
   vUndo: TFreeUndoObject;
 begin
   if FreeShip.NumberOfSelectedControlPoints>1 then begin
@@ -2768,7 +2761,7 @@ var
   I,NLocked,NChanged: integer;
   Point: TFreeSubdivisionControlPoint;
   P1, P2: TFreeSubdivisionControlPoint;
-  P: T3DCoordinate;
+  P: T3DVector;
   vUndo: TFreeUndoObject;
 begin
   if FreeShip.NumberOfSelectedControlPoints > 2 then begin
@@ -2816,7 +2809,7 @@ var
   NChanged: integer;
   Point: TFreeSubdivisionControlPoint;
   P1, P2: TFreeSubdivisionControlPoint;
-  P: T3DCoordinate;
+  P: T3DVector;
   vUndo: TFreeUndoObject;
 begin
   if FreeShip.NumberOfSelectedControlPoints > 2 then begin

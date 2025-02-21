@@ -6,7 +6,7 @@ begin
   Result:=FEdges[Index];
 end;{TFreeSubdivisionPoint.FGetEdge}
 
-function TFreeSubdivisionPoint.FGetCoordinate: T3DCoordinate;
+function TFreeSubdivisionPoint.FGetCoordinate: T3DVector;
 begin
   Result:=FCoordinate;
 end;{TFreeSubdivisionPoint.FGetCoordinate}
@@ -21,7 +21,7 @@ var
   Face: TFreeSubdivisionface;
   Sigma, Tmp: extended;
 
-  function Angle_VV_3D(P1, P2, P3: T3DCoordinate): extended;
+  function Angle_VV_3D(P1, P2, P3: T3DVector): extended;
   var
     V1X, V1Y, V1Z: extended;
     V2X, V2Y, V2Z: extended;
@@ -98,12 +98,12 @@ begin
       Result:=Result or Edge[I-1].IsBoundaryEdge;
 end;{TFreeSubdivisionPoint.FGetIsBoundaryVertex}
 
-function TFreeSubdivisionPoint.FGetNormal: T3DCoordinate;
+function TFreeSubdivisionPoint.FGetNormal: T3DVector;
 var
   I, J, Index: integer;
   Face: TFreeSubdivisionFace;
-  P1, P3: T3DCoordinate;
-  C, N: T3DCoordinate;
+  P1, P3: T3DVector;
+  C, N: T3DVector;
 begin
   Result.X:=0;
   Result.Y:=0;
@@ -187,7 +187,7 @@ begin
   end;
 end;{TFreeSubdivisionPoint.FGetRegularPoint}
 
-function TFreeSubdivisionPoint.FGetLimitPoint: T3DCoordinate;
+function TFreeSubdivisionPoint.FGetLimitPoint: T3DVector;
 var
   I, N, NN, Ind: integer;
   P30, P33, P: TFreeSubdivisionPoint;
@@ -258,7 +258,7 @@ begin
   end else Result:=False;
 end;
 
-procedure TFreeSubdivisionPoint.FSetCoordinate(Val: T3DCoordinate);
+procedure TFreeSubdivisionPoint.FSetCoordinate(Val: T3DVector);
 begin FCoordinate:=Val; end;
 
 procedure TFreeSubdivisionPoint.AddEdge(Edge: TFreeSubdivisionEdge);
@@ -268,7 +268,7 @@ procedure TFreeSubdivisionPoint.AddFace(Face: TFreeSubdivisionFace);
 begin if FFaces.IndexOf(Face) = -1 then begin FFaces.Add(Face); end;
 end;
 
-function TFreeSubdivisionPoint.Averaging: T3DCoordinate;
+function TFreeSubdivisionPoint.Averaging: T3DVector;
 const  Pi = 3.1415926535897932385; // instead of system.py() func
 const  AA : array[1..8] of TFloatType =
    (  5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 1)),
@@ -283,7 +283,7 @@ const  AA : array[1..8] of TFloatType =
 var
   I, J, Nt, Nq, NoP: integer;
   A, Weight, TotalWeight: TFloatType;
-  Center: T3DCoordinate;
+  Center: T3DVector;
   Face: TFreeSubdivisionFace;
   Edge: TFreeSubdivisionEdge;
   P: TFreeSubdivisionPoint;
@@ -380,12 +380,12 @@ end;{TFreeSubdivisionPoint.Averaging}
   C.Y:=(PrevPoint.FCoordinate.Y+4.0*C.Y+NextPoint.FCoordinate.Y)/6.0 ;
   C.Z:=(PrevPoint.FCoordinate.Z+4.0*C.Z+NextPoint.FCoordinate.Z)/6.0 ;
 }
-function TFreeSubdivisionPoint.LastAveraging:T3DCoordinate;
+function TFreeSubdivisionPoint.LastAveraging:T3DVector;
 var
   I, J, Nt, Nq, NoP: integer;
   a: TFloatType;
   Weight, TotalWeight: TFloatType;
-  Center: T3DCoordinate;
+  Center: T3DVector;
   Face: TFreeSubdivisionFace;
   Edge: TFreeSubdivisionEdge;
   P: TFreeSubdivisionPoint;
@@ -424,12 +424,12 @@ begin
   end;
 end;
 {
-function TFreeSubdivisionPoint.ReverseAveraging: T3DCoordinate;
+function TFreeSubdivisionPoint.ReverseAveraging: T3DVector;
 var
   I, J, Nt, Nq, NoP: integer;
   a: TFloatType;
   Weight, TotalWeight: TFloatType;
-  Center: T3DCoordinate;
+  Center: T3DVector;
   Face: TFreeSubdivisionFace;
   Edge: TFreeSubdivisionEdge;
   P: TFreeSubdivisionPoint;
@@ -462,7 +462,7 @@ end;
 }
 function TFreeSubdivisionPoint.CalculateVertexPoint: TFreeSubdivisionPoint;
 var
-  Point: T3DCoordinate;
+  Point: T3DVector;
   Edge: TFreeSubdivisionEdge;
   I: integer;
 begin

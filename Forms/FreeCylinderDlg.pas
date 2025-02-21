@@ -58,14 +58,14 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
   private   { Private declarations }
-    function FGetStartPoint: T3DCoordinate;
-    procedure FSetStartPoint(val: T3DCoordinate);
-    function FGetEndPoint: T3DCoordinate;
-    procedure FSetEndPoint(val: T3DCoordinate);
+    function FGetStartPoint: T3DVector;
+    procedure FSetStartPoint(val: T3DVector);
+    function FGetEndPoint: T3DVector;
+    procedure FSetEndPoint(val: T3DVector);
   public    { Public declarations }
     function Execute(Str: string): boolean;
-    property StartPoint: T3DCoordinate read FGetStartPoint write FSetStartPoint;
-    property EndPoint: T3DCoordinate read FGetEndPoint write FSetEndPoint;
+    property StartPoint: T3DVector read FGetStartPoint write FSetStartPoint;
+    property EndPoint: T3DVector read FGetEndPoint write FSetEndPoint;
   end;
 
 var FreeCylinderDialog: TFreeCylinderDialog;
@@ -74,24 +74,24 @@ implementation
 
 {$R *.lfm}
 
-function TFreeCylinderDialog.FGetStartPoint: T3DCoordinate;
+function TFreeCylinderDialog.FGetStartPoint: T3DVector;
 begin
   Result:=SetPoint(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
 end;
 
-procedure TFreeCylinderDialog.FSetStartPoint(val: T3DCoordinate);
+procedure TFreeCylinderDialog.FSetStartPoint(val: T3DVector);
 begin
   StartPointX.Value:=Val.X;
   StartPointY.Value:=Val.Y;
   StartPointZ.Value:=Val.Z;
 end;
 
-function TFreeCylinderDialog.FGetEndPoint: T3DCoordinate;
+function TFreeCylinderDialog.FGetEndPoint: T3DVector;
 begin
   Result:=SetPoint(EndPointX.Value, EndPointY.Value, EndPointZ.Value);
 end;
 
-procedure TFreeCylinderDialog.FSetEndPoint(val: T3DCoordinate);
+procedure TFreeCylinderDialog.FSetEndPoint(val: T3DVector);
 begin
   EndPointX.Value:=Val.X;
   EndPointY.Value:=Val.Y;

@@ -39,14 +39,10 @@ resourcestring
   rsGHSFiles = 'GHS files';
 //rsAdd_MassFiles = 'Add_Mass files';
   rsIGESFiles = 'IGES files';
-  rsMichletInputFile = 'Michlet input file';
-  rsMichletWaveElevationsFile = 'Michlet wave elevations file';
-//rsAllFiles = 'All files';
   rsOBJfile = 'OBJ file';
   rsSTLFile = 'STL file';
   rsCareneXYZFiles = 'Carene XYZ files';
   rsTextFiles = 'Text files';
-  rsVRMLFiles = 'VRML files';
   rsPolyCadFiles = 'PolyCad files';
   rsFREEShipGeometryPart = 'FREE!ship geometry part';
   rsCarlssonHullFiles = 'Carlsson Hull files';
@@ -59,44 +55,44 @@ type
   TFreeIntersection = class;
 
   TFreeHydrostaticsData = record
-    ModelMin, ModelMax: T3DCoordinate;  // Min/max coordinates under given heelingangle and trim
-    WlMin, WlMax: T3DCoordinate;        // Min/max coordinates of the waterline
-    SubMin, SubMax: T3DCoordinate;      // Min/max extents of the submerged body
+    ModelMin, ModelMax: T3DVector;  // Min/max coordinates under given heelingangle and trim
+    WlMin, WlMax: T3DVector;        // Min/max coordinates of the waterline
+    SubMin, SubMax: T3DVector;      // Min/max extents of the submerged body
     WaterlinePlane: T3DPlane;           // Depth of the lowest point of the hull beneath the waterplane
     AbsoluteDraft: TFloatType;          // The following properties are always calculated
     Volume: TFloatType;                 // Displaced volume of the hull
     Displacement: TFloatType;           // Displacement
-    CenterOfBuoyancy: T3DCoordinate;    // Center of gravity of displaced volume
+    CenterOfBuoyancy: T3DVector;    // Center of gravity of displaced volume
     LCBPerc: TFloatType;
     LengthWaterline: TFloatType;
     BeamWaterline: TFloatType;
     BlockCoefficient: TFloatType;       // BlockCoefficient
     WettedSurface: TFloatType;
-    Leak: T3DCoordinate;                // Coordinate encountered where the ship is making water
+    Leak: T3DVector;                // Coordinate encountered where the ship is making water
                                         // Midship (aka Mainframe) properties
     MidshipArea: TFloatType;
-    MidshipCOG: T3DCoordinate;
+    MidshipCOG: T3DVector;
     MidshipCoeff: TFloatType;           // Waterplane properties
     Waterplanearea: TFloatType;
-    WaterplaneCOG: T3DCoordinate;
+    WaterplaneCOG: T3DVector;
     WaterplaneEntranceAngle: TFloatType;
     WaterplaneCoeff: TFloatType;
     WaterplaneMomInertia: T2DCoordinate; // Stability data
     KMtransverse: TFloatType;
     KMlongitudinal: TFloatType;         // Lateral area and center
     LateralArea: TFloatType;
-    LateralCOG: T3DCoordinate;
+    LateralCOG: T3DVector;
 
     PrismCoefficient: TFloatType;        // Prismatic coefficient
     VertPrismCoefficient: TFloatType;    // Prismatic coefficient
     SAC: array of T2DCoordinate;         // Sectional areas
     Weight_: TFloatType;                 // Weight and coordinates of CoG
-    CenterOfGravity_: T3DCoordinate;
+    CenterOfGravity_: T3DVector;
     BulbSectionarea: TFloatType;         // BulbSection properties
-    BulbSectionCOG: T3DCoordinate;
+    BulbSectionCOG: T3DVector;
     BulbSectionCoeff: TFloatType;
     SDP:TFloatType; // LateralArea above DWL and coordinates Z of CoG above DWL
-    SDPCOG: T3DCoordinate;
+    SDPCOG: T3DVector;
     Zsdp: TFloatType;
     Xsdp: TFloatType;
     YWindAreaMax: TFloatType;
@@ -136,7 +132,7 @@ type
     AbsoluteDraft: TFloatType; // Depth of the lowest point of the hull beneath the waterplane
     Volume: TFloatType;       // The following properties are always calculated
     Displacement: TFloatType;                   // Displaced volume of the hull
-    CenterOfBuoyancy: T3DCoordinate;                // Displacement
+    CenterOfBuoyancy: T3DVector;                // Displacement
                                        // Center of gravity of displaced volume
     KNSinPhi: TFloatType;              // Stability data
   end;
@@ -311,7 +307,7 @@ type
 
   public
     procedure Add(Item: TFreeSpline);
-    procedure CalculateArea(Plane: T3DPlane; var Area: TFloatType; var COG: T3DCoordinate; var MomentOfInertia: T2DCoordinate);
+    procedure CalculateArea(Plane: T3DPlane; var Area: TFloatType; var COG: T3DVector; var MomentOfInertia: T2DCoordinate);
     procedure Clear;
     constructor Create(Owner: TFreeShip);
     procedure CreateStarboardPart;
@@ -321,7 +317,7 @@ type
     destructor Destroy; override;
     procedure Draw(Viewport: TFreeViewport);
     procedure DrawAll;
-    procedure Extents(var Min, Max: T3DCoordinate);
+    procedure Extents(var Min, Max: T3DVector);
     procedure LoadBinary(Source: TFreeFileBuffer);
     procedure Rebuild;
     procedure SaveToDXF(Strings: TStringList);
@@ -569,7 +565,7 @@ type
     procedure Model_Check(ShowResult: boolean);    // Checks the surface for inconsistent normal directions and leaks
     function Model_New: boolean;            // Start a Example Ship (with a predefined surface)
     procedure Model_LackenbyTransformation; // Affine hullform transformation according to Lackenby
-    procedure Model_Scale(ScaleVector: T3DCoordinate; OverrideLock, AdjustMarkers: boolean); // Scale the entire model and all equivalent data such as stations etc.
+    procedure Model_Scale(ScaleVector: T3DVector; OverrideLock, AdjustMarkers: boolean); // Scale the entire model and all equivalent data such as stations etc.
     procedure Point_Collapse;          // Merge two selected edges by removing their common controlpoint.
     procedure Point_RemoveUnused;      // removes any unused points from the model
     procedure Point_InsertPlane;       // Finds all intersection of VISIBLE edges and a 3D plane, and inserts a point on each of these edges
@@ -577,7 +573,7 @@ type
     procedure Point_Lock;  // Locks all selected points
     procedure Point_Extrude; // Create new controlPoints by extruding selected points
     function Point_New: TFreeSubdivisionControlPoint; // Add a new point to the model with no edges/faces attached
-    function Point_New(coord:T3DCoordinate): TFreeSubdivisionControlPoint; overload;
+    function Point_New(coord:T3DVector): TFreeSubdivisionControlPoint; overload;
     procedure Point_AnchorToPoint;
     procedure Point_CoinsideToPoint;
     procedure Point_ProjectStraightLine; // Project all selected points onto a straight line through the first and last selected points
@@ -706,7 +702,7 @@ type
   TFreeProjectSettings = class
   private
     FFreeShip: TFreeShip;
-    FMainparticularsHasBeenset: boolean; // Flag to check if the main particulars have been set before hydrostatic calculationss are being performed
+//  FMainparticularsHasBeenset: boolean; // Flag to check if the main particulars have been set before hydrostatic calculationss are being performed
     FDisableModelCheck: boolean;         // Disable the automatic checking of the surface
     FEnableModelAutoMove: boolean;       // Unable the automatic moving model along Z
 //  FEnableBonjeanSAC: boolean;          // Unable calculation and save in file Bonjean scale and SAC
@@ -781,7 +777,7 @@ type
     property Hydrostatics_EndDraft: TFloatType read FEndDraft write FSetEndDraft;
     property Hydrostatics_DraftStep: TFloatType read FDraftStep write FSetDraftStep;
     property Hydrostatics_Trim: TFloatType read FTrim write FSetTrim;
-    property MainparticularsHasBeenset: boolean read FMainparticularsHasBeenset;
+//  property MainparticularsHasBeenset: boolean read FMainparticularsHasBeenset;
     property FreeShip: TFreeShip read FFreeShip write FFreeShip;
     property ProjectAppendageCoefficient: TFloatType read FProjectAppendageCoefficient write FSetProjectAppendageCoefficient;
     property ProjectBeam: TFloatType read FProjectBeam write FSetProjectBeam;
@@ -942,7 +938,7 @@ type
     procedure SetObjectSelected(aObject: TFreeNamedObject; aSelected: boolean);
 //  procedure SetOnChangeActiveControlPoint(AValue: TNotifyEvent);
   protected   { Protected declarations }
-    procedure ViewportRequestExtents(Sender: TObject; var Min, Max: T3DCoordinate);
+    procedure ViewportRequestExtents(Sender: TObject; var Min, Max: T3DVector);
   public      { Public declarations }
     IsRebuildAsyncDisabled:boolean;
     function GetFocusedViewport: TFreeViewport;
@@ -952,7 +948,7 @@ type
     procedure Clear;
     procedure ClearUndo;
     constructor Create(AOwner: TComponent); override;
-    procedure CreateOutputHeader(CalcHeader: AnsiString; Strings: TStrings);
+//  procedure CreateOutputHeader(CalcHeader: AnsiString; Strings: TStrings); ///***???
     // Creates a header with all relevant project data
     procedure DeleteViewport(Viewport: TFreeViewport);
     // Delete a viewport from the list of viewports connected to the model
@@ -960,7 +956,7 @@ type
     procedure Draw;
     procedure ZoomFitAllViewports;
     procedure DrawToViewport(Viewport: TFreeViewport);
-    procedure Extents(var Min, Max: T3DCoordinate);
+    procedure Extents(var Min, Max: T3DVector);
     // calculate the bounding box coordinates of the model
     function FindLowestHydrostaticsPoint: TFloatType;
     function FindByName(aName:AnsiString):TFreeNamedObject;
@@ -991,7 +987,7 @@ type
 //  procedure SaveControlPointLinearConstraints(Destination:TFreeFileBuffer); // fv462
     procedure SavePart(Faces: TFasterListTFreeSubdivisionControlFace);
     procedure SelectPointsInFrame(Viewport: TfreeViewport; rect:TRect);
-    procedure SubmergedHullExtents(Wlplane: T3DPlane; var Min, Max: T3DCoordinate);
+    procedure SubmergedHullExtents(Wlplane: T3DPlane; var Min, Max: T3DVector);
     procedure KeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure KeyUp(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure DoSelectItems(const Viewport: TFreeViewport; const X, Y: integer;  const Button: TMouseButton;  const Shift: TShiftState; var ItemSelected: boolean);

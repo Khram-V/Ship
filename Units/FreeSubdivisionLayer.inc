@@ -26,9 +26,9 @@ var
   I,J,K: integer;
   Child: TFreeSubdivisionFace;
   Area:  TFloatType;
-  Center: T3DCoordinate;
+  Center: T3DVector;
 
-  procedure ProcessTriangle(P1, P2, P3: T3DCoordinate);
+  procedure ProcessTriangle(P1, P2, P3: T3DVector);
   var
     ax, ay, az: TFloatType;
   begin
@@ -226,7 +226,7 @@ begin
   FThickness:=Source.FThickness;
 end;
 
-function ToStr( c: T3DCoordinate ): string;
+function ToStr( c: T3DVector ): string;
 begin
   Result:='('+FloatToStr( c.X )+','
              +FloatToStr( c.Y )+','
@@ -248,8 +248,8 @@ var
   Inserted: boolean;
   Plane: T3DPlane;
   S1, S2, T: TFloatType;
-  P2D, P3D, esp, eep, CP0, CP2, CP1: T3DCoordinate;
-  PP3D: ^T3DCoordinate;
+  P2D, P3D, esp, eep, CP0, CP2, CP1: T3DVector;
+  PP3D: ^T3DVector;
   PiT, esl, psl: boolean;
 label
   StartAgain;
@@ -366,7 +366,7 @@ var
   Inserted: boolean;
   Plane: T3DPlane;
   S1, S2, T: TFloatType;
-  P2D, P3D, esp, eep, CP0, CP2, CP1: T3DCoordinate;
+  P2D, P3D, esp, eep, CP0, CP2, CP1: T3DVector;
   PiT: boolean;
   //TmpPoints: TFasterListTFreeSubdivisionControlPoint;
 label
@@ -508,7 +508,7 @@ var
   Inserted: boolean;
   Plane: T3DPlane;
   S1, S2, T: TFloatType;
-  P2D, P3D, esp, eep, CP0, CP2, CP1: T3DCoordinate;
+  P2D, P3D, esp, eep, CP0, CP2, CP1: T3DVector;
   PiT: boolean;
 label
   StartAgain;
@@ -589,7 +589,7 @@ end;
 procedure Sort3DPoints(var Points: TFasterListTFreeSubdivisionControlPoint);
 var
   I, J: integer;
-  P1, P2: T3DCoordinate;
+  P1, P2: T3DVector;
   //SP:TFreeSubdivisionPoint;
 begin exit;
   for I:=0 to Points.Count-1 do
@@ -621,7 +621,7 @@ you can find the points on the line which are closest to the other line like thi
     Find the point on line1 p1=Add(r1,Scale(d1,e1))
     Find the point on line2 p2=Add(r2,Scale(d2,e2))
 }
-//function LineIntersection(P1b, P1e, P2b, P2e: T3DCoordinate): T3DCoordinate;
+//function LineIntersection(P1b, P1e, P2b, P2e: T3DVector): T3DVector;
 //begin
 //  Result:=ZERO;
 //end;
@@ -641,8 +641,8 @@ var
   Inserted: boolean;
   Plane: T3DPlane;
   S1, S2, T: TFloatType;
-  P2D, P3D, esp, eep, CP0, CP2, CP1: T3DCoordinate;
-  PP3D: ^T3DCoordinate;
+  P2D, P3D, esp, eep, CP0, CP2, CP1: T3DVector;
+  PP3D: ^T3DVector;
   PiT, IsFaceDeleted: boolean;
   label StartAgain;
 begin
@@ -873,9 +873,9 @@ begin
   end;
 end;
 
-procedure TFreeSubdivisionLayer.Extents(var Min, Max: T3DCoordinate);
+procedure TFreeSubdivisionLayer.Extents(var Min, Max: T3DVector);
 var
-  I: integer; Face: TFreeSubdivisionControlface; P: T3DCoordinate;
+  I: integer; Face: TFreeSubdivisionControlface; P: T3DVector;
 begin
   if SurfaceVisible then
     for I:=1 to Count do begin

@@ -32,13 +32,13 @@ type
   private
     FCapacity,FCount: integer;
     FFaceSets: specialize TFasterList<TVRMLIndexedFaceSet>;
-    FCoordinates: array of T3DCoordinate;
+    FCoordinates: array of T3DVector;
 
     function FGetNumberOfFacesets: integer;
-    function FGetPoint(Index: integer): T3DCoordinate;
+    function FGetPoint(Index: integer): T3DVector;
     procedure FSetCapacity(val: integer);
   public
-    procedure Add(P: T3DCoordinate);
+    procedure Add(P: T3DVector);
     procedure AddFaceSet(FaceSet: TVRMLIndexedFaceSet);
     procedure Clear; override;
     constructor Create(Owner: TVRMLList); override;
@@ -48,7 +48,7 @@ type
     property Count: integer read FCount;
     property Capacity: integer read FCapacity write FSetCapacity;
     property NumberOfFaceSets: integer read FGetNumberOfFacesets;
-    property Point[index: integer]: T3DCoordinate read FGetPoint;
+    property Point[index: integer]: T3DVector read FGetPoint;
   end;
 
   TVRMLIndexedFaceSet = class(TVRMLobject)
@@ -248,7 +248,7 @@ end;
 function TVRMLCoordinate3.FGetNumberOfFacesets: integer;
    begin Result:=FFaceSets.Count; end;
 
-function TVRMLCoordinate3.FGetPoint(Index: integer): T3DCoordinate;
+function TVRMLCoordinate3.FGetPoint(Index: integer): T3DVector;
 begin
   if (Index >= 0) and (Index < FCount) then Result:=FCoordinates[index] else
   begin Result:=ZERO;
@@ -261,7 +261,7 @@ begin FCapacity:=val; Setlength(FCoordinates,FCapacity);
       if FCapacity<FCount then FCount:=FCapacity;
 end;
 
-procedure TVRMLCoordinate3.Add(P: T3DCoordinate);
+procedure TVRMLCoordinate3.Add(P: T3DVector);
 begin if FCount>=FCapacity then Capacity:=Count+25; Inc(FCount);
       FCoordinates[FCount-1]:=P;
 end;
@@ -289,7 +289,7 @@ var
   Data: AnsiString;
   Index,S,F,I,L, Flag: integer; Ch: char;
   Points: TStringList;
-  P: T3DCoordinate;
+  P: T3DVector;
 begin
   Data:=Strings.Text;                            // writeln( 'Coord3: '+Data );
   Index:=Pos('POINT', Data);
@@ -494,7 +494,7 @@ procedure TVRMLList.Import
   SubdivisionSurface: TFreeSubdivisionSurface
 );
 var //VRMLList: TVRMLList;
-  I,J,K,N,Index: integer; V3Point: T3DCoordinate;
+  I,J,K,N,Index: integer; V3Point: T3DVector;
   Data: TFasterListTVRMLIndexedFaceSet;
   CoordInfo: TVRMLCoordinate3;
   FaceInfo: TVRMLIndexedFaceSet;

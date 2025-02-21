@@ -465,7 +465,7 @@ begin
   //FDrawingBuffer.Canvas.Pixels[P1.X,P1.Y]:=RGBtoColor(R,G,B);  // this causes mem leak in LibQt4 DCSetPixel (qtobject.inc) calling QPen_create5
 end;
 
-procedure TFreeViewport.DrawLineToZBuffer(Point1, Point2: T3DCoordinate; R,G,B: byte);
+procedure TFreeViewport.DrawLineToZBuffer(Point1, Point2: T3DVector; R,G,B: byte);
 var
   D, ax,ay, sx,sy, dx,dy, W,H: integer;
   P1, P2: TShadePoint;
@@ -531,13 +531,13 @@ begin
   //EndUpdate;
 end;
 
-procedure TFreeViewport.InitializeViewport( Min, Max: T3DCoordinate );
+procedure TFreeViewport.InitializeViewport( Min, Max: T3DVector );
 // This procedure initializes the viewports and sets the scale in such a way
 // that the model completely fills the viewport
 var
-  P: array[1..8] of T3DCoordinate;
+  P: array[1..8] of T3DVector;
   Projected, Min2D, Max2D: T2DCoordinate;
-  Diff,P3D: T3DCoordinate;
+  Diff,P3D: T3DVector;
   I,VertCorr,HorCorr:  integer;
   Width,Height, Tmp,XScale,YScale: TFloatType;
   Pt1, Pt2: TPoint;
@@ -550,10 +550,10 @@ var
   end;
 
 begin // Add margin
-  Diff:=ScalePoint( 0.01*FMargin,Subtract( Max,Min ) );
-  FMin3D:=Subtract( Min,  Diff );
-  Diff:=ScalePoint( -1.0, Diff );
-  FMax3D:=Subtract( Max,  Diff );
+  Diff  :=0.01*FMargin*( Max-Min );
+  FMin3D:=Min-Diff;
+  Diff  :=-1.0*Diff;
+  FMax3D:=Max-Diff;
   // Calculate the midpoint of the boundingbox, which is used as the center of the model for rotating the model
   FMidPoint:=MidPoint( FMin3D, FMax3D );
   // Calculate the distance of the camera to the center of the model, following from the field of view from the camera
@@ -643,8 +643,8 @@ var
   Scale, Tmp, Width, Height, ModelSize, OldScale: extended;
   OldCanvas: TCanvas;
   OldCenter,OldPan,ProjMidPoint: TPoint;
-  P: array[1..8] of T3DCoordinate;
-  P3D: T3DCoordinate;
+  P: array[1..8] of T3DVector;
+  P3D: T3DVector;
   Projected, Min2D, Max2D: T2DCoordinate;
   AbortPrinting: boolean;
   Str: AnsiString;
@@ -772,9 +772,9 @@ begin
   end else ShowMessage( 'No printer assigned!' );
 end;
 
-function TFreeViewport.Project(P: T3DCoordinate): TPoint;
+function TFreeViewport.Project(P: T3DVector): TPoint;
 var
-  P3D: T3DCoordinate;
+  P3D: T3DVector;
   P2D: T2DCoordinate;
   Dist: TFloatType;
   dX,dY:double;
@@ -798,8 +798,8 @@ end;
 function TFreeViewport.ProjectBackAsLine(P: TPoint): T3DLine;
 var
   P2D: T2DCoordinate;
-  P1, P2: T3DCoordinate;
-  P3D: T3DCoordinate;
+  P1, P2: T3DVector;
+  P3D: T3DVector;
   Dist: TFloatType;
 begin
   // convert from screencoordinate to 2D world coordinate
@@ -820,14 +820,14 @@ begin
   Result.B:=RotatedPointBack(P3D);
 end;
 
-function TFreeViewport.ProjectBack(P: TPoint; Input: T3DCoordinate): T3DCoordinate;
+function TFreeViewport.ProjectBack(P: TPoint; Input: T3DVector): T3DVector;
 var
   P2D: T2DCoordinate;
-  P1, P2: T3DCoordinate;
-  P3D: T3DCoordinate;
+  P1, P2: T3DVector;
+  P3D: T3DVector;
   Dist: TFloatType;
 
-  function Dist_PL_3D(P, P1, P2: T3DCoordinate): T3DCoordinate;
+  function Dist_PL_3D(P, P1, P2: T3DVector): T3DVector;
   var
     t: TFloatType;
   begin
@@ -863,8 +863,8 @@ end;
 function TFreeViewport.ProjectBackTo2D(P: TPoint): T2DCoordinate;
 var
   P2D: T2DCoordinate;
-  P1, P2: T3DCoordinate;
-  P3D: T3DCoordinate;
+  P1, P2: T3DVector;
+  P3D: T3DVector;
   Dist: TFloatType;
 
 begin
@@ -891,9 +891,9 @@ begin
 end;
 
 // Projects a 3D point to the screen and calculate it's Z-value for the Z-buffer
-function TFreeViewport.ProjectToZBuffer(P: T3DCoordinate): TShadePoint;
+function TFreeViewport.ProjectToZBuffer(P: T3DVector): TShadePoint;
 var
-  P3D: T3DCoordinate;
+  P3D: T3DVector;
   P2D: T2DCoordinate;
   Dist: TFloatType;
 begin
@@ -908,9 +908,9 @@ begin
 end;
 
 // Projects a 3D point with a certain z-buffer offset to the screen, used for drawing lines on top of shaded surfaces
-function TFreeViewport.ProjectToZBuffer(Scale: TFloatType; P: T3DCoordinate): TShadePoint;
+function TFreeViewport.ProjectToZBuffer(Scale: TFloatType; P: T3DVector): TShadePoint;
 var
-  P3D: T3DCoordinate;
+  P3D: T3DVector;
   P2D: T2DCoordinate;
   Dist: TFloatType;
 begin
@@ -928,10 +928,10 @@ end;
 // Midpoint coordinate and is orthogonal to ray through camera and the Midpoint
 // Used in getting cursor coords in perspective view
 function TFreeViewport.ProjectPointBackToZeroPlane(X, Y: integer;
-  Viewport: TFreeViewport): T3DCoordinate;
+  Viewport: TFreeViewport): T3DVector;
 var
   Px, Pt,Pt1, Pt2, Pt3: TPoint;
-  P0, PC, P1, P2, P3, XP, RelativeCameraLocation, S: T3DCoordinate;
+  P0, PC, P1, P2, P3, XP, RelativeCameraLocation, S: T3DVector;
   MidPlane: T3DPlane;
 begin
   Result:=ZERO;
@@ -945,11 +945,11 @@ begin
 
   intsn:=RayIntersectTriangle(ray, p1,p2,p3, IntersectionCoord);
 
-  PlanePointNormal(P, Normal: T3DCoordinate): T3DPlane;
+  PlanePointNormal(P, Normal: T3DVector): T3DPlane;
 end;
 }
 
-function TFreeViewport.RotatedPoint(P: T3DCoordinate): T3DCoordinate;
+function TFreeViewport.RotatedPoint(P: T3DVector): T3DVector;
 begin
   // This function takes a point from worldspace and rotates it around the midpoint
   // of the scene as specified by the viewing-parameters (angle/elevation)
@@ -967,7 +967,7 @@ begin
   Result.Z:=Result.Z+FMidPoint.Z;
 end;
 
-function TFreeViewport.RotatedPointBack(P: T3DCoordinate): T3DCoordinate;
+function TFreeViewport.RotatedPointBack(P: T3DVector): T3DVector;
 var
   CosAngle, SinAngle: TFloatType;
   CosElevation, SinElevation: TFloatType;
@@ -997,7 +997,7 @@ var
   OldCanvas: TCanvas;
   DrawingToPrinter: boolean;
   L: TFloatType;
-  N: T3DCoordinate;
+  N: T3DVector;
   P,P0,PC,p1,p2,p3: TPoint;
 begin
   inherited;
@@ -1620,12 +1620,12 @@ begin
   }
 end;{TFreeViewport.ShadedColor}
 
-procedure TFreeViewport.ShadeTriangle(P_1, P_2, P_3: T3DCoordinate; R, G, B: byte; Alpha: byte);
+procedure TFreeViewport.ShadeTriangle(P_1, P_2, P_3: T3DVector; R, G, B: byte; Alpha: byte);
 var
-  Normal: T3DCoordinate;
+  Normal: T3DVector;
   Pt1, Pt2, Pt3, T: TShadePoint;
-  LSourceDirection: T3DCoordinate;
-  Center: T3DCoordinate;
+  LSourceDirection: T3DVector;
+  Center: T3DVector;
   LIntensityRatio, LIntensity: TFloatType;
   Y: integer;
   XLeft, dXLeft, XRight, dXRight: integer;
@@ -1789,15 +1789,15 @@ end;
 
 // Draw a smooth shaded triangle to the ZBuffer (used when all 3 corners of the triangle have
 // different color, as for example when shading GAUSS curvature
-procedure TFreeViewport.ShadeTriangle(P_1, P_2, P_3: T3DCoordinate;
+procedure TFreeViewport.ShadeTriangle(P_1, P_2, P_3: T3DVector;
   R1, G1, B1, R2, G2, B2, R3, G3, B3: byte);
 var
   Left, Right, DLeft, dRight: TShadePoint;
   Y, d: integer;
   Tmp: TShadePoint;
   V1, V2, V3: TShadePoint;
-  Normal, Center: T3DCoordinate;
-  LSourceDirection: T3DCoordinate;
+  Normal, Center: T3DVector;
+  LSourceDirection: T3DVector;
   LIntensityRatio: TFloatType;
 
   procedure SetColor(var P: TShadePoint; R, G, B: byte);
@@ -2032,12 +2032,12 @@ end;
 
 // Draw a smooth shaded triangle to the ZBuffer (used when all 3 corners of the triangle have
 // different color, as for example when shading GAUSS curvature
-procedure TFreeViewport.ShadeTriangle(P_1, P_2, P_3: T3DCoordinate; C1, C2, C3: extended);
+procedure TFreeViewport.ShadeTriangle(P_1, P_2, P_3: T3DVector; C1, C2, C3: extended);
 var
   Y, d: integer;
   LIntensityRatio: TFloatType;
   Left, Right, DLeft, dRight, Tmp, V1, V2, V3: TShadePoint;
-  Normal, Center, LSourceDirection: T3DCoordinate;
+  Normal, Center, LSourceDirection: T3DVector;
 
   procedure SetColor(var P: TShadePoint; Curvature: extended);
   // Set the color of each vertex based on it's curvature and triangle normal
@@ -2272,7 +2272,7 @@ end;
 
 procedure TFreeViewport.ZoomExtents;
 var
-  Min,Max: T3DCoordinate;
+  Min,Max: T3DVector;
 begin
   if Assigned( FOnRequestExtents ) then begin
     Min:=ZERO;

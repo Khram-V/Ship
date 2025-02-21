@@ -74,7 +74,7 @@ end;
 procedure TFreeSubdivisionControlPoint.FSetLocked(val: boolean);
 begin if Val<>FLocked then FLocked:=Val; end;
 
-procedure TFreeSubdivisionControlPoint.FSetCoordinate( Val: T3DCoordinate );
+procedure TFreeSubdivisionControlPoint.FSetCoordinate( Val: T3DVector );
 begin if Locked then exit;
   //if Locked and (FAnchorPoint = nil) then exit;
   inherited FSetCoordinate(Val);
@@ -83,9 +83,9 @@ end;
 
 procedure TFreeSubdivisionControlPoint.SetCoordinate
 ( ViewPort: TFreeViewPort;
-       Val: T3DCoordinate;
+       Val: T3DVector;
    vAnchor: TFreeSubdivisionControlPoint );
-var i,j:integer; dX,dY,dZ:TFloatType; oP:T3DCoordinate;
+var i,j:integer; dX,dY,dZ:TFloatType; oP:T3DVector;
   gPoint:TFreeSubdivisionControlPoint;
 begin
   if FLocked then exit;
@@ -342,7 +342,7 @@ var
   P, PA,PB: TPoint;
   Pz: TShadePoint;
   I: integer;
-  P3D, P3DA, P3DB, P3DA2, P3DB2 : T3DCoordinate;
+  P3D, P3DA, P3DB, P3DA2, P3DB2 : T3DVector;
   MFL: TFloatType;
   B3D: T3DLine;
 begin
@@ -433,10 +433,10 @@ procedure TFreeSubdivisionControlPoint.AdjustToLinearConstraint
     ( Viewport: TFreeViewport );
 var P,PN: TPoint;
     I: integer;
-    CA,CB : T3DCoordinate;      // project point P on the ray through P1 and P2
-    function Project_PL_3D(P, P1, P2: T3DCoordinate): T3DCoordinate;
+    CA,CB : T3DVector;      // project point P on the ray through P1 and P2
+    function Project_PL_3D(P, P1, P2: T3DVector): T3DVector;
     var
-      T, L: TFloatType; d1, d2: T3DCoordinate;
+      T, L: TFloatType; d1, d2: T3DVector;
     begin
       d1.X:=P.X-P1.X;      d1.Y:=P.Y-P1.Y;      d1.Z:=P.Z-P1.Z;
       d2.X:=P2.X-P1.X;     d2.Y:=P2.Y-P1.Y;     d2.Z:=P2.Z-P1.Z;
@@ -451,7 +451,7 @@ var P,PN: TPoint;
     end;{Dist_PL_3D}
 
     // project point P on the ray through P1 and P2 by X
-    function Project_PL_3D_X(P, P1, P2: T3DCoordinate): T3DCoordinate;
+    function Project_PL_3D_X(P, P1, P2: T3DVector): T3DVector;
     var
       Kz,Ky, dX,pX: TFloatType;
     begin
@@ -465,7 +465,7 @@ var P,PN: TPoint;
     end;{Dist_PL_3D}
 
     // project point P on the ray through P1 and P2 by Y
-    function Project_PL_3D_Y(P, P1, P2: T3DCoordinate): T3DCoordinate;
+    function Project_PL_3D_Y(P, P1, P2: T3DVector): T3DVector;
     var
       Kz,Kx, dY,pY: TFloatType;
     begin
@@ -479,7 +479,7 @@ var P,PN: TPoint;
     end;{Dist_PL_3D}
 
     // project point P on the ray through P1 and P2 by Z
-    function Project_PL_3D_Z(P, P1, P2: T3DCoordinate): T3DCoordinate;
+    function Project_PL_3D_Z(P, P1, P2: T3DVector): T3DVector;
     var
       Kx,Ky, dZ,pZ: TFloatType;
     begin
@@ -491,7 +491,7 @@ var P,PN: TPoint;
       Result.Y:=P1.Y+Ky * pZ;
       Result.Z:=P.Z;
     end;{Dist_PL_3D}
-var OldCoordinate: T3DCoordinate;
+var OldCoordinate: T3DVector;
 begin
   if (FLinearConstraintPointA = nil) or (FLinearConstraintPointB = nil) then exit;
   CA:=FLinearConstraintPointA.Coordinate;
@@ -532,7 +532,7 @@ function TFreeSubdivisionControlPoint.DistanceToCursor(X, Y: integer;
   Viewport: TFreeViewport): integer;
 var
   Pt: TPoint;
-  P: T3DCoordinate;
+  P: T3DVector;
 begin
   // Check if cursor position lies within the boundaries
   P:=FCoordinate;
@@ -550,7 +550,7 @@ var
   I: integer;
   Sel: boolean;
 begin
-  Source.LoadT3DCoordinate(FCoordinate);
+  Source.LoadT3DVector(FCoordinate);
   Source.LoadInteger(I);
   FVertextype:=TFreeVertexType(I);
   Source.LoadBoolean(Sel);
@@ -580,7 +580,7 @@ end;
 
 procedure TFreeSubdivisionControlPoint.MoveBy( Viewport:TFreeViewPort; dX,dY,dZ: TFloatType;
                                                vAnchor:TFreeSubdivisionControlPoint );
-var i:integer; C:T3DCoordinate;
+var i:integer; C:T3DVector;
 begin
   C.X:=FCoordinate.X+dX;
   C.Y:=FCoordinate.Y+dY;

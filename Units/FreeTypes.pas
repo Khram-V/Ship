@@ -12,26 +12,20 @@ Type
   TFloatType   = single;                        // All floatingpoint variables are of this type
   TFloatArray  = array of TFloatType;
   T2DCoordinate= record X,Y:TFloatType; end;    // 2D coordinate type
-  T3DCoordinate= record X,Y,Z:TFloatType; end;  // 3D coordinate type
-  T3DLine      = record A,B:T3DCoordinate; end; // 3D line type
-  T3DPlane     = record a,b,c,d:TFloatType;end; // Description of a 3D plane: a*x+b*y+c*z -d = 0.0;
   T3DVector    = record X,Y,Z:TFloatType; end;  // 3D coordinate type
+  T3DLine      = record A,B:T3DVector; end; // 3D line type
+  T3DPlane     = record a,b,c,d:TFloatType;end; // Description of a 3D plane: a*x+b*y+c*z -d = 0.0;
 
 
 
 
-  operator =  (c1, c2:T3DCoordinate): boolean;
-  operator <> (c1, c2:T3DCoordinate): boolean;
-  operator =  (v1, v2:T3DVector):     boolean;
-  operator <> (v1, v2:T3DVector):     boolean;
-  operator+ (c:T3DCoordinate; v:T3DVector): T3DCoordinate;
-  operator- (c:T3DCoordinate; v:T3DVector): T3DCoordinate;
-//operator- ( A,B:T3DCoordinate ): T3DCoordinate;  // A-B
-  operator- (c1,c2:T3DCoordinate): T3DVector;
-  operator /  ( A:T3DCoordinate; B:TFloatType ): T3DCoordinate;  // A/B
-  operator *  (s:TFloatType; v:T3DVector): T3DVector;
-  operator *  (v1:T3DVector; v2:T3DVector): T3DVector;
-  operator *  (v1:T3DCoordinate; v2:T3DCoordinate): T3DCoordinate;
+  operator <> (A,B: T3DVector): boolean;
+  operator =  (A,B: T3DVector):     boolean;
+  operator - ( A,B: T3DVector ): T3DVector;  // A-B
+  operator + ( A,B: T3DVector ): T3DVector;
+  operator * ( A,B: T3DVector ): T3DVector;
+  operator * ( D:TFloatType; B:T3DVector ): T3DVector;  // D*B
+  operator / ( A:T3DVector; D:TFloatType ): T3DVector;  // A/D
 Type
   TRGBTriple = packed record rgbtBlue : BYTE;
                              rgbtGreen: BYTE;
@@ -39,7 +33,7 @@ Type
 
   pRGBTripleArray              = ^TRGBTripleArray;
   TRGBTripleArray              = array[0..PixelCountMax-1] of TRGBTriple;
-  T3DCoordinateArray           = array of T3DCoordinate;
+  T3DVectorArray           = array of T3DVector;
   TPointArray                  = array of TPoint;
   TFreePrecisionType           = (fpLow,fpMedium,fpHigh,fpVeryHigh);                  // Precision of the ship-model
   TFreeIntersectionType        = (fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal); // Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
@@ -90,7 +84,7 @@ Type
                                  end;
 
 Const
-  ZERO : T3DCoordinate = (X:0.0;Y:0.0;Z:0.0);
+  ZERO : T3DVector = (X:0.0;Y:0.0;Z:0.0);
   EOL                  = #13#10;
 //Var
 //  FUnderWaterColor: TColor; // Default color used for shading underwaterpart of the vessel
@@ -98,7 +92,7 @@ Const
 
 
 Function F2S( Value: TFloatType ): TFloatType;
-function Point3D( X,Y,Z: TFloattype): T3DCoordinate;
+//function Point3D( X,Y,Z: TFloattype): T3DVector;
 Function GetFloat(const S: String): TFloatType;
 Function GetInteger( const S:String ): Integer;
 Function GetBoolean( const S:String ): Boolean;
@@ -107,7 +101,7 @@ Procedure WestPoint;
 Function BlankOff( S: AnsiString ): AnsiString;
 //Function Dist( A:T3DVector ): TFloatType;
 Function Distance2D( P1,P2: T2DCoordinate ): extended;
-Function Distance3D( P1,P2: T3DCoordinate ): extended;
+Function Distance3D( P1,P2: T3DVector ): extended;
 //function GetUnderwaterColor: TColor;
 //function GetUnderwaterColorAlpha: byte;
 //procedure SetUnderwaterColor(Val: TColor);
@@ -118,65 +112,46 @@ Function Distance3D( P1,P2: T3DCoordinate ): extended;
 
 
 Implementation
-function Point3D( X,Y,Z: TFloattype): T3DCoordinate;
-   begin Result.X:=X;
-         Result.Y:=Y;
-         Result.Z:=Z; end;
+//function Point3D( X,Y,Z: TFloattype): T3DVector;   == SetPoint
+//   begin Result.X:=X;
+//         Result.Y:=Y;
+//         Result.Z:=Z; end;
 
-operator = (c1,c2:T3DCoordinate): boolean;
-begin result:=(c1.x=c2.x) and (c1.y=c2.y) and (c1.z=c2.z); end;
+operator = ( A,B: T3DVector ): boolean;
+begin result:=(A.x=B.x) and (A.y=A.y) and (A.z=B.z); end;
 
-operator <> (c1,c2:T3DCoordinate): boolean;
-begin result:=not( (c1.x=c2.x) and (c1.y=c2.y) and (c1.z=c2.z) ); end;
+operator <> (A,B: T3DVector ): boolean;
+begin result:=(A.x<>B.x) or (A.y<>A.y) or (A.z<>B.z); end;
 
-operator = (v1,v2:T3DVector): boolean;
-begin result:=(v1.x=v2.x) and (v1.y=v2.y) and (v1.z=v2.z); end;
-
-operator <> (v1,v2:T3DVector): boolean;
-begin result:=not( (v1.x=v2.x) and (v1.y=v2.y) and (v1.z=v2.z) ); end;
-
-operator+(c:T3DCoordinate; v:T3DVector): T3DCoordinate ;
-begin result.x:=(c.x+v.x);
-      result.y:=(c.y+v.y);
-      result.z:=(c.z+v.z);
+operator + ( A,B: T3DVector ): T3DVector ;
+begin result.x:=(A.x+B.x);
+      result.y:=(A.y+B.y);
+      result.z:=(A.z+B.z);
 end;
 
-operator-(c:T3DCoordinate; v:T3DVector): T3DCoordinate;
-begin result.x:=(c.x-v.x);
-      result.y:=(c.y-v.y);
-      result.z:=(c.z-v.z);
+operator - ( A,B: T3DVector ): T3DVector;   // A-B
+begin result.x:=(A.x-B.x);
+      result.y:=(A.y-B.y);
+      result.z:=(A.z-B.z);
 end;
 
-operator-(c1,c2:T3DCoordinate): T3DVector;
-begin result.x:=(c1.x-c2.x);
-      result.y:=(c1.y-c2.y);
-      result.z:=(c1.z-c2.z);
+operator / ( A:T3DVector; D:TFloatType ): T3DVector;  // A/B
+begin result.x:=A.x/D;
+      result.y:=A.y/D;
+      result.z:=A.z/D;
 end;
 
-operator / ( A:T3DCoordinate; B:TFloatType ): T3DCoordinate;  // A/B
-begin result.x:=A.x/B;
-      result.y:=A.y/B;
-      result.z:=A.z/B;
+operator * ( D:TFloatType; B:T3DVector): T3DVector;   // scalar product
+begin result.x:=D*B.x;
+      result.y:=D*B.y;
+      result.z:=D*B.z;
 end;
 
-operator * (s:TFloatType; v:T3DVector): T3DVector; // scalar product
-begin result.x:=s*v.x;
-      result.y:=s*v.y;
-      result.z:=s*v.z;
+operator * ( A,B: T3DVector ): T3DVector;  // cross product
+begin result.x:=(A.y*B.z)-(A.z*B.y);
+      result.y:=(A.z*B.x)-(A.x*B.z);
+      result.z:=(A.x*B.y)-(A.y*B.x);
 end;
-
-operator * (v1:T3DCoordinate; v2:T3DCoordinate): T3DCoordinate;
-begin result.x:=(v1.y * v2.z)-(v1.z * v2.y);
-      result.y:=(v1.z * v2.x)-(v1.x * v2.z);
-      result.z:=(v1.x * v2.y)-(v1.y * v2.x);
-end;
-
-operator * (v1:T3DVector; v2:T3DVector): T3DVector; // cross product
-begin result.x:=(v1.y * v2.z)-(v1.z * v2.y);
-      result.y:=(v1.z * v2.x)-(v1.x * v2.z);
-      result.z:=(v1.x * v2.y)-(v1.y * v2.x);
-end;
-
 
 function Distance2D(P1, P2: T2DCoordinate): extended;
   var dX, dY: extended;
@@ -184,7 +159,7 @@ begin dX:=P2.X-P1.X;
       dY:=P2.Y-P1.Y; Result:=sqrt( sqr( dX )+sqr( dY ) );
 end;{Distance2D}
 
-function Distance3D(P1, P2: T3DCoordinate): extended;
+function Distance3D(P1, P2: T3DVector): extended;
   var dX,dY,dZ: extended;
 begin dX:=P2.X-P1.X;
       dY:=P2.Y-P1.Y;

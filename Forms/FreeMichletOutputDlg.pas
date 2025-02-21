@@ -147,7 +147,7 @@ type
     procedure OKbuttonClick(Sender: TObject);
     procedure CancelButtonClick(Sender: TObject);
     procedure ViewportRequestExtents(Sender: TObject;
-      var Min, Max: T3DCoordinate);
+      var Min, Max: T3DVector);
     procedure ViewportRedraw(Sender: TObject);
     procedure RadioButton1Click(Sender: TObject);
     procedure DistanceAfterSetValue(Sender: TObject);
@@ -241,7 +241,7 @@ implementation
 procedure TFreeMichletOutputDialog.FBuildOffsets;
 var
   I, J, K, L, N: integer;
-  Min, Max, P: T3DCoordinate;
+  Min, Max, P: T3DVector;
   First: boolean;
   WlHeight: TFloatType;
   StSpacing: TFloatType;
@@ -557,7 +557,7 @@ procedure TFreeMichletOutputDialog.CancelButtonClick(Sender: TObject);
 begin ModalResult:=mrCancel; end;
 
 procedure TFreeMichletOutputDialog.ViewportRequestExtents(Sender: TObject;
-  var Min, Max: T3DCoordinate);
+  var Min, Max: T3DVector);
 var
   I, J: integer;
 begin
@@ -581,7 +581,7 @@ procedure TFreeMichletOutputDialog.ViewportRedraw(Sender: TObject);
 var
   XSpacing,ZSpacing: TFloatType;
   I, J: integer;
-  P1, P2: T3DCoordinate;
+  P1, P2: T3DVector;
   Pt: TPoint;
   Dist, Tmp: extended;
 begin

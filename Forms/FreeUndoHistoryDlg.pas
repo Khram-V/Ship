@@ -20,7 +20,7 @@ type
     SpeedButton2: TSpeedButton;
     procedure UndoBoxClick(Sender: TObject);
     procedure ViewportRequestExtents(Sender: TObject; var Min,
-    Max: T3DCoordinate);
+    Max: T3DVector);
     procedure ViewportRedraw(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
@@ -125,7 +125,7 @@ begin
    end;
 end;
 
-procedure TFreeUndoHistoryDialog.ViewportRequestExtents(Sender: TObject;var Min, Max: T3DCoordinate);
+procedure TFreeUndoHistoryDialog.ViewportRequestExtents(Sender: TObject;var Min, Max: T3DVector);
 begin Freeship1.Extents(Min,Max); end;
 
 procedure TFreeUndoHistoryDialog.ViewportRedraw(Sender: TObject);

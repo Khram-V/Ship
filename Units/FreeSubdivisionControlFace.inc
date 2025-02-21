@@ -155,13 +155,13 @@ begin
 end;{TFreeSubdivisionControlFace.Create}
 
 function TFreeSubdivisionControlFace.DistanceToCursor(X, Y: integer;
-  var P: T3DCoordinate; Viewport: TFreeViewport): integer;
+  var P: T3DVector; Viewport: TFreeViewport): integer;
 var
   I, Dist, Tmp: integer;
   Param: TFloatType;
   Edge: TFreeSubdivisionEdge;
   Pt1, Pt2: TPoint;
-  P1, P2, M: T3DCoordinate;
+  P1, P2, M: T3DVector;
   D: TFloatType;
 begin
   Result:=1000000;
@@ -280,13 +280,13 @@ begin
 end;{TFreeSubdivisionControlFace.DistanceToCursor}
 
 function TFreeSubdivisionControlFace.PointInFace(X, Y: integer;
-  var IntersectionCoord: T3DCoordinate; var Proximity:TFloatType;
+  var IntersectionCoord: T3DVector; var Proximity:TFloatType;
   Viewport: TFreeViewport): boolean;
 var
   I, J: integer;
   Child: TFreeSubdivisionFace;
   Pt: TPoint;
-  P1, P2, P3, RelativeCameraLocation: T3DCoordinate;
+  P1, P2, P3, RelativeCameraLocation: T3DVector;
   ray:T3DLine;
   intsn: integer;
 begin
@@ -459,7 +459,7 @@ end;
 procedure TFreeSubdivisionControlFace.Draw(Viewport: TFreeViewport);
 type
   TIntData = record
-    P: T3DCoordinate;
+    P: T3DVector;
     DotProd: TFloatType;
   end;
 
@@ -472,8 +472,8 @@ var
   Child: TFreeSubdivisionFace;
   Point: TFreeSubdivisionPoint;
 
-  P1, P2, P3: T3DCoordinate;
-  Camera: T3DCoordinate;
+  P1, P2, P3: T3DVector;
+  Camera: T3DVector;
   R, G, B: byte;
   Ru, Gu, Bu: byte;
   Alpha, uwR, uwG, uwB, uwA: byte;
@@ -485,10 +485,10 @@ var
   Capacity: integer;
   Points: TFasterListTFreeSubdivisionPoint;
 
-  procedure DrawNormal(P, N: T3DCoordinate; color: TColor);
+  procedure DrawNormal(P, N: T3DVector; color: TColor);
   var
     P1, P2: TPoint;
-    V: T3DCoordinate;
+    V: T3DVector;
     L, Ldes: TFloatType;
   begin
     if (Viewport.ViewType = fvBodyplan) and (not Surface.DrawMirror) and
@@ -528,21 +528,21 @@ var
     end;
   end;{Draw normal}
 
-  procedure ZebraStripe(Camera: T3DCoordinate;
+  procedure ZebraStripe(Camera: T3DVector;
     Point1, Point2, Point3: TFreeSubdivisionPoint; R, G, B, Zr, Zg, Zb: byte);
   const
     Width = 0.02;
   var
     d1, d2, d3: TFloatType;
     Mindp, Maxdp: TFloatType;
-    Eye, Vector: T3DCoordinate;
-    P1, P2, P3: T3DCoordinate;
-    N1, N2, N3: T3DCoordinate;
+    Eye, Vector: T3DVector;
+    P1, P2, P3: T3DVector;
+    N1, N2, N3: T3DVector;
     NInt, Lo, Hi: integer;
-    Pts: array of T3DCoordinate;
+    Pts: array of T3DVector;
     I, J, Npts: integer;
 
-    procedure Add(P: T3DCoordinate; Dp: TFloatType);
+    procedure Add(P: T3DVector; Dp: TFloatType);
     begin
       if NInt = Capacity then
       begin
@@ -554,12 +554,12 @@ var
       Intersections[NInt-1].DotProd:=Dp;
     end;
 
-    procedure Process(P: T3DCoordinate; Dp: TFloatType);
+    procedure Process(P: T3DVector; Dp: TFloatType);
     var
       PrevDp: TFloatType;
       I, L, H: integer;
       Val, T: TFloatType;
-      PrevP, P3D: T3DCoordinate;
+      PrevP, P3D: T3DVector;
     begin
       PrevDp:=Intersections[NInt-1].DotProd;
       L:=Trunc(PrevDp / Width);
@@ -620,15 +620,15 @@ var
       N3:=Point3.Normal
     else
       N3:=Vector;
-    Eye:=Normalize(Subtract(Camera, P1));
+    Eye:=Normalize( Camera-P1 );
     d1:=Dotproduct(Eye, N1);
     if d1 < 0 then
       d1:=-d1;
-    Eye:=Normalize(Subtract(Camera, P2));
+    Eye:=Normalize( Camera-P2 );
     d2:=Dotproduct(Eye, N2);
     if d2 < 0 then
       d2:=-d2;
-    Eye:=Normalize(Subtract(Camera, P3));
+    Eye:=Normalize( Camera-P3 );
     d3:=Dotproduct(Eye, N3);
     if d3 < 0 then
       d3:=-d3;
@@ -697,9 +697,9 @@ var
       N3.Y:=-N3.Y;
       NInt:=0;
 
-      Eye:=Normalize(Subtract(Camera,P1)); d1:=Dotproduct(Eye,N1); if d1<0 then d1:=-d1;
-      Eye:=Normalize(Subtract(Camera,P2)); d2:=Dotproduct(Eye,N2); if d2<0 then d2:=-d2;
-      Eye:=Normalize(Subtract(Camera,P3)); d3:=Dotproduct(Eye,N3); if d3<0 then d3:=-d3;
+      Eye:=Normalize( Camera-P1 ); d1:=Dotproduct(Eye,N1); if d1<0 then d1:=-d1;
+      Eye:=Normalize( Camera-P2 ); d2:=Dotproduct(Eye,N2); if d2<0 then d2:=-d2;
+      Eye:=Normalize( Camera-P3 ); d3:=Dotproduct(Eye,N3); if d3<0 then d3:=-d3;
 
       MindP:=d1;
       MaxDp:=d1;
@@ -989,7 +989,7 @@ var
   I, J: integer;
   Index: integer;
   Child: TFreeSubdivisionFace;
-  P1, P2, P3: T3DCoordinate;
+  P1, P2, P3: T3DVector;
   Curv: TFloatType;
   R1, G1, B1: byte;
   R2, G2, B2: byte;

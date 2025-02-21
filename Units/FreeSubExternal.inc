@@ -17,7 +17,7 @@ var
   I,J,K,Index: integer; Str: AnsiString;
 // CFace: TFreeSubdivisionControlFace; CPoint: TFreeSubdivisionCOntrolPoint;
   CPoints, FacePoints: TFasterListTFreeSubdivisionControlPoint;
-  C3d: T3DCoordinate;
+  C3d: T3DVector;
   Faces: TStringList;
   Vindex: array of AnsiString;
 begin
@@ -61,7 +61,7 @@ var
   Child: TFreeSubdivisionFace;
   Str: string;
   P: TFreeSubdivisionPoint;
-  C3d: T3DCoordinate;
+  C3d: T3DVector;
 begin
   if not ExportControlNet then begin               // export subdivided surface
     if not Built then rebuild;
@@ -240,7 +240,7 @@ begin FSpline.Fragments:=FSpline.NumberOfPoints;
 end;
 procedure TFreeSubdivisionLayer.SaveToDXF(Strings: TStringList);
 var
-  NAssembled, I,J,K, Cols,Rows: integer; P: T3DCoordinate;
+  NAssembled, I,J,K, Cols,Rows: integer; P: T3DVector;
   Layers: TFasterListTFreeSubdivisionLayer;
   Assembled: TFreeFaceArray;
   AssFace: TFreeFaceGrid;
@@ -329,7 +329,7 @@ end;
 //
 procedure TFreeSubdivisionControlFace.SaveToDXF(Strings: TStringList);
 var
-  I,J,K, Cols,Rows, ColorIndex: integer;   P: T3DCoordinate;
+  I,J,K, Cols,Rows, ColorIndex: integer;   P: T3DVector;
   Child: TFreeSubdivisionFace;
   LayerName: string;
   Grid: TFreeSubdivisionPointGrid;
@@ -433,7 +433,7 @@ var
   Col: integer;
   Index: integer;
   P: TFreeSubdivisionPoint;
-  P3D: T3DCoordinate;
+  P3D: T3DVector;
   Layer: string;
   Source: TFasterListTFreeSubdivisionEdge;
   Dest: TFasterListTFreeSubdivisionFace;
@@ -444,7 +444,7 @@ var
   var
     I, Col: integer;
     P2D: T2DCoordinate;
-    P3D: T3DCoordinate;
+    P3D: T3DVector;
   begin
     Col:=FindDXFColorIndex(Spline.Color);
     Strings.Add('0'+EOL+'POLYLINE');
@@ -566,7 +566,7 @@ var
   Face: TFreeSubdivisionControlFace;
   Layer: TFreeSubdivisionLayer;
 
-  function NewPoint(P: T3DCoordinate): TFreeSubdivisionControlPoint;
+  function NewPoint(P: T3DVector): TFreeSubdivisionControlPoint;
   begin Result:=TFreeSubdivisionControlPoint.Create(self);
         Result.FCoordinate:=P;
         FControlPoints.Add(Result);

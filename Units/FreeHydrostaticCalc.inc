@@ -24,7 +24,7 @@ end;
 function TFreeHydrostaticCalc.FGetWlPlane: T3DPlane;
 var
   LowestValue: TFloatType;
-  P1, P2, P3: T3DCoordinate;
+  P1, P2, P3: T3DVector;
 begin
   LowestValue:=Owner.FindLowestHydrostaticsPoint;
   P1:=SetPoint(0.0, 0.0, LowestValue+(Draft-0.5 * Trim));
@@ -61,9 +61,7 @@ procedure TFreeHydrostaticCalc.FSetErrors(val: TFreeHydrostaticErrors);
 
 procedure TFreeHydrostaticCalc.FSetHydrostaticType(val: TFreeHydrostaticType);
 begin
-  if Val <> FHydrostaticType then begin
-    FHydrostaticType:=val;
-    Calculated:=False;
+  if Val<>FHydrostaticType then begin FHydrostaticType:=val; Calculated:=False;
   end;
 end;
 
@@ -737,7 +735,7 @@ begin
   end;
 end;
 
-procedure TFreeHydrostaticCalc.AddHeader(Strings: TStringList);
+procedure TFreeHydrostaticCalc.AddHeader(Strings: TStringList);       ///***!!!
 begin
   Strings.Add(MakeLength(Userstring(39), 21)+' : '+Owner.ProjectSettings.ProjectName);
   Strings.Add(MakeLength(Userstring(40), 21)+' : '+Owner.ProjectSettings.ProjectDesigner);
@@ -780,7 +778,7 @@ var
   PrevCursor: TCursor;
   Point: TFreeSubdivisionControlPoint;
   Proceed: boolean;
-  P, Translate: T3DCoordinate;
+  P, Translate: T3DVector;
   Marker: TFreeMarker;
 begin
   for I:=1 to Owner.NumberOfLayers do
@@ -900,9 +898,9 @@ type
     Displ: single;
   end;
   TMinMaxdata = record
-    LowestPoint: T3DCoordinate;
-    Lowestleak: T3DCoordinate;
-    PlaneNormal: T3DCoordinate;
+    LowestPoint: T3DVector;
+    Lowestleak: T3DVector;
+    PlaneNormal: T3DVector;
     Maxdraft: TFloatType;
     LowestZ: TFloatType;
     Calculated: boolean;
@@ -931,7 +929,7 @@ var
     Result:=Y1+(Y2-Y1) * (X-X1) / (X2-X1);
   end;{Interpolate}
 
-  function RotatePointBack(P: T3DCoordinate): T3DCoordinate;
+  function RotatePointBack(P: T3DVector): T3DVector;
     // Rotate a point under given trim and heel back to heel=0 and trim=0 position
   begin
     Result.x:=P.x * FCosTrim-P.z * FSinTrim;
@@ -941,7 +939,7 @@ var
 
   function CalculatewaterlinePlane(Desireddraft: TFloatType): T3DPlane;
   var
-    P: T3DCoordinate;
+    P: T3DVector;
   begin
     P.X:=MinMaxdata.LowestPoint.X+Desireddraft * MinMaxdata.PlaneNormal.X;
     P.Y:=MinMaxdata.LowestPoint.Y+Desireddraft * MinMaxdata.PlaneNormal.Y;
@@ -952,7 +950,7 @@ var
   procedure CalculateMinMaxdata;
   var
     I, J, K, L: integer;
-    P1, P2, P3: T3DCoordinate;
+    P1, P2, P3: T3DVector;
     First: boolean;
     FirstLeak: boolean;
     Min, Max: TFloatType;
@@ -1186,7 +1184,7 @@ procedure TFreeHydrostaticCalc.CalculateMidshipLocation;
 var i:integer; Frame: TFreeIntersection;
   X,X1,X2, Step, MaxArea, Area :TFloatType;
   MOI: T2DCoordinate;
-  COG: T3DCoordinate;
+  COG: T3DVector;
   MaxStation: integer;
 begin
   MaxStation:=0;
@@ -1279,14 +1277,14 @@ var
   Leaks: TFasterListTFreeSubdivisionControlPoint;
   CtrlPoint: TFreeSubdivisionControlPoint;
   Point, Pt: TFreeSubdivisionPoint;
-  P1, P2: T3DCoordinate;
-  P, Keel: T3DCoordinate;
-  NewOrigin: T3DCoordinate;
+  P1, P2: T3DVector;
+  P, Keel: T3DVector;
+  NewOrigin: T3DVector;
   TmpP2D: T2DCoordinate;
   FirstSubmPoint: boolean;
   FirstPoint: boolean;
   Submerged: boolean;
-  Points: array of T3DCoordinate;
+  Points: array of T3DVector;
   // Array containing the coordinates of the underwaterpart of a face
   PointCapacity: integer;                 // Length of the dynamic point-array
   NoPoints: integer;
@@ -1308,7 +1306,7 @@ var
   Wbon: array [1..101, 1..101] of single;
 
 
-  function RotatePoint(P: T3DCoordinate): T3DCoordinate;
+  function RotatePoint(P: T3DVector): T3DVector;
     // Rotate a point at heel=0 and trim=0 position to given trim and heel
   begin
     P.Z:=P.Z-Keel.Z;
@@ -1317,11 +1315,11 @@ var
     Result.z:=-P.x * SinTrim+(P.y * SinHeel+P.z * CosHeel) * CosTrim;
   end;{THydrostaticsData.RotatePoint}
 
-  procedure ProcessTriangle(P1, P2, P3: T3DCoordinate);
+  procedure ProcessTriangle(P1, P2, P3: T3DVector);
   var
-    VolumeMoment: T3DCoordinate;
+    VolumeMoment: T3DVector;
     Volume: TFloatType;
-    Center: T3DCoordinate;
+    Center: T3DVector;
     ax, ay, az: TFloatType;
   begin
     // Reposition points with respect to the new projected origin
@@ -1359,7 +1357,7 @@ var
     FData.WettedSurface:=FData.WettedSurface+Sqrt(ax * ax+ay * ay+az * az);
   end;{ProcessTriangle}
 
-  procedure CheckSubmergedBody(P: T3DCoordinate; Side: TFloatType);
+  procedure CheckSubmergedBody(P: T3DVector; Side: TFloatType);
   begin
     // Calculate extents of waterplane and submerged body
     P:=RotatePoint(P);
@@ -1925,18 +1923,18 @@ var
   Face: TFreeSubdivisionControlFace;
   Child: TFreeSubdivisionFace;
   Side1, Side2: TFloatType;
-  P1, P2: T3DCoordinate;
-  P, Keel: T3DCoordinate;
-  NewOrigin: T3DCoordinate;
+  P1, P2: T3DVector;
+  P, Keel: T3DVector;
+  NewOrigin: T3DVector;
   FirstPoint: boolean;
   Submerged: boolean;
-  Points: array of T3DCoordinate;
+  Points: array of T3DVector;
   // Array containing the coordinates of the underwaterpart of a face
   PointCapacity: integer;                 // Length of the dynamic point-array
   NoPoints: integer;
   // number of points stored int the dynamic array
 
-  function RotatePoint(P: T3DCoordinate): T3DCoordinate;
+  function RotatePoint(P: T3DVector): T3DVector;
     // Rotate a point at heel=0 and trim=0 position to given trim and heel
   begin
     P.Z:=P.Z-Keel.Z;
@@ -1945,11 +1943,11 @@ var
     Result.z:=-P.x * SinTrim+(P.y * SinHeel+P.z * CosHeel) * CosTrim;
   end;{THydrostaticsData.RotatePoint}
 
-  procedure ProcessTriangle(P1, P2, P3: T3DCoordinate);
+  procedure ProcessTriangle(P1, P2, P3: T3DVector);
   var
-    VolumeMoment: T3DCoordinate;
+    VolumeMoment: T3DVector;
     Volume: TFloatType;
-    Center: T3DCoordinate;
+    Center: T3DVector;
   begin
     // Reposition points with respect to the new projected origin
     P1.X:=P1.X-NewOrigin.X;
@@ -2222,8 +2220,8 @@ begin
   if not Calculated then Calculate;
   Strings:=TStringList.Create;
   AddData( Strings,Mode,';' );
-  Dialog:=TFreeHydrostaticsDialog.Create(Owner);
-  ShowTranslatedValues(Dialog);
+  Dialog:=TFreeHydrostaticsDialog.Create( Owner );
+  ShowTranslatedValues( Dialog );
 //Strings.SaveToFile('FreeHydrostaticsMode.ShowData.Strings.txt');
 //try
     Dialog.Edit.Lines.BeginUpdate;

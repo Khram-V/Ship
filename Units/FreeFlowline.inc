@@ -66,7 +66,7 @@ function TFreeFlowline.DistanceToCursor(X,Y:integer; Viewport:TFreeViewport):int
 var
   I,Tmp   : integer;
   Pt,P1,P2: TPoint;
-  V1,V2   : T3DCoordinate;
+  V1,V2   : T3DVector;
   Param   : TFloatType;
 begin
   Result:=1000000;
@@ -123,7 +123,7 @@ var
   Output: TFreeIntersectionData;
   Param: TFloatArray;
   NParam: integer;
-  P3D: T3DCoordinate;
+  P3D: T3DVector;
   PArray1: array of TPoint;
   Pt: TPoint;
   Fragm: integer;
@@ -221,8 +221,8 @@ type
     Processed: boolean;
   end;
   TPointData = record
-    Coord     : T3DCoordinate;
-    FlowDir   : T3DCoordinate;
+    Coord     : T3DVector;
+    FlowDir   : T3DVector;
     Triangles : array of integer;
     Ntriangles: integer;
   end;
@@ -243,7 +243,7 @@ var
   TriangleCapacity: integer;
   PointData: array of TPointData;
   StartPoint, EndPoint,
-  Intersection, Direction: T3DCoordinate;
+  Intersection, Direction: T3DVector;
   Valid: boolean;
 
   procedure AddTriangleToPoint(var Point: TPointData; TriangleIndex: integer);
@@ -270,9 +270,9 @@ var
     Inc(NTriangles);
   end;
   function CalculateFlowDirection2
-  ( Incoming:T3DCoordinate; Point:TFreeSubdivisionPoint ): T3DCoordinate;
+  ( Incoming:T3DVector; Point:TFreeSubdivisionPoint ): T3DVector;
   var
-    Normal,Direction,P,Proj: T3DCoordinate; Plane: T3DPlane;
+    Normal,Direction,P,Proj: T3DVector; Plane: T3DPlane;
   begin
     //Incoming.x:=Incoming.x-1.001;
     //Incoming.x:=Incoming.X-1.001;
@@ -285,18 +285,18 @@ var
     Direction:=Normalize(AddPoint(Normal,Incoming));
     Incoming:=AddPoint(P,Direction);
     Proj:=ProjectPointOnPlane(Incoming,Plane);
-    Direction:=Subtract(Proj,P);
+    Direction:=Proj-P;
     Result:=Normalize(Direction);
   end;
-  function CalculateFlowDirection(Point: TFreeSubdivisionPoint): T3DCoordinate;
-    var V: T3DCoordinate;
+  function CalculateFlowDirection(Point: TFreeSubdivisionPoint): T3DVector;
+    var V: T3DVector;
   begin V:=SetPoint(-1,0,0); Result:=CalculateFlowDirection2( V,Point ); end;
-  function FindInitialTriangle(StartPoint, EndPoint: T3DCoordinate; var Int,Dir:T3DCoordinate): integer;
+  function FindInitialTriangle(StartPoint, EndPoint: T3DVector; var Int,Dir:T3DVector): integer;
   var
     I: Integer;
     Triangle: TTriangle;
     S1, S2, s, t: TFloatType;
-    P, u,v,w, P0,P1,P2: T3DCoordinate;
+    P, u,v,w, P0,P1,P2: T3DVector;
     Distance, b0, b1, b2, UdotV, UdotU, VdotV, WdotU, WdotV: Double;
   begin
     Result:=-1;
@@ -334,9 +334,9 @@ var
       P0:=PointData[Triangle.P1].Coord;
       P1:=PointData[Triangle.P2].Coord;
       P2:=PointData[Triangle.P3].Coord;
-      u:=Subtract(P1,P0);
-      v:=Subtract(P2,P0);
-      w:=Subtract(Int,P0);
+      u:=P1-P0;
+      v:=P2-P0;
+      w:=Int-P0;
       UdotU:=Dotproduct(U,U);
       UdotV:=Dotproduct(U,V);
       VdotV:=Dotproduct(V,V);
@@ -362,9 +362,9 @@ var
   end; {FindInitialTriangle}
 
   function ProcessTriangle(var Triangle:TTriangle; var SkipInd1,SkipInd2: integer;
-    var Intersection,Direction:T3DCoordinate; var NextTriangle:integer ): boolean;
+    var Intersection,Direction:T3DVector; var NextTriangle:integer ): boolean;
   var
-    P1, P2, Dir1, Dir2, Int: T3DCoordinate;
+    P1, P2, Dir1, Dir2, Int: T3DVector;
     I, Ind1, Ind2: Integer;
     Distance: TFloatType;
     Param: double;
@@ -566,7 +566,7 @@ end;
 procedure TFreeFlowline.LoadBinary(Source: TFreeFileBuffer);
 var
   I, N: integer;
-  P: T3DCoordinate;
+  P: T3DVector;
   K: boolean;
 begin
   Source.LoadTFloatType(FProjectionPoint.X);
@@ -579,7 +579,7 @@ begin
   Source.LoadInteger(N);
   FFlowline.Capacity:=N;
   for I:=1 to N do begin
-    Source.LoadT3DCoordinate(P);
+    Source.LoadT3DVector(P);
     Source.LoadBoolean(K);
     FFlowline.Add(P);
     FFlowline.Knuckle[FFlowline.NumberOfPoints-1]:=K;

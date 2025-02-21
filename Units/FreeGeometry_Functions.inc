@@ -1,6 +1,6 @@
 { included in FreeGometry.pas }
 
-function AddPoint(P1, P2: T3DCoordinate): T3DCoordinate;    // Add two vectors
+function AddPoint(P1, P2: T3DVector): T3DVector;    // Add two vectors
 begin
   Result.X:=P1.X+P2.X;
   Result.Y:=P1.Y+P2.Y;
@@ -8,7 +8,7 @@ begin
   Result.Z:=P1.Z+P2.Z;
 end;
 
-function AddPointSymm(P1, P2: T3DCoordinate): T3DCoordinate; // Add two vectors
+function AddPointSymm(P1, P2: T3DVector): T3DVector; // Add two vectors
 begin
   Result.X:=P1.X+P2.X;
   Result.Y:=P1.Y+P2.Y;
@@ -85,7 +85,7 @@ begin
          else Result:='0';
 end;
                                                        // outer box of 3 points
-function Box3P(P1, P2, P3: T3DCoordinate): T3DLine;
+function Box3P(P1, P2, P3: T3DVector): T3DLine;
 begin
   Result.A.X:=MaxFloat;
   Result.A.Y:=MaxFloat;
@@ -120,7 +120,7 @@ begin
 end;
 
 // longest line of 3 points on same ray
-function Line3P(P1, P2, P3: T3DCoordinate): T3DLine;
+function Line3P(P1, P2, P3: T3DVector): T3DLine;
 var d12,d23,d13: TFloatType;
 begin
   d12:=SquaredDistPP(P1, P2);
@@ -131,12 +131,11 @@ begin
   if (d13 > d12) and (d13 > d23) then begin Result.A:=P1; Result.B:=P3; end;
 end;
 
-
-procedure ClipTriangle(P1, P2, P3: T3DCoordinate; s1, s2, s3: TFloatType;
+procedure ClipTriangle(P1, P2, P3: T3DVector; s1, s2, s3: TFloatType;
   var Nf, Nb: integer; var Front, Back: TFreeCoordinateArray); overload;
 var
   T: double;
-  P: T3DCoordinate;
+  P: T3DVector;
 begin
   Nf:=0;
   Nb:=0;
@@ -191,7 +190,7 @@ begin
   end;
 end;{ClipTriangle}
 
-procedure ClipTriangle(P1, P2, P3: T3DCoordinate; Plane: T3DPlane;
+procedure ClipTriangle(P1, P2, P3: T3DVector; Plane: T3DPlane;
   var Nf, Nb: integer; var Front, Back: TFreeCoordinateArray);
 var
   S1, S2, S3: double;
@@ -253,9 +252,7 @@ begin
     myString:=MidStr(myString, 2, 255);
     if Pos(RelIdentifier, myString) > 0 then
       myString:='0'; // make sure not to have another '@' (and a 0 doesn't hurt)
-  end
-  else
-    myOldValue:=0;  // we have a new value now, so don't add the old one!
+  end else myOldValue:=0; // we have a new value now, so don't add the old one!
 
   if LeftStr(myString, 1) = '-' then       // get rid of the minus
   begin
@@ -298,13 +295,8 @@ begin
     begin
       myWholeInch:=GetFloat(myString);
     end;
-
-  end
-  else
-    myWholeFeet:=GetFloat(myString); // no imperial input format
-
-  Result:=myOldValue+myFactor * (myWholeFeet+myWholeInch / 12 +
-    myFracInch / (12 * InchFractions));
+  end else myWholeFeet:=GetFloat(myString); // no imperial input format
+  Result:=myOldValue+myFactor*(myWholeFeet+myWholeInch/12+myFracInch/(12*InchFractions));
 end;{ConvertCoordinate}
 
 function DistPoint2D(P1, P2: TPoint): TFloatType;
@@ -313,15 +305,15 @@ begin
   Result:=Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y));
 end;{DistPP3D}
 
-function DistPP3D(P1, P2: T3DCoordinate): TFloatType;
+function DistPP3D(P1, P2: T3DVector): TFloatType;
   // Calculates the distance between two points
 begin
   Result:=Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z));
 end;{DistPP3D}
 
-function DistancePointToLine(P, P1, P2: T3DCoordinate): TFloatType;
+function DistancePointToLine(P, P1, P2: T3DVector): TFloatType;
 var
-  V1, V2, N: T3DCoordinate;
+  V1, V2, N: T3DVector;
   Len, a, b, c: TFloatType;
 begin
   a:=P1.x-P2.x;
@@ -345,7 +337,7 @@ begin
     Result:=Sqrt(Sqr(P.X-P1.X)+Sqr(P.Y-P1.Y)+Sqr(P.Z-P1.Z));
 end;{DistancePointToLine}
 
-function DistancePointToPlane(P: T3DCoordinate; Plane: T3DPlane): TFloatType;
+function DistancePointToPlane(P: T3DVector; Plane: T3DPlane): TFloatType;
 begin
   Result:=Plane.a * P.x+Plane.b * P.y+Plane.c * P.z+Plane.d;
 end;{DistancePointToPlane}
@@ -374,7 +366,7 @@ begin
   end;
 end;{DistanceToLine}
 
-function CrossProduct(U, V: T3DCoordinate): T3DCoordinate;
+function CrossProduct(U, V: T3DVector): T3DVector;
 begin
   Result.X:=(V.Y * U.Z-V.Z * U.Y);
   Result.Y:=-(V.X * U.Z-V.Z * U.X);
@@ -392,10 +384,9 @@ begin
   Result:=Result / AppCoeff;
 end;{DisplacementToVolume}
 
-function DotProduct(U, V: T3DCoordinate): TFloatType;
-begin
-  Result:=(U.X * V.X)+(U.Y * V.Y)+(U.Z * V.Z);
-end;{DotProduct}
+function DotProduct(U, V: T3DVector): TFloatType;
+begin Result:=(U.X * V.X)+(U.Y * V.Y)+(U.Z * V.Z);
+end;  {DotProduct}
 
 procedure FillColor(Parameter: TFloatType; var R, G, B: byte);
 // Calculate color on basis of wavelength (0.0-1.0)
@@ -463,7 +454,7 @@ begin
   B:=Adjust(Blue);
 end;{FillColor}
 
-function Interpolate(P1, P2: T3DCoordinate; Param: TFloatType): T3DCoordinate;
+function Interpolate(P1, P2: T3DVector; Param: TFloatType): T3DVector;
 begin
   Result.X:=P1.X+Param * (P2.X-P1.X);
   Result.Y:=P1.Y+Param * (P2.Y-P1.Y);
@@ -480,7 +471,7 @@ procedure JoinSplineSegments
 //type
 //  TSegmentRecord = record
 //    Length: TFloatType;
-//    COG: T3DCoordinate;
+//    COG: T3DVector;
 //  end;
 //  TSegmentdata = array[0..0] of TSegmentRecord;
 //PSegmentdata = ^TSegmentdata;
@@ -498,12 +489,9 @@ var
   function Minimum(D1, D2, D3, D4: TFloatType): TFloatType;
   begin
     Result:=D1;
-    if D2 < Result then
-      Result:=D2;
-    if D3 < Result then
-      Result:=D3;
-    if D4 < Result then
-      Result:=D4;
+    if D2 < Result then Result:=D2;
+    if D3 < Result then Result:=D3;
+    if D4 < Result then Result:=D4;
   end;{Minimum}
 
 begin
@@ -590,8 +578,8 @@ begin
   end;
 end;{JoinSplineSegments}
 
-function Lines3DIntersect(P1, P2, P3, P4: T3DCoordinate; var Param: double;
-  var Int: T3DCoordinate): boolean;
+function Lines3DIntersect(P1, P2, P3, P4: T3DVector; var Param: double;
+  var Int: T3DVector): boolean;
   //   Calculate the line segment PaPb that is the shortest route between
   //   two lines P1P2 and P3P4. Calculate also the values of mua and mub where
   //      Pa = P1+mua (P2-P1)
@@ -603,7 +591,7 @@ const
   eps2 = 1e-12;
 //eps3 = 3e-6;
 var
-  pa, pb, p13, p43, p21: T3DCoordinate;
+  pa, pb, p13, p43, p21: T3DVector;
   numer, denom, mua, mub: double;
   d1343, d4321, d1321, d4343, d2121: double;
 begin
@@ -663,23 +651,23 @@ begin
 end;{Lines3DIntersect}
 
 // Calculate the mid-point between P1 and P2
-function Midpoint(P1, P2: T3DCoordinate): T3DCoordinate;
+function Midpoint(P1, P2: T3DVector): T3DVector;
 begin
   Result.X:=0.5 * (P1.X+P2.X);
   Result.Y:=0.5 * (P1.Y+P2.Y);
   Result.Z:=0.5 * (P1.Z+P2.Z);
 end;{Midpoint}
 
-function Mid3point(P1, P2, P3: T3DCoordinate): T3DCoordinate;
+function Mid3point(P1, P2, P3: T3DVector): T3DVector;
 begin
   Result.X:=(P1.X+P2.X+P3.X) / 3;
   Result.Y:=(P1.Y+P2.Y+P3.Y) / 3;
   Result.Z:=(P1.Z+P2.Z+P3.Z) / 3;
 end;{Mid3point}
 
-function MirrorPlane(P: T3DCoordinate; Plane: T3DPLane): T3DCoordinate;
+function MirrorPlane(P: T3DVector; Plane: T3DPLane): T3DVector;
 var
-  P2: T3DCoordinate;
+  P2: T3DVector;
 begin
   P2:=ProjectPointOnPlane(P, Plane);
   Result.X:=P.X+2 * (P2.X-P.X);
@@ -706,9 +694,9 @@ begin
 end;{NumberOfDecimals}
 
 // Function to determine if a plane intersects a bounding box
-function PlaneIntersectsBox(Min, Max: T3DCoordinate; Plane: T3DPlane): boolean;
+function PlaneIntersectsBox(Min, Max: T3DVector; Plane: T3DPlane): boolean;
 var
-  P: array[1..8] of T3DCoordinate;
+  P: array[1..8] of T3DVector;
   I: integer;
   S: TFloatType;
   SMin: TFloatType;
@@ -740,24 +728,17 @@ begin
   P[8].X:=Min.X;
   P[8].Y:=Max.Y;
   P[8].Z:=Max.Z;
-  for I:=1 to 8 do
-  begin
+  for I:=1 to 8 do begin
     S:=Plane.A * P[I].x+Plane.B * P[I].y+Plane.C * P[I].z+Plane.D;
-    if I = 1 then
-    begin
-      SMin:=S;
-      SMax:=S;
-    end;
-    if S < SMin then
-      SMin:=S;
-    if S > SMax then
-      SMax:=S;
+    if I = 1 then begin SMin:=S; SMax:=S; end;
+    if S < SMin then SMin:=S;
+    if S > SMax then SMax:=S;
   end;
   Result:=((Smin <= 0.0) and (SMax >= 0.0)) or ((SMax <= 0.0) and (SMin >= 0.0));
 end;{PlaneIntersectsBox}
 
 // Calculates the plane with a given normal N through point P
-function PlanePointNormal(P, Normal: T3DCoordinate): T3DPlane;
+function PlanePointNormal(P, Normal: T3DVector): T3DPlane;
 begin
   Result.a:=Normal.x;
   Result.b:=Normal.y;
@@ -765,9 +746,9 @@ begin
   Result.d:=-P.x * Result.a-P.y * Result.b-P.z * Result.c;
 end;{PlanePointNormal}
 
-function PlanePPP(P1, P2, P3: T3DCoordinate): T3DPlane;
+function PlanePPP(P1, P2, P3: T3DVector): T3DPlane;
 var
-  N: T3DCoordinate;
+  N: T3DVector;
   L: TFloatType;
 begin
   // Calculate normal
@@ -785,25 +766,25 @@ begin
 end;{PlanePPP}
 
 
-function PointInBlock(P, Pmin, Pmax: T3DCoordinate): boolean;
+function PointInBlock(P, Pmin, Pmax: T3DVector): boolean;
 begin
   Result:=((P.X >= Pmin.X) and (P.Y >= Pmin.Y) and (P.Z >= Pmin.Z)) and
     ((P.X <= Pmax.X) and (P.Y <= Pmax.Y) and (P.Z <= Pmax.Z));
 end;
 
-function PointInTriangleBarycentric(P, A, B, C: T3DCoordinate): boolean;
+function PointInTriangleBarycentric(P, A, B, C: T3DVector): boolean;
   // This function calculates using Barycentric method
   // if a point lies inside a triangle
   // from: http://blogs.msdn.com/b/rezanour/archive/2011/08/07/barycentric-coordinates-and-point-in-triangle-tests.aspx
 var
   s, t, r, denom: double;
-  u, v, w, vCrossU, vCrossW, uCrossV, uCrossW: T3DCoordinate; //vectors
+  u, v, w, vCrossU, vCrossW, uCrossV, uCrossW: T3DVector; //vectors
   i: double;
 begin
   Result:=False;
-  u:=Subtract(B, A);
-  v:=Subtract(C, A);
-  w:=Subtract(P, A);
+  u:=B-A;
+  v:=C-A;
+  w:=P-A;
   vCrossW:=CrossProduct(v, w);
   vCrossU:=CrossProduct(v, w);
   r:=DotProduct(vCrossW, vCrossU); // calc r just to know its sign
@@ -827,14 +808,14 @@ begin
   Result:=(i <= 1);
 end;
 
-function PointInTriangle(Int, P0, P1, P2: T3DCoordinate): boolean;
+function PointInTriangle(Int, P0, P1, P2: T3DVector): boolean;
   // This function calculates if a point lies inside a triangle
   // assuming it lies on the plane determined by the triangle
 
-  function SameSide(p1, p2, a, b: T3DCoordinate): boolean;
+  function SameSide(p1, p2, a, b: T3DVector): boolean;
   var
-    Cp1, Cp2: T3DCoordinate;
-    P, Ba: T3DCoordinate;
+    Cp1, Cp2: T3DVector;
+    P, Ba: T3DVector;
     Dp: double;
   begin
     Ba.X:=B.X-A.X;
@@ -875,14 +856,11 @@ begin
   result:=false;
   cn:=0;
   j:=length(Points)-1;
-  for i:=0 to length(Points)-1 do
-  begin
+  for i:=0 to length(Points)-1 do begin
     p1:=Points[i];
     p2:=Points[j];
-
     if ((p1.y < P.Y) and (p2.y >= P.y))
-     or((p2.y < P.Y) and (p1.y >= P.y)) then
-    begin
+     or((p2.y < P.Y) and (p1.y >= P.y)) then begin
        // compute the actual edge-ray intersect x-coordinate
        vt:=(P.y-p1.y) / (p2.y-p1.y);
        if (P.x > (p1.x+vt * (p2.x-p1.x))) then // P.x < intersect
@@ -896,11 +874,10 @@ end;
 // from http://read.pudn.com/downloads352/sourcecode/graph/fractal/1532960/Geometry_Algorithm_Archive.pdf#%16%95%9F%98%88H%5C%07%8F%97%F2%12%F2%EF%04%C5%CDintersect_RayTriangle%28%29
 const SMALL_NUM = 0.00000001; // anything that avoids division overflow
 
-function dotProduct(const u,v:T3DVector):TFloatType; overload;
-begin
-  result:=((u).x * (v).x+(u).y * (v).y+(u).z * (v).z);
-end;
-
+//function dotProduct(const u,v:T3DVector):TFloatType; overload;
+//begin
+//  result:=((u).x*(v).x + (u).y*(v).y + (u).z*(v).z);
+//end;
 // intersect_RayTriangle(): intersect a ray with a 3D triangle
 //    Input:  a ray R, and a triangle T
 //    Output: *I = intersection point (when it exists)
@@ -909,8 +886,8 @@ end;
 //             1 = intersect in unique point I1
 //             2 = are in the same plane
 function RayIntersectTriangle(
-           Ray:T3DLine; V0,V1,V2:T3DCoordinate;
-           var IntersectionPoint:T3DCoordinate):integer;
+           Ray:T3DLine; V0,V1,V2:T3DVector;
+           var IntersectionPoint:T3DVector):integer;
 var
   u, v, n : T3DVector;             // triangle vectors
   dir, w0, w : T3DVector;          // ray vectors
@@ -934,66 +911,36 @@ begin
   a:=dotProduct(n,w0);
   b:=dotProduct(n,dir);
 
-  if (abs(b) < SMALL_NUM) then
-  begin     // ray is parallel to triangle plane
-    if (a = 0) then  // ray lies in triangle plane
-    begin
-      result:=2;
-      exit;
-    end
-    else    // ray disjoint from plane
-    begin
-      result:=0;
-      exit;
-    end
+  if (abs(b) < SMALL_NUM) then begin       // ray is parallel to triangle plane
+    if (a = 0) then                        // ray lies in triangle plane
+      begin result:=2; exit; end else      // ray disjoint from plane
+      begin result:=0; exit; end
   end;
-
-  // get intersect point of ray with triangle plane
-  r:=-a / b;
-  if (r < 0.0) then           // ray goes away from triangle
-  begin                       // => no intersect
-    result:=0;
-    exit;
-  end;
-  // for a segment, also test if (r > 1.0) => no intersect
-
-  IntersectionPoint:=Ray.A+r * dir;  // intersect point of ray and plane
-
-  // is IntersectionPoint inside Triangle?
-  uu:=dotProduct(u,u);
+  r:=-a / b;                  // get intersect point of ray with triangle plane
+  if (r < 0.0) then                              // ray goes away from triangle
+    begin result:=0; exit;                                   // => no intersect
+    end;               // for a segment, also test if (r > 1.0) => no intersect
+  IntersectionPoint:=Ray.A+r * dir;    // intersect point of ray and plane
+  uu:=dotProduct(u,u);                 // is IntersectionPoint inside Triangle?
   uv:=dotProduct(u,v);
   vv:=dotProduct(v,v);
   w:=IntersectionPoint-V0;
   wu:=dotProduct(w,u);
   wv:=dotProduct(w,v);
   D:=uv * uv-uu * vv;
-
-  if D = 0 then  // IntersectionPoint is outside Triangle
-  begin                       // => no intersect
-    result:=0;
-    exit;
-  end;
-
-  // get and test parametric coords
-  s:=(uv * wv-vv * wu) / D;
-  if (s < 0.0) or (s > 1.0) then  // IntersectionPoint is outside Triangle
-  begin                       // => no intersect
-    result:=0;
-    exit;
-  end;
-
+  if D=0 then                          // IntersectionPoint is outside Triangle
+     begin result:=0; exit; end;                             // => no intersect
+  s:=(uv * wv-vv * wu) / D;            // get and test parametric coords
+  if (s < 0.0) or (s > 1.0) then       // IntersectionPoint is outside Triangle
+     begin result:=0; exit; end;                             // => no intersect
   t:=(uv * wu-uu * wv) / D;
-  if (t < 0.0) or ((s+t) > 1.0) then // IntersectionPoint is outside Triangle
-  begin                       // => no intersect
-    result:=0;
-    exit;
-  end;
-
-  result:=1;                 // IntersectionPoint is in Triangle
+  if (t < 0.0) or ((s+t) > 1.0) then   // IntersectionPoint is outside Triangle
+     begin  result:=0; exit; end;                            // => no intersect
+  result:=1;                                // IntersectionPoint is in Triangle
 end;
 
 
-function RotatePoint(Center, Point: T3DCoordinate; Angle, Elevation:TFloatType): T3DCoordinate;
+function RotatePoint(Center, Point: T3DVector; Angle, Elevation:TFloatType): T3DVector;
 var
   CosAngle, SinAngle: TFloatType;
   CosElevation, SinElevation: TFloatType;
@@ -1025,7 +972,7 @@ begin
   Result:=InpLbs * Lbs * 9.81;
 end;{PoundsToNewton}
 
-function ProjectPointOnPlane(P: T3DCoordinate; Plane: T3DPlane): T3DCoordinate;
+function ProjectPointOnPlane(P: T3DVector; Plane: T3DPlane): T3DVector;
   // Projects a point on a plane
 var
   q, r: TFloatType;
@@ -1044,9 +991,9 @@ begin
 end;{ProjectPointOnPlane}
 
 // Projects point P on the linesegment through P1 and P2
-{function ProjectPointOnLine(P, P1, P2: T3DCoordinate): T3DCoordinate;
+{function ProjectPointOnLine(P, P1, P2: T3DVector): T3DVector;
 var
-  V1, V2: T3DCoordinate;
+  V1, V2: T3DVector;
   L, T: TFloatType;
 begin
   V1.X:=P.X-P1.X;
@@ -1068,9 +1015,9 @@ begin
     Result:=P;
 end;}{ProjectPointOnLine}
 
-function ProjectPointOnLine(P, P1, P2: T3DCoordinate): T3DCoordinate;
+function ProjectPointOnLine(P, P1, P2: T3DVector): T3DVector;
 var
-  d1, d2: T3DCoordinate;
+  d1, d2: T3DVector;
   L, T: TFloatType;
 begin
   d1.X:=P.X-P1.X;
@@ -1097,10 +1044,10 @@ end;{ProjectPointOnLine}
 //begin Result:=RGB(Base+Random(255-Base),Base+Random(255-Base),Base+Random(255-Base));
 //end;{RandomColor}
 
-function RotateAroundPoint(P: T3DCoordinate; Center: T3DCoordinate;
-  sinhx, coshx, sinhy, coshy, sinhz, coshz: TFloatType): T3DCoordinate;
+function RotateAroundPoint(P: T3DVector; Center: T3DVector;
+  sinhx, coshx, sinhy, coshy, sinhz, coshz: TFloatType): T3DVector;
 var
-  P1: T3DCoordinate;
+  P1: T3DVector;
   r11, r12, r13, r21, r22, r23, r31, r32, r33: TFloatType;
 begin
   // Translate back to origin
@@ -1129,57 +1076,37 @@ begin
 end;{RotateAroundPoint}
 
 // Function to rotate a point around a vector
-function RotatePointAroundVector(Point, StartPoint, Endpoint: T3DCoordinate): T3DCoordinate;
+function RotatePointAroundVector(Point, StartPoint, Endpoint: T3DVector): T3DVector;
 var
   sinhx, coshx: TFloatType;
   sinhy, coshy: TFloatType;
   yz, xyz: TFloatType;
-  P1, P2: T3DCoordinate;
+  P1, P2: T3DVector;
 begin
   Result:=ZERO;
   yz:=sqrt(Endpoint.y * Endpoint.y+Endpoint.z * Endpoint.z);
-  if (Endpoint.z = 0) and (Endpoint.y = 0) then
-  begin
-    sinhx:=0;
-    coshx:=1;
-  end
-  else
-  begin
-    sinhx:=-Endpoint.y / yz;
-    coshx:=Endpoint.z / yz;
-  end;
+  if (Endpoint.z=0) and (Endpoint.y=0) then begin sinhx:=0; coshx:=1; end
+          else begin sinhx:=-Endpoint.y / yz; coshx:=Endpoint.z / yz; end;
   xyz:=sqrt(Endpoint.x * Endpoint.x+Endpoint.y * Endpoint.y+Endpoint.z * Endpoint.z);
-  if xyz = 0 then
-  begin
-    Result:=Point;
-    exit;
-  end
-  else
-  begin
-    sinhy:=Endpoint.x / xyz;
-    coshy:=yz / xyz;
-  end;
-  // Translate to origin
-  P1.x:=Point.x-StartPoint.x;
+  if xyz = 0 then begin Result:=Point; exit; end
+                  else begin sinhy:=Endpoint.x / xyz; coshy:=yz / xyz;  end;
+  P1.x:=Point.x-StartPoint.x;                            // Translate to origin
   P1.y:=Point.y-StartPoint.y;
   P1.z:=Point.z-StartPoint.z;
-  // Rotate around Y-axis
-  P2.X:=P1.x * coshy+P1.z * sinhy;
+  P2.X:=P1.x * coshy+P1.z * sinhy;                      // Rotate around Y-axis
   P2.Y:=P1.Y;
   P2.Z:=-P1.x * sinhy+P1.z * coshy;
-  // Rotate around X-axis
-  P1.x:=P2.x;
+  P1.x:=P2.x;                                           // Rotate around X-axis
   P1.y:=P2.y * coshx-P2.z * sinhx;
   P1.z:=P2.y * sinhx+P2.z * coshx;
-  // Translate back to centre again
-  Result.x:=P1.x+StartPoint.x;
+  Result.x:=P1.x+StartPoint.x;                // Translate back to centre again
   Result.y:=P1.y+StartPoint.y;
   Result.z:=P1.z+StartPoint.z;
 end;{RotatePointAroundVector}
 
 // Rotates a vector around the origin
-function RotateVector(P0: T3DCoordinate;
-  sinx, cosx, siny, cosy, sinz, cosz: TFloatType): T3DCoordinate;
+function RotateVector(P0: T3DVector;
+  sinx, cosx, siny, cosy, sinz, cosz: TFloatType): T3DVector;
 var r11, r12, r13, r21, r22, r23, r31, r32, r33: TFloatType;
 begin // Do rotation
   r11:=cosy * cosz;
@@ -1197,11 +1124,11 @@ begin // Do rotation
 end; {RotateVector}
 
 // Scales a vector
-function ScalePoint(Scale: TFloatType; P: T3DCoordinate): T3DCoordinate;
-begin Result.X:=P.X * Scale;
-      Result.Y:=P.Y * Scale;
-      Result.Z:=P.Z * Scale;
-end; {ScalePoint}
+//function ScalePoint( Scale: TFloatType; P: T3DVector ): T3DVector;
+//begin Result.X:=P.X * Scale;
+//      Result.Y:=P.Y * Scale;
+//      Result.Z:=P.Z * Scale;
+//end; {ScalePoint}
 
 function SetPlane(a, b, c, d: TFloatType): T3DPlane;
 begin Result.a:=a;
@@ -1210,7 +1137,7 @@ begin Result.a:=a;
       Result.d:=d;
 end; {SetPlane}
 
-function SetPoint(X, Y, Z: TFloatType): T3DCoordinate;
+function SetPoint(X, Y, Z: TFloatType): T3DVector;
 begin Result.X:=X;
       Result.Y:=Y;
       Result.Z:=Z;
@@ -1264,7 +1191,7 @@ var I: integer;
 begin Result:=''; for I:=1 to Index do Result:=Result+' ';
 end; {Space}
 *)
-function SquaredDistPP( P1,P2: T3DCoordinate): TFloatType; // calculates the squared distance between two points
+function SquaredDistPP( P1,P2: T3DVector): TFloatType; // calculates the squared distance between two points
 begin Result:=Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z);
 end;
 
@@ -1295,14 +1222,14 @@ function MakeLength(Value: string; DesLength: integer): string;
 begin while UTF8Length(Value) < DesLength do Value:=Value+' '; Result:=Value;
 end;{MakeLength}
 
-procedure MinMax(P: T3DCoordinate; var Min, Max: T3DCoordinate);
+procedure MinMax(P: T3DVector; var Min, Max: T3DVector);
 begin
   if P.X < Min.X then Min.X:=P.X else if P.X > Max.X then Max.X:=P.X;
   if P.Y < Min.Y then Min.Y:=P.Y else if P.Y > Max.Y then Max.Y:=P.Y;
   if P.Z < Min.Z then Min.Z:=P.Z else if P.Z > Max.Z then Max.Z:=P.Z;
 end;{MinMax}
 
-function UnifiedNormal(P1, P2, P3: T3DCoordinate): T3DCoordinate;
+function UnifiedNormal(P1, P2, P3: T3DVector): T3DVector;
 var L: TFloatType;
 begin
   Result.x:=(P2.y-P1.y) * (P3.z-P1.z)-(P2.z-P1.z) * (P3.y-P1.y);
@@ -1315,7 +1242,7 @@ begin
   Result.z:=Result.z / L;
 end;
 
-function UnitVector(P: T3DCoordinate): T3DCoordinate;
+function UnitVector(P: T3DVector): T3DVector;
 var L: TFloatType;
 begin
   L:=Sqrt(Sqr(P.X * P.X)+Sqr(P.Y * P.Y)+Sqr(P.Z * P.Z));
@@ -1325,14 +1252,14 @@ begin
   Result.Z:=P.Z / L;
 end;{UnitVector}
 
-function Subtract(AVec1, AVec2: T3DCoordinate): T3DCoordinate;
-begin
-  Result.X:=AVec1.X-AVec2.X;
-  Result.Y:=AVec1.Y-AVec2.Y;
-  Result.Z:=AVec1.Z-AVec2.Z;
-end;{Subtract}
+//function Subtract( AVec1,AVec2: T3DVector ): T3DVector;
+//begin
+//  Result.X:=AVec1.X-AVec2.X;
+//  Result.Y:=AVec1.Y-AVec2.Y;
+//  Result.Z:=AVec1.Z-AVec2.Z;
+//end;{Subtract}
 
-function Normalize(P: T3DCoordinate): T3DCoordinate; // Normalize a vector to unit length
+function Normalize(P: T3DVector): T3DVector; // Normalize a vector to unit length
 var L: TFloatType;
 begin
   L:=Sqrt(P.X * P.X+P.Y * P.Y+P.Z * P.Z);
@@ -1344,7 +1271,7 @@ begin
   end;
 end;{Normalize}
 
-function VectorLength(Normal: T3DCoordinate): TFloatType; // calculate the length of a vector
+function VectorLength(Normal: T3DVector): TFloatType; // calculate the length of a vector
 var Tmp: TFloatType;
 begin
   Tmp:=(Normal.X * Normal.X)+(Normal.Y * Normal.Y)+(Normal.Z * Normal.Z);

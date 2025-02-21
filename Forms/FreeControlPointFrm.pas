@@ -159,7 +159,7 @@ var I,N : Integer;
     Npoi: Integer;
     R,R1,R2,alfa,beta,gamma,acos,len    : single;
     cos1a,cos2a,cos1b,cos2b,cos1g,cos2g : single;
-    C0,CN,C1,C2,C3,Cp,Ci:T3DCoordinate;
+    C0,CN,C1,C2,C3,Cp,Ci:T3DVector;
     IsPointDifferent: boolean;
 begin
    IsPointDifferent:=FActiveControlPoint <> Val;
@@ -416,7 +416,7 @@ begin
 end;
 
 procedure TFreeControlPointForm.OrdinateEditorChange(Sender: TObject);
-var P: T3DCoordinate;
+var P: T3DVector;
     OrdEdit : TFloatSpinEdit;
     Val: Double;
 begin
@@ -447,7 +447,7 @@ begin
 end;
 
 procedure TFreeControlPointForm.EditYChange(Sender: TObject);
-var P   : T3DCoordinate;
+var P   : T3DVector;
 begin
    if FActiveControlPointChanging then exit;
    if FPointEditorChanging then exit;
@@ -471,7 +471,7 @@ begin
 end;
 
 procedure TFreeControlPointForm.EditZChange(Sender: TObject);
-var P   : T3DCoordinate;
+var P   : T3DVector;
 begin
    if FActiveControlPointChanging then exit;
    if FPointEditorChanging then exit;
@@ -479,23 +479,21 @@ begin
    if not(EditZ.Focused and EditZ.Enabled and not EditZ.ReadOnly) then exit;
    FPointEditorChanging:=true;
    if ActiveControlPoint<>nil then
-     if EntryMethod <> emTyping then
-     begin
-        TFreeShip(FreeShip).Edit.CreateUndoObject(rsPointMove,True);
-        P:=ActiveControlPoint.Coordinate;
-        //P.Z:=P.Z+TFreeShip(FreeShip).Visibility.CursorIncrement;
-        P.Z:=EditZ.Value;
-        ActiveControlPoint.SetCoordinate(nil, P, nil);
-        TFreeShip(FreeShip).Built:=False;
-        TFreeShip(FreeShip).FileChanged:=True;
-        TFreeShip(FreeShip).Redraw;
-        //ActiveControlPoint:=ActiveControlPoint;
-     end;
-   FPointEditorChanging:=false;
+   if EntryMethod <> emTyping then begin
+      TFreeShip(FreeShip).Edit.CreateUndoObject(rsPointMove,True);
+      P:=ActiveControlPoint.Coordinate;
+   // P.Z:=P.Z+TFreeShip(FreeShip).Visibility.CursorIncrement;
+      P.Z:=EditZ.Value;
+      ActiveControlPoint.SetCoordinate( nil,P,nil );
+      TFreeShip(FreeShip).Built:=False;
+      TFreeShip(FreeShip).FileChanged:=True;
+      TFreeShip(FreeShip).Redraw;
+   // ActiveControlPoint:=ActiveControlPoint;
+   end; FPointEditorChanging:=false;
 end;
 
 procedure TFreeControlPointForm.OrdinateEditorEditingDone(Sender: TObject);
-var P    : T3DCoordinate;
+var P    : T3DVector;
     Val  : TFloatType;
     I    : Integer;
     saved: Boolean;
@@ -506,8 +504,7 @@ begin
    if not Self.Active then exit;
    //if not Self.Focused then exit;
 
-   if ActiveControlPoint<>nil then
-   begin
+   if ActiveControlPoint<>nil then begin
       OrdEdit:=Sender as TFloatSpinEdit;
       // do something only if the value has really been changed:
       Val:=OrdEdit.Value;
@@ -515,16 +512,12 @@ begin
       if (OrdEdit = EditX) and (abs(P.X-Val) < 1e-5) then exit;
       if (OrdEdit = EditY) and (abs(P.Y-Val) < 1e-5) then exit;
       if (OrdEdit = EditZ) and (abs(P.Z-Val) < 1e-5) then exit;
-      if (TFreeShip(FreeShip).NumberOfSelectedControlPoints>0) then
-      begin
-         // SAP change all selected points
-         for I:=0 to TFreeShip(FreeShip).NumberOfSelectedControlPoints-1 do
-         begin
+      if (TFreeShip(FreeShip).NumberOfSelectedControlPoints>0) then begin // SAP change all selected points
+         for I:=0 to TFreeShip(FreeShip).NumberOfSelectedControlPoints-1 do begin
             P:=TFreeShip(FreeShip).SelectedControlPoint[I].Coordinate;
             //if abs(P.X-Val)>1e-5 then
             begin
-               if not saved then
-               begin
+               if not saved then begin
                   TFreeShip(FreeShip).Edit.CreateUndoObject(rsXCoordinate,True);
                   saved:=true;
                end;
@@ -545,8 +538,7 @@ begin
          else Val:= 0;
          OrdEdit.Text:=FloatToDec(Val,4); // update the field in case of input errors
          }
-         if saved then
-         begin
+         if saved then begin
             TFreeShip(FreeShip).Surface.Selection_Add(ActiveControlPoint);
             TFreeShip(FreeShip).Built:=False;
             TFreeShip(FreeShip).FileChanged:=True;
@@ -609,7 +601,7 @@ begin
 end;
 
 procedure TFreeControlPointForm.EditYEditingDone(Sender: TObject);
-var P    : T3DCoordinate;
+var P    : T3DVector;
     Val  : TFloatType;
     I    : Integer;
     saved: Boolean;
@@ -664,7 +656,7 @@ begin
 end;{TFreeControlPointForm.Edit2Exit}
 
 procedure TFreeControlPointForm.EditZEditingDone(Sender: TObject);
-var P    : T3DCoordinate;
+var P    : T3DVector;
     Val  : TFloatType;
     I    : Integer;
     saved: Boolean;
@@ -967,7 +959,7 @@ begin
 end;
 
 procedure TFreeControlPointForm.SpeedButton1Click(Sender: TObject);
-var P   : T3DCoordinate;
+var P   : T3DVector;
 begin
    if ActiveControlPoint<>nil then
    begin
@@ -983,7 +975,7 @@ begin
 end;{TFreeControlPointForm.SpeedButton1Click}
 
 procedure TFreeControlPointForm.SpeedButton4Click(Sender: TObject);
-var P   : T3DCoordinate;
+var P   : T3DVector;
 begin
    if ActiveControlPoint<>nil then
    begin
@@ -999,7 +991,7 @@ begin
 end;{TFreeControlPointForm.SpeedButton4Click}
 
 procedure TFreeControlPointForm.SpeedButton2Click(Sender: TObject);
-var P   : T3DCoordinate;
+var P   : T3DVector;
 begin
    if ActiveControlPoint<>nil then
    begin
@@ -1015,7 +1007,7 @@ begin
 end;
 
 procedure TFreeControlPointForm.SpeedButton5Click(Sender: TObject);
-var P   : T3DCoordinate;
+var P   : T3DVector;
 begin
    if ActiveControlPoint<>nil then
    begin
@@ -1031,7 +1023,7 @@ begin
 end;
 
 procedure TFreeControlPointForm.SpeedButton3Click(Sender: TObject);
-var P   : T3DCoordinate;
+var P   : T3DVector;
 begin
    if ActiveControlPoint<>nil then
    begin
@@ -1047,7 +1039,7 @@ begin
 end;
 
 procedure TFreeControlPointForm.SpeedButton6Click(Sender: TObject);
-var P   : T3DCoordinate;
+var P   : T3DVector;
 begin
    if ActiveControlPoint<>nil then
    begin

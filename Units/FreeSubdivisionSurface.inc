@@ -2,7 +2,7 @@
 {                                         TFreeSubdivisionSurface }
 {-----------------------------------------------------------------}
 function TFreeSubdivisionSurface.AddControlPoint
-( P: T3DCoordinate;
+( P: T3DVector;
   aTolerance:double=1e-6
 ):
 TFreeSubdivisionControlPoint;
@@ -12,7 +12,7 @@ var
   Edge: TFreeSubdivisionEdge;
   Point: TFreeSubdivisionControlPoint;
 
-  function NewPoint(P: T3DCoordinate): TFreeSubdivisionControlPoint;
+  function NewPoint(P: T3DVector): TFreeSubdivisionControlPoint;
   begin
     Result:=TFreeSubdivisionControlPoint.Create(self);
     Result.FCoordinate:=P;
@@ -1165,11 +1165,11 @@ begin
   end;
 end;
 
-function TFreeSubdivisionSurface.AddControlFace(Points: array of T3DCoordinate;
+function TFreeSubdivisionSurface.AddControlFace(Points: array of T3DVector;
   NoPoints: integer): TFreeSubdivisionControlFace;
 var
   I, J, N: integer;
-  P: T3DCoordinate;
+  P: T3DVector;
   Edge: TFreeSubdivisionEdge;
   Point, Prev: TFreeSubdivisionControlPoint;
   dist: TFloatType;
@@ -1915,7 +1915,7 @@ begin
     end;
   end;
 end;
-procedure TFreeSubdivisionSurface.Extents(var Min, Max: T3DCoordinate);
+procedure TFreeSubdivisionSurface.Extents(var Min, Max: T3DVector);
 var I: integer;
 begin
   if not Built then Rebuild;
@@ -1933,11 +1933,11 @@ end;
 
 function TFreeSubdivisionSurface.ExtrudeControlPoints(
   Points: TFasterListTFreeSubdivisionControlPoint;
-  Direction: T3DCoordinate): TFasterListTFreeSubdivisionControlPoint;
+  Direction: T3DVector): TFasterListTFreeSubdivisionControlPoint;
 var
   I: integer;
   Point: TFreeSubdivisionControlPoint;
-  P3d:T3DCoordinate;
+  P3d:T3DVector;
 begin
   if (Points = nil) then exit;
   if (Points.Count = 0) then exit;
@@ -1953,7 +1953,7 @@ end;
 
 procedure TFreeSubdivisionSurface.ExtrudeEdges
 ( Edges: TFasterListTFreeSubdivisionEdge;
-  Direction: T3DCoordinate );
+  Direction: T3DVector );
 var
   I, INdex: integer;
   Edge, Tmp: TFreesubdivisionControlEdge;
@@ -2043,7 +2043,7 @@ procedure TFreeSubdivisionSurface.CalculateIntersections
   Destination: TFasterListTFreeSpline );
 type
   IntersectionData = record
-    Point: T3DCoordinate;
+    Point: T3DVector;
     Knuckle: boolean;
     Edge: TFreeSubdivisionEdge;
   end;
@@ -2057,7 +2057,7 @@ var
   Side1,Side2,Parameter: TFloatType;
   //AbsSide1: TFloatType;
   //AbsSide2: TFloatType;
-  Output: T3DCoordinate;
+  Output: T3DVector;
   Spline: TFreeSpline;
   //Copy: TFreeSpline;
   Face, F2: TFreeSubdivisionface;
@@ -2179,7 +2179,7 @@ begin
           if IntArray[K-1].Edge = IntArray[K-2].Edge then begin
             if DistPP3D(IntArray[K-1].Point, IntArray[K-2].Point) < 1e-4 then
             begin
-              Move(IntArray[K-1],IntArray[K-2],(NoPoints-K+1)*SizeOf(T3DCoordinate));
+              Move(IntArray[K-1],IntArray[K-2],(NoPoints-K+1)*SizeOf(T3DVector));
               Dec(NoPoints);
             end else Inc(K);
           end else Inc(K);
@@ -2639,7 +2639,7 @@ var
   I,J: integer;
   CtrlFace: TFreesubdivisionControlFace;
   IntersectedFaces: TFasterListTFreeSubdivisionFace;
-  Min, Max: T3DCoordinate;
+  Min, Max: T3DVector;
   UseLayer: boolean;
   Layer: TFreeSubdivisionLayer;
 begin
@@ -2668,7 +2668,7 @@ procedure TFreeSubdivisionSurface.InsertPlane(Plane: T3DPlane; AddCurves: boolea
 var
   I, J, K: integer;
   S1, S2, T: TFloatType;
-  P, StartPoint, EndPoint: T3DCoordinate;
+  P, StartPoint, EndPoint: T3DVector;
   face: TFreeSubdivisionControlface;
   Edge: TFreeSubdivisionControlEdge;
   NewP,P1,P2: TFreeSubdivisionControlPoint;
@@ -2955,7 +2955,7 @@ begin Result:=FControlPoints.IndexOf(P)<>-1; end;
 
 procedure TFreeSubdivisionSurface.Rebuild;                 ///*** rebuild model
 var
-  I, J, K, X,V: integer; C: T3DCoordinate;
+  I, J, K, X,V: integer; C: T3DVector;
   P1,P2,P3, Point: TFreeSubdivisionPoint;
   Curve: TFreeSubdivisionControlCurve;
   Edge1,Edge2,HEdge,NewEdge: TFreeSubdivisionEdge;
@@ -3057,7 +3057,7 @@ end;
 
 procedure TFreeSubdivisionSurface.Average;
 var Point: TFreeSubdivisionPoint; i,c:integer;
-  TmpPoints: array of T3DCoordinate;
+  TmpPoints: array of T3DVector;
 begin
   if FIsAveraged then exit; // perform averaging procedure to smooth the new mesh
 
@@ -3086,7 +3086,7 @@ end;
 procedure TFreeSubdivisionSurface.ReverseAverage;
 var Point: TFreeSubdivisionPoint;
     I,C: integer;
-    TmpPoints: array of T3DCoordinate;
+    TmpPoints: array of T3DVector;
 begin
   if FIsAveraged then exit; // perform reverse averaging procedure to coarse the new mesh
   Setlength(TmpPoints, FPoints.Count);
@@ -3251,7 +3251,7 @@ var
   P,PSD,Point: TFreeSubdivisionPoint;
   // NewPointList  : TFasterListTFreeSubdivisionControlPoint;
   NewEdgeList,RefEdges: TFasterListTFreeSubdivisionEdge;
-  TmpPoints: array of T3DCoordinate;
+  TmpPoints: array of T3DVector;
   RefVertexPoints,FreeStandingPoints: TFasterListTFreeSubdivisionPoint;
   RefFaces: TFasterListTFreeSubdivisionFace;
 begin

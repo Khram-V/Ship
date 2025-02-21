@@ -59,7 +59,7 @@ var
     end;
   end;
   procedure SendSpline( Spline:TFreespline );
-  var J,N: integer; P: T3DCoordinate;
+  var J,N: integer; P: T3DVector;
   begin N:=Spline.NumberOfPoints-1;
     Str:=format( ' %3d ',[N+1] );
     if Spline.Point[0].Z<=Spline.Point[N].Z
@@ -69,9 +69,9 @@ var
   end;
 
 var I,J,K,N: integer;
-    Title,S: AnsiString; P0,PN: T3DCoordinate; Dis: boolean=true;
+    Title,S: AnsiString; P0,PN: T3DVector; Dis: boolean=true;
     Dialog: TSaveDialog;
-//    T3: T3DCoordinate=(X:0;Y:0;Z:0);
+//    T3: T3DVector=(X:0;Y:0;Z:0);
     EdgePointLists: TFasterListTFasterListTFreeSubdivisionPoint;
     Points: TFasterListTFreeSubdivisionPoint;
     Point: TFreeSubdivisionPoint;
@@ -210,14 +210,14 @@ var
   SaveDialog: TSaveDialog;
   FFile: TextFile;
   I, J, K, L: integer;
-  C1, C2, C3: T3DCoordinate;
+  C1, C2, C3: T3DVector;
   Layer: TFreeSubdivisionLayer;
   Face: TFreeSubdivisionControlface;
   Child: TFreeSubdivisionface;
 
-  procedure Addfacet( C1,C2,C3: T3DCoordinate );
+  procedure Addfacet( C1,C2,C3: T3DVector );
   var
-    Normal: T3DCoordinate;
+    Normal: T3DVector;
   begin
     Normal:=UnifiedNormal( C1,C2,C3 );
 //  Write(FFile,   'facet normal ');
@@ -310,7 +310,7 @@ procedure TFreeSpline.SaveToDXF
   Layername: AnsiString;
   SendMirror: boolean );
 var
-  I,J,Ind,NParams: integer; P: T3DCoordinate; Params: TFloatArray;
+  I,J,Ind,NParams: integer; P: T3DVector; Params: TFloatArray;
 begin
   Ind:=FindDXFColorIndex( Color );
   NParams:=0;
@@ -454,10 +454,10 @@ var
       I,Ind,NParams,Cap, Pn,Pn1,Pn2: integer;
       Params: TFloatArray;
       SplineLength,T: double;
-      P1, P2, Pkn: T3DCoordinate;
-      SplineValues: T3DCoordinateArray;
+      P1, P2, Pkn: T3DVector;
+      SplineValues: T3DVectorArray;
 
-      procedure SaveVertex(P:T3DCoordinate); // port side
+      procedure SaveVertex(P:T3DVector); // port side
       begin
         Strings.Add('0'+EOL+'VERTEX');
         Strings.Add('8'+EOL+LayerName);
@@ -473,7 +473,7 @@ var
             Strings.Add('20'+EOL+FloatToDec(Scale * P.Y, 5)); end;
         end;
       end;
-      procedure SaveVertexSB(P:T3DCoordinate); // starboard side
+      procedure SaveVertexSB(P:T3DVector); // starboard side
       begin
         Strings.Add('0'+EOL+'VERTEX');
         Strings.Add('8'+EOL+LayerName);
@@ -722,15 +722,11 @@ var
   Frame: TFreeSpline;
   Tmp, Str: string;
   I, J, Np: integer;
-  P: T3DCoordinate;
+  P: T3DVector;
   SaveDialog: TSaveDialog;
   ffile: textfile;
   Strings: TStringList;
 begin
-  if not FreeShip.ProjectSettings.FMainparticularsHasBeenset then begin
-     MessageDlg(Userstring(95), mtWarning, [mbOK], 0);
-     exit;
-  end;
   Frames:=TFasterListTFreeSpline.Create;
   FreeShip.FBuildValidFrameTable(Frames, True);
   if Frames.Count > 0 then begin
@@ -950,7 +946,7 @@ var
   Strings: TStringList;
   I: integer;
   procedure SendSpline( Spline:TFreespline );
-  var J: integer; Str: string; P: T3DCoordinate;
+  var J: integer; Str: string; P: T3DVector;
   begin
     for J:=1 to Spline.NumberOfPoints do begin P:=Spline.Point[J-1];
       Str:='        '+MakeLength( P.X,4,10 ) +
@@ -1146,7 +1142,7 @@ begin
       FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity,5)+#32 +
       FloatToDec(FreeShip.ProjectSettings.ProjectAppendageCoefficient,5) +
       #32+IntToStr(Ord(FreeShip.ProjectSettings.ProjectUnits))+#32 +
-      BoolToStr(FreeShip.ProjectSettings.MainparticularsHasBeenset) +
+      'true'+ //BoolToStr(FreeShip.ProjectSettings.MainparticularsHasBeenset) +
       #32+IntToStr(Ord(FreeShip.Precision)));
     FreeShip.Surface.ExportFeFFile(Strings);
     Strings.SaveToFile(ChangeFileExt(Savedialog.FileName, '.fef'));
@@ -1166,20 +1162,14 @@ var
   Scale: TFloatType;
   Frames: TFasterListTFreeSpline;
   Str: string;
-  P, Pkn: T3DCoordinate;
+  P, Pkn: T3DVector;
   NParams: integer;
   Params: TFloatArray;
   Pn, Pn1, Pn2: integer;
 begin
-  if not FreeShip.ProjectSettings.FMainparticularsHasBeenset then
-  begin
-    MessageDlg(Userstring(95), mtWarning, [mbOK], 0);
-    exit;
-  end;
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-  Str:=ChangeFileExt(ExtractFilename(FreeShip.Filename), '.GF');
-  // no spaces allowed in filename
+  Str:=ChangeFileExt(ExtractFilename(FreeShip.Filename),'.GF'); // no spaces allowed in filename
   repeat
     I:=Pos(#32, Str);
     if I <> 0 then Delete(Str, I, 1);
@@ -1550,18 +1540,18 @@ var
     LeftPresent: boolean;
     RightPresent: boolean;
     TopPresent: boolean;
-    P: T3DCoordinate;
+    P: T3DVector;
 
-    function PhantomPoint(BorderPoint, InnerPoint: T3DCoordinate): T3DCoordinate;
+    function PhantomPoint(BorderPoint, InnerPoint: T3DVector): T3DVector;
     begin
       Result.X:=2 * BorderPoint.X-InnerPoint.X;
       Result.Y:=2 * BorderPoint.Y-InnerPoint.Y;
       Result.Z:=2 * BorderPoint.Z-InnerPoint.Z;
     end;{PhantomPoint}
 
-    function CornerPoint(P5, P6, P8, P9: T3DCoordinate): T3DCoordinate;
+    function CornerPoint(P5, P6, P8, P9: T3DVector): T3DVector;
     var
-      P2, P3, P4, P7: T3DCoordinate;
+      P2, P3, P4, P7: T3DVector;
     begin
       P2:=PhantomPoint(P5, P8);
       P3:=PhantomPoint(P6, P9);
@@ -1905,6 +1895,9 @@ begin
   FreeAndNil(Dialog);
 end;
 
+resourcestring
+rsMichletInputFile = 'Michlet input file';
+
 // Creates a file to be read by the CFD program Michlet
 procedure TFreeEdit.File_Export_Michlet;
 var
@@ -1912,10 +1905,7 @@ var
   SaveDialog: TSaveDialog;
   UndoObject: TFreeUndoObject;
 begin
-  if not FreeShip.ProjectSettings.FMainparticularsHasBeenset then begin
-                    MessageDlg(Userstring(95),mtWarning,[mbOK],0); exit;
-  end;
-  // temporarily switch to metric units for michlet export
+// temporarily switch to metric units for michlet export
   if FreeShip.ProjectSettings.ProjectUnits = fuImperial then begin
     UndoObject:=CreateUndoObject(Userstring(101), False);
     FreeShip.ProjectSettings.ProjectUnits:=fuMetric;

@@ -57,8 +57,8 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
   private   { Private declarations }
-    FMin: T3DCoordinate;
-    FMax: T3DCoordinate;
+    FMin: T3DVector;
+    FMax: T3DVector;
     function FGetCreateControlcurve: boolean;
     function FGetPlane: T3DPlane;
     procedure FUpdate;
@@ -66,9 +66,9 @@ type
     function Execute: boolean;
     property CreateControlcurve: boolean
       read FGetCreateControlcurve;
-    property Max: T3DCoordinate
+    property Max: T3DVector
       read FMax write FMax;
-    property Min: T3DCoordinate
+    property Min: T3DVector
       read FMin write FMin;
     property Plane: T3DPlane read FGetPlane;
   end;

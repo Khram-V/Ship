@@ -28,7 +28,7 @@ begin Result:=0.0;
   end;
 end;
 
-function TFreeDevelopedPatch.FGetPoint(index: integer): T3DCoordinate;
+function TFreeDevelopedPatch.FGetPoint(index: integer): T3DVector;
 var
   P: T2DCoordinate;
 begin
@@ -38,10 +38,10 @@ begin
   Result:=ConvertTo3D(P);
 end;
 
-function TFreeDevelopedPatch.FGetMirrorPoint(index: integer): T3DCoordinate;
+function TFreeDevelopedPatch.FGetMirrorPoint(index: integer): T3DVector;
 var
   P: T2DCoordinate;
-  Tmp: T3DCoordinate;
+  Tmp: T3DVector;
 begin
   P:=F2DCoordinates[index].Coordinate;
 
@@ -228,7 +228,7 @@ function TFreeDevelopedPatch.DistanceToCursor(X, Y: integer;
 var
   I,S,E,Dist: integer;
   Edge: TFreeSubdivisionEdge;
-  P1, P2: T3DCoordinate;
+  P1, P2: T3DVector;
   Param: TFloattype;
 begin
   Result:=1000000;                      // check distance to all interior edges
@@ -257,7 +257,7 @@ procedure TFreeDevelopedPatch.Draw(Viewport: TFreeViewport);
 var
   I,J,K,S,E, Na, Nb, Index,Cap, r,g,b, PenWidthfactor: integer;
   MinZ,MaxZ, s1,s2,s3: TFloatType;
-  P1,P2,P3, Min,Max: T3DCoordinate;
+  P1,P2,P3, Min,Max: T3DVector;
   Face: TFreeSubdivisionFace;
   Edge: TFreeSubdivisionEdge;
   Point: TFreeSubdivisionPoint;
@@ -272,7 +272,7 @@ var
   var
     I: integer;
     P2D: T2DCoordinate;
-    P3D: T3DCoordinate;
+    P3D: T3DVector;
     Pts: array of TPoint;
   begin
     //MM: for some reason number of fragments is not set for Dev Patch splines, so we set it here
@@ -294,19 +294,19 @@ var
     Viewport.Polyline(Pts);
   end;{DrawSpline}
 
-  procedure Swap(var P1, P2: T3DCoordinate);
+  procedure Swap(var P1, P2: T3DVector);
   var
-    Tmp: T3DCoordinate;
+    Tmp: T3DVector;
   begin
     Tmp:=P1;
     P1:=P2;
     P2:=Tmp;
   end;{Swap}
 
-  procedure DrawDimension(P1, P2: T3DCoordinate);
+  procedure DrawDimension(P1, P2: T3DVector);
   var
     Tmp: integer;
-    P: T3DCoordinate;
+    P: T3DVector;
     Pt: TPoint;
     Str: string;
   begin
@@ -344,7 +344,7 @@ var
     end;
   end;{DrawDimension}
 
-  procedure DrawTriangle(P1, P2, P3: T3DCoordinate; Color: TColor);
+  procedure DrawTriangle(P1, P2, P3: T3DVector; Color: TColor);
   var
     Pts: array[0..2] of TPoint;
   begin
@@ -581,10 +581,10 @@ begin
   Viewport.FontColor:=clBlack;
 end;
 
-procedure TFreeDevelopedPatch.Extents(var Min, Max: T3DCoordinate);
+procedure TFreeDevelopedPatch.Extents(var Min, Max: T3DVector);
 var
   I: integer;
-  P: T3DCoordinate;
+  P: T3DVector;
 begin
   if FPoints.Count = 0 then begin
     Min.X:=-1.0;
@@ -611,7 +611,7 @@ end;
 procedure TFreeDevelopedPatch.IntersectPlane(Plane: T3DPlane; Color: TColor);
 type
   IntersectionData = record
-    Point: T3DCoordinate;
+    Point: T3DVector;
     Knuckle: boolean;
   end;
 var
@@ -623,7 +623,7 @@ var
   Side1: TFloatType;
   Side2: TFloatType;
   Parameter: TFloatType;
-  Output: T3DCoordinate;
+  Output: T3DVector;
   Spline: TFreeSpline;
   Copy: TFreeSpline;
   Face: TFreeSubdivisionface;
@@ -753,7 +753,7 @@ begin
 
 end;{TFreeDevelopedPatch.IntersectPlane}
 
-function TFreeDevelopedPatch.ConvertTo3D(P: T2DCoordinate): T3DCoordinate;
+function TFreeDevelopedPatch.ConvertTo3D(P: T2DCoordinate): T3DVector;
 var
   Mid: T2DCoordinate;
   P2: T2DCoordinate;
@@ -773,13 +773,13 @@ var
   I, J: integer;
   Index: integer;
   P: TFreeSubdivisionPoint;
-  P3D: T3DCoordinate;
+  P3D: T3DVector;
   Source, Dest: TFasterListTFreeSubdivisionEdge;
   Edge:TFreeSubdivisionEdge;
-  Min, Max: T3DCoordinate;
+  Min, Max: T3DVector;
   First: boolean;
 
-  procedure getEdgeMinMax(P:TFreeSubdivisionPoint; var Min, Max: T3DCoordinate);
+  procedure getEdgeMinMax(P:TFreeSubdivisionPoint; var Min, Max: T3DVector);
   begin
     Index:=FPoints.IndexOf(P);
     P3D:=Point[Index];
@@ -845,9 +845,9 @@ var
   SeedArea: extended;
   OptArea, Dist: TFloatType;
   OptAngle: TFloatType;
-  Min, Max: T3DCoordinate;
-  Normal: T3DCoordinate;
-  P3D1, P3D2, P3D3: T3DCoordinate;
+  Min, Max: T3DVector;
+  Normal: T3DVector;
+  P3D1, P3D2, P3D3: T3DVector;
   Ctrlface: TFreeSubdivisionControlFace;
   Child, Face: TFreeSubdivisionface;
   Seedface: TFreeSubdivisionface;
@@ -873,7 +873,7 @@ var
     Result:=sqrt(sqr(dX)+sqr(dY));
   end;{Distance2D}
 
-  function Distance3D(P1, P2: T3DCoordinate): extended;
+  function Distance3D(P1, P2: T3DVector): extended;
   var
     dX, dY, dZ: extended;
   begin

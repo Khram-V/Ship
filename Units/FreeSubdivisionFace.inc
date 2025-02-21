@@ -5,7 +5,7 @@ function TFreeSubdivisionFace.FGetArea: TFloatType;
 var
   I: integer;
 
-  function TriangleArea(P1, P2, P3: T3DCoordinate): TFloatType;
+  function TriangleArea(P1, P2, P3: T3DVector): TFloatType;
   var
     ax, ay, az: TFloatType;
   begin
@@ -25,7 +25,7 @@ begin
       Point[I-1].Coordinate);
 end;{TFreeSubdivisionFace.FGetArea}
 
-function TFreeSubdivisionFace.FGetFaceCenter: T3DCoordinate;
+function TFreeSubdivisionFace.FGetFaceCenter: T3DVector;
 var I: integer;
     P: TFreeSubdivisionPoint;
 begin Result:=ZERO;
@@ -42,10 +42,10 @@ begin Result:=ZERO;
   end;
 end;
 
-function TFreeSubdivisionFace.FGetFaceNormal: T3DCoordinate;
+function TFreeSubdivisionFace.FGetFaceNormal: T3DVector;
 var
   I: integer;
-  N, C, P: T3DCoordinate;
+  N, C, P: T3DVector;
   P1, P2: TFreeSubdivisionPoint;
 begin
   Result:=ZERO; C:=ZERO;                         //calculate center of the face
@@ -81,7 +81,7 @@ procedure TFreeSubdivisionFace.AddPoint(Point: TFreeSubdivisionPoint);
 
 function TFreeSubdivisionFace.CalculateFaceCenterPoint: TFreeSubdivisionPoint;
 var I: integer;
-    P,Centre: T3DCoordinate;
+    P,Centre: T3DVector;
 begin
   Result:=nil;
   Centre:=ZERO;

@@ -53,11 +53,11 @@ type
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
   private   { Private declarations }
-    function GetStartPoint: T3DCoordinate;
-    procedure SetStartPoint(val: T3DCoordinate);
+    function GetStartPoint: T3DVector;
+    procedure SetStartPoint(val: T3DVector);
   public    { Public declarations }
     function Execute(Str: string): boolean;
-    property StartPoint: T3DCoordinate
+    property StartPoint: T3DVector
       read GetStartPoint write SetStartPoint;
   end;
 
@@ -67,12 +67,12 @@ implementation
 
 {$R *.lfm}
 
-function TFreeGridDialog.GetStartPoint: T3DCoordinate;
+function TFreeGridDialog.GetStartPoint: T3DVector;
 begin
   Result:=SetPoint(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
 end;
 
-procedure TFreeGridDialog.SetStartPoint(val: T3DCoordinate);
+procedure TFreeGridDialog.SetStartPoint(val: T3DVector);
 begin
   StartPointX.Value:=Val.X;
   StartPointY.Value:=Val.Y;

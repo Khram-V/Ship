@@ -234,8 +234,7 @@ begin
                              else HydObject.Draft:=EndDraft-Zmin;
         HydObject.Calculate;
         // Пересчет коэфФициентов полноты, если базовая линия проходит через линию киля
-        if abs(HydObject.Data.ModelMin.Z) > 0.001 then
-        begin
+        if abs(HydObject.Data.ModelMin.Z) > 0.001 then begin
           Zmin:=HydObject.Data.ModelMin.Z;
           Cb:=HydObject.Data.BlockCoefficient * HydObject.Draft / (HydObject.Draft+HydObject.Data.ModelMin.Z);
           Cm:=HydObject.Data.MidshipCoeff * HydObject.Draft / (HydObject.Draft+HydObject.Data.ModelMin.Z);

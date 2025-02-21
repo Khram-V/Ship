@@ -55,15 +55,15 @@ const
   Zoomfactor = 1.02;
 type
   TShadePoint = record                         // Used for drawing to the Z-buffer
-    X, Y: integer;
+    X,Y: integer;
     Z: TFloatType;
-    R, G, B: integer;
+    R,G,B: integer;
   end;
 
   TLayerProperties = record
     SurfaceArea: TFloatType;
     Weight: TFloatType;
-    SurfaceCenterOfGravity: T3DCoordinate;
+    SurfaceCenterOfGravity: T3DVector;
   end;
   TFreeVertexType=(svRegular, svCrease, svDart, svCorner); // Different types of subdivisionvertices
   TFreeCameraType=(ftWide,ftStandard,ftShortTele,ftMediumTele,ftFarTele); // Different types of camera lenses, corresponding to focalpoints 20mm, 50mm, 90mm, 130mm, 200mm
@@ -75,7 +75,7 @@ type
   TFreeViewportBackgroundMode = (emNormal, emSetOrigin, emSetScale, emSetFrame, emUnsetFrame, emSetTransparentColor);
 
   TFreeLight = record
-    Position: T3DCoordinate;   // position of light in world
+    Position: T3DVector;   // position of light in world
     Intensity: byte;           // brightness
     Ambient: byte;
   end;
@@ -148,8 +148,8 @@ type
   TFreeSubdivisionPointGrid = array of array of TFreeSubdivisionPoint;
   TFreeSubdivisionControlPointGrid = array of array of TFreeSubdivisionControlPoint;
   TFreeZBufferRow = TFloatArray;
-  TFreeCoordinateArray = array of T3DCoordinate;
-  TFreeCoordinateGrid = array of array of T3DCoordinate;
+  TFreeCoordinateArray = array of T3DVector;
+  TFreeCoordinateGrid = array of array of T3DVector;
 
   TFreeIntersectionData = record // intersections of a spline with a plane
     NumberOfIntersections: integer;
@@ -162,7 +162,7 @@ type
     Coordinate: T2DCoordinate;
   end;
   TOnRequestExtentsEvent = procedure(Sender: TObject;
-    var Min, Max: T3DCoordinate) of object;
+    var Min, Max: T3DVector) of object;
   // Event from TFreeviewport, which is raised when the viewport initializes and needs the
   // bounding box of the min/max coordinates of the 3D model
   TChangeActiveLayerEvent = procedure(Sender: TObject;
@@ -185,7 +185,6 @@ type
     First, Last: integer;
     Pixels: array of TAlphaBlendPixelArray;
   end;
-
 
   TProgressEvent = procedure(Sender: TObject; current:integer; total:integer) of object;
 
@@ -294,12 +293,12 @@ type
     FPrintResolution: integer;   // horizontal reolution of the printer
     FDestinationWidth: integer;  // Destinationwidth of the canvas when not drawing to the screen
     FDestinationHeight: integer; // DestinationHeight of the canvas when not drawing to the screen
-    FMin3D, FMax3D: T3DCoordinate;
-    FMidPoint: T3DCoordinate;    // Midpoint of the boundarybox determined by FMin3D and FMax3D. This point is used as centerpoint for rotating the 3D model
+    FMin3D, FMax3D: T3DVector;
+    FMidPoint: T3DVector;    // Midpoint of the boundarybox determined by FMin3D and FMax3D. This point is used as centerpoint for rotating the 3D model
     FMargin: TFloatType;         // margin around to viewport to keep clear; and it also is the direction at which the camera looks
     FBackgroundMode: TFreeViewportBackgroundMode;
     FViewType: TFreeViewType;    // Switch to sideview, frontview, topview or perspective view
-    FCameraLocation: T3DCoordinate; // Position of the camera, following from the field of view and the distance of the camera
+    FCameraLocation: T3DVector; // Position of the camera, following from the field of view and the distance of the camera
     FCameraType: TFreeCameraType;   // Determines the focalpoint of the camera
     FCosAngle, FSinAngle: TFloatType; // Pre calculated values to speed-up the rotating of point in the perspective-projection
     FCosElevation, FSinElevation: TFloatType; // Pre calculated values to speed-up the rotating of point in the perspective-projection
@@ -396,22 +395,22 @@ type
   public
 {$ifdef DrawDebug}
         FDebugPoint:TPoint;
-        FDebug3DPoint,FDebugCamera,FDebugIntersection,FDebugT1,FDebugT2,FDebugT3:T3DCoordinate;
+        FDebug3DPoint,FDebugCamera,FDebugIntersection,FDebugT1,FDebugT2,FDebugT3:T3DVector;
 {$endif DrawDebug}
 
     constructor Create( AOwner:TComponent ); override;
     destructor Destroy; override;
     procedure DetachEventHandlers;
-    procedure DrawLineToZBuffer(Point1, Point2: T3DCoordinate; R, G, B: byte); virtual;
-    procedure InitializeViewport(Min, Max: T3DCoordinate); virtual;
+    procedure DrawLineToZBuffer(Point1, Point2: T3DVector; R, G, B: byte); virtual;
+    procedure InitializeViewport(Min, Max: T3DVector); virtual;
     procedure Print(Units: TFreeUnitType; AskPrintScale: boolean; Jobname: string); virtual;
-    function Project(P: T3DCoordinate): TPoint;
-    function ProjectBack(P: TPoint; Input: T3DCoordinate): T3DCoordinate;
+    function Project(P: T3DVector): TPoint;
+    function ProjectBack(P: TPoint; Input: T3DVector): T3DVector;
     function ProjectBackTo2D(P: TPoint): T2DCoordinate;                           // Takes the cursor position and projects it to 2D object space
-    function ProjectToZBuffer(P: T3DCoordinate): TShadePoint; overload; virtual;  // Projects a 3D point to the screen and calculate it's Z-value for the Z-buffer
-    function ProjectToZBuffer(Scale:TFloatType;P:T3DCoordinate):TShadePoint; reintroduce; overload; // Projects a 3D point with a certain z-buffer offset to the screen, used for drawing lines on top of shaded surfaces
-    function RotatedPoint(P: T3DCoordinate): T3DCoordinate;
-    function RotatedPointBack(P: T3DCoordinate): T3DCoordinate;
+    function ProjectToZBuffer(P: T3DVector): TShadePoint; overload; virtual;  // Projects a 3D point to the screen and calculate it's Z-value for the Z-buffer
+    function ProjectToZBuffer(Scale:TFloatType;P:T3DVector):TShadePoint; reintroduce; overload; // Projects a 3D point with a certain z-buffer offset to the screen, used for drawing lines on top of shaded surfaces
+    function RotatedPoint(P: T3DVector): T3DVector;
+    function RotatedPointBack(P: T3DVector): T3DVector;
 
     procedure BeginUpdate;
     procedure EndUpdate;
@@ -436,9 +435,9 @@ type
     procedure SetPenWidth(Width: integer); virtual;
     procedure StretchDraw(DestRect: TRect; bmp: TBitmap); virtual;
     procedure ShadedColor(aIntensityRatio: single; R, G, B: byte; var ROut, GOut, BOut: byte); virtual;
-    procedure ShadeTriangle(P_1, P_2, P_3: T3DCoordinate; R, G, B: byte; Alpha: byte); overload; virtual;
-    procedure ShadeTriangle(P_1, P_2, P_3: T3DCoordinate; C1, C2, C3: extended); virtual; //reintroduce;overload;
-    procedure ShadeTriangle(P_1, P_2, P_3: T3DCoordinate; R1, G1, B1, R2, G2, B2, R3, G3, B3: byte); virtual; //reintroduce;overload;
+    procedure ShadeTriangle(P_1, P_2, P_3: T3DVector; R, G, B: byte; Alpha: byte); overload; virtual;
+    procedure ShadeTriangle(P_1, P_2, P_3: T3DVector; C1, C2, C3: extended); virtual; //reintroduce;overload;
+    procedure ShadeTriangle(P_1, P_2, P_3: T3DVector; R1, G1, B1, R2, G2, B2, R3, G3, B3: byte); virtual; //reintroduce;overload;
     function TextWidth(val: string): integer; virtual;
     function TextHeight(val: string): integer; virtual;
     procedure TextOut(x, y: integer; val: string); virtual;
@@ -451,7 +450,7 @@ type
     property BackgroundMode: TFreeViewportBackgroundMode read FBackgroundMode write FSetBackgroundMode;
     property BrushColor: TColor read FGetBrushColor write FSetBrushColor;
     property BrushStyle: TBrushStyle read FGetBrushStyle write FSetBrushStyle;
-    property CameraLocation: T3DCoordinate read FCameraLocation write FCameraLocation;
+    property CameraLocation: T3DVector read FCameraLocation write FCameraLocation;
     property DrawingCanvas: TCanvas read FDrawingCanvas write FDrawingCanvas;
     property FieldOfView: TFloatType read FFieldOfView;
     property FontColor: TColor read FGetFontColor write FSetFontColor;
@@ -460,9 +459,9 @@ type
     property FontHeight: integer read FGetFontHeight write FSetFontHeight;
 
     property Light: TFreeLight read FLight write FSetLight;
-    property Max3D: T3DCoordinate read FMax3D;
-    property Min3D: T3DCoordinate read FMin3D;
-    property SceneMidPoint: T3DCoordinate read FMidPoint write FMidPoint;
+    property Max3D: T3DVector read FMax3D;
+    property Min3D: T3DVector read FMin3D;
+    property SceneMidPoint: T3DVector read FMidPoint write FMidPoint;
     property PenColor: TColor read FGetPenColor write FSetPenColor;
     property PenStyle: TPenStyle read FGetPenStyle write FSetPenStyle;
     property PenWidth: integer read FGetPenWidth write FSetPenWidth;
@@ -569,20 +568,20 @@ type
     function FGetMinError: extended;
     function FGetMaxError: extended;
     function FGetMidPoint: T2DCoordinate;
-    function FGetMirrorPoint( index: integer ): T3DCoordinate;
-    function FGetPoint(index: integer): T3DCoordinate;
+    function FGetMirrorPoint( index: integer ): T3DVector;
+    function FGetPoint(index: integer): T3DVector;
     procedure FSetRotation(Val: TFloatType);
     procedure FSetTranslation(Val: T2DCoordinate);
     procedure FSetMirrorOnScreen(val: boolean);
   public
     procedure Assign(Org: TFreeDevelopedPatch; Mirror: boolean);
     procedure Clear;
-    function ConvertTo3D(P: T2DCoordinate): T3DCoordinate;
+    function ConvertTo3D(P: T2DCoordinate): T3DVector;
     constructor Create(Owner: TFreeSubdivisionLayer);
     destructor Destroy; override;
     function DistanceToCursor(X, Y: integer; Viewport: TFreeViewport): integer;
     procedure Draw(Viewport: TFreeViewport);
-    procedure Extents(var Min, Max: T3DCoordinate);
+    procedure Extents(var Min, Max: T3DVector);
     procedure IntersectPlane(Plane: T3DPlane; Color: TColor);
     procedure SaveToDXF(Strings: TStringList);
     procedure SaveToTextFile(Strings: TStringList);
@@ -595,8 +594,8 @@ type
     property Name: string read FName write FName;
     property NumberOfIterations: integer read FNoIterations;
     property Owner: TFreeSubdivisionLayer read FOwner;
-    property MirrorPoint[index: integer]: T3DCoordinate read FGetMirrorPoint;
-    property Point[index: integer]: T3DCoordinate read FGetPoint;
+    property MirrorPoint[index: integer]: T3DVector read FGetMirrorPoint;
+    property Point[index: integer]: T3DVector read FGetPoint;
     property Rotation: TFloatType read FRotation write FSetRotation;
     property ShadeSubmerged: boolean read FShadeSubmerged write FShadeSubmerged;
     property ShowBoundingBox: boolean read FShowBoundingBox write FShowBoundingBox;
@@ -619,7 +618,6 @@ type
     property XGrid: TFloatType read FXGrid write FXGrid;
     property YGrid: TFloatType read FYGrid write FYGrid;
   end;
-
 
   {------------------------------------------------------------}
   {                                           TFreeNamedObject }
@@ -647,9 +645,9 @@ type
   private
     FBuilt: boolean; // Flag to check if the entity has already been built
     FIsBuilding: boolean; // Flag to check if the entity structure is building to exclude double entrance to building
-    FMin, FMax: T3DCoordinate; // The min/max boundary coordinates of the entity after it has been build
-    function GetMin: T3DCoordinate; virtual;
-    function GetMax: T3DCoordinate; virtual;
+    FMin, FMax: T3DVector; // The min/max boundary coordinates of the entity after it has been build
+    function GetMin: T3DVector; virtual;
+    function GetMax: T3DVector; virtual;
     procedure SetBuilt(Val: boolean); virtual;
   public
     Color: TColor;         // Color when drawing
@@ -658,13 +656,13 @@ type
     constructor Create(Owner: TFreeSubdivisionSurface); override;
     procedure Clear; virtual;
     destructor Destroy; override;
-    procedure Extents(var Min, Max: T3DCoordinate); virtual;
+    procedure Extents(var Min, Max: T3DVector); virtual;
     procedure Draw(Viewport: TFreeViewport); virtual;
     procedure Rebuild; virtual;
     property Built: boolean read FBuilt write SetBuilt;
     property IsBuilding: boolean read FIsBuilding;
-    property Min: T3DCoordinate  read GetMin;
-    property Max: T3DCoordinate  read GetMax;
+    property Min: T3DVector  read GetMin;
+    property Max: T3DVector  read GetMax;
   end;
 
   {--------------------------------------------------------------------}
@@ -691,28 +689,28 @@ type
     function FGetFragments: integer;
     function FGetKnuckle(Index: integer): boolean;
     function FGetParameter(Index: integer): TFloatType;
-    function FGetPoint(Index: integer): T3DCoordinate;
+    function FGetPoint(Index: integer): T3DVector;
     procedure SetBuilt(val: boolean); override;
     procedure FSetCapacity(Val: integer);
     procedure FSetFragments(Val: integer);
     procedure FSetKnuckle(Index: integer; Value: boolean);
-    procedure FSetPoint(Index: integer; P: T3DCoordinate);
+    procedure FSetPoint(Index: integer; P: T3DVector);
   public
-    procedure Add(P: T3DCoordinate);
-    procedure AddKnuckle(P: T3DCoordinate); // add a new point to the curve
+    procedure Add(P: T3DVector);
+    procedure AddKnuckle(P: T3DVector); // add a new point to the curve
     procedure Assign(Spline: TFreeSpline);  // Copy all data from another spline
     function CoordLength(T1, T2: TFloatType): TFloatType;
     function ChordlengthApproximation( Percentage: TFloatType): extended;
     procedure Clear; override;
     constructor Create(Owner: TFreeSubdivisionSurface); override;
-    function Curvature(Parameter: TFloatType; var Value, Normal: T3DCoordinate): TFloatType;
+    function Curvature(Parameter: TFloatType; var Value, Normal: T3DVector): TFloatType;
     procedure DeletePoint(Index: integer);
     function DistanceToCursor(X, Y: integer; Viewport: TFreeViewport): integer; virtual;
     procedure Draw(Viewport: TFreeViewport); override;
-    function GetValues: T3DCoordinateArray;
+    function GetValues: T3DVectorArray;
     function GetValuesProjected(Viewport: TFreeViewport): TPointArray;
-    function FirstDerive(Parameter: TFloatType): T3DCoordinate;
-    procedure Insert(Index: integer; P: T3DCoordinate);
+    function FirstDerive(Parameter: TFloatType): T3DVector;
+    procedure Insert(Index: integer; P: T3DVector);
     procedure InsertSpline(Index: integer; Invert, DuplicatePoint: boolean; Source: TFreeSpline);
     function IntersectPlane(Plane: T3DPlane; var Output: TFreeIntersectionData): boolean;
     procedure InvertDirection; // invert the direction of the controlpoints and knuckles
@@ -720,18 +718,18 @@ type
     procedure Rebuild; override;
     procedure SaveBinary(Destination: TFreeFileBuffer); virtual;
     procedure SaveToDXF( Strings: TStringList; Layername: AnsiString; SendMirror: boolean );
-    function SecondDerive(Parameter: TFloatType): T3DCoordinate;
+    function SecondDerive(Parameter: TFloatType): T3DVector;
     function Simplify(Criterium: TFloatType): boolean;
     // Remove points that do not contribute significantly to the shape
     // PointNo1, PointNo2 are points the Parameter is between
-    function Value(Parameter: extended): T3DCoordinate; overload;
-    function Value(Parameter: extended; var PointNo1, PointNo2: integer): T3DCoordinate; overload;
+    function Value(Parameter: extended): T3DVector; overload;
+    function Value(Parameter: extended; var PointNo1, PointNo2: integer): T3DVector; overload;
     property Capacity: integer read FCapacity write FSetCapacity;
     property Fragments: integer read FGetFragments write FSetFragments;
     property Knuckle[Index: integer]: boolean read FGetKnuckle write FSetKnuckle;
     property NumberOfPoints: integer read FNoPoints;
     property Parameter[Index: integer]: TFloatType read FGetParameter;
-    property Point[Index: integer]: T3DCoordinate read FGetPoint write FSetPoint;
+    property Point[Index: integer]: T3DVector read FGetPoint write FSetPoint;
     property TotalLength: TFloatType read FTotalLength;
   end;
   {------------------------------------------------------------}
@@ -746,10 +744,10 @@ type
     FColKnots: TFloatArray;
     FRowKnots: TFloatArray;
     FControlPoints: TFreeCoordinateGrid;
-    function FGetpoint(Col, Row: integer): T3DCoordinate;
+    function FGetpoint(Col, Row: integer): T3DVector;
     procedure FSetColDegree(Val: integer);
     procedure FSetRowDegree(Val: integer);
-    procedure FSetPoint(Col, Row: integer; Val: T3DCoordinate);
+    procedure FSetPoint(Col, Row: integer; Val: T3DVector);
     procedure FSetColCapacity(Val: integer);
     procedure FSetRowCapacity(Val: integer);
   protected
@@ -770,7 +768,7 @@ type
     property ColCapacity: integer read FColCapacity write FSetColCapacity;
     property ColDegree: integer read FColDegree write FSetColDegree;
     property ColKnotVector: TFloatArray read FColknots;
-    property Point[Col, Row: integer]: T3DCoordinate read FGetpoint write FSetPoint;
+    property Point[Col, Row: integer]: T3DVector read FGetpoint write FSetPoint;
     property RowCapacity: integer read FRowCapacity write FSetRowCapacity;
     property RowDegree: integer read FRowDegree write FSetRowDegree;
     property RowKnotVector: TFloatArray read FRowknots;
@@ -856,17 +854,15 @@ type
   { Properties such as color, visibility etc. are common   }
   { for all controlfaces belonging the the same layer      }
   {--------------------------------------------------------}
-  TFreeSubdivisionLayer = class
-    // color, visibility, symmetric, calc intersections/part of hull
+  TFreeSubdivisionLayer = class // color, visibility, symmetric, calc intersections/part of hull
   private
     FOwner: TFreeSubdivisionSurface;       // Pointer to the subdivisionsurface
     FLayerID: integer;  // Unique identification number for internal references
-    FColor: TColor;     // Color of this layer
-
+    FColor: TColor;            // Color of this layer
     FSurfaceVisible: boolean;  // Visibility switch for subdivided mesh/surface
-    FControlNetVisible: boolean; // Visibility switch for Control Net
+    FControlNetVisible: boolean;           // Visibility switch for Control Net
 
-    FDescription: string;    // Description of the layer, used as user identification
+    FDescription:AnsiString; // Description of the layer, used as user identification
     FSymmetric: boolean;     // Symmetric patches are mirrored in the centerplane when both halves of the ship are drawn
     FDevelopable: boolean;   // Developable layers are shaded with Gauss curvature
     FUseForIntersections: boolean; // If set to true, stations, waterlines, buttocks and diagonals are calculated
@@ -878,13 +874,13 @@ type
     FAlphaBlend: byte;
     function FGetColor: TColor;
     function FGetCount: integer;
-    function FGetDXFLayername: string;
-    function FGetName: string;
+    function FGetDXFLayername: AnsiString;
+    function FGetName: AnsiString;
     function FGetItems(Index: integer): TFreeSubdivisionControlFace;
     function FGetLayerIndex: integer;
     function FGetSurfaceProperties: TLayerProperties;
     procedure FSetFDevelopable(Val: boolean);
-    procedure FSetName(Val: string);
+    procedure FSetName(Val: AnsiString);
     procedure FSetColor(Val: TColor);
     procedure FSetShowInLinesplan(val: boolean);
     procedure FSetUseInHydrostatics(val: boolean);
@@ -906,7 +902,7 @@ type
     procedure DeleteControlFace( ControlFace: TFreeSubdivisionControlFace);
     destructor Destroy; override;
     procedure Draw(Viewport: TFreeViewport);
-    procedure Extents(var Min, Max: T3DCoordinate);
+    procedure Extents(var Min, Max: T3DVector);
     procedure LoadBinary(Source: TFreeFileBuffer);
     procedure LoadFromStream( var LineNr: integer; Strings: TStringList);
     procedure MoveDown;
@@ -943,29 +939,29 @@ type
   private
     FFaces: TFasterListTFreeSubdivisionFace;
     FEdges: TFasterListTFreeSubdivisionEdge;
-    FCoordinate: T3DCoordinate;
+    FCoordinate: T3DVector;
     FVertexType: TFreeVertexType;
     function FGetEdge(Index: integer):TFreeSubdivisionEdge;
-    function FGetCoordinate: T3DCoordinate;
+    function FGetCoordinate: T3DVector;
     function FGetCurvature: extended;
     function FGetFace(Index: integer):TFreeSubdivisionFace;
     function FGetIndex: integer;virtual;
     function FGetIsBoundaryVertex: boolean;
-    function FGetNormal: T3DCoordinate;
+    function FGetNormal: T3DVector;
     function FGetNumberOfCurves: integer;
     function FGetNumberOfEdges: integer;
     function FGetNumberOfFaces: integer;
     function FGetRegularPoint: boolean;
-    function FGetLimitPoint: T3DCoordinate;
-    procedure FSetCoordinate(Val: T3DCoordinate);virtual;
+    function FGetLimitPoint: T3DVector;
+    procedure FSetCoordinate(Val: T3DVector);virtual;
 //    procedure PrintDebug; override;
     procedure SetVertexType(AValue: TFreeVertexType);
   public
     procedure AddEdge(Edge: TFreeSubdivisionEdge);
     procedure AddFace(Face: TFreeSubdivisionFace);
-    function Averaging: T3DCoordinate;
-    function LastAveraging: T3DCoordinate;
-//  function ReverseAveraging: T3DCoordinate;
+    function Averaging: T3DVector;
+    function LastAveraging: T3DVector;
+//  function ReverseAveraging: T3DVector;
     function CalculateVertexPoint:TFreeSubdivisionPoint;virtual;
     function CheckIntegrity: boolean;
     procedure Clear;
@@ -977,15 +973,15 @@ type
     destructor Destroy;override;
     function IndexOfFace(Face: TFreeSubdivisionFace): integer;
     function IsRegularNURBSPoint(Faces: TFasterListTFreeSubdivisionFace): boolean;
-    property Coordinate:T3DCoordinate read FGetCoordinate write FSetCoordinate;
+    property Coordinate:T3DVector read FGetCoordinate write FSetCoordinate;
     property Curvature: extended read FGetCurvature;
     property Edges: TFasterListTFreeSubdivisionEdge read FEdges;
     property Edge[index: integer]: TFreeSubdivisionEdge read FGetEdge;
     property Faces: TFasterListTFreeSubdivisionFace read FFaces;
     property Face[index: integer]: TFreeSubdivisionFace read FGetFace;
     property IsBoundaryVertex: boolean read FGetIsBoundaryVertex;
-    property LimitPoint: T3DCoordinate read FGetLimitPoint;
-    property Normal: T3DCoordinate read FGetNormal;
+    property LimitPoint: T3DVector read FGetLimitPoint;
+    property Normal: T3DVector read FGetNormal;
     property NumberOfCurves: integer read FGetNumberOfCurves;
     property NumberOfEdges: integer read FGetNumberOfEdges;
     property NumberOfFaces: integer read FGetNumberOfFaces;
@@ -1015,7 +1011,7 @@ type
     function FGetVisible: boolean;
     procedure FSetLocked(val: boolean);
     procedure FSetSelected(val: boolean); override;
-    procedure FSetCoordinate(Val: T3DCoordinate); override;
+    procedure FSetCoordinate(Val: T3DVector); override;
   public
     procedure Collapse0;
     procedure Collapse;
@@ -1028,7 +1024,7 @@ type
     procedure LoadBinary(Source: TFreeFileBuffer);
     procedure LoadFromStream(var LineNr: integer; Strings: TStringList);
     procedure MoveBy( Viewport:TFreeViewPort; dX,dY,dZ: TFloatType; vAnchor:TFreeSubdivisionControlPoint);
-    procedure SetCoordinate( ViewPort:TFreeViewPort; Val: T3DCoordinate; vAnchor:TFreeSubdivisionControlPoint);
+    procedure SetCoordinate( ViewPort:TFreeViewPort; Val: T3DVector; vAnchor:TFreeSubdivisionControlPoint);
     procedure SaveBinary(Destination: TFreeFileBuffer);
     procedure SaveToStream(Strings: TStringList);
     procedure SetLinearConstraint(pointA, pointB: TFreeSubdivisionControlPoint);
@@ -1057,7 +1053,7 @@ type
   private
     FControlPoints: TFasterListTFreeSubdivisionControlPoint;
     FLocked: boolean;
-    function CalculateCenterPoint: T3DCoordinate;
+    function CalculateCenterPoint: T3DVector;
     function FGetIndex: integer;
     function FGetSelected: boolean; override;
     function FGetVisible: boolean;
@@ -1112,7 +1108,7 @@ type
     procedure UnreferenceFace(Face: TFreeSubdivisionFace);
     procedure Unreference; virtual;
     destructor Destroy; override;
-    function DistanceToCursor(X, Y: integer; var P: T3DCoordinate; Viewport: TFreeViewport): integer; virtual;
+    function DistanceToCursor(X, Y: integer; var P: T3DVector; Viewport: TFreeViewport): integer; virtual;
     procedure Draw(DrawMirror: boolean; Viewport: TFreeViewport); virtual;
     procedure SwapData;
     property Crease: boolean read FCrease write FSetCrease;
@@ -1149,9 +1145,9 @@ type
     constructor Create(Owner: TFreeSubdivisionSurface); override;
     procedure Delete; override;
     procedure Unreference; override;
-    function DistanceToCursor(X, Y: integer; var P: T3DCoordinate; Viewport: TFreeViewport): integer; override;
+    function DistanceToCursor(X, Y: integer; var P: T3DVector; Viewport: TFreeViewport): integer; override;
     procedure Draw(DrawMirror: boolean; Viewport: TFreeViewport); override;
-    function InsertControlPoint( P: T3DCoordinate): TFreeSubdivisionControlpoint;
+    function InsertControlPoint( P: T3DVector): TFreeSubdivisionControlpoint;
     procedure LoadBinary(Source: TFreeFileBuffer);
     procedure LoadFromStream( var LineNr: integer; Strings: TStringList);
     procedure SaveBinary(Destination: TFreeFileBuffer);
@@ -1174,8 +1170,8 @@ type
   private
     FPoints: TFasterListTFreeSubdivisionPoint;
     function FGetArea: TFloatType;
-    function FGetFaceCenter: T3DCoordinate;
-    function FGetFaceNormal: T3DCoordinate;
+    function FGetFaceCenter: T3DVector;
+    function FGetFaceNormal: T3DVector;
     function FGetNumberOfPoints: integer;
     function FGetPoint(Index: integer): TFreeSubdivisionPoint;
   public
@@ -1199,8 +1195,8 @@ type
       aControlDescendandEdges:TFasterListTFreeSubdivisionEdge;
       aNewFaces: TFasterListTFreeSubdivisionFace );
     property Area: TFloatType        read FGetArea;
-    property FaceCenter:             T3DCoordinate read FGetFaceCenter;
-    property FaceNormal:             T3DCoordinate read FGetFaceNormal;
+    property FaceCenter:             T3DVector read FGetFaceCenter;
+    property FaceNormal:             T3DVector read FGetFaceNormal;
     property NumberOfPoints:integer read FGetNumberOfPoints;
     property Point[index: integer]:  TFreeSubdivisionPoint read FGetPoint;
     property Points:TFasterListTFreeSubdivisionPoint read FPoints;
@@ -1213,7 +1209,7 @@ type
   private
     FLayer: TFreeSubdivisionLayer;
     FChildren: TFasterListTFreeSubdivisionFace;
-    FMin,FMax: T3DCoordinate;
+    FMin,FMax: T3DVector;
     FEdges: TFasterListTFreeSubdivisionEdge;
     FControlDescendantEdges: TFasterListTFreeSubdivisionEdge; // here can be real ControlEdges and divided "children" of them. Do not why.
     function FGetChild(Index: integer): TFreeSubdivisionFace;
@@ -1236,9 +1232,9 @@ type
     procedure ClearChildren;
     constructor Create(Owner: TFreeSubdivisionSurface); override;
     function DistanceToCursor(X, Y: integer;
-      var P: T3DCoordinate; Viewport: TFreeViewport): integer;
+      var P: T3DVector; Viewport: TFreeViewport): integer;
     function PointInFace(X, Y: integer;
-      var IntersectionCoord: T3DCoordinate; var Proximity:TFloatType;
+      var IntersectionCoord: T3DVector; var Proximity:TFloatType;
       Viewport: TFreeViewport): boolean;
     procedure Delete; override;
     procedure Unreference; override;
@@ -1274,8 +1270,8 @@ type
     property EdgeCount: integer read FGetEdgeCount;
     property FaceIndex: integer read FGetIndex;
     property Layer: TFreeSubdivisionLayer read FLayer write FSetLayer;
-    property Max: T3DCoordinate read FMax;
-    property Min: T3DCoordinate read FMin;
+    property Max: T3DVector read FMax;
+    property Min: T3DVector read FMin;
     property Point[index: integer]: TFreeSubdivisionControlPoint read FGetPoint;
 
     property Selected: boolean read FGetSelected write FSetSelected;
@@ -1425,12 +1421,12 @@ type
   public
     procedure AddControlCurve(Curve: TFreesubdivisionControlCurve);
     function AddControlEdge(P1, P2: TFreeSubdivisionControlPoint): TFreesubdivisionControlEdge; overload; virtual;
-    function AddControlFace(Points: array of T3DCoordinate; NoPoints: integer): TFreeSubdivisionControlFace; overload; virtual;
+    function AddControlFace(Points: array of T3DVector; NoPoints: integer): TFreeSubdivisionControlFace; overload; virtual;
     function AddControlFace(Points: TFasterListTFreeSubdivisionControlPoint; CheckEdges: boolean): TFreeSubdivisionControlFace; reintroduce; overload;
     function AddControlFace(Points: TList; CheckEdges: boolean): TFreeSubdivisionControlFace; reintroduce; overload;
     function AddControlFace(Points: TFasterListTFreeSubdivisionControlPoint; CheckEdges: boolean; Layer: TFreeSubdivisionLayer): TFreeSubdivisionControlFace; reintroduce; overload;
     function AddControlFaceN(Points: TFasterListTFreeSubdivisionControlPoint; CheckEdges: boolean; Layer: TFreeSubdivisionLayer): TFreeSubdivisionControlFace; reintroduce; overload;
-    function AddControlPoint(P: T3DCoordinate; aTolerance:double=1e-6): TFreeSubdivisionControlPoint; overload; virtual;
+    function AddControlPoint(P: T3DVector; aTolerance:double=1e-6): TFreeSubdivisionControlPoint; overload; virtual;
     procedure AddControlPoint(P: TFreeSubdivisionControlPoint); reintroduce; overload;
     function AddControlPoint: TFreeSubdivisionControlPoint; reintroduce; overload;
     // Adds a new controlpoint at 0,0,0 without checking other points
@@ -1488,12 +1484,12 @@ type
     procedure ExportFeFFile( Strings: TStringList );
     procedure ImportObjFile( Strings: TStringList );
     procedure ExportObjFile( ExportControlNet: boolean; Strings: TStringList );
-    procedure Extents(var Min, Max: T3DCoordinate); override;
+    procedure Extents(var Min, Max: T3DVector); override;
     function  ExtrudeControlPoints
            (  Points: TFasterListTFreeSubdivisionControlPoint;
-              Direction: T3DCoordinate
+              Direction: T3DVector
            ): TFasterListTFreeSubdivisionControlPoint;
-    procedure ExtrudeEdges(Edges: TFasterListTFreeSubdivisionEdge; Direction: T3DCoordinate);
+    procedure ExtrudeEdges(Edges: TFasterListTFreeSubdivisionEdge; Direction: T3DVector);
       reintroduce; overload;
     procedure CalculateIntersections(Plane: T3DPlane;
       Faces: TFasterListTFreeSubdivisionFace; Destination: TFasterListTFreeSpline);
@@ -1638,60 +1634,60 @@ type
     procedure DestroyAll; // destroy all objects in the list, but not the list itself. To destroy the list call Destroy;
   end;
 
-function AddPoint(P1, P2: T3DCoordinate): T3DCoordinate;     // Add two vectors
-function AddPointSymm(P1, P2: T3DCoordinate): T3DCoordinate; // Add two vectors for symmetric layers
+function AddPoint(P1, P2: T3DVector): T3DVector;     // Add two vectors
+function AddPointSymm(P1, P2: T3DVector): T3DVector; // Add two vectors for symmetric layers
 function AreaStr(Units: TFreeUnitType): string; // Returns a string value with the area units
 function BoolToStr(Val: boolean): string;       // In contrast to delphis own BoolToStrF this procedure returns '0' when false and '1' when true
-procedure ClipTriangle(P1, P2, P3: T3DCoordinate; s1, s2, s3: TFloatType; var Nf, Nb: integer; var Front, Back: TFreeCoordinateArray); overload;
-procedure ClipTriangle(P1, P2, P3: T3DCoordinate; Plane: T3DPlane; var Nf, Nb: integer; var Front, Back: TFreeCoordinateArray); overload;
+procedure ClipTriangle(P1, P2, P3: T3DVector; s1, s2, s3: TFloatType; var Nf, Nb: integer; var Front, Back: TFreeCoordinateArray); overload;
+procedure ClipTriangle(P1, P2, P3: T3DVector; Plane: T3DPlane; var Nf, Nb: integer; var Front, Back: TFreeCoordinateArray); overload;
 function ConvertDimension(Value: TFloatType; Units: TFreeUnitType): string; // Converts a dimesnion to a string
 function ConvertCoordinate(Coord: string; OldCoord: TFloatType): TFloatType; // converts a string to a floatingpoint value, possibly using imperial units
-function CrossProduct(U, V: T3DCoordinate): T3DCoordinate;
+function CrossProduct(U, V: T3DVector): T3DVector;
 function DisplacementToVolume(Displ, Density, AppCoeff: TFloatType;  Units: TFreeUnitType): TFloatType; // Converts a displacement to volume
 function DensityStr(Units: TFreeUnitType): string;                // Returns a string value with the density units
-function DistPP3D(P1, P2: T3DCoordinate): TFloatType;             // Calculates the distance between two points
+function DistPP3D(P1, P2: T3DVector): TFloatType;             // Calculates the distance between two points
 function DistanceToLine(P1, P2: TPoint; X, Y: integer; var Parameter: TFloatType): TFloatType;
-function DistancePointToPlane(P: T3DCoordinate; Plane: T3DPlane): TFloatType;
-function DotProduct(U, V: T3DCoordinate): TFloatType;
+function DistancePointToPlane(P: T3DVector; Plane: T3DPlane): TFloatType;
+function DotProduct(U, V: T3DVector): TFloatType;
 function FindDXFColorIndex(Color: TColor): integer;               // find nearest DXF color corresponding to a windows color
 procedure FillColor(Parameter: TFloatType; var R, G, B: byte);
 function InertiaStr(Units: TFreeUnitType): string;                // Returns a string value with the moment of inertia units
-function Interpolate(P1, P2: T3DCoordinate; Param: TFloatType): T3DCoordinate; // perform linear interpolation between two 3D points
+function Interpolate(P1, P2: T3DVector; Param: TFloatType): T3DVector; // perform linear interpolation between two 3D points
 procedure JoinSplineSegments(JoinError: TFloatType; ForceToOneSegment: boolean; List: TFasterListTFreeSpline);// Takes multiple splines and tries to connect them to as few as possible
-function Lines3DIntersect(P1, P2, P3, P4: T3DCoordinate; var Param: double; var Int: T3DCoordinate): boolean;
+function Lines3DIntersect(P1, P2, P3, P4: T3DVector; var Param: double; var Int: T3DVector): boolean;
 function LengthStr(Units: TFreeUnitType): string;                 // Returns a string value with the length units
 function MakeLength(Value: TFloatType; Decimals, DesLength: integer): string; overload;
 function MakeLength(Value: Ansistring; DesLength: integer): Ansistring; overload;
-procedure MinMax(P: T3DCoordinate; var Min, Max: T3DCoordinate);
-function Midpoint(P1, P2: T3DCoordinate): T3DCoordinate;          // Calculate the mid-point between P1 and P2
-function Mid3point(P1, P2, P3: T3DCoordinate): T3DCoordinate;
-function MirrorPlane(P: T3DCoordinate; Plane: T3DPLane): T3DCoordinate; // mirror a point in a plane
-function Normalize(P: T3DCoordinate): T3DCoordinate;
+procedure MinMax(P: T3DVector; var Min, Max: T3DVector);
+function Midpoint(P1, P2: T3DVector): T3DVector;          // Calculate the mid-point between P1 and P2
+function Mid3point(P1, P2, P3: T3DVector): T3DVector;
+function MirrorPlane(P: T3DVector; Plane: T3DPLane): T3DVector; // mirror a point in a plane
+function Normalize(P: T3DVector): T3DVector;
 function NumberOfDecimals(Value: TFloatType): integer;            // Finds out with how many decimals a number should be presented
-function PlaneIntersectsBox(Min, Max: T3DCoordinate; Plane: T3DPlane): boolean; // Function to determine if a plane intersects a bounding box
-function PlanePointNormal(P, Normal: T3DCoordinate): T3DPlane;    // Calculates the plane with a given normal N through point P
-function PlanePPP(P1, P2, P3: T3DCoordinate): T3DPlane;           // Create a plane defined by three points
-function PointInTriangle(Int, P0, P1, P2: T3DCoordinate):boolean; // This function calculates if a point lies inside a triangle assuming it lies on the plane determined by the triangle
+function PlaneIntersectsBox(Min, Max: T3DVector; Plane: T3DPlane): boolean; // Function to determine if a plane intersects a bounding box
+function PlanePointNormal(P, Normal: T3DVector): T3DPlane;    // Calculates the plane with a given normal N through point P
+function PlanePPP(P1, P2, P3: T3DVector): T3DPlane;           // Create a plane defined by three points
+function PointInTriangle(Int, P0, P1, P2: T3DVector):boolean; // This function calculates if a point lies inside a triangle assuming it lies on the plane determined by the triangle
 function PoundsToNewton(InpLbs: TFloatType): TFloatType;          // converts pounds to Newton
-function ProjectPointOnLine(P, P1, P2: T3DCoordinate): T3DCoordinate; // Projects point  P on the linesegment through P1 and P2
-function ProjectPointOnPlane(P: T3DCoordinate; Plane: T3DPlane): T3DCoordinate; // Projects a point on to a plane
-//function RandomColor: TColor;                                     // create a random color
+function ProjectPointOnLine(P, P1, P2: T3DVector): T3DVector; // Projects point  P on the linesegment through P1 and P2
+function ProjectPointOnPlane(P: T3DVector; Plane: T3DPlane): T3DVector; // Projects a point on to a plane
+// function RandomColor: TColor;                                     // create a random color
 // GetBoolean Read a single boolean value from a string
 // GetFloat   Read a single floatingpoint value from a string
 // GetInteger Read an integer value from a string
-function RotateAroundPoint(P: T3DCoordinate; Center: T3DCoordinate; sinhx, coshx, sinhy, coshy, sinhz, coshz: TFloatType): T3DCoordinate;
-function RotatePointAroundVector(Point, StartPoint, Endpoint: T3DCoordinate): T3DCoordinate; // Function to rotate a point around a vector
-function RotateVector(P0: T3DCoordinate; sinx, cosx, siny, cosy, sinz, cosz: TFloatType): T3DCoordinate; // Rotates a vector around the origin
-function ScalePoint(Scale: TFloatType; P: T3DCoordinate): T3DCoordinate; // Scales a vector
+// function ScalePoint(Scale: TFloatType; P: T3DVector): T3DVector; // Scales a vector
+// function Subtract(AVec1, AVec2: T3DVector): T3DVector;    // subtract two vectors
+function RotateAroundPoint(P: T3DVector; Center: T3DVector; sinhx, coshx, sinhy, coshy, sinhz, coshz: TFloatType): T3DVector;
+function RotatePointAroundVector(Point, StartPoint, Endpoint: T3DVector): T3DVector; // Function to rotate a point around a vector
+function RotateVector(P0: T3DVector; sinx, cosx, siny, cosy, sinz, cosz: TFloatType): T3DVector; // Rotates a vector around the origin
 function SetPlane(a, b, c, d: TFloatType): T3DPlane;
-function SetPoint(X, Y, Z: TFloatType): T3DCoordinate;
+function SetPoint(X, Y, Z: TFloatType): T3DVector;
 procedure SortFloatArray(var FloatArray: TFloatArray; var N: integer); // sorts an array with floatingpoint values and removes double entries
-function SquaredDistPP(P1, P2: T3DCoordinate): TFloatType;        // calculates the squared distance between two points
-function Subtract(AVec1, AVec2: T3DCoordinate): T3DCoordinate;    // subtract two vectors
+function SquaredDistPP(P1, P2: T3DVector): TFloatType;        // calculates the squared distance between two points
 function FloatToDec(Value: TFloatType; Maxlength: integer): string; // Convert a floatingpoint to a string value with a max. number of specified decimals All trailing zeros will be removed
-function UnifiedNormal(P1, P2, P3: T3DCoordinate): T3DCoordinate; // calculate the normal of a plane defined by points P1,P2,P3 and scale to unit-length
-function UnitVector(P: T3DCoordinate): T3DCoordinate;             // Scale a vector sucht that it's length is 1.0
-function VectorLength(Normal: T3DCoordinate): TFloatType;         // Calculate the length of a vector
+function UnifiedNormal(P1, P2, P3: T3DVector): T3DVector; // calculate the normal of a plane defined by points P1,P2,P3 and scale to unit-length
+function UnitVector(P: T3DVector): T3DVector;             // Scale a vector sucht that it's length is 1.0
+function VectorLength(Normal: T3DVector): TFloatType;         // Calculate the length of a vector
 function VolStr(Units: TFreeUnitType): string;                    // Returns a string value with the volume units
 function DensStr(Units: TFreeUnitType): string;                   // Returns a string value with the density units
 function ViscStr(Units: TFreeUnitType): string;                   // Returns a string value with the viscosity units

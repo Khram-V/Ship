@@ -10,7 +10,7 @@ begin
   FRowCapacity:=Row;
 end;
 
-function TFreeNURBSurface.FGetpoint(Col, Row: integer): T3DCoordinate;
+function TFreeNURBSurface.FGetpoint(Col, Row: integer): T3DVector;
 begin
   Result:=FControlPoints[Row][Col];
 end;
@@ -122,7 +122,7 @@ begin
   end;
 end;
 
-procedure TFreeNURBSurface.FSetPoint(Col, Row: integer; Val: T3DCoordinate);
+procedure TFreeNURBSurface.FSetPoint(Col, Row: integer; Val: T3DVector);
 begin
   if (Col > ColCapacity) and (Row > RowCapacity) then
     SetCapacity(Col, Row)
@@ -167,7 +167,7 @@ var
 begin
   for I:=1 to Rowcount do begin
     Move(FControlpoints[I-1][Col+1], FControlpoints[I-1][Col],
-      (Colcount-Col-1) * SizeOf(T3DCoordinate));
+      (Colcount-Col-1) * SizeOf(T3DVector));
   end;
   Dec(ColCount);
   Built:=False;
@@ -178,7 +178,7 @@ var
   I: integer;
 begin
   for I:=Row+1 to Rowcount-1 do
-    Move(FControlpoints[I][0], FControlpoints[I-1][0], (Colcount) * SizeOf(T3DCoordinate));
+    Move(FControlpoints[I][0], FControlpoints[I-1][0], (Colcount) * SizeOf(T3DVector));
   Dec(RowCount);
   Built:=False;
 end;
@@ -259,7 +259,7 @@ begin
       I1:=I-1;
       setlength(FControlpoints[I1],Colcount+1);
       Move(Newpoints[I1][0], FControlpoints[I1][0],
-        (Colcount+1) * SizeOf(T3DCoordinate));
+        (Colcount+1) * SizeOf(T3DVector));
     end;
     // create new knotvector
     X:=length(FColknots);
@@ -345,7 +345,7 @@ begin
     for I:=0 to Rowcount do
     begin
       setlength(FControlpoints[I],Colcount);
-      Move(Newpoints[I][0], FControlpoints[I][0], (Colcount) * SizeOf(T3DCoordinate));
+      Move(Newpoints[I][0], FControlpoints[I][0], (Colcount) * SizeOf(T3DVector));
     end;
     // create the new new knotvector
     X:=length(FRowknots);

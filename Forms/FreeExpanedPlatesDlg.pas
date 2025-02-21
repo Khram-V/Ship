@@ -114,7 +114,7 @@ type                                               { TFreeExpanedplatesDialog }
     procedure FloatSpinEdit3Change(Sender: TObject);
     procedure ListBoxClickCheck(Sender: TObject);
     procedure SpinEditFontSizeChange(Sender: TObject);
-    procedure ViewportRequestExtents(Sender: TObject; var Min, Max: T3DCoordinate);
+    procedure ViewportRequestExtents(Sender: TObject; var Min, Max: T3DVector);
     procedure ViewportRedraw(Sender: TObject);
     procedure ViewportMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
@@ -260,9 +260,9 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.ViewportRequestExtents(Sender: TObject;
-  var Min, Max: T3DCoordinate);
+  var Min, Max: T3DVector);
 var
-  FMin, FMax: T3DCoordinate;
+  FMin, FMax: T3DVector;
   I, N: integer;
   Patch: TFreeDevelopedPatch;
 begin
@@ -287,8 +287,8 @@ function TFreeExpanedplatesDialog.Execute
 var
   I: integer;
   Patch: TFreeDevelopedPatch;
-  Min, Max: T3DCoordinate;
-  MinT, MaxT: T3DCoordinate;
+  Min, Max: T3DVector;
+  MinT, MaxT: T3DVector;
   P2D: T2DCoordinate;
   Clearance: TFloatType;
   Tmp: TFloatType;
@@ -377,7 +377,7 @@ var
   I, N: integer;
   Patch: TFreeDevelopedPatch;
   X, Y: TFloatType;
-  P: T3DCoordinate;
+  P: T3DVector;
   Pt1, Pt2: TPoint;
   Space: TFloatType;
   Suppress: boolean;

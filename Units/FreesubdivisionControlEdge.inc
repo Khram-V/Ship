@@ -320,10 +320,10 @@ begin
 end;
 
 function TFreesubdivisionControlEdge.DistanceToCursor(X, Y: integer;
-  var P: T3DCoordinate; Viewport: TFreeViewport): integer;
+  var P: T3DVector; Viewport: TFreeViewport): integer;
 var
   Pt, Pt1, Pt2: TPoint;
-  P1, P2, M: T3DCoordinate;
+  P1, P2, M: T3DVector;
   Param: TFloatType;
   Tmp: integer;
 begin                    // Check if cursor position lies within the boundaries
@@ -380,7 +380,7 @@ end;{TFreesubdivisionControlEdge.DistanceToCursor}
 
 procedure TFreesubdivisionControlEdge.Draw(DrawMirror: boolean; Viewport: TFreeViewport);
 var
-  P1,P2,M: T3DCoordinate;
+  P1,P2,M: T3DVector;
   Pt1,Pt2: TPoint;
 begin
   if Visible then begin
@@ -443,7 +443,7 @@ begin
 end;
 
 function TFreesubdivisionControlEdge.InsertControlPoint
-     ( P: T3DCoordinate ): TFreeSubdivisionControlpoint;
+     ( P: T3DVector ): TFreeSubdivisionControlpoint;
 var
   I,I1,I2: integer;
   Face : TFreeSubdivisionFace;

@@ -49,7 +49,7 @@ private
     procedure Add(words: TStrings);            overload; virtual;
 //  procedure Add(WordValue:word);             overload;virtual;
     procedure Add(Version: TFreeFileVersion);  overload; virtual;
-    procedure Add(Coordinate: T3DCoordinate);  overload; virtual;
+    procedure Add(Coordinate: T3DVector);  overload; virtual;
     procedure Add(NameData: TNameData);        overload; virtual;
     procedure Add(AnchorData: TAnchorData);    overload; virtual;
     procedure Add(LCData:TLinearConstraintData); overload; virtual;
@@ -70,7 +70,7 @@ private
     procedure LoadTAnchorData(var AnchorData: TAnchorData); virtual;
     procedure LoadTLinearConstraintData(var LCData: TLinearConstraintData); virtual;
     procedure LoadTFloatType(var Output: TFloatType); virtual;
-    procedure LoadT3DCoordinate(var Output: T3DCoordinate); virtual;
+    procedure LoadT3DVector(var Output: T3DVector); virtual;
     procedure LoadT3DPlane(var Output: T3DPlane); virtual;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); virtual;
     procedure LoadTFreeKAPERResistanceData(var Data: TFreeKAPERResistanceData); virtual;
@@ -110,7 +110,7 @@ private
     procedure Add(PVersion: TFreeFileVersion); override; overload;
     procedure Add(NameData: TNameData); override; overload;
     procedure Add(LCData: TLinearConstraintData); override; overload;
-    procedure Add(Coordinate: T3DCoordinate); override; overload;
+    procedure Add(Coordinate: T3DVector); override; overload;
     procedure Add(Plane: T3DPlane); override; overload;
 //  procedure Add(const source;Size:Integer);     override;
     procedure Add(JPegImage: TJPEGImage); override; overload;
@@ -125,7 +125,7 @@ private
     procedure LoadTNameData(var Output: TNameData); override;
     procedure LoadTLinearConstraintData(var Output: TLinearConstraintData); override;
 //  procedure LoadTFreeMHSeriesResistanceData(var Output: TColor); override;
-    procedure LoadT3DCoordinate(var Output: T3DCoordinate); override;
+    procedure LoadT3DVector(var Output: T3DVector); override;
     procedure LoadT3DPlane(var Output: T3DPlane); override;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); override;
 //  procedure LoadTFreeMHSeriesResistanceData(var Dest;Size:Integer); override;
@@ -207,7 +207,7 @@ begin
   Inc(FCount, Size);
 end;
 
-procedure TFreeFileBuffer.Add(Coordinate: T3DCoordinate);
+procedure TFreeFileBuffer.Add(Coordinate: T3DVector);
 var
   Size: integer;
 begin
@@ -470,7 +470,7 @@ begin
   Inc(FPosition, Size);
 end;
 
-procedure TFreeFileBuffer.LoadT3DCoordinate(var Output: T3DCoordinate);
+procedure TFreeFileBuffer.LoadT3DVector(var Output: T3DVector);
 var
   Size: integer;
 begin
@@ -695,7 +695,7 @@ begin
   Inc(FPosition);
 end;
 
-procedure TFreeTextBuffer.Add( Coordinate: T3DCoordinate );
+procedure TFreeTextBuffer.Add( Coordinate: T3DVector );
 var S: AnsiString;
 begin
   S:=FloatTypeToStr( Coordinate.X )+' '
@@ -845,7 +845,7 @@ begin
   Inc( FPosition );
 end;
 
-procedure TFreeTextBuffer.LoadT3DCoordinate(var Output: T3DCoordinate);
+procedure TFreeTextBuffer.LoadT3DVector(var Output: T3DVector);
 var S: AnsiString;
 begin
   S:=FLines[FPosition];

@@ -142,13 +142,13 @@ private
   FCapacity: integer;
   FCount: integer;
   FFaceSets: TFasterListTVRML2IndexedFaceSet;
-  FCoordinates: array of T3DCoordinate;
+  FCoordinates: array of T3DVector;
 //FPrecision: double;
   function FGetNumberOfFacesets: integer;
-  function FGetPoint(Index: integer): T3DCoordinate;
+  function FGetPoint(Index: integer): T3DVector;
   procedure FSetCapacity(val: integer);
 public
-  procedure Add(P: T3DCoordinate);
+  procedure Add(P: T3DVector);
   procedure AddFaceSet(FaceSet: TVRML2IndexedFaceSet);
   procedure Clear; override;
   constructor Create(Scene: TVRML2Scene; Parent:TVRML2Object); override;
@@ -158,7 +158,7 @@ public
   property Count: integer read FCount;
   property Capacity: integer read FCapacity write FSetCapacity;
   property NumberOfFaceSets: integer read FGetNumberOfFacesets;
-  property Point[index: integer]: T3DCoordinate read FGetPoint;
+  property Point[index: integer]: T3DVector read FGetPoint;
 //property Precision: double read FPrecision;
 end;
 
@@ -583,7 +583,7 @@ procedure TVRML2Group.Load;
 var
   token:TToken;
   word,ObjectName: string;
-  coord: T3DCoordinate;
+  coord: T3DVector;
   child: TVRML2Object;
 begin
   word:=FScene.LoadId(token);
@@ -662,7 +662,7 @@ procedure TVRML2Transform.Load;
 var
   token:TToken;
   word,ObjectName: string;
-  coord: T3DCoordinate;
+  coord: T3DVector;
   child: TVRML2Object;
 begin
   word:=FScene.LoadId(token);
@@ -875,7 +875,7 @@ procedure TVRML2Shape.Load;
 var
   token: TToken;
   word, ObjectName: string;
-  coord: T3DCoordinate;
+  coord: T3DVector;
   VRMLObject: TVRML2Object;
 begin
   word:=FScene.LoadId(token);
@@ -913,7 +913,7 @@ end;
 function TVRML2Coordinates.FGetNumberOfFacesets: integer;
    begin Result:=FFaceSets.Count; end;
 
-function TVRML2Coordinates.FGetPoint(Index: integer): T3DCoordinate;
+function TVRML2Coordinates.FGetPoint(Index: integer): T3DVector;
 begin
   if (Index >= 0) and (Index < FCount) then Result:=FCoordinates[index]
   else begin Result:=ZERO;
@@ -928,7 +928,7 @@ begin
   if FCapacity < FCount then FCount:=FCapacity;
 end;
 
-procedure TVRML2Coordinates.Add(P: T3DCoordinate);
+procedure TVRML2Coordinates.Add(P: T3DVector);
 begin
   if FCount >= FCapacity then Capacity:=Count+25; Inc(FCount);
   FCoordinates[FCount-1]:=P;
@@ -956,7 +956,7 @@ procedure TVRML2Coordinates.Load;
 var
   token, tokenX, tokenY, tokenZ:TToken;
   word, ObjectName: string;
-  coord: T3DCoordinate;
+  coord: T3DVector;
 {
   procedure detectPrecision(D:string);
   var i:integer; dc, code:integer; ss:string;
@@ -1096,7 +1096,7 @@ procedure TVRML2Scene.Import
   SubdivisionSurface: TFreeSubdivisionSurface );
  var
       VRMLScene: TVRML2Scene;
-      I,J,K,N,FS, Index: integer; V3Point: T3DCoordinate;
+      I,J,K,N,FS, Index: integer; V3Point: T3DVector;
       IndexedFaceSets: TFasterListTVRML2IndexedFaceSet;
       CoordInfo: TVRML2Coordinates;
       FaceInfo: TVRML2IndexedFaceSet;
@@ -1107,7 +1107,7 @@ procedure TVRML2Scene.Import
       CtrPoint: TFreeSubdivisionControlPoint;
       VRMLVersion: String;
 
-  function AddedCtrlPtsIndexOf(V3Point: T3DCoordinate): Integer;
+  function AddedCtrlPtsIndexOf(V3Point: T3DVector): Integer;
     var I: integer;
   begin Result:=-1; for i:=0 to AddedCtrlPts.Count-1 do
                       if V3Point = AddedCtrlPts[i].Point[i]

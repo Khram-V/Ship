@@ -58,10 +58,10 @@ begin
   Destroy;
 end;
 
-function TFreeSubdivisionControlPointGroup.CalculateCenterPoint: T3DCoordinate;
+function TFreeSubdivisionControlPointGroup.CalculateCenterPoint: T3DVector;
 var
   I,C: integer;
-  P,Centre: T3DCoordinate;
+  P,Centre: T3DVector;
 begin
   Result:=ZERO;
   Centre:=ZERO;
@@ -84,7 +84,7 @@ var
   MFL: TFloatType;
   P, PA,PB: TPoint;
   Pz: TShadePoint;
-  P3D: T3DCoordinate;
+  P3D: T3DVector;
 begin
   if Viewport.ViewportMode = vmWireframe then begin
     if ( Name>'' ) then begin

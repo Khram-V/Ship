@@ -630,7 +630,7 @@ end;
 procedure TFreeIntersectionDialog.AddRangeExecute(Sender: TObject);
 var
   Str: ansistring;
-  Min, Max: T3DCoordinate;
+  Min, Max: T3DVector;
   Start, Stop: TFloatType;
   Step: TFloatType;
   Index: integer;

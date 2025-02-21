@@ -815,7 +815,7 @@ type
       var Handled: Boolean);
     procedure TrackBarHorizontalCompressionChange(Sender: TObject);
     procedure ViewportRequestExtents(Sender: TObject;
-      var Min, Max: T3DCoordinate);
+      var Min, Max: T3DVector);
     procedure ViewportRedraw(Sender: TObject);
     procedure ViewportRedraw2(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
@@ -844,7 +844,7 @@ type
     GeomAspectRatio: TFloatType;
     EffAspectRatio: TFloatType;
     Volume: TFloatType;
-    VolCOG: T3DCoordinate;
+    VolCOG: T3DVector;
     WettedArea: TFloatType;
     fDragBegin: TPoint;
     fMouseDownLoc: TPoint;
@@ -862,7 +862,7 @@ type
     procedure createViewport();
   public    { Public declarations }
     str: array [0..9] of string;
-    Mesh: array of array of T3DCoordinate;
+    Mesh: array of array of T3DVector;
     function Execute(Freeship: TFreeShip): boolean;
     procedure SendToSurface(
       Surface: TFreeSubdivisionsurface);
@@ -909,9 +909,9 @@ var
   L, a, b: TFloatType;
   I, J, Index, N: integer;
   VertInd, HorInd: double;
-  P,P0: T3DCoordinate;
-  P_1, P_2: T3DCoordinate;
-  P_3, P_4: T3DCoordinate;
+  P,P0: T3DVector;
+  P_1, P_2: T3DVector;
+  P_3, P_4: T3DVector;
   RootChordLength,TipChordLength,DeltaTip,Span,VCompression,HCompression: TFloatType;
   VpointsNum,HpointsNum: integer;
   Angle: TFloatType;
@@ -933,11 +933,11 @@ var
   // End Victor T correction
   Pn1,Pn2: integer;
 
-  procedure ProcessTriangle(P1, P2, P3: T3DCoordinate);
+  procedure ProcessTriangle(P1, P2, P3: T3DVector);
   var
-    VolumeMoment: T3DCoordinate;
+    VolumeMoment: T3DVector;
     Vol: TFloatType;
-    Center: T3DCoordinate;
+    Center: T3DVector;
     ax, ay, az: TFloatType;
   begin
     Center.X:=(P1.X+P2.X+P3.X) / 3;
@@ -989,7 +989,7 @@ var
       // Calculate planform area
   procedure calculate_planform_area;
   var i:integer;
-    VPs: array of T3DCoordinate;
+    VPs: array of T3DVector;
   begin
     if Span <> 0.0 then
     begin
@@ -1334,7 +1334,7 @@ begin
     GeomAspectRatio:=0.0;
     EffAspectRatio:=0.0;
     Volume:=0.0;
-    Fillchar(VolCOG, SizeOf(T3DCoordinate), 0);
+    Fillchar(VolCOG, SizeOf(T3DVector), 0);
     WettedArea:=0.0;
 
     calculate_volume_CB_WA; // calculate volume, center of bouyancy and wetted area
@@ -1640,7 +1640,7 @@ begin
     OnRequestExtents:=ViewportRequestExtents;
     PopupMenu:=PopupMenu1;
     VpLight:=Light;
-    VpLight.Position:=Point3D(-180,180,180);
+    VpLight.Position:=SetPoint(-180,180,180);
     Light:=VpLight;
   end;
 end;
@@ -1853,10 +1853,10 @@ begin
 end;
 
 procedure TFreeKeelWizardDialog.ViewportRequestExtents(Sender: TObject;
-  var Min, Max: T3DCoordinate);
+  var Min, Max: T3DVector);
 var
   I, J: integer;
-  P: T3DCoordinate;
+  P: T3DVector;
 begin
   if FProfile <> nil then
     if FProfile.NumberOfPoints > 1 then
@@ -1880,7 +1880,7 @@ end;{TFreeKeelWizardDialog.ViewportRequestExtents}
 
 procedure TFreeKeelWizardDialog.ViewportRedraw(Sender: TObject);
 
-  procedure DrawPoint(P: T3DCoordinate; Text: string);
+  procedure DrawPoint(P: T3DVector; Text: string);
   var
     Pt: TPoint;
     Size: integer;
@@ -1923,8 +1923,8 @@ procedure TFreeKeelWizardDialog.ViewportRedraw(Sender: TObject);
 var
   P:TPoint;
   Pts: array of TPoint;
-  P1, P2: T3DCoordinate;
-  P3, P4: T3DCoordinate;
+  P1, P2: T3DVector;
+  P3, P4: T3DVector;
   I, J, Rn, C: integer;
   Pts100: array [0..99] of TPoint;
   dy, dz, wng: extended;
@@ -2120,7 +2120,7 @@ var
   P: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionedge;
   Layer: TFreeSubdivisionLayer;
-  P3D: T3DCoordinate;
+  P3D: T3DVector;
   Str: string;
   PrevCursor: TCursor;
 

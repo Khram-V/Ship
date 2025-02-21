@@ -51,27 +51,19 @@ begin
   end;
 end;
 
-procedure TFreeProjectSettings.FSetProjectBeam(Val: TFloatType);
+procedure TFreeProjectSettings.FSetProjectBeam( Val: TFloatType );
 begin
-  if abs( Val-FProjectBeam )>1e-7 then begin FProjectBeam:=Val;
-    FMainparticularsHasBeenset:=True; FreeShip.FileChanged:=True;
-  end;
+  if Val<0.001 then Val:=1; FProjectBeam:=Val; FreeShip.FileChanged:=True;
 end;
 
 procedure TFreeProjectSettings.FSetProjectDraft(Val: TFloatType);
-var I: integer;
 begin
-  if abs( Val-FProjectDraft )>1e-7 then begin FProjectDraft:=Val;
-    FMainparticularsHasBeenset:=True; FreeShip.FileChanged:=True;
-    for I:=0 to FreeShip.NumberOfFlowLines-1 do FreeShip.Flowline[I].Build:=False;
-  end;
+  if Val<0.001 then Val:=1; FProjectDraft:=Val; FreeShip.FileChanged:=True;
 end;
 
 procedure TFreeProjectSettings.FSetProjectLength(Val: TFloatType);
 begin
-  if abs( Val-FProjectLength )>1e-7 then begin FProjectLength:=Val;
-    FMainparticularsHasBeenset:=True; FreeShip.FileChanged:=True;
-  end;
+  if Val<0.001 then Val:=1; FProjectLength:=Val; FreeShip.FileChanged:=True;
 end;
 
 procedure TFreeProjectSettings.FSetProjectSplitSectionLocation(val: TFloatType);
@@ -161,7 +153,7 @@ end;
 procedure TFreeProjectSettings.FSetProjectUnits(Val: TFreeUnitType);
 var
   UnitConversionFactor: double;
-  ScaleVector: T3DCoordinate;
+  ScaleVector: T3DVector;
   WeightFactor: TFloatType;
   ThicknessFactor: TFloatType;
   I: integer;
@@ -204,7 +196,7 @@ begin
   FProjectWaterTemper:=15.;
   FProjectAppendageCoefficient:=1.0;
   // Default 1.0, typical values for ships to cpmpensate for appendices and shellplate = 1.0005;
-  FMainparticularsHasBeenset:=False;
+//FMainparticularsHasBeenset:=False;
   FProjectShadeUnderwaterShip:=True;
   // Shades the underwaterpart of the hull in a different color
   ProjectUnderWaterColor:=FreeShip.Preferences.UnderWaterColor;
@@ -339,7 +331,8 @@ end;
 
 procedure TFreeProjectSettings.LoadBinary(Source: TFreeFilebuffer; Image: TJPegImage);
 var
-  I:integer; Jpg:TJPEGImage; FEnableBonjeanSAC:boolean; // == отменён
+  I:integer; Jpg:TJPEGImage;
+  FEnableBonjeanSAC,MainparticularsHasBeenset: boolean; // == отменён
 begin
   Clear;
   Source.LoadString(FProjectName);
@@ -347,7 +340,7 @@ begin
   Source.LoadTFloatType(FProjectlength);
   Source.LoadTFloatType(FProjectBeam);
   Source.LoadTFloatType(FProjectDraft);
-  Source.LoadBoolean(FMainparticularsHasBeenset);
+  Source.LoadBoolean(MainparticularsHasBeenset);
   Source.LoadTFloatType(FProjectWaterDensity);
   //   Source.LoadTFloatType(FProjectWaterTemper);
   Source.LoadTFloatType(FProjectAppendageCoefficient);
@@ -418,7 +411,7 @@ begin
     Destination.Add(FProjectlength);
     Destination.Add(FProjectBeam);
     Destination.Add(FProjectDraft);
-    Destination.Add(FMainparticularsHasBeenset);
+    Destination.Add(true);      // Destination.Add(FMainparticularsHasBeenset);
     Destination.Add(FProjectWaterDensity); // Destination.Add(FProjectWaterTemper);
     Destination.Add(FProjectAppendageCoefficient);
     Destination.Add(FProjectShadeUnderwaterShip);
