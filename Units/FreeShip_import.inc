@@ -399,29 +399,20 @@ begin
       for I:=1 to Frames.Count do
       begin
         for J:=1 to NoPoints do
-          if abs(ControlPoints[I-1][J-1].Coordinate.Z -
-            MinMaxData[I-1].MinZ) < 1e-7 then
-          begin
+          if abs(ControlPoints[I-1][J-1].Coordinate.Z-MinMaxData[I-1].MinZ)<1e-7
+          then begin
             P2:=ControlPoints[I-1][J-1];
-            if P2.Coordinate.Y <> 0.0 then
-            begin
-              // Force point to centerplane
+            if P2.Coordinate.Y <> 0.0 then begin  // Force point to centerplane
               P:=P2.Coordinate;
               P.Y:=0;
               P2.Coordinate:=P;
             end;
             break;
-          end
-          else
-            Points.Add(ControlPoints[I-1][J-1]);// store to be deleted later
-        if (P1 <> nil) and (P2 <> nil) then
-        begin
+          end else Points.Add(ControlPoints[I-1][J-1]); // store to be deleted later
+        if (P1 <> nil) and (P2 <> nil) then begin
           Edge:=FreeShip.Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-          if Edge <> nil then
-            Edge.Crease:=True
-          else
-          begin
-            // Find out if P1 and P2 share the same controlface
+          if Edge <> nil then Edge.Crease:=True
+          else begin // Find out if P1 and P2 share the same controlface
             for J:=1 to P1.NumberOfFaces do
               if P2.IndexOfFace(P1.Face[J-1]) <> -1 then
               begin
@@ -440,36 +431,25 @@ begin
       // Try to reconnect the deckline
       P1:=nil;
       P2:=nil;
-      for I:=1 to Frames.Count do
-      begin
+      for I:=1 to Frames.Count do begin
         for J:=1 to NoPoints do
-          if abs(ControlPoints[I-1][J-1].Coordinate.Z -
-            MinMaxData[I-1].MaxZ) < 1e-7 then
-          begin
-            P2:=ControlPoints[I-1][J-1];
+          if abs(ControlPoints[I-1][J-1].Coordinate.Z-MinMaxData[I-1].MaxZ)<1e-7
+          then begin P2:=ControlPoints[I-1][J-1];
             K:=J+1;
-            while K <= NoPoints do
-            begin
-              Points.Add(ControlPoints[I-1][K-1]);
-              Inc(K);
+            while K <= NoPoints do begin
+              Points.Add(ControlPoints[I-1][K-1]); Inc(K);
             end;
             break;
           end;
-        if (P1 <> nil) and (P2 <> nil) then
-        begin
+        if (P1 <> nil) and (P2 <> nil) then begin
           Edge:=FreeShip.Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-          if Edge <> nil then
-            Edge.Crease:=True
-          else
-          begin
-            // Find out if P1 and P2 share the same controlface
+          if Edge <> nil then Edge.Crease:=True
+          else begin        // Find out if P1 and P2 share the same controlface
             for J:=1 to P1.NumberOfFaces do
-              if P2.IndexOfFace(P1.Face[J-1]) <> -1 then
-              begin
+              if P2.IndexOfFace(P1.Face[J-1]) <> -1 then begin
                 Face:=P1.Face[J-1] as TFreeSubdivisionControlFace;
                 Edge:=Face.InsertEdge(P1, P2, IsFaceDeleted);
-                if Edge <> nil then
-                  Edge.Crease:=True;
+                if Edge <> nil then Edge.Crease:=True;
               end;
             DelayedDestroyList.DestroyAll;
           end;
@@ -478,11 +458,9 @@ begin
         P2:=nil;
       end;
       // Delete all controlpoints beneath the contourline and above the deckline
-      for J:=1 to Points.Count do
-      begin
+      for J:=1 to Points.Count do begin
         P1:=Points[J-1];
-        if FreeShip.Surface.PointExists(P1) then
-          P1.Delete;
+        if FreeShip.Surface.PointExists(P1) then P1.Delete;
       end;
       for I:=1 to FreeShip.Surface.NumberOfControlPoints do
         if FreeShip.Surface.ControlPoint[I-1].NumberOfFaces = 1 then
@@ -491,11 +469,10 @@ begin
       FreeShip.FileChanged:=True;
     end;
     FreeShip.Draw;
-    if Assigned(FreeShip.OnUpdateGeometryInfo) then
-      FreeShip.OnUpdateGeometryInfo(self);
+    if Assigned(FreeShip.OnUpdateGeometryInfo)
+           then FreeShip.OnUpdateGeometryInfo( self );
     // Destroy allocated stations
-    for I:=1 to Frames.Count do
-    begin
+    for I:=1 to Frames.Count do begin
       Spline:=Frames[I-1];
       FreeAndNil(Spline);
     end;
@@ -507,29 +484,25 @@ end;{TFreeEdit.ImportFrames}
 // imports a number of longitudinally lines and creates developable surfaces
 // between each two subsequent chines
 //
-procedure TFreeShip.ImportChines(Np: integer;
-  Chines: TFasterListTFreeSpline);
+procedure TFreeShip.ImportChines
+( Np: integer; Chines: TFasterListTFreeSpline );
 var
   I, J: integer;
   P, Min, Max: T3DVector;
-  Pts, Pts2: TFasterListTFreeSubdivisionControlPoint;
-  Tmp: TFasterListTFreeSubdivisionControlPoint;
+  Pts,Pts2,Tmp: TFasterListTFreeSubdivisionControlPoint;
   Points: array of array of TFreeSubdivisionControlPoint;
   Point: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
   vLayer: TFreeSubdivisionLayer;
   Spline: TFreeSpline;
   vMarker: TFreeMarker;
-  Matrix: TFreeMatrix;
-  Inv: TFreeMatrix;
-  OrgPts: TFreeMatrix;
-  NewPts: TFreeMatrix;
+  Matrix,Inv,OrgPts,NewPts: TFreeMatrix;
   Curve: TFreeSubdivisionControlCurve;
 begin
 //  try
     for I:=1 to Chines.Count-1 do begin
       if I <= Surface.NumberOfLayers then vLayer:=Surface.Layer[I-1]
-                                      else vLayer:=Surface.AddNewLayer;
+                                     else vLayer:=Surface.AddNewLayer;
       vLayer.Name:=Userstring(186)+#32+IntToStr(I);
       vLayer.Developable:=True;
     end;
@@ -544,16 +517,16 @@ begin
     Matrix.Fill(0.0);
     Matrix.Value[0, 0]:=1.0;
     for I:=2 to Np-1 do begin
-      Matrix.Value[I-1, I-2]:=1 / 6;
-      Matrix.Value[I-1, I-1]:=2 / 3;
-      Matrix.Value[I-1, I]:=1 / 6;
+      Matrix.Value[I-1,I-2]:=1 / 6;
+      Matrix.Value[I-1,I-1]:=2 / 3;
+      Matrix.Value[I-1,I]:=1 / 6;
     end;
     Matrix.Value[Np-1, Np-1]:=1.0;                 // Invert matrix
     Inv:=Matrix.Invert;
     FreeAndNil(Matrix);
 
     OrgPts:=TFreeMatrix.Create;
-    OrgPts.SetSize(3, Np);
+    OrgPts.SetSize( 3,Np );
 
     for I:=1 to Np do Setlength(Points[I-1], Chines.Count);
     for I:=1 to Chines.Count do begin

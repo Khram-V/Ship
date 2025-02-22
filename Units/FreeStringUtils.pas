@@ -1,10 +1,8 @@
 
 unit FreeStringUtils;
-
 {$mode delphi}
 
 interface
-
 uses
   SysUtils, LazUTF8;
 
@@ -14,53 +12,53 @@ resourcestring
   rsImageFiles = 'Image files';
   rsBitmapFiles = 'Bitmap files';
 
-function Len(s: string): PtrInt;
-function Pos(const SearchForText, SearchInText: string): PtrInt; inline;
-function Copy(const s: string; StartCharIndex, CharCount: PtrInt): string; inline;
-procedure Delete(var s: String; StartCharIndex, CharCount: PtrInt); inline;
-procedure Insert(const source: String; var s: string; StartCharIndex: PtrInt); inline;
+function Len(s: AnsiString): PtrInt;
+function Pos(const SearchForText, SearchInText: AnsiString): PtrInt; inline;
+function Copy(const s: AnsiString; StartCharIndex, CharCount: PtrInt): AnsiString; inline;
+procedure Delete(var s: AnsiString; StartCharIndex, CharCount: PtrInt); inline;
+procedure Insert(const source: AnsiString; var s: AnsiString; StartCharIndex: PtrInt); inline;
 
-function UpperCase(const s: string): string;
-function LowerCase(const s: string): string;
-Function ReplaceStr(const AText, AFromText, AToText: string): string;inline;
-Function ReplaceText(const AText, AFromText, AToText: string): string;inline;
+function UpperCase(const s: AnsiString): AnsiString;
+function LowerCase(const s: AnsiString): AnsiString;
+Function ReplaceStr(const AText, AFromText, AToText: AnsiString): AnsiString;inline;
+Function ReplaceText(const AText, AFromText, AToText: AnsiString): AnsiString;inline;
 
-function createDialogFilter(FilterName:string; extensions:array of string; NeedsAll:boolean=True): string;
+function createDialogFilter(FilterName:AnsiString; extensions:array of AnsiString; NeedsAll:boolean=True): AnsiString;
 implementation
 
-function Len(s: string): PtrInt; begin result:=UTF8Length(s); end;
+function Len(s: AnsiString): PtrInt; begin result:=UTF8Length(s); end;
 
-function Pos(const SearchForText, SearchInText: string): PtrInt; inline;
+function Pos(const SearchForText, SearchInText: AnsiString): PtrInt; inline;
 begin result:=UTF8Pos(SearchForText, SearchInText); end;
 
-function Copy(const s: string; StartCharIndex, CharCount: PtrInt): string; inline;
+function Copy(const s: AnsiString; StartCharIndex, CharCount: PtrInt): AnsiString; inline;
 begin result:=UTF8Copy(s, StartCharIndex, CharCount); end;
 
-procedure Delete(var s: String; StartCharIndex, CharCount: PtrInt); inline;
+procedure Delete(var s: AnsiString; StartCharIndex, CharCount: PtrInt); inline;
 begin UTF8Delete(s, StartCharIndex, CharCount); end;
 
-procedure Insert(const source: String; var s: string; StartCharIndex: PtrInt); inline;
+procedure Insert(const source: AnsiString; var s: AnsiString; StartCharIndex: PtrInt); inline;
 begin UTF8Insert(source, s, StartCharIndex); end;
 
-function UpperCase(const s: string): string;
+function UpperCase(const s: AnsiString): AnsiString;
 begin result:=UTF8UpperCase(s); end;
 
-function LowerCase(const s: string): string;
+function LowerCase(const s: AnsiString): AnsiString;
 begin result:=UTF8LowerCase(s); end;
 
-Function ReplaceStr(const AText, AFromText, AToText: string): string;inline;
+Function ReplaceStr(const AText, AFromText, AToText: AnsiString): AnsiString;inline;
 begin result:=UTF8StringReplace(AText, AFromText, AToText, [rfReplaceAll]);
 end;
 
-Function ReplaceText(const AText, AFromText, AToText: string): string;inline;
+Function ReplaceText(const AText, AFromText, AToText: AnsiString): AnsiString;inline;
 begin result:=UTF8StringReplace(AText, AFromText, AToText, [rfReplaceAll]);
 end;
 
 // creates dialog filter for Windows (case insensitive) or GTK (case sensitive)
-function createDialogFilter(FilterName: string; extensions: array of string;
-                            NeedsAll: boolean = True): string;
-var i:integer; ext, fltr: string;
-  function makeGTKfilter(ext:string):string;
+function createDialogFilter(FilterName: AnsiString; extensions: array of AnsiString;
+                            NeedsAll: boolean = True): AnsiString;
+var i:integer; ext, fltr: AnsiString;
+  function makeGTKfilter(ext:AnsiString):AnsiString;
   var i:integer;
   begin Result:='';
     for i:=1 to length(ext) do Result+='['+uppercase(ext[i])+lowercase(ext[i])+']';
@@ -70,11 +68,7 @@ begin
   Result:=FilterName+' (';
   for i:=0 to length(extensions)-1 do begin
     ext += '*.'+extensions[i]+';';
-    {$IF defined(LCLGtk2) or defined(LCLGtk3)}
-    fltr += '*.'+makeGTKfilter(extensions[i])+';';
-    {$ELSE}
     fltr += '*.'+extensions[i]+';';
-    {$ENDIF}
   end;
   ext:=LeftStr(ext, length(ext)-1);
   fltr:=LeftStr(fltr, length(fltr)-1);

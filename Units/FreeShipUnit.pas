@@ -27,7 +27,7 @@ const
   FreeShipExtention='.ftm'; // Default extention for hull model files
   SelectDistance = 3;       // Max. distance in pixels between an item and the cursor in order to be selected
 //Threshold = 3;            // The distance that the cursor has to be moved before a controlpoint starts moving
-  FontheightFactor = 140;   // used for calculating fontheight
+//FontheightFactor = 140;   // used for calculating fontheight
 
 resourcestring
   rsPointMove = 'point move';
@@ -1110,8 +1110,8 @@ uses Math,
   FreeHydrostaticsFrm,
   FreePreferencesDlg,
   FreeExpanedPlatesDlg,
-  FreeLinesplanFrm,
-  FreeLinesplanFrme,
+  FreeLinesplanForm,
+  FreeLinesplanFrame,
   FreeInsertPlaneDlg,
   FreeMichletOutputDlg,
   FreeSelectLayersDlg,

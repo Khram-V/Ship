@@ -12,40 +12,31 @@ unit FreeLanguageSupport;
 {$ENDIF}
 
 interface
-
-uses
-{$IFnDEF FPC} Windows,
-{$ELSE} LCLType, {$ENDIF}
+uses LCLType,LazFileUtils,
      SysUtils,
      Classes,
      stdCtrls,
      typInfo,
      extCtrls,
      iniFiles,
-     FreeStringUtils,
-     LazFileUtils;
-
-// Skip translation
-
-type
-
-TLanguageIniFile = class( TMemIniFile )                    { TLanguageIniFile }
+     FreeStringUtils;
+type TLanguageIniFile = class( TMemIniFile )               { TLanguageIniFile }
 public
-  Name: string;
-  constructor Create( const AName: string;const AFileName:string );
+  Name: AnsiString;
+  constructor Create( const AName: AnsiString;const AFileName:AnsiString );
 end;
 
-var CurrentLanguage : TLanguageIniFile; // Global variable for current language
+var CurrentLanguage:TLanguageIniFile=nil; // Global variable for current language
 
 //user procs
-function LoadLanguage(aName:string; aFileName:string):TLanguageIniFile;overload;
+function LoadLanguage(aName:AnsiString; aFileName:AnsiString):TLanguageIniFile;overload;
 procedure ShowTranslatedValues( Component:TComponent );
-function UserString( Index:Integer ):String;
+function UserString( Index:Integer ):AnsiString;
 
 implementation
 
-function LoadLanguage( aName:string; aFileName:string ):TLanguageIniFile;
-var Filename:string;
+function LoadLanguage( aName:AnsiString; aFileName:AnsiString ):TLanguageIniFile;
+var Filename:AnsiString;
 begin
    if aName='' then exit;                // leave with default English language
    if FileExistsUTF8( aFilename ) then begin
@@ -55,12 +46,10 @@ begin
    Result:=CurrentLanguage;
 end;
 
-function UserString(Index:Integer):String;
-var Str,Section,val : string;
-    Key : string='User0000';
-    I,N : Integer;
-begin
-   Result:='';
+function UserString(Index:Integer):AnsiString;
+var Str,Section,Val : AnsiString;
+    Key : AnsiString='User0000'; // I,N: Integer;
+begin Result:='';
    if CurrentLanguage<>nil then begin Section:='User';
       Val:=IntToStr( Index );
       Key:=Copy( Key,1,8-len(Val) )+Val;
@@ -83,7 +72,7 @@ var I,J,Index : Integer;
     Str,Tmp   : TTranslateString;
 
 // Assign the value value to prop property of comp component
-    procedure setProp( comp:TComponent; {const }prop,value:string );
+    procedure setProp( comp:TComponent; {const }prop,value:AnsiString );
     var ppi:PPropInfo;
     begin if value<>'' then begin ppi:=getPropInfo( comp.classInfo,prop );
              if ppi<>nil then setStrProp(comp,ppi,value);
@@ -95,7 +84,7 @@ begin
    with CurrentLanguage do begin
       Str:=readString( Component.Classname,Component.Classname+'.Caption','' );
       if Str<>'' then setProp( Component,'Caption',Str );
-      for i:=0 to Component.componentCount-1 do begin comp:=Component.Components[i];
+      for I:=0 to Component.componentCount-1 do begin comp:=Component.Components[i];
          Str:=readString(Component.Classname,Component.Classname+'.'+comp.name+'.Caption','');
          if Str<>'' then setProp(comp,'Caption',Str);
          Str:=readString(Component.ClassName,Component.Classname+'.'+comp.name+'.Hint','');
@@ -131,14 +120,13 @@ end;
 
 { TLanguageIniFile }
 
-constructor TLanguageIniFile.Create(const AName: string; const AFileName: string);
+constructor TLanguageIniFile.Create(const AName: AnsiString; const AFileName: AnsiString);
 begin Name:=aName; inherited Create( AFileName,false ); end;
-
+{
 initialization
    CurrentLanguage:=nil;
-
 finalization
    if CurrentLanguage<>nil then CurrentLanguage.Free;
-
+}
 end.
 

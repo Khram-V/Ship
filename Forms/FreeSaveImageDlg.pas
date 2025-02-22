@@ -1,175 +1,93 @@
 
-
 unit FreeSaveImageDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
-{$IFnDEF FPC}
-  Windows,
-{$ELSE}
-  LCLIntf,
-{$ENDIF}
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
-  ExtCtrls, Spin,
-  FreeShipUnit,FreeLanguageSupport;
-
-type
-
-  { TSaveImageDialog }
-
-  TSaveImageDialog = class(TForm)
-    BitBtn1: TSpeedButton;
-    BitBtn2: TSpeedButton;
-    Edit3: TEdit;
-    FloatSpinEdit1: TFloatSpinEdit;
-    Label1: TLabel;
-    Label3: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Panel1: TPanel;
-    Panel2: TPanel;
-    Panel3: TPanel;
-    Label2: TLabel;
-    Label4: TLabel;
-    Panel4: TPanel;
-    SpinEdit1: TSpinEdit;
-    SpinEdit2: TSpinEdit;
-    Label7: TLabel;
-    SpeedButton1: TSpeedButton;
-    SaveDialog: TSaveDialog;
-    procedure FormCreate(Sender: TObject);
-    procedure SpinEdit1Change(Sender: TObject);
-    procedure SpinEdit2Change(Sender: TObject);
-    procedure SpeedButton1Click(Sender: TObject);
-    procedure BitBtn1Click(Sender: TObject);
-    procedure BitBtn2Click(Sender: TObject);
-    procedure SetImageSizes(W,H: integer);
+{$MODE Delphi}
+interface uses
+     Classes,   SysUtils,
+     Controls,  Forms,
+     ExtCtrls,  Dialogs,
+     StdCtrls,  Buttons;
+type TSaveImageDialog = class(TForm)
+     Edit1, Edit2, Edit3: TEdit;
+     Panel1,Panel2,Panel3: TPanel;
+     Label1,Label2,Label3,Label4,_Label5,Label6,Label7: TLabel;
+     SpeedButton1,BitBtn1,BitBtn2: TSpeedButton;
+     SaveDialog: TSaveDialog;
+     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
+     procedure Edit1Exit(Sender: TObject);
+     procedure Edit1KeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
+     procedure Edit2Exit(Sender: TObject);
+     procedure SpeedButton1Click(Sender: TObject);
+     procedure BitBtn1Click(Sender: TObject);
+     procedure BitBtn2Click(Sender: TObject);
   private   { Private declarations }
-    FRatio: single;
-    FIsInteractive : boolean;
-    function FGetFilename: string;
-    function FGetImageWidth: integer;
-    procedure FSetImageWidth(val: integer);
-    procedure FSetFilename(val: string);
-    function FGetImageHeight: integer;
-    procedure FSetImageHeight(val: integer);
+     FRatio : single;
+     function FGetFilename:AnsiString;
+     function FGetImageWidth:integer;
+     procedure FSetImageWidth(val:integer);
+     procedure FSetFilename(val:AnsiString);
+     function FGetImageHeight:integer;
+     procedure FSetImageHeight(val:integer);
   public    { Public declarations }
-    function Execute: boolean;
-    procedure SetImageSize;
-    property Filename: string
-      read FGetFilename write FSetFilename;
-    property ImageWidth: integer
-      read FGetImageWidth write FSetImageWidth;
-    property ImageHeight: integer
-      read FGetImageHeight write FSetImageHeight;
+     function Execute:Boolean;
+     procedure SetImageSize;
+     property FilenamePNG:AnsiString read FGetFilename write FSetFilename;
+     property ImageWidth:integer read FGetImageWidth write FSetImageWidth;
+     property ImageHeight:integer read FGetImageHeight write FSetImageHeight;
   end;
-
-var
-  SaveImageDialog: TSaveImageDialog;
+var SaveImageDialog:TSaveImageDialog;
 
 implementation
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 procedure TSaveImageDialog.SetImageSize;
-var
-  Size: single;
-begin
-  Size:=ImageWidth * ImageHeight * 3 / 1024;
-  if size > 1024 then begin
-    FloatSpinEdit1.Value:=Size / 1024; Label5.Caption:='MB';
-  end else begin
-    FloatSpinEdit1.Value:=Size / 1024; Label5.Caption:='KB';
-  end;
+  var Size: single;
+begin Size:=ImageWidth*ImageHeight*3/1024;
+   if size>1024 then _Label5.caption:=FloatToStrF(Size/1024,ffFixed,7,2)+' MB'
+                else _Label5.caption:=FloatToStrF(Size,ffFixed,7,0)+' KB'
 end;
-
-function TSaveImageDialog.FGetFilename: string;
-begin Result:=Edit3.Text; end;
-
-procedure TSaveImageDialog.FSetFilename(val: string);
-begin
-  Edit3.Text:=val;
+function TSaveImageDialog.FGetFilename:AnsiString;
+   begin Result:=Edit3.Text; end;
+function TSaveImageDialog.FGetImageWidth:integer;
+   begin if Edit1.Text='' then result:=1
+                          else Result:=StrToInt(Edit1.Text);
 end;
+procedure TSaveImageDialog.FSetImageWidth(val:integer);
+    begin Edit1.Text:=IntToStr(Val); SetImageSize; end;
 
-procedure TSaveImageDialog.SetImageSizes(W,H: integer);
-begin
-  FIsInteractive:=false;
-  ImageWidth:=W;
-  ImageHeight:=H;
-  FRatio:=ImageWidth / ImageHeight;
-  FIsInteractive:=true;
+procedure TSaveImageDialog.FSetFilename(val:AnsiString);
+    begin Edit3.Text:=val; end;
+function TSaveImageDialog.FGetImageHeight:integer;
+begin if Edit2.Text='' then result:=1
+                       else Result:=StrToInt(Edit2.Text);
 end;
-
-function TSaveImageDialog.FGetImageWidth: integer;
-begin Result:=SpinEdit1.Value; end;
-
-procedure TSaveImageDialog.FSetImageWidth(val: integer);
-begin SpinEdit1.Value:=val; SetImageSize; end;
-
-function TSaveImageDialog.FGetImageHeight: integer;
-begin Result:=SpinEdit2.Value; end;
-
-procedure TSaveImageDialog.FSetImageHeight(val: integer);
-begin SpinEdit2.Value:=val; SetImageSize; end;
-
-function TSaveImageDialog.Execute: boolean;
-begin
-  FRatio:=Imagewidth / ImageHeight;
-  ShowTranslatedValues(Self); Showmodal;
-  Result:=ModalResult = mrOk;
+procedure TSaveImageDialog.FSetImageHeight(val:integer);
+    begin Edit2.Text:=IntToStr(Val); SetImageSize; end;
+function TSaveImageDialog.Execute:Boolean;
+   begin FRatio:=Imagewidth/ImageHeight; Showmodal; Result:=ModalResult=mrOk;
+   end;
+procedure TSaveImageDialog.Edit1KeyPress(Sender: TObject; var Key: Char);
+    begin if (Key in [#8,'1'..'9','0',#13])
+          or (Key=FormatSettings.DecimalSeparator) then else key:=#0;
+    end;
+procedure TSaveImageDialog.Edit1Exit(Sender: TObject);
+    begin ImageWidth:=self.ImageWidth;
+          ImageHeight:=Round(Imagewidth/FRatio);
+    end;
+procedure TSaveImageDialog.Edit1KeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
+    begin if Key=13 then SelectNext(Activecontrol,True,true); end;
+procedure TSaveImageDialog.Edit2Exit(Sender: TObject);
+begin inherited;
+      ImageHeight:=self.ImageHeight;
+      ImageWidth:=Round(FRatio*ImageHeight);
 end;
-
-procedure TSaveImageDialog.FormCreate(Sender: TObject);
-begin
-  FIsInteractive:=true;
-  FRatio:=1.0;
-end;
-
-procedure TSaveImageDialog.SpinEdit1Change(Sender: TObject);
-begin
-  if not FIsInteractive then exit;
-  //ImageWidth:=self.ImageWidth;
-  ImageHeight:=Round(Imagewidth / FRatio);
-  SetImageSize;
-end;
-
-procedure TSaveImageDialog.SpinEdit2Change(Sender: TObject);
-begin
-  if not FIsInteractive then exit;
-  //ImageHeight:=self.ImageHeight;
-  ImageWidth:=Round(FRatio * ImageHeight);
-  SetImageSize;
-end;
-
 procedure TSaveImageDialog.SpeedButton1Click(Sender: TObject);
-begin
-  SaveDialog.InitialDir:= ExtractFileDir(Filename);
-  SaveDialog.FileName:=ExtractFileName(Filename);
-  if SaveDialog.Execute then
-    Filename:=SaveDialog.FileName;
+begin SaveDialog.FileName:=FilenamePNG;
+      if SaveDialog.Execute then FilenamePNG:=SaveDialog.FileName;
 end;
-
 procedure TSaveImageDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult:=mrOk; end;
+    begin ModalResult:=mrOk; end;
 
 procedure TSaveImageDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult:=mrCancel; end;
+    begin ModalResult:=mrCancel; end;
 
 end.

@@ -1,4 +1,4 @@
-unit FreeLinesplanFrme;
+unit FreeLinesPlanFrame;
 {$MODE Delphi}
 interface
 uses
@@ -14,7 +14,6 @@ type
   TLinesplanView = (lvProfile, lvAftBody, lvFrontBody, lvPlan);
   TLinesplanViews = set of TLinesplanView;
   TFreeLinesplanFrame = class( TFrame )                 { TFreeLinesplanFrame }
-    Viewport: TFreeViewport;
     ToolBar1: TToolBar;
     MenuImages: TImageList;
     ActionList1: TActionList;
@@ -57,6 +56,7 @@ type
     procedure FSetFreeShip( Val: TFreeShip );
     procedure CreateViewport;
   public                                                { Public declarations }
+    Viewport: TFreeViewport;
     FontSize: integer;
     constructor Create(TheOwner: TComponent); override;
     procedure UpdateMenu;
@@ -82,7 +82,7 @@ begin
     Left:=0;
     Height:=465;
     Top:=29;
-    Width:=761;
+    Width:=800;
     Angle:=90;
     Align:=alClient;
     BackgroundImage.Alpha:=255;
@@ -109,7 +109,7 @@ begin
   end;
 end;
 
-constructor TFreeLinesplanFrame.Create(TheOwner: TComponent);
+constructor TFreeLinesplanFrame.Create( TheOwner: TComponent );
       begin inherited Create(TheOwner); CreateViewport; end;
 
 procedure TFreeLinesplanFrame.UpdateMenu;
@@ -119,27 +119,115 @@ begin
   MirrorPlanview.Enabled:=Freeship.NumberofDiagonals=0;
 end;
 
-procedure TFreeLinesplanFrame.FSetFreeShip(Val: TFreeShip);
+procedure TFreeLinesplanFrame.FSetFreeShip( Val:TFreeShip );
 begin
   if FFreeShip<>nil then FFreeShip.LinesplanFrame:=nil; FFreeShip:=Val;
   if FFreeShip<>nil then begin //USE ONCE!
      FFreeShip.LinesplanFrame:=self;
+     ViewPort.ZoomExtents;
      UpdateMenu;
   end;
 end;
 
-procedure TFreeLinesplanFrame.ViewportRequestExtents(Sender: TObject;
-  var Min, Max: T3DVector);
+procedure TFreeLinesplanFrame.ZoomExtentsExecute(Sender: TObject);
+begin Viewport.ZoomExtents; end;
+
+procedure TFreeLinesplanFrame.ZoomInExecute(Sender: TObject);
+begin Viewport.ZoomIn; end;
+
+procedure TFreeLinesplanFrame.ZoomOutExecute(Sender: TObject);
+begin Viewport.ZoomOut; end;
+
+procedure TFreeLinesplanFrame.ShowFillColorExecute(Sender: TObject);
+begin
+  ShowFillcolor.Checked:=not ShowFillcolor.Checked;
+  UpdateMenu;
+  Viewport.Refresh;
+end;
+
+
+procedure TFreeLinesplanFrame.PrintExecute(Sender: TObject);
+begin
+  if Viewport.Width > Viewport.Height then Printer.Orientation:=poLandscape
+                                      else Printer.Orientation:=poPortrait;
+  if PrintDialog.Execute then
+     Viewport.Print( FFreeship.ProjectSettings.ProjectUnits,True,
+                    'FREE!ship linesplan ' );
+end;
+
+procedure TFreeLinesplanFrame.ViewportMouseMove
+( Sender: TObject;
+  Shift: TShiftState;
+  X,Y: integer );
 var
+  P: TPoint;
+begin
+  if ssLeft in Shift then begin                         // Zoom in or zoom out
+    if abs(FInitialPosition.Y-Y) > 4 then begin
+      if Y < FInitialPosition.Y then Viewport.ZoomIn else
+      if Y > FInitialPosition.Y then Viewport.ZoomOut;
+      FInitialPosition.X:=X;
+      FInitialPosition.Y:=Y;
+    end;
+  end
+  else if ssRight in Shift then begin // Pan the window left, right, top or bottom
+    if (abs(FInitialPosition.X-X)>4) or (abs(FInitialPosition.Y-Y)>4) then begin
+      P.X:=Viewport.Pan.X+X-FInitialPosition.X;
+      P.Y:=Viewport.Pan.Y+Y-FInitialPosition.Y; Viewport.Pan:=P;
+      FInitialPosition.X:=X;
+      FInitialPosition.Y:=Y;
+    end;
+  end;
+end;
+
+procedure TFreeLinesplanFrame.ViewportMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X,Y: integer);
+begin
+  FInitialPosition.X:=X;
+  FInitialPosition.Y:=Y;
+end;
+
+procedure TFreeLinesplanFrame.SaveBitmapExecute( Sender: TObject );
+  var Str: Ansistring;
+begin Str:=FFreeShip.Preferences.ExportDirectory;
+  if Str[Length(Str)]<>'\' then Str:=Str+'\';
+  Str:=Str+ChangeFileExt( ExtractFilename(FFreeship.FileName),'')+'_Linesplan.png';
+  Viewport.SaveAsBitmap( Str );
+end;
+
+procedure TFreeLinesplanFrame.UseLightsExecute(Sender: TObject);
+begin
+  UseLights.Checked:=not UseLights.Checked;
+  UpdateMenu;
+  Viewport.Refresh;
+end;
+
+procedure TFreeLinesplanFrame.ShowMonochromeExecute(Sender: TObject);
+begin
+  ShowMonochrome.Checked:=not ShowMonochrome.Checked;
+  UpdateMenu;
+  Viewport.Refresh;
+end;
+
+procedure TFreeLinesplanFrame.MirrorPlanViewExecute(Sender: TObject);
+begin
+  MirrorPlanview.Checked:=not MirrorPlanview.Checked;
+  UpdateMenu;
+  Viewport.ZoomExtents;
+end;
+
+procedure TFreeLinesplanFrame.ViewportRequestExtents
+( Sender: TObject;
+  var Min,Max: T3DVector );
+var I,J,K: integer;
   Space,Tmp: TFloatType;
   Min3D,Max3D, P,Diff: T3DVector;
-  I,J,K: integer;
   Diagonal: TFreeIntersection;
   Spline: TFreeSpline;
   Plane: T3DPlane;
   First: boolean;
   Layer: TFreeSubdivisionLayer;
-begin
+begin                                         Min3D:=setPoint(0); Max3D:=Min3D;
   if Freeship<>nil then begin First:=True; // всяко хотя бы одна точка должна быть
     for I:=1 to Freeship.NumberOfLayers do begin
       Layer:=Freeship.Layer[I-1];
@@ -157,7 +245,6 @@ begin
     for I:=1 to Freeship.NumberofButtocks do Freeship.Buttock[I-1].Extents(Min3D, Max3D);
     for I:=1 to Freeship.NumberofWaterlines do Freeship.Waterline[I-1].Extents(Min3D, Max3D);
     for I:=1 to Freeship.NumberofDiagonals do Freeship.Diagonal[I-1].Extents(Min3D, Max3D);
-
     FMin3D:=Min3D;
     FMax3D:=Max3D;
     FModelHeight:=Max3D.Z-Min3D.Z;                         // высота
@@ -188,43 +275,39 @@ begin
         then Min.Y:=Min3D.Z-2*Space-FModelHeight-FModelBeam-0.5*space
         else Min.Y:=Min3D.Z-2*Space-FModelHeight-0.5*FModelBeam-0.5*space;
     Min.Z:=0.0;
-    Max.X:=Min.X+FModelLength+3*space+FModelBeam;
+    Max.X:=Min.X+FModelLength+3*space+1.2*FModelBeam;
     Max.Y:=-Min3D.Z+FModelHeight+0.5*space;
     Max.Z:=0.0;
-//  Tmp:=( FModelLength-2*FModelbeam-3*space )/3;
 
     FProfileOrigin.X:=0.0;                       // Attachpoint for profileview
     FPlanOrigin:=FProfileOrigin;
     FProfileOrigin.Y:=-Min3D.Z; FProfileOrigin.Z:=0.0;
-    FPlanOrigin.Y:=FAftOrigin.Y-space-0.5*FModelBeam+Min3D.Z;
+    FPlanOrigin.Y:=FProfileOrigin.Y-2*space-0.5*FModelBeam+Min3D.Z;
 
     FAftOrigin:=FProfileOrigin;         // Attachpoint for aft view of bodyplan
     FAftOrigin.X:=Max3D.x+3*space+0.6*FModelBeam;
-//  FAftOrigin.X:=Max3D.x+3*space+FModelBeam;
     FFrontOrigin:=FAftOrigin;
     Diff:= 0.01*( Max3D-Min3D );              // Blowup the boundary box by 1%
     Min := Min - Diff;
-    Max := Max + 10*Diff;
-
-
+    Max := Max + 6*Diff;
   end else begin
     Min.X:=-1; Max.X:=1; Min.Y:=-1; Max.Y:=1; Min.Z:=-1; Max.Z:=1;
-  end;
-end;{TFreeLinesplanFrame.ViewportRequestExtents}
+  end; UpdateMenu;
+end;
 
 procedure TFreeLinesplanFrame.SpinEdit1Change( Sender: TObject );
-begin FontSize:=(Sender as TSpinEdit).Value;
+begin
+      FontSize:=(Sender as TSpinEdit).Value;
       Viewport.invalidate;
 end;
 
-procedure TFreeLinesplanFrame.ViewportRedraw(Sender: TObject);
+procedure TFreeLinesplanFrame.ViewportRedraw( Sender: TObject );
 type
   TriangleData = record
-    P1, P2, P3, Center: T3DVector;
-    Color: TColor; Symmetric: boolean;
+    P1,P2,P3, Center: T3DVector; Color: TColor; Symmetric: boolean;
   end;
   TriangleArray = record
-    Capacity, Count: integer;
+    Capacity,Count: integer;
     Triangles: array of TriangleData;
   end;
 var
@@ -279,9 +362,7 @@ var
   end; {DrawLineAtt}
 
   procedure DrawDiagonalLine(Origin: T3DVector; P1, P2: T3DVector);
-  var
-    Pt: TPoint;
-    P: T3DVector;
+  var Pt: TPoint; P: T3DVector;
   begin
     P.X:=Origin.X+P1.Y;
     P.Y:=Origin.Y+P1.Z; P.Z:=0.0;
@@ -661,7 +742,7 @@ var
 
 begin
   if Freeship = nil then exit;
-  if Viewport.Printing then PenWidthfactor:=Round(Viewport.PrintScaleFactor)
+  if Viewport.Printing then PenWidthfactor:=Round( Viewport.PrintScaleFactor )
                        else PenwidthFactor:=1;
   if Viewport.Printing then Steps:=1250
                        else Steps:=200;
@@ -669,11 +750,10 @@ begin
   WlPlane.b:=0.0;
   WlPlane.c:=1.0;
   WlPlane.d:=-(Freeship.Surface.Min.Z+Freeship.ProjectSettings.ProjectDraft);
-//  MidshipLocation:=Freeship.ProjectSettings.ProjectSplitSectionLocation;
-  if not FFreeship.HydrostaticCalculation[0].Calculated then
-                     FFreeship.HydrostaticCalculation[0].Calculate;
-  MidshipLocation:=//FFreeship.ProjectSettings.ProjectSplitSectionLocation;
-                     FFreeship.HydrostaticCalculation[0].MidshipLocation;
+  MidshipLocation:=Freeship.ProjectSettings.ProjectSplitSectionLocation;
+//if not FFreeship.HydrostaticCalculation[0].Calculated then
+//                 FFreeship.HydrostaticCalculation[0].Calculate;
+//MidshipLocation:=FFreeship.HydrostaticCalculation[0].MidshipLocation;
   Mainplane.a:=1.0;
   Mainplane.b:=0.0;
   Mainplane.c:=0.0;
@@ -690,17 +770,11 @@ begin
 
   Viewport.FontName:='Times';
   Viewport.FontColor:=clBlack;
-  // calculate and set fontheight
-  //SetFontHeight(DistPP3D(FMin3D,FMax3D)/FontheightFactor * FFontheightScale);
-  //just set font from the frame self
-  //Viewport.FontName:=Font.Name;
-  //Viewport.FontColor:=Font.Color;
-  //Viewport.FontHeight:=Font.Height;
-  //Viewport.FontSize:=Font.Size;
   if Viewport.DrawingCanvas.Font=nil then Viewport.DrawingCanvas.Font:=TFont.Create;
   Viewport.DrawingCanvas.Font.Name:='Times';
   Viewport.DrawingCanvas.Font.Color:=clBlack;
   Viewport.DrawingCanvas.Font.Size:=FontSize;
+
   if (not ShowMonochrome.Checked) and (ShowFillcolor.Checked) then begin
   for I:=1 to Freeship.Surface.NumberOfLayers do
     if Freeship.Layer[I-1].ShowInLinesplan then begin
@@ -710,16 +784,16 @@ begin
       else SubmColor:=Layer.Color;
       for j:=1 to Layer.Count do begin Face:=Layer.Items[J-1];
         Done:=False;
-        if Face.Max.Z < Freeship.Surface.Min.Z +
+        if Face.Max.Z<Freeship.Surface.Min.Z +
         Freeship.ProjectSettings.ProjectDraft then begin
           for N:=1 to Face.ChildCount do begin Child:=Face.Child[N-1];
             for K:=3 to Child.NumberOfpoints do
-            AddTriangle(Child.Point[0].Coordinate, Child.Point[K-2].Coordinate,
-              Child.Point[K-1].Coordinate, SubmColor, Below, Layer.Symmetric);
+            AddTriangle(Child.Point[0].Coordinate,Child.Point[K-2].Coordinate,
+              Child.Point[K-1].Coordinate,SubmColor,Below,Layer.Symmetric);
           end;
           Done:=True;
         end else
-        if Face.Min.Z > Freeship.Surface.Min.Z+Freeship.ProjectSettings.ProjectDraft
+        if Face.Min.Z>Freeship.Surface.Min.Z+Freeship.ProjectSettings.ProjectDraft
         then begin
           for N:=1 to Face.ChildCount do begin Child:=Face.Child[N-1];
             for K:=3 to Child.NumberOfpoints do
@@ -734,8 +808,8 @@ begin
     SortTriangles(Below,2); DrawTriangles(Below,[lvProfile]);
     SortTriangles(Above,2); DrawTriangles(Above,[lvProfile]);
     SortTriangles(Below,1); DrawTriangles(Below,[lvAftBody]);
-    SortTriangles(Above,1); DrawTriangles(Above,[lvAftBody]); // Aft bodyplan
                             DrawTriangles(Below,[lvFrontBody]); // frontview on bodyplan
+    SortTriangles(Above,1); DrawTriangles(Above,[lvAftBody]);   // Aft bodyplan
                             DrawTriangles(Above,[lvFrontBody]); // plan view
     SortTriangles(Below,3); DrawTriangles(Below,[lvPlan]);
     SortTriangles(Above,3); DrawTriangles(Above,[lvPlan]); // Draw dwl as a white band in profile and bodyplan views
@@ -955,7 +1029,7 @@ begin
 //  HydObject.Destroy;
 //  Descr.Destroy;  ...  Pt:=FInitialPosition;
 
-Viewport.FontColor:=clGray;
+  Viewport.FontColor:=clGray;
   Tmp:=0.0;
   if Freeship.NumberofDiagonals>0 then Tmp:=FDiagonalWidth else
   if MirrorPlanview.Checked then Tmp:=FMax3D.Y;
@@ -976,8 +1050,8 @@ Viewport.FontColor:=clGray;
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(43)+' : '+ExtractFilename(FreeShip.FileName) );
 
   Viewport.FontColor:=clNavy;
-  Pt:=Viewport.Project( SetPoint( FAftOrigin.X-FModelBeam/2,FPlanOrigin.Y+FModelBeam/2,0 ) );
-  Pt.y+=ViewPort.FontHeight;
+  Pt:=Viewport.Project(SetPoint(FAftOrigin.X-FModelBeam/2,FPlanOrigin.Y+FModelBeam/2,0));
+//Pt.y+=ViewPort.FontHeight; // div 2;
   Viewport.TextOut( Pt.X,Pt.Y,'Basic dimensions of a ship''s hull' );
   Pt.y-=(3*ViewPort.FontHeight) div 2;
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(45)+' : '+
@@ -999,91 +1073,6 @@ Viewport.FontColor:=clGray;
          ConvertDimension( FreeShip.ProjectSettings.ProjectSplitSectionLocation,Freeship.ProjectSettings.ProjectUnits) );
 
   Screen.Cursor:=Prevcursor;
-end;
-
-procedure TFreeLinesplanFrame.ZoomExtentsExecute(Sender: TObject);
-begin Viewport.ZoomExtents; end;
-
-procedure TFreeLinesplanFrame.ZoomInExecute(Sender: TObject);
-begin Viewport.ZoomIn; end;
-
-procedure TFreeLinesplanFrame.ZoomOutExecute(Sender: TObject);
-begin Viewport.ZoomOut; end;
-
-procedure TFreeLinesplanFrame.ShowFillColorExecute(Sender: TObject);
-begin
-  ShowFillcolor.Checked:=not ShowFillcolor.Checked;
-  UpdateMenu;
-  Viewport.Refresh;
-end;
-
-procedure TFreeLinesplanFrame.PrintExecute(Sender: TObject);
-begin
-  if Viewport.Width > Viewport.Height then Printer.Orientation:=poLandscape
-                                      else Printer.Orientation:=poPortrait;
-  if PrintDialog.Execute then
-    Viewport.Print(FFreeship.ProjectSettings.ProjectUnits,True,'FREE!ship linesplan ');
-end;
-
-procedure TFreeLinesplanFrame.ViewportMouseMove(Sender: TObject; Shift: TShiftState;
-  X, Y: integer);
-var
-  P: TPoint;
-begin
-  if ssLeft in Shift then begin                         // Zoom in or zoom out
-    if abs(FInitialPosition.Y-Y) > 4 then begin
-      if Y < FInitialPosition.Y then Viewport.ZoomIn else
-      if Y > FInitialPosition.Y then Viewport.ZoomOut;
-      FInitialPosition.X:=X;
-      FInitialPosition.Y:=Y;
-    end;
-  end
-  else if ssRight in Shift then begin // Pan the window left, right, top or bottom
-    if (abs(FInitialPosition.X-X) > 4) or (abs(FInitialPosition.Y-Y) > 4) then
-    begin
-      P.X:=Viewport.Pan.X+X-FInitialPosition.X;
-      P.Y:=Viewport.Pan.Y+Y-FInitialPosition.Y;
-      Viewport.Pan:=P;
-      FInitialPosition.X:=X;
-      FInitialPosition.Y:=Y;
-    end;
-  end;
-end;
-
-procedure TFreeLinesplanFrame.ViewportMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: integer);
-begin
-  FInitialPosition.X:=X;
-  FInitialPosition.Y:=Y;
-end;
-
-procedure TFreeLinesplanFrame.SaveBitmapExecute(Sender: TObject);
-  var Str: string;
-begin Str:=FFreeShip.Preferences.ExportDirectory;
-  if Str[Length(Str)] <> '\' then Str:=Str+'\';
-  Str:=Str+ChangeFileExt(ExtractFilename(FFreeship.FileName), '')+'_Linesplan.bmp';
-  Viewport.SaveAsBitmap(Str);
-end;
-
-procedure TFreeLinesplanFrame.UseLightsExecute(Sender: TObject);
-begin
-  UseLights.Checked:=not UseLights.Checked;
-  UpdateMenu;
-  Viewport.Refresh;
-end;
-
-procedure TFreeLinesplanFrame.ShowMonochromeExecute(Sender: TObject);
-begin
-  ShowMonochrome.Checked:=not ShowMonochrome.Checked;
-  UpdateMenu;
-  Viewport.Refresh;
-end;
-
-procedure TFreeLinesplanFrame.MirrorPlanViewExecute(Sender: TObject);
-begin
-  MirrorPlanview.Checked:=not MirrorPlanview.Checked;
-  UpdateMenu;
-  Viewport.ZoomExtents;
 end;
 
 procedure TFreeLinesplanFrame.ExportDXFExecute(Sender: TObject);
@@ -1161,8 +1150,7 @@ var
   var
     Points: array of T3DVector;
     P: T3DVector;
-    I,J, NParams,NValues, Pn, Pn1, Pn2: integer;
-    Params: TFloatArray;
+    I,J, NParams,NValues, Pn,Pn1,Pn2: integer; Params: TFloatArray;
   begin
     NParams:=0;
     Setlength(Params, Spline.NumberOfPoints);  // count number of knucklepoints
@@ -1252,8 +1240,9 @@ var
     end;
   end;{AddSpline}
 
-  procedure AddEdgeLoop(const Points: TFasterListTFreeSubdivisionPoint;
-    Views: TLinesplanViews; Layername: string; Color: TColor);
+  procedure AddEdgeLoop
+  ( const Points: TFasterListTFreeSubdivisionPoint;
+    Views: TLinesplanViews; Layername: string; Color: TColor );
   var
     Point: TFreeSubdivisionPoint;
     P: T3DVector;

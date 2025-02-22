@@ -672,7 +672,8 @@ begin        // Redraws model to all viewports by re-initializing all viewports
 //    P.ViewPort.Invalidate;
 //    P.ViewportRedraw( self ); // == DrawToViewPort( P );
     end;
-    if LinesplanFrame<>nil then TFreeLinesplanframe(LinesplanFrame).Viewport.ZoomExtents;
+    if LinesplanFrame<>nil then
+       TFreeLinesplanframe(LinesplanFrame).Viewport.ZoomExtents;
 //     then ShowTranslatedValues( TFreeLinesplanForm(MDIChildren[I-1]).LinesplanFrame )
 //     else ShowTranslatedValues( MDIChildren[I-1] );
   end;
@@ -745,7 +746,7 @@ var
   begin
     if CompensateHeight then P.Z:=P.Z+FDesignHydrostatics.FData.ModelMin.Z;
     Pt:=Viewport.Project(P);
-    Viewport.FontName:='Arial';
+    Viewport.FontName:='Times';
     Viewport.FontColor:=Preferences.HydrostaticsFontColor;
     //size:=Round(Sqrt(Viewport.Zoom)*7);
     //if size<2 then size:=2;
@@ -822,7 +823,7 @@ var
     if DrawStations or DrawButtocks or DrawWaterlines or DrawDiagonals then
     begin
       Viewport.PenColor:=Preferences.GridColor;
-      Viewport.FontName:='Arial';
+      Viewport.FontName:='Times';
       Viewport.FontColor:=Preferences.GridFontColor;
       // calculate and set fontheight
       //SetFontHeight(DistPP3D(Min,Max)/FontheightFactor * FFontScale);
@@ -1232,7 +1233,7 @@ begin
     Rect.Bottom:=Rect.Top+LegendHeight;
     Rect.Right:=Rect.Left+LegendWidth;
     Viewport.Rectangle(Rect);
-    //Viewport.FontName:='Arial';
+    //Viewport.FontName:='Times';
     //Viewport.FontSize:=8;
     Viewport.FontColor:=Preferences.GridFontColor;
     NDecimal:=3;

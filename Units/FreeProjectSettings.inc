@@ -401,7 +401,7 @@ begin
   end;
 end;
 
-procedure TFreeProjectSettings.SaveBinary(Destination: TFreeFileBuffer);
+procedure TFreeProjectSettings.SaveBinary( Destination: TFreeFileBuffer );
 var
   Jpg: TJPegImage; I: integer;
 begin

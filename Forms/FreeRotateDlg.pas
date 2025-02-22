@@ -1,43 +1,31 @@
 
 
 unit FreeRotateDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
+{$MODE Delphi}
 
 interface
-
 uses
-  SysUtils,
   Controls,
   Forms,
-  Dialogs,
   StdCtrls,
   Buttons,
-  ExtCtrls, Spin, Menus,
-  FreeLanguageSupport;
-
+  ExtCtrls,
+  Spin;
 type
-
-  { TFreeRotateDialog }
-
-  TFreeRotateDialog = class(TForm)                        { TFreeRotateDialog }
+  TFreeRotateDialog = class( TForm )                      { TFreeRotateDialog }
     FloatSpinEdit1, FloatSpinEdit2, FloatSpinEdit3: TFloatSpinEdit;
     Label1, Label2, Label3, Label4, Label6, Label9: TLabel;
     Panel1, Panel2, Panel3: TPanel;
     OKButton, CancelButton: TSpeedButton;
     procedure OKButtonClick(Sender: TObject);
     procedure CancelButtonClick(Sender: TObject);
-  private   { Private declarations }
-    function  FGetXValue: extended;
-    procedure FSetXValue(val: extended);
-    function  FGetYValue: extended;
-    procedure FSetYValue(val: extended);
-    function  FGetZValue: extended;
-    procedure FSetZValue(val: extended);
-  public    { Public declarations }
-    function Execute( Units: String ): boolean;
+  private                                              { Private declarations }
+    function  FGetXValue: extended;    procedure FSetXValue(val: extended);
+    function  FGetYValue: extended;    procedure FSetYValue(val: extended);
+    function  FGetZValue: extended;    procedure FSetZValue(val: extended);
+  public                                                 { Public declarations }
+//  Caption: AnsiString;
+    function Execute( Units: String; Rotat:boolean=false ): boolean;
     property XValue: extended read FGetXValue write FSetXValue;
     property YValue: extended read FGetYValue write FSetYValue;
     property ZValue: extended read FGetZValue write FSetZValue;
@@ -48,7 +36,6 @@ var FreeRotateDialog: TFreeRotateDialog;
 implementation
 
 {$R *.lfm}
-
 function TFreeRotateDialog.FGetXValue: extended;
    begin Result:=FloatSpinEdit1.Value; end;
 function TFreeRotateDialog.FGetYValue: extended;
@@ -63,12 +50,16 @@ procedure TFreeRotateDialog.FSetYValue(val: extended);
 procedure TFreeRotateDialog.FSetZValue(val: extended);
     begin FloatSpinEdit3.Value:=val; end;
 
-function TFreeRotateDialog.Execute( Units: String ): boolean;
+function TFreeRotateDialog.Execute( Units: String; Rotat: boolean ): boolean;
 begin
-  ShowTranslatedValues(Self);
-  Label3.Caption:=Units;                        //  Self.Caption:=Caption;
+  Label3.Caption:=Units;
   Label6.Caption:=Units;
   Label9.Caption:=Units;
+  if Rotat then begin
+    FloatSpinEdit1.MaxValue:=360; FloatSpinEdit1.MinValue:=-360;
+    FloatSpinEdit2.MaxValue:=360; FloatSpinEdit2.MinValue:=-360;
+    FloatSpinEdit3.MaxValue:=360; FloatSpinEdit3.MinValue:=-360;
+  end;
   Showmodal;
   Result:=ModalResult = mrOk;
 end;

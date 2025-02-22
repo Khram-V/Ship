@@ -20,7 +20,7 @@ uses SysUtils,    // = exception ...
      FreeShipUnit,FreeVersionUnit,
      FreeAboutDlg,FreehullFormWindow_panel,
      FreeLayerVisibilityDlg,FreeLanguageSupport,
-     FreeSelectedDlg,FreeSplitSectionDlg,MDIPanel;
+     FreeSelectedDlg,FreeSplitSectionDlg,MDIPanel,FreeLinesPlanFrame;
 type
   TMainForm = class( TForm )                                       // TMainForm
      ToolBarCurves,
@@ -440,7 +440,7 @@ var MainForm: TMainForm;
 
 implementation
 
-uses FreeLinesplanFrm,
+uses FreeLinesplanForm,
      FreeKeelWizardDlg,
      FreeEmptyModelChooserDlg,
      TileDialog,
@@ -537,7 +537,7 @@ begin
     if Est then Est:=Load_and_Scale( FFileName );
     if not Est then begin
        FreeEmptyModelChooserDialog:=TFreeEmptyModelChooserDialog.Create(Self);
-       ShowTranslatedValues(FreeEmptyModelChooserDialog);
+       ShowTranslatedValues( FreeEmptyModelChooserDialog );
        if FreeEmptyModelChooserDialog.Execute( FFileName ) then begin
          if FreeEmptyModelChooserDialog.RbCreateNew.Checked then NewModelExecute(Self) else
          if FreeEmptyModelChooserDialog.RbLoadFile.Checked then LoadFileExecute(Self)
@@ -1184,11 +1184,6 @@ begin Result:=false;
      Freeship.Edit.ProgressBar:=ProgressBarMain;
      Freeship.Surface.OnFaceRebuilt:=Freeship.Edit.OnFaceRebuilt;
      Freeship.Edit.File_Load( Filename );
-//     Freeship.RebuildModel;
-//     Freeship.ZoomFitAllViewports;
-//     SetCaption;
-//     UpdateMenu;
-     Freeship.Edit.ProgressBar:=nil;
      Result:=true;
   end;
 end;
@@ -1585,19 +1580,25 @@ end;
 procedure TMainForm.ExportArchimedesExecute(Sender: TObject);
 begin FreeShip.Edit.File_ExportArchimedes; UpdateMenu; end;
 
-procedure TMainForm.ShowLinesplanExecute(Sender: TObject);
+procedure TMainForm.ShowLinesplanExecute( Sender: TObject );
 var I          : Integer;
-    AlreadyOpen: Boolean;
+//  AlreadyOpen: Boolean;
     Form       : TFreeLinesplanForm;
 begin
-   AlreadyOpen:=False;
-   for I:=1 to MDIChildCount
-   do if MDIChildren[I-1] is TFreeLinesplanForm then begin
-      AlreadyOpen:=True;
-      MDIChildren[I-1].BringToFront; break;
-   end;
-   if not AlreadyOpen then begin
-      Form:=TFreeLinesplanForm.Create(self);
+// AlreadyOpen:=False;
+// for I:=0 to FreeShip.NumberOfViewports-1 do         == не срабатывает по MDI
+//   for I:=0 to MDIChildCount do
+//   if MDIChildren[I] is TFreeLinesplanForm then begin AlreadyOpen:=True;
+//      TFreeLinesplanForm( MDIChildren[I] ).LinesplanFrame.ViewPort.ZoomExtents;
+//      MDIChildren[I].BringToFront; break;
+//   end;
+   if FreeShip.LinesplanFrame<>nil then begin
+      TFreeLinesplanFrame( FreeShip.LinesplanFrame ).Viewport.ZoomExtents;
+      TFreeLinesplanFrame( FreeShip.LinesplanFrame ).Viewport.SetFocus;
+   end else
+// if not AlreadyOpen then
+   begin
+      Form:=TFreeLinesplanForm.Create( self );
       Form.LinesplanFrame.FreeShip:=FreeShip;
       Form.LinesplanFrame.Viewport.ZoomExtents;
    end;

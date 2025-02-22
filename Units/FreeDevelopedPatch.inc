@@ -182,7 +182,7 @@ begin
   FVisible:=True;
   FMirrorOnScreen:=False;
   FDimFontColor:=clBlack;
-  FDimFontName:='Arial';
+  FDimFontName:='Times';
   FDimFontSize:=6;
   for I:=0 to FStations.Count-1   do FStations[I].Free;   FStations.Clear;
   for I:=0 to FButtocks.Count-1   do FButtocks[I].Free;   FButtocks.Clear;
@@ -487,7 +487,7 @@ begin
     Viewport.PenWidth:=PenwidthFactor;
 
     // calculate and set fontheight
-    //Viewport.FontName:='arial';
+    //Viewport.FontName:='Times';
     //Viewport.FontHeight:=round(DistPP3D(Viewport.Min3D,Viewport.Max3D)/150);
 
     Viewport.DrawingCanvas.Font.Color:=FDimFontColor;

@@ -255,21 +255,19 @@ end;
 
 procedure TFreeHullWindow.SetCaption; begin Caption:=FCaptionText; end;
 
-procedure TFreeHullWindow.FSetFreeShip(Val:TFreeShip);
+procedure TFreeHullWindow.FSetFreeShip( Val:TFreeShip );
 begin
    if Val<>FFreeShip then begin
-      if FFreeShip<>nil then begin // Disconnect from Freeship component
-         FFreeShip.DeleteViewport(Viewport);
-      end;
+      if FFreeShip<>nil then              // Disconnect from Freeship component
+         FFreeShip.DeleteViewport( Viewport );
       FFreeShip:=Val;
-      if FFreeShip<>nil then begin // Connect to Freeship component
-         FFreeShip.AddViewport(Viewport);
-      end;
-   end;  // FreeHullForm.FreeShip:=FreeShip;
+      if FFreeShip<>nil then                   // Connect to Freeship component
+         FFreeShip.AddViewport( Viewport );
+   end; // FreeHullForm.FreeShip:=FreeShip;
 end;
 
 procedure TFreeHullWindow.UpdateMenu;
-begin  // Update all menuitems and action
+begin                                        // Update all menuitems and action
    Print.Enabled:=(Viewport.ViewportMode=vmWireframe) and (Printer<>nil);
    WideLens.Checked:=Viewport.CameraType=ftWide;
    Camera1.Enabled:=Viewport.Viewtype=fvPerspective;
@@ -314,8 +312,8 @@ begin
    if FreeShip<>nil then begin
       Freeship.Extents( Min,Max );
       if Viewport.ViewType=fvBodyPlan then //Min.Y:= -Max.Y;
-        if -Min.Y > Max.y then Max.Y:=-Min.Y
-                          else Min.Y:=-Max.Y;
+        if -Min.Y>Max.y then Max.Y:=-Min.Y
+                        else Min.Y:=-Max.Y;
    end;
 end;
 
@@ -595,11 +593,10 @@ begin
      fvBodyplan     : vpt:='_Bodyplan';
      fvProfile      : vpt:='_Profile';
      fvPlan         : vpt:='_Plan';
-     fvPerspective  : vpt:='_Perspective';
-     else vpt:='';
+     fvPerspective  : vpt:='_Perspective'; else vpt:='';
   end;
   Str:=Freeship.Preferences.ExportDirectory+DirectorySeparator
-    +ChangeFileExt( ExtractFilename( Freeship.Filename )+vpt,'.png' );
+     + ChangeFileExt( ExtractFilename( Freeship.Filename )+vpt,'.png' );
   Viewport.SaveAsBitmap( Str,true );
 end;
 

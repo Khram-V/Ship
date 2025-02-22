@@ -4,7 +4,7 @@ object FreeRotateDialog: TFreeRotateDialog
   Top = 243
   Width = 278
   BorderStyle = bsDialog
-  Caption = 'Rotation'
+  Caption = '<Rotation>'
   ClientHeight = 163
   ClientWidth = 278
   Position = poMainFormCenter
@@ -189,8 +189,6 @@ object FreeRotateDialog: TFreeRotateDialog
         Width = 100
         Constraints.MinWidth = 100
         DecimalPlaces = 6
-        MaxValue = 360
-        MinValue = -360
         TabOrder = 0
       end
       object FloatSpinEdit2: TFloatSpinEdit
@@ -200,8 +198,6 @@ object FreeRotateDialog: TFreeRotateDialog
         Width = 100
         Constraints.MinWidth = 100
         DecimalPlaces = 6
-        MaxValue = 360
-        MinValue = -360
         TabOrder = 1
       end
       object FloatSpinEdit3: TFloatSpinEdit
@@ -211,8 +207,6 @@ object FreeRotateDialog: TFreeRotateDialog
         Width = 100
         Constraints.MinWidth = 100
         DecimalPlaces = 6
-        MaxValue = 360
-        MinValue = -360
         TabOrder = 2
       end
       object Label3: TLabel

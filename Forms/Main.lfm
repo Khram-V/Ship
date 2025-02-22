@@ -912,6 +912,18 @@ object MainForm: TMainForm
       Hint = 'Removes all faces on the starbaordside of the hull.'
       OnExecute = RemoveNegativeExecute
     end
+    object ScaleModel: TAction
+      Category = 'Transform'
+      Caption = 'Scale...'
+      Hint = 'Scale selected items.'
+      OnExecute = ScaleModelExecute
+    end
+    object MoveModel: TAction
+      Category = 'Transform'
+      Caption = 'Move...'
+      Hint = 'Move the entire model.'
+      OnExecute = MoveModelExecute
+    end
     object RotateModel: TAction
       Category = 'Transform'
       Caption = 'Rotate...'
@@ -923,12 +935,6 @@ object MainForm: TMainForm
       Caption = 'Heeling and/or trimming...'
       Hint = 'Rotate all model items.'
       OnExecute = RotateModelMExecute
-    end
-    object ScaleModel: TAction
-      Category = 'Transform'
-      Caption = 'Scale...'
-      Hint = 'Scale selected items.'
-      OnExecute = ScaleModelExecute
     end
     object ShowGrid: TAction
       Category = 'Visibility'
@@ -998,12 +1004,6 @@ object MainForm: TMainForm
       Category = 'Export'
       Caption = 'Offsets...'
       OnExecute = ExportOffsetsExecute
-    end
-    object MoveModel: TAction
-      Category = 'Transform'
-      Caption = 'Move...'
-      Hint = 'Move the entire model.'
-      OnExecute = MoveModelExecute
     end
     object AddPoint: TAction
       Category = 'Point'

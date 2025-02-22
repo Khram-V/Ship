@@ -145,7 +145,7 @@ var FreeLayerDialog : TFreeLayerDialog;
 
 implementation
 
-uses FreeLinesplanFrme;
+uses FreeLinesplanFrame;
 
 {$IFnDEF FPC}
   {$R *.dfm}

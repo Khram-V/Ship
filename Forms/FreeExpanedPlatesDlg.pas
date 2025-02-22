@@ -632,10 +632,9 @@ var
   Str: string;
 begin
   Str:=FFreeShip.Preferences.ExportDirectory;
-  if Str[Length(Str)] <> '\' then Str:=Str+'\';        // Skip translation
-  Str:=Str+ChangeFileExt(ExtractFilename(FFreeship.FileName), '') +
-    '_developments.bmp';
-  // End Skip translation
+  if Str[Length(Str)] <> '\' then Str:=Str+'\';
+  Str:=Str + ChangeFileExt( ExtractFilename( FFreeship.FileName ),'' )
+           + '_developments.png';
   Viewport.SaveAsBitmap(Str);
 end;
 

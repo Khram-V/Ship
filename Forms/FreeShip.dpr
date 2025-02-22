@@ -1,10 +1,5 @@
-
-
-
 program FreeShip;                                                 { FREE!ship }
-
 {$mode objfpc}{$H+}
-
 uses
     Controls, Forms, Dialogs,
     SysUtils, Math, LazUTF8,                 // this includes the LCL widgetset
@@ -13,7 +8,6 @@ uses
     FreeTypes           in '../Units/FreeTypes.pas',
     FreeLanguageSupport in '../Units/FreeLanguageSupport.pas',
     FreeVersionUnit     in '../Units/FreeVersionUnit.pas';
-
 var ParametersHelp: boolean=false;
     sOpenFile: AnsiString='';
     sHelp: AnsiString;
@@ -25,7 +19,6 @@ procedure InitByParameters; var S: AnsiString; p: integer; begin
     or ( lowerCase(UTF8RightStr( S,4 ))='.fbm' ) then sOpenFile:=S;
   end;
 end;
-
 procedure PrintParametersHelp( Ans: Boolean ); begin
   sHelp:=#10+'Usage: Free!Ship [parameter] [model]'
         +#10+ 'Where parameter is: --help = this screen'
@@ -41,9 +34,7 @@ procedure PrintParametersHelp( Ans: Boolean ); begin
     if Ans then ShowMessage( sHelp )
            else WriteLn( sHelp );
 end;
-
 {$R *.res}
-
 begin
   WestPoint;
   InitByParameters;

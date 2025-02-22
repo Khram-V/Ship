@@ -15,11 +15,11 @@ begin Result:=FRecentFiles.Count;
 end;
 
 // Takes a filename and adds it to the list with recent files
-procedure TFreeEdit.AddToRecentFiles( Filename:string );
+procedure TFreeEdit.AddToRecentFiles( Filename:AnsiString );
 var
   I,Index: integer;
   AlreadyPresent: boolean;
-  Tmp,Ext: string;
+  Tmp,Ext: AnsiString;
 begin
   AlreadyPresent:=False;
   FreeShip.Preferences.LastDirectory:=ExtractFilePath( FileName );
@@ -27,17 +27,17 @@ begin
   Index:=-1;
   Tmp:=Trim(Filename);
   for I:=0 to FRecentFiles.Count-1 do
-    if Uppercase(Trim(FRecentFiles[I]))=Uppercase(Tmp) then begin
-      Index:=I; break;
-    end;                                 // Already in list. move to the front;
-  if Index >= 0 then begin
-    FRecentFiles.Delete(Index);
-    FRecentFiles.Insert(0, Tmp);
+  if Uppercase(Trim(FRecentFiles[I]))=Uppercase(Tmp) then begin Index:=I;
+    break;
+  end;                                 // Already in list. move to the front;
+  if Index>=0 then begin
+    FRecentFiles.Delete( Index );
+    FRecentFiles.Insert( 0,Tmp );
   end else
-    if FRecentFiles.Count = 0 then FRecentFiles.Add(Tmp) else
-       FRecentFiles.Insert(0,Tmp); // file not yet in the list, add at the front
-                                  // delete items until no more than 10 are left
-  while FRecentFiles.Count > 10 do FRecentFiles.Delete(FRecentFiles.Count-1);
+    if FRecentFiles.Count=0 then FRecentFiles.Add(Tmp) else
+       FRecentFiles.Insert(0,Tmp);// file not yet in the list, add at the front
+                                 // delete items until no more than 36 are left
+  while FRecentFiles.Count>36 do FRecentFiles.Delete(FRecentFiles.Count-1); ///***!!!
   if assigned( FreeShip.FOnUpdateRecentFileList ) then
                FreeShip.FOnUpdateRecentFileList( self );
 end;
@@ -113,7 +113,7 @@ begin
       if FreeShip.NumberofBackgroundImages > 1 then
         Data.FScale:=FreeShip.BackgroundImage // use same scale as previous images
           [FreeShip.NumberofBackgroundImages-2].FScale
-      else begin    // calculate scale
+      else begin                                             // calculate scale
         Pt:=Viewport.Project(ZERO);
         Pt.X:=Viewport.ClientWidth;
         P2D:=Viewport.ProjectBackTo2D(Pt);
@@ -728,39 +728,39 @@ begin
     if Proceed then begin
       Dialog:=TFreeRotateDialog.Create( FreeShip );
       ShowTranslatedValues(Dialog);
-      Dialog.Caption:='Rotate selected items.';  //-- ShowTranslatedValues(Dialog);
+      Dialog.Caption:='Rotate selected items.';
+      ShowTranslatedValues(Dialog);
       Dialog.XValue:=0.0;
       Dialog.YValue:=0.0;
       Dialog.ZValue:=0.0;
-      if Dialog.Execute('[°]') then begin
+      if Dialog.Execute( '[°]',true ) then begin
         CreateUndoObject( 'rotate', True);
         PrevCursor:=Screen.Cursor;
         Screen.Cursor:=crHourGlass;
 //      try
-          CosX:=Cos(DegToRad(Dialog.XValue));
-          SinX:=Sin(DegToRad(Dialog.XValue));
-          CosY:=Cos(DegToRad(Dialog.YValue));
-          SinY:=Sin(DegToRad(Dialog.YValue));
-          CosZ:=Cos(DegToRad(Dialog.ZValue));
-          SinZ:=Sin(DegToRad(Dialog.ZValue));
-          for I:=1 to Points.Count do begin
-            Point:=Points[I-1];
-            if not Point.Locked then
-              Point.Coordinate:=RotateVector(Point.Coordinate,SinX,CosX,SinY,CosY,SinZ,CosZ);
-          end;
-          if Points.Count = FreeShip.Surface.NumberOfControlPoints then
-          if FreeShip.AdjustMarkers then
-           for I:=1 to FreeShip.NumberofMarkers do begin
-             Marker:=FreeShip.Marker[I-1];
-             for J:=1 to Marker.NumberOfPoints do
-               Marker.Point[J-1]:=RotateVector(Marker.Point[J-1],SinX,CosX,SinY,CosY,SinZ,CosZ);
-          end;
-          FreeShip.Built:=False;
-          Freeship.RebuildModel;
+        CosX:=Cos(DegToRad(Dialog.XValue));
+        SinX:=Sin(DegToRad(Dialog.XValue));
+        CosY:=Cos(DegToRad(Dialog.YValue));
+        SinY:=Sin(DegToRad(Dialog.YValue));
+        CosZ:=Cos(DegToRad(Dialog.ZValue));
+        SinZ:=Sin(DegToRad(Dialog.ZValue));
+        for I:=1 to Points.Count do begin Point:=Points[I-1];
+          if not Point.Locked then
+          Point.Coordinate:=RotateVector(Point.Coordinate,SinX,CosX,SinY,CosY,SinZ,CosZ);
+        end;
+        if Points.Count = FreeShip.Surface.NumberOfControlPoints then
+        if FreeShip.AdjustMarkers then
+         for I:=1 to FreeShip.NumberofMarkers do begin
+           Marker:=FreeShip.Marker[I-1];
+           for J:=1 to Marker.NumberOfPoints do
+             Marker.Point[J-1]:=RotateVector(Marker.Point[J-1],SinX,CosX,SinY,CosY,SinZ,CosZ);
+        end;
+        FreeShip.Built:=False;
+        Freeship.RebuildModel;
 //      finally                                    // Refresh controlpoint data
-          if Points.IndexOf(FreeShip.ActiveControlPoint)<>-1
-             then FreeShip.ActiveControlPoint:=FreeShip.ActiveControlPoint;
-          Screen.Cursor:=PrevCursor;
+        if Points.IndexOf(FreeShip.ActiveControlPoint)<>-1
+           then FreeShip.ActiveControlPoint:=FreeShip.ActiveControlPoint;
+        Screen.Cursor:=PrevCursor;
 //      end;
       end else begin
         for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do
@@ -784,9 +784,7 @@ var
   PrevCursor: TCursor;
   Point: TFreeSubdivisionControlPoint;
   Dialog: TFreeRotateDialog;
-  SinX, CosX: TFloatType;
-  SinY, CosY: TFloatType;
-  SinZ, CosZ: TFloatType;
+  SinX,CosX, SinY,CosY, SinZ,CosZ: TFloatType;
   Marker: TFreeMarker;
 begin
   Points:=TFasterListTFreeSubdivisionControlPoint.Create;
@@ -800,12 +798,12 @@ begin
   if Points.Count>0 then begin
     Dialog:=TFreeRotateDialog.Create( FreeShip );
     Dialog.Caption:='Heeling and/or trimming all model items.';
-    ShowTranslatedValues(Dialog);
+    ShowTranslatedValues( Dialog );
     Dialog.XValue:=0.0;
     Dialog.YValue:=0.0;
     Dialog.ZValue:=0.0;
-    if Dialog.Execute('[°]') then begin
-      CreateUndoObject('rotate',True);
+    if Dialog.Execute( '[°]',true ) then begin
+      CreateUndoObject( 'rotate',True );
       PrevCursor:=Screen.Cursor;
       Screen.Cursor:=crHourGlass;
       CosX:=Cos(DegToRad(Dialog.XValue));
@@ -954,9 +952,9 @@ begin
       Proceed:=MessageDlg(Userstring(86)+EOL+Userstring(87),mtWarning,[mbYes,mbNo],0)=mrYes
     else Proceed:=True;
     if Proceed then begin
-      Dialog:=TFreeRotateDialog.Create(FreeShip);
-      Dialog.Caption:= 'Move the entire model.';
-      ShowTranslatedValues(Dialog);
+      Dialog:=TFreeRotateDialog.Create( FreeShip );
+      Dialog.Caption:='Move the entire model.';
+      ShowTranslatedValues( Dialog );
       Dialog.XValue:=0.0;
       Dialog.YValue:=0.0;
       Dialog.ZValue:=0.0;
@@ -1230,6 +1228,15 @@ begin
     end;
     TMainForm(MainForm).SetCaption;
     TMainForm(MainForm).UpdateMenu;
+    // Freeship.RebuildModel;
+    // Freeship.ZoomFitAllViewports;
+    // SetCaption;
+    // UpdateMenu;
+    Freeship.Edit.ProgressBar:=nil;
+    if FreeShip.LinesplanFrame<>nil then
+      TFreeLinesplanframe(FreeShip.LinesplanFrame).FreeShip:=FreeShip;
+    // with TFreeLinesplanframe(FreeShip.LinesplanFrame) do begin
+    //      Viewport.ZoomExtents; UpdateMenu; end;
 //  finally
     FreeAndNil( Source );
     if FreeShip.ModelIsLoaded then AddToRecentFiles( FileName );

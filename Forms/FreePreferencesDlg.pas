@@ -48,6 +48,7 @@ type                                                 { TFreePreferencesDialog }
     SpinEdit1: TSpinEdit;
     seSubmergedSurfaceOpacity: TSpinEdit;
     seFontSize: TSpinEdit;
+    TabSheet1: TTabSheet;
 //  TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;

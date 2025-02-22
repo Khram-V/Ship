@@ -536,7 +536,6 @@ begin
   end;
 end;
 
-
 function TFreeMichletOutputDialog.Execute(Freeship: TFreeShip): boolean;
 begin
   createViewport();

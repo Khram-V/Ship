@@ -1157,83 +1157,68 @@ procedure TFreeViewport.Polygon(const Points: array of TPoint);
 function TFreeViewport.GetDrawingBuffer:TBitmap;
 begin result:=FDrawingBuffer; end;
 
-procedure TFreeViewport.SaveAsBitmap( Filename: string;
-                                const ShowDialog: boolean = True );
-var
-  CanvasWidth: integer;
-  CanvasHeight: integer;
-  XScale: TFloatType;
-  YScale: TFloatType;
-  Scale: TFloatType;
-  OldScale: TFloatType;
-  OldPan: TPoint;
-  OldCanvas: TCanvas;
-  OldCenter: TPoint;
-  Bitmap: TBitmap;
-  Dialog: TSaveImageDialog;
-  OK: boolean;
-  TargetImage:TImage;
+procedure TFreeViewport.SaveAsBitmap
+  ( Filename:AnsiString;
+    const ShowDialog:boolean=true );
+var CanvasWidth,CanvasHeight     : Integer;
+    XScale,YScale,Scale,OldScale : TFloatType;
+    OldPan,OldCenter : TPoint;
+    OldCanvas : TCanvas;
+    Bitmap    : TPortableNetworkGraphic; // TBitmap;
+    Dialog    : TSaveImageDialog;
+    OK        : Boolean;
 begin
-  if ShowDialog then begin
-    Dialog:=TSaveImageDialog.Create( self );
-    ShowTranslatedValues(Dialog);
-    Dialog.SetImageSizes( ClientWidth,ClientHeight );
-    Dialog.Filename:=Filename;
-    OK:=Dialog.Execute;
-  end else begin
-    OK:=True;
-    Dialog:=nil;
-  end;
-  if OK then begin // Backup settings;
-    OldScale:=FScale;
-    OldPan:=FPan;
-    OldCanvas:=FDrawingCanvas;
-    OldCenter:=FScreencenter;
-//    try
+   if ShowDialog then begin
+      Dialog:=TSaveImageDialog.Create( self );
+      ShowTranslatedValues(Dialog);
+      Dialog.ImageWidth:=ClientWidth;
+      Dialog.ImageHeight:=ClientHeight;
+      Dialog.FilenamePNG:=Filename;
+      OK:=Dialog.Execute;
+   end else begin OK:=True; Dialog:=nil; end;
+   if OK then begin                                         // Backup settings;
+      OldScale:=FScale;
+      OldPan:=FPan;
+      OldCanvas:=FDrawingCanvas;
+      OldCenter:=FScreencenter;
+//   try
       if ShowDialog then begin
-        CanvasWidth:=Dialog.ImageWidth;
-        CanvasHeight:=Dialog.ImageHeight;
+         CanvasWidth:=Dialog.ImageWidth;
+         CanvasHeight:=Dialog.ImageHeight;
       end else begin
-        CanvasWidth:=ClientWidth;
-        CanvasHeight:=ClientHeight;
+         CanvasWidth:=ClientWidth;
+         CanvasHeight:=ClientHeight;
       end;
-      Bitmap:=TBitmap.Create;
+      Bitmap:=TPortableNetworkGraphic.Create; // := TBitmap.Create;
       Bitmap.PixelFormat:=pf24bit;
       Bitmap.Width:=CanvasWidth;
       Bitmap.Height:=CanvasHeight;
-      ///FDrawingCanvas:=Bitmap.Canvas;
-      XScale:=CanvasWidth / ClientWidth;
-      YScale:=CanvasHeight / ClientHeight;
-      if XScale < YScale then Scale:=XScale
-                         else Scale:=YScale;
-      FScale:=FScale * Scale;
-      FScreencenter.X:=round(XScale * FScreencenter.X);
-      FScreencenter.Y:=round(YScale * FScreencenter.Y); /// FPrinting:=True;
+      FDrawingCanvas:=Bitmap.Canvas;
+      XScale:=CanvasWidth/ClientWidth;
+      YScale:=CanvasHeight/ClientHeight;
+      if XScale<YScale then Scale:=XScale
+                       else Scale:=YScale;
+      FScale:=FScale*Scale;
+      FScreencenter.X:=round(XScale*FScreencenter.X);
+      FScreencenter.Y:=round(YScale*FScreencenter.Y);
+      FPrinting:=True;
       FDestinationWidth:=CanvasWidth;
       FDestinationHeight:=CanvasHeight;
-      Refresh;
-      //Bitmap.SaveToFile(ChangeFileExt(filename, '.bmp'));
-      //Bitmap.SaveToFile(filename);
-      FreeAndNil( Bitmap );
-
-      TargetImage:=TImage.Create( self );
-      TargetImage.Width:=FDestinationWidth;
-      TargetImage.Height:=FDestinationHeight;
-      TargetImage.Canvas.CopyRect(Rect(0,0,FDestinationWidth,FDestinationHeight),
-                             self.Canvas, Rect(0,0,CanvasWidth,CanvasHeight));
-      TargetImage.Picture.SaveToFile( Dialog.Filename );
-      TargetImage.Free;
-//    finally // Restore settings;
-      FPrinting:=False;
+      refresh;
+      Bitmap.SaveToFile( ChangeFileExt(Dialog.FilenamePNG,'.png' ));
+      Bitmap.Destroy;
+//   finally                                              // Restore settings;
+      FPrinting:=false;
       FDrawingCanvas:=OldCanvas;
       FScale:=OldScale;
       FPan:=OldPan;
       FScreencenter:=OldCenter;
       Refresh;
-//    end;
-  end;
-  if ShowDialog then FreeAndNil( Dialog );
+//   end;
+   end;
+   if ShowDialog then Dialog.Destroy;
 end;{TFreeViewport.SaveAsBitmap}
+
 
 procedure TFreeViewport.Resize;
 begin

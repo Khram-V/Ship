@@ -294,12 +294,12 @@ type
     FDestinationWidth: integer;  // Destinationwidth of the canvas when not drawing to the screen
     FDestinationHeight: integer; // DestinationHeight of the canvas when not drawing to the screen
     FMin3D, FMax3D: T3DVector;
-    FMidPoint: T3DVector;    // Midpoint of the boundarybox determined by FMin3D and FMax3D. This point is used as centerpoint for rotating the 3D model
-    FMargin: TFloatType;         // margin around to viewport to keep clear; and it also is the direction at which the camera looks
+    FMidPoint: T3DVector; // Midpoint of the boundarybox determined by FMin3D and FMax3D. This point is used as centerpoint for rotating the 3D model
+    FMargin: TFloatType;  // margin around to viewport to keep clear; and it also is the direction at which the camera looks
     FBackgroundMode: TFreeViewportBackgroundMode;
-    FViewType: TFreeViewType;    // Switch to sideview, frontview, topview or perspective view
+    FViewType: TFreeViewType;  // Switch to sideview, frontview, topview or perspective view
     FCameraLocation: T3DVector; // Position of the camera, following from the field of view and the distance of the camera
-    FCameraType: TFreeCameraType;   // Determines the focalpoint of the camera
+    FCameraType: TFreeCameraType; // Determines the focalpoint of the camera
     FCosAngle, FSinAngle: TFloatType; // Pre calculated values to speed-up the rotating of point in the perspective-projection
     FCosElevation, FSinElevation: TFloatType; // Pre calculated values to speed-up the rotating of point in the perspective-projection
     FScale: TFloatType;               // Scale for projecting the 2D coordinates to the viewport
@@ -422,16 +422,11 @@ type
     procedure Rectangle(rect: TRect); virtual; overload;
     procedure Ellipse(x1, y1, x2, y2: integer); virtual;
     procedure Pie(EllipseX1, EllipseY1, EllipseX2, EllipseY2, StartX, StartY, EndX, EndY: integer); virtual;
-
     procedure Polyline(const Points: array of TPoint); virtual;
     procedure Polygon(const Points: array of TPoint); virtual;
-
     function GetDrawingBuffer:TBitmap;
-
     procedure SaveAsBitmap(Filename: string; const ShowDialog: boolean = True); virtual;
-
     procedure SetFocus; override;
-
     procedure SetPenWidth(Width: integer); virtual;
     procedure StretchDraw(DestRect: TRect; bmp: TBitmap); virtual;
     procedure ShadedColor(aIntensityRatio: single; R, G, B: byte; var ROut, GOut, BOut: byte); virtual;
@@ -1681,7 +1676,7 @@ function RotateAroundPoint(P: T3DVector; Center: T3DVector; sinhx, coshx, sinhy,
 function RotatePointAroundVector(Point, StartPoint, Endpoint: T3DVector): T3DVector; // Function to rotate a point around a vector
 function RotateVector(P0: T3DVector; sinx, cosx, siny, cosy, sinz, cosz: TFloatType): T3DVector; // Rotates a vector around the origin
 function SetPlane(a, b, c, d: TFloatType): T3DPlane;
-function SetPoint(X, Y, Z: TFloatType): T3DVector;
+function SetPoint( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
 procedure SortFloatArray(var FloatArray: TFloatArray; var N: integer); // sorts an array with floatingpoint values and removes double entries
 function SquaredDistPP(P1, P2: T3DVector): TFloatType;        // calculates the squared distance between two points
 function FloatToDec(Value: TFloatType; Maxlength: integer): string; // Convert a floatingpoint to a string value with a max. number of specified decimals All trailing zeros will be removed
@@ -1701,7 +1696,6 @@ var
 procedure Register;
 
 implementation
-
 {$R ..\Forms\Cursors.res }         // new nice cursors with antialiasing
 
 uses
