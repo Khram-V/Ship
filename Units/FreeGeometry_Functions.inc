@@ -213,15 +213,14 @@ begin
     Result:=IntToStr(Feet);
     if (Feet = 0) and (Value < 0) then Result:='-'+Result;
     Result:=Result+''''+#32+FloatToStrF(Inches, ffFixed, 7, 1)+'''''';
-  end
-  else
-//Result:=IntToStr( Round( 1000 * Value ) ); !!!!!!!
+  end else
+//Result:=IntToStr( Round( 1000 * Value ) ); ///***!!!
   Result:=FloatToStr( Round( Value*100 )/100 );
-end;{ConvertDimension}
+end; {ConvertDimension}
 
 function ConvertCoordinate(Coord: string; OldCoord: TFloatType): TFloatType;
   { parses input "Coord" and and returns the new value of a coordinate    }
-  { if first character of input is (RelIdentifier-currently '@')        }
+  { if first character of input is (RelIdentifier-currently '@')          }
   {    then the input value is added to the old value "OldCoord".         }
   { if the first character of the value is '-',                           }
   {    then the remainder is treated as a negative value                  }

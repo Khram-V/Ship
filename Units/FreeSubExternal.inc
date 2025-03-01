@@ -27,8 +27,8 @@ begin
   Self.IsLoading:=true;
   for I:=0 to Strings.Count-1 do begin
     Str:=BlankOff( Strings[I] );
-    if Str.StartsWith('#') then else
-    if Str.StartsWith('v ') then begin SetLength( Vindex,0 );
+    if Str.StartsWith( '#' ) then else
+    if Str.StartsWith( 'v ' ) then begin SetLength( Vindex,0 );
       Vindex:=Str.Split( [' '] );
       C3d.X:=GetFloat( Vindex[1] );
       C3d.Y:=GetFloat( Vindex[3] );
@@ -39,11 +39,16 @@ begin
   for I:=0 to Faces.Count-1 do begin SetLength( Vindex,0 ); FacePoints.Clear;
     Vindex:=Faces[I].Split( [' '] );
     K:=Length( Vindex )-1;           //?? с замыкаением контура много?угольника
-    for J:=0 to K do begin
-      Index:=GetInteger( Vindex[(J mod K)+1].Replace('/',' ') ); // впереди 'f'
-      FacePoints.Add( CPoints[Index-1] );
+    if K>2 then begin
+      for J:=1 to K do begin
+        Index:=GetInteger( Vindex[J].Replace( '/',' ' ) );       // впереди 'f'
+        FacePoints.Add( CPoints[Index-1] );
+      end;
+      if  ( FacePoints[0]<>FacePoints[1] )  // нулевая площадь - приемлема
+      and ( FacePoints[1]<>FacePoints[2] )  // совпедение точек - недопустимо
+      and ( FacePoints[2]<>FacePoints[0] )
+      then AddControlFace( FacePoints,True,Self.Layer[0] );
     end;
-    AddControlFace( FacePoints,True,Self.Layer[0] );
   end;
   Self.IsLoading:=false;
   SetLength( Vindex,0 );

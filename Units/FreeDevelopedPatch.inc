@@ -29,56 +29,47 @@ begin Result:=0.0;
 end;
 
 function TFreeDevelopedPatch.FGetPoint(index: integer): T3DVector;
-var
-  P: T2DCoordinate;
+var P: T2DCoordinate;
 begin
   P:=F2DCoordinates[index].Coordinate;
-  if (FMirrorOnScreen) and not (FMirror) then
-    P.Y:=-P.Y;
+  if (FMirrorOnScreen) and not (FMirror) then P.Y:=-P.Y;
   Result:=ConvertTo3D(P);
 end;
 
 function TFreeDevelopedPatch.FGetMirrorPoint(index: integer): T3DVector;
-var
-  P: T2DCoordinate;
+var P: T2DCoordinate;
   Tmp: T3DVector;
 begin
   P:=F2DCoordinates[index].Coordinate;
-
   Tmp:=SetPoint(P.X, P.Y, 0.0);
   Tmp:=MirrorPlane(Tmp, FMirrorplane);
   P.X:=Tmp.X;
   P.Y:=Tmp.Y;
-  if (FMirrorOnScreen) and not (FMirror) then
-    P.Y:=-P.Y;
+  if (FMirrorOnScreen) and not (FMirror) then P.Y:=-P.Y;
   Result:=ConvertTo3D(P);
-end;{TFreeDevelopedPatch.FGetMirrorPoint}
+end;
 
 procedure TFreeDevelopedPatch.FSetRotation(Val: TFloatType);
 begin
   FRotation:=val;
   FCos:=Cos(DegTorad(FRotation));
   FSin:=Sin(DegTorad(FRotation));
-end;{TFreeDevelopedPatch.FSetRotation}
+end;
 
 procedure TFreeDevelopedPatch.FSetTranslation(Val: T2DCoordinate);
-begin
-  FTranslation:=Val;
-end;{TFreeDevelopedPatch.FSetTranslation}
+begin FTranslation:=Val; end;
 
 procedure TFreeDevelopedPatch.FSetMirrorOnScreen(val: boolean);
-var
-  Value: TFloatType;
+var Value: TFloatType;
 begin
-  if (val <> FMirrorOnScreen) and (not FMirror) then
-  begin
+  if (val <> FMirrorOnScreen) and (not FMirror) then begin
     FMirrorOnScreen:=Val;
     Value:=FMin2D.Y;
     FMin2D.Y:=-FMax2D.Y;
     FMax2D.Y:=-Value;
     Rotation:=-Rotation;
   end;
-end;{TFreeDevelopedPatch.FSetMirrorOnScreen}
+end;
 
 procedure TFreeDevelopedPatch.Assign(Org: TFreeDevelopedPatch; Mirror: boolean);
 var
@@ -115,29 +106,24 @@ begin
   Translation:=Org.Translation;
   FNoIterations:=Org.FNoIterations;
   FMirrorOnScreen:=Org.FMirrorOnScreen;
-  if length(Org.F2DCoordinates) > 0 then
-  begin
+  if length(Org.F2DCoordinates) > 0 then begin
     Setlength(F2DCoordinates, FPoints.Count);
-    for I:=1 to FPoints.Count do
-    begin
+    for I:=1 to FPoints.Count do begin
       F2DCoordinates[I-1]:=Org.F2DCoordinates[I-1];
       if Mirror then
         F2DCoordinates[I-1].Coordinate.Y:=-F2DCoordinates[I-1].Coordinate.Y;
-      if I = 1 then
-      begin
+      if I = 1 then begin
         FMin2D:=F2DCoordinates[I-1].Coordinate;
         FMax2D:=FMin2D;
-      end
-      else
-      begin
+      end else begin
         if F2DCoordinates[I-1].Coordinate.X < FMin2D.X then
-          FMin2D.X:=F2DCoordinates[I-1].Coordinate.X;
+           FMin2D.X:=F2DCoordinates[I-1].Coordinate.X;
         if F2DCoordinates[I-1].Coordinate.Y < FMin2D.Y then
-          FMin2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
+           FMin2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
         if F2DCoordinates[I-1].Coordinate.X > FMax2D.X then
-          FMax2D.X:=F2DCoordinates[I-1].Coordinate.X;
+           FMax2D.X:=F2DCoordinates[I-1].Coordinate.X;
         if F2DCoordinates[I-1].Coordinate.Y > FMax2D.Y then
-          FMax2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
+           FMax2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
       end;
     end;
   end;
@@ -145,11 +131,10 @@ begin
   Move(Org.FEdgeErrors[0], FEdgeErrors[0], FEdges.Count * SizeOf(double));
   FMaxAreaError:=Org.FMaxAreaError;
   FTotalAreaError:=Org.FTotalAreaError;
-end;{TFreeDevelopedPatch.Assign}
+end;
 
 procedure TFreeDevelopedPatch.Clear;
-var
-  I: integer; Spline: TFreeSpline;
+var I: integer; Spline: TFreeSpline;
 begin
   FConnectedMirror:=nil;
   FXGrid:=1;
@@ -264,7 +249,7 @@ var
   Pts: array of TPoint;
   Pt: TPoint;
   EdgeColor: TColor;
-  Str: string;
+  Str: AnsiString;
   WlPlane: T3Dplane;
   Above,Below: TFreeCoordinateArray;
 
@@ -284,8 +269,7 @@ var
       P3D:=Spline.Value(I / Spline.Fragments);
       P2D.X:=P3D.X;
       P2D.Y:=P3D.Y;
-      if (FMirrorOnScreen) and not (FMirror) then
-        P2D.Y:=-P2D.Y;
+      if (FMirrorOnScreen) and not (FMirror) then P2D.Y:=-P2D.Y;
       P3D:=self.ConvertTo3D(P2D);
       Pts[I]:=Viewport.Project(P3D);
     end;
@@ -295,20 +279,14 @@ var
   end;{DrawSpline}
 
   procedure Swap(var P1, P2: T3DVector);
-  var
-    Tmp: T3DVector;
-  begin
-    Tmp:=P1;
-    P1:=P2;
-    P2:=Tmp;
-  end;{Swap}
+  var Tmp: T3DVector; begin Tmp:=P1; P1:=P2; P2:=Tmp; end; {Swap}
 
   procedure DrawDimension(P1, P2: T3DVector);
   var
     Tmp: integer;
     P: T3DVector;
     Pt: TPoint;
-    Str: string;
+    Str: AnsiString;
   begin
     if P2.X <> P1.X then begin
       if P2.X < P1.X then Swap(P1, P2);
@@ -331,8 +309,8 @@ var
       Tmp:=Trunc(P1.Y / YGrid)-1;
       P.Y:=Tmp * YGrid;
       while P.Y <= P2.Y+YGrid do begin
-        if (Abs(P.Y-P1.Y) < 1e-4) or (Abs(P.Y-P2.Y) < 1e-4) or
-          ((P.Y >= P1.Y) and (P.Y <= P2.Y)) then begin
+        if (Abs(P.Y-P1.Y) < 1e-4) or (Abs(P.Y-P2.Y) < 1e-4)
+        or ((P.Y >= P1.Y) and (P.Y <= P2.Y)) then begin
           P.X:=P1.X+((P.Y-P1.Y) / (P2.Y-P1.Y)) * (P2.X-P1.X);
           P.Z:=0.0;
           Pt:=Viewport.Project(P);
@@ -361,10 +339,8 @@ begin
   g:=round(0.9 * GetGValue(Owner.Color));
   b:=round(0.9 * GetBValue(Owner.Color));
   EdgeColor:=RGB(r, g, b);
-  if Viewport.Printing then
-    PenWidthfactor:=Round(Viewport.PrintScaleFactor)
-  else
-    PenwidthFactor:=1;
+  if Viewport.Printing then PenWidthfactor:=Round(Viewport.PrintScaleFactor)
+                       else PenwidthFactor:=1;
 
   r:=round(1.1 * GetRValue(Owner.Color)); if r > 255 then r:=255;
   g:=round(1.1 * GetGValue(Owner.Color)); if g > 255 then g:=255;
@@ -388,8 +364,7 @@ begin
 
     Wlplane:=Owner.Surface.WaterlinePlane;
 
-    for I:=1 to FDoneList.Count do begin
-      Face:=FDoneList[I-1];
+    for I:=1 to FDoneList.Count do begin Face:=FDoneList[I-1];
       if cap <> Face.NumberOfpoints then begin
         Cap:=Face.NumberOfpoints;
         setlength(Pts, Cap);
@@ -402,18 +377,17 @@ begin
           Index:=FPoints.IndexOf(Face.Point[J-2]);
           if Index <> -1 then P2:=self.Point[index];
           Index:=FPoints.IndexOf(Face.Point[J-1]);
-          if Index <> -1 then P3:=self.Point[index];
-
-          // Check if clipping is required
-
+          if Index <> -1 then P3:=self.Point[index]; // Check if clipping is required
           Point:=Face.Point[0];
-          s1:=WlPlane.a * Point.Coordinate.x+WlPlane.b * Point.Coordinate.y +
-            WlPlane.c * Point.Coordinate.z+WlPlane.d;
+          s1:=WlPlane.a * Point.Coordinate.x +
+              WlPlane.b * Point.Coordinate.y +
+              WlPlane.c * Point.Coordinate.z + WlPlane.d;
           MinZ:=s1;
           MaxZ:=MinZ;
           Point:=Face.Point[J-2];
-          s2:=WlPlane.a * Point.Coordinate.x+WlPlane.b * Point.Coordinate.y +
-            WlPlane.c * Point.Coordinate.z+WlPlane.d;
+          s2:=WlPlane.a * Point.Coordinate.x +
+              WlPlane.b * Point.Coordinate.y +
+              WlPlane.c * Point.Coordinate.z + WlPlane.d;
           if s2 < MinZ then MinZ:=s2 else
           if s2 > MaxZ then MaxZ:=s2;
           Point:=Face.Point[J-1];
@@ -450,13 +424,12 @@ begin
           if Index <> -1 then begin
             P1:=MirrorPoint[index];
             Pts[J-1]:=Viewport.Project(P1);
-          end;         // WriteLn('Unrolled point could not be found!');
+          end;                // WriteLn('Unrolled point could not be found!');
         end;
         Viewport.Polygon(Pts);
       end;
     end;
   end;
-
   if not ShowInteriorEdges then begin                // Draw only boundaryedges
     Viewport.PenColor:=EdgeColor;
     Viewport.PenStyle:=psSolid;
@@ -479,17 +452,13 @@ begin
       end;
     end;
   end;
-
-
   if ShowDimensions then begin                               // draw dimensions
     Viewport.PenColor:=clBlack;
     Viewport.BrushStyle:=bsClear;
     Viewport.PenWidth:=PenwidthFactor;
-
     // calculate and set fontheight
-    //Viewport.FontName:='Times';
-    //Viewport.FontHeight:=round(DistPP3D(Viewport.Min3D,Viewport.Max3D)/150);
-
+    // Viewport.FontName:='Times';
+    // Viewport.FontHeight:=round(DistPP3D(Viewport.Min3D,Viewport.Max3D)/150);
     Viewport.DrawingCanvas.Font.Color:=FDimFontColor;
     Viewport.DrawingCanvas.Font.Name:=FDimFontName;
     Viewport.DrawingCanvas.Font.Size:=FDimFontSize;
@@ -520,8 +489,7 @@ begin
         Viewport.TextOut(Pt.X-Viewport.TextWidth(Str) div 2, Pt.Y, Str);
       end;
     end;
-  end;
-  // show edges with errors
+  end;                                                // show edges with errors
   if ShowErrorEdges then begin
     Viewport.PenWidth:=2 * PenwidthFactor;
     for I:=1 to FEdges.Count do begin
@@ -596,11 +564,8 @@ begin
   end else
   for I:=1 to FPoints.Count do begin
       P:=Point[I-1];
-      if I = 1 then begin
-        Min:=P;
-        Max:=Min;
-      end;
-      MinMax(P, Min, Max);
+      if I=1 then begin Min:=P; Max:=Min; end;
+      MinMax( P, Min, Max );
       if FMirror then begin
         P:=MirrorPoint[I-1];
         MinMax(P, Min, Max);
@@ -645,8 +610,8 @@ begin
       P2:=Face.FPoints[K-1];
       Side2:=Plane.A * P2.Coordinate.x+Plane.B * P2.Coordinate.y +
         Plane.C * P2.Coordinate.z+Plane.D;
-      if ((Side1 < -1e-5) and (Side2 > 1e-5)) or
-        ((Side1 > 1e-5) and (Side2 < -1e-5)) then begin
+      if ((Side1 < -1e-5) and (Side2 > 1e-5))
+      or ((Side1 > 1e-5) and (Side2 < -1e-5)) then begin
         // regular intersection of edge
         // add the edge to the list
         Parameter:=-side1 / (side2-side1);
@@ -714,39 +679,22 @@ begin
       end;
     end;
   end;
-  for I:=1 to Dest.Count do
-  begin
+  for I:=1 to Dest.Count do begin
     Spline:=Dest[I-1];
-    if abs(Plane.a) > 0.9999 then
-      FStations.Add(Spline)
-    else
-    if abs(Plane.b) > 0.9999 then
-      FButtocks.Add(Spline)
-    else
-    if abs(Plane.c) > 0.9999 then
-      FWaterlines.Add(Spline)
-    else
-    if (abs(Plane.b) > 0.5) and (abs(Plane.c) > 0.5) then
-      FDiagonals.Add(Spline);
-    if FMirror then
-    begin
+    if abs(Plane.a) > 0.9999 then FStations.Add(Spline) else
+    if abs(Plane.b) > 0.9999 then FButtocks.Add(Spline) else
+    if abs(Plane.c) > 0.9999 then FWaterlines.Add(Spline) else
+    if (abs(Plane.b)>0.5) and (abs(Plane.c)>0.5) then FDiagonals.Add(Spline);
+    if FMirror then begin
       Copy:=TFreeSpline.Create(Owner.Surface);
       Copy.Assign(Spline);
-      for J:=1 to Spline.NumberOfPoints do
-      begin
+      for J:=1 to Spline.NumberOfPoints do begin
         Copy.Point[J-1]:=MirrorPlane(Spline.Point[J-1], FMirrorPlane);
       end;
-      if abs(Plane.a) > 0.9999 then
-        FStations.Add(Copy)
-      else
-      if abs(Plane.b) > 0.9999 then
-        FButtocks.Add(Copy)
-      else
-      if abs(Plane.c) > 0.9999 then
-        FWaterlines.Add(Copy)
-      else
-      if (abs(Plane.b) > 0.5) and (abs(Plane.c) > 0.5) then
-        FDiagonals.Add(Copy);
+      if abs(Plane.a) > 0.9999 then FStations.Add(Copy) else
+      if abs(Plane.b) > 0.9999 then FButtocks.Add(Copy) else
+      if abs(Plane.c) > 0.9999 then FWaterlines.Add(Copy) else
+      if (abs(Plane.b)>0.5) and (abs(Plane.c)>0.5) then FDiagonals.Add(Copy);
     end;
   end;
   FreeAndNil(Dest);
@@ -817,8 +765,7 @@ begin                                             // Extract edges as polylines
 
   for I:=1 to Dest.Count do begin
     Edge:=Dest[I-1];
-    if I > 1 then
-      Strings.Add('');
+    if I > 1 then Strings.Add('');
 
     printEdgePoint(Edge.StartPoint, FMirror);
     printEdgePoint(Edge.EndPoint, FMirror);
@@ -837,17 +784,10 @@ procedure TFreeDevelopedPatch.Unroll(ControlFaces: TFasterListTFreeSubdivisionCo
 type
   TPolygonOrientation = (poCCW, poCW);
 var
-  I, J, K, N: integer;
-  BestIndex: integer;
-  ErrorIndex: integer;
-  Error, Area: extended;
-  MaxError: extended;
-  SeedArea: extended;
-  OptArea, Dist: TFloatType;
-  OptAngle: TFloatType;
-  Min, Max: T3DVector;
-  Normal: T3DVector;
-  P3D1, P3D2, P3D3: T3DVector;
+  I, J, K, N, BestIndex, ErrorIndex: integer;
+  Error, Area, MaxError, SeedArea: extended;
+  OptArea, Dist, OptAngle: TFloatType;
+  Min, Max, Normal, P3D1, P3D2, P3D3: T3DVector;
   Ctrlface: TFreeSubdivisionControlFace;
   Child, Face: TFreeSubdivisionface;
   Seedface: TFreeSubdivisionface;
@@ -1068,18 +1008,12 @@ var
   procedure ProcessFaces(Seedface: TFreeSubdivisionFace; var MaxError: extended;
   var ErrorIndex: integer);
   var
-    I, J, k, S, E, P: integer;
-    Index: integer;
+    I, J, k, S, E, P, Index: integer;
     ToDoList: TFasterListTFreeSubdivisionFace;
-    Face: TFreeSubdivisionFace;
-    Child: TFreeSubdivisionFace;
+    Face, Child: TFreeSubdivisionFace;
     Edge: TFreeSubdivisionEdge;
     P1, P2: TFreeSubdivisionPoint;
-    L2D, L3D: extended;
-    Error: extended;
-    TotalError: extended;
-    _3DArea: extended;
-    _2DArea: extended;
+    L2D, L3D, Error, TotalError, _3DArea, _2DArea: extended;
     Temp: boolean;
   begin
     MaxError:=0.0;
@@ -1091,11 +1025,8 @@ var
     Setlength(F2DCoordinates, FPoints.Count);
     Setlength(Processed, FPoints.Count);
     Setlength(FEdgeErrors, FEdges.Count);
-    for I:=1 to FEdges.Count do
-      FEdgeErrors[I-1]:=0.0;
-
-    for i:=1 to FPoints.Count do
-    begin
+    for I:=1 to FEdges.Count do FEdgeErrors[I-1]:=0.0;
+    for i:=1 to FPoints.Count do begin
       Processed[I-1]:=False;
       F2DCoordinates[I-1].Coordinate.X:=0.0;
       F2DCoordinates[I-1].Coordinate.Y:=0.0;
@@ -1156,16 +1087,12 @@ var
       if Error > FMaxAreaError then
         FMaxAreaError:=Error;
     end;
-
-    // calculate min/max errors of edges
-    for I:=1 to FEdges.Count do
-    begin
+                                           // calculate min/max errors of edges
+    for I:=1 to FEdges.Count do begin
       Edge:=FEdges[I-1];
       S:=FPoints.IndexOf(Edge.StartPoint);
       E:=FPoints.IndexOf(Edge.EndPoint);
-      if (S <> -1) and (E <> -1) then
-      begin
-        // original distance in 3D
+      if (S <> -1) and (E <> -1) then begin          // original distance in 3D
         L3D:=sqr(Edge.Endpoint.Coordinate.X-Edge.Startpoint.Coordinate.X) +
           sqr(Edge.Endpoint.Coordinate.Y-Edge.Startpoint.Coordinate.Y) +
           sqr(Edge.Endpoint.Coordinate.Z-Edge.Startpoint.Coordinate.Z);
@@ -1173,32 +1100,25 @@ var
           sqr(F2DCoordinates[E].Coordinate.Y-F2DCoordinates[S].Coordinate.Y);
         Error:=Sqrt(L2D)-Sqrt(L3D);
         TotalError:=TotalError+abs(Error);
-        if abs(Error) > MaxError then
-          MaxError:=abs(Error);
+        if abs(Error) > MaxError then MaxError:=abs(Error);
         FEdgeErrors[I-1]:=Error;
       end;
     end;
     MaxError:=MaxError+abs(FTotalAreaError);
   end;{ProcessFaces}
 
-begin
-  // first assemble all points, edges and faces used
+begin                        // first assemble all points, edges and faces used
   FFaces:=TFasterListTFreeSubdivisionFace.Create;
-  for K:=1 to ControlFaces.Count do
-  begin
+  for K:=1 to ControlFaces.Count do begin
     Ctrlface:=ControlFaces[K-1];
     FFaces.AddList(Ctrlface.FChildren);
 //  FFaces.Sort;
-    for I:=1 to Ctrlface.ChildCount do
-    begin
+    for I:=1 to Ctrlface.ChildCount do begin
       Child:=Ctrlface.Child[I-1];
       P1:=Child.Point[Child.NumberOfPoints-1];
-      for J:=1 to Child.NumberOfpoints do
-      begin
-        P2:=Child.Point[J-1];
-        // Add this point
-        if FPoints.IndexOf(P2) = -1 then FPoints.Add(P2);
-        // add this edge
+      for J:=1 to Child.NumberOfpoints do begin
+        P2:=Child.Point[J-1];                                 // Add this point
+        if FPoints.IndexOf(P2) = -1 then FPoints.Add(P2);     // add this edge
         Edge:=Owner.Surface.EdgeExists(P1, P2);
         if Edge <> nil then
           if FEdges.IndexOf(Edge) = -1 then FEdges.Add(Edge);
@@ -1206,13 +1126,12 @@ begin
       end;
     end;
   end;
-
   FPoints.Capacity:=FPoints.Count;
   FEdges.Capacity:=FEdges.Count;
 
-  // Find the seed face, which is characterized by the face that it
-  // has one cornerpoint with (possibly) multiple faces, but only 1
-  // face is present in the list of faces to be unrolled.
+              // Find the seed face, which is characterized by the face that it
+              // has one cornerpoint with (possibly) multiple faces, but only 1
+              // face is present in the list of faces to be unrolled.
   SeedFaces:=TFasterListTFreeSubdivisionFace.Create;
   SeedFace:=nil;
   SeedArea:=0;
@@ -1234,92 +1153,70 @@ begin
         end;
       end;
     end;
-  end;
-
-  // if NO seedfaces could be found (which should not occur) then
-  // pick a random one (the one with the largest area)
-  if Seedfaces.Count = 0 then
-  begin
-    for I:=1 to FFaces.Count do
-    begin
+  end;               // if NO seedfaces could be found (which should not occur)
+                     // then pick a random one (the one with the largest area)
+  if Seedfaces.Count = 0 then begin
+    for I:=1 to FFaces.Count do begin
       Face:=FFaces[I-1];
       Area:=Face.Area;
-      if (I = 1) or (Area > SeedArea) then
-      begin
+      if (I = 1) or (Area > SeedArea) then begin
         SeedFace:=face;
         SeedArea:=Area;
       end;
     end;
-    if Seedface <> nil then
-    begin
-      Seedfaces.Add(SeedFace);
-    end;
+    if Seedface <> nil then begin Seedfaces.Add(SeedFace); end;
   end;
-
-  // sort seedfaces
-  for I:=1 to Seedfaces.Count-1 do
-  begin
+                                                              // sort seedfaces
+  for I:=1 to Seedfaces.Count-1 do begin
     SeedFace:=Seedfaces[I-1];
     SeedArea:=Seedface.Area;
-    for J:=2 to SeedFaces.Count do
-    begin
+    for J:=2 to SeedFaces.Count do begin
       Child:=Seedfaces[J-1];
       Area:=Child.Area;
-      if Area < seedArea then
-      begin
+      if Area < seedArea then begin
         Seedfaces.Exchange(I-1, J-1);
         SeedArea:=Area;
       end;
     end;
   end;
-  if SeedFaces.Count > 0 then
-  begin
+  if SeedFaces.Count > 0 then begin
     MaxError:=1e10;
     BestIndex:=-1;
     I:=1;
     FNoIterations:=0;
     // Keep trying to develop the faces until no error has occured and the max. error<1e-7 and the number of iterations<=25
-    while I <= seedfaces.Count do
-    begin
+    while I <= seedfaces.Count do begin
       Seedface:=Seedfaces[I-1];
       ProcessFaces(Seedface, Error, ErrorIndex);
       Inc(FNoIterations);
-      if (ErrorIndex <> -1) and (Seedfaces.Count < 25) then
-      begin
-        // Add faces where an error occured as new seedfaces, these
-        // are generally areas where gauss curvature<>0.0
+      if (ErrorIndex <> -1) and (Seedfaces.Count < 25) then begin
+                         // Add faces where an error occured as new seedfaces,
+                        // these are generally areas where gauss curvature<>0.0
         if Seedfaces.IndexOf(FDonelist[ErrorIndex]) = -1 then
           Seedfaces.Add(FDonelist[ErrorIndex]);
       end;
-      if Error < MaxError then
-      begin
+      if Error < MaxError then begin
         MaxError:=Error;
         BestIndex:=I-1;
       end;
       Inc(I);
     end;
-
-    // Restore the best development
-    if (BestIndex <> -1) and (BestIndex <> Seedfaces.Count-1) then
-    begin
+                                                // Restore the best development
+    if (BestIndex <> -1) and (BestIndex <> Seedfaces.Count-1) then begin
       Seedface:=Seedfaces[BestIndex];
       ProcessFaces(Seedface, Error, ErrorIndex);
     end;
-
-    // Assemble all boundaryedges
+                                                  // Assemble all boundaryedges
     FBoundaryEdges.Clear;
-    for I:=1 to FEdges.Count do
-    begin
-      Edge:=FEdges[I-1];
-      // Only edges with 1 attached face in the ffaces list are valid
+    for I:=1 to FEdges.Count do begin
+      Edge:=FEdges[I-1]; // Only edges with 1 attached face in the ffaces list are valid
       N:=0;
       for J:=1 to Edge.NumberOfFaces do
         if FFaces.IndexOf(Edge.Face[J-1]) <> -1 then Inc(N);
       if N = 1 then FBoundaryEdges.Add(Edge);
     end;
     FBoundaryEdges.Capacity:=FBoundaryEdges.Count;
-
-    // calculate min/max coordinates in 2D
+                                         // calculate min/max coordinates in 2D
     for I:=1 to FPoints.Count do begin
       if I = 1 then begin
         FMin2D:=F2DCoordinates[I-1].Coordinate;
@@ -1335,96 +1232,74 @@ begin
           FMax2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
       end;
     end;
-
-    // finally find optimal rotation angle such that the
-    // area of the bounding box is minimal
+                           // finally find optimal rotation angle such that the
+                           // area of the bounding box is minimal
     OptArea:=0;
     OptAngle:=0;
     for I:=0 to 180 do begin
       Rotation:=I / 2;
       Extents(Min, Max);
       Area:=(Max.X-Min.X) * (Max.Y-Min.Y);
-      if I = 0 then
-      begin
+      if I = 0 then begin
         OptArea:=Area;
         OptAngle:=Rotation;
       end;
-      if Area < OptArea then
-      begin
+      if Area < OptArea then begin
         OptArea:=Area;
         OptAngle:=Rotation;
       end;
     end;
     Rotation:=OptAngle;
     Extents(Min, Max);
-    if Max.X-Min.X < Max.Y-Min.Y then
-      Rotation:=Rotation-90;
-    if Owner.Symmetric then
-    begin
-      // Now check if the surface has one of its sides on the centerplane
+    if Max.X-Min.X < Max.Y-Min.Y then Rotation:=Rotation-90;
+    if Owner.Symmetric then begin // Now check if the surface has one of its sides on the centerplane
       FMirror:=False;
       TmpEdges:=TFasterListTFreeSubdivisionEdge.Create;
-      for J:=1 to FEdges.Count do
-      begin
+      for J:=1 to FEdges.Count do begin
         Edge:=FEdges[J-1];
-        if (Edge.NumberOfFaces = 1) and (abs(Edge.StartPoint.Coordinate.Y) <= 1e-4) and
-          (abs(Edge.EndPoint.Coordinate.Y) <= 1e-4) then
-        begin
+        if (Edge.NumberOfFaces = 1) and (abs(Edge.StartPoint.Coordinate.Y) <= 1e-4)
+        and (abs(Edge.EndPoint.Coordinate.Y) <= 1e-4) then begin
           FMirror:=True;
           TmpEdges.Add(Edge);
         end;
       end;
-      if TmpEdges.Count > 0 then
-      begin
-        if FMirror then
-        begin
-          // Now if all facenormals have a Y-coordinate of approx. 0.0 then
-          // this is probably a bottom panel, a deck or a transom
-          for J:=1 to FDoneList.Count do
-          begin
+      if TmpEdges.Count > 0 then begin
+        if FMirror then begin
+              // Now if all facenormals have a Y-coordinate of approx. 0.0 then
+              // this is probably a bottom panel, a deck or a transom
+          for J:=1 to FDoneList.Count do begin
             Face:=FDonelist[J-1];
             Normal:=Face.FaceNormal;
-            if abs(Normal.Y) > 1e-2 then
-            begin
-              FMirror:=False;
-              // Y-coordinate of Normal is too big, do not attach
+            if abs(Normal.Y) > 1e-2 then begin
+              FMirror:=False;// Y-coordinate of Normal is too big, do not attach
               Break;
             end;
           end;
 
-          if FMirror then
-          begin
+          if FMirror then begin
             // Check if all points on the centerline are developed onto a 2Dline
             // if so, then this line is used to mirror the other half of the layer
             // so it forms 1 whole panel and there is no need to unfold it.
             SortedPointLists:=TFasterListTFreeSubdivisionFace.Create;
             self.FOwner.Surface.IsolateEdges(TmpEdges, SortedPointLists);
             FreeAndNil(TmpEdges);
-
-            // MM: logic is not clear
-            for J:=SortedPointLists.Count downto 1 do
-            begin
+                                                      // MM: logic is not clear
+            for J:=SortedPointLists.Count downto 1 do begin
               sPointList:=SortedPointLists[J-1];
-              if J > 1 then
-                FreeAndNil(sPointList); // MM: ??
+              if J > 1 then FreeAndNil(sPointList); // MM: ??
             end;
-
             if sPointList <> nil then
-              if sPointList.NumberOfpoints > 0 then
-              begin
+              if sPointList.NumberOfpoints > 0 then begin
                 P1:=sPointList.Point[0];
                 P2:=sPointList.Point[ sPointList.NumberOfpoints-1 ];
-                if P1 = P2 then // closed loop, pick another point
-                begin
+                if P1 = P2 then begin        // closed loop, pick another point
                   J:=sPointList.NumberOfpoints;
-                  while (J > 1) and (P1 = P2) do
-                  begin
+                  while (J > 1) and (P1 = P2) do begin
                     P2:=sPointList.Point[J-1];
                     Dec(J);
                   end;
                 end;
-                if P1 <> P2 then
-                begin
+                if P1 <> P2 then begin
                   BestIndex:=FPoints.IndexOf(P1);
                   P3D1.X:=F2DCoordinates[BestIndex].Coordinate.X;
                   P3D1.Y:=F2DCoordinates[BestIndex].Coordinate.Y;
@@ -1458,8 +1333,7 @@ begin
                     P3D3.Z:=1.0;
                     FMirror:=True;
                     FMirrorPlane:=PlanePPP(P3D1, P3D2, P3D3);
-
-                    // calculate min/max coordinates in 2D of the mirror part
+                      // calculate min/max coordinates in 2D of the mirror part
                     for J:=1 to FPoints.Count do begin
                       P3D2:=SetPoint(F2DCoordinates[J-1].Coordinate.X, F2DCoordinates[J-1].Coordinate.Y, 0.0);
                       P3D1:=MirrorPlane(P3D2, FMirrorplane);
@@ -1478,10 +1352,8 @@ begin
       if (TmpEdges <> nil) and Assigned(TmpEdges) then
         FreeAndNil(TmpEdges);
     end;
-
-    // Assemble cornerpoints for dimensioning
-    for I:=1 to FPoints.Count do
-    begin
+                                      // Assemble cornerpoints for dimensioning
+    for I:=1 to FPoints.Count do begin
       P1:=FPoints[I-1];
       N:=0;
       for J:=1 to P1.NumberOfFaces do
@@ -1489,11 +1361,11 @@ begin
       if (N = 1) or (P1.VertexType = svCorner) then begin FCorners.Add(P1); end;
     end;
   end else WriteLn('UnRoll: Seed could not be found!');
-  {Seedfaces.Destroy;
-  Seedfaces:=nil;
-  FreeAndNil(FFaces);
-  FFaces:=nil;}
+  {  Seedfaces.Destroy;
+     Seedfaces:=nil;
+     FreeAndNil( FFaces );
+     FFaces:=nil; }
   FreeAndNil(Seedfaces);
   FreeAndNil(FFaces);
-end;{TFreeDevelopedPatch.Unroll}
+end;
 

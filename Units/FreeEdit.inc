@@ -518,12 +518,13 @@ begin
       if P3D.Y<0 then IsMinus:=true else isZero:=true;
     end;
     if not IsPlus then begin Face.Delete; Inc( RemovedF ); end; // else
+//  if (not IsPlus) and (not isZero) then begin Face.Delete; Inc( RemovedF ); end; // else
 //    for J:=0 to Face.NumberOfpoints-1 do begin P3D:=Face.Point[J].Coordinate;
 //      if P3D.Y<0 then begin P3D.Y:=0.0; Face.Point[J].Coordinate:=P3D; end;
 //  end;
   end;
   //
-  //  расчестка всех точек, не привязанных к треугольникам
+  //  расчистка всех точек, не привязанных к треугольникам
   //
   for I:=FreeShip.Surface.NumberOfControlPoints-1 downto 0 do begin
     Point:=FreeShip.Surface.ControlPoint[I];

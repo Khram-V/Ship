@@ -1142,7 +1142,7 @@ begin
        FDesignHydrostatics.Calculate;
        FDesignHydrostatics.CalculateGravity;
     end;
-    if FDesignHydrostatics.Errors = [] then              ///***??? Hydro
+//  if FDesignHydrostatics.Errors = [] then              ///***??? Hydro
     begin                                                // Center of bouyancy
       if Visibility.FShowHydrostDisplacement then
         DrawPoint(FDesignHydrostatics.FData.CenterOfBuoyancy, 'Displ=' +

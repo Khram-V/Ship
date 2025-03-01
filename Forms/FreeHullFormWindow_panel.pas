@@ -586,17 +586,18 @@ procedure TFreeHullWindow.ShowGaussCurvatureExecute(Sender: TObject);
 procedure TFreeHullWindow.ShowDevelopablityExecute(Sender: TObject);
     begin Viewport.ViewportMode:=vmShadeDevelopable; end;
 
-procedure TFreeHullWindow.SaveAsBitmapExecute(Sender: TObject);
-var Str,vpt: string;
+procedure TFreeHullWindow.SaveAsBitmapExecute( Sender: TObject );
+var Str,vpt: AnsiString;
 begin
   Case Viewport.ViewType of
      fvBodyplan     : vpt:='_Bodyplan';
      fvProfile      : vpt:='_Profile';
      fvPlan         : vpt:='_Plan';
-     fvPerspective  : vpt:='_Perspective'; else vpt:='';
+     fvPerspective  : vpt:='_Perspective'; else vpt:='__wwedfwedf';
   end;
-  Str:=Freeship.Preferences.ExportDirectory+DirectorySeparator
-     + ChangeFileExt( ExtractFilename( Freeship.Filename )+vpt,'.png' );
+  Str:=Freeship.Preferences.ExportDirectory
+     + ChangeFileExt( ExtractFilename(
+       ChangeFileExt( Freeship.Filename,'' ) )+vpt,'.png' );
   Viewport.SaveAsBitmap( Str,true );
 end;
 

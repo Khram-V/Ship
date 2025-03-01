@@ -224,36 +224,27 @@ type
     // Input data for each calculation
     FHeelingAngle: TFloatType;
     FTrim: TFloatType;
-    FDraft: TFloatType;
-    // Calculation flags
-    FCalculated: boolean;
-    FErrors: TFreeHydrostaticErrors;
-    FHydrostaticType: TFreeHydrostaticType;
-    // Determines how calculations are performed: short, extensive etc.
-    // The following data is calculated
-    FData: TFreeHydrostaticsData;
+    FDraft: TFloatType;                                    // Calculation flags
+    FCalculated: boolean; // Determines how calculations are performed: short, extensive etc.
+    FData: TFreeHydrostaticsData;           // The following data is calculated
     FCalculations: TFreeHydrostaticsCalculate;
     FMidshipSection: TFreeIntersection;
     FMidshipLocation: TFloatType;
     FBulbSection: TFreeIntersection;
-//  function FGetErrorString: AnsiString;
     function FGetTrimAngle: TFloatType;
     function FGetWlPlane: T3DPlane;
     procedure FSetCalculated(val: boolean);
     procedure FSetDraft(Val: TFloatType);
-    procedure FSetErrors(val: TFreeHydrostaticErrors);
     procedure FSetHeelingAngle(Val: TFloatType);
-    procedure FSetHydrostaticType(val: TFreeHydrostaticType);
     procedure FSetTrim(Val: TFloatType);
   public
-    procedure AddData(Strings: TStringList; Mode: TFreeHydrostaticsMode;
-      Separator: char);
-    // Add calculated data to a stringlist to either show in a report or save to disc
+    procedure AddData(Strings: TStringList; Mode: TFreeHydrostaticsMode; Separator: char);
+//  Add calculated data to a stringlist to either show in a report or save to disc
     procedure AddHeader(Strings: TStringList);
     procedure AddFooter(Strings: TStringList; Mode: TFreeHydrostaticsMode);
 //  function Balance(Displacement: TFloatType; FreeToTrim: boolean; var Output: TFreeCrosscurvesData): boolean;
     procedure Calculate;
-    // The actual calculation of the hydrostatics finds place in this procedure
+//  The actual calculation of the hydrostatics finds place in this procedure
     procedure CalculateGravity;
     procedure CalculateMidshipLocation;
     procedure CalculateVolume(WaterlinePlane: T3DPlane);
@@ -266,11 +257,8 @@ type
     property Calculations: TFreeHydrostaticsCalculate read FCalculations write FCalculations;
     property Data: TFreeHydrostaticsData read FData;
     property Draft: TFloatType read FDraft write FSetDraft;
-    property Errors: TFreeHydrostaticErrors read FErrors write FSetErrors;
-//  property ErrorString: AnsiString read FGetErrorString;
     property HeelingAngle: TFloatType read FHeelingAngle write FSetHeelingAngle;
-    property HydrostaticType: TFreeHydrostaticType read FHydrostaticType write FSetHydrostaticType;
-    // Determines how calculations are performed: short, extensive etc.
+//  Determines how calculations are performed: short, extensive etc.
     property MidshipLocation: TFloatType read FMidshipLocation;
     property Owner: TFreeShip read FOwner;
     property Trim: TFloatType read FTrim write FSetTrim;

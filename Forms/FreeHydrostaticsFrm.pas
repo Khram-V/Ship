@@ -266,7 +266,7 @@ begin
           Inc(I);
         end;
         Value:=Value+DraftStep;
-        if (feMakingWater in HydObject.Errors) then break; // stop if the vessel is making water
+//      if (feMakingWater in HydObject.Errors) then break; // stop if the vessel is making water
       end;
       HydObject.AddHeader(Strings);
       Strings.add('');
