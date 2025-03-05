@@ -41,7 +41,6 @@ end;
 //
 //
 //
-
 procedure TFreeEdit.File_ImportSTL;
 var
   OpenDialog: TOpenDialog;
@@ -237,9 +236,8 @@ begin
   FreeAndNil(OpenDialog);
 end;
 //
-//
-//
 // Loads a bodyplane and tries to fit a surface to it
+//
 procedure TFreeEdit.ImportFrames;
 type
   TMinMax = record MinZ, MaxZ: TFloatType; end;
@@ -265,7 +263,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=ExtractFilepath(Application.ExeName);
-  OpenDialog.Filter:=createDialogFilter(rs3DTextFile, ['txt']);
+  OpenDialog.Filter:=createDialogFilter( rs3DTextFile,['txt'] );
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     Frames:=TFasterListTFreeSpline.Create;
@@ -392,12 +390,10 @@ begin
           FreeShip.Surface.AddControlFace(Points, True);
         end;
 
-      Points.Clear;
-      // Try to reconnect the contourline
+      Points.Clear;                        // Try to reconnect the contourline
       P1:=nil;
       P2:=nil;
-      for I:=1 to Frames.Count do
-      begin
+      for I:=1 to Frames.Count do begin
         for J:=1 to NoPoints do
           if abs(ControlPoints[I-1][J-1].Coordinate.Z-MinMaxData[I-1].MinZ)<1e-7
           then begin
@@ -414,8 +410,7 @@ begin
           if Edge <> nil then Edge.Crease:=True
           else begin // Find out if P1 and P2 share the same controlface
             for J:=1 to P1.NumberOfFaces do
-              if P2.IndexOfFace(P1.Face[J-1]) <> -1 then
-              begin
+              if P2.IndexOfFace(P1.Face[J-1]) <> -1 then begin
                 Face:=P1.Face[J-1] as TFreeSubdivisionControlFace;
                 Edge:=Face.InsertEdge(P1, P2, IsFaceDeleted);
                 if Edge <> nil then
@@ -469,8 +464,7 @@ begin
       FreeShip.FileChanged:=True;
     end;
     FreeShip.Draw;
-    if Assigned(FreeShip.OnUpdateGeometryInfo)
-           then FreeShip.OnUpdateGeometryInfo( self );
+    if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo( self );
     // Destroy allocated stations
     for I:=1 to Frames.Count do begin
       Spline:=Frames[I-1];
@@ -726,8 +720,7 @@ begin
               Readln(FFile, Str);
               repeat
                 I:=Pos(#9, Str);
-                if I <> 0 then
-                  str[I]:=#32;
+                if I <> 0 then str[I]:=#32;
               until I = 0;
               Inc(Nr);
               Str:=Trim(Uppercase(Str));
@@ -1159,9 +1152,8 @@ begin
   FreeAndNil(OpenDialog);
 end;{TFreeEdit.File_Import_MichletWaves}
 //
-//
-//
 // imports a Carene XYZ file and creates a multichine boat with developable surfaces
+//
 procedure TFreeEdit.File_ImportCarene;
 var
   OpenDialog: TOpenDialog;
@@ -1244,7 +1236,7 @@ begin
         FreeAndNil(Chines);
 //    finally
         CloseFile(FFile);
-        FreeShip.Filename:=ChangeFileExt(Opendialog.FileName, '.fbm');
+        FreeShip.Filename:=ChangeFileExt( Opendialog.FileName,'.fbm' );
         FreeShip.ModelIsLoaded:=True;
         FreeShip.RebuildModel;
 //    end;
@@ -1326,8 +1318,7 @@ begin
             end;
           until (Str = 'EOF') or (EOF(FFile));
           if Spline.NumberOfPoints > 1 then Chines.Add( Spline )
-          else
-            FreeAndNil(Spline);
+                                       else FreeAndNil( Spline );
 //        except
 //          MessageDlg('Error on line '+IntToStr(LineNr)+' in file ' +
 //            Opendialog.Filename, mtError, [mbOK], 0);
@@ -1347,8 +1338,78 @@ begin
   end;
   FreeAndNil(OpenDialog);
 end;
-
+//
 // Import a Freeship Exchange Format (FEF) file
+//
+(*
+procedure TFreeEdit.File_ImportFEF;
+var OpenDialog : TOpenDialog;
+    Answer     : word;
+    Strings    : TStringList;
+    Str        : string;
+    LineNr,I   : integer;
+begin
+   OpenDialog:=TOpenDialog.Create(FreeShip);
+   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
+   OpenDialog.Filter:='FREE!ship Exchange Format file ( *.Fef )|*.Fef';
+   Opendialog.Options:=[ofHideReadOnly];
+   if OpenDialog.Execute then
+   begin
+      if FreeShip.FileChanged then
+      begin
+         Answer:=MessageDlg(Userstring(103)+EOL+Userstring(104),mtConfirmation,[mbYes,mbNo,mbCancel],0);
+         if Answer=mrCancel then
+         begin
+            OpenDialog.Destroy;
+            exit;
+         end;
+         if Answer=mrYes then
+         begin
+            File_SaveAs;
+            if FreeShip.FileChanged then
+            begin
+               // Apparently saving was not successfull, abort
+               OpenDialog.Destroy;
+               exit;
+            end;
+         end;
+      end;
+      FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
+      CreateUndoObject(Userstring(109),True);
+      FreeShip.Clear;
+      Strings:=TStringList.Create;
+      Strings.LoadFromFile(OpenDialog.Filename);
+      LineNr:=-1;
+      // Read general information and mainparticulars
+
+      inc(LineNr); FreeShip.ProjectSettings.FProjectName:=Strings[LineNr];
+      inc(LineNr); FreeShip.ProjectSettings.FProjectDesigner:=Strings[LineNr];
+      inc(LineNr); FreeShip.ProjectSettings.FProjectFileCreatedBy:=Strings[LineNr];
+      inc(LineNr); FreeShip.ProjectSettings.FProjectComment:=Strings[LineNr];
+      Inc(LineNr); Str:=Strings[LineNr];
+      FreeShip.ProjectSettings.ProjectLength:=GetFloat(Str);
+      FreeShip.ProjectSettings.ProjectBeam:=GetFloat(Str);
+      FreeShip.ProjectSettings.ProjectDraft:=GetFloat(Str);
+      FreeShip.ProjectSettings.ProjectWaterDensity:=GetFloat(Str);
+      FreeShip.ProjectSettings.ProjectAppendageCoefficient:=GetFloat(Str);
+      I:=getInteger(Str);
+      FreeShip.ProjectSettings.FProjectUnits:=TFreeUnitType( I );
+      {FreeShip.ProjectSettings.FMainparticularsHasBeenset} getBoolean( Str );
+      I:=getInteger(Str);
+      FreeShip.FPrecision:=TFreePrecisionType(I);
+      FreeShip.Surface.ImportFEFFile( Strings,LineNr );
+      Strings.Destroy;
+      FreeShip.FileName:=Opendialog.FileName;
+//    FreeShip.Build:=False;
+      FreeShip.RebuildModel;
+      if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
+   end;
+   OpenDialog.Destroy;
+end; {TFreeEdit.File_ImportFEF}
+*)
+resourcestring
+rsFREEShipExchangeFormatFile = 'FREE!ship Exchange Format file';
+
 procedure TFreeEdit.File_ImportFEF;
 var
   OpenDialog: TOpenDialog;
@@ -1359,25 +1420,11 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsFREEShipExchangeFormatFile, ['part']);
+  OpenDialog.Filter:=createDialogFilter(rsFREEShipExchangeFormatFile, ['fef']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
-(*                                                                      ////+++
-    if FreeShip.FileChanged then begin
-      Answer:=MessageDlg(Userstring(103)+EOL+Userstring(104),
-        mtConfirmation, [mbYes, mbNo, mbCancel], 0);
-      if Answer = mrCancel then begin FreeAndNil(OpenDialog); exit; end;
-      if Answer = mrYes then begin
-!!!     File_SaveAs;
-        if FreeShip.FileChanged then begin // Apparently saving was not successfull, abort
-          FreeAndNil(OpenDialog);
-          exit;
-        end;
-      end;
-    end;
-*)
     FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
     CreateUndoObject(Userstring(109),True);
     FreeShip.Clear;
@@ -1413,6 +1460,7 @@ begin
 end;
 
 // Imports a file created with Carlssons's Hulls program
+
 procedure TFreeEdit.File_ImportHull;
 var OpenDialog: TOpenDialog; Answer: word;
 begin

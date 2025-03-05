@@ -1185,28 +1185,23 @@ begin
   Strings:=TStringList.Create;
   Frames:=TFasterListTFreeSpline.Create;
 //try
-    FreeShip.FBuildValidFrameTable(Frames, True);
+    FreeShip.FBuildValidFrameTable( Frames,True );
     Scale:=1.0;
-    //      if FreeShip.ProjectSettings.ProjectUnits=fuMetric then Scale:=1.0
-    //                                                     else Scale:=1/Foot;
+    //       if FreeShip.ProjectSettings.ProjectUnits=fuMetric then Scale:=1.0
+    //                                                      else Scale:=1/Foot;
     Str:=FreeShip.ProjectSettings.ProjectName;
-    if Length(Str) > 58 then
-      Str:=Copy(Str, 1, 58);
+    if Length(Str) > 58 then Str:=Copy( Str,1,58 );
     Strings.Add(Str);
     // ProjectDescription, max 58 characters
-    Strings.Add('L:'+FloatToStrF(Scale * FreeShip.ProjectSettings.ProjectLength, ffFixed, 7, 3));
+    Strings.Add('L:'+FloatToStrF(Scale*FreeShip.ProjectSettings.ProjectLength,ffFixed,7,3));
     // Length
-    Strings.Add('W:'+FloatToStrF(Scale * FreeShip.ProjectSettings.ProjectBeam,
-      ffFixed, 7, 3));
+    Strings.Add('W:'+FloatToStrF(Scale*FreeShip.ProjectSettings.ProjectBeam,ffFixed,7,3));
     // Beam
     Strings.Add('OL:Frame 0');
     Strings.Add('OT:Centerplane');
-    Strings.Add('OV:Baseline');
-    // Units preference
-    if FreeShip.ProjectSettings.ProjectUnits = fuMetric then
-      Strings.Add('P:M')
-    else
-      Strings.Add('P:F');
+    Strings.Add('OV:Baseline');                             // Units preference
+    if FreeShip.ProjectSettings.ProjectUnits = fuMetric then Strings.Add('P:M')
+                                                        else Strings.Add('P:F');
     // Add max. 10 comments
     Strings.Add('\Generated with FREE!ship');
 //  Strings.Add('\www.freeship.org');
@@ -1215,40 +1210,30 @@ begin
     Strings.Add('*');
     Strings.Add('HULL'); // shape name
     Strings.Add(IntToStr(Frames.Count)); // Number of sections
-    for I:=Frames.Count downto 1 do
-    begin
+    for I:=Frames.Count downto 1 do begin
       Section:=Frames[I-1];
       if Section.NumberOfPoints > 0 then
-        if section.Point[Section.NumberOfPoints-1].Y > 0 then
-        begin
-          Section.Knuckle[Section.NumberOfPoints-1]:=True;
-          Section.Add(Section.Point[Section.NumberOfPoints-1]);
-        end;
-
+      if section.Point[Section.NumberOfPoints-1].Y > 0 then begin
+        Section.Knuckle[Section.NumberOfPoints-1]:=True;
+        Section.Add(Section.Point[Section.NumberOfPoints-1]);
+      end;
       NParams:=0;
-      Setlength(Params, Section.NumberOfPoints);
-      // count number of knucklepoints
+      Setlength(Params, Section.NumberOfPoints); // count number of knucklepoints
       for J:=2 to Section.NumberOfPoints-1 do
-        if Section.Knuckle[J-1] then
-        begin
-          Params[NParams]:=Section.Parameter[J-1];
-          Inc(NParams);
-        end;
-      if Section.NumberOfPoints > 100 then
-      begin
+      if Section.Knuckle[J-1] then begin
+        Params[NParams]:=Section.Parameter[J-1];
+        Inc(NParams);
+      end;
+      if Section.NumberOfPoints > 100 then begin
         Section.Fragments:=100;
         Setlength(Params, NParams+Section.Fragments);
-        for J:=1 to Section.Fragments do
-        begin
+        for J:=1 to Section.Fragments do begin
           Params[NParams]:=(J-1) / (Section.Fragments-1);
           Inc(NParams);
         end;
-      end
-      else
-      begin
+      end else begin
         Setlength(Params, NParams+Section.NumberOfPoints);
-        for J:=1 to Section.NumberOfPoints do
-        begin
+        for J:=1 to Section.NumberOfPoints do begin
           Params[NParams]:=Section.Parameter[J-1];
           Inc(NParams);
         end;
@@ -1256,8 +1241,7 @@ begin
       SortFloatArray(Params, NParams);
       Strings.Add(FloatToDec(-Scale * Section.Min.X, 4)+','+IntToStr(NParams));
       Pn:=0;
-      for J:=0 to NParams-1 do
-      begin
+      for J:=0 to NParams-1 do begin
         P:=Section.Value(Params[J], Pn1, Pn2);
         if (Pn <> Pn1) and Section.Knuckle[Pn1] then
         begin
@@ -1270,23 +1254,21 @@ begin
       FreeAndNil(Section);
     end;
     Strings.Add('0,0,0');         // shell thickness data of shape
-
-    // save Component
+                                  // save Component
     Strings.Add('**');
     Strings.Add('HULL.C');        // ComponentName
-    // side
+                                  // side
     Strings.Add('0');             // side=center
     Strings.Add('1.0');           // effectivenes
     Strings.Add('0,0,0');         // attachpoint
     Strings.Add('HULL');          // partname
-
-    // Save part
+                                  // Save part
     Strings.Add('***');
     Strings.Add('HULL');          // Partname and description
-    Strings.Add('WATER');                  // FluidName
-    strings.Add('1');                      // part type (displacement)
-    if FreeShip.ProjectSettings.ProjectUnits = fuMetric then
-      Strings.Add(FloatToStrF(FreeShip.ProjectSettings.ProjectWaterDensity, ffFixed, 7, 3))
+    Strings.Add('WATER');         // FluidName
+    strings.Add('1');             // part type (displacement)
+    if FreeShip.ProjectSettings.ProjectUnits=fuMetric then
+      Strings.Add(FloatToStrF(FreeShip.ProjectSettings.ProjectWaterDensity,ffFixed,7,3))
     // specific gravity of water
     else
       Strings.Add(FloatToStrF(FreeShip.ProjectSettings.ProjectWaterDensity /
@@ -1294,13 +1276,13 @@ begin
     Strings.Add('0,0,0');      // ReferencePoint
     Strings.Add('1');          // Number of components
     Strings.Add('HULL.C');     // Componentname
-    // Mark end of file
+                               // Mark end of file
     Strings.Add('****');
     Str:=ChangeFileExt(ExtractFilename(Savedialog.FileName), '.GF');
     // no spaces allowed in filename
     repeat
-      I:=Pos(#32,Str);
-      if I<>0 then Delete(Str, I, 1);
+      I:=Pos( #32,Str );
+      if I<>0 then Delete( Str,I,1 );
     until I=0;
     Str:=ExtractFilePath(SaveDialog.Filename)+Str;
     Strings.SaveToFile(Str);

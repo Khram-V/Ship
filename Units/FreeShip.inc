@@ -84,10 +84,8 @@ begin Result:=FBackgroundImages.Count; end;
 function TFreeShip.FGetUndoCount: integer;
 begin Result:=FUndoObjects.Count; end;
 
-function TFreeShip.FGetUndoMemory: integer;
-  var I: integer;
-begin Result:=0;
-  for I:=1 to UndoCount do Result:=Result+UndoObject[I-1].Memory;
+function TFreeShip.FGetUndoMemory: integer; var I: integer;
+begin Result:=0; for I:=1 to UndoCount do Result:=Result+UndoObject[I-1].Memory;
 end;
 
 function TFreeShip.FGetUndoObject(Index: integer): TFreeUndoObject;

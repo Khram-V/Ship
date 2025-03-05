@@ -19,7 +19,7 @@ begin
   ResetColors;         FPointSize:=2;
   ResetDirectories;    LastDirectory:='';
   Language:='English'; LanguageFile:=''; FFbmEncoding:='cp1251';
-  FMaxUndoMemory:=20;                                    // Max 20Mb undomemory
+  FMaxUndoMemory:=128;                                   // Max 20Mb undomemory
 end;
 constructor TFreePreferences.Create(Owner: TFreeShip);
   begin inherited Create; FOwner:=Owner; Clear; end;
@@ -242,7 +242,7 @@ begin
   FFontSize   :=8;
   FLanguage   :='English';
   FFbmEncoding:='cp1251';
-  FMaxUndoMemory:=32;
+  FMaxUndoMemory:=128;
   ResetDirectories;
   ResetColors;
 end;

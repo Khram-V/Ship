@@ -808,13 +808,9 @@ begin
   Inc(FPosition);
 end;
 
-procedure TFreeTextBuffer.LoadTFloatType(var Output: TFloatType);
-var
-  S: AnsiString; // LocalFormatSettings: TFormatSettings;
-begin
-  S:=FLines[FPosition];
-  Output:=GetFloat(S);
-  Inc(FPosition);
+procedure TFreeTextBuffer.LoadTFloatType( var Output: TFloatType );
+  var S: AnsiString;                   // LocalFormatSettings: TFormatSettings;
+begin S:=FLines[FPosition]; Output:=GetFloat( S ); Inc( FPosition );
 end;
 {
 procedure TFreeTextBuffer.LoadTJPEGImage(var Output: TColor);
@@ -839,9 +835,9 @@ procedure TFreeTextBuffer.LoadTLinearConstraintData(var Output: TLinearConstrain
 var  S: AnsiString;
 begin
   S:=FLines[FPosition];
-  Output.N:=StrToInt(ExtractWord(1, S, [' ']));
-  Output.LinearConstraintPointA:=StrToInt(ExtractWord(2, S, [' ']));
-  Output.LinearConstraintPointB:=StrToInt(ExtractWord(3, S, [' ']));
+  Output.N:=GetInteger( S );                      // StrToInt(ExtractWord(1,S,[' ']));
+  Output.LinearConstraintPointA:=GetInteger( S ); // StrToInt(ExtractWord(2,S,[' ']));
+  Output.LinearConstraintPointB:=GetInteger( S ); // StrToInt(ExtractWord(3,S,[' ']));
   Inc( FPosition );
 end;
 
@@ -849,9 +845,9 @@ procedure TFreeTextBuffer.LoadT3DVector(var Output: T3DVector);
 var S: AnsiString;
 begin
   S:=FLines[FPosition];
-  Output.X:=GetFloat(ExtractWord(1, S, [' ']));
-  Output.Y:=GetFloat(ExtractWord(2, S, [' ']));
-  Output.Z:=GetFloat(ExtractWord(3, S, [' ']));
+  Output.X:=GetFloat( S ); // ExtractWord(1, S, [' ']));
+  Output.Y:=GetFloat( S ); // ExtractWord(2, S, [' ']));
+  Output.Z:=GetFloat( S ); // ExtractWord(3, S, [' ']));
   Inc( FPosition );
 end;
 
@@ -859,10 +855,10 @@ procedure TFreeTextBuffer.LoadT3DPlane(var Output: T3DPlane);
 var S: AnsiString;
 begin
   S:=FLines[FPosition];
-  Output.a:=GetFloat(ExtractWord(1, S, [' ']));
-  Output.b:=GetFloat(ExtractWord(2, S, [' ']));
-  Output.c:=GetFloat(ExtractWord(3, S, [' ']));
-  Output.d:=GetFloat(ExtractWord(4, S, [' ']));
+  Output.a:=GetFloat( S ); // ExtractWord(1, S, [' ']));
+  Output.b:=GetFloat( S ); // ExtractWord(2, S, [' ']));
+  Output.c:=GetFloat( S ); // ExtractWord(3, S, [' ']));
+  Output.d:=GetFloat( S ); // ExtractWord(4, S, [' ']));
   Inc( FPosition );
 end;
 

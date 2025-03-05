@@ -1181,52 +1181,37 @@ var
   Sel: boolean;
 begin
   Inc(LineNr);
-  Str:=Strings[LineNr];
-  // Read controlpoint data
- // N:=ReadIntFromStr(LineNr, Str);
+  Str:=Strings[LineNr]; N:=getInteger( Str );
   FPoints.Clear;
-  FPoints.Capacity:=N;
-  for I:=1 to N do
-  begin
-   // Index:=ReadIntFromStr(LineNr, Str);
-    if Index = -1 then
-      Index:=0;
-    if Index <> -1 then
-    begin
+  FPoints.Capacity:=N;                   // Read controlpoint data
+  for I:=1 to N do begin
+    Index:=getInteger( Str );
+    if Index = -1 then Index:=0;
+    if Index <> -1 then begin
       P1:=Surface.FControlPoints[Index];
       FPoints.Add(P1);
       P1.FFaces.Add(Self);
     end;
-  end;
-  // Read layer-index
- // Index:=ReadIntFromStr(LineNr, Str);
+  end;                                    // Read layer-index
+  Index:=getInteger( Str );
   if (Index >= 0) and (Index < Surface.FLayers.Count) then
   begin FLayer:=Surface.Layer[Index];
   end else begin
     FLayer:=Surface.Layer[0]; // Reference to an invalid layer. Assign to owners default layer
   end;
-  if FLayer <> nil then FLayer.AddControlFace(self)
-  else WriteLn('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadFromStream!');
-
-  if Str <> '' then
-  begin
-   // Sel:=ReadBoolFromStr(LineNr, Str);
-    if sel then
-      Selected:=True;
+  if FLayer <> nil then FLayer.AddControlFace( self );                          //  else WriteLn('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadFromStream!');
+  if Str <> '' then begin
+    Sel:=getBoolean( Str );
+    if Sel then Selected:=True;
   end;
-
   P1:=Point[NumberOfPoints-1];
-  for I:=1 to NumberOfPoints do
-  begin
+  for I:=1 to NumberOfPoints do begin
     P2:=Point[I-1];
-    Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-    if Edge <> nil then
-      Edge.FFaces.Add(Self)
-    else
-    ;//  MessageDlg(rs_Could_not_find_edge {UserString[201]}+'!', mtError, [mbOK], 0);
+    Edge:=Surface.EdgeExists( P1,P2 ) as TFreeSubdivisionControlEdge;
+    if Edge <> nil then Edge.FFaces.Add( Self );                                //  else MessageDlg(rs_Could_not_find_edge {UserString[201]}+'!',mtError,[mbOK],0);
     P1:=P2;
   end;
-end;{TFreeSubdivisionControlFace.LoadFromStream}
+end; {TFreeSubdivisionControlFace.LoadFromStream}
 
 procedure TFreeSubdivisionControlFace.RemoveReferences;
 var
@@ -1235,18 +1220,16 @@ var
   Edge: TFreeSubdivisionEdge;
 begin
   P1:=FPoints[FPoints.Count-1];
-  for I:=1 to FPoints.Count do
-  begin
+  for I:=1 to FPoints.Count do begin
     P2:=FPoints[I-1];
     P2.UnreferenceFace(self);
     Edge:=Surface.EdgeExists(P1, P2);
-    if Edge <> nil then
-    begin
+    if Edge <> nil then begin
       Edge.UnreferenceFace(self);
     end;
     P1:=p2;
   end;
-end;{TFreeSubdivisionControlFace.RemoveReferences}
+end; {TFreeSubdivisionControlFace.RemoveReferences}
 
 procedure TFreeSubdivisionControlFace.SaveBinary(Destination: TFreeFileBuffer);
 var
@@ -1254,16 +1237,12 @@ var
 begin
   Destination.Add(NumberOfPoints);
   for I:=1 to NumberOfPoints do
-    Destination.Add(Surface.FControlPoints.IndexOf(Point[I-1]));
-  // Add layer index
-  if Layer <> nil then
-    Index:=Surface.FLayers.IndexOf(Layer)
-  else
-    Index:=-1;
+    Destination.Add(Surface.FControlPoints.IndexOf(Point[I-1])); // Add layer index
+  if Layer <> nil then Index:=Surface.FLayers.IndexOf(Layer)
+                  else Index:=-1;
   Destination.Add(Index);
   Destination.Add(Selected);
-end;{TFreeSubdivisionControlFace.SaveBinary}
-
+end;
 
 procedure TFreeSubdivisionControlFace.SaveToStream(Strings: TStringList);
 var
@@ -1272,15 +1251,12 @@ var
 begin
   Str:=IntToStr(NumberOfPoints);
   for I:=1 to NumberOfPoints do
-    Str:=Str+#32+IntToStr(Surface.FControlPoints.IndexOf(Point[I-1]));
-  // Add layer index
-  if Layer <> nil then
-    Index:=Surface.FLayers.IndexOf(Layer)
-  else
-    Index:=-1;
+    Str:=Str+#32+IntToStr(Surface.FControlPoints.IndexOf(Point[I-1])); // Add layer index
+  if Layer <> nil then Index:=Surface.FLayers.IndexOf(Layer)
+                  else Index:=-1;
   Str:=Str+#32+IntToStr(Index)+#32+BoolToStr(Selected);
   strings.Add(Str);
-end;{TFreeSubdivisionControlFace.SaveToStream}
+end;
 
 procedure TFreeSubdivisionControlFace.Subdivide(
       aOwner: TFreeSubdivisionSurface;
@@ -1307,23 +1283,19 @@ begin
   //    FControlDescendantEdges[i].Free;
   //FControlDescendantEdges.Clear;
 
-  if FChildren.Count = 0 then
-  begin
+  if FChildren.Count = 0 then begin
     FChildren.Capacity:=NumberOfPoints;
     FEdges.Capacity:=4;
     inherited Subdivide(aOwner, True, aVertexPoints, aEdgePoints, aFacePoints,
       FEdges, NewControlEdges, FChildren);
-  end
-  else
-  begin
+  end else begin
     TmpFaces:=TFasterListTFreeSubdivisionFace.Create;
     TmpFaces.Capacity:=4 * ChildCount;
     TmpEdges:=TFasterListTFreeSubdivisionEdge.Create;
     I:=Round(Power(2, aOwner.FCurrentSubdivisionLevel));
     TmpEdges.Capacity:=2 * (I * (I-1));
 
-    for I:=0 to FChildren.Count-1 do
-    begin
+    for I:=0 to FChildren.Count-1 do begin
       ChildFace:=FChildren[I];
       ChildFace.Subdivide(aOwner, False, aVertexPoints, aEdgePoints, aFacePoints,
         TmpEdges, NewControlEdges, TmpFaces);
@@ -1333,33 +1305,24 @@ begin
 
     //for i:=0 to FEdges.Count-1 do
     //    FEdges[i].Free;
-    while FEdges.Count>0 do
-      begin
-      FEdges[FEdges.Count-1].Destroy;
-      //FEdges.Delete(FEdges.Count-1);
-      end;
+    while FEdges.Count>0 do begin
+      FEdges[FEdges.Count-1].Destroy;      //FEdges.Delete(FEdges.Count-1);
+    end;
     FEdges.Free;
     FEdges:=TmpEdges;
 
-    //for i:=0 to FChildren.Count-1 do
-    //    FChildren[i].Free;
-    while FChildren.Count > 0 do
-      begin
-      FChildren[FChildren.Count-1].Free;
-      //FChildren.Delete(FChildren.Count-1);
+    // for i:=0 to FChildren.Count-1 do FChildren[i].Free;
+    while FChildren.Count > 0 do begin
+      FChildren[FChildren.Count-1].Free;   //FChildren.Delete(FChildren.Count-1);
       end;
     FChildren.Free;
     FChildren:=TmpFaces;
 
-{    // investigation
-    for I:=0 to FEdges.Count-1 do
-      if not  FEdges[i].CheckIntegrity
-         then X:=0;
+  { // investigation
+    for I:=0 to FEdges.Count-1 do if not FEdges[i].CheckIntegrity then X:=0;
     // investigation
-    for I:=0 to FChildren.Count-1 do
-      if not  FChildren[i].CheckIntegrity
-         then X:=0;
- }
+    for I:=0 to FChildren.Count-1 do if not FChildren[i].CheckIntegrity then X:=0;
+  }
   end;
 
   FControlDescendantEdges.Clear;

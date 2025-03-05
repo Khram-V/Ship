@@ -102,9 +102,7 @@ begin
 end;
 
 procedure TFreeSubdivisionControlPointGroup.LoadBinary(Source: TFreeFileBuffer);
-var
-  I, N, CPN: integer; SS:TStrings;
-  Sel: boolean;
+  var I,N,CPN: integer; SS:TStrings; Sel: boolean;
 begin
   Source.LoadString( Name );
   SS:=TStringList.Create;
@@ -116,23 +114,18 @@ begin
   SS.Free;
 end;
 
-procedure TFreeSubdivisionControlPointGroup.LoadFromStream(
-  var LineNr: integer; Strings: TStringList);
-var
-  Str: string; Strs:TStringArray;
-  I,N,CPN: integer;
-  sel: boolean;
+procedure TFreeSubdivisionControlPointGroup.LoadFromStream
+( var LineNr: integer; Strings: TStringList );
+var Str: string; Strs:TStringArray;
+    I,N,CPN: integer;
+    sel: boolean;
 begin
-  Inc(LineNr);
-  Name:=Strings[LineNr];
-  Inc(LineNr);
-  Str:=Strings[LineNr];
-  Strs:=Str.Split([#32]);
-  N:= length(Strs);
-  for i:=0 to N-1 do begin
-    //CPN:=ReadIntFromStr(LineNr, Str);
-    CPN:=GetInteger( Strs[i] );
-    FControlPoints.Add(Surface.FControlPoints[CPN]);
+  Inc(LineNr); Name:=Strings[LineNr];
+  Inc(LineNr); Str:=Strings[LineNr]; Strs:=Str.Split([#32]);
+  N:=length(Strs);
+  for i:=0 to N-1 do begin                   //CPN:=ReadIntFromStr(LineNr,Str);
+    CPN:=GetInteger( Strs[I] );
+    FControlPoints.Add( Surface.FControlPoints[CPN] );
   end;
 end;
 

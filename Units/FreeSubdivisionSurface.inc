@@ -2905,7 +2905,7 @@ var
 begin
   FIsLoading:=true;                                     // First read layerdata
   Inc( LineNr );
-  Str:=Strings[LineNr]; N:=getInteger( Str ); //N:=ReadIntFromStr( LineNr,Str );   ///***??? был закрыт, странно...
+  Str:=Strings[LineNr]; N:=getInteger( Str );
   if N<>0 then begin                 // Delete current layers and load new ones
     for I:=1 to NumberOfLayers do self.Layer[I-1].Destroy;
     FLayers.Clear;
@@ -2917,18 +2917,18 @@ begin
   end else begin end; // No layers in the file, so keep the current default one
   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self); // Read index of active layer
   Inc(LineNr);
-  Str:=Strings[LineNr]; N:=getInteger( Str ); //N:=ReadIntFromStr(LineNr, Str);
+  Str:=Strings[LineNr]; N:=getInteger( Str );
   ActiveLayer:=self.Layer[N];
   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self, self.Layer[0]);
   Inc(LineNr);
-  Str:=Strings[LineNr]; N:=getInteger( Str ); // N:=ReadIntFromStr(LineNr, Str);
+  Str:=Strings[LineNr]; N:=getInteger( Str );
   for I:=1 to N do begin                                  // Read controlpoints
     Point:=TFreeSubdivisionControlPoint.Create(self);
     FControlPoints.Add(Point);
     Point.LoadFromStream(LineNr, Strings);
   end;                                                     // Read controlEdges
   Inc(LineNr);
-  Str:=Strings[LineNr]; N:=getInteger( Str ); //N:=ReadIntFromStr(LineNr, Str);
+  Str:=Strings[LineNr]; N:=getInteger( Str );
   for I:=1 to N do begin
     Edge:=TFreeSubdivisionControlEdge.Create(self);
     Edge.FControlEdge:=True;
@@ -2936,7 +2936,7 @@ begin
     Edge.LoadFromStream(LineNr, Strings);
   end;
   Inc(LineNr);
-  Str:=Strings[LineNr]; N:=getInteger( Str ); //N:=ReadIntFromStr(LineNr, Str);
+  Str:=Strings[LineNr]; N:=getInteger( Str );
   for I:=1 to N do begin
     Face:=TFreeSubdivisionControlFace.Create(self);
     FControlFaces.Add(Face);

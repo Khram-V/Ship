@@ -304,9 +304,9 @@ begin
       if Points.Count mod 3 = 0 then begin
         Capacity:=Points.Count div 3; I:=1;
         while I <= Points.Count do begin
-          P.X:=getFloat( Points[I-1] );
-          P.Y:=getFloat( Points[I]   );
-          P.Z:=getFloat( Points[I+1] ); Add( P ); Inc( I,3 );
+          P.X:=StrtoFloat( Points[I-1] );
+          P.Y:=StrtoFloat( Points[I]   );
+          P.Z:=StrtoFloat( Points[I+1] ); Add( P ); Inc( I,3 );
         end;
       end; FreeAndNil(Points);
     end;

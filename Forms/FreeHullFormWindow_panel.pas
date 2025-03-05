@@ -294,10 +294,10 @@ begin                                        // Update all menuitems and action
                          and (Viewport.BackgroundImage.Visible)
                          and (Viewport.BackgroundImage.ShowInView=Viewport.ViewType);
    BackgroundTransparentColor.Enabled:= BackgroundOrigin.Enabled;
-   BackgroundScale.Enabled          :=BackgroundOrigin.Enabled;
-   BackgroundBlending.Enabled       :=BackgroundOrigin.Enabled;
-   BackgroundExport.Enabled         :=BackgroundOrigin.Enabled;
-   BackgroundFrame.Enabled          :=BackgroundBlending.Enabled;
+   BackgroundScale.Enabled   :=BackgroundOrigin.Enabled;
+   BackgroundBlending.Enabled:=BackgroundOrigin.Enabled;
+   BackgroundExport.Enabled  :=BackgroundOrigin.Enabled;
+   BackgroundFrame.Enabled   :=BackgroundBlending.Enabled;
    BackgroundTolerance.Enabled:=(Viewport.ViewType<>fvPerspective) and
                                 (Viewport.BackgroundImage.Bitmap<>nil) and
                                 (Viewport.BackgroundImage.Visible) and
@@ -593,7 +593,7 @@ begin
      fvBodyplan     : vpt:='_Bodyplan';
      fvProfile      : vpt:='_Profile';
      fvPlan         : vpt:='_Plan';
-     fvPerspective  : vpt:='_Perspective'; else vpt:='__wwedfwedf';
+     fvPerspective  : vpt:='_Perspective'; else vpt:='';
   end;
   Str:=Freeship.Preferences.ExportDirectory
      + ChangeFileExt( ExtractFilename(

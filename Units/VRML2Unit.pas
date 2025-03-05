@@ -1077,7 +1077,7 @@ begin
         end;
         if FaceCoords.Count>0 then begin new( fc );
            SetLength( fc^,FaceCoords.Count );
-           for i:=0 to FaceCoords.Count-1 do fc^[i]:=GetInteger( FaceCoords[i] ); //Integer.Parse(FaceCoords[i]);
+           for i:=0 to FaceCoords.Count-1 do fc^[i]:=StrtoInt( FaceCoords[i] ); //Integer.Parse(FaceCoords[i]);
            FFaces.Add( fc^ );
            FaceCoords.Clear;
         end;

@@ -20,7 +20,7 @@ Type
 
 
   operator <> (A,B: T3DVector): boolean;
-  operator =  (A,B: T3DVector):     boolean;
+  operator =  (A,B: T3DVector): boolean;
   operator - ( A,B: T3DVector ): T3DVector;  // A-B
   operator + ( A,B: T3DVector ): T3DVector;
   operator * ( A,B: T3DVector ): T3DVector;
@@ -92,10 +92,13 @@ Const
 
 Function F2S( Value: TFloatType ): TFloatType;
 //function Point3D( X,Y,Z: TFloattype): T3DVector;
-Function GetFloat(const S: String): TFloatType;
-Function GetInteger( const S:String ): Integer;
-Function GetBoolean( const S:String ): Boolean;
-Function FloatTypeToStr( Value: TFloatType ): String;
+Function GetFloat( var S: AnsiString): TFloatType;
+Function GetInteger( var S:AnsiString ): Integer;
+Function GetBoolean( var S:AnsiString ): Boolean;
+function FloatToDec( Value: TFloatType; Maxlength: integer ): AnsiString;
+                 // Convert a floatingpoint to a string value with a max.number
+                 // of specified decimals All trailing zeros will be removed
+Function FloatTypeToStr( Value: TFloatType ): AnsiString;
 Procedure WestPoint;
 Function BlankOff( S: AnsiString ): AnsiString;
 //Function Dist( A:T3DVector ): TFloatType;
@@ -177,42 +180,55 @@ begin
   W:=Value; W:=Round( W*1e6 ); Result:=W/1e6; end;
 end;
 
-function FloatTypeToStr( Value: TFloatType ): String;
+function FloatTypeToStr( Value: TFloatType ): AnsiString;
 begin Result:=FloatToStr( F2S( Value ) ); end;
 //begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
 
-Function GetFloat( const S: String ): TFloatType;
+function FloatToDec(Value: TFloatType; Maxlength: integer): AnsiString;
+       //var fmt:TFormatSettings;
+begin  //  fmt:=DefaultFormatSettings;
+       //  fmt.DecimalSeparator:='.';
+       //  fmt.ThousandSeparator:=',';
+  Result:=FloatToStrF( Value,ffFixed,10,Maxlength ); //, fmt);
+  while Result[Length(Result)]='0' do Delete(Result,Length(Result),1);
+  if Length(Result)<MaxLength then Result:=Result+'0' else
+  if Result[Length(Result)] in ['.', ','] then Result:=Result+'0';
+end;{FloatToDec}
+
+Function GetFloat( var S: AnsiString ): TFloatType;
   var LocalFormatSettings: TFormatSettings; I,J,K: Integer; R:extended;
 begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
   for J:=1 to Length( S ) do begin
-    if S[J]>' ' then begin K:=J+1;
-      if I=0 then I:=J;
+    if S[J]>' ' then begin K:=J+1;                   // обход значимого символа
+      if I=0 then I:=J;                              // начало записи числа
       if S[J]='.' then begin LocalFormatSettings.DecimalSeparator:='.';
                              LocalFormatSettings.ThousandSeparator:=','; end else
       if S[J]=',' then begin LocalFormatSettings.DecimalSeparator:=',';
                              LocalFormatSettings.ThousandSeparator:='.'; end;
-    end else if I>0 then begin K:=J; break; end;
+    end else if I>0 then begin K:=J; break; end;    // здесь к = новый пробел
   end;
   if I>0 then Result:=StrToFloat( copy( S,I,K-I ),LocalFormatSettings );
+  Delete( S,1,K-1 ); // удаление считанного с последующим пробелом ??
+
 //if K>0 then begin WriteLn( copy( S,I,K-I )+'['+IntToStr(Length(S))+'] <- '+S ); ReadLn; end;
 end;
 
-Function GetInteger( const S: String ): Integer;
+Function GetInteger( var S: AnsiString ): Integer;
 var I,J,K: Integer;
 begin I:=0; K:=0; Result:=0;
   for J:=1 to Length( S ) do
     if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else
     if I>0 then begin K:=J; break; end;
-  if I>0 then Result:=StrToInt( copy( S,I,K-I ) );
+  if I>0 then Result:=StrToInt( copy( S,I,K-I ) ); Delete( S,1,K-1 );
 end;
 
-Function GetBoolean( const S: String ): Boolean;
-var I,J,K: Integer; Str: String;
+Function GetBoolean( var S: AnsiString ): Boolean;
+var I,J,K: Integer; Str: AnsiString;
 begin I:=0; K:=0; Result:=false;
   for J:=1 to Length( S ) do
    if S[J]>' ' then begin K:=J+1; if I=0 then I:=J; end else if I>0 then break;
   if K>0 then begin Str:=Upcase( copy( S,I,K-I ) );
-  Result:=(Str='1') or (Str='TRUE') or (Str='YES');
+         Result:=(Str='1') or (Str='TRUE') or (Str='YES'); Delete( S,1,K-1 );
   end;
 end;
 Procedure WestPoint;

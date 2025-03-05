@@ -556,20 +556,20 @@ begin
   Source.LoadBoolean(Sel);
   if Sel then Selected:=True;
   if Source.Version >= fv198 then begin
-    Source.LoadBoolean(FLocked);
+    Source.LoadBoolean( FLocked );
   end;
 end;
 
-procedure TFreeSubdivisionControlPoint.LoadFromStream(
-  var LineNr: integer; Strings: TStringList);
+procedure TFreeSubdivisionControlPoint.LoadFromStream
+( var LineNr: integer; Strings: TStringList );
 var
   Str: string; I: integer; sel: boolean;
 begin                                                       // FCoordinate
   Inc(LineNr);
   Str:=Strings[LineNr];
-  FCoordinate.X:=GetFloat( Str);
-  FCoordinate.Y:=GetFloat( Str);
-  FCoordinate.Z:=GetFloat( Str);                            // FVertexType
+  FCoordinate.X:=GetFloat( Str );
+  FCoordinate.Y:=GetFloat( Str );
+  FCoordinate.Z:=GetFloat( Str );                           // FVertexType
   if Str <> '' then begin
     I:=GetInteger( Str); FVertextype:=TFreeVertexType( I );
     if Str <> '' then begin Sel:=GetBoolean( Str);

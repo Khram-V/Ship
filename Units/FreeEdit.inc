@@ -1657,31 +1657,23 @@ begin
     fiStation: TargetList:=FreeShip.FStations;
     fiButtock: TargetList:=FreeShip.FButtocks;
     fiWaterline: TargetList:=FreeShip.FWaterlines;
-    fiDiagonal: TargetList:=FreeShip.FDiagonals;
-    else TargetList:=nil;
+    fiDiagonal: TargetList:=FreeShip.FDiagonals; else TargetList:=nil;
   end;
   if TargetList <> nil then begin
-    TargetList.Add(Intersection);
-    // Now sort the list so that the distance is in ascending order
-    for I:=1 to TargetList.Count-1 do
-    begin
-      Int1:=TargetList[I-1];
-      for J:=I+1 to TargetList.Count do
-      begin
-        Int2:=Targetlist[J-1];
+    TargetList.Add(Intersection); // Now sort the list so that the distance is in ascending order
+    for I:=1 to TargetList.Count-1 do begin Int1:=TargetList[I-1];
+      for J:=I+1 to TargetList.Count do begin Int2:=Targetlist[J-1];
         if -Int2.FPlane.d < -Int1.FPlane.d then begin // swap the two intersections
-          Targetlist.Exchange(I-1, J-1);
+          Targetlist.Exchange(I-1,J-1);
           Int1:=TargetList[I-1];
         end;
       end;
     end;
   end;
 end;
-
 // Pops up the dialog in which to add or delete stations, buttocks and waterlines
 procedure TFreeEdit.Intersection_Dialog;
-var
-  Dialog: TFreeIntersectionDialog;
+  var Dialog: TFreeIntersectionDialog;
 begin
   Dialog:=FreeShip.FIntersectionDialog as TFreeIntersectionDialog;
   ShowTranslatedValues(Dialog);
@@ -1692,39 +1684,32 @@ end;
 
 // All connected patches surrounded by crease edges are grouped together into a new layer
 procedure TFreeEdit.Layer_AutoGroup;
-var
-  ToDoList: TList;
-  DoneList: TList;
-  Current: TList;
-  I, J: integer;
+var I,J: integer;
+  ToDoList,DoneList,Current: TList;
   Face, Face2: TFreeSubdivisionControlFace;
   Layer: TFreeSubdivisionLayer;
   SameLayer: boolean;
 
   procedure FindAttachedFaces(List: TList; Face: TFreeSubdivisionControlFace);
-  var
-    I, J: integer;
-    Index: integer;
-    P1, P2: TFreeSubdivisionPoint;
+  var I,J,Index: integer;
+    P1,P2: TFreeSubdivisionPoint;
     Edge: TFreeSubdivisionEdge;
   begin
     P1:=Face.Point[Face.NumberOfPoints-1];
-    for I:=1 to Face.NumberOfpoints do
-    begin
+    for I:=1 to Face.NumberOfpoints do begin
       P2:=Face.Point[I-1];
       Edge:=Face.Surface.EdgeExists(P1, P2);
       if Edge <> nil then
-        if not Edge.Crease then
-          for J:=1 to Edge.NumberOfFaces do
-            if Edge.Face[J-1] <> Face then begin
-              Index:=ToDoList.IndexOf(Edge.Face[J-1]);
-              if Index <> -1 then begin
-                List.Add(Edge.Face[J-1]);
-                ToDoList.Delete(Index);
-                FindAttachedFaces(List, Edge.Face[J-1] as
-                  TFreeSubdivisionControlFace);
-              end;
-            end; P1:=p2;
+      if not Edge.Crease then
+      for J:=1 to Edge.NumberOfFaces do
+      if Edge.Face[J-1]<>Face then begin
+        Index:=ToDoList.IndexOf( Edge.Face[J-1] );
+        if Index<>-1 then begin
+          List.Add(Edge.Face[J-1]);
+          ToDoList.Delete(Index);
+          FindAttachedFaces(List,Edge.Face[J-1] as TFreeSubdivisionControlFace);
+        end;
+      end; P1:=p2;
     end;
   end;
 
@@ -2016,14 +2001,12 @@ begin
           for J:=1 to Edge1.StartPoint.NumberOfEdges do begin
             Edge2:=Edge1.StartPoint.Edge[J-1] as TFreeSubdivisionControlEdge;
             if (Edge1 <> Edge2) and (Edge2.NumberOfFaces = 1) then
-              if ((DistPP3D(Edge1.StartPoint.Coordinate, Edge2.StartPoint.Coordinate) <
-                EdgeError) and (DistPP3D(Edge1.EndPoint.Coordinate,
-                Edge2.EndPoint.Coordinate) < EdgeError)) or
-                ((DistPP3D(Edge1.StartPoint.Coordinate, Edge2.EndPoint.Coordinate) <
-                EdgeError) and (DistPP3D(Edge1.EndPoint.Coordinate,
-                Edge2.StartPoint.Coordinate) < EdgeError)) then
-                if DoubleEdges.IndexOf(Edge2) = -1 then
-                  DoubleEdges.AddObject(Edge1, Edge2);
+              if ((DistPP3D( Edge1.StartPoint.Coordinate,Edge2.StartPoint.Coordinate ) <  EdgeError)
+              and (DistPP3D(Edge1.EndPoint.Coordinate,Edge2.EndPoint.Coordinate) < EdgeError))
+              or ((DistPP3D(Edge1.StartPoint.Coordinate, Edge2.EndPoint.Coordinate) < EdgeError)
+              and (DistPP3D(Edge1.EndPoint.Coordinate,Edge2.StartPoint.Coordinate) < EdgeError))
+              then
+              if DoubleEdges.IndexOf(Edge2)=-1 then DoubleEdges.AddObject( Edge1,Edge2 );
           end;
     end;
     Points:=TFasterListTFreeSubdivisionControlPoint.Create;

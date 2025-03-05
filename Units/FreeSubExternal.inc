@@ -30,9 +30,9 @@ begin
     if Str.StartsWith( '#' ) then else
     if Str.StartsWith( 'v ' ) then begin SetLength( Vindex,0 );
       Vindex:=Str.Split( [' '] );
-      C3d.X:=GetFloat( Vindex[1] );
-      C3d.Y:=GetFloat( Vindex[3] );
-      C3d.Z:=GetFloat( Vindex[2] ); CPoints.Add( AddControlPoint( C3d ) );
+      C3d.X:=StrtoFloat( Vindex[1] );
+      C3d.Y:=StrtoFloat( Vindex[3] );
+      C3d.Z:=StrtoFloat( Vindex[2] ); CPoints.Add( AddControlPoint( C3d ) );
     end else
     if Str.StartsWith('f ') then Faces.Append( Str );
   end;
@@ -41,7 +41,7 @@ begin
     K:=Length( Vindex )-1;           //?? с замыкаением контура много?угольника
     if K>2 then begin
       for J:=1 to K do begin
-        Index:=GetInteger( Vindex[J].Replace( '/',' ' ) );       // впереди 'f'
+        Index:=StrtoInt( Vindex[J].Replace( '/',' ' ) );       // впереди 'f'
         FacePoints.Add( CPoints[Index-1] );
       end;
       if  ( FacePoints[0]<>FacePoints[1] )  // нулевая площадь - приемлема
@@ -571,65 +571,55 @@ var
   Face: TFreeSubdivisionControlFace;
   Layer: TFreeSubdivisionLayer;
 
-  function NewPoint(P: T3DVector): TFreeSubdivisionControlPoint;
-  begin Result:=TFreeSubdivisionControlPoint.Create(self);
+  function NewPoint( P: T3DVector ): TFreeSubdivisionControlPoint;
+  begin Result:=TFreeSubdivisionControlPoint.Create( self );
         Result.FCoordinate:=P;
-        FControlPoints.Add(Result);
+        FControlPoints.Add( Result );
   end;{NewPoint}
 begin
   FIsLoading:=true;  // Read layer information
-  Inc(LineNr);
-  Str:=Strings[LineNr];
-  N:=GetInteger( Str);
+  Inc(LineNr); Str:=Strings[LineNr];
+  N:=GetInteger( Str );
   for I:=1 to N do begin
     if I>NumberOfLayers then Layer:=self.AddNewLayer
                         else Layer:=self.Layer[I-1];
-    Inc(LineNr);
-    Layer.FDescription:=Strings[LineNr];
-    ;
-    Inc(LineNr);
-    Str:=Strings[LineNr];
-    Layer.FLayerID:=GetInteger( Str);
-    if Layer.FLayerID > FLastusedLayerID then FLastusedLayerID:=Layer.FLayerID;
-    Layer.FColor:=GetInteger( Str);
-    Layer.FSurfaceVisible:=GetBoolean( Str);
-    Layer.FDevelopable:=GetBoolean( Str);
-    Layer.FSymmetric:=GetBoolean( Str);
+    Inc( LineNr ); Layer.FDescription:=Strings[LineNr];
+    Inc( LineNr ); Str:=Strings[LineNr];
+    Layer.FLayerID:=GetInteger( Str );
+    if Layer.FLayerID>FLastusedLayerID then FLastusedLayerID:=Layer.FLayerID;
+    Layer.FColor:=GetInteger( Str );
+    Layer.FSurfaceVisible:=GetBoolean( Str );
+    Layer.FDevelopable:=GetBoolean( Str );
+    Layer.FSymmetric:=GetBoolean( Str );
     Layer.FSymmetric:=True;
-    Layer.FUseForIntersections:=GetBoolean( Str);
-    Layer.FUseInHydrostatics:=GetBoolean( Str);
-    Layer.FShowInLinesplan:=GetBoolean( Str);
-    Layer.FMaterialDensity:=GetFloat( Str);
-    Layer.FThickness:=GetFloat( Str);
+    Layer.FUseForIntersections:=GetBoolean( Str );
+    Layer.FUseInHydrostatics:=GetBoolean( Str );
+    Layer.FShowInLinesplan:=GetBoolean( Str );
+    Layer.FMaterialDensity:=GetFloat( Str );
+    Layer.FThickness:=GetFloat( Str );
   end;
   if Assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-  Inc(LineNr);
-  Str:=Strings[LineNr];            // Read controlpoints
-  N:=GetInteger( Str);
+  Inc(LineNr); Str:=Strings[LineNr];                      // Read controlpoints
+  N:=GetInteger( Str);                                    writeln( 'cp='+inttostr( N ) );
   for I:=1 to N do begin
     Point:=TFreeSubdivisionControlPoint.Create(self);
     FControlPoints.Add(Point);
     Point.LoadFromStream(LineNr, Strings);
   end;
-                                   // Read controlEdges
-  Inc(LineNr);
-  Str:=Strings[LineNr];
-  N:=GetInteger( Str);
+  Inc(LineNr); Str:=Strings[LineNr];                       // Read controlEdges
+  N:=GetInteger( Str);                                     writeln( 'ce='+inttostr( N ) );
   for I:=1 to N do begin
     Edge:=TFreeSubdivisionControlEdge.Create(self);
     Edge.FControlEdge:=True;
     FControlEdges.Add(Edge);
-    Edge.LoadFromStream(LineNr, Strings);
+    Edge.LoadFromStream( LineNr,Strings );
   end;
-                                    // Read controlFaces
-  Inc(LineNr);
-  Str:=Strings[LineNr];
-  N:=GetInteger( Str);
+  Inc(LineNr); Str:=Strings[LineNr];                       // Read controlFaces
+  N:=GetInteger( Str );                                    writeln( 'cf='+inttostr( N ) );
   for I:=1 to N do begin
     Face:=TFreeSubdivisionControlFace.Create(self);
     FControlFaces.Add(Face);
-    Inc(LineNr);
-    Str:=Strings[LineNr];
+    Inc(LineNr); Str:=Strings[LineNr];
     Np:=GetInteger( Str);
     for J:=1 to Np do begin
       Index:=GetInteger( Str);           // Attach controlface to controlpoints
@@ -638,11 +628,11 @@ begin
     P1:=Face.Point[Face.FPoints.Count-1];
     for J:=1 to Face.FPoints.Count do begin
       P2:=Face.Point[J-1];
-      Edge:=EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
+      Edge:=EdgeExists(P1,P2) as TFreeSubdivisionControlEdge;
       if Edge<>nil then Edge.AddFace(Face); // else MessageDlg( 'Could not find edge!',mtError,[mbOK],0);
       P1:=P2;
-    end;                                   // Read Layerindex
-    Index:=GetInteger( Str);
+    end;
+    Index:=GetInteger( Str);                                 // Read Layerindex
     while Index > NumberOfLayers-1 do begin AddNewLayer; end;
     Layer:=FLayers[Index];
     Layer.AddControlFace(Face);
@@ -650,7 +640,7 @@ begin
   Built:=False;
   FInitialized:=True;
   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self, self.Layer[0]);
+  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
   FisLoading:=false;
 end;
 //

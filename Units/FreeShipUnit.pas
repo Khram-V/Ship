@@ -46,7 +46,6 @@ resourcestring
   rsPolyCadFiles = 'PolyCad files';
   rsFREEShipGeometryPart = 'FREE!ship geometry part';
   rsCarlssonHullFiles = 'Carlsson Hull files';
-  rsFREEShipExchangeFormatFile = 'FREE!ship Exchange Format file';
   rsArchimedesMBMultiBodyHullData = 'ArchimedesMB multi body hull data';
   rsArchimedesSingleBodyHullData = 'Archimedes single body hull data';
 

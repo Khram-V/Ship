@@ -1118,10 +1118,9 @@ type
     property PreviousEdge: TFreeSubdivisionEdge read FGetPreviousEdge;
     property StartPoint: TFreeSubdivisionPoint read FStartPoint write SetStartPoint;
   end;
-
-  {--------------------------------------------------------------------------------------------------}
-  {                                         TFreesubdivisionControlEdge                              }
-  {--------------------------------------------------------------------------------------------------}
+  {---------------------------------------------------------------------}
+  {                                         TFreesubdivisionControlEdge }
+  {---------------------------------------------------------------------}
   TFreesubdivisionControlEdge = class(TFreeSubdivisionEdge)
   private
     IsDeleting : boolean;
@@ -1157,10 +1156,9 @@ type
     // Property to see if this edge has been selected by the user
     property Visible: boolean read FGetVisible;
   end;
-
-  {--------------------------------------------------------------------------------------------------}
-  {                                           TFreeSubdivisionFace                                   }
-  {--------------------------------------------------------------------------------------------------}
+  {----------------------------------------------------------------}
+  {                                           TFreeSubdivisionFace }
+  {----------------------------------------------------------------}
   TFreeSubdivisionFace = class(TFreeSubdivisionBase)
   private
     FPoints: TFasterListTFreeSubdivisionPoint;
@@ -1196,10 +1194,9 @@ type
     property Point[index: integer]:  TFreeSubdivisionPoint read FGetPoint;
     property Points:TFasterListTFreeSubdivisionPoint read FPoints;
   end;
-
-  {--------------------------------------------------------------------------------------------------}
-  {                                           TFreeSubdivisionControlFace                            }
-  {--------------------------------------------------------------------------------------------------}
+  {-----------------------------------------------------------------------}
+  {                                           TFreeSubdivisionControlFace }
+  {-----------------------------------------------------------------------}
   TFreeSubdivisionControlFace = class(TFreeSubdivisionFace)
   private
     FLayer: TFreeSubdivisionLayer;
@@ -1274,13 +1271,15 @@ type
     property Visible: boolean read FGetVisible;
   end;
 
-  {--------------------------------------------------------------------------------------------------}
-  {                                           TFreeSubdivisionSurface                                }
-  { This is the subdivision surface used for modelling the hull.                                     }
-  { This is actually a quad-triangle subdivision surface as published in the articles:               }
-  {   "Quad/triangle subdivision" by J. Stam & C. Loop http://research.microsoft.com/~cloop/qtEG.pdf }
-  {   "On C2 triangle/quad subdivision" by Scott Schaeffer & Joe Warren                              }
-  {--------------------------------------------------------------------------------------------------}
+  {-------------------------------------------------------------------}
+  {                                           TFreeSubdivisionSurface }
+  { This is the subdivision surface used for modelling the hull.      }
+  { This is actually a quad-triangle subdivision                      }
+  { surface as published in the articles:                             }
+  {   "Quad/triangle subdivision" by J. Stam & C.                     }
+  {   Loop http://research.microsoft.com/~cloop/qtEG.pdf              }
+  { "On C2 triangle/quad subdivision" by Scott Schaeffer & Joe Warren }
+  {-------------------------------------------------------------------}
   TFreeSubdivisionSurface = class(TFreeEntity)
   private
     FActiveControlCurve: TFreeSubdivisionControlCurve;
@@ -1330,7 +1329,7 @@ type
     FOnChangeItemListeners: TMethodList<TNotifyEvent>;
 
     FWaterlinePlane: T3DPlane; // This plane is used to clip the hull, and shade the underwatership in a different color
-    FShadeUnderWater: boolean; // Switch to turn under water shading on or off
+    FShadeUnderWater,           // Switch to turn under water shading on or off
     FShowNormals: boolean;     // show normals of selected controlfaces
     FControlPointSize: integer;
 
@@ -1367,7 +1366,7 @@ type
     InUnreferenceControlPoint,
     InUnreferenceFace,
     InUnreferenceEdge,
-    InUnreferencePoint:boolean;
+    InUnreferencePoint: boolean;
     procedure ClearCurvesSubdivision;
     function FGetControlPoint(Index: integer): TFreeSubdivisionControlPoint;
     function FGetControlPointGroup(Index: integer): TFreeSubdivisionControlPointGroup;
@@ -1679,17 +1678,17 @@ function SetPlane(a, b, c, d: TFloatType): T3DPlane;
 function SetPoint( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
 procedure SortFloatArray(var FloatArray: TFloatArray; var N: integer); // sorts an array with floatingpoint values and removes double entries
 function SquaredDistPP(P1, P2: T3DVector): TFloatType;        // calculates the squared distance between two points
-function FloatToDec(Value: TFloatType; Maxlength: integer): string; // Convert a floatingpoint to a string value with a max. number of specified decimals All trailing zeros will be removed
+//function FloatToDec( Value: TFloatType; Maxlength: integer ): string; // Convert a floatingpoint to a string value with a max. number of specified decimals All trailing zeros will be removed
 function UnifiedNormal(P1, P2, P3: T3DVector): T3DVector; // calculate the normal of a plane defined by points P1,P2,P3 and scale to unit-length
 function UnitVector(P: T3DVector): T3DVector;             // Scale a vector sucht that it's length is 1.0
-function VectorLength(Normal: T3DVector): TFloatType;         // Calculate the length of a vector
-function VolStr(Units: TFreeUnitType): string;                    // Returns a string value with the volume units
-function DensStr(Units: TFreeUnitType): string;                   // Returns a string value with the density units
-function ViscStr(Units: TFreeUnitType): string;                   // Returns a string value with the viscosity units
-function VolumeToDisplacement(Volume, Density, AppCoeff: TFloatType;  Units: TFreeUnitType): TFloatType; // Converts a volume to displacement
-function WeightStr(Units: TFreeUnitType): string;                 // Returns a string value with the weight units
-function DegrStr(Units: TFreeUnitType): string;                   // Returns a string value with the degr units
-function LenMMStr(Units: TFreeUnitType): string;                  // Returns a string value with the length (mm or inch) units
+function VectorLength(Normal: T3DVector): TFloatType;     // Calculate the length of a vector
+function VolStr(Units: TFreeUnitType): string;            // Returns a string value with the volume units
+function DensStr(Units: TFreeUnitType): string;           // Returns a string value with the density units
+function ViscStr(Units: TFreeUnitType): string;           // Returns a string value with the viscosity units
+function VolumeToDisplacement( Volume,Density,AppCoeff: TFloatType;  Units: TFreeUnitType): TFloatType; // Converts a volume to displacement
+function WeightStr(Units: TFreeUnitType): string;         // Returns a string value with the weight units
+function DegrStr(Units: TFreeUnitType): string;           // Returns a string value with the degr units
+function LenMMStr(Units: TFreeUnitType): string;          // Returns a string value with the length (mm or inch) units
 var
   DelayedDestroyList: TFreeDestroyList;
 

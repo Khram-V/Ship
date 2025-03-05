@@ -512,27 +512,22 @@ var
   Index: integer;
   Sel: boolean;
 begin
-  Inc(LineNr);
-  Str:=Strings[LineNr];
-  // FStartpoint
- // Index:=ReadIntFromStr(LineNr, Str);
+  Inc(LineNr); Str:=Strings[LineNr];
+  Index:=getInteger( Str );                                      // FStartpoint
   if index = -1 then index:=0;
   if Index <> -1 then begin
     FStartPoint:=Surface.FControlPoints[Index];
     FStartPoint.FEdges.Add(Self);
   end;
-  // FEndpoint
-  //Index:=ReadIntFromStr(LineNr, Str);
+  Index:=getInteger( Str );                                        // FEndpoint
   if index = -1 then index:=0;
   if Index <> -1 then begin
     FEndPoint:=Surface.FControlPoints[Index];
     FEndPoint.FEdges.Add(Self);
   end;
-  // FCrease
-  // FCrease:=ReadIntFromStr(LineNr, Str) = 1;
-  if Str <> '' then begin
-  // Flag to indicate that this edge was selected when the model was saved (for undo-purposes)
-  //  Sel:=ReadBoolFromStr(LineNr, Str);
+  FCrease:=getInteger( Str )=1;                                      // FCrease
+  if Str<>'' then begin         // Flag to indicate that this edge was selected
+    Sel:=getBoolean( Str );    //  when the model was saved (for undo-purposes)
     Selected:=Sel;
   end;
 end;

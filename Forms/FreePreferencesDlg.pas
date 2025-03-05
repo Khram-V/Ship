@@ -275,7 +275,7 @@ procedure TFreePreferencesDialog.SpeedButton17Click(Sender: TObject);
 begin
   SelectDirectoryDialog1.FileName:=EditExportDir.Text;
   if SelectDirectoryDialog1.Execute then
-    EditExportDir.Text:=SelectDirectoryDialog1.FileName;
+     EditExportDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 
 procedure TFreePreferencesDialog.ComboBoxEncodingFillItems;
@@ -299,7 +299,7 @@ begin
     AddObject( 'CP852- DOS Central Europe', TObject(string('cp852')));
     AddObject( 'CP866- DOS and Windows console Cyrillic', TObject(string('cp866')));
     AddObject( 'CP874- Thai', TObject(string('cp874')));
-    AddObject( 'KOI8- Russian Cyrillic', TObject(string('koi8')));
+    AddObject(  'KOI8- Russian Cyrillic', TObject(string('koi8')));
 *)end;
 end;
 

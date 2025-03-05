@@ -264,31 +264,25 @@ begin
   begin
     if myFracPos > 1 then   // check whether there is an whole feet value
     begin
-      myWholeFeet:=GetFloat(LeftStr(myString, myFracPos-1));
+      myWholeFeet:=StrtoFloat(LeftStr(myString, myFracPos-1));
       myString:=MidStr(myString, myFracPos+1, 255);
     end;
 
     myFracPos:=Pos('-', myString);
     // is there a second "-", i.e. do we have also fractional inches?
-    if myFracPos > 0 then
-    begin
-      if myFracPos > 1 then   // check whether there is an whole inch value
-      begin
-        myWholeInch:=GetFloat(LeftStr(myString, myFracPos-1));
+    if myFracPos > 0 then begin
+      if myFracPos > 1 then begin // check whether there is an whole inch value
+
+        myWholeInch:=StrtoFloat(LeftStr(myString, myFracPos-1));
         myString:=MidStr(myString, myFracPos, 255);
       end;
       // new: check whether there is a+or a-to add or subtract a half fraction
       myString:=MidStr(myString, 2, 255);
-      if (RightStr(myString,1) = '-') then
-      begin myFracInch:=GetFloat(LeftStr(myString, Pos('-', myString)-1))-0.5;
-      end
-      else if (RightStr(myString,1) = '+') then
-      begin
-        myFracInch:=GetFloat(LeftStr(myString, Pos('+', myString)-1))+0.5;
-      end
-      else
-        myFracInch:=GetFloat(myString);
-      // end new
+      if (RightStr(myString,1) = '-') then begin
+        myFracInch:=StrtoFloat(LeftStr(myString, Pos('-', myString)-1))-0.5;
+      end else if (RightStr(myString,1) = '+') then begin
+        myFracInch:=StrtoFloat(LeftStr(myString, Pos('+', myString)-1))+0.5;
+      end else myFracInch:=StrtoFloat(myString);                     // end new
     end
     else // no fractional inches
     begin
@@ -1193,20 +1187,6 @@ end; {Space}
 function SquaredDistPP( P1,P2: T3DVector): TFloatType; // calculates the squared distance between two points
 begin Result:=Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z);
 end;
-
-function FloatToDec(Value: TFloatType; Maxlength: integer): string;
-  // Convert a floatingpoint to a string value with a max. number of specified decimals
-  // All trailing zeros will be removed
-//var fmt:TFormatSettings;
-begin
-//  fmt:=DefaultFormatSettings;
-//  fmt.DecimalSeparator:='.';
-//  fmt.ThousandSeparator:=',';
-  Result:=FloatToStrF(Value, ffFixed, 10, Maxlength ); //, fmt);
-  while Result[Length(Result)] = '0' do Delete(Result, Length(Result), 1);
-  if Length(Result) < MaxLength then Result:=Result+'0' else
-  if Result[Length(Result)] in ['.', ','] then Result:=Result+'0';
-end;{FloatToDec}
 
 function MakeLength(Value: TFloatType; Decimals, DesLength: integer): string;
 var Input: string;
