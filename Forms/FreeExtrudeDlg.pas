@@ -1,34 +1,11 @@
-
-//   FreeExtrudeDlg
-
 unit FreeExtrudeDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
-{$IFnDEF FPC}
-  Windows,
-{$ELSE}
-  LCLIntf, LCLType, //
-{$ENDIF}
-  //Messages,
-  SysUtils,
-  Classes,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
-  ExtCtrls, Spin,
-  FreeShipUnit, FreeLanguageSupport;
+{$MODE Delphi}
+interface uses
+  Classes,  Controls,
+  Forms,    StdCtrls,
+  Buttons,  ExtCtrls,
+  Spin,     FreeLanguageSupport;
 type
-
-  { TFreeExtrudeDialog }
-
   TFreeExtrudeDialog = class(TForm)
     BitBtn1: TSpeedButton;
     BitBtn2: TSpeedButton;
@@ -73,11 +50,7 @@ type
 var FreeExtrudeDialog: TFreeExtrudeDialog;
 
 implementation
-{$IFnDEF FPC}
-  {$R *.dfm}
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 function TFreeExtrudeDialog.FGetXValue: extended;
 begin

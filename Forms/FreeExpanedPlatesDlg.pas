@@ -158,7 +158,7 @@ type                                               { TFreeExpanedplatesDialog }
     FFontSize: integer;
     function FGetActivePatch: TFreeDevelopedPatch;
     procedure FSetActivePatch(Val: TFreeDevelopedPatch);
-    procedure FUpdateListBox;
+  //procedure FUpdateListBox;
     procedure InitViewPort;
   public    { Public declarations }
     function Execute(FreeShip: TFreeShip;
@@ -243,22 +243,19 @@ begin
   end;
   Viewport.Refresh;
 end;
-
+{
 procedure TFreeExpanedplatesDialog.FUpdateListBox;
-var
-  I, Index: integer;
-  Patch: TFreeDevelopedPatch;
+var I,Index: integer; Patch: TFreeDevelopedPatch;
 begin
   ListBox.Items.BeginUpdate;
   ListBox.Clear;
-  for I:=1 to FPlates.Count do begin
-    Patch:=FPlates[I-1];
+  for I:=1 to FPlates.Count do begin Patch:=FPlates[I-1];
     Index:=ListBox.Items.AddObject(Patch.Name, Patch);
     ListBox.Checked[index]:=Patch.Visible;
   end;
   Listbox.Items.EndUpdate;
 end;
-
+}
 procedure TFreeExpanedplatesDialog.ViewportRequestExtents(Sender: TObject;
   var Min, Max: T3DVector);
 var
@@ -302,10 +299,9 @@ begin
   ////Freeship.Preferences.dumpIcons(MenuImages,ActionList1);
 
 //Freeship.Preferences.LoadImageListByActions(MenuImages, ActionList1);
-  ToolBar1.ButtonHeight:= MenuImages.Height+4;
-  ToolBar1.ButtonWidth:=MenuImages.Width +4;
-
-  FUpdateListBox;
+//ToolBar1.ButtonHeight:= MenuImages.Height+4;
+//ToolBar1.ButtonWidth:=MenuImages.Width +4;
+//FUpdateListBox;
 
   ShowStations.Checked:=FreeShip.Visibility.ShowStations;
   ShowButtocks.Checked:=FreeShip.Visibility.ShowButtocks;
@@ -324,7 +320,7 @@ begin
   for I:=1 to FPlates.Count do begin
     Patch:=Plates[I-1];
     Patch.Extents(Min, Max);
-    Clearance:=0.025 * DistPP3D(Min, Max);
+    Clearance:=0.025*Distance3D( Min,Max );
     if I = 1 then begin
       P2D.X:=-Min.X;
       if Max.Y < -Min.Y then P2D.Y:=Min.Y
@@ -383,40 +379,30 @@ var
   Suppress: boolean;
   Str: string;
 begin
-  if FPlates <> nil then
-  begin
-    // Skip translation
+  if FPlates <> nil then begin                              // Skip translation
     Viewport.DrawingCanvas.Font.Color:=clBlack;
     Viewport.DrawingCanvas.Font.Name:='Arial';
-    Viewport.DrawingCanvas.Font.Size:=FFontSize;
-    // End Skip translation
+    Viewport.DrawingCanvas.Font.Size:=FFontSize;        // End Skip translation
     Viewport.FontSize:=FFontSize;
-    if ShowDimensions.Checked then
-    begin
-      Suppress:=False;
-      // Draw grid lines
-      Space:=0.025 * DistPP3D(Viewport.Min3D, Viewport.Max3D);
-
-      // Calculate and draw XGrid
-      if FXGridSpacing <> 0 then
-        N:=round((2 * Space+Viewport.Max3D.X-Viewport.Min3D.X) / FXGridSpacing)
-      else
-        N:=10000;
-      if N < 500 then
-      begin
+    if ShowDimensions.Checked then begin
+      Suppress:=False;                                       // Draw grid lines
+      Space:=0.025*Distance3D( Viewport.Min3D,Viewport.Max3D );
+                                                    // Calculate and draw XGrid
+      if FXGridSpacing<>0
+      then N:=round((2*Space+Viewport.Max3D.X-Viewport.Min3D.X)/FXGridSpacing)
+      else N:=10000;
+      if N < 500 then begin
         Viewport.PenColor:=RGB(225, 225, 225);
         Viewport.Penwidth:=1;
         Viewport.PenStyle:=psSolid;
         I:=Round((Viewport.Min3D.X) / FXGridSpacing)-2;
         X:=I * FXGridSpacing;
-        while X <= Viewport.Max3D.X do
-        begin
-          if (X >= Viewport.Min3D.X-0.01) and (X <= Viewport.Max3D.X+0.01) then
-          begin
-            P:=SetPoint(X, Viewport.Min3D.Y-Space, 0.0);
+        while X <= Viewport.Max3D.X do begin
+          if (X >= Viewport.Min3D.X-0.01) and (X <= Viewport.Max3D.X+0.01) then begin
+            P:=Vector(X, Viewport.Min3D.Y-Space);
             Pt1:=Viewport.Project(P);
             Viewport.MoveTo(Pt1.X, Pt1.Y);
-            P:=SetPoint(X, Viewport.Max3D.Y+Space, 0.0);
+            P:=Vector(X, Viewport.Max3D.Y+Space);
             Pt2:=Viewport.Project(P);
             Viewport.LineTo(Pt2.X, Pt2.Y);
             Str:=ConvertDimension(X, FFreeship.ProjectSettings.ProjectUnits);
@@ -442,10 +428,10 @@ begin
         while Y <= Viewport.Max3D.Y do begin
           if (Y >= Viewport.Min3D.Y-0.01) and (Y <= Viewport.Max3D.Y+0.01)
           then begin
-            P:=SetPoint(Viewport.Min3D.X-Space, Y, 0.0);
+            P:=Vector(Viewport.Min3D.X-Space, Y);
             Pt1:=Viewport.Project(P);
             Viewport.MoveTo(Pt1.X, Pt1.Y);
-            P:=SetPoint(Viewport.Max3D.X+Space, Y, 0.0);
+            P:=Vector(Viewport.Max3D.X+Space, Y);
             Pt2:=Viewport.Project(P);
             Viewport.LineTo(Pt2.X, Pt2.Y);
             Str:=ConvertDimension(Y, FFreeship.ProjectSettings.ProjectUnits);

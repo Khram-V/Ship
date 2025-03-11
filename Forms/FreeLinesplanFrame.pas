@@ -227,7 +227,7 @@ var I,J,K: integer;
   Plane: T3DPlane;
   First: boolean;
   Layer: TFreeSubdivisionLayer;
-begin                                         Min3D:=setPoint(0); Max3D:=Min3D;
+begin                                         Min3D:=Vector(0); Max3D:=Min3D;
   if Freeship<>nil then begin First:=True; // всяко хотя бы одна точка должна быть
     for I:=1 to Freeship.NumberOfLayers do begin
       Layer:=Freeship.Layer[I-1];
@@ -456,19 +456,19 @@ var
     Setlength( Pts,length(VPs) );
     if lvProfile in views then begin                 // батоксы и рыбины здесь?
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];
-        Pr:=SetPoint(FProfileOrigin.X+P.X, FProfileOrigin.Y+P.Z, 0);
+        Pr:=Vector( FProfileOrigin.X+P.X,FProfileOrigin.Y+P.Z );
         Pts[i]:=Viewport.Project(Pr);
       end; Viewport.Polyline( Pts );
     end;
     if (lvAftBody in views) and (Spline.Max.X<=MidshipLocation) then begin
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];           // корпус - корма
-        Pr:=SetPoint( FAftOrigin.X-P.Y,FAftOrigin.Y+P.Z,0 );
+        Pr:=Vector( FAftOrigin.X-P.Y,FAftOrigin.Y+P.Z );
         Pts[i]:=Viewport.Project(Pr);
       end; Viewport.Polyline(Pts);
     end;
     if (lvFrontBody in views) and (Spline.Min.X>=MidshipLocation) then begin
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];             // корпус - нос
-        Pr:=SetPoint( FFrontOrigin.X+P.Y,FFrontOrigin.Y+P.Z,0 );
+        Pr:=Vector( FFrontOrigin.X+P.Y,FFrontOrigin.Y+P.Z );
         Pts[i]:=Viewport.Project(Pr);
       end; Viewport.Polyline(Pts);
     end;
@@ -477,7 +477,7 @@ var
     and (Freeship.NumberofDiagonals=0)          // (-) ватерлинии правого борта
     and (MirrorPlanview.Checked)) then begin    //                   или рыбины
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];
-        Pr:=SetPoint( FPlanOrigin.X+P.X,FPlanOrigin.Y+YSign*P.Y,0 );
+        Pr:=Vector( FPlanOrigin.X+P.X,FPlanOrigin.Y+YSign*P.Y );
           Pts[i]:=Viewport.Project(Pr);
         end; Viewport.Polyline(Pts);
     end;
@@ -590,7 +590,7 @@ var
     end; {GetColor}
   begin
     if lvAftBody in views then begin P.Z:=0.0;           // (-) кормовые обводы
-      L:=SetPoint(-1.0,0.0,0.0);
+      L:=Vector( -1.0 );
       for I:=Triangles.Count downto 1 do begin
         Triangle:=Triangles.Triangles[I-1];
         if not UseLights.Checked then begin
@@ -625,12 +625,12 @@ var
         end;
 }     end;
     end else begin
-      L:=SetPoint(-1.0, 0.0, 0.0);
+      L:=Vector( -1.0 );
       for I:=1 to Triangles.Count do begin
         Triangle:=Triangles.Triangles[I-1];
         P.Z:=0.0;
         if lvProfile in Views then begin
-          L:=SetPoint(0.0, -1.0, 0.0);
+          L:=Vector( 0.0,-1.0 );
           if not UseLights.Checked then begin
             Viewport.BrushColor:=Triangle.Color;
             Viewport.PenColor:=Triangle.Color;
@@ -651,7 +651,7 @@ var
           Viewport.Polygon(Pts);
         end;
         if lvFrontBody in views then begin
-          L:=SetPoint(1.0, 0.0, 0.0);
+          L:=Vector( 1.0 );
           if not UseLights.Checked then begin
             Viewport.BrushColor:=Triangle.Color;
             Viewport.PenColor:=Triangle.Color;
@@ -684,7 +684,7 @@ var
           end;
 }       end;
         if lvPlan in views then begin
-          L:=SetPoint(0.0, 0.0, -1.0);
+          L:=Vector( 0.0,0.0,-1.0 );
           if not UseLights.Checked then begin
             Viewport.BrushColor:=Triangle.Color;
             Viewport.PenColor:=Triangle.Color;
@@ -819,17 +819,17 @@ begin
     Space:=CalculateSpace(0.5 * textspace, FMin3D.X, FMax3D.X);
     Viewport.BrushStyle:=bsClear;                      // draw dwl in profile
     DrawLineAtt( FProfileOrigin,
-      SetPoint( FMin3D.X-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),
-      SetPoint( FMax3D.X+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),'',False);
+      Vector( FMin3D.X-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+      Vector( FMax3D.X+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),'',False);
                                                     // draw dwl in aft bodyplan
     Space:=CalculateSpace(textspace, FMin3D.Y, FMax3D.Y);
     DrawLineAtt(FAftOrigin,
-      SetPoint(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),
-      SetPoint( FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),'',False);
+      Vector(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+      Vector( FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),'',False);
                                                   // draw dwl in front bodyplan
     DrawLineAtt(FFrontOrigin,
-      SetPoint(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),
-      SetPoint( FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),'',False);
+      Vector(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+      Vector( FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),'',False);
   end;                                                             // Draw grid
   if ShowMonochrome.Checked then Viewport.PenColor:=clSilver
                             else Viewport.PenColor:=clSilver;
@@ -839,40 +839,40 @@ begin
   if ShowMonochrome.Checked then Viewport.FontColor:=clBlack
                             else Viewport.FontColor:=clTeal;   // draw baseline
   DrawLineAtt( FProfileOrigin,
-               SetPoint( FMin3D.X-Space,FMin3D.Z,0),
-               SetPoint( FMax3D.X+Space,FMin3D.Z,0),' Base ',False );           //'Base '+ConvertDimension( FMin3D.Z,Freeship.ProjectSettings.ProjectUnits),False );
-  DrawLineAtt( FProfileOrigin,                                      // draw dwl
-               SetPoint(FMin3D.X-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),
-               SetPoint(FMax3D.X+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),
+               Vector( FMin3D.X-Space,FMin3D.Z),
+               Vector( FMax3D.X+Space,FMin3D.Z),' Base ',False ); //'Base '+ConvertDimension( FMin3D.Z,Freeship.ProjectSettings.ProjectUnits),False );
+  DrawLineAtt( FProfileOrigin,                                    // draw dwl
+               Vector(FMin3D.X-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+               Vector(FMax3D.X+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
                ' DWL ',false,true );                                            //'DWL '+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits), False);
   Viewport.SetPenWidth( PenwidthFactor );
   Viewport.FontColor:=clBlack;
   for I:=1 to FFreeship.NumberofWaterlines do begin
     Tmp:=-FFreeship.Waterline[I-1].Plane.D;
     Str:=ConvertDimension(Tmp, Freeship.ProjectSettings.ProjectUnits);
-    DrawLineAtt( FProfileOrigin,SetPoint(FMin3D.X-Space,Tmp,0),
-                                SetPoint(FMax3D.X+Space,Tmp,0),Str,False,True);
+    DrawLineAtt( FProfileOrigin,Vector(FMin3D.X-Space,Tmp),
+                                Vector(FMax3D.X+Space,Tmp),Str,False,True);
   end;
   Space:=CalculateSpace( textspace,FMin3D.Z,FMax3D.Z );   // ватерлинии на боку
   for I:=1 to FFreeship.NumberofStations do begin
     Tmp:=-FFreeship.Station[I-1].Plane.D;
     Str:=ConvertDimension(Tmp, Freeship.ProjectSettings.ProjectUnits);
-    DrawLineAtt( FProfileOrigin,SetPoint(Tmp,FMin3D.Z-space,0 ),
-                                SetPoint(Tmp,FMax3D.Z+space,0 ),Str,True );
+    DrawLineAtt( FProfileOrigin,Vector(Tmp,FMin3D.Z-space),
+                                Vector(Tmp,FMax3D.Z+space),Str,True );
   end;                                          // draw grid in aft body view
   Viewport.SetPenWidth( 2*PenwidthFactor );
   Space:=CalculateSpace( textspace,FMin3D.Y,FMax3D.Y );
   if ShowMonochrome.Checked then Viewport.FontColor:=clBlack
                             else Viewport.FontColor:=clTeal;;      // draw base
-  DrawLineAtt( FAftOrigin,SetPoint(-FMax3D.Y-Space, FMin3D.Z, 0),
-                          SetPoint(FMax3D.Y+Space, FMin3D.Z, 0),' Base ',false); // +ConvertDimension(FMin3D.Z, Freeship.ProjectSettings.ProjectUnits),False);
+  DrawLineAtt( FAftOrigin,Vector(-FMax3D.Y-Space, FMin3D.Z),
+                          Vector(FMax3D.Y+Space, FMin3D.Z),' Base ',false); // +ConvertDimension(FMin3D.Z, Freeship.ProjectSettings.ProjectUnits),False);
   DrawLineAtt(FAftOrigin,                                           // draw dwl
-    SetPoint(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),
-    SetPoint( FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),
+    Vector(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+    Vector( FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
     ' DWL ',false,true );                                                       //+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits),False);
   Space:=CalculateSpace( textspace,FMin3D.Z,FMax3D.Z );
-  DrawLineAtt(FAftOrigin, SetPoint( 0.0,FMin3D.Z-space,0),          // ДП=Center
-                          SetPoint( 0.0,FMax3D.Z+space,0),'ДП',True );
+  DrawLineAtt(FAftOrigin, Vector(0.0,FMin3D.Z-space),              // ДП=Center
+                          Vector(0.0,FMax3D.Z+space),'ДП',True );
 
   Space:=CalculateSpace(textspace,FMin3D.Y,FMax3D.Y);
   Viewport.FontColor:=clGray;                 // ватерлинии на корпусе по корме
@@ -880,77 +880,77 @@ begin
   for I:=1 to FFreeship.NumberofWaterlines do begin
     Tmp:=-FFreeship.Waterline[I-1].Plane.D;
     Str:=ConvertDimension( Tmp,Freeship.ProjectSettings.ProjectUnits );
-    DrawLineAtt( FAftOrigin,SetPoint(-FMax3D.Y-Space,Tmp,0),
-                            SetPoint(FMax3D.Y+Space,Tmp,0),Str,False,True );
+    DrawLineAtt( FAftOrigin,Vector(-FMax3D.Y-Space,Tmp),
+                            Vector(FMax3D.Y+Space,Tmp),Str,False,True );
   end;
   Space:=CalculateSpace( textspace,FMin3D.Z,FMax3D.Z );
   for I:=1 to FFreeship.NumberofButtocks do begin
     Tmp:=-FFreeship.Buttock[I-1].Plane.D;        // батоксы на корпусе по корме
     Str:=ConvertDimension( Tmp,Freeship.ProjectSettings.ProjectUnits );
-    DrawLineAtt( FAftOrigin,SetPoint(Tmp, FMin3D.Z-space,0),
-                            SetPoint(Tmp, FMax3D.Z+space,0),Str,True );
-    DrawLineAtt( FAftOrigin,SetPoint(-Tmp,FMin3D.Z-space,0),
-                            SetPoint(-Tmp,FMax3D.Z+space,0),Str,True );
+    DrawLineAtt( FAftOrigin,Vector(Tmp, FMin3D.Z-space),
+                            Vector(Tmp, FMax3D.Z+space),Str,True );
+    DrawLineAtt( FAftOrigin,Vector(-Tmp,FMin3D.Z-space),
+                            Vector(-Tmp,FMax3D.Z+space),Str,True );
   end;
   Viewport.SetPenWidth( 2*PenwidthFactor);      // draw grid in front body view
   Space:=CalculateSpace( textspace,FMin3D.Y,FMax3D.Y );        // корус по носу
   if ShowMonochrome.Checked then Viewport.FontColor:=clBlack
                             else Viewport.FontColor:=clTeal;   // draw baseline
   DrawLineAtt(FFrontOrigin,
-    SetPoint(-FMax3D.Y-Space,FMin3D.Z,0),
-    SetPoint(FMax3D.Y+Space,FMin3D.Z,0),' Base ',false );                       // + ConvertDimension(FMin3D.Z, Freeship.ProjectSettings.ProjectUnits),False);
+    Vector(-FMax3D.Y-Space,FMin3D.Z),
+    Vector(FMax3D.Y+Space,FMin3D.Z),' Base ',false );                       // + ConvertDimension(FMin3D.Z, Freeship.ProjectSettings.ProjectUnits),False);
   DrawLineAtt(FFrontOrigin,                         // draw dwl
-    SetPoint(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),
-    SetPoint(FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,0),
+    Vector(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+    Vector(FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
     ' DWL ',false,true );                                                       //+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits), False);
   Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);
-  DrawLineAtt( FFrontOrigin,SetPoint(0.0,FMin3D.Z-space,0),
-                            SetPoint(0.0,FMax3D.Z+space,0),' ДП ', True);
+  DrawLineAtt( FFrontOrigin,Vector(0.0,FMin3D.Z-space),
+                            Vector(0.0,FMax3D.Z+space),' ДП ', True);
   Space:=CalculateSpace( textspace,FMin3D.Y,FMax3D.Y );
   Viewport.FontColor:=clGray;
   Viewport.SetPenWidth( PenwidthFactor );                // Font.Height;
   for I:=1 to FFreeship.NumberofWaterlines do begin       // ватерлинии по носу
     Tmp:=-FFreeship.Waterline[I-1].Plane.D;
     Str:=ConvertDimension( Tmp,Freeship.ProjectSettings.ProjectUnits );
-    DrawLineAtt( FFrontOrigin,SetPoint(-FMax3D.Y-Space,Tmp,0),
-                              SetPoint(FMax3D.Y+Space,Tmp,0),Str,False,true );
+    DrawLineAtt( FFrontOrigin,Vector(-FMax3D.Y-Space,Tmp),
+                              Vector(FMax3D.Y+Space,Tmp),Str,False,true );
   end;
   Space:=CalculateSpace( textspace,FMin3D.Z,FMax3D.Z );
   for I:=1 to FFreeship.NumberofButtocks do begin // бактокы на корпусе по носу
     Tmp:=-FFreeship.Buttock[I-1].Plane.D;
     Str:=ConvertDimension( Tmp,Freeship.ProjectSettings.ProjectUnits);
-    DrawLineAtt( FFrontOrigin,SetPoint(Tmp,FMin3D.Z-space,0),
-                              SetPoint(Tmp,FMax3D.Z+space,0),Str,True);
-    DrawLineAtt( FFrontOrigin,SetPoint(-Tmp,FMin3D.Z-space,0),
-                              SetPoint(-Tmp,FMax3D.Z+space,0),Str,True);
+    DrawLineAtt( FFrontOrigin,Vector(Tmp,FMin3D.Z-space),
+                              Vector(Tmp,FMax3D.Z+space),Str,True);
+    DrawLineAtt( FFrontOrigin,Vector(-Tmp,FMin3D.Z-space),
+                              Vector(-Tmp,FMax3D.Z+space),Str,True);
   end;
 
   Viewport.SetPenWidth( 2*PenwidthFactor);            // draw grid in plan view
   Space:=CalculateSpace( 0.2*textspace,FMin3D.X,FMax3D.X );
   if ShowMonochrome.Checked then Viewport.FontColor:=clBlack
                             else Viewport.FontColor:=clTeal;
-  DrawLineAtt( FPlanOrigin,SetPoint(FMin3D.X-Space,0,0 ),
-               SetPoint( FMax3D.X+Space,0,0),' Center ',False,true );
+  DrawLineAtt( FPlanOrigin,Vector( FMin3D.X-Space ),
+               Vector( FMax3D.X+Space ),' Center ',False,true );
   Viewport.FontColor:=clBlack;
   Viewport.SetPenWidth(PenwidthFactor);
   for I:=1 to FFreeship.NumberofButtocks do begin
     Tmp:=-FFreeship.Buttock[I-1].Plane.D;
     Str:=ConvertDimension(Tmp, Freeship.ProjectSettings.ProjectUnits );
-    DrawLineAtt( FPlanOrigin,SetPoint(FMin3D.X-Space,Tmp,0),
-                             SetPoint(FMax3D.X+Space,Tmp,0),Str,False,true );
+    DrawLineAtt( FPlanOrigin,Vector(FMin3D.X-Space,Tmp),
+                             Vector(FMax3D.X+Space,Tmp),Str,False,true );
     if (Freeship.NumberofDiagonals = 0) and (MirrorPlanview.Checked) then
-      DrawLineAtt( FPlanOrigin,SetPoint(FMin3D.X-Space,-Tmp,0),
-                               SetPoint(FMax3D.X+Space,-Tmp,0),Str,False,true);
+      DrawLineAtt( FPlanOrigin,Vector(FMin3D.X-Space,-Tmp),
+                               Vector(FMax3D.X+Space,-Tmp),Str,False,true);
   end;
   Space:=CalculateSpace( textspace,FMin3D.Y,FMax3D.Y );
   for I:=1 to FFreeship.NumberofStations do begin
     Tmp:=-FFreeship.Station[I-1].Plane.D;
     Str:=ConvertDimension(Tmp, Freeship.ProjectSettings.ProjectUnits);
     if (Freeship.NumberofDiagonals=0) and (MirrorPlanview.Checked )
-    then DrawLineAtt( FPlanOrigin,SetPoint( Tmp,-FMax3D.Y-space,0 ),
-                                  SetPoint( Tmp,FMax3D.Y+space,0),Str,True )
-    else DrawLineAtt( FPlanOrigin,SetPoint( Tmp,-FDiagonalWidth-space,0 ),
-                                  SetPoint( Tmp,FMax3D.Y+space,0),Str,True );
+    then DrawLineAtt( FPlanOrigin,Vector( Tmp,-FMax3D.Y-space),
+                                  Vector( Tmp,FMax3D.Y+space),Str,True )
+    else DrawLineAtt( FPlanOrigin,Vector( Tmp,-FDiagonalWidth-space),
+                                  Vector( Tmp,FMax3D.Y+space),Str,True );
   end;
   if not ShowFillColor.checked then begin               //   draw knuckle-lines
     if ShowFillColor.Checked then Viewport.SetPenWidth( PenwidthFactor )
@@ -1008,7 +1008,7 @@ begin
           if Tmp < min then Min:=Tmp;
           if Tmp > max then Max:=Tmp;
         end;
-        P:=SetPoint( FPlanOrigin.X+P.X,FPlanOrigin.Y-abs(Tmp),0.0 );
+        P:=Vector( FPlanOrigin.X+P.X,FPlanOrigin.Y-abs(Tmp) );
         Pts[K]:=Viewport.Project(P);
       end;
       Viewport.Polyline(Pts);                 // draw as grid in bodyplan views
@@ -1017,8 +1017,8 @@ begin
                                 else Viewport.PenColor:=clSilver;
                // calculate height of intersection of diagonal with centerplane
       Tmp:=-Diagonal.PLane.d / Diagonal.Plane.c;
-      P1:=SetPoint( 0.0,Min*Sin(DegToRad(45)), Tmp-Min*Sin(DegToRad(45)));
-      P2:=SetPoint( 0.0,Max*Sin(DegToRad(45)), Tmp-Max*Sin(DegToRad(45)));
+      P1:=Vector( 0.0,Min*Sin(DegToRad(45)), Tmp-Min*Sin(DegToRad(45)));
+      P2:=Vector( 0.0,Max*Sin(DegToRad(45)), Tmp-Max*Sin(DegToRad(45)));
       DrawDiagonalLine( FAftOrigin,P1,P2 );
       DrawDiagonalLine( FFrontOrigin,P1,P2 );
     end;
@@ -1033,7 +1033,7 @@ begin
   Tmp:=0.0;
   if Freeship.NumberofDiagonals>0 then Tmp:=FDiagonalWidth else
   if MirrorPlanview.Checked then Tmp:=FMax3D.Y;
-  Pt:=Viewport.Project( SetPoint( FMin3D.X,FPlanOrigin.Y-Tmp,0 ) );
+  Pt:=Viewport.Project( Vector( FMin3D.X,FPlanOrigin.Y-Tmp ) );
   Pt.y-=ViewPort.FontHeight*3;
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(39)+' : '+FreeShip.ProjectSettings.ProjectName );
   Pt.y-=ViewPort.FontHeight;
@@ -1050,7 +1050,7 @@ begin
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(43)+' : '+ExtractFilename(FreeShip.FileName) );
 
   Viewport.FontColor:=clNavy;
-  Pt:=Viewport.Project(SetPoint(FAftOrigin.X-FModelBeam/2,FPlanOrigin.Y+FModelBeam/2,0));
+  Pt:=Viewport.Project(Vector(FAftOrigin.X-FModelBeam/2,FPlanOrigin.Y+FModelBeam/2));
 //Pt.y+=ViewPort.FontHeight; // div 2;
   Viewport.TextOut( Pt.X,Pt.Y,'Basic dimensions of a ship''s hull' );
   Pt.y-=(3*ViewPort.FontHeight) div 2;
@@ -1339,21 +1339,21 @@ begin
     Strings.Add('0'+EOL+'SECTION');
     Strings.Add('2'+EOL+'ENTITIES');                            // PROFILE VIEW
     Space:=CalculateSpace( 0.5*textspace,FMin3D.X,FMax3D.X );  // draw baseline
-    AddLine( SetPoint(FMin3D.X-Space,FMin3D.Z,0),
-             SetPoint(FMax3D.X+Space,FMin3D.Z,0),
+    AddLine( Vector(FMin3D.X-Space,FMin3D.Z),
+             Vector(FMax3D.X+Space,FMin3D.Z),
              [lvProfile],'Base ',Freeship.Preferences.GridColor );  // draw dwl
-    AddLine( SetPoint(FMin3D.X-Space,0,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
-             SetPoint(FMax3D.X+Space, 0, FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+    AddLine( Vector(FMin3D.X-Space,0,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+             Vector(FMax3D.X+Space, 0, FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
              [lvProfile],'DWL ', clRed);
     for I:=1 to FFreeship.NumberofWaterlines do begin
       Tmp:=-FFreeship.Waterline[I-1].Plane.D;
-      AddLine(SetPoint(FMin3D.X-Space, 0, Tmp), SetPoint(FMax3D.X+Space, 0, Tmp),
+      AddLine(Vector(FMin3D.X-Space, 0, Tmp), Vector(FMax3D.X+Space, 0, Tmp),
         [lvProfile], 'wlgrid', Freeship.Preferences.GridColor);
     end;
     Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);
     for I:=1 to FFreeship.NumberofStations do begin
       Tmp:=-FFreeship.Station[I-1].Plane.D;
-      AddLine(SetPoint(Tmp, 0, FMin3D.Z-space), SetPoint(Tmp, 0, FMax3D.Z+space),
+      AddLine(Vector(Tmp, 0, FMin3D.Z-space), Vector(Tmp, 0, FMax3D.Z+space),
         [lvProfile], 'stationgrid', Freeship.Preferences.GridColor);
     end;
     // draw buttocks
@@ -1373,27 +1373,27 @@ begin
     // AFT VIEW OF BODYPLAN
     Space:=CalculateSpace(0.5 * textspace, -FMax3D.Y, FMax3D.Y);
     // draw baseline
-    AddLine(SetPoint(0.0, -FMax3D.Y-Space, 0.0), SetPoint(0.0, FMax3D.Y+Space, 0.0),
+    AddLine(Vector(0,-FMax3D.Y-Space), Vector(0,FMax3D.Y+Space),
       [lvAftBody],'Base ', Freeship.Preferences.GridColor);
     // draw dwl
-    AddLine(SetPoint(0.0, -FMax3D.Y-Space, FMin3D.Z +
-      FFreeship.ProjectSettings.ProjectDraft), SetPoint(0.0, FMax3D.Y+Space,
-      FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),[lvAftBody],'DWL ',clRed);
+    AddLine( Vector(0,-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+             Vector(0,FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+             [lvAftBody],'DWL ',clRed );
     for I:=1 to FFreeship.NumberofWaterlines do begin
       Tmp:=-FFreeship.Waterline[I-1].Plane.D;
-      AddLine( SetPoint(0.0,-FMax3D.Y-Space, Tmp),
-               SetPoint(0.0,FMax3D.Y+Space,Tmp ),
+      AddLine( Vector(0.0,-FMax3D.Y-Space, Tmp),
+               Vector(0.0,FMax3D.Y+Space,Tmp ),
                [lvAftBody], 'wlgrid', Freeship.Preferences.GridColor );
     end;
     Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);    // draw centerline
-    AddLine(SetPoint(0.0, 0.0, FMin3D.Z-space), SetPoint(0.0, 0.0, FMax3D.Z+space),
+    AddLine(Vector(0.0, 0.0, FMin3D.Z-space), Vector(0.0, 0.0, FMax3D.Z+space),
       [lvAftBody],'Center ', clRed);
     for I:=1 to FFreeship.NumberofButtocks do begin
       Tmp:=-FFreeship.Buttock[I-1].Plane.D;
-      AddLine(SetPoint(0.0, Tmp, FMin3D.Z-space), SetPoint(
-        0.0, Tmp, FMax3D.Z+space), [lvAftBody], 'buttockgrid', Freeship.Preferences.GridColor);
-      AddLine(SetPoint(0.0, -Tmp, FMin3D.Z-space), SetPoint(
-        0.0, -Tmp, FMax3D.Z+space), [lvAftBody], 'buttockgrid', Freeship.Preferences.GridColor);
+      AddLine(Vector(0.0, Tmp, FMin3D.Z-space),
+              Vector(0.0, Tmp, FMax3D.Z+space), [lvAftBody], 'buttockgrid', Freeship.Preferences.GridColor);
+      AddLine(Vector(0.0, -Tmp, FMin3D.Z-space),
+              Vector(0.0, -Tmp, FMax3D.Z+space), [lvAftBody], 'buttockgrid', Freeship.Preferences.GridColor);
     end;
     // draw stations
     for I:=1 to Freeship.NumberofStations do
@@ -1415,26 +1415,25 @@ begin
     end;
 
     Space:=CalculateSpace( 0.5*textspace,-FMax3D.Y,FMax3D.Y ); // FRONT VIEW OF BODYPLAN
-    AddLine( SetPoint(0.0,-FMax3D.Y-Space, 0.0),               // draw baseline
-             SetPoint(0.0, FMax3D.Y+Space, 0.0),
+    AddLine(Vector(0.0,-FMax3D.Y-Space),               // draw baseline
+            Vector(0.0, FMax3D.Y+Space),
             [lvFrontBody],'Base ', Freeship.Preferences.GridColor); // draw dwl
-    AddLine(SetPoint(0.0, -FMax3D.Y-Space, FMin3D.Z +
-      FFreeship.ProjectSettings.ProjectDraft), SetPoint(0.0, FMax3D.Y+Space,
-      FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft), [lvFrontBody],'DWL ',clRed);
+    AddLine(Vector(0.0, -FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+            Vector(0.0, FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft), [lvFrontBody],'DWL ',clRed);
     for I:=1 to FFreeship.NumberofWaterlines do begin
       Tmp:=-FFreeship.Waterline[I-1].Plane.D;
-      AddLine(SetPoint(0.0, -FMax3D.Y-Space, Tmp), SetPoint(
-        0.0, FMax3D.Y+Space, Tmp), [lvFrontBody], 'wlgrid', Freeship.Preferences.GridColor);
+      AddLine(Vector(0,-FMax3D.Y-Space,Tmp),
+              Vector(0,FMax3D.Y+Space,Tmp),[lvFrontBody], 'wlgrid', Freeship.Preferences.GridColor);
     end;
     Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);
     // draw centerline
-    AddLine(SetPoint(0.0, 0.0, FMin3D.Z-space), SetPoint(0.0, 0.0, FMax3D.Z+space),
+    AddLine(Vector(0.0, 0.0, FMin3D.Z-space), Vector(0.0, 0.0, FMax3D.Z+space),
       [lvFrontBody],'Center ', clRed);
     for I:=1 to FFreeship.NumberofButtocks do begin
       Tmp:=-FFreeship.Buttock[I-1].Plane.D;
-      AddLine(SetPoint(0.0, Tmp, FMin3D.Z-space), SetPoint(
+      AddLine(Vector(0.0, Tmp, FMin3D.Z-space), Vector(
         0.0, Tmp, FMax3D.Z+space), [lvFrontBody], 'buttockgrid', Freeship.Preferences.GridColor);
-      AddLine(SetPoint(0.0, -Tmp, FMin3D.Z-space), SetPoint(
+      AddLine(Vector(0.0, -Tmp, FMin3D.Z-space), Vector(
         0.0, -Tmp, FMax3D.Z+space), [lvFrontBody], 'buttockgrid', Freeship.Preferences.GridColor);
     end;
     // draw stations
@@ -1459,14 +1458,14 @@ begin
     // PLAN VIEW
     Space:=CalculateSpace(0.5 * textspace, FMin3D.X, FMax3D.X);
     // draw centerline
-    AddLine(SetPoint(FMin3D.X-Space, 0.0, 0.0), SetPoint(FMax3D.X+Space, 0.0, 0.0),
+    AddLine(Vector(FMin3D.X-Space, 0.0, 0.0), Vector(FMax3D.X+Space, 0.0, 0.0),
       [lvPlan],'Center ', clRed);
     for I:=1 to FFreeship.NumberofButtocks do begin
       Tmp:=-FFreeship.Buttock[I-1].Plane.D;
-      AddLine(SetPoint(FMin3D.X-Space, Tmp, 0.0), SetPoint(
+      AddLine(Vector(FMin3D.X-Space, Tmp, 0.0), Vector(
         FMax3D.X+space, Tmp, 0.0), [lvPlan], 'buttockgrid', Freeship.Preferences.GridColor);
       if (Freeship.NumberofDiagonals = 0) and (MirrorPlanView.Checked) then
-        AddLine(SetPoint(FMin3D.X-space, -Tmp, 0.0), SetPoint(FMax3D.X+space, -Tmp, 0.0),
+        AddLine(Vector(FMin3D.X-space, -Tmp, 0.0), Vector(FMax3D.X+space, -Tmp, 0.0),
           [lvPlan], 'buttockgrid', Freeship.Preferences.GridColor);
     end;
     // stations
@@ -1474,10 +1473,10 @@ begin
     for I:=1 to FFreeship.NumberofStations do begin
       Tmp:=-FFreeship.Station[I-1].Plane.D;
       if (Freeship.NumberofDiagonals = 0) and (MirrorPlanview.Checked) then
-        AddLine(SetPoint(Tmp, -FMax3D.Y-space, 0), SetPoint(Tmp, FMax3D.Y+space, 0),
+        AddLine(Vector(Tmp, -FMax3D.Y-space, 0), Vector(Tmp, FMax3D.Y+space, 0),
           [lvPlan], 'stationgrid', Freeship.Preferences.GridColor)
       else
-        AddLine(SetPoint(Tmp, -FDiagonalWidth-space, 0), SetPoint(Tmp, FMax3D.Y+space, 0),
+        AddLine(Vector(Tmp, -FDiagonalWidth-space, 0), Vector(Tmp, FMax3D.Y+space, 0),
           [lvPlan], 'stationgrid', Freeship.Preferences.GridColor);
     end;
     // draw waterlines
@@ -1526,8 +1525,8 @@ begin
         // draw as grid in bodyplan views
         // calculate height of intersection of diagonal with centerplane
         Tmp:=-Diagonal.Plane.d / Diagonal.Plane.c;
-        P1:=SetPoint(0.0, Min * Sin(DegToRad(45)), Tmp-Min * Sin(DegToRad(45)));
-        P2:=SetPoint(0.0, Max * Sin(DegToRad(45)), Tmp-Max * Sin(DegToRad(45)));
+        P1:=Vector(0.0, Min * Sin(DegToRad(45)), Tmp-Min * Sin(DegToRad(45)));
+        P2:=Vector(0.0, Max * Sin(DegToRad(45)), Tmp-Max * Sin(DegToRad(45)));
         AddLine(P1, P2, [lvAftBody], 'diagonalgrid', freeship.Preferences.GridColor);
         AddLine(P1, P2, [lvFrontBody], 'diagonalgrid', freeship.Preferences.GridColor);
         P1.Y:=-P1.Y;

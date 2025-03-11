@@ -750,8 +750,6 @@ type
     Panel8: TPanel;
     Panel9: TPanel;
     PopupMenu1: TPopupMenu;
-//    ScrollBar1: TScrollBar;
-//    ScrollBar2: TScrollBar;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
     TrackBar2: TTrackBar;
@@ -1165,17 +1163,13 @@ begin
   VpointsNum:=Input5.Value;
   HpointsNum:=Input6.Value;
   VCompression:=TrackBarVerticalCompression.Value;
-
-  if ComboBoxPlanformShape.ItemIndex = 0 then
-  begin
-    FProfile.AddKnuckle(SetPoint(0, 0, 0));
-    FProfile.AddKnuckle(SetPoint(DeltaTip, 0, -Span));
-    FProfile.AddKnuckle(SetPoint(DeltaTip+TipChordLength, 0, -Span));
-    FProfile.AddKnuckle(SetPoint(RootChordLength, 0, 0));
+  if ComboBoxPlanformShape.ItemIndex = 0 then begin
+    FProfile.AddKnuckle(Vector(0, 0, 0));
+    FProfile.AddKnuckle(Vector(DeltaTip, 0, -Span));
+    FProfile.AddKnuckle(Vector(DeltaTip+TipChordLength, 0, -Span));
+    FProfile.AddKnuckle(Vector(RootChordLength, 0, 0));
     FProfile.AddKnuckle(FProfile.Point[0]);
-  end
-  else
-  begin
+  end else begin
     L:=Span;
     case ComboBoxPlanformShape.ItemIndex of
       1: a:=0.50 * RootChordLength;
@@ -1196,8 +1190,8 @@ begin
       end
     else
     begin
-      FProfile.Add(SetPoint(0, 0, 0));
-      FProfile.Add(SetPoint(0, 0, -L));
+      FProfile.Add(Vector(0, 0, 0));
+      FProfile.Add(Vector(0, 0, -L));
       FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
     end;
     for I:=1 to 10 do
@@ -1371,17 +1365,17 @@ begin
     FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
     FProfile.add(FProfile.Point[FProfile.NumberOfPoints-3]);
     FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
-    FProfile.Add(SetPoint(DeltaTip+TipChordLength, 0, -Span));
+    FProfile.Add(Vector(DeltaTip+TipChordLength, 0, -Span));
     FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
-    FProfile.Add(SetPoint(DeltaTip+TipChordLength+InputBulbDelta.Value -
+    FProfile.Add(Vector(DeltaTip+TipChordLength+InputBulbDelta.Value -
       InputBulbLength.Value, 0, -Span));
     FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;}
 
     { for ref
-    FProfile.Add(SetPoint(0, 0, 0));
-    FProfile.AddKnuckle(SetPoint(DeltaTip, 0, -Span));
-    FProfile.AddKnuckle(SetPoint(DeltaTip+TipChordLength, 0, -Span));
-    FProfile.AddKnuckle(SetPoint(RootChordLength, 0, 0));
+    FProfile.Add(Vector(0, 0, 0));
+    FProfile.AddKnuckle(Vector(DeltaTip, 0, -Span));
+    FProfile.AddKnuckle(Vector(DeltaTip+TipChordLength, 0, -Span));
+    FProfile.AddKnuckle(Vector(RootChordLength, 0, 0));
     FProfile.Add(FProfile.Point[0]); }
 
     //FProfile.Color:=clRed;
@@ -1389,8 +1383,8 @@ begin
 
     FProfile.addKnuckle(FProfile.Point[N-1]);
     FProfile.addKnuckle(FProfile.Point[N-2]);
-    FProfile.addKnuckle(SetPoint(DeltaTip+TipChordLength, 0, -Span));
-    FProfile.addKnuckle(SetPoint(DeltaTip+TipChordLength
+    FProfile.addKnuckle(Vector(DeltaTip+TipChordLength, 0, -Span));
+    FProfile.addKnuckle(Vector(DeltaTip+TipChordLength
                                          +InputBulbDelta.Value
                                          -InputBulbLength.Value, 0, -Span));
 
@@ -1419,7 +1413,7 @@ begin
       end;
       FProfile.Knuckle[FProfile.NumberOfPoints-2]:=True;
       FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
-      FProfile.Add(SetPoint(DeltaTip+TipChordLength+InputBulbDelta.Value -
+      FProfile.Add(Vector(DeltaTip+TipChordLength+InputBulbDelta.Value -
         InputBulbLength.Value, 0, -Span));
       FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
     end;
@@ -1442,7 +1436,7 @@ begin
         InputBulbLength.Value * 14.14 / (20+TrackBar2.Position);
       FProfile.Add(P);
     end;
-    FProfile.Add(SetPoint(DeltaTip+TipChordLength+InputBulbDelta.Value -
+    FProfile.Add(Vector(DeltaTip+TipChordLength+InputBulbDelta.Value -
       InputBulbLength.Value, 0, -Span));
     FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
 
@@ -1471,7 +1465,7 @@ begin
       end;
       FProfile.Knuckle[FProfile.NumberOfPoints-2]:=True;
       FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
-      FProfile.Add(SetPoint(DeltaTip+Input2.Value+InputBulbDelta.Value -
+      FProfile.Add(Vector(DeltaTip+Input2.Value+InputBulbDelta.Value -
         InputBulbLength.Value, 0, -Span));
       FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
       for I:=Nh downto 1 do
@@ -1496,7 +1490,7 @@ begin
       end;
       FProfile.Knuckle[FProfile.NumberOfPoints-2]:=True;
       FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
-      FProfile.Add(SetPoint(DeltaTip+Input2.Value+InputBulbDelta.Value -
+      FProfile.Add(Vector(DeltaTip+Input2.Value+InputBulbDelta.Value -
         InputBulbLength.Value, 0, -Span));
       FProfile.Knuckle[FProfile.NumberOfPoints-1]:=True;
     end;
@@ -1628,8 +1622,6 @@ begin
     Color:=clGray; //FFreeship.Preferences.ViewportColor;
     DoubleBuffer:=True;
     Elevation:=20;
-//    HorScrollbar:=ScrollBar1;
-//    VertScrollbar:=ScrollBar2;
     Margin:=0;
     ViewType:=fvPerspective;
     ViewportMode:=vmWireFrame;
@@ -1640,7 +1632,7 @@ begin
     OnRequestExtents:=ViewportRequestExtents;
     PopupMenu:=PopupMenu1;
     VpLight:=Light;
-    VpLight.Position:=SetPoint(-180,180,180);
+    VpLight.Position:=Vector(-180,180,180);
     Light:=VpLight;
   end;
 end;
@@ -1988,7 +1980,7 @@ begin
           end;
           Viewport.Polyline(Pts);
         end;
-        DrawPoint(SetPoint(COG.X, 0, COG.Y), '');
+        DrawPoint(Vector(COG.X, 0, COG.Y), '');
 
         //Bulb intersections
         Viewport.PenColor:=clGray;
@@ -2142,17 +2134,17 @@ var
 
     P1:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P1);
-    P1.Coordinate:=SetPoint(dX, 0, dZ);
+    P1.Coordinate:=Vector(dX, 0, dZ);
 
     P2:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P2);
-    P2.Coordinate:=SetPoint(dX-InputBulbLength.Value, 0, dZ);
+    P2.Coordinate:=Vector(dX-InputBulbLength.Value, 0, dZ);
 
     for i:=2 to Nh-1 do
     begin
       P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate:=SetPoint(
+      P.Coordinate:=Vector(
         dX-InputBulbLength.Value * NacaProfiles[0, I],
         dY,
         dZ+kZ * NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR);
@@ -2160,7 +2152,7 @@ var
 
       P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate:=SetPoint(
+      P.Coordinate:=Vector(
         dX-InputBulbLength.Value * NacaProfiles[0, I],
         dY+NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR / 1.4142,
         dZ+kZ * NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR);
@@ -2168,7 +2160,7 @@ var
 
       P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate:=SetPoint(
+      P.Coordinate:=Vector(
         dX-InputBulbLength.Value * NacaProfiles[0, I],
         dY+NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR / 1.4142,
         dZ-kZ * NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR);
@@ -2176,7 +2168,7 @@ var
 
       P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate:=SetPoint(
+      P.Coordinate:=Vector(
       dX-InputBulbLength.Value * NacaProfiles[0, I],
       dY,
       dZ-kZ * NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR);
@@ -2298,25 +2290,25 @@ var
 
     P1:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P1);
-    P1.Coordinate:=SetPoint(dX, wng, dZ);
+    P1.Coordinate:=Vector(dX, wng, dZ);
 
     P2:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P2);
-    P2.Coordinate:=SetPoint(dX-InputBulbLength.Value, wng, dZ);
+    P2.Coordinate:=Vector(dX-InputBulbLength.Value, wng, dZ);
 
     P3:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P3);
-    P3.Coordinate:=SetPoint(dX, 0, dZ);
+    P3.Coordinate:=Vector(dX, 0, dZ);
 
     P4:=TFreeSubdivisionControlPoint.Create(Surface);
     Surface.AddControlPoint(P4);
-    P4.Coordinate:=SetPoint(dX-InputBulbLength.Value, 0, dZ);
+    P4.Coordinate:=Vector(dX-InputBulbLength.Value, 0, dZ);
 
     for i:=2 to Nh-1 do
     begin
       P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate:=SetPoint(
+      P.Coordinate:=Vector(
         dX-InputBulbLength.Value * NacaProfiles[0, I],
         dY,
         dZ+kZ * NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR);
@@ -2324,7 +2316,7 @@ var
 
       P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate:=SetPoint(
+      P.Coordinate:=Vector(
         dX-InputBulbLength.Value * NacaProfiles[0, I],
         dY+Wng,
         dZ+kZ * NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR);
@@ -2333,12 +2325,12 @@ var
       P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
       if InputBulbShape.ItemIndex = 3 then
-        P.Coordinate:=SetPoint(
+        P.Coordinate:=Vector(
           dX-InputBulbLength.Value * NacaProfiles[0, I],
           dY+NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR+wng,
           dZ)
       else
-        P.Coordinate:=SetPoint(
+        P.Coordinate:=Vector(
           dX-InputBulbLength.Value * NacaProfiles[0, I],
           dY+Wng,
           dZ);
@@ -2347,7 +2339,7 @@ var
 
       P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate:=SetPoint(
+      P.Coordinate:=Vector(
         dX-InputBulbLength.Value * NacaProfiles[0, I],
         dY+Wng,
         dZ-kZ * NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR);
@@ -2355,7 +2347,7 @@ var
 
       P:=TFreeSubdivisionControlPoint.Create(Surface);
       Surface.AddControlPoint(P);
-      P.Coordinate:=SetPoint(
+      P.Coordinate:=Vector(
         dX-InputBulbLength.Value * NacaProfiles[0, I],
         dY,
         dZ-kZ * NacaProfiles[InputBulbWing.ItemIndex+1, I] * InputBulbLength.Value * kR);

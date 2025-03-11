@@ -1,11 +1,211 @@
-{--«Free!Ship»-------------------------------------------------------------}
+{--«Free!Ship»  <== FreeShipUnit  -----------------------------------------}
 {   TFreeShip                                                              }
-{    is the actual component used for modelling and representing the ship  }
+{     is the actual component used for modelling and representing the ship }
 {--------------------------------------------------------------------------}
+{$ifdef false}
 function TFreeShip.FGetNumberOfViewports: integer;
-//begin Result:=(MainForm as TmainForm).PanelManager.MList.Count; end;
-//begin Result:=(MainForm as TmainForm).MDIChildCount; end;
-begin Result:=Viewports.Count; end;
+// begin Result:=(MainForm as TmainForm).MDIChildCount; end; // это то же самое
+   begin Result:=(MainForm as TmainForm).PanelManager.MList.Count; end;
+function TFreeShip.FGetViewport(Index: integer): TFreeViewport;
+   begin if Index<0 then Index:=0 else
+         if Index>=NumberOfViewports then Index:=NumberOfViewports-1;
+         Result:=(MainForm as TmainForm).GetMDIChildren(Index).Viewport;
+   end;
+{$else}
+function TFreeShip.FGetNumberOfViewports: integer;
+// begin Result:=Viewports.Count; end;                    ///*** здесь ошибка...
+   begin Result:=(MainForm as TmainForm).PanelManager.MList.Count; end;
+function TFreeShip.FGetViewport(Index: integer): TFreeViewport;
+   begin if Index<0 then Index:=0 else
+//       if Index>=Viewports.Count then Index:=Viewports.Count-1;
+//       Result:=FViewports[Index]
+         if Index>=NumberOfViewports then Index:=NumberOfViewports-1;
+         Result:=(MainForm as TmainForm).GetMDIChildren(Index).Viewport;
+
+   end;
+{$endif}
+
+procedure TFreeShip.AddViewport( Viewport: TFreeViewport );
+begin          // Add a viewport to the list of viewports connected to the model
+  if FViewports.IndexOf( Viewport )=-1 then begin
+    Viewport.Color:=Preferences.ViewportColor;
+    FViewports.Add( Viewport );
+//    (MainForm as TmainForm).PanelManager.Add( PanelManager.Create );
+//    (MainForm as TmainForm).PanelManager.Create;
+    Viewport.OnRequestExtents:=@ViewportRequestExtents;
+    Viewport.ZoomExtents;
+  end;
+end;
+
+procedure TFreeShip.DeleteViewport( Viewport: TFreeViewport );
+  var Index: integer;
+begin Index:=FViewports.IndexOf( Viewport );
+      if Index<>-1 then begin
+         FViewports.Delete( Index );
+//       (MainForm as TmainForm).PanelManager.Destroy;
+      end;
+end;
+
+function TFreeShip.GetFocusedViewport: TFreeViewport; var I:Integer;
+begin Result:=nil; for I:=0 to FViewports.Count-1 do
+                   if FViewports[I].Focused then result:=FViewports[I];
+end;
+
+procedure TFreeShip.LoadProject( Source: TFreeFileBuffer );  //  «Free!Ship»
+var
+  PrevCursor: TCursor;
+  I, N, PointN: integer;
+  Str, PointName: AnsiString;
+  Intersection: TFreeIntersection;
+  vMarker: TFreeMarker;
+  Data: TFreeBackgroundImageData;
+  vFlowline: TFreeFlowline;
+  // PreviewImg : TJPegImage;
+  // CF0:TFreeSubdivisionControlFace;
+const WN: array[0..3] of Integer = ( 3,1,0,2 );
+begin
+  // Remember the filename because it will be erased by the clear method
+  Str:=FFilename;
+  Clear;
+  FFilename:=Str;
+  PrevCursor:=Screen.Cursor;
+  Screen.Cursor:=crHourGlass;
+//  try               // finally
+//  try             // except
+    Source.Reset;
+    Source.Encoding:=Preferences.FbmEncoding;
+    Source.LoadString( Str );
+    if Str = 'FREE!ship' then begin
+      Source.LoadTFreeFileVersion( FFileVersion );
+      Source.Version:=FFileVersion;
+//    if (FFileVersion <= CurrentVersion)
+//    or (FFileVersion <= High(FFileVersion) ) then    // !! без ограничений...
+      begin
+        WriteLN( '[',FFileVersion,'] "',ExtractFilename( FFilename ),'"'   );
+        Source.LoadInteger( I );
+        FPrecision:=TFreePrecisionType( I );
+        Visibility.LoadBinary( Source );
+        ProjectSettings.LoadBinary( Source,nil ); // Load actual subdivision-surface data.
+        Surface.LoadBinary( Source );
+//      if Surface.NumberOfControlFaces>0 then CF0:=Surface.ControlFace[0];
+        Source.LoadInteger(N);                    // Load stations
+        FStations.Capacity:=N;
+        for I:=1 to N do begin
+          Intersection:=TFreeIntersection.Create(self);
+          FStations.Add(Intersection);
+          Intersection.LoadBinary(Source);
+        end;
+        Source.LoadInteger(N);                    // Load Buttocks
+        FButtocks.Capacity:=N;
+        for I:=1 to N do begin
+          Intersection:=TFreeIntersection.Create(self);
+          FButtocks.Add(Intersection);
+          Intersection.LoadBinary(Source);
+        end;
+        Source.LoadInteger(N);                    // Load Waterlines
+        FWaterlines.Capacity:=N;
+        for I:=1 to N do begin
+          Intersection:=TFreeIntersection.Create(self);
+          FWaterlines.Add(Intersection);
+          Intersection.LoadBinary(Source);
+        end;
+        if FileVersion >= fv180 then begin        // Load Diagonals
+          Source.LoadInteger(N);
+          FDiagonals.Capacity:=N;
+          for I:=1 to N do begin
+            Intersection:=TFreeIntersection.Create(self);
+            FDiagonals.Add(Intersection);
+            Intersection.LoadBinary(Source);
+          end;
+          if FileVersion >= fv191 then begin      // Load markers
+            Source.LoadInteger(N);
+            FMarkers.Capacity:=N;
+            for I:=1 to N do begin
+              vMarker:=TFreeMarker.Create(Surface);
+              vMarker.FOwner:=Self;
+              Edit.Marker_Add(vMarker);
+              vMarker.LoadBinary(Source);
+            end;
+            if FileVersion >= fv210 then begin  // считывание, если для истории
+//            Source.FPosition += sizeof( FResistanceDelftData );
+//            Source.FPosition += sizeof( FResistanceKaperData );
+              Source.LoadTFreeDelftSeriesResistanceData(FResistanceDelftData);
+              Source.LoadTFreeKAPERResistanceData(FResistanceKaperData);
+              if FileVersion >= fv250 then begin
+                Source.LoadInteger(N);                      // BackgroundImages
+                for I:=1 to N do begin
+                  Data:=TFreeBackgroundImageData.Create(self);
+                  FBackgroundImages.Add(Data);
+                  Data.LoadBinary(Source);
+                end;
+                Source.LoadInteger(N);                         // TFreeFlowline
+                FFlowlines.Capacity:=N;
+                for I:=1 to N do begin
+                  vFlowline:=TFreeFlowline.Create(self);
+                  FFlowlines.Add(vFlowline);
+                  vFlowline.LoadBinary(Source);
+                end;
+              end; // V >= fv250
+            end;   // V >= fv210
+          end;     // V >= fv191
+        end;       // V >= fv180                         // и к совместимости с
+//      if FFileVersion>fv261 then FFileVersion:=fv261;  // исходным оригиналом
+        FileVersion:=fv261;
+      end  // (FFileVersion<=CurrentVersion) or (FFileVersion<=High(FFileVersion))
+//    else
+//    MessageDlg( Userstring(113)+eol+UserString(188)+'. == '+VersionString(FFileVersion),mtError,[mbOK],0);
+//                          0113=This file was created with a later version of FREE!ship!
+//                          0188=and cannot be opened with this version
+    end // 'FREE!ship'
+    else MessageDlg( 'Not a FREE!ship file!',mtError,[mbOK],0 ); //=Userstring(189)
+
+    Surface.UnderWaterColor:=ProjectSettings.ProjectUnderWaterColor;
+    Surface.ShadeUnderWater:=ProjectSettings.ProjectShadeUnderwaterShip;
+
+    FileChanged:=False;
+    ModelIsLoaded:=True;
+//  except
+//    Surface.Clear; raise;
+//  end;
+//  finally
+    Surface.DesiredSubdivisionLevel:=Ord(Precision)+1;
+//    MessageDlg( '///begin???',mtError,[mbOK],0 );
+//    CF0:=Surface.ControlFace[0];
+//    MessageDlg( '...begin???',mtError,[mbOK],0 );
+//  Surface.Rebuild;                             // it will be rebuilt in Draw
+    Screen.Cursor:=PrevCursor;
+//  for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;  ///!!! -->> File_Load(Name)
+    if Assigned( OnUpdateGeometryInfo ) then OnUpdateGeometryInfo( self );
+//  end;
+end;
+
+function TFreeShip.FGetPreview: TJPEGImage;
+var Pic: TBitMap;
+    Frm: TFreeHullWindow;
+    I: Integer;
+begin
+  Result:=nil;
+  for I:=(MainForm as TMainForm).MDIChildCount-1 downto 0 do begin
+    Frm:=(MainForm as TMainForm).GetMDIChildren( I );
+    if assigned( Frm ) then
+    if (MainForm as TMainForm).WindowState=wsNormal then        ///*** активная
+    if Frm.ViewPort.ViewPortMode = vmShade then                 /// 3D-картинка
+//  if Frm.ViewPort.ViewType = fvPerspective then
+    if( ProjectSettings.FSavePreview ) then begin
+       Frm.Repaint;
+//     Pic:=TBitmap.Create;
+//     Pic.PixelFormat:=pf15bit;
+       Pic:=Frm.ViewPort.GetDrawingBuffer;
+       if Pic <> nil then begin
+          Result:=TJPEGImage.Create;
+          Result.Assign( Pic );
+          Result.CompressionQuality:=30;                        ///*** 90%%
+//        Result.SaveToFile( 'Pic_screenshot.jpg ');
+       end; //FreeAndNil( Pic );
+       break;
+    end;
+  end;
+end;
 
 function TFreeShip.FGetOnChangeActiveLayer: TChangeActiveLayerEvent;
 begin Result:=Surface.OnChangeActiveLayer; end;
@@ -17,28 +217,28 @@ function TFreeShip.FGetOnSelectItem: TNotifyEvent;
 begin Result:=Surface.OnSelectItem; end;
 }
 function TFreeShip.FGetSelectedControlCurve(Index: integer): TFreeSubdivisionControlCurve;
-begin Result:=Surface.SelectedControlCurve[index]; end;
+   begin Result:=Surface.SelectedControlCurve[index]; end;
 
 function TFreeShip.FGetControlCurve(Index: integer): TFreeSubdivisionControlCurve;
-begin Result:=Surface.ControlCurve[index]; end;
+   begin Result:=Surface.ControlCurve[index]; end;
 
 function TFreeShip.FGetSelectedControlEdge(Index: integer): TFreeSubdivisionControlEdge;
-begin Result:=Surface.SelectedControlEdge[index]; end;
+   begin Result:=Surface.SelectedControlEdge[index]; end;
 
 function TFreeShip.FGetSelectedControlPoint(Index: integer): TFreeSubdivisionControlPoint;
-begin Result:=Surface.SelectedControlPoint[index]; end;
+   begin Result:=Surface.SelectedControlPoint[index]; end;
 
 function TFreeShip.FGetSelectedControlPointGroup(Index: integer): TFreeSubdivisionControlPointGroup;
-begin Result:=Surface.SelectedControlPointGroup[index]; end;
+   begin Result:=Surface.SelectedControlPointGroup[index]; end;
 
 function TFreeShip.FGetSelectedControlFace(Index: integer): TFreeSubdivisionControlFace;
-begin Result:=Surface.SelectedControlFace[index]; end;
+   begin Result:=Surface.SelectedControlFace[index]; end;
 
 function TFreeShip.FGetSelectedFlowline(index: integer): TFreeFlowline;
-begin Result:=FSelectedFlowlines[index]; end;
+   begin Result:=FSelectedFlowlines[index]; end;
 
 function TFreeShip.FGetSelectedMarker(index: integer): TFreeMarker;
-begin Result:=FSelectedMarkers[index]; end;
+   begin Result:=FSelectedMarkers[index]; end;
 
 function TFreeShip.IsObjectSelected(aObject:TFreeNamedObject): boolean;
 begin
@@ -56,10 +256,10 @@ procedure TFreeShip.SetObjectSelected(aObject:TFreeNamedObject; aSelected: boole
 begin
   if (aObject is TFreeSubdivisionControlPoint)
   or (aObject is TFreeSubdivisionControlPointGroup)
-  or (aObject is TFreeSubdivisionControlFace)
-  or (aObject is TFreeSubdivisionControlEdge)
+  or (aObject is TFreeSubdivisionControlFace )
+  or (aObject is TFreeSubdivisionControlEdge )
   or (aObject is TFreeSubdivisionControlCurve)
-                           then Surface.SetObjectSelected(aObject,aSelected);
+                           then Surface.SetObjectSelected( aObject,aSelected );
   if (aObject is TFreeMarker) then (aObject as TFreeMarker).Selected:=true;
   if (aObject is TFreeFlowLine) then (aObject as TFreeFlowLine).Selected:=true;
 end;
@@ -166,7 +366,7 @@ begin
     end;
 end;
 
-function TFreeShip.FindByName(aName:String):TFreeNamedObject;
+function TFreeShip.FindByName( aName:String ):TFreeNamedObject;
 var i:integer;
 begin result:=nil;
   for i:=0 to Surface.NumberOfControlPoints-1 do
@@ -269,37 +469,26 @@ begin Result:=Surface.NumberOfLockedPoints; end;
 function TFreeShip.FGetNumberOfLayers: integer;
 begin Result:=Surface.NumberOfLayers; end;
 
-function TFreeShip.FGetViewport(Index: integer): TFreeViewport;
-begin
-    if Index<0 then Index:=0 else
-    if Index>=NumberOfViewports then Index:=NumberOfViewports-1;
-//  if (Index >= 0) and (Index < NumberOfViewports) then
-    Result:=FViewports[index]
-//else WriteLn('Invalid viewport index!');
-end;
-
 procedure TFreeShip.FSetActiveControlPoint(Val: TFreeSubdivisionControlPoint);
 begin
-  if Val <> FActiveControlPoint then begin
+  if Val<>FActiveControlPoint then begin
     FActiveControlPoint:=Val;
     FControlpointForm.ActiveControlPoint:=FActiveControlPoint;
-    if FActiveControlPoint = nil then begin
-      ShowTranslatedValues(FControlpointForm);
+    if FActiveControlPoint=nil then begin ShowTranslatedValues( FControlpointForm );
       if FControlpointForm.Visible then FControlpointForm.Visible:=False;
     end else begin
       // The first line makes sure that the activecontrolpoint form does NOT recieve focus.
       // because the mousewheel zoom in/out doesn't work anymore in that case
-      if not FControlpointForm.Visible then begin
-        ShowTranslatedValues(FControlpointForm);
-        ShowWindow(FControlpointForm.Handle, SW_SHOWNOACTIVATE);
+      if not FControlpointForm.Visible then begin ShowTranslatedValues( FControlpointForm );
+        ShowWindow( FControlpointForm.Handle,SW_SHOWNOACTIVATE );
       end;
       if not FControlpointForm.Visible then FControlpointForm.Visible:=True;
       MainForm.SetFocus;
     end;
     FCurrentlyMoving:=False;
     FPointHasBeenMoved:=False;
-  end
-  else if FActiveControlPoint <> nil then    // Update controlpoint information
+  end else
+  if FActiveControlPoint<>nil then           // Update controlpoint information
     FControlpointForm.ActiveControlPoint:=FActiveControlPoint;
 end;
 
@@ -414,84 +603,37 @@ begin
   end;
 end;
 
-function TFreeShip.FGetPreview: TJPEGImage;
-var Pic: TBitMap;
-    Frm: TFreeHullWindow;
-    I: Integer;
-begin
-  Result:=nil;
-  for I:=(MainForm as TMainForm).MDIChildCount-1 downto 0 do begin
-    Frm:=(MainForm as TMainForm).GetMDIChildren( I );
-    if assigned( Frm ) then
-    if (MainForm as TMainForm).WindowState=wsNormal then        ///+++ активная
-    if Frm.ViewPort.ViewPortMode = vmShade then                 /// 3D-картинка
-//  if Frm.ViewPort.ViewType = fvPerspective then
-    if( ProjectSettings.FSavePreview ) then begin
-       Frm.Repaint;
-//     Pic:=TBitmap.Create;
-//     Pic.PixelFormat:=pf15bit;
-       Pic:=Frm.ViewPort.GetDrawingBuffer;
-       if Pic <> nil then begin
-          Result:=TJPEGImage.Create;
-          Result.Assign( Pic );
-          Result.CompressionQuality:=32;                        ///+++ 90%%
-//        Result.SaveToFile( 'Pic_screenshot.jpg ');
-       end;
-       //FreeAndNil( Pic );
-       break;
-    end;
-  end;
-end;
-
 //TPixelFormat=(pfDevice,pf1bit,pf4bit,pf8bit,pf15bit,pf16bit,pf24bit,pf32bit,pfCustom);
 {
 procedure TFreeShip.SetOnChangeActiveControlPoint(AValue: TNotifyEvent);
 begin Surface.OnChangeActiveControlPoint:=AValue; end;
 }
-procedure TFreeShip.AddViewport(Viewport: TFreeViewport);
-// Add a viewport to the list of viewports connected to the model
-begin
-  if FViewports.IndexOf(Viewport) = -1 then begin
-    Viewport.Color:=Preferences.ViewportColor;
-    FViewports.Add(Viewport);
-    Viewport.OnRequestExtents:=@ViewportRequestExtents;
-    Viewport.ZoomExtents;
-  end;
-end;
-
-function TFreeShip.GetFocusedViewport: TFreeViewport;
-  var i:integer;
-begin result:=nil;
-  for i:=0 to FViewports.Count-1 do if FViewports[i].Focused then result:=FViewports[i];
-end;
 
 function TFreeShip.AdjustMarkers: boolean;
 begin Result:=False;
-   if NumberofMarkers>0 then
-      Result:=MessageDlg(Userstring(180)+'?',mtInformation,[mbYes,mbNo],0)=mrYes;
+  if NumberofMarkers>0 then
+  Result:=MessageDlg( Userstring(180)+'?',mtInformation,[mbYes,mbNo],0 )=mrYes;
 end;
 
-constructor TFreeShip.Create(AOwner: TComponent);
+constructor TFreeShip.Create( AOwner: TComponent );
 var FreeShip: TFreeShip;
 begin
   inherited Create(AOwner);
-  if AOwner is TMainForm then FMainForm:=TForm(AOwner);
+  if AOwner is TMainForm then MainForm:=TForm( AOwner );
 
   if not (csDesigning in ComponentState) then
     FIntersectionDialog:=TFreeIntersectionDialog.Create(self);
-
   FEdit:=TFreeEdit.Create(Self);
   FPreferences:=TFreePreferences.Create(self);
-  FPreferences.MainForm:=FMainForm;
-  if Assigned(FMainForm) // load preferences only for main FreeShip instance, not for preview ones
+  FPreferences.MainForm:=MainForm;
+  if Assigned( MainForm ) // load preferences only for main FreeShip instance, not for preview ones
      then FPreferences.Load;
   FProjectSettings:=TFreeProjectSettings.Create(self);
   FFileVersion:=CurrentVersion;
   FActiveControlPoint:=nil;
   FSurface:=TFreeSubdivisionSurface.Create(nil);
-  FSurface.FreeShip:= Self;
+  FSurface.FreeShip:=Self;
   FSurface.LayerColor:=FPreferences.LayerColor;
-
   FViewports:=TFasterListTFreeViewPort.Create;
   FMarkers:=TFasterListTFreeMarker.Create;
   FVisibility:=TFreeVisibility.Create(self);
@@ -557,23 +699,15 @@ begin
   Strings.Add('');
 end;
 *)
-procedure TFreeShip.DeleteViewport(Viewport: TFreeViewport);
-var Index: integer;
-begin
-  Index:=FViewports.IndexOf(Viewport);
-  if Index<>-1 then FViewports.Delete(index);
-end;
 
 procedure TFreeShip.Clear;
-var
-  I: integer;
-  Pt: TPoint;
+var I: integer; Pt: TPoint;
 begin                                                    // Initialize all data
   FPrecision:=fpLow;
   FFileVersion:=CurrentVersion;
   FFileChanged:=False;
-  FModelIsLoaded:=False;
-  FFileIsReadOnly:=False;
+  ModelIsLoaded:=False;
+  FileIsReadOnly:=False;
   FSurface.Clear;
   FFilename:=Userstring(179);
   FVisibility.Clear;
@@ -594,8 +728,8 @@ begin                                                    // Initialize all data
   for I:=1 to NumberOfHydrostaticCalculations do HydrostaticCalculation[I-1].Calculated:=False;
   FDiagonals.Clear;
   FProjectSettings.Clear;
-  FFilenameSet:=False;
-  FStopAskingForFileVersion:=False;
+  FilenameSet:=False;
+  StopAskingForFileVersion:=False;
   Fillchar(FResistanceDelftData, SizeOf(FResistanceDelftData), 0);
   Fillchar(FResistanceKaperData, SizeOf(TFreeKAPERResistanceData), 0);
 
@@ -609,8 +743,9 @@ begin                                                    // Initialize all data
   if not (csDestroying in componentState) then begin // remove backgroundimages from viewports
     Pt.X:=0;
     Pt.Y:=0;
-    for I:=1 to NumberOfViewports do
-        Viewport[I-1].BackgroundImage.AssignData
+//  for J:=0 to NumberOfViewports-1 do
+    for I:=0 to Viewports.Count-1 do
+        Viewport[I].BackgroundImage.AssignData
                 (nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True);
     if assigned(FOnFileChanged) then FOnFileChanged(self);
     if Assigned(OnUpdateGeometryInfo) then OnUpdateGeometryInfo(self);
@@ -676,7 +811,7 @@ begin        // Redraws model to all viewports by re-initializing all viewports
 //     else ShowTranslatedValues( MDIChildren[I-1] );
   end;
 (*
-  for I:=1 to NumberOfViewports do begin
+  for I:=1 to Viewports.Count do begin
     if MDIChildren[I] is TFreeLinesplanForm then P:=TFreeLinesplanForm(MDIChildren[I]).LinesplanFrame.ViewPort else --
       Viewport[I-1].ZoomExtents;
 //    Viewport[I-1].Invalidate;
@@ -712,7 +847,7 @@ end;
 procedure TFreeShip.Redraw;
 var I: integer;
 begin // Redraws model to all viewports using the current min/max coordinates of the boundingbox
-  for I:=1 to NumberOfViewports do
+  for I:=1 to Viewports.Count do
     if Viewport[I-1].Zoom=1.0 then Viewport[I-1].ZoomExtents
                               else Viewport[I-1].Refresh;
   if LinesplanFrame<>nil then TFreeLinesplanframe(LinesplanFrame).Viewport.Refresh;
@@ -1008,8 +1143,8 @@ var
         Viewport.FontColor:=clBlue;
         Viewport.PenColor:=clBlue;
         Viewport.PenWidth:=1;
-        P1:=SetPoint(Surface.SplitSectionLocation, Min.Y, Min.Z);
-        P2:=SetPoint(Surface.SplitSectionLocation, Max.Y, Max.Z);;
+        P1:=Vector( Surface.SplitSectionLocation,Min.Y,Min.Z );
+        P2:=Vector( Surface.SplitSectionLocation,Max.Y,Max.Z );
         Position:=Surface.SplitSectionLocation;
         Str:=rsSplitSection +':'+ConvertDimension(Position, ProjectSettings.ProjectUnits);
         Pt1:=Viewport.Project( P1 );
@@ -1143,13 +1278,13 @@ begin
 //  if FDesignHydrostatics.Errors = [] then              ///***??? Hydro
     begin                                                // Center of bouyancy
       if Visibility.FShowHydrostDisplacement then
-        DrawPoint(FDesignHydrostatics.FData.CenterOfBuoyancy, 'Displ=' +
-          FloatToStrF(FDesignHydrostatics.Data.Displacement,ffFixed,7,2),True);
+        DrawPoint( FDesignHydrostatics.FData.CenterOfBuoyancy, 'Displ=' +
+          FloatToStrF( FDesignHydrostatics.Data.Displacement,ffFixed,7,2),True );
       if abs(FDesignHydrostatics.Data.WaterplaneCOG.Y) < 0.01 then
       begin                                    // Transverse metacentric height
         if Visibility.FShowHydrostMetacentricHeight then
-          DrawPoint(Setpoint(FDesignHydrostatics.FData.CenterOfBuoyancy.X,
-            0.0, FDesignHydrostatics.FData.KMtransverse), 'KM=' +
+          DrawPoint( Vector(FDesignHydrostatics.FData.CenterOfBuoyancy.X,
+                     0.0, FDesignHydrostatics.FData.KMtransverse), 'KM=' +
             FloatToStrF(FDesignHydrostatics.Data.KMtransverse +
             FDesignHydrostatics.Data.ModelMin.Z, ffFixed, 7, 2), True);
         // Longitudinal center of floatation
@@ -1308,134 +1443,6 @@ begin
         if vLayer.Items[J-1].Min.Z < Result then
           Result:=vLayer.Items[J-1].Min.Z;
   end;
-end;
-
-procedure TFreeShip.LoadProject( Source: TFreeFileBuffer );  //  «Free!Ship»
-var
-  PrevCursor: TCursor;
-  I, N, PointN: integer;
-  Str, PointName: AnsiString;
-  Intersection: TFreeIntersection;
-  vMarker: TFreeMarker;
-  Data: TFreeBackgroundImageData;
-  vFlowline: TFreeFlowline;
-  // PreviewImg : TJPegImage;
-  // CF0:TFreeSubdivisionControlFace;
-const WN: array[0..3] of Integer = ( 3,1,0,2 );
-begin
-  // Remember the filename because it will be erased by the clear method
-  Str:=FFilename;
-  Clear;
-  FFilename:=Str;
-  PrevCursor:=Screen.Cursor;
-  Screen.Cursor:=crHourGlass;
-//  try               // finally
-//  try             // except
-    Source.Reset;
-    Source.Encoding:=Preferences.FbmEncoding;
-    Source.LoadString( Str );
-    if Str = 'FREE!ship' then begin
-      Source.LoadTFreeFileVersion( FFileVersion );
-      Source.Version:=FFileVersion;
-//    if (FFileVersion <= CurrentVersion)
-//    or (FFileVersion <= High(FFileVersion) ) then    // !! без ограничений...
-      begin
-        WriteLN( '[',FFileVersion,'] "',ExtractFilename( FFilename ),'"'   );
-        Source.LoadInteger( I );
-        FPrecision:=TFreePrecisionType( I );
-        Visibility.LoadBinary( Source );
-        ProjectSettings.LoadBinary( Source,nil ); // Load actual subdivision-surface data.
-        Surface.LoadBinary( Source );
-//      if Surface.NumberOfControlFaces>0 then CF0:=Surface.ControlFace[0];
-        Source.LoadInteger(N);                    // Load stations
-        FStations.Capacity:=N;
-        for I:=1 to N do begin
-          Intersection:=TFreeIntersection.Create(self);
-          FStations.Add(Intersection);
-          Intersection.LoadBinary(Source);
-        end;
-        Source.LoadInteger(N);                    // Load Buttocks
-        FButtocks.Capacity:=N;
-        for I:=1 to N do begin
-          Intersection:=TFreeIntersection.Create(self);
-          FButtocks.Add(Intersection);
-          Intersection.LoadBinary(Source);
-        end;
-        Source.LoadInteger(N);                    // Load Waterlines
-        FWaterlines.Capacity:=N;
-        for I:=1 to N do begin
-          Intersection:=TFreeIntersection.Create(self);
-          FWaterlines.Add(Intersection);
-          Intersection.LoadBinary(Source);
-        end;
-        if FileVersion >= fv180 then begin        // Load Diagonals
-          Source.LoadInteger(N);
-          FDiagonals.Capacity:=N;
-          for I:=1 to N do begin
-            Intersection:=TFreeIntersection.Create(self);
-            FDiagonals.Add(Intersection);
-            Intersection.LoadBinary(Source);
-          end;
-          if FileVersion >= fv191 then begin      // Load markers
-            Source.LoadInteger(N);
-            FMarkers.Capacity:=N;
-            for I:=1 to N do begin
-              vMarker:=TFreeMarker.Create(Surface);
-              vMarker.FOwner:=Self;
-              Edit.Marker_Add(vMarker);
-              vMarker.LoadBinary(Source);
-            end;
-            if FileVersion >= fv210 then begin  // считывание, если для истории
-//            Source.FPosition += sizeof( FResistanceDelftData );
-//            Source.FPosition += sizeof( FResistanceKaperData );
-              Source.LoadTFreeDelftSeriesResistanceData(FResistanceDelftData);
-              Source.LoadTFreeKAPERResistanceData(FResistanceKaperData);
-              if FileVersion >= fv250 then begin
-                Source.LoadInteger(N);                      // BackgroundImages
-                for I:=1 to N do begin
-                  Data:=TFreeBackgroundImageData.Create(self);
-                  FBackgroundImages.Add(Data);
-                  Data.LoadBinary(Source);
-                end;
-                Source.LoadInteger(N);                         // TFreeFlowline
-                FFlowlines.Capacity:=N;
-                for I:=1 to N do begin
-                  vFlowline:=TFreeFlowline.Create(self);
-                  FFlowlines.Add(vFlowline);
-                  vFlowline.LoadBinary(Source);
-                end;
-              end; // V >= fv250
-            end;   // V >= fv210
-          end;     // V >= fv191
-        end;       // V >= fv180                         // и к совместимости с
-//      if FFileVersion>fv261 then FFileVersion:=fv261;  // исходным оригиналом
-        FileVersion:=fv261;
-      end  // (FFileVersion<=CurrentVersion) or (FFileVersion<=High(FFileVersion))
-//    else
-//    MessageDlg( Userstring(113)+eol+UserString(188)+'. == '+VersionString(FFileVersion),mtError,[mbOK],0);
-//                          0113=This file was created with a later version of FREE!ship!
-//                          0188=and cannot be opened with this version
-    end // 'FREE!ship'
-    else MessageDlg( 'Not a FREE!ship file!',mtError,[mbOK],0 ); //=Userstring(189)
-
-    Surface.UnderWaterColor:=ProjectSettings.ProjectUnderWaterColor;
-    Surface.ShadeUnderWater:=ProjectSettings.ProjectShadeUnderwaterShip;
-
-    FileChanged:=False;
-    ModelIsLoaded:=True;
-//  except
-//    Surface.Clear; raise;
-//  end;
-//  finally
-    Surface.DesiredSubdivisionLevel:=Ord(Precision)+1;
-//    MessageDlg( '///begin???',mtError,[mbOK],0 );
-//    CF0:=Surface.ControlFace[0];
-//    MessageDlg( '...begin???',mtError,[mbOK],0 );
-//  Surface.Rebuild;                             // it will be rebuilt in Draw
-    Screen.Cursor:=PrevCursor;
-//  for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;  ///!!! -->> File_Load(Name)
-    if Assigned( OnUpdateGeometryInfo ) then OnUpdateGeometryInfo( self );
-//  end;
 end;
 
 // fv421
@@ -2027,29 +2034,27 @@ begin
     P:=Point.Coordinate;
     case vViewport.Viewtype of
       fvProfile: case Key of
-          Left: P.X:=P.X-Visibility.CursorIncrement;
-          Up: P.Z:=P.Z+Visibility.CursorIncrement;
+           Left: P.X:=P.X-Visibility.CursorIncrement;
+             Up: P.Z:=P.Z+Visibility.CursorIncrement;
           Right: P.X:=P.X+Visibility.CursorIncrement;
-          Down: P.Z:=P.Z-Visibility.CursorIncrement;
+           Down: P.Z:=P.Z-Visibility.CursorIncrement;
         end;
       fvPlan: case Key of
-          Left: P.X:=P.X-Visibility.CursorIncrement;
+        Left: P.X:=P.X-Visibility.CursorIncrement;
           Up: P.Y:=P.Y+Visibility.CursorIncrement;
-          Right: P.X:=P.X+Visibility.CursorIncrement;
-          Down: P.Y:=P.Y-Visibility.CursorIncrement;
+       Right: P.X:=P.X+Visibility.CursorIncrement;
+        Down: P.Y:=P.Y-Visibility.CursorIncrement;
         end;
       fvBodyplan: case Key of
           Left:
-            if P.X <= self.ProjectSettings.ProjectSplitSectionLocation then
-              P.Y:=P.Y+Visibility.CursorIncrement
-            else
-              P.Y:=P.Y-Visibility.CursorIncrement;
-          Up: P.Z:=P.Z+Visibility.CursorIncrement;
+            if P.X<=self.ProjectSettings.ProjectSplitSectionLocation
+              then P.Y:=P.Y+Visibility.CursorIncrement
+              else P.Y:=P.Y-Visibility.CursorIncrement;
+          Up:      P.Z:=P.Z+Visibility.CursorIncrement;
           Right:
-            if P.X <= self.ProjectSettings.ProjectSplitSectionLocation then
-              P.Y:=P.Y-Visibility.CursorIncrement
-            else
-              P.Y:=P.Y+Visibility.CursorIncrement;
+            if P.X <= self.ProjectSettings.ProjectSplitSectionLocation
+              then P.Y:=P.Y-Visibility.CursorIncrement
+              else P.Y:=P.Y+Visibility.CursorIncrement;
           Down: P.Z:=P.Z-Visibility.CursorIncrement;
         end;
     end;
@@ -2078,12 +2083,8 @@ begin
   if not (Sender is TFreeHullWindow) then exit;
   vViewport:=(Sender as TFreeHullWindow).Viewport;
   if (vViewport.ViewType = fvPerspective) then exit;
-
-  if (Key = VK_SUBTRACT)
-    or ((Key = VK_OEM_MINUS) and not(ssShift in Shift)) then S:=-1 else
-  if (Key = VK_ADD)
-    or ((Key = VK_OEM_PLUS) and (ssShift in Shift)) then S:=1
-  else exit;
+  if (Key=VK_SUBTRACT) or ((Key=VK_OEM_MINUS) and not(ssShift in Shift)) then S:=-1 else
+  if (Key=VK_ADD) or ((Key=VK_OEM_PLUS) and (ssShift in Shift)) then S:=1 else exit;
 
  // use integers to eliminate issues with dirt at the end of floats
  I:=round(Visibility.CursorIncrement * 1000000);
@@ -2091,12 +2092,12 @@ begin
  N:=I;
  D:=0; E:=1;
  for P:=0 to 10 do begin
-   if (I >= E)and(I < E*10) then D:=E; E:=E*10;
+   if (I>=E) and (I<E*10) then D:=E; E:=E*10;
  end;
  if (S<0) then
-   if (I < 1000000000) then
-     if (I > D) then N:=N-D
-                else N:=N-D div 10
+ if (I < 1000000000) then
+   if (I > D) then N:=N-D
+              else N:=N-D div 10
    else N:=N-100000000
  else
    if (I >= 1) then N:=N+D
@@ -2130,9 +2131,10 @@ begin
           then self.Surface.Selection_Add(Point);
             //ItemSelected:=True;
             // Draw the selected point to all viewports
-            for J:=1 to NumberOfViewports do
-              if self.Viewport[J-1].ViewportMode=vmWireframe
-                then Point.Draw(self.Viewport[J-1]);
+//          for J:=0 to NumberOfViewports-1 do
+            for J:=0 to Viewports.Count-1 do
+              if self.Viewport[J].ViewportMode=vmWireframe
+                 then Point.Draw(self.Viewport[J]);
         end; Inc(I);
       end;
     end;
@@ -2141,7 +2143,7 @@ end;
 
 procedure TFreeShip.DoSelectItems
 ( const Viewport: TFreeViewport;
-  const X,Y: integer;
+  const X,Y: Integer;
   const Button: TMouseButton;
   const Shift: TShiftState;
   var ItemSelected: boolean );
@@ -2153,61 +2155,68 @@ var
   Curve: TFreeSubdivisionControlCurve;
   Face:  TFreeSubdivisionControlFace;
   Entity:TFreeSubdivisionBase;
-begin                                                                           ///***??? mouse-select
+begin                                                    ///***??? mouse-select
   Entity:=nil;                             // First check the selected vertices
-  for i:=Surface.NumberOfSelectedControlPoints-1 downto 0 do begin
-    Point:=Surface.SelectedControlPoint[i];
+  for I:=Surface.NumberOfSelectedControlPoints-1 downto 0 do begin
+    Point:=Surface.SelectedControlPoint[I];
     if not Point.Visible then continue;
     Tmp:=Point.DistanceToCursor( X,Y,Viewport );
     if Tmp<=SelectDistance then begin
       Entity:=Point;
       ItemSelected:=True;           // Draw the selected point to all viewports
-      for J:=0 to NumberOfViewports-1 do
-        if self.Viewport[J].ViewportMode=vmWireframe
-          then Point.Draw( self.Viewport[J] ); break;
+//    for J:=0 to NumberOfViewports-1 do
+      for J:=0 to Viewports.Count-1 do
+          if self.Viewport[J].ViewportMode=vmWireframe then
+             Point.Draw( self.Viewport[J] );
+      break;
     end;
   end;
-  I:=1;                                            // Second check the vertices
+  I:=0;                                            // Second check the vertices
   if Entity=nil then
-  while I <= Surface.NumberOfControlPoints do begin
-    if Surface.ControlPoint[I-1].Visible then begin
-      Point:=Surface.ControlPoint[I-1];
+  while I<Surface.NumberOfControlPoints do begin
+    if Surface.ControlPoint[I].Visible then begin
+      Point:=Surface.ControlPoint[I];
       Tmp:=Point.DistanceToCursor( X,Y,Viewport );
-      if Tmp<=SelectDistance then begin Entity:=Point;
-        //Point.Selected:=not Point.Selected;
+      if Tmp<=SelectDistance then begin
+        Entity:=Point;              // Point.Selected:=not Point.Selected;
         ItemSelected:=True;         // Draw the selected point to all viewports
-        for J:=1 to NumberOfViewports do
-          if self.Viewport[J-1].ViewportMode=vmWireframe then
-            Point.Draw(self.Viewport[J-1]); break;
+//      for J:=0 to NumberOfViewports-1 do
+        for J:=0 to Viewports.Count-1 do
+          if self.Viewport[J].ViewportMode=vmWireframe then
+          Point.Draw(self.Viewport[J]);
+        break;
       end;
     end; Inc(I);
   end;
   if Entity=nil then begin   // No points found, search for nearest controlEdge
-    I:=1;
-    while I <= Surface.NumberOfControlEdges do begin
-      if Surface.ControlEdge[I-1].Visible then begin
-        Edge:=Surface.ControlEdge[I-1];
+    I:=0;
+    while I<Surface.NumberOfControlEdges do begin
+      if Surface.ControlEdge[I].Visible then begin
+        Edge:=Surface.ControlEdge[I];
         Tmp:=Edge.DistanceToCursor( X,Y,P3D,Viewport );
-        if Tmp <= SelectDistance then begin
+        if Tmp<=SelectDistance then begin
           Entity:=Edge;
           Edge.Selected:=not Edge.Selected;
                    // If CTRL key is pressed, select multiple edges in one pass
                   // by tracing regular edges to a boundary or irregular points
           if (ssCtrl in shift) then Edge.Trace;
-          ItemSelected:=Edge.Selected; // Draw the selected edge to all viewports
-          for J:=1 to NumberOfViewports do Self.Viewport[J-1].Refresh; break;
+          ItemSelected:=Edge.Selected;   // Draw selected edge to all viewports
+//        for J:=0 to NumberOfViewports-1 do
+          for J:=0 to Viewports.Count-1 do
+                 Self.Viewport[J].Refresh;
+          break;
         end;
       end; Inc(I);
     end;
   end;
   if (Entity=nil) and (Visibility.ShowInteriorEdges) then begin
     Surface.ShowInteriorEdges:=True; // No edges found, search for nearest control-face
-    I:=1;
-    while I<=Surface.NumberOfControlFaces do begin
-      if Surface.ControlFace[I-1].Visible then begin
-        Face:=Surface.ControlFace[I-1];
+    I:=0;
+    while I<Surface.NumberOfControlFaces do begin
+      if Surface.ControlFace[I].Visible then begin
+        Face:=Surface.ControlFace[I];
         Tmp:=Face.DistanceToCursor( X,Y,P3D,Viewport );
-        if Tmp <= SelectDistance then begin
+        if Tmp<=SelectDistance then begin
           Entity:=Face;
           Face.Selected:=not Face.Selected;
              // If CTRL key is pressed, select all connected controlfaces that
@@ -2215,63 +2224,67 @@ begin                                                                           
              // and have the same selected state
           if (ssCtrl in shift) then Face.Trace;
           ItemSelected:=True;       // Draw the selected faces to all viewports
-          for J:=1 to NumberOfViewports do Self.Viewport[J-1].Refresh; break;
+//        for J:=0 to NumberOfViewports-1 do
+          for J:=0 to Viewports.Count-1 do
+                 Self.Viewport[J].Refresh;
+          break;
         end;
       end; Inc(I);
     end;
   end;
   if (Entity=nil) then begin
-    I:=1;
-    while I<=Surface.NumberOfControlCurves do begin
-      if Surface.ControlCurve[I-1].Visible then begin
-        Curve:=Surface.ControlCurve[I-1];
+    I:=0;
+    while I<Surface.NumberOfControlCurves do begin
+      if Surface.ControlCurve[I].Visible then begin
+        Curve:=Surface.ControlCurve[I];
         Tmp:=Curve.DistanceToCursor( X,Y,Viewport );
         if Tmp<=SelectDistance then begin
           Entity:=Curve;
           Curve.Selected:=not Curve.Selected;
           ItemSelected:=True;        // Draw the selected edge to all viewports
-          for J:=1 to NumberOfViewports do
-            if self.Viewport[J-1].ViewportMode = vmWireframe then
-              Curve.Draw(self.Viewport[J-1]); break;
+//        for J:=0 to NumberOfViewports-1 do
+          for J:=0 to Viewports.Count-1 do
+            if self.Viewport[J].ViewportMode=vmWireframe
+               then Curve.Draw(self.Viewport[J]);
+          break;
         end;
       end; Inc(I);
     end;
   end;                                                       // check flowlines
   if (Entity=nil) and (not ItemSelected) and (Visibility.ShowFlowlines) then begin
-    I:=1;
-    while I<=NumberOfFlowlines do begin
-      Tmp:=Flowline[I-1].DistanceToCursor( X,Y,Viewport );
+    I:=0;
+    while I<NumberOfFlowlines do begin
+      Tmp:=Flowline[I].DistanceToCursor( X,Y,Viewport );
       if Tmp<=SelectDistance then begin
-        Flowline[I-1].Selected:=not Flowline[I-1].Selected;
+        Flowline[I].Selected:=not Flowline[I].Selected;
         ItemSelected:=True;      // Draw the selected flowline to all viewports
-        for J:=1 to NumberOfViewports do
-          if self.Viewport[J-1].ViewportMode = vmWireframe then
-            Flowline[I-1].Draw(self.Viewport[J-1]); break;
-      end; Inc(I);
+//      for J:=0 to NumberOfViewports-1 do
+        for J:=0 to Viewports.Count-1 do
+          if self.Viewport[J].ViewportMode = vmWireframe
+             then Flowline[I].Draw( self.Viewport[J] );
+        break;
+      end; Inc( I );
     end;
   end;                                                         // check Markers
   if (Entity=nil) and (not ItemSelected) and (Visibility.ShowMarkers) then begin
-    I:=1;
-    while I <= NumberOfMarkers do begin
-      Tmp:=Marker[I-1].DistanceToCursor( X,Y,Viewport );
+    I:=0;
+    while I<NumberOfMarkers do begin
+      Tmp:=Marker[I].DistanceToCursor( X,Y,Viewport );
       if Tmp<=SelectDistance then begin
-        Marker[I-1].Selected:=not Marker[I-1].Selected;
+        Marker[I].Selected:=not Marker[I].Selected;
         ItemSelected:=True;        // Draw the selected Marker to all viewports
-        for J:=1 to NumberOfViewports do
-          if self.Viewport[J-1].ViewportMode=vmWireframe then
-            Marker[I-1].Draw(self.Viewport[J-1]); break;
+//      for J:=0 to NumberOfViewports-1 do
+        for J:=0 to Viewports.Count-1 do
+          if self.Viewport[J].ViewportMode=vmWireframe then
+            Marker[I].Draw(self.Viewport[J]); break;
       end; Inc(I);
     end;
   end;                                                     // search by surface
   if (Entity=nil) and (Viewport.ViewPortMode<>vmWireFrame ) then begin
-    MinDistance:=1e6;     // ~10e18
+    MinDistance:=1e6; // ~10e18
     P.x:=X; P.y:=Y;
     p3d:=ViewPort.ProjectBack( P,ZERO );
     P:=ViewPort.Project( p3d );
-{$ifdef DrawDebug}
-        ViewPort.FDebugPoint:=P;
-        ViewPort.FDebug3DPoint:=p3d;
-{$endif DrawDebug}
     for I:=0 to Surface.NumberOfControlFaces-1 do begin
       if Surface.ControlFace[I].Visible then begin Face:=Surface.ControlFace[I];
         if Face.PointInFace( X,Y,P3D,Dist,Viewport ) then begin
@@ -2282,30 +2295,31 @@ begin                                                                           
     if Entity<>nil then begin
       Face:=TFreeSubdivisionControlFace( Entity );
       Face.Selected:=not Face.Selected;
-             // If CTRL key is pressed, select all connected controlfaces that
-             // belong to the same layer and are not separated by a crease edge
-             // and have the same selected state
+                   // If CTRL key is pressed, select all connected controlfaces
+                   // that belong to the same layer and are not separated
+                   // by a crease edgea nd have the same selected state
       if (ssCtrl in shift) then Face.Trace;
       ItemSelected:=True;           // Draw the selected faces to all viewports
-      for J:=0 to NumberOfViewports-1 do Self.Viewport[J].Refresh;
+//    for J:=0 to NumberOfViewports-1 do
+      for J:=0 to Viewports.Count-1 do
+             Self.Viewport[J].Refresh;
     end;
   end;
-
-  if Entity <> nil then               // apparently SOMEthing has been selected
-    if Entity is TFreeSubdivisionControlPoint then begin                        ///***??? проблемы мышки
-                 // If CTRL key is pressed, selection of multiple controlpoints
+  if Entity<>nil then                 // apparently SOMEthing has been selected
+    if Entity is TFreeSubdivisionControlPoint          ///***??? проблемы мышки
+    then begin   // If CTRL key is pressed, selection of multiple controlpoints
                  // is allowed, otherwise select only ONE controlpoint
       Point:=Entity as TFreeSubdivisionControlPoint;
       if not (ssCtrl in shift) then begin
         if NumberOfSelectedControlPoints>0 then
-          for I:=NumberOfSelectedControlPoints downto 1
-            do SelectedControlPoint[I-1].Selected:=False;
+          for I:=NumberOfSelectedControlPoints-1 downto 0
+            do SelectedControlPoint[I].Selected:=False;
         if NumberOfSelectedControlPointGroups>0 then
-          for i:=0 to NumberOfSelectedControlPointGroups-1
+          for I:=0 to NumberOfSelectedControlPointGroups-1
             do SelectedControlPointGroup[I].Selected:=False;                    ///***writeln( 'pass-N='+inttostr( NumberOfSelectedControlPoints )+' \ '+inttostr( NumberOfSelectedControlPointGroups ) );
         Point.Selected:=True;          // select all points in a group if there
         ActiveControlPoint:=Point;
-//      if Surface.ControlPointGroups.Count>0 then
+        if Surface.ControlPointGroups.Count>0 then
         for I:=0 to Surface.ControlPointGroups.Count-1 do
           if Surface.ControlPointGroups[I].ControlPoints.IndexOf(Point)>=0 then
              Surface.ControlPointGroups[I].Selected:=true;                      ///***writeln( 'exit-N='+inttostr(Surface.ControlPoints.Count)+' \ '+inttostr(Surface.ControlPointGroups.Count) );
@@ -2314,7 +2328,9 @@ begin                                                                           
         if not Point.Selected
           then Point:=SelectedControlPoint[NumberOfSelectedControlPoints-1];
       end;
-      for J:=1 to NumberOfViewports do self.Viewport[J-1].Refresh;
+//    for J:=0 to NumberOfViewports-1 do
+      for J:=0 to Viewports.Count-1 do
+             self.Viewport[J].Refresh;
       if ActiveControlPoint<>Point then ActiveControlPoint:=Point;
       FCurrentlyMoving:=True;
       FPointHasBeenMoved:=False;
@@ -2328,8 +2344,9 @@ begin                                                                           
        ActiveControlFace:=Entity as TFreeSubdivisionControlFace;
     end else
     if Entity is TFreeSubdivisionControlCurve then begin
-      for J:=0 to NumberOfViewports-1 do
-      if self.Viewport[J].ViewportMode=vmWireframe then self.Viewport[J].Refresh;
+//    for J:=0 to NumberOfViewports-1 do
+      for J:=0 to Viewports.Count-1 do
+        if self.Viewport[J].ViewportMode=vmWireframe then self.Viewport[J].Refresh;
       ActiveControlCurve:=Entity as TFreeSubdivisionControlCurve;
     end;
 end;
@@ -2450,7 +2467,9 @@ begin
             if not Viewport.Focused then Viewport.SetFocus; // Application.ProcessMessages;
             TControl(Viewport.Owner).BringToFront;
           end;
-          for I:=1 to NumberOfViewports do self.Viewport[I-1].Refresh;
+//        for J:=0 to NumberOfViewports-1 do
+          for I:=0 to Viewports.Count-1 do
+                 self.Viewport[I].Refresh;
           if LinesplanFrame<>nil then TFreeLinesplanframe(LinesplanFrame).Viewport.Refresh;
           FPrevCursorPosition.X:=X;
           FPrevCursorPosition.Y:=Y;

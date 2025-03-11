@@ -188,7 +188,7 @@ begin
       Inc(Nf); Front[Nf-1]:=P;
     end;
   end;
-end;{ClipTriangle}
+end; {ClipTriangle}
 
 procedure ClipTriangle(P1, P2, P3: T3DVector; Plane: T3DPlane;
   var Nf, Nb: integer; var Front, Back: TFreeCoordinateArray);
@@ -199,22 +199,19 @@ begin
   S2:=Plane.a * P2.x+Plane.b * P2.y+Plane.c * P2.z+Plane.d;
   S3:=Plane.a * P3.x+Plane.b * P3.y+Plane.c * P3.z+Plane.d;
   ClipTriangle(P1, P2, P3, s1, s2, s3, Nf, Nb, Front, Back);
-end;{ClipTriangle}
+end; {ClipTriangle}
 
 function ConvertDimension(Value: TFloatType; Units: TFreeUnitType): string;
-var
-  Feet: integer;
-  Inches: TFloatType;
+var Feet: integer; Inches: TFloatType;
 begin
   if Units = fuImperial then begin
-    if Value < 0 then Feet:=-abs(Trunc(Value))
-                 else Feet:=Trunc(Value);
+    if Value<0 then Feet:=-abs(Trunc(Value))
+               else Feet:=Trunc(Value);
     Inches:=abs(Value-Feet) * 12;
     Result:=IntToStr(Feet);
     if (Feet = 0) and (Value < 0) then Result:='-'+Result;
     Result:=Result+''''+#32+FloatToStrF(Inches, ffFixed, 7, 1)+'''''';
   end else
-//Result:=IntToStr( Round( 1000 * Value ) ); ///***!!!
   Result:=FloatToStr( Round( Value*100 )/100 );
 end; {ConvertDimension}
 
@@ -292,17 +289,10 @@ begin
   Result:=myOldValue+myFactor*(myWholeFeet+myWholeInch/12+myFracInch/(12*InchFractions));
 end;{ConvertCoordinate}
 
-function DistPoint2D(P1, P2: TPoint): TFloatType;
-  // Calculates the distance between two points
-begin
-  Result:=Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y));
-end;{DistPP3D}
-
-function DistPP3D(P1, P2: T3DVector): TFloatType;
-  // Calculates the distance between two points
-begin
-  Result:=Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z));
-end;{DistPP3D}
+function DistPoint2D(P1, P2: TPoint): TFloatType; // Calculates the distance between two points
+   begin Result:=Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)); end;
+//function DistPP3D(P1, P2: T3DVector): TFloatType; // Calculates the distance between two points
+//begin Result:=Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z)); end;
 
 function DistancePointToLine(P, P1, P2: T3DVector): TFloatType;
 var
@@ -324,20 +314,18 @@ begin
     N.x:=V1.y * V2.z-V1.z * V2.y;
     N.y:=V1.z * V2.x-V1.x * V2.z;
     N.z:=V1.x * V2.y-V1.y * V2.x;
-    Result:=Sqrt(N.x * N.x+N.y * N.y+N.z * N.z) / Len;
-  end
-  else
-    Result:=Sqrt(Sqr(P.X-P1.X)+Sqr(P.Y-P1.Y)+Sqr(P.Z-P1.Z));
-end;{DistancePointToLine}
+    Result:=Abs( N )/Len;         // Sqrt(N.x * N.x+N.y * N.y+N.z * N.z) / Len;
+  end else Result:=Abs( P-P1 );   //Sqrt(Sqr(P.X-P1.X)+Sqr(P.Y-P1.Y)+Sqr(P.Z-P1.Z));
+end;
 
 function DistancePointToPlane(P: T3DVector; Plane: T3DPlane): TFloatType;
 begin
   Result:=Plane.a * P.x+Plane.b * P.y+Plane.c * P.z+Plane.d;
 end;{DistancePointToPlane}
 
-function DistanceToLine(P1, P2: TPoint; X, Y: integer; var Parameter: TFloatType): TFloatType;
-var
-  Pt: T2DCoordinate;
+function DistanceToLine
+( P1,P2: TPoint; X,Y: integer; var Parameter: TFloatType ): TFloatType;
+  var Pt: T2DCoordinate;
 begin
   if (P1.X < 0) and (P2.X < 0) then Result:=1e6 else
   if (P1.X > Screen.Width) and (P2.X > Screen.Width) then Result:=1e6 else
@@ -494,7 +482,7 @@ begin
   begin
     Fixed:=List.Items[I-1];
     if Fixed.NumberOfPoints > 1 then
-      FixedClosed:=DistPP3D(Fixed.Point[0], Fixed.Point[Fixed.NumberOfPoints-1]) < 1e-5
+      FixedClosed:=Distance3D(Fixed.Point[0], Fixed.Point[Fixed.NumberOfPoints-1]) < 1e-5
     else
       FixedClosed:=False;
     if (Fixed.NumberOfPoints > 1) and (not FixedClosed) then
@@ -507,7 +495,7 @@ begin
         begin
           Match:=List.Items[J-1];
           if Match.NumberOfPoints > 1 then
-            MatchClosed:=DistPP3D(Match.Point[0], Match.Point[Match.NumberOfPoints-1]) < 1e-5
+            MatchClosed:=Distance3D(Match.Point[0], Match.Point[Match.NumberOfPoints-1]) < 1e-5
           else
             MatchClosed:=False;
           if (Match.NumberOfPoints > 1) and (not MatchClosed) then
@@ -749,9 +737,8 @@ begin
   N.y:=(P2.z-P1.z) * (P3.x-P1.x)-(P2.x-P1.x) * (P3.z-P1.z);
   N.z:=(P2.x-P1.x) * (P3.y-P1.y)-(P2.y-P1.y) * (P3.x-P1.x);
   // Make normal unit length
-  L:=Sqrt((N.X * N.X)+(N.Y * N.Y)+(N.Z * N.Z));
-  if L <= 0 then
-    L:=0.0000001;
+  L:=Abs( N );                           //Sqrt((N.X*N.X)+(N.Y*N.Y)+(N.Z*N.Z));
+  if L<=0 then L:=0.0000001;
   Result.a:=N.x / L;
   Result.b:=N.y / L;
   Result.c:=N.z / L;
@@ -1116,25 +1103,12 @@ begin // Do rotation
   Result.z:=P0.x * r31+P0.y * r32+P0.z * r33;
 end; {RotateVector}
 
-// Scales a vector
-//function ScalePoint( Scale: TFloatType; P: T3DVector ): T3DVector;
-//begin Result.X:=P.X * Scale;
-//      Result.Y:=P.Y * Scale;
-//      Result.Z:=P.Z * Scale;
-//end; {ScalePoint}
-
 function SetPlane(a, b, c, d: TFloatType): T3DPlane;
 begin Result.a:=a;
       Result.b:=b;
       Result.c:=c;
       Result.d:=d;
 end; {SetPlane}
-
-function SetPoint(X, Y, Z: TFloatType): T3DVector;
-begin Result.X:=X;
-      Result.Y:=Y;
-      Result.Z:=Z;
-end; {SetPoint}
 
 procedure SortFloatArray(var FloatArray: TFloatArray; var N: integer);
 var I: integer;
@@ -1224,7 +1198,7 @@ end;
 function UnitVector(P: T3DVector): T3DVector;
 var L: TFloatType;
 begin
-  L:=Sqrt(Sqr(P.X * P.X)+Sqr(P.Y * P.Y)+Sqr(P.Z * P.Z));
+  L:=Abs( P );           // Sqrt(Sqr(P.X * P.X)+Sqr(P.Y * P.Y)+Sqr(P.Z * P.Z));
   if L = 0.0 then L:=1e-5;
   Result.X:=P.X / L;
   Result.Y:=P.Y / L;
@@ -1241,7 +1215,7 @@ end;{UnitVector}
 function Normalize(P: T3DVector): T3DVector; // Normalize a vector to unit length
 var L: TFloatType;
 begin
-  L:=Sqrt(P.X * P.X+P.Y * P.Y+P.Z * P.Z);
+  L:=Abs( P );                          // Sqrt(P.X * P.X+P.Y * P.Y+P.Z * P.Z);
   if IsNan(L) then begin Result:=ZERO; end else begin
     if L < 1e-6 then L:=1e-6;
     Result.X:=P.X / L;

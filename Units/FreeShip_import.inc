@@ -365,8 +365,8 @@ begin
         for J:=1 to Spline.NumberOfPoints do
         if Spline.Knuckle[J-1] then begin Index:=0; // find the nearest point on resampled spline
           for K:=2 to NewSpline.NumberOfPoints-1 do
-          if DistPP3D(Spline.Point[J-1], NewSpline.Point[K-1]) <
-             DistPP3D(Spline.Point[J-1], NewSpline.Point[index]) then Index:=K-1; // replace by the old coordinate
+          if Distance3D(Spline.Point[J-1], NewSpline.Point[K-1]) <
+             Distance3D(Spline.Point[J-1], NewSpline.Point[index]) then Index:=K-1; // replace by the old coordinate
           NewSpline.Point[index]:=Spline.Point[J-1];
           NewSpline.Knuckle[index]:=True;
         end;

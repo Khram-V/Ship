@@ -76,7 +76,7 @@ implementation
 
 function TFreeCylinderDialog.FGetStartPoint: T3DVector;
 begin
-  Result:=SetPoint(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
+  Result:=Vector(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
 end;
 
 procedure TFreeCylinderDialog.FSetStartPoint(val: T3DVector);
@@ -88,7 +88,7 @@ end;
 
 function TFreeCylinderDialog.FGetEndPoint: T3DVector;
 begin
-  Result:=SetPoint(EndPointX.Value, EndPointY.Value, EndPointZ.Value);
+  Result:=Vector(EndPointX.Value, EndPointY.Value, EndPointZ.Value);
 end;
 
 procedure TFreeCylinderDialog.FSetEndPoint(val: T3DVector);

@@ -1,31 +1,26 @@
-
 unit FreeTypes;
-
-//{$mode delphi}
-{$mode objfpc}
+{$mode objfpc}{$H+}
 
 Interface
-Uses Classes, SysUtils, Graphics;
+Uses Classes,SysUtils,Graphics;
 Const PixelCountMax=32768; // used for faster pixel acces when shading to viewport
 
 Type
-  TFloatType   = single;                        // All floatingpoint variables are of this type
+  TFloatType   = single;        // All floatingpoint variables are of this type
   TFloatArray  = array of TFloatType;
-  T2DCoordinate= record X,Y:TFloatType; end;    // 2D coordinate type
-  T3DVector    = record X,Y,Z:TFloatType; end;  // 3D coordinate type
-  T3DLine      = record A,B:T3DVector; end; // 3D line type
-  T3DPlane     = record a,b,c,d:TFloatType;end; // Description of a 3D plane: a*x+b*y+c*z -d = 0.0;
+  T2DCoordinate= record X,Y:TFloatType; end;   // 2D coordinate type
+  T3DVector    = record X,Y,Z:TFloatType; end; // 3D coordinate type
+  T3DLine      = record A,B:T3DVector; end;    // 3D line type
+  T3DPlane     = record a,b,c,d:TFloatType; end;
+                                     // Description 3D plane: a*x+b*y+c*z-d=0.0
 
-
-
-
-  operator <> (A,B: T3DVector): boolean;
-  operator =  (A,B: T3DVector): boolean;
-  operator - ( A,B: T3DVector ): T3DVector;  // A-B
-  operator + ( A,B: T3DVector ): T3DVector;
-  operator * ( A,B: T3DVector ): T3DVector;
-  operator * ( D:TFloatType; B:T3DVector ): T3DVector;  // D*B
-  operator / ( A:T3DVector; D:TFloatType ): T3DVector;  // A/D
+  operator <>( const A,B: T3DVector): boolean;
+  operator = ( const A,B: T3DVector): boolean;
+  operator - ( const A,B: T3DVector ): T3DVector;  // A-B
+  operator + ( const A,B: T3DVector ): T3DVector;
+  operator * ( const A,B: T3DVector ): T3DVector;  // векторное пероизведение
+  operator * ( const D:TFloatType; const B:T3DVector ): T3DVector;  // D*B
+  operator / ( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/D
 Type
   TRGBTriple = packed record rgbtBlue : BYTE;
                              rgbtGreen: BYTE;
@@ -33,6 +28,7 @@ Type
 
   pRGBTripleArray              = ^TRGBTripleArray;
   TRGBTripleArray              = array[0..PixelCountMax-1] of TRGBTriple;
+//TRGBTripleArray              = array of TRGBTriple;
   T3DVectorArray               = array of T3DVector;
   TPointArray                  = array of TPoint;
   TFreePrecisionType           = (fpLow,fpMedium,fpHigh,fpVeryHigh);                  // Precision of the ship-model
@@ -44,9 +40,6 @@ Type
   TFreeHydrostaticsCalculate   = set of TFreeHydrostaticsCalculation;                 // Set with all calculations to be performed
   TFreeHydrostaticsCalculateGravity = set of TFreeHydrostaticsCalculation;
   TFreeHydrostaticCoeff        = (fcProjectSettings,fcActualData);
-//TFreeHydrostaticError        = (feNothingSubmerged,feMakingWater,feNotEnoughBuoyancy); // Errors that may occur when calculating hydrostatics
-//TFreeHydrostaticErrors       = set of TFreeHydrostaticError;
-//+++++++++++++++++++++++++++++++++++++
   TFreeDelftSeriesResistanceData=record
                                     StartSpeed,
                                     EndSpeed,
@@ -68,7 +61,6 @@ Type
                                     EstimateWetSurf,
                                     Extract           : Boolean;
                                  end;
-
   TFreeKAPERResistanceData     = record
                                     Draft,
                                     Lwl,
@@ -84,14 +76,14 @@ Type
 
 Const
   ZERO : T3DVector = (X:0.0;Y:0.0;Z:0.0);
-  EOL                  = #13#10;
+  EOL              = #13#10;
 //Var
 //  FUnderWaterColor: TColor; // Default color used for shading underwaterpart of the vessel
 //  FUnderWaterColorAlpha: byte;
 
 
 Function F2S( Value: TFloatType ): TFloatType;
-//function Point3D( X,Y,Z: TFloattype): T3DVector;
+function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
 Function GetFloat( var S: AnsiString): TFloatType;
 Function GetInteger( var S:AnsiString ): Integer;
 Function GetBoolean( var S:AnsiString ): Boolean;
@@ -102,8 +94,9 @@ Function FloatTypeToStr( Value: TFloatType ): AnsiString;
 Procedure WestPoint;
 Function BlankOff( S: AnsiString ): AnsiString;
 //Function Dist( A:T3DVector ): TFloatType;
-Function Distance2D( P1,P2: T2DCoordinate ): extended;
-Function Distance3D( P1,P2: T3DVector ): extended;
+function Abs( const V: T3DVector ): extended; overload;
+Function Distance2D( const P1,P2: T2DCoordinate ): extended;
+Function Distance3D( const P1,P2: T3DVector ): extended;
 //function GetUnderwaterColor: TColor;
 //function GetUnderwaterColorAlpha: byte;
 //procedure SetUnderwaterColor(Val: TColor);
@@ -111,78 +104,72 @@ Function Distance3D( P1,P2: T3DVector ): extended;
 //property UnderWaterColor: TColor read GetUnderWaterColor write SetUnderwaterColor;
 //property UnderWaterColorAlpha: byte read GetUnderWaterColorAlpha write SetUnderwaterColorAlpha;
 
-
-
 Implementation
-//function Point3D( X,Y,Z: TFloattype): T3DVector;   == SetPoint
-//   begin Result.X:=X;
-//         Result.Y:=Y;
-//         Result.Z:=Z; end;
+function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
+   begin Result.X:=X;
+         Result.Y:=Y;                                            // == SetPoint
+         Result.Z:=Z; end;
 
-operator = ( A,B: T3DVector ): boolean;
+operator = ( const A,B: T3DVector ): boolean;
 begin result:=(A.x=B.x) and (A.y=A.y) and (A.z=B.z); end;
 
-operator <> (A,B: T3DVector ): boolean;
+operator <> ( const A,B: T3DVector ): boolean;
 begin result:=(A.x<>B.x) or (A.y<>A.y) or (A.z<>B.z); end;
 
-operator + ( A,B: T3DVector ): T3DVector ;
+operator + ( const A,B: T3DVector ): T3DVector ;
 begin result.x:=(A.x+B.x);
       result.y:=(A.y+B.y);
       result.z:=(A.z+B.z);
 end;
 
-operator - ( A,B: T3DVector ): T3DVector;   // A-B
-begin result.x:=(A.x-B.x);
+operator - ( const A,B: T3DVector ): T3DVector;   // A-B
+begin result.x:=(A.x-B.x);   // B:=( X:1.0; Y:2.0; Z:0.3 );
       result.y:=(A.y-B.y);
       result.z:=(A.z-B.z);
 end;
 
-operator / ( A:T3DVector; D:TFloatType ): T3DVector;  // A/B
+operator / ( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/B
 begin result.x:=A.x/D;
       result.y:=A.y/D;
       result.z:=A.z/D;
 end;
 
-operator * ( D:TFloatType; B:T3DVector): T3DVector;   // scalar product
+operator * ( const D:TFloatType; const B:T3DVector): T3DVector;   // scalar product
 begin result.x:=D*B.x;
       result.y:=D*B.y;
       result.z:=D*B.z;
 end;
 
-operator * ( A,B: T3DVector ): T3DVector;  // cross product
+operator * ( const A,B: T3DVector ): T3DVector;  // cross product
 begin result.x:=(A.y*B.z)-(A.z*B.y);
       result.y:=(A.z*B.x)-(A.x*B.z);
       result.z:=(A.x*B.y)-(A.y*B.x);
 end;
 
-function Distance2D(P1, P2: T2DCoordinate): extended;
-  var dX, dY: extended;
-begin dX:=P2.X-P1.X;
-      dY:=P2.Y-P1.Y; Result:=sqrt( sqr( dX )+sqr( dY ) );
-end;{Distance2D}
+function Distance2D( const P1,P2: T2DCoordinate ): extended; var dX,dY: extended;
+begin dX:=P2.X-P1.X; dY:=P2.Y-P1.Y; Result:=sqrt( sqr( dX )+sqr( dY ) ); end;
 
-function Distance3D(P1, P2: T3DVector): extended;
-  var dX,dY,dZ: extended;
+function Abs( const V: T3DVector ): extended;
+begin Result:=sqrt( sqr( V.X )+sqr( V.Y )+sqr( V.Z ) ); end;
+
+function Distance3D( const P1,P2: T3DVector ): extended; var dX,dY,dZ: extended;
 begin dX:=P2.X-P1.X;
       dY:=P2.Y-P1.Y;
       dZ:=P2.Z-P1.Z; Result:=sqrt( sqr( dX )+sqr( dY )+sqr( dZ ) );
-end;{Distance3D}
+end;
 
-//Function Dist( A:T3DVector ): TFloatType;
-//   begin result:=sqrt( A.x*A.x+A.y*A.y+A.z*A.z ); end;
 //Function Length( Str: AnsiString ): Integer; overload; // ??? reintroduce; override; virtual;
 //   begin Result:=UTF8Length( Str ); end;
 
-function F2S( Value: TFloatType ): TFloatType;
-var W:Double;
+function F2S( Value: TFloatType ): TFloatType; var W: extended;
 begin
   if abs( Value )<1e-5 then Result:=0 else begin
   W:=Value; W:=Round( W*1e6 ); Result:=W/1e6; end;
 end;
 
 function FloatTypeToStr( Value: TFloatType ): AnsiString;
-begin Result:=FloatToStr( F2S( Value ) ); end;
-//begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
+   begin Result:=FloatToStr( F2S( Value ) ); end;
+// begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
 
 function FloatToDec(Value: TFloatType; Maxlength: integer): AnsiString;
        //var fmt:TFormatSettings;

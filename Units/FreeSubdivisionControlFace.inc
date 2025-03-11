@@ -314,7 +314,7 @@ begin
         Viewport.FDebugT2:=p2;
         Viewport.FDebugT3:=p3;
         Viewport.FDebugCamera:=RelativeCameraLocation;}
-        Proximity:=DistPP3D(RelativeCameraLocation, IntersectionCoord);
+        Proximity:=Distance3D(RelativeCameraLocation, IntersectionCoord);
         result:=true;
         exit;
       end;
@@ -334,7 +334,7 @@ begin
           Viewport.FDebugT2:=p2;
           Viewport.FDebugT3:=p3;
           Viewport.FDebugCamera:=RelativeCameraLocation;}
-          Proximity:=DistPP3D(RelativeCameraLocation, IntersectionCoord);
+          Proximity:=Distance3D(RelativeCameraLocation, IntersectionCoord);
           result:=true;
           exit;
         end;

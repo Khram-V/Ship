@@ -132,9 +132,8 @@ var
     C.Y:=0.0;
     MomI:=C;
 
-    if IntersectionType = fiWaterline then
-    begin
-      ClosedSpline:=DistPP3D(Spline.Point[0],
+    if IntersectionType = fiWaterline then begin
+      ClosedSpline:=Distance3D(Spline.Point[0],
         Spline.Point[Spline.NumberOfPoints-1]) < 1e-4;
       if not ClosedSpline then
       begin
@@ -641,7 +640,7 @@ begin
         SplineSB.Draw(Viewport);
         SplineSB.Free;
       end;
-    end;    //Viewport.EndUpdate;
+    end; //Viewport.EndUpdate;
   end;
 end;
 
@@ -655,7 +654,7 @@ procedure TFreeIntersection.Extents(var Min, Max: T3DVector);
 var I: integer;
 begin
   if not Built then Rebuild;
-  for I:=1 to Count do Items[I-1].Extents(Min, Max);
+  for I:=1 to Count do Items[I-1].Extents( Min,Max );
 end;
 
 procedure TFreeIntersection.LoadBinary(Source: TFreeFileBuffer);

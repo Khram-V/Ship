@@ -290,7 +290,7 @@ var
   end;
   function CalculateFlowDirection(Point: TFreeSubdivisionPoint): T3DVector;
     var V: T3DVector;
-  begin V:=SetPoint(-1,0,0); Result:=CalculateFlowDirection2( V,Point ); end;
+  begin V:=Vector(-1); Result:=CalculateFlowDirection2( V,Point ); end;
   function FindInitialTriangle(StartPoint, EndPoint: T3DVector; var Int,Dir:T3DVector): integer;
   var
     I: Integer;
@@ -318,7 +318,7 @@ var
         P.Z:=StartPoint.Z+T*(EndPoint.Z-StartPoint.Z);
         if PointInTriangle(P, PointData[Triangle.P1].Coord,
            PointData[Triangle.P2].Coord,PointData[Triangle.P3].Coord) then begin
-           T:=DistPP3D( StartPoint,P );
+           T:=Distance3D( StartPoint,P );
            if T<Distance then begin
               Distance:=T;
               Result:=I-1;
@@ -356,7 +356,7 @@ var
         Dir.X:=b0 * P0.X+b1 * P1.X+b2 * P2.X;
         Dir.Y:=b0 * P0.Y+b1 * P1.Y+b2 * P2.Y;
         Dir.Z:=b0 * P0.Z+b1 * P1.Z+b2 * P2.Z;
-//      if FMethodNew then begin Dir:=Normalize(SetPoint(-1,0.1,-0.1)); end;
+//      if FMethodNew then begin Dir:=Normalize(Vector(-1,0.1,-0.1)); end;
       end; // else Result:=Result-1+1;
     end;
   end; {FindInitialTriangle}
@@ -490,22 +490,22 @@ begin                   // clear any present data
           Startpoint.X:=FProjectionPoint.X;
           StartPoint.Y:=FreeShip.Surface.Max.Y+10;
           StartPoint.Z:=FProjectionPoint.Y;
-          EndPoint:=setPoint( StartPoint.X,0,StartPoint.Z ); end;
+          EndPoint:=Vector( StartPoint.X,0,StartPoint.Z ); end;
       fvPlan: begin
           Startpoint.X:=FProjectionPoint.X;
           StartPoint.Y:=FProjectionPoint.Y;
           StartPoint.Z:=FreeShip.Surface.Min.Z-10;
-          EndPoint:=setPoint(StartPoint.X,StartPoint.Y,FreeShip.Surface.Max.Z+100); end;
+          EndPoint:=Vector(StartPoint.X,StartPoint.Y,FreeShip.Surface.Max.Z+100); end;
       fvBodyplan: if FProjectionPoint.X < 0 then begin
           Startpoint.X:=FreeShip.Surface.Min.X-10;
           StartPoint.Y:=-FProjectionPoint.X;
           StartPoint.Z:=FProjectionPoint.Y;
-          EndPoint:=setPoint(FreeShip.Surface.Max.X+10,StartPoint.Y,StartPoint.Z);
+          EndPoint:=Vector(FreeShip.Surface.Max.X+10,StartPoint.Y,StartPoint.Z);
       end else begin
           Startpoint.X:=FreeShip.Surface.Max.X+10;
           StartPoint.Y:=FProjectionPoint.X;
           StartPoint.Z:=FProjectionPoint.Y;
-          EndPoint:=setPoint(FreeShip.Surface.Min.X-10,StartPoint.Y,StartPoint.Z);
+          EndPoint:=Vector(FreeShip.Surface.Min.X-10,StartPoint.Y,StartPoint.Z);
       end;
     end;
     // find the initial triangle

@@ -1,87 +1,51 @@
 
-//   FreeIntersectionDlg
-
 unit FreeIntersectionDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
+{$MODE Delphi}
 interface
-
 uses
-{$IFnDEF FPC}
-  Windows,
-{$ELSE}
-  LCLIntf, LCLType, //
-{$ENDIF}
-  SysUtils,
-  Classes,
-  Graphics,
-  Forms,
-  Controls,
-  StdCtrls,
-  ExtCtrls,
-  Dialogs,
-  FreeTypes,
-  FreeGeometry,
-  FreeShipUnit,
-  ComCtrls,
-  //ToolWin,
-  ActnList, Grids;
-
+  SysUtils,    Classes,
+  Forms,       Controls,
+  StdCtrls,    ExtCtrls,
+  Dialogs,     FreeTypes,
+  FreeShipUnit,ComCtrls,
+  ActnList,    Grids;
 type
-
-  { TFreeIntersectionDialog }
-
-  TFreeIntersectionDialog = class(TForm)
-    DeleteSelected: TAction;
+  TFreeIntersectionDialog = class( TForm )          { TFreeIntersectionDialog }
     PageControl1: TPageControl;
-    Panel1: TPanel;
-    sgWaterlines: TStringGrid;
-    sgDiagonals: TStringGrid;
-    sgStations: TStringGrid;
-    sgButtocks: TStringGrid;
-    tsStations: TTabSheet;
-    tsButtocks: TTabSheet;
-    tsWaterlines: TTabSheet;
-    tsDiagonals: TTabSheet;
     ToolBar1: TToolBar;
-    tbStations: TToolButton;
-    tbButtocks: TToolButton;
-    tbWaterlines: TToolButton;
+    Panel1: TPanel;
+    sgStations, sgWaterlines, sgButtocks, sgDiagonals: TStringGrid;
+    tsStations, tsWaterlines, tsButtocks, tsDiagonals: TTabSheet;
+    tbStations, tbWaterlines, tbButtocks, tbDiagonals: TToolButton;
+    ShowStations: TAction;
+    ShowWaterlines: TAction;
+    ShowButtocks: TAction;
+    ShowDiagonals: TAction;
+    DeleteSelected: TAction;
     ToolButton14: TToolButton;
-    tbDiagonals: TToolButton;
-    tbAddOne: TToolButton;
-    tbAddRange: TToolButton;
-    tbCloseDialog: TToolButton;
+    AddOne: TAction;      tbAddOne: TToolButton;
+    AddRange: TAction;    tbAddRange: TToolButton;
+    CloseDialog: TAction; tbCloseDialog: TToolButton;
     MenuImages: TImageList;
     ActionList1: TActionList;
-    ShowStations: TAction;
-    ShowButtocks: TAction;
-    ShowWaterlines: TAction;
-    ShowDiagonals: TAction;
-    CloseDialog: TAction;
-    AddOne: TAction;
-    AddRange: TAction;
     DeleteAll: TAction;
     tbDeleteSelected: TToolButton;
     ToolButton8: TToolButton;
     procedure DeleteSelectedExecute(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    //procedure ListBoxClickCheck( Sender: TObject);
+//  procedure ListBoxClickCheck( Sender: TObject);
     procedure ListBoxKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure ListBoxSelectionChange(Sender: TObject; User: boolean);
     procedure PageControl1Change(Sender: TObject);
     procedure sgButtocksCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
-    //procedure sgButtocksEditingDone(Sender: TObject);
-    //procedure sgDiagonalsEditingDone(Sender: TObject);
+//  procedure sgButtocksEditingDone(Sender: TObject);
+//  procedure sgDiagonalsEditingDone(Sender: TObject);
     procedure OnGridEditingDone(Sender: TObject);
     procedure OnGridGetEditMask(Sender: TObject; ACol, ARow: Integer; var Value: string);
     procedure sgStationsSelectEditor(Sender: TObject; aCol, aRow: Integer;  var Editor: TWinControl);
     procedure OnGridSelection(Sender: TObject; aCol, aRow: Integer);
     procedure OnGridValidateEntry(sender: TObject; aCol, aRow: Integer; const OldValue: string; var NewValue: String);
-    //procedure sgWaterlinesEditingDone(Sender: TObject);
+//  procedure sgWaterlinesEditingDone(Sender: TObject);
     procedure ShowStationsExecute(Sender: TObject);
     procedure ShowButtocksExecute(Sender: TObject);
     procedure ShowWaterlinesExecute(Sender: TObject);
@@ -91,58 +55,44 @@ type
     procedure AddRangeExecute(Sender: TObject);
     procedure DeleteAllExecute(Sender: TObject);
     procedure ToolBar1Click(Sender: TObject);
-  private   { Private declarations }
+  private                                              { Private declarations }
     FFreeShip: TFreeShip;
     procedure FillButtocks;
-    //procedure FillBox;
+//  procedure FillBox;
     procedure FillDiagonals;
     procedure FillGrids;
     procedure FillStations;
     procedure FillWaterlines;
     function GridRowSelected(grid: TStringGrid; aRow: Integer): boolean;
-  public    { Public declarations }
+  public                                                { Public declarations }
     procedure Execute(FreeShip: TFreeShip);
     procedure UpdateMenu;
     procedure UnselectAll;
   end;
 
-var
-  FreeIntersectionDialog: TFreeIntersectionDialog;
+var FreeIntersectionDialog: TFreeIntersectionDialog;
 
 implementation
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-
-{$ELSE}
   {$R *.lfm}
-{$ENDIF}
 
 procedure TFreeIntersectionDialog.UpdateMenu;
 begin
-  if ShowStations.Checked then
-  begin
+  if ShowStations.Checked then begin
     AddOne.Hint:='Add one station';
     AddRange.Hint:='Add multiple stations';
     DeleteAll.Hint:='Delete all stations';
-    DeleteAll.Enabled:=FFreeship.NumberofStations > 0;
-  end
-  else if ShowButtocks.Checked then
-  begin
+    DeleteAll.Enabled:=FFreeship.NumberofStations > 0; end else
+  if ShowButtocks.Checked then begin
     AddOne.Hint:='Add one buttock';
     AddRange.Hint:='Add multiple buttocks';
     DeleteAll.Hint:='Delete all buttocks';
-    DeleteAll.Enabled:=FFreeship.NumberofButtocks > 0;
-  end
-  else if ShowWaterlines.Checked then
-  begin
+    DeleteAll.Enabled:=FFreeship.NumberofButtocks > 0; end else
+  if ShowWaterlines.Checked then begin
     AddOne.Hint:='Add one waterline';
     AddRange.Hint:='Add multiple waterlines';
     DeleteAll.Hint:='Delete all waterlines';
-    DeleteAll.Enabled:=FFreeship.NumberofWaterlines > 0;
-  end
-  else if ShowDiagonals.Checked then
-  begin
+    DeleteAll.Enabled:=FFreeship.NumberofWaterlines > 0; end else
+  if ShowDiagonals.Checked then begin
     AddOne.Hint:='Add one diagonal';
     AddRange.Hint:='Add multiple diagonals';
     DeleteAll.Hint:='Delete all diagonals';
@@ -170,40 +120,36 @@ begin
   try
     ListBox.Clear;
     if ShowStations.Checked then
-      for I:=1 to FFreeShip.NumberofStations do
-      begin
+      for I:=1 to FFreeShip.NumberofStations do begin
         Ind:=ListBox.Items.AddObject(FFreeship.Station[I-1].Description,
           FFreeship.Station[I-1]);
         ListBox.Checked[Ind]:=FFreeship.Station[I-1].ShowCurvature;
       end// Fill box with stations
     else if ShowButtocks.Checked then
-      for I:=1 to FFreeShip.NumberofButtocks do
-      begin
+      for I:=1 to FFreeShip.NumberofButtocks do begin
         Ind:=ListBox.Items.AddObject(FFreeship.Buttock[I-1].Description,
           FFreeship.Buttock[I-1]);
         ListBox.Checked[Ind]:=FFreeship.Buttock[I-1].ShowCurvature;
       end// Fill box with buttocks
     else if ShowWaterlines.Checked then
-      for I:=1 to FFreeShip.NumberofWaterlines do
-      begin
+      for I:=1 to FFreeShip.NumberofWaterlines do begin
         Ind:=ListBox.Items.AddObject(FFreeship.Waterline[I-1].Description,
           FFreeship.Waterline[I-1]);
         ListBox.Checked[Ind]:=FFreeship.Waterline[I-1].ShowCurvature;
-      end// Fill box with waterlines
+      end  // Fill box with waterlines
     else
-      for I:=1 to FFreeShip.NumberofDiagonals do
-      begin
+      for I:=1 to FFreeShip.NumberofDiagonals do begin
         Ind:=ListBox.Items.AddObject(FFreeship.Diagonal[I-1].Description,
           FFreeship.Diagonal[I-1]);
         ListBox.Checked[Ind]:=FFreeship.Diagonal[I-1].ShowCurvature;
-      end// Fill box with diagonals
+      end  // Fill box with diagonals
     ;
   finally
     ListBox.Items.EndUpdate;
     if (PrevInd >= 0) and (PrevInd < ListBox.Count) then
       ListBox.ItemIndex:=PrevInd;
   end;
-end;{TFreeIntersectionDialog.FillBox}
+end;  {TFreeIntersectionDialog.FillBox}
 *)
 
 procedure TFreeIntersectionDialog.FillGrids;
@@ -531,23 +477,19 @@ var I: integer;
 begin
   if ShowStations.Checked then begin
     for I:=FFreeShip.NumberofStations-1 downto 0 do
-      if GridRowSelected(sgStations,i+1) then
-        FFreeship.Station[i].Delete(I=0);
+    if GridRowSelected(sgStations,i+1) then FFreeship.Station[i].Delete(I=0);
   end else
   if ShowButtocks.Checked then begin
     for I:=FFreeShip.NumberofButtocks-1 downto 0 do
-      if GridRowSelected(sgButtocks,i+1) then
-         FFreeship.Buttock[i].Delete(I=0);
-  end
-  else if ShowWaterlines.Checked then begin
+    if GridRowSelected(sgButtocks,i+1) then FFreeship.Buttock[i].Delete(I=0);
+  end else
+  if ShowWaterlines.Checked then begin
     for I:=FFreeShip.NumberofWaterlines-1 downto 0 do
-      if GridRowSelected(sgWaterlines,i+1) then
-        FFreeship.Waterline[i].Delete(I=0);
+    if GridRowSelected(sgWaterlines,i+1) then FFreeship.Waterline[i].Delete(I=0);
   end else
   if ShowDiagonals.Checked then begin
     for I:=FFreeShip.NumberofDiagonals downto 0 do
-      if GridRowSelected(sgDiagonals,i+1) then
-        FFreeship.Diagonal[i].Delete(I=0);
+    if GridRowSelected(sgDiagonals,i+1) then FFreeship.Diagonal[i].Delete(I=0);
   end;
   FillGrids;
   UpdateMenu;

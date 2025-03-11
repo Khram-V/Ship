@@ -15,9 +15,9 @@ function TFreeHydrostaticCalc.FGetWlPlane: T3DPlane;
   var LowestValue: TFloatType; P1,P2,P3: T3DVector;
 begin
   LowestValue:=Owner.FindLowestHydrostaticsPoint;
-  P1:=SetPoint( 0.0,0.0,LowestValue+(Draft-0.5*Trim) );
-  P2:=SetPoint(Owner.ProjectSettings.ProjectLength,0.0,LowestValue+(Draft+0.5*Trim));
-  P3:=SetPoint(Owner.ProjectSettings.ProjectLength,Cos(DegToRad(-HeelingAngle)),
+  P1:=Vector( 0.0,0.0,LowestValue+(Draft-0.5*Trim) );
+  P2:=Vector(Owner.ProjectSettings.ProjectLength,0.0,LowestValue+(Draft+0.5*Trim));
+  P3:=Vector(Owner.ProjectSettings.ProjectLength,Cos(DegToRad(-HeelingAngle)),
                    LowestValue+(Draft+0.5 * Trim)-Sin(DegToRad(-HeelingAngle)));
   Result:=PlanePPP( P1,P2,P3 );
 end;
@@ -711,7 +711,6 @@ begin
      Strings.Add(MakeLength(Userstring(41),21)+' : '+Owner.ProjectSettings.ProjectFileCreatedBy);
   if Owner.ProjectSettings.ProjectComment <> '' then
      Strings.Add(MakeLength(Userstring(42),21)+' : '+Owner.ProjectSettings.ProjectComment );
-
   Strings.Add(MakeLength(Userstring(43), 21)+' : '+ChangeFileExt( ExtractFilename(Owner.FileName), '.fbm'));
   Strings.Add( '' );
   Strings.Add(MakeLength(Userstring(44), 21)+' : '+MakeLength(
@@ -929,9 +928,9 @@ var
     Child: TFreeSubdivisionFace;
   begin
     Fillchar(MinMaxdata, SizeOf(TMinMaxdata), 0);
-    P1:=RotatePointBack(SetPoint(0.0, 0.0, 0.0));
-    P2:=RotatePointBack(SetPoint(1.0, 0.0, 0.0));
-    P3:=RotatePointBack(SetPoint(1.0, 1.0, 0.0));
+    P1:=RotatePointBack(Vector(0.0, 0.0, 0.0));
+    P2:=RotatePointBack(Vector(1.0, 0.0, 0.0));
+    P3:=RotatePointBack(Vector(1.0, 1.0, 0.0));
     // The following plane has the right orientation for the given trim and angle of heel,
     // however the correct distance from the lowest point on the hull has to be calculated
     MinMaxdata.PlaneNormal:=UnifiedNormal(P1, P2, P3);
@@ -1327,7 +1326,7 @@ begin
 
   Calculated:=False;           // Resets all data and calculated variables
                               // Calculate the definition of the waterlineplane
-  Keel:=SetPoint(0.0, 0.0, Owner.FindLowestHydrostaticsPoint);
+  Keel:=Vector(0.0, 0.0, Owner.FindLowestHydrostaticsPoint);
   FData.WaterlinePlane:=WaterlinePlane;
 
   // In order to calculate the volume enclosed by the underwatership correctly,
@@ -1881,7 +1880,7 @@ begin
 
   Calculated:=False;   // Resets all data and calculated variables
   // Calculate the definition of the waterlineplane
-  Keel:=SetPoint(0.0, 0.0, Owner.FindLowestHydrostaticsPoint);
+  Keel:=Vector(0.0, 0.0, Owner.FindLowestHydrostaticsPoint);
   FData.WaterlinePlane:=WaterlinePlane;
 
   // In order to calculate the volume enclosed by the underwatership correctly,

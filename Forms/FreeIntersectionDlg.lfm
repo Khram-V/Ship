@@ -9,7 +9,7 @@ object FreeIntersectionDialog: TFreeIntersectionDialog
   OnClose = FormClose
   ParentFont = True
   Position = poScreenCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.8.0.0'
   object Panel1: TPanel
     Left = 0
     Height = 376

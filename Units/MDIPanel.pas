@@ -1,33 +1,26 @@
-
 unit MDIPanel;
-
 {$mode objfpc}{$H+}
-
 //{$define Use_MouseClickProxy}
-
 interface
-
 uses
   Classes, SysUtils, LCLType, LCLIntf,
   LMessages, LResources, GraphType, Graphics, Menus,
   ActnList, Controls, Forms, StdCtrls, ExtCtrls,  Buttons;
 type
-  TWindowPositionState = ( wpsNone, wpsMoving, wpsResizing );
-  TWindowResizingSide = (
-    wrszsNW, wrszsN, wrszsNE,
-    wrszsW,  wrszsZ, wrszsE,
-    wrszsSW, wrszsS, wrszsSE );
-  TCaptionButton = ( // Form title bar items
-    cbSystemMenu,    // system menu
-    cbMinimize,      // minimize button
-    cbMaximize,      // maximize button
-    cbRestore,       // resore button
+  TWindowPositionState= ( wpsNone, wpsMoving, wpsResizing );
+  TWindowResizingSide = ( wrszsNW, wrszsN, wrszsNE,
+                          wrszsW,  wrszsZ, wrszsE,
+                          wrszsSW, wrszsS, wrszsSE );
+  TCaptionButton =     // Form title bar items
+  ( cbSystemMenu,      // system menu
+    cbMinimize,        // minimize button
+    cbMaximize,        // maximize button
+    cbRestore,         // restore button
     cbClose );
   TCaptionButtons = set of TCaptionButton;
 
 type TMDIClientPanel = class(TPanel)
-public
-   procedure ActiveDefaultControlChanged( NewControl: TControl ); override;
+public procedure ActiveDefaultControlChanged( NewControl: TControl ); override;
 end;
 
 {$ifdef Use_MouseClickProxy}
@@ -54,7 +47,7 @@ type                                                        { TCustomMDIPanel }
     FClientControls:TFPList;
     FCaptionPanel: TPanel;
     FCaptionLabel: TLabel;
-    FClientPanel: TMDIClientPanel; //TScrollBox;
+    FClientPanel: TMDIClientPanel;
     FSystemButton: TImage;
     FCloseButton: TSpeedButton;
     FMaximizeButton: TSpeedButton;
@@ -67,15 +60,10 @@ type                                                        { TCustomMDIPanel }
     FMenuItemClose: TMenuItem;
     PanelManager: WinPanelManager;
   private
-    FOnActivate: TNotifyEvent;
-    FOnDeactivate: TNotifyEvent;
-    FOnClose: TCloseEvent;
-    FOnCreate: TNotifyEvent;
-    FOnDestroy: TNotifyEvent;
-    FOnHelp: THelpEvent;
-    FOnHide: TNotifyEvent;
+    FOnCreate,FOnActivate,FOnShow,FOnHide,FOnDeactivate,FOnDestroy:TNotifyEvent;
     FOnShortcut: TShortCutEvent;
-    FOnShow: TNotifyEvent;
+    FOnClose: TCloseEvent;
+    FOnHelp: THelpEvent;
 
     FNormalBounds: Trect; // bounds when not maximized, minimized or hidden
     FWindowState: TWindowState;
@@ -181,24 +169,23 @@ type                                                        { TCustomMDIPanel }
     procedure SetMDIPanelManager(AValue: WinPanelManager);
     procedure InactivateSiblings;
   public
-    constructor CreateNew(AOwner: TComponent); virtual;
-    constructor Create(AOwner: TComponent); override;
+    constructor CreateNew( AOwner: TComponent ); virtual;
+    constructor Create( AOwner: TComponent ); override;
     destructor Destroy; override;
     procedure Close;
 
-    procedure InsertControl(AControl: TControl);
-    procedure InsertControl(AControl: TControl; Index: integer); override;
-    procedure RemoveControl(AControl: TControl); override;
+    procedure InsertControl( AControl: TControl );
+    procedure InsertControl( AControl: TControl; Index: integer ); override;
+    procedure RemoveControl( AControl: TControl ); override;
 
- // function GetIcon :TIcon;
- // procedure SetIcon(val:TIcon);
+ // function GetIcon: TIcon; procedure SetIcon( val:TIcon );
 
     property Controls[Index: integer]: TControl read GetControl;
  // property ControlCount: integer read GetControlCount;
 
     property CaptionButtons:TCaptionButtons read FCaptionButtons write SetCaptionButtons;
     property FormStyle:TFormStyle read FFormStyle write FFormStyle default fsMDIChild;
-    property MDIPanelManager:WinPanelManager read PanelManager write SetMDIPanelManager;
+    property MDIPanelManager: WinPanelManager read PanelManager write SetMDIPanelManager;
     property Position: TPosition read FPosition write FPosition default poDesigned;
 
     property Active: boolean read FActive write setActive;
@@ -221,7 +208,6 @@ type                                                        { TCustomMDIPanel }
         FAllowDropFiles: Boolean;
         FAlphaBlend: Boolean;
         FAlphaBlendValue: Byte;
-//      FAutoScroll: Boolean;
 //      FBorderIcons: TBorderIcons;
         FDesignTimePPI: Integer;
         FDefaultMonitor: TDefaultMonitor;
@@ -243,7 +229,6 @@ type                                                        { TCustomMDIPanel }
       property AllowDropFiles: Boolean read FAllowDropFiles write FAllowDropFiles default False;
       property AlphaBlend: Boolean read FAlphaBlend write FAlphaBlend;
       property AlphaBlendValue: Byte read FAlphaBlendValue write FAlphaBlendValue;
-//    property AutoScroll: Boolean read FAutoScroll write FAutoScroll default False;// auto show/hide scrollbars
 //    property BorderIcons: TBorderIcons read FBorderIcons write FBorderIcons default [biSystemMenu, biMinimize, biMaximize];
       property DefaultMonitor: TDefaultMonitor read FDefaultMonitor write FDefaultMonitor default dmActiveForm;
       property DesignTimePPI: Integer read FDesignTimePPI write FDesignTimePPI default 96;
@@ -383,10 +368,10 @@ type                                                        { TCustomMDIPanel }
       MList: TFPList;
     private
       function GetMDIPanel(Index: Integer): TCustomMDIPanel;
+      function GetPanelCount: integer;
     public
       constructor Create; virtual;
       destructor Destroy; override;
-
       procedure Add(APanel: TCustomMDIPanel );
       procedure Insert( APanel: TCustomMDIPanel );
       procedure Insert( APanel: TCustomMDIPanel; Index: integer );
@@ -394,19 +379,14 @@ type                                                        { TCustomMDIPanel }
       procedure Delete( Index:integer );
       function  FindActivePanel: TCustomMDIPanel;
       procedure Show( Cascad: Boolean );  // Tile(false)+Cascade(true);
-
     public
-      property Panels[Index: Integer]: TCustomMDIPanel read GetMDIPanel;
-
-//    function  IndexOf(APanel: TCustomMDIPanel ):integer;
-//    function GetPanelCount: integer;
-//    property PanelCount:integer read GetPanelCount;
+      property MDIPanels[Index: Integer]: TCustomMDIPanel read GetMDIPanel;
+      function IndexOf( APanel: TCustomMDIPanel ):integer;
+      property PanelCount:integer read GetPanelCount;
   end;
 
 implementation
-uses Main,
-     FPImage;
-
+//uses Main,FPImage;
 //{$I MDIPanel.inc}
 {%MainUnit MDIPanel.pas ##################################################### }
 
@@ -460,7 +440,7 @@ begin
        K:=PanelManager.MList.IndexOf( Self );
        if K>=0 then begin
            PanelManager.MList.Remove( Self );
-//         PanelManager.MList.Delete( K );
+//         PanelManager.MList.Delete( K );                     ///*** окна-окна
            if Application<>nil then Application.ReleaseComponent( Self ) else Free;
 //         Destroy;
        end;
@@ -594,7 +574,6 @@ begin
   OnMouseUp  :=@BorderMouseUp;
   SCH:=GetSystemMetrics( SM_CYCAPTION );    // header height
 //SFW:=GetSystemMetrics( SM_CYDLGFRAME );   // frame width
-
   FCaptionPanel:=TPanel.Create( Self );
   FCaptionPanel.Parent:=Self;
   with FCaptionPanel do begin
@@ -618,7 +597,6 @@ begin
     OnMouseUp:=@CaptionPanelMouseUp;
     OnMouseDown:=@CaptionPanelMouseDown;
   end;
-
   FCaptionLabel:=TLabel.Create(Self);
   FCaptionLabel.Parent:=FCaptionPanel;
   FCaptionLabel.ParentFont:=true;
@@ -717,7 +695,6 @@ begin  // exit;
     end;
   end;
 end;
-
 (*
 function TCustomMDIPanel.GetIcon: TIcon;
 begin result:=nil;
@@ -730,7 +707,6 @@ end;
 procedure TCustomMDIPanel.SetIcon(val: TIcon);
 begin FSystemButton.Picture.Icon.Assign(val); end;
 *)
-
 procedure TCustomMDIPanel.Paint;
 var IRect: TRect; ibw:integer;
 begin
@@ -741,7 +717,6 @@ begin
   InflateRect(IRect, -ibw, -ibw);
   Canvas.Frame3d(IRect, BorderColor, BorderColor, BorderWidth);
 end;
-
 {
 procedure TCustomMDIPanel.Resize;
 var cw,ch:integer;
@@ -893,8 +868,6 @@ begin
   with FClientPanel do begin
     Parent:=Self;
     Name:='ClientPanel';
- // HorzScrollBar.Page:=1;
- // VertScrollBar.Page:=1;
     Align:=alClient;
     TabStop:=False;
     BevelOuter:=bvNone;
@@ -1474,22 +1447,17 @@ begin Result:=TMethod(P).Code = TMethod(@OnClick).Code; end;
 procedure TMDIClientPanel.ActiveDefaultControlChanged( NewControl: TControl );
 begin
   if assigned(NewControl) and assigned(Parent) and (Parent is TCustomMDIPanel)
-  then TCustomMDIPanel(Parent).setActive(true);
+  then TCustomMDIPanel( Parent ).setActive( true );
 end;
-{
-procedure Register;
-begin RegisterComponents('MDIPanel', [TMDIPanel]); end;
-}
-
+//procedure Register; begin RegisterComponents('MDIPanel', [TMDIPanel]); end;
 //{$I MDIPanelManager.inc}
 {%MainUnit MDIPanel.pas}
-{ WinPanelManager ########################################################### }
 
 function WinPanelManager.GetMDIPanel(Index: Integer): TCustomMDIPanel;
-begin Result:=TCustomMDIPanel(MList[Index]); end;
+   begin Result:=TCustomMDIPanel(MList[Index]); end;
 
-//function WinPanelManager.GetPanelCount: integer;
-//begin result:=MList.Count; end;
+function WinPanelManager.GetPanelCount: integer;
+   begin result:=MList.Count; end;
 
 constructor WinPanelManager.Create;
       begin inherited Create; MList:=TFPList.Create; end;
@@ -1497,8 +1465,8 @@ constructor WinPanelManager.Create;
 destructor WinPanelManager.Destroy;
      begin FreeAndNil( MList ); end; // inherited; end;
 
-//function WinPanelManager.IndexOf( APanel: TCustomMDIPanel ): integer;
-//begin result:=MList.IndexOf( APanel ); end;
+function WinPanelManager.IndexOf( APanel: TCustomMDIPanel ): integer;
+   begin result:=MList.IndexOf( APanel ); end;
 
 procedure WinPanelManager.Add(APanel: TCustomMDIPanel);
 begin if APanel=nil then exit;
@@ -1506,7 +1474,7 @@ begin if APanel=nil then exit;
       APanel.MDIPanelManager:=self;
 end;
 
-procedure WinPanelManager.Insert(APanel: TCustomMDIPanel);
+procedure WinPanelManager.Insert( APanel: TCustomMDIPanel );
 begin Insert( APanel,MList.Count );
       APanel.MDIPanelManager:=self;
 end;
@@ -1524,8 +1492,7 @@ end;
 procedure WinPanelManager.Delete( Index: integer );
 begin MList.Delete(Index); end;
 
-function WinPanelManager.FindActivePanel: TCustomMDIPanel;
-var i:integer;
+function WinPanelManager.FindActivePanel: TCustomMDIPanel; var i:integer;
 begin result:=nil;
   for i:=0 to MList.Count-1 do
    if TCustomMDIPanel(MList[i]).Active then result:=TCustomMDIPanel(MList[i]);
@@ -1536,10 +1503,10 @@ var MW,MH, W,H, M,MCC, i,j : Integer;
     WM: array[0..3] of Record x,y,w,h: Integer; end;
     panel  : TCustomMDIPanel;
     parent : TWinControl;
-    swc    : TScrollingWinControl;
+//  swc    : TScrollingWinControl;
 begin
   if MList.Count=0 then exit;
-  parent:=Panels[0].Parent; // we get just parent of first MDIPanel. Assumed that all have same parent.
+  parent:=MDIPanels[0].Parent; // we get just parent of first MDIPanel. Assumed that all have same parent.
   if parent=nil then exit;
 
   MCC:=MList.Count; if MCC=0 then exit else M:=MCC;
@@ -1555,12 +1522,12 @@ begin
     if M=3 then begin WM[0].x:=0; WM[0].y:=0; WM[0].h:=MH; WM[0].w:=W;
                       WM[1].x:=W; WM[1].y:=H; WM[1].h:=H; WM[1].w:=W*2;
                       WM[2].x:=W; WM[2].y:=0; WM[2].h:=H; WM[2].w:=W*2; end else
-    begin WM[0].x:=W*2; WM[0].y:=0; WM[0].h:=H;   WM[0].w:=W;   // fvBodyplan
-          WM[1].x:=0;   WM[1].y:=0; WM[1].h:=H;   WM[1].w:=W*2; // fvProfile
-          WM[2].x:=0;   WM[2].y:=H; WM[2].h:=H;   WM[2].w:=W*2; // fvPlan
-          WM[3].x:=W*2; WM[3].y:=H; WM[3].h:=H+2; WM[3].w:=W+2; // fvPerspective
+    begin WM[0].x:=W*2; WM[0].y:=0; WM[0].h:=H;   WM[0].w:=W;   // fvBodyplan - корпус
+          WM[1].x:=0;   WM[1].y:=0; WM[1].h:=H;   WM[1].w:=W*2; // fvProfile  - бок
+          WM[2].x:=0;   WM[2].y:=H; WM[2].h:=H;   WM[2].w:=W*2; // fvPlan     - полуширота
+          WM[3].x:=W*2; WM[3].y:=H; WM[3].h:=H+2; WM[3].w:=W+2; // fvPerspective - аксонометрия
     end;
-    for i:=0 to M-1 do begin  panel:=Panels[i];
+    for i:=0 to M-1 do begin  panel:=MDIPanels[i];
       if Assigned( panel ) then panel.SetBounds( WM[i].x,WM[i].y,WM[i].w,WM[i].h );
     end;
   end;
@@ -1568,10 +1535,9 @@ begin
     if j=0 then begin W:=0; H:=0; j:=1; end else begin
       W:=MW div 16; MW -= W;
       H:=MH div 16; MH -= H; end;
-    for i:=M to MCC-1 do begin panel:=Panels[i];
-      if Assigned( panel ) then
-         panel.SetBounds( ((i-M)*W) div j,
-                          ((i-M)*H) div j, MW,MH );
+    for i:=M to MCC-1 do begin panel:=MDIPanels[i];
+      if Assigned( panel ) then panel.SetBounds( ((i-M)*W) div j,
+                                                 ((i-M)*H) div j, MW,MH );
     end;
   end;
 end;

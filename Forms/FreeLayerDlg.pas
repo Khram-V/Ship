@@ -174,19 +174,10 @@ begin
    Undo:=Freeship.Edit.CreateUndoObject( 'Layer properties ',False);
    FFillBox;
    _Label4.Caption:=DensityStr(FFreeship.ProjectSettings.ProjectUnits);
-
    if FFreeship.ProjectSettings.ProjectUnits=fuImperial
       then _Label6.Caption:=LenMMStr( FFreeship.ProjectSettings.ProjectUnits )
       else _Label6.Caption:=LenMMStr( FFreeship.ProjectSettings.ProjectUnits );
-
-// ToolBar1.ButtonWidth :=Freeship.Preferences.ToolIconSize;
-// ToolBar1.ButtonHeight:=Freeship.Preferences.ToolIconSize;
-{  Freeship.Preferences.LoadImageIntoList(MenuImages, 0, 'ExitProgram');
-   Freeship.Preferences.LoadImageIntoList(MenuImages, 1, 'NewLayer');
-   Freeship.Preferences.LoadImageIntoList(MenuImages, 2, 'DeleteEmptyLayers');
-   Freeship.Preferences.LoadImageIntoList(MenuImages, 3, 'MoveUp');
-   Freeship.Preferences.LoadImageIntoList(MenuImages, 4, 'MoveDown');
-}  UpdateMenu;
+   UpdateMenu;
    ShowModal;
    Result:=ModalResult=mrOk;
    if Result then Undo.Accept

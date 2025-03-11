@@ -36,7 +36,7 @@ private
     FData: array of byte;
     FFileName: AnsiString;
     FFile: file;
-    FEncoding: string;
+    FEncoding: AnsiString;
     procedure FGrow(size: integer);
     procedure FSetCapacity(val: integer); virtual;
     function FGetCapacity: integer; virtual;
@@ -87,7 +87,7 @@ private
     property Count: integer read FCount;
     property Version: TFreeFileVersion read FVersion write FVersion;
     property Position: integer read GetPosition;
-    property Encoding: string read FEncoding write FEncoding;
+    property Encoding: AnsiString read FEncoding write FEncoding;
   end;
   {-----------------------------------------------------------}
   {                                           TFreeTextBuffer }
@@ -124,11 +124,9 @@ private
     procedure LoadTStrings(var Output: TStrings); override;
     procedure LoadTNameData(var Output: TNameData); override;
     procedure LoadTLinearConstraintData(var Output: TLinearConstraintData); override;
-//  procedure LoadTFreeMHSeriesResistanceData(var Output: TColor); override;
     procedure LoadT3DVector(var Output: T3DVector); override;
     procedure LoadT3DPlane(var Output: T3DPlane); override;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); override;
-//  procedure LoadTFreeMHSeriesResistanceData(var Dest;Size:Integer); override;
 
     procedure Clear; override;
     procedure LoadFromFile(Filename: AnsiString); override;

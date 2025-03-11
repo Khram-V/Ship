@@ -69,7 +69,7 @@ implementation
 
 function TFreeGridDialog.GetStartPoint: T3DVector;
 begin
-  Result:=SetPoint(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
+  Result:=Vector(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
 end;
 
 procedure TFreeGridDialog.SetStartPoint(val: T3DVector);

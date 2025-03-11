@@ -309,8 +309,7 @@ procedure TFreeSpline.SaveToDXF
 ( Strings: TStringList;
   Layername: AnsiString;
   SendMirror: boolean );
-var
-  I,J,Ind,NParams: integer; P: T3DVector; Params: TFloatArray;
+var I,J,Ind,NParams: integer; P: T3DVector; Params: TFloatArray;
 begin
   Ind:=FindDXFColorIndex( Color );
   NParams:=0;
@@ -1117,6 +1116,9 @@ begin
   end;
   FreeAndNil(Dialog);
 end;
+
+resourceString
+ rsFREEShipExchangeFormat = 'FREE!ship Exchange Format';
 
 procedure TFreeEdit.File_ExportFEF;
 var

@@ -1,18 +1,12 @@
-
-
 unit FreeBitmapFormatHelper;
-
 {$mode delphi}
 //{$mode objfpc}{$H+}
 
 interface
-
-uses
-  SysUtils, FreeTypes, Graphics, GraphType;
-
+uses SysUtils, FreeTypes, Graphics, GraphType;
 type
 TBitMapDataFormat = (
- //bmdf_BPP1, // Black and White
+                                                //bmdf_BPP1, // Black and White
  bmdf_BPP16_R5G6B5, // 16-bit
  bmdf_BPP16_B5G6R5, // 16-bit
  // Formats in RGB order
@@ -27,43 +21,15 @@ TBitMapDataFormat = (
  // Qt Standard format (see lcl/interfaces/qt/qtproc.pp FillStandardDescription)
  bmdf_BPP32_B8G8R8A8_R
  );
-
-TRGB = packed record
-   rgbRed  : BYTE;
-   rgbGreen: BYTE;
-   rgbBlue : BYTE;
-end;
-PRGB = ^TRGB;
-
-TRGBA = packed record
-   rgbaRed  : BYTE;
-   rgbaGreen: BYTE;
-   rgbaBlue : BYTE;
-   rgbaAlpha : BYTE;
-end;
+TRGB  = packed record rgbRed,rgbGreen,rgbBlue: BYTE; end;
+PRGB  = ^TRGB;
+TRGBA = packed record rgbaRed,rgbaGreen,rgbaBlue,rgbaAlpha : BYTE; end;
 PRGBA = ^TRGBA;
-
-TARGB = packed record
-   argbAlpha : BYTE;
-   argbRed  : BYTE;
-   argbGreen: BYTE;
-   argbBlue : BYTE;
-end;
+TARGB = packed record argbAlpha,argbRed,argbGreen,argbBlue : BYTE; end;
 PARGB = ^TARGB;
-
-TBGR = packed record
-   bgrBlue : BYTE;
-   bgrGreen: BYTE;
-   bgrRed  : BYTE;
-end;
-PBGR = ^TBGR;
-
-TBGRA = packed record
-   bgraBlue : BYTE;
-   bgraGreen: BYTE;
-   bgraRed  : BYTE;
-   bgraAlpha : BYTE;
-end;
+TBGR  = packed record bgrBlue,bgrGreen,bgrRed: BYTE; end;
+PBGR  = ^TBGR;
+TBGRA = packed record bgraBlue,bgraGreen,bgraRed,bgraAlpha : BYTE; end;
 PBGRA = ^TBGRA;
 
 TGetPixelProc = procedure(P: pointer; out R,G,B,A: byte) of object;
@@ -164,26 +130,22 @@ begin
   FBitMapDataFormat:=bmdf_BPP24_B8G8R8; //default Windows
   Desc:=ABitmap.RawImage.Description;
   FBytesPerPixel:=Desc.BitsPerPixel div 8;
-
-  With Desc do
-  begin
-    if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
-      and (Depth = 16) // used bits per pixel
-      and (BitOrder = riboBitsInOrder)
-      and (ByteOrder = riboLSBFirst)
-      and (BitsPerPixel = 16) // bits per pixel. can be greater than Depth.
-      and (RedPrec = 5) // red precision. bits for red
-      and (RedShift = 0)
-      and (GreenPrec = 6)
-      and (GreenShift = 5) // bitshift. Direction from least to most significant
-      and (BluePrec = 5)
+  With Desc do begin
+    if (Format=ricfRGBA) and (PaletteColorCount=0)
+      and (Depth=16)              // used bits per pixel
+      and (BitOrder=riboBitsInOrder)
+      and (ByteOrder=riboLSBFirst)
+      and (BitsPerPixel=16)       // bits per pixel. can be greater than Depth.
+      and (RedPrec=5)             // red precision. bits for red
+      and (RedShift=0)
+      and (GreenPrec=6)
+      and (GreenShift=5)  // bitshift. Direction from least to most significant
+      and (BluePrec=5)
       and (BlueShift=11)
       and (AlphaPrec=0)
       and (MaskBitsPerPixel=0)
     then FBitMapDataFormat:=bmdf_BPP16_R5G6B5
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    else if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 16) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = riboLSBFirst)
@@ -214,8 +176,7 @@ begin
       and (AlphaShift=0)
       and (MaskBitsPerPixel=0)
     then FBitMapDataFormat:=bmdf_BPP24_B8G8R8
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    else if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = riboLSBFirst)
@@ -229,8 +190,7 @@ begin
       and (AlphaPrec=0)
       and (MaskBitsPerPixel=0)
     then FBitMapDataFormat:=bmdf_BPP24_R8G8B8
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    else if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboReversedBits)
       and (ByteOrder = riboLSBFirst)
@@ -244,8 +204,7 @@ begin
       and (AlphaPrec=0)
       //and (MaskBitsPerPixel=0)
     then FBitMapDataFormat:=bmdf_BPP24_B8G8R8      // not sure what reverce bit order means here
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    else if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = riboLSBFirst)
@@ -259,8 +218,7 @@ begin
       and (AlphaPrec=0)
       //and (MaskBitsPerPixel=0)
     then FBitMapDataFormat:=bmdf_BPP32_R8G8B8
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    else if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboReversedBits)
       and (ByteOrder = riboLSBFirst)
@@ -274,8 +232,7 @@ begin
       and (AlphaPrec=0)
       //and (MaskBitsPerPixel=0)
     then FBitMapDataFormat:=bmdf_BPP32_B8G8R8      // not sure what reverce bit order means here
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    else if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = DefaultByteOrder)

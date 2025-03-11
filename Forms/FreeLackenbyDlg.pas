@@ -1,28 +1,16 @@
 
 
 unit FreeLackenbyDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
+{$MODE Delphi}
 
 interface
-
 uses
-  SysUtils,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
-  FreeTypes,
-  FreeGeometry,
-  FreeShipUnit, FreeLanguageSupport,
-  ExtCtrls,
-  Spin,
-  CheckLst;
+  SysUtils,  Classes,
+  Graphics,  Controls,
+  CheckLst,  Forms,
+  Dialogs,   Buttons,
+  StdCtrls,  ExtCtrls,
+  Spin,FreeTypes,FreeGeometry,FreeShipUnit,FreeLanguageSupport;
 
 const
   NStations = 40;
@@ -30,70 +18,45 @@ const
   MaxDisplError = 1e-4;
 
 type
-  TSimpsonData = record
-    Area: TFloatType;
-    Distance: TFloatType;
-    SF: TFloatType;
-  end;
-
+  TSimpsonData=record Area,Distance,SF: TFloatType; end;
   TBodyProp = record
-    Displacement: TFloatType;
-    LCB: TFloatType;
-    Cp: TFloatType;
-    Length: TFloatType;
-    k, p, z: TFloatType;
-    A, B, C, dCp, dp: TFloatType;
+    Displacement,LCB,Cp,Length, k,p,z, A,B,C,dCp,dp: TFloatType;
   end;
 
-  { TFreeLackenbyDialog }
 
-  TFreeLackenbyDialog = class(TForm)
+
+  TFreeLackenbyDialog = class(TForm)                    { TFreeLackenbyDialog }
     CheckBox1: TCheckBox;
-    DisplacementDiff: TFloatSpinEdit;
-    BlockCoeffDiff: TFloatSpinEdit;
-    PrismCoeffDiff: TFloatSpinEdit;
-    LongCoBDiff: TFloatSpinEdit;
-    DisplacementCurrent: TFloatSpinEdit;
-    BlockCoeffCurrent: TFloatSpinEdit;
-    PrismCoeffCurrent: TFloatSpinEdit;
-    LongCoBCurrent: TFloatSpinEdit;
-    DisplacementNew: TFloatSpinEdit;
-    BlockCoeffNew: TFloatSpinEdit;
-    PrismCoeffNew: TFloatSpinEdit;
+    DisplacementDiff,
+    BlockCoeffDiff,
+    PrismCoeffDiff,
+    LongCoBDiff,
+    DisplacementCurrent,
+    BlockCoeffCurrent,
+    PrismCoeffCurrent,
+    LongCoBCurrent,
+    DisplacementNew,
+    BlockCoeffNew,
+    PrismCoeffNew,
     LongCoBNew: TFloatSpinEdit;
     IterationBox: TSpinEdit;
-    Label1: TLabel;
-    Label10: TLabel;
-    Label11: TLabel;
-    Label12: TLabel;
-    Label13: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Label16: TLabel;
-    Label17: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    Panel2: TPanel;
+    Label1,Label2,Label3,Label4,Label5,Label6,Label7,Label8,Label9,
+    Label10,Label11,Label12,Label13,Label14,Label15,Label16,Label17: TLabel;
     Panel1: TPanel;
-    Button1: TSpeedButton;
+    Panel2: TPanel;
     Panel3: TPanel;
+    Panel4: TPanel;
+    Panel5: TPanel;
     Panel6: TPanel;
     Panel7: TPanel;
+    Button1: TSpeedButton;
     Viewport: TFreeViewport;
     SpeedButton1: TSpeedButton;
     BitBtn2: TSpeedButton;
     Splitter2: TSplitter;
-    Panel4: TPanel;
     Splitter1: TSplitter;
     LayerBox: TCheckListBox;
     TopView: TFreeViewport;
-    Panel5: TPanel;
     _Label12: TLabel;
     _Label14: TLabel;
     _Label16: TLabel;
@@ -105,11 +68,9 @@ type
     procedure Input1AfterSetValue(Sender: TObject);
     procedure Input2AfterSetValue(Sender: TObject);
     procedure Input3AfterSetValue(Sender: TObject);
-    procedure ViewportRequestExtents(Sender: TObject;
-      var Min, Max: T3DVector);
+    procedure ViewportRequestExtents(Sender: TObject; var Min, Max: T3DVector);
     procedure ViewportRedraw(Sender: TObject);
-    procedure TopViewRequestExtents(Sender: TObject;
-      var Min, Max: T3DVector);
+    procedure TopViewRequestExtents(Sender: TObject; var Min, Max: T3DVector);
     procedure TopViewRedraw(Sender: TObject);
   private   { Private declarations }
     FFreeship: TFreeship;
@@ -136,20 +97,17 @@ type
     procedure createViewport();
     procedure createTopView();
   public    { Public declarations }
-    function Execute(Freeship: TFreeship;
-      var Modified: boolean): boolean;
-    procedure Transform(NewDispl: TFloatType;
-      MaxIterations: integer; UpdateWindows: boolean; var Succeeded: boolean);
+    function Execute(Freeship: TFreeship; var Modified: boolean): boolean;
+    procedure Transform( NewDispl: TFloatType;
+      MaxIterations: integer; UpdateWindows: boolean; var Succeeded: boolean );
   end;
 
 var
   FreeLackenbyDialog: TFreeLackenbyDialog;
 
 implementation
-
 uses Math;
-
-  {$R *.lfm}
+{$R *.lfm}
 
 procedure TFreeLackenbyDialog.CalulateHydrostaticProperties(Wlplane: T3DPlane;
   MainArea: TFloatType; Stations: TFasterListTFreeIntersection;
@@ -166,14 +124,12 @@ begin
   N:=Stations.Count;
   Setlength(SimpsonData, N);
   Fillchar(prop, SizeOf(Prop), 0);
-  for I:=1 to length(SimpsonData) do
-  begin
+  for I:=1 to length(SimpsonData) do begin
     Simpsondata[I-1].Area:=0.0;
     Simpsondata[I-1].SF:=0.0;
     Simpsondata[I-1].Distance:=0.0;
   end;
-  for I:=1 to N do
-  begin
+  for I:=1 to N do begin
     Station:=Stations[I-1];
     Station.Rebuild;
     Station.CalculateArea(Wlplane, Area, COG, Mom);
@@ -182,8 +138,7 @@ begin
   end;
 
   I:=0;
-  while I < N-1 do
-  begin
+  while I < N-1 do begin
     Dist:=SimpsonData[I+2].Distance-SimpsonData[I].Distance;
     if abs(Dist) > 1e-6 then begin
       fie:=(SimpsonData[I+1].Distance-SimpsonData[I].Distance) / Dist;
@@ -203,10 +158,9 @@ begin
   for I:=1 to N do begin
     Prod:=SimpsonData[I-1].SF * SimpsonData[I-1].Area;
     if SAC <> nil then
-      if FMainArea <> 0 then
-        SAC.Add(SetPoint(SimpsonData[I-1].Distance, y * SimpsonData[I-1].Area / FMainArea, 0.0))
-      else
-        SAC.Add(SetPoint(SimpsonData[I-1].Distance, y * SimpsonData[I-1].Area, 0.0));
+    if FMainArea <> 0
+    then SAC.Add(Vector(SimpsonData[I-1].Distance,y*SimpsonData[I-1].Area/FMainArea))
+    else SAC.Add(Vector(SimpsonData[I-1].Distance,y*SimpsonData[I-1].Area));
     Prop.Displacement:=Prop.Displacement+Prod;
     Prop.LCB:=prop.LCB+Prod * SimpsonData[I-1].Distance;
     Prop.k:=Prop.k+Prod * SimpsonData[I-1].Distance * SimpsonData[I-1].Distance;
@@ -222,10 +176,9 @@ begin
   end;
 
   Prop.Length:=SimpsonData[N-1].Distance-SimpsonData[0].Distance;
-  if MainArea <> 0 then
-    Prop.Cp:=Prop.Displacement / (Prop.Length * Mainarea)
-  else
-    Prop.Cp:=0.0;
+  if MainArea <> 0
+     then Prop.Cp:=Prop.Displacement/(Prop.Length*Mainarea)
+     else Prop.Cp:=0.0;
   Stations.Capacity:=Stations.Capacity;
 end;
 
@@ -241,25 +194,21 @@ end;
 procedure TFreeLackenbyDialog.UpdateDifferences;
 begin
   DisplacementDiff.Value:=DisplacementNew.Value-DisplacementCurrent.Value;
-  if abs(DisplacementDiff.Value) > 1e-3 then
-    DisplacementDiff.Font.Color:=clred
-  else
-    DisplacementDiff.Font.Color:=clGreen;
+  if abs(DisplacementDiff.Value) > 1e-3
+     then DisplacementDiff.Font.Color:=clred
+     else DisplacementDiff.Font.Color:=clGreen;
   BlockCoeffDiff.Value:=BlockCoeffNew.Value-BlockCoeffCurrent.Value;
-  if abs(BlockCoeffDiff.Value) > 1e-4 then
-    BlockCoeffDiff.Font.Color:=clred
-  else
-    BlockCoeffDiff.Font.Color:=clGreen;
+  if abs(BlockCoeffDiff.Value) > 1e-4
+     then BlockCoeffDiff.Font.Color:=clred
+     else BlockCoeffDiff.Font.Color:=clGreen;
   PrismCoeffDiff.Value:=PrismCoeffNew.Value-PrismCoeffCurrent.Value;
-  if abs(PrismCoeffDiff.Value) > 1e-4 then
-    PrismCoeffDiff.Font.Color:=clred
-  else
-    PrismCoeffDiff.Font.Color:=clGreen;
+  if abs(PrismCoeffDiff.Value) > 1e-4
+     then PrismCoeffDiff.Font.Color:=clred
+     else PrismCoeffDiff.Font.Color:=clGreen;
   LongCoBDiff.Value:=LongCoBNew.Value-LongCoBCurrent.Value;
-  if abs(LongCoBDiff.Value) > 1e-3 then
-    LongCoBDiff.Font.Color:=clred
-  else
-    LongCoBDiff.Font.Color:=clGreen;
+  if abs(LongCoBDiff.Value) > 1e-3
+     then LongCoBDiff.Font.Color:=clred
+     else LongCoBDiff.Font.Color:=clGreen;
   DisplacementDiff.DecimalPlaces:=NumberOfdecimals(DisplacementDiff.Value);
 end;
 
@@ -269,29 +218,25 @@ var
   ForeProperties: TBodyProp;
   TotalProp: TBodyProp;
   MaxDispl: TFloatType;
-
 begin
   Fillchar(AftProperties, SizeOf(AftProperties), 0);
-  if SAC <> nil then
-    SAC.Clear;
+  if SAC <> nil then SAC.Clear;
   ForeProperties:=Aftproperties;
   TotalProp:=Aftproperties;
 
-  CalulateHydrostaticProperties(FWaterlinePlane, FMainArea, FAftShip,
-    AftProperties, SAC);
-  CalulateHydrostaticProperties(FWaterlinePlane, FMainArea, FForeShip,
-    ForeProperties, SAC);
+  CalulateHydrostaticProperties
+    ( FWaterlinePlane, FMainArea, FAftShip, AftProperties, SAC );
+  CalulateHydrostaticProperties
+    ( FWaterlinePlane, FMainArea, FForeShip, ForeProperties, SAC );
 
   TotalProp.Displacement:=AftProperties.Displacement+ForeProperties.Displacement;
-  if TotalProp.Displacement > 0 then
-  begin
-    TotalProp.LCB:=(AftProperties.Displacement * AftProperties.LCB +
-      ForeProperties.Displacement * ForeProperties.LCB) / TotalProp.Displacement;
+  if TotalProp.Displacement > 0 then begin
+    TotalProp.LCB:=(AftProperties.Displacement*AftProperties.LCB +
+      ForeProperties.Displacement*ForeProperties.LCB)/TotalProp.Displacement;
     TotalProp.Length:=AftProperties.Length+ForeProperties.Length;
-    if Totalprop.Length * FMainArea <> 0 then
-      TotalProp.Cp:=TotalProp.Displacement / (Totalprop.Length * FMainArea)
-    else
-      TotalProp.Cp:=0.0;
+    if Totalprop.Length * FMainArea <> 0
+       then TotalProp.Cp:=TotalProp.Displacement/(Totalprop.Length*FMainArea)
+       else TotalProp.Cp:=0.0;
   end;
   with FFreeship.ProjectSettings do
     DisplacementCurrent.Value:=VolumeToDisplacement(Totalprop.Displacement,
@@ -320,20 +265,15 @@ var
   Station: TFreeIntersection;
   Spline: TFreeSpline;
 begin
-  for I:=1 to Dest.Count do begin
-    Spline:=Dest[I-1];
-    FreeAndNil(Spline);
-  end;
+  for I:=1 to Dest.Count do begin Spline:=Dest[I-1]; FreeAndNil(Spline); end;
   Dest.Clear;
-
   for I:=1 to FFreeship.NumberofStations do begin
     Station:=FFreeship.Station[I-1];
     if not Station.Built then Station.Rebuild;
     for J:=1 to Station.Count do begin
       Spline:=TFreeSpline.Create(FFreeship.Surface);
       Spline.Assign(Station.Items[J-1]);
-      if Spline.Max.X <= FFreeship.ProjectSettings.ProjectSplitSectionLocation then
-      begin
+      if Spline.Max.X<=FFreeship.ProjectSettings.ProjectSplitSectionLocation then begin
         for K:=1 to Spline.NumberOfPoints do begin
           P:=Spline.Point[K-1];
           P.Y:=-P.Y;
@@ -352,8 +292,7 @@ var
   Spline: TFreeSpline;
   Plane: T3DPlane;
 begin
-  for I:=1 to Dest.Count do
-  begin
+  for I:=1 to Dest.Count do begin
     Spline:=Dest[I-1];
     FreeAndNil(Spline);
   end;
@@ -380,8 +319,7 @@ var
   Point: TFreeSubdivisionControlPoint;
   P3D: T3DVector;
   MainLoc: TFloatType;
-  Iteration: integer;
-  I, J, K, Index: integer;
+  Iteration, I, J, K, Index: integer;
   Face: TFreeSubdivisionFace;
   LockedPoints: TFasterListTFreeSubdivisionControlPoint;
   AftProperties: TBodyprop;
@@ -391,8 +329,7 @@ var
   dz, x, dx: TFloatType;
   DisplError: TFloatType;
   LCBError: TFloatType;
-  Proceed: boolean;
-  Modified: boolean;
+  Proceed, Modified: boolean;
   Undo: TFreeUndoObject;
   PrevCursor: TCursor;
   ConvFactor: double;
@@ -400,7 +337,7 @@ var
   Layer: TFreeSubdivisionLayer;
   TmpLayerInfo: array of boolean;
 
-  procedure InitializeData(var Prop: TBodyProp);
+  procedure InitializeData( var Prop: TBodyProp );
   begin
     Prop.A:=Prop.Cp * (1-2 * Prop.LCB)-Prop.p * (1-Prop.Cp);
     Prop.B:=(Prop.Cp * (2 * Prop.LCB-3 * Prop.k * Prop.k-Prop.p * (1-2 * Prop.LCB)) / Prop.A);
@@ -602,11 +539,9 @@ end;
 
 procedure TFreeLackenbyDialog.createViewport();
 begin
-  if assigned(Viewport) then
-    exit;
-  Viewport:=TFreeViewport.Create(Self);
-  with Viewport do
-  begin
+  if assigned(Viewport) then exit;
+  Viewport:=TFreeViewport.Create( Self );
+  with Viewport do begin
     Parent:=Panel2;
     Left:=414;
     Height:=278;
@@ -625,7 +560,7 @@ begin
     BackgroundImage.Visible:=True;
     BorderStyle:=bsSingle;
     CameraType:=ftStandard;
-    Color:=clWhite; // clBackground;
+    Color:=clWhite; //clBackground;
     DoubleBuffer:=True;
     Elevation:=0;
     Margin:=0;
@@ -840,18 +775,15 @@ procedure TFreeLackenbyDialog.Input1AfterSetValue(Sender: TObject);
 var
   NewDispl: TFloatType;
 begin
-  if DisplacementNew.Value > 0 then
-  begin
+  if DisplacementNew.Value > 0 then begin
     // New displacement set, update otherboxes
     with FFreeship.ProjectSettings do
       NewDispl:=DisplacementToVolume(DisplacementNew.Value, ProjectWaterDensity,
         ProjectAppendageCoefficient, ProjectUnits);
-    ////      BlockCoeffNew.Value:=NewDispl/((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
+    //// BlockCoeffNew.Value:=NewDispl/((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
     BlockCoeffNew.Value:=NewDispl / ((FMax.X-FMin.X) * (FMax.Y-FMin.Y) * FMax.Z);
     PrismCoeffNew.Value:=NewDispl / (FMainArea * (FMax.X-FMin.X));
-  end
-  else
-  begin
+  end else begin
     BlockCoeffNew.Value:=0;
     PrismCoeffNew.Value:=0;
   end;
@@ -859,10 +791,8 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.Input2AfterSetValue(Sender: TObject);
-var
-  NewDispl: TFloatType;
-begin
-  ////   NewDispl:=BlockCoeffNew.Value*((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
+  var NewDispl: TFloatType;
+begin //// NewDispl:=BlockCoeffNew.Value*((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
   NewDispl:=BlockCoeffNew.Value * ((FMax.X-FMin.X) * (FMax.Y-FMin.Y) * FMax.Z);
   DisplacementNew.Value:=VolumeToDisplacement(
     NewDispl, FFreeship.ProjectSettings.ProjectWaterDensity,
@@ -936,8 +866,8 @@ begin
     end;
   end;
   if First then begin
-    Min:=SetPoint(-1, -1, -1);
-    Max:=SetPoint(1, 1, 1);
+    Min:=Vector(-1, -1, -1);
+    Max:=Vector(1, 1, 1);
   end;
 end;
 
@@ -983,9 +913,9 @@ begin
     end;
     Viewport.PenColor:=clBlack;
     Viewport.PenStyle:=psSolid;
-    Pt:=Viewport.Project(SetPoint(Viewport.Min3D.X, 0.0, Viewport.Min3D.Z));
+    Pt:=Viewport.Project(Vector(Viewport.Min3D.X, 0.0, Viewport.Min3D.Z));
     Viewport.MoveTo(Pt.X, Pt.Y);
-    Pt:=Viewport.Project(SetPoint(Viewport.Min3D.X, 0.0, Viewport.Max3D.Z));
+    Pt:=Viewport.Project(Vector(Viewport.Min3D.X, 0.0, Viewport.Max3D.Z));
     Viewport.LineTo(Pt.X, Pt.Y);
   end;
 end;
@@ -1055,8 +985,8 @@ begin
   end
   else
   begin
-    Min:=SetPoint(-1, -1, -1);
-    Max:=SetPoint(1, 1, 1);
+    Min:=Vector(-1, -1, -1);
+    Max:=Vector(1, 1, 1);
   end;
 end;
 
@@ -1069,11 +999,8 @@ var
   Face: TFreeSubdivisionControlface;
 begin
   if FFreeship <> nil then
-    if FOriginalSectionalAreaCurve.NumberOfPoints > 0 then
-    begin
-      // Skip translation
+    if FOriginalSectionalAreaCurve.NumberOfPoints > 0 then begin
       TopView.FontName:='Arial';
-      // End skip translation
       TopView.FontSize:=7;
       TopView.FontColor:=clBlack;
       TopView.BrushStyle:=bsClear;
@@ -1092,10 +1019,10 @@ begin
           end;
       end;
       Topview.PenStyle:=psDot;
-      Pt:=Topview.Project(SetPoint(FFreeship.ProjectSettings.ProjectSplitSectionLocation,
+      Pt:=Topview.Project(Vector(FFreeship.ProjectSettings.ProjectSplitSectionLocation,
         Topview.Min3D.Y, 0));
       Topview.MoveTo(Pt.X, Pt.Y);
-      Pt:=Topview.Project(SetPoint(FFreeship.ProjectSettings.ProjectSplitSectionLocation,
+      Pt:=Topview.Project(Vector(FFreeship.ProjectSettings.ProjectSplitSectionLocation,
         Topview.Max3D.Y, 0));
       Topview.LineTo(Pt.X, Pt.Y);
 
@@ -1139,9 +1066,9 @@ begin
       end;
       TopView.PenColor:=clBlack;
       TopView.PenStyle:=psSolid;
-      Pt:=TopView.Project(SetPoint(TopView.Min3D.X, 0.0, 0.0));
+      Pt:=TopView.Project(Vector(TopView.Min3D.X));
       TopView.MoveTo(Pt.X, Pt.Y);
-      Pt:=TopView.Project(SetPoint(TopView.Max3D.X, 0.0, 0.0));
+      Pt:=TopView.Project(Vector(TopView.Max3D.X));
       TopView.LineTo(Pt.X, Pt.Y);
     end;
 end;

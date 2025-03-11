@@ -133,9 +133,9 @@ begin Result:=-1;
   for I:=0 to FCount-1 do if FList[I]=Item then begin Result:=I; break; end;
 end;
 
-procedure TFasterList.Insert( Index: integer; Item: TItemType );
+procedure TFasterList.Insert( Index: Integer; Item: TItemType );
 begin
-  if Index<0 then Index:=0;                                          ///***???
+  if Index<0 then Index:=0 else
   if Index>=FCount then Index:=FCount-1;
   if FCount>=FCapacity then FSetCapacity( FCapacity+256  );           // FGrow;
   if Index<FCount then begin

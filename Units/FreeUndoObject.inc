@@ -84,9 +84,9 @@ begin
 //try
     Owner.LoadProject( FUndoData );
     Owner.FFileChanged:=FFileChanged;
-    Owner.FFilename   :=FFilename;
-    Owner.FEditMode   :=FEditMode;
-    Owner.FFilenameSet:=FFilenameSet;
+    Owner.FFilename  :=FFilename;
+    Owner.FEditMode  :=FEditMode;
+    Owner.FilenameSet:=FFilenameSet;
 //finally
     Owner.Redraw;
 //end;

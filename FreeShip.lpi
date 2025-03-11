@@ -613,7 +613,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="FreeShip"/>
+      <Filename Value="../FreeShip"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="Units;Forms;$(ProjOutDir)"/>

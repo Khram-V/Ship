@@ -82,7 +82,7 @@ begin
   I:=2;
   FTotalLength:=0;
   while I <= FNoPoints do begin
-    Len:={Sqrt}(DistPP3D(FPoints[I-2], FPoints[I-1]));
+    Len:=Distance3D(FPoints[I-2],FPoints[I-1]);
     FTotalLength:=FTotalLength+Len;
     Inc(I);
   end;
@@ -96,7 +96,7 @@ begin
     end else begin
       FParameters[0]:=0.0;
       for I:=2 to FNoPoints-1 do begin
-        Len:=Len+{Sqrt}(DistPP3D(FPoints[I-2], FPoints[I-1]));
+        Len:=Len+Distance3D( FPoints[I-2],FPoints[I-1] );
         FParameters[I-1]:=Len / FTotalLength;
       end;
       FParameters[FNoPoints-1]:=1.0;
@@ -343,7 +343,7 @@ begin
   for I:=0 to Fragments do begin
     T:=T1+(I/Fragments)*(T2-T1);
     P2:=Value(T);
-    if I>0 then Result:=Result+Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z));
+    if I>0 then Result:=Result+Distance3D( P2,P1 ); // Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z));
     P1:=P2;
   end;
 end;
@@ -413,8 +413,7 @@ begin
   CrossProduct.X:= (Acc.Y * (Vel1.Z)-(Acc.Z) * Vel1.Y);
   CrossProduct.Y:=-(Acc.X * (Vel1.Z)-(Acc.Z) * Vel1.X);
   CrossProduct.Z:= (Acc.X * Vel1.Y-Acc.Y * Vel1.X);
-  L:=Sqrt((CrossProduct.X * CrossProduct.X)+(CrossProduct.Y * CrossProduct.Y) +
-    (CrossProduct.Z * CrossProduct.Z));
+  L:=Abs( CrossProduct );            // Sqrt((CrossProduct.X*CrossProduct.X)+(CrossProduct.Y*CrossProduct.Y)+(CrossProduct.Z*CrossProduct.Z));
   if L = 0 then L:=0.00001;
   VdotA:=(Vel1.X * Acc.X)+(Vel1.Y * Acc.Y)+(Vel1.Z * Acc.Z);
   VdotV:=(Vel1.X * Vel1.X)+(Vel1.Y * Vel1.Y)+(Vel1.Z * Vel1.Z);

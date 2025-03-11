@@ -15,22 +15,14 @@ uses
   FreeLanguageSupport;
 
 const // Cursors
-{  crCOLORPICKER_32 = 1;
-   crCOLORPICKER_48 = 2;
-   crROTATE_32 = 3;
-   crROTATE_48 = 4;
-   crSETLINE_32 = 5;
-   crSETLINE_48 = 6;
-   crSETORIGIN_32 = 7;
-   crSETORIGIN_48 = 8;
-   crSETPOINT_32 = 9;
-   crSETPOINT_48 = 10;
-   crSETSCALE_32 = 11;
-   crSETSCALE_48 = 12;
-   crSETSPLINE_32 = 13;
-   crSETSPLINE_48 = 14;
-   crSMALLCROSS_32 = 15;
-   crSMALLCROSS_48 = 16;
+{  crCOLORPICKER_32 = 1;          crCOLORPICKER_48 = 2;
+   crROTATE_32 = 3;               crROTATE_48 = 4;
+   crSETLINE_32 = 5;              crSETLINE_48 = 6;
+   crSETORIGIN_32 = 7;            crSETORIGIN_48 = 8;
+   crSETPOINT_32 = 9;             crSETPOINT_48 = 10;
+   crSETSCALE_32 = 11;            crSETSCALE_48 = 12;
+   crSETSPLINE_32 = 13;           crSETSPLINE_48 = 14;
+   crSMALLCROSS_32 = 15;          crSMALLCROSS_48 = 16;
 }
 // Currently using 32x32 cursors
    crRotate = 1; // Rotation cursor
@@ -134,8 +126,7 @@ type
 
   TFasterListTFreeSubdivisionLayer = TFasterList<TFreeSubdivisionLayer>;
   TFasterListTFreeDevelopedPatch = TFasterList<TFreeDevelopedPatch>;
-  {---------------------------------------------------------------------------------------------------}
-
+  {---------------------------------------------------------------------------}
   TFreeFaceGrid = record
     Faces: array of array of
     TFreeSubdivisionControlFace;
@@ -151,23 +142,21 @@ type
   TFreeCoordinateArray = array of T3DVector;
   TFreeCoordinateGrid = array of array of T3DVector;
 
-  TFreeIntersectionData = record // intersections of a spline with a plane
+  TFreeIntersectionData = record      // intersections of a spline with a plane
     NumberOfIntersections: integer;
     Points: TFreeCoordinateArray;
     Parameters: TFloatArray;
   end;
 
-  TUnrolledPoint =
-    record // points with extra information, used for unrolling plates
+  TUnrolledPoint=record // points with extra information, used for unrolling plates
     Coordinate: T2DCoordinate;
   end;
-  TOnRequestExtentsEvent = procedure(Sender: TObject;
-    var Min, Max: T3DVector) of object;
-  // Event from TFreeviewport, which is raised when the viewport initializes and needs the
-  // bounding box of the min/max coordinates of the 3D model
-  TChangeActiveLayerEvent = procedure(Sender: TObject;
-    Layer: TFreeSubdivisionLayer) of object;
-  // Event raised when the active lyers has been changed
+
+  TOnRequestExtentsEvent = procedure( Sender: TObject; var Min,Max: T3DVector ) of object;
+     // Event from TFreeviewport, which is raised when the viewport initializes
+     // and needs the bounding box of the min/max coordinates of the 3D model
+  TChangeActiveLayerEvent = procedure(Sender: TObject; Layer: TFreeSubdivisionLayer) of object;
+                         // Event raised when the active lyers has been changed
 
   TAlphaBlendData = record
     R, G, B: byte;
@@ -176,13 +165,12 @@ type
   end;
 
   TAlphaBlendPixelArray = record
-    Number: byte;
-    Capacity: byte;
+    Number,Capacity: byte;
     Data: array of TAlphaBlendData;
   end;
 
   TAlphaBlendArray = record
-    First, Last: integer;
+    First,Last: integer;
     Pixels: array of TAlphaBlendPixelArray;
   end;
 
@@ -207,7 +195,6 @@ type
     procedure Initialize(aViewport: TFreeViewport);
     procedure Draw;
   end;
-
   {--------------------------------------------------------}
   {                                           TFreeZBuffer }
   { Z-buffer class used in the shading algorithm           }
@@ -228,17 +215,12 @@ type
   {----------------------------------------------------------------}
   TFreeBackgroundImage = class(TPersistent)
   private
-//  FOwner: TFreeViewport;
     FOrigin: TPoint;
-    FScale: TFloatType;
     FTransparent: boolean;
     FTransparentColor: TColor;
     FVisible: boolean;
-    FShowInView: TFreeViewType;
-    FQuality: byte;
     FAlpha: byte;
     FTolerance: byte;
-//  FBitmap: TBitmap;
     FCachedBmp: TBitmap;
     procedure FSetAlpha(val: byte);
     procedure FSetOrigin(val: TPoint);
@@ -248,10 +230,13 @@ type
     procedure FSetVisible(val: boolean);
   public
     Owner: TFreeViewport;
+    ShowInView: TFreeViewType;
     Bitmap: TBitmap;
-    procedure AssignData(Image: TGraphic;
-      View: TFreeViewType; Origin: TPoint; Scale: TFloatType; Transp: boolean;
-      TranspCol: TColor; Alpha, Quality, Tolerance: byte; Quiet: boolean);
+    Quality: byte;
+    Scale: TFloatType;
+    procedure AssignData( I:TGraphic; V:TFreeViewType; O:TPoint; S:TFloatType;
+                          T:boolean; C:TColor; A,Q,L:byte; Z:boolean );
+    { Image,View,Origin,Scale,Transp,TranspCol,Alpha,Quality,Tolerance,Quiet }
     procedure Clear;
     constructor Create(Viewport: TFreeViewport);
     destructor Destroy; override;
@@ -259,30 +244,36 @@ type
     procedure Draw;
     function ImageCoordinate(X, Y: integer): TPoint;
     function TargetRect: TRect;
-    procedure Open(InitialDir: string);
+    procedure Open( InitialDir: AnsiString );
     procedure Save;
     procedure SetBlendingValue;
     procedure SetToleranceValue;
     property Origin: TPoint read FOrigin write FSetOrigin;
   published
     property Alpha: byte read FAlpha write FSetAlpha;
-//  property Bitmap: TBitmap read FBitmap write FBitmap;
-//  property Owner: TFreeViewport read FOwner write FOwner;
-    property Quality: byte read FQuality write FQuality;
-    property Scale: TFloatType read FScale write FScale;
-    property ShowInView: TFreeViewType read FShowInView write FShowInView;
     property Tolerance: byte read FTolerance write FSetTolerance;
     property Transparent: boolean read FTransparent write FSetTransparent;
     property TransparentColor: TColor read FTransparentColor write FSetTransparentColor;
     property Visible: boolean read FVisible write FSetVisible;
   end;
-
+{ FOwner: TFreeViewport;
+  FScale: TFloatType;
+  FShowInView: TFreeViewType;
+  FQuality: byte;
+  FBitmap: TBitmap;
+  procedure AssignData( var Data: TFreeBackgroundImageData );
+  property Bitmap: TBitmap read FBitmap write FBitmap;
+  property Owner: TFreeViewport read FOwner write FOwner;
+  property Quality: byte read FQuality write FQuality;
+  property Scale: TFloatType read FScale write FScale;
+  property ShowInView: TFreeViewType read FShowInView write FShowInView;
+}
   {---------------------------------------------------------}
   {                                           TFreeViewport }
   { This is a 3D drawingcanvas used for viewing and drawing }
   { It also is the userinterface for editing the hullform.  }
   {---------------------------------------------------------}
-  TFreeViewport = class(TCustomPanel)
+  TFreeViewport = class( TCustomPanel )
   private
     FAngle: TFloatType;
     FDistance: TFloatType;       // The distance from the model to the camera, determined by the field of view
@@ -329,8 +320,6 @@ type
     FZBuffer: TFreeZBuffer;
     FAlphaBuffer: TFreeAlphaBuffer;
     FLight: TFreeLight;
-//  FHorScrollbar: TScrollBar;
-//  FVertScrollbar: TScrollBar;
     FSelectionFrameRect: TRect;
     FSelectionFrameActive: boolean;
     FUpdating: boolean;
@@ -338,8 +327,6 @@ type
     FLastResizeHeight:integer;
     FLastResizeClientWidth:integer;
     FLastResizeClientHeight:integer;
-//  FOriginalVertScrollbarChange:TNotifyEvent;
-//  FOriginalHorScrollbarChange:TNotifyEvent;
 
     function FGetBrushColor: TColor;
     function FGetBrushStyle: TBrushStyle;
@@ -362,8 +349,6 @@ type
     procedure FSetFontName(val: string);
     procedure FSetFontSize(val: integer);
     procedure FSetFontHeight(val: integer);
-//  procedure FSetHorScrollbar(val: TScrollbar);
-//  procedure FSetVertScrollbar(val: TScrollbar);
     procedure FSetMargin(Val: TFloatType);
     procedure FSetPan(Val: TPoint);
     procedure FSetPenColor(Val: TColor);
@@ -375,8 +360,6 @@ type
     procedure SetSelectionFrameActive(Val: boolean);
     procedure FSetViewType(Val: TFreeViewType);
     procedure FSetViewportMode(Val: TFreeViewportMode);
-//  procedure FVertScrollbarChange(Sender: TObject);
-//  procedure FHorScrollbarChange(Sender: TObject);
     procedure FSetZoom(val: TFloatType);
     procedure WMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure WMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
@@ -484,8 +467,6 @@ type
     property DestinationHeight: integer read FDestinationHeight write FDestinationHeight;
     property DoubleBuffer: boolean read FDoubleBuffer write FDoubleBuffer;
     property Elevation: TFloatType read FElevation write FSetElevation;
-//  property HorScrollbar: TScrollBar read FHorScrollbar write FSetHorScrollbar;
-//  property VertScrollbar: TScrollBar read FVertScrollbar write FSetVertScrollbar;
     property Margin: TFloatType read FMargin write FSetMargin;
     property PopupMenu;
     property Visible;
@@ -1638,18 +1619,18 @@ function ConvertDimension(Value: TFloatType; Units: TFreeUnitType): string; // C
 function ConvertCoordinate(Coord: string; OldCoord: TFloatType): TFloatType; // converts a string to a floatingpoint value, possibly using imperial units
 function CrossProduct(U, V: T3DVector): T3DVector;
 function DisplacementToVolume(Displ, Density, AppCoeff: TFloatType;  Units: TFreeUnitType): TFloatType; // Converts a displacement to volume
-function DensityStr(Units: TFreeUnitType): string;                // Returns a string value with the density units
-function DistPP3D(P1, P2: T3DVector): TFloatType;             // Calculates the distance between two points
+function DensityStr(Units: TFreeUnitType): string;  // Returns a string value with the density units
+//function DistPP3D(P1, P2: T3DVector): TFloatType; // Calculates the distance between two points
 function DistanceToLine(P1, P2: TPoint; X, Y: integer; var Parameter: TFloatType): TFloatType;
 function DistancePointToPlane(P: T3DVector; Plane: T3DPlane): TFloatType;
 function DotProduct(U, V: T3DVector): TFloatType;
-function FindDXFColorIndex(Color: TColor): integer;               // find nearest DXF color corresponding to a windows color
+function FindDXFColorIndex(Color: TColor): integer;         // find nearest DXF color corresponding to a windows color
 procedure FillColor(Parameter: TFloatType; var R, G, B: byte);
-function InertiaStr(Units: TFreeUnitType): string;                // Returns a string value with the moment of inertia units
+function InertiaStr(Units: TFreeUnitType): string;          // Returns a string value with the moment of inertia units
 function Interpolate(P1, P2: T3DVector; Param: TFloatType): T3DVector; // perform linear interpolation between two 3D points
 procedure JoinSplineSegments(JoinError: TFloatType; ForceToOneSegment: boolean; List: TFasterListTFreeSpline);// Takes multiple splines and tries to connect them to as few as possible
 function Lines3DIntersect(P1, P2, P3, P4: T3DVector; var Param: double; var Int: T3DVector): boolean;
-function LengthStr(Units: TFreeUnitType): string;                 // Returns a string value with the length units
+function LengthStr(Units: TFreeUnitType): string;           // Returns a string value with the length units
 function MakeLength(Value: TFloatType; Decimals, DesLength: integer): string; overload;
 function MakeLength(Value: Ansistring; DesLength: integer): Ansistring; overload;
 procedure MinMax(P: T3DVector; var Min, Max: T3DVector);
@@ -1657,12 +1638,12 @@ function Midpoint(P1, P2: T3DVector): T3DVector;          // Calculate the mid-p
 function Mid3point(P1, P2, P3: T3DVector): T3DVector;
 function MirrorPlane(P: T3DVector; Plane: T3DPLane): T3DVector; // mirror a point in a plane
 function Normalize(P: T3DVector): T3DVector;
-function NumberOfDecimals(Value: TFloatType): integer;            // Finds out with how many decimals a number should be presented
+function NumberOfDecimals(Value: TFloatType): integer;        // Finds out with how many decimals a number should be presented
 function PlaneIntersectsBox(Min, Max: T3DVector; Plane: T3DPlane): boolean; // Function to determine if a plane intersects a bounding box
 function PlanePointNormal(P, Normal: T3DVector): T3DPlane;    // Calculates the plane with a given normal N through point P
 function PlanePPP(P1, P2, P3: T3DVector): T3DPlane;           // Create a plane defined by three points
 function PointInTriangle(Int, P0, P1, P2: T3DVector):boolean; // This function calculates if a point lies inside a triangle assuming it lies on the plane determined by the triangle
-function PoundsToNewton(InpLbs: TFloatType): TFloatType;          // converts pounds to Newton
+function PoundsToNewton(InpLbs: TFloatType): TFloatType;      // converts pounds to Newton
 function ProjectPointOnLine(P, P1, P2: T3DVector): T3DVector; // Projects point  P on the linesegment through P1 and P2
 function ProjectPointOnPlane(P: T3DVector; Plane: T3DPlane): T3DVector; // Projects a point on to a plane
 // function RandomColor: TColor;                                     // create a random color
@@ -1674,11 +1655,9 @@ function ProjectPointOnPlane(P: T3DVector; Plane: T3DPlane): T3DVector; // Proje
 function RotateAroundPoint(P: T3DVector; Center: T3DVector; sinhx, coshx, sinhy, coshy, sinhz, coshz: TFloatType): T3DVector;
 function RotatePointAroundVector(Point, StartPoint, Endpoint: T3DVector): T3DVector; // Function to rotate a point around a vector
 function RotateVector(P0: T3DVector; sinx, cosx, siny, cosy, sinz, cosz: TFloatType): T3DVector; // Rotates a vector around the origin
-function SetPlane(a, b, c, d: TFloatType): T3DPlane;
-function SetPoint( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
+function SetPlane( a,b,c,d: TFloatType): T3DPlane;
 procedure SortFloatArray(var FloatArray: TFloatArray; var N: integer); // sorts an array with floatingpoint values and removes double entries
-function SquaredDistPP(P1, P2: T3DVector): TFloatType;        // calculates the squared distance between two points
-//function FloatToDec( Value: TFloatType; Maxlength: integer ): string; // Convert a floatingpoint to a string value with a max. number of specified decimals All trailing zeros will be removed
+function SquaredDistPP(P1, P2: T3DVector): TFloatType;    // calculates the squared distance between two points
 function UnifiedNormal(P1, P2, P3: T3DVector): T3DVector; // calculate the normal of a plane defined by points P1,P2,P3 and scale to unit-length
 function UnitVector(P: T3DVector): T3DVector;             // Scale a vector sucht that it's length is 1.0
 function VectorLength(Normal: T3DVector): TFloatType;     // Calculate the length of a vector

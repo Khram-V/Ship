@@ -8,7 +8,6 @@ begin
     FAngle:=Val;
     FCosAngle:=cos( DegToRad( FAngle ) );
     FSinAngle:=sin( DegToRad( FAngle ) );
-//  FHorScrollbarChange( self );
     InitializeViewport( FMin3D,FMax3D );
   end;
 end;
@@ -97,7 +96,6 @@ begin
     FElevation:=Val;
     FCosElevation:=cos(DegToRad(FElevation));
     FSinElevation:=sin(DegToRad(FElevation));
-//  FVertScrollbarChange( self );
     InitializeViewport( FMin3D,FMax3D );
   end;
 end;
@@ -161,44 +159,13 @@ begin
      if FDrawingCanvas.Font.Size<3 then break;
    end; }
 end;
-{
-procedure TFreeViewport.FSetHorScrollbar(val: TScrollbar);
-begin
-  if FHorScrollbar <> nil then FHorScrollbar.OnChange:=nil;
-  FHorScrollbar:=Val;
-  if FHorScrollbar <> nil then begin
-    FOriginalHorScrollbarChange:=val.OnChange;
-    FHorScrollbar.OnChange:=FHorScrollbarChange;
-    FHorScrollbar.Min:=-180;
-    FHorScrollbar.Max:=180;
-    if FHorScrollbar.Position <> round(angle) then
-       FHorScrollbar.Position:=Round(Angle);
-    FHorScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
-  end;
-end;
-procedure TFreeViewport.FSetVertScrollbar(val: TScrollbar);
-begin
-  if FVertScrollbar <> nil then FVertScrollbar.OnChange:=nil;
-  FVertScrollbar:=Val;
-  if FVertScrollbar <> nil then begin
-    FOriginalVertScrollbarChange:=val.OnChange;
-    FVertScrollbar.OnChange:=FVertScrollbarChange;
-    FVertScrollbar.Min:=-180;
-    FVertScrollbar.Max:=180;
-    if FVertScrollbar.Position <> round(Elevation) then
-       FVertScrollbar.Position:=Round(Elevation);
-    FVertScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
-  end;
-end;
-}
+
 procedure TFreeViewport.SetSelectionFrameRect(Rect: TRect);
-begin FSelectionFrameRect:=Rect;
-   if FSelectionFrameActive then refresh;
+begin FSelectionFrameRect:=Rect; if FSelectionFrameActive then refresh;
 end;
 
 procedure TFreeViewport.SetSelectionFrameActive(Val: boolean);
-begin FSelectionFrameActive:=Val;
-   if FSelectionFrameActive then refresh;
+begin FSelectionFrameActive:=Val; if FSelectionFrameActive then refresh;
 end;
 
 procedure TFreeViewport.DrawSelectionFrame;
@@ -244,18 +211,6 @@ begin
       fvPlan:        begin FAngle:=90; FElevation:=90; end;
       fvPerspective: begin FAngle:=20; FElevation:=20; end;
     end;
-{
-    if FHorScrollbar <> nil then begin
-      FHorScrollbar.Position:=round(Angle);
-      FHorScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
-      if FHorScrollbar.Position <> round(angle) then FHorScrollbar.Position:=Round(Angle);
-    end;
-    if FVertScrollbar <> nil then begin
-      FVertScrollbar.Position:=round(Elevation);
-      FVertScrollbar.Visible:=false; // ViewType = fvPerspective; ///+++
-      if FVertScrollbar.Position <> round(Elevation) then FVertScrollbar.Position:=Round(Elevation);
-    end;
-}
     if assigned(FOnRequestBackgroundImage) then FOnRequestBackgroundImage(self);
     if assigned(FOnRequestExtents) then FOnRequestExtents( self,FMin3D,FMax3D );
     InitializeViewport( FMin3D,FMax3D );
@@ -269,22 +224,7 @@ end;
 procedure TFreeViewport.FSetViewportMode(Val: TFreeViewportMode);
 begin if Val <> FViewportMode then begin FViewportmode:=Val; Refresh; end;
 end;
-{
-procedure TFreeViewport.FHorScrollbarChange(Sender: TObject);
-begin
-  if FHorScrollbar <> nil then begin
-    if Round(Angle) <> FHorScrollbar.Position then Angle:=FHorScrollbar.Position;
-    if @FOriginalHorScrollbarChange <> nil then FOriginalHorScrollbarChange(Sender);
-  end;
-end;
-procedure TFreeViewport.FVertScrollbarChange(Sender: TObject);
-begin
-  if FVertScrollbar <> nil then begin
-    if Round(Elevation) <> FVertScrollbar.Position then Elevation:=FVertScrollbar.Position;
-    if @FOriginalVertScrollbarChange <> nil then FOriginalVertScrollbarChange(Sender);
-  end;
-end;
-}
+
 procedure TFreeViewport.FSetZoom(val: TFloatType);
 begin if FZoom = val then exit; FZoom:=val; end;
 
@@ -328,8 +268,6 @@ begin
   FViewType:=fvPerspective;
   FDoubleBuffer:=True;
   FBackgroundImage:=TFreeBackgroundImage.Create( Self );
-//FHorScrollbar:=nil;
-//FVertScrollbar:=nil;
 
   // Inherited create(AOwner);
   FDrawingBuffer:=TBitmap.Create;
@@ -434,7 +372,7 @@ begin
    R:=Pixel.rgbtRed;
    G:=Pixel.rgbtGreen;
    B:=Pixel.rgbtBlue;}
-  FBitmapFormatHelper.GetPixel(FDrawingBuffer, X, Y, R, G, B, A);
+  FBitmapFormatHelper.GetPixel( FDrawingBuffer,X,Y, R,G,B,A );
 
   // Canvas.Pixels method.
   // temporary draw via canvas. Appeared it works well in QT.
@@ -445,7 +383,7 @@ begin
    }
 end;
 
-procedure TFreeViewport.SetPixel(X, Y: integer; R, G, B: byte);
+procedure TFreeViewport.SetPixel( X,Y: integer; R,G,B: byte);
 //var Row : pRGBTripleArray;
 begin
   //BeginUpdate;   //do it on higher level
@@ -456,7 +394,7 @@ begin
 
   // My method via FBitmapFormatHelper
 
-  FBitmapFormatHelper.SetPixel(FDrawingBuffer, X, Y, R, G, B, 255);
+  FBitmapFormatHelper.SetPixel( FDrawingBuffer, X,Y, R,G,B,255 );
 
   //EndUpdate;    //do it on higher level
 
@@ -527,8 +465,7 @@ begin
       P1.Z:=P1.Z+dZ;
       Inc(d, ax);
     end;
-  end;
-  //EndUpdate;
+  end; //EndUpdate;
 end;
 
 procedure TFreeViewport.InitializeViewport( Min, Max: T3DVector );
@@ -1008,7 +945,7 @@ begin
   begin                          // See if the contents is drawn to the printer
     if ViewportMode <> vmWireframe then
     begin
-      L:=7.5 * DistPP3D(FMin3D, FMax3D);
+      L:=7.5 * Distance3D(FMin3D, FMax3D);
       N:=Normalize(FLight.Position);
       N.X:=N.X * L;
       N.Y:=N.Y * L;
@@ -1242,7 +1179,7 @@ procedure TFreeViewport.KeyPress(var Key: char);
 begin
   inherited;
   if key in ['a', 'A'] then begin ZoomExtents; end else
-  if key in ['i', 'I'] then begin ZoomIn; end  else
+  if key in ['i', 'I'] then begin ZoomIn; end else
   if key in ['o', 'O'] then begin ZoomOut; end;
 end;
 
@@ -1261,15 +1198,12 @@ begin
   inherited;
   FPreviousPosition.X:=X;
   FPreviousPosition.Y:=Y;
-  if (BackgroundMode <> emNormal) and (BackgroundMode <> emSetFrame)
-    and (ssRight in Shift) then begin BackgroundMode:=emNormal; end
-  else
-  if (BackgroundMode = emSetOrigin) and (ssLeft in Shift) then begin
-    // Start moving the background image
-    // store current origin
-    FBackgroundOrigin:=BackgroundImage.Origin;
-  end
-  else if (BackgroundMode = emSetScale) and (ssLeft in Shift) then begin
+  if (BackgroundMode<>emNormal) and (BackgroundMode<>emSetFrame)
+  and (ssRight in Shift) then BackgroundMode:=emNormal
+  else                // Start moving the background image store current origin
+  if (BackgroundMode=emSetOrigin) and (ssLeft in Shift)
+  then FBackgroundOrigin:=BackgroundImage.Origin else
+  if (BackgroundMode=emSetScale) and (ssLeft in Shift) then begin
     Pt:=Project(ZERO);
     if (Scale * Zoom * BackgroundImage.Scale) <> 0 then begin
       Diff.X:=round((Pt.X-X) / (Scale * Zoom * BackgroundImage.Scale));
@@ -1277,26 +1211,25 @@ begin
     end else begin
       Diff.X:=Pt.X-X;
       Diff.Y:=Pt.Y-Y;
-    end;
-    //TODO-change InputQuery to a dialog with TFloatSpinEdit fields
+    end;        //TODO-change InputQuery to a dialog with TFloatSpinEdit fields
     Str:=FloatToDec(-BackgroundImage.Scale * Diff.X, 4)+', '+FloatToDec(
       BackgroundImage.Scale * Diff.Y, 4);
-    if InputQuery('Scale ', 'New coordinate: ', str) then begin
+    if InputQuery( 'Scale ','New coordinate: ', str ) then begin
       Ind:=Pos(',', Str);
       if Ind <> 0 then begin
         OK:=True;
-        Tmp:=trim(Copy(Str, 1, Ind-1));
-        if Tmp <> '' then begin Val(Tmp, XVal, I);
-                                if I <> 0 then OK:=False;
+        Tmp:=trim( Copy( Str,1,Ind-1 ) );
+        if Tmp<>'' then begin Val( Tmp,XVal,I );
+          if I<>0 then OK:=False;
         end else XVal:=0;
         Tmp:=trim(Copy(Str, Ind+1, Length(Str)-Ind));
-        if Tmp <> '' then begin Val(Tmp, YVal, I);
-                                if I <> 0 then OK:=False;
+        if Tmp<>'' then begin Val( Tmp,YVal,I );
+          if I<>0 then OK:=False;
         end else YVal:=0;
         if OK then  begin
           if abs(Diff.X) > abs(Diff.Y)
-            then BackgroundImage.FScale:=XVal / -Diff.X
-            else BackgroundImage.FScale:=YVal / Diff.Y;
+            then BackgroundImage.Scale:=XVal / -Diff.X
+            else BackgroundImage.Scale:=YVal / Diff.Y;
           Refresh;
           BackgroundMode:=emNormal;
           if assigned(FOnChangeBackgroundImage) then
@@ -1305,8 +1238,8 @@ begin
       end;    // else MessageDlg('Invalid coordinate!', mtError, [mbOK], 0);
     end;
   end else
-  if (BackgroundMode = emSetFrame) and (ssLeft in Shift) then begin
-    FBackgroundScale:=BackgroundImage.FScale;
+  if (BackgroundMode=emSetFrame) and (ssLeft in Shift) then begin
+    FBackgroundScale:=BackgroundImage.Scale;
     FBackgroundOrigin:=BackgroundImage.Origin;
     Refresh;
     if assigned(FOnChangeBackgroundImage) then FOnChangeBackgroundImage(Owner);
@@ -1387,30 +1320,30 @@ begin
     H:=BackgroundImage.Bitmap.Height;
     if FBackgroundScaleIsMouseOnFrameSide = fsW then begin
       X0:=BackgroundImage.FOrigin.X-dX;
-      Scl:=BackgroundImage.FScale * (-dX+W) / W;
+      Scl:=BackgroundImage.Scale * (-dX+W) / W;
     end;
     if FBackgroundScaleIsMouseOnFrameSide = fsE then begin
-      Scl:=BackgroundImage.FScale * (dX+W) / W;
+      Scl:=BackgroundImage.Scale * (dX+W) / W;
     end;
     if FBackgroundScaleIsMouseOnFrameSide = fsN then begin
-      Scl:=BackgroundImage.FScale * (-dY+H) / H;
+      Scl:=BackgroundImage.Scale * (-dY+H) / H;
     end;
     if FBackgroundScaleIsMouseOnFrameSide = fsS then begin
       Y0:=BackgroundImage.FOrigin.Y-dY;
-      Scl:=BackgroundImage.FScale * (dY+H) / H;
+      Scl:=BackgroundImage.Scale * (dY+H) / H;
     end;
     if Scl > 0 then  begin
       FPreviousPosition.X:=X;
       FPreviousPosition.Y:=Y;
       Pt:=BackgroundImage.FOrigin;
-      S:=BackgroundImage.FScale;
+      S:=BackgroundImage.Scale;
       BackgroundImage.FOrigin.X:=X0;
       BackgroundImage.FOrigin.Y:=Y0;
-      BackgroundImage.FScale:=Scl;
+      BackgroundImage.Scale:=Scl;
       bgiRect:=BackgroundImage.TargetRect;
       if (bgiRect.Width < 16) or (bgiRect.Height < 16) then begin
         BackgroundImage.FOrigin:=Pt;
-        BackgroundImage.FScale:=S;
+        BackgroundImage.Scale:=S;
       end;
     end;
     Invalidate;
@@ -1458,11 +1391,7 @@ begin
     while FElevation < -180 do FElevation:=FElevation+360;
     FCosElevation:=Cos(DegToRad(FElevation));
     FSinElevation:=sin(DegToRad(FElevation));
-{   if FHorScrollbar <> nil then
-      if FHorScrollbar.Position <> round(angle) then FHorScrollbar.Position:=Round(Angle);
-    if FVertScrollbar <> nil then
-      if FVertScrollbar.Position <> round(Elevation) then FVertScrollbar.Position:=Round(Elevation);
-}   InitializeViewport(FMin3D, FMax3D);
+    InitializeViewport(FMin3D, FMax3D);
   end else if ssRight in shift then Cursor:=crPan;
   FPreviousPosition.X:=X;
   FPreviousPosition.Y:=Y;
@@ -1557,23 +1486,18 @@ begin
   if assigned(Parent) then TWinControl(Parent).ActiveDefaultControlChanged(Self);
 end;
 
-procedure TFreeViewport.SetPenWidth(Width: integer);
-begin
-  if FDrawingCanvas.Pen.Width <> Width then
-    FDrawingCanvas.Pen.Width:=Width;
-end;
+procedure TFreeViewport.SetPenWidth( Width: integer );
+  begin if FDrawingCanvas.Pen.Width<>Width then
+           FDrawingCanvas.Pen.Width:=Width;
+  end;
 
-procedure TFreeViewport.ShadedColor(aIntensityRatio: single; R, G, B: byte; var ROut, GOut, BOut: byte);
-const
-  AmbientStrength: single = 0.20;
-  s255: single = 255;
-var
-  C,Ap,Tmp: single;
+procedure TFreeViewport.ShadedColor
+( aIntensityRatio:single; R,G,B:byte; var ROut,GOut,BOut:byte );
+const AmbientStrength: single = 0.20; s255: single = 255;
+var C,Ap,Tmp: single;
 begin
-  if aIntensityRatio < 0.0 then
-    aIntensityRatio:=-aIntensityRatio
-  else if aIntensityRatio > 1.0 then
-    aIntensityRatio:=1.0;
+  if aIntensityRatio < 0.0 then aIntensityRatio:=-aIntensityRatio
+  else if aIntensityRatio > 1.0 then aIntensityRatio:=1.0;
 
   C:=FLightIntensity * aIntensityRatio+FAmbientIntencity;
   if C > 1.0 then C:=1.0;

@@ -1,57 +1,22 @@
 
-//   FreeHullFormWindow_Panel
-
 unit FreeHullFormWindow_Panel;
-
-{$IFNDEF FPC}
-  {$MODE Delphi}
-{$ELSE}
-  {$mode objfpc}{$H+}
-{$ENDIF}
-
-interface
-
-uses
-// MDIPanel,
-{$IFDEF WINDOWS}
-  Windows,
- {$ENDIF}
-  LCLIntf, LCLType,
-  PrintersDlgs,
-     SysUtils,
-     Classes,
-     Graphics,
-     Controls,
-     Forms,
-     Dialogs,
-     FreeTypes,
-     FreeGeometry,
-     FreeShipUnit,
-     StdCtrls,
-     Menus,
-     ActnList,
-     Printers,
-     LightDialog,
-//{$IFDEF USEOPENGL}
-//   FreeViewPortOpenGL,
-//{$ENDIF}
- {$IFDEF USE_freehullformwindow_form}
-     freehullformwindow_form,
- {$ENDIF}
-     MDIPanel;
+{$mode objfpc}{$H+}
+interface uses SysUtils,
+     Classes,  Graphics,
+     Controls, Forms,
+     Dialogs,  Menus,
+     ActnList, LightDialog,
+     Printers, PrintersDlgs,
+     FreeTypes,FreeGeometry,FreeShipUnit,MDIPanel;
 type
- TFreeHullWindow = class(TMDIPanel)                         { TFreeHullWindow }
-  BackgroundFrame: TAction;  Frame: TMenuItem;
-  SetLight: TAction;         Light: TMenuItem;
-
-  ActionListHull: TActionList;
-  ImagesHull: TImageList;
-
-  PopupMenuHull: TPopupMenu;
-  PrintDialogHull: TPrintDialog;
-//   ScrollBar1: TScrollBar;
-//   ScrollBar2: TScrollBar;
-   Viewport  : TFreeViewport;
+ TFreeHullWindow = class( TMDIPanel )                       { TFreeHullWindow }
+   Viewport: TFreeViewport;
+   BackgroundFrame: TAction;  Frame: TMenuItem;
+   SetLight: TAction;         Light: TMenuItem;
+   ActionListHull: TActionList;
+   ImagesHull: TImageList;
+   PopupMenuHull: TPopupMenu;
+   PrintDialogHull: TPrintDialog;
    StandardLens: TAction;
    WideLens: TAction;
    Camera1: TMenuItem;
@@ -124,10 +89,6 @@ type
    procedure FormKeyPress(Sender: TObject; var Key: char);
    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
    procedure FrameClick(Sender: TObject);
-//   procedure ScrollBar1Change(Sender: TObject);
-//   procedure ScrollBar1Enter(Sender: TObject);
-//   procedure ScrollBar2Change(Sender: TObject);
-//   procedure ScrollBar2Enter(Sender: TObject);
    procedure SetLightExecute(Sender: TObject);
    procedure ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
    procedure ViewportRedraw(Sender: TObject);
@@ -176,25 +137,25 @@ type
    procedure BackgroundToleranceExecute(Sender: TObject);
    procedure BackgroundVisibleExecute(Sender: TObject);
 
-private    { Private declarations }
-   FOnClose: TCloseEvent;   ///+++
-   FLCLVersion : string;
+private                                                { Private declarations }
+   FOnClose: TCloseEvent;
+   FLCLVersion: AnsiString;
    FFormState : TFormState;
-   FFreeShip         : TFreeShip;
-   FPanned           : Boolean;  // Private variable from which can be seen if the popup menu has to be shown or not
-   FInitialPosition  : TPoint;   // Initial position of the mouse cursor when the left or right button was pressed
-   FAllowPanOrZoom   : Boolean;  // Flag to check whether panning or zooming is allowed or not (not when an item has just been selected)
+   FFreeShip  : TFreeShip;
+   FPanned    : Boolean;  // Private variable from which can be seen if the popup menu has to be shown or not
+   FInitialPosition: TPoint;   // Initial position of the mouse cursor when the left or right button was pressed
+   FAllowPanOrZoom : Boolean;  // Flag to check whether panning or zooming is allowed or not (not when an item has just been selected)
 
-   procedure FSetFreeShip(Val:TFreeShip);
-   function FCaptionText:string;
-   procedure CreateFreeViewport();
+   procedure FSetFreeShip( Val:TFreeShip );
+   function FCaptionText: AnsiString;
+   procedure CreateFreeViewport;
    // procedure CreateComponents;
    // procedure CopyComponentsFromFreeHullForm;
    // protected
    // procedure ProcessResource; virtual;
-public     { Public declarations }
+public                                                  { Public declarations }
   LightDialog:TLightDialog;
-  constructor Create(AOwner: TComponent); override;
+  constructor Create( AOwner: TComponent ); override;
   //constructor CreateNew(AOwner: TComponent); virtual;
   destructor Destroy; override;
   procedure SetCaption;
@@ -224,12 +185,10 @@ uses main;
 
 {$R *.lfm}
 
-function Hex2Bin(hex:PChar):Pchar;
-var len:integer;
-begin
-  len:=length(hex) div 2;
-  result:=getmem(len);
-  HexToBin(hex, result, len);
+Function Hex2Bin( hex:PChar ): Pchar; var Len:Integer;
+begin Len:=Length( hex ) div 2;
+      Result:=getmem( Len );
+      HexToBin( hex,Result,Len );
 end;
 
 //{$I freehullformwindow_panel.inc}
@@ -242,27 +201,22 @@ destructor TFreeHullWindow.Destroy;
 begin if assigned(ViewPort) then FreeAndNil(ViewPort); inherited;
 end;
 
-function TFreeHullWindow.FCaptionText:string;
-begin
-   Case Viewport.ViewType of
-      fvBodyplan     : Result:='Bodyplan';
-      fvProfile      : Result:='Profile';
-      fvPlan         : Result:='Plan';
-      fvPerspective  : Result:='Perspective';
-      else Result:='';
-   end;
+function TFreeHullWindow.FCaptionText: String;
+begin Case Viewport.ViewType of
+        fvBodyplan   : Result:='Bodyplan';
+        fvProfile    : Result:='Profile';
+        fvPlan       : Result:='Plan';
+        fvPerspective: Result:='Perspective'; else Result:='';
+      end;
 end;
 
 procedure TFreeHullWindow.SetCaption; begin Caption:=FCaptionText; end;
 
 procedure TFreeHullWindow.FSetFreeShip( Val:TFreeShip );
-begin
-   if Val<>FFreeShip then begin
-      if FFreeShip<>nil then              // Disconnect from Freeship component
-         FFreeShip.DeleteViewport( Viewport );
-      FFreeShip:=Val;
-      if FFreeShip<>nil then                   // Connect to Freeship component
-         FFreeShip.AddViewport( Viewport );
+begin if Val<>FFreeShip then begin        // Disconnect from Freeship component
+         if FFreeShip<>nil then FFreeShip.DeleteViewport( Viewport );
+            FFreeShip:=Val;                    // Connect to Freeship component
+         if FFreeShip<>nil then FFreeShip.AddViewport( Viewport );
    end; // FreeHullForm.FreeShip:=FreeShip;
 end;
 
@@ -325,16 +279,11 @@ begin ViewportKeyDown( Sender, Key, Shift ); end;
 procedure TFreeHullWindow.FormKeyPress(Sender: TObject; var Key: char);
 begin ViewportKeyPress( Sender, Key ); end;
 
-procedure TFreeHullWindow.FormKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin ViewportKeyUp(Sender, Key, Shift); end;
+procedure TFreeHullWindow.FormKeyUp
+( Sender: TObject; var Key: Word; Shift: TShiftState);
+begin ViewportKeyUp( Sender,Key,Shift ); end;
 
 procedure TFreeHullWindow.FrameClick(Sender: TObject); begin end;
-
-//procedure TFreeHullWindow.ScrollBar1Change(Sender: TObject);begin SetActive(true); end;
-//procedure TFreeHullWindow.ScrollBar1Enter(Sender: TObject);begin SetActive(true); end;
-//procedure TFreeHullWindow.ScrollBar2Change(Sender: TObject);begin SetActive(true); end;
-//procedure TFreeHullWindow.ScrollBar2Enter(Sender: TObject);begin SetActive(true); end;
 
 procedure TFreeHullWindow.SetLightExecute(Sender: TObject);
 begin
@@ -383,10 +332,8 @@ begin
     ParentColor:=true;
     DoubleBuffer:=True;
     Elevation:=20;
-//    HorScrollbar:=ScrollBar1;
     Margin:=1;
     PopupMenuHull:=PopupMenuHull;
-//    VertScrollbar:=ScrollBar2;
     ViewType     :=fvPerspective;  // fvBodyplan;    //
     ViewportMode :=vmWireFrame;    // vmShade; //
 
@@ -410,13 +357,9 @@ procedure TFreeHullWindow.FormActivate(Sender: TObject); begin end;
 procedure TFreeHullWindow.FormCreate(Sender: TObject);
 var o:TObject;
 begin
-  CreateFreeViewport;
-//   CreateComponents;
-//   ScrollBar1.Position:=Round(Viewport.Angle);
-//   ScrollBar2.Position:=Round(Viewport.Elevation);
-//   if ScrollBar1.OnEnter = nil then ScrollBar1.OnEnter:=@ScrollBar1Enter;
+  CreateFreeViewport;        // CreateComponents;
    FAllowPanOrZoom:=False;
-   FreeShip:=GlobalFreeShip;
+   FreeShip:=Ship;           // SetFreeShip( Ship );
    o:=self.PopupMenuHull;
    o:=self.ActionListHull;
    o:=self.ImagesHull;
@@ -489,7 +432,7 @@ var P    : TPoint;
     P3D  : T3DVector;
     Str  : string='';
 begin
-// if (Shift <> []) then => ошибка
+// if (Shift <> []) then => ошибка ///*** мышка
 // if Viewport.ViewType<>fvPerspective then begin SetFocus;
       P.X:=X;
       P.Y:=Y;
@@ -639,13 +582,19 @@ var I:Integer; Data:TFreeBackgroundImageData; Pt:TPoint;
 begin
    if Freeship<>nil then begin
       Data:=nil;
-      for I:=1 to Freeship.NumberofBackgroundImages do if Freeship.BackgroundImage[I-1].AssignedView=Viewport.ViewType then
+      for I:=1 to Freeship.NumberofBackgroundImages
+       do if Freeship.BackgroundImage[I-1].AssignedView=Viewport.ViewType then
          Data:=Freeship.BackgroundImage[I-1];
-      if Data<>nil then Viewport.BackgroundImage.AssignData(Data.Image,Data.AssignedView,Data.Origin,Data.Scale,Data.Transparent,Data.TransparentColor,Data.BlendingValue,Data.Quality,Data.Tolerance,True)
-                   else if Viewport.BackgroundImage.Bitmap<>nil then begin
+      if Data<>nil
+      then Viewport.BackgroundImage.AssignData
+                  ( Data.Image,Data.AssignedView,Data.Origin,Data.Scale,
+                    Data.Transparent,Data.TransparentColor,Data.BlendingValue,
+                    Data.Quality,Data.Tolerance,True )
+      else if Viewport.BackgroundImage.Bitmap<>nil then begin
          Pt.X:=0;
          Pt.Y:=0;
-         Viewport.BackgroundImage.AssignData(nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True);
+         Viewport.BackgroundImage.AssignData
+                  ( nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True );
       end;
    end;
 end;
@@ -664,7 +613,7 @@ procedure TFreeHullWindow.BackgroundExportExecute(Sender: TObject);
 begin Viewport.BackgroundImage.Save; end;
 
 procedure TFreeHullWindow.BackgroundToleranceExecute(Sender: TObject);
-var Str:Ansistring; Value,I:Integer;
+var Str:AnsiString; Value,I:Integer;
 begin
    Str:=IntToStr(Viewport.BackgroundImage.Tolerance);
    if InputQuery('Transparency tolerance','Set tolerance (0-255)',Str) then begin

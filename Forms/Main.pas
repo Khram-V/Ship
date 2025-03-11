@@ -1,21 +1,19 @@
 unit Main;
 
-{$IFDEF FPC}
+//{$mode objfpc}{$H+}
   {$MODE Delphi}
-{$ENDIF}
 
 interface
-
-uses SysUtils,    // = exception ...
-     Classes,     // constructor Create
-     LCLIntf,     // openDocument
-     LazFileUtils,// дата и время файла
+uses SysUtils,     // = exception ...
+     Classes,      // constructor Create
+     LCLIntf,      // openDocument
+     LazFileUtils, // дата и время файла
      Graphics,    Controls,
      Forms,       Dialogs,
      ExtCtrls,    ActnList,
      StdCtrls,    ComCtrls,
      Menus,       StdActns,
-     Spin,        Interfaces,
+     Spin,   //   Interfaces,
      FreeTypes,   FreeGeometry,
      FreeShipUnit,FreeVersionUnit,
      FreeAboutDlg,FreehullFormWindow_panel,
@@ -23,6 +21,7 @@ uses SysUtils,    // = exception ...
      FreeSelectedDlg,FreeSplitSectionDlg,MDIPanel,FreeLinesPlanFrame;
 type
   TMainForm = class( TForm )                                       // TMainForm
+     FreeShip: TFreeShip;
      ToolBarCurves,
      ToolBarFaces,
      ToolBarFile,
@@ -31,13 +30,9 @@ type
      ToolBarPoints,
      ToolBarVisibility,
      ToolBarLayers : TToolBar;
-
      ActionList1 : TActionList;
 //   FActionListHull : TActionList;
-
-     AboutAction,
-     NewModel,                      ResistanceDelft,
-     ResistanceKaper,               SelectionDialog,
+     AboutAction,                   NewModel,
      SplitSection50pct,             LayerVisibilityDialog,
      SplitSectionDialog,            ShowFreeObjects,
      PointExtrude,                  PointsCoincide,
@@ -55,15 +50,15 @@ type
      DesignHydrostatics,            EdgeCrease,
      DeselectAll,                   PointCollapse,
      ActiveLayerColor,              DeleteEmptyLayers,
-     LayerDialog,               //  NewModel,
+     LayerDialog,                   SelectionDialog,
      ShowStations,                  ShowButtocks,
      ShowWaterlines,                NewFace,
      IntersectionDialog,            EdgeExtrude,
      EdgeSplit,                     ExportFEF,
      EditProjectSettings,           CheckModel,
      ShowNormals,                   CrossCurves,
-     ImportVRML,ImportSTL,ImportOBJ,ImportFEF: TAction;
-
+     ImportVRML,ImportSTL,ImportOBJ,ImportFEF,
+     ResistanceDelft,               ResistanceKaper: TAction;
      AuroraHullVsl,                 MichletCFD1,
      miSelectionDialog,             miShowLayerVisibilityDialog,
      miSetSplitSection,             miShowFreeObjects,
@@ -111,10 +106,9 @@ type
      MainClientPanel           : TPanel;
      StatusPanel5              : TPanel;
      PanelMain                 : TPanel;
-     ProgressBarMain           : TProgressBar;
-     FreeShip                  : TFreeShip;
-     SpinEditFontSize          : TSpinEdit;
      StatusBar                 : TPanel;
+     ProgressBarMain           : TProgressBar;
+     SpinEditFontSize          : TSpinEdit;
      MenuImages                : TImageList;
      MainMenu1                 : TMainMenu;
 
@@ -238,7 +232,6 @@ type
 
  // FMDIChildList : TList;
     PanelManager: WinPanelManager;                       { FMDIPanelManager }
-
     procedure ActionCheckUpdatesExecute(Sender: TObject);
     procedure AddFlowLineExecute       (Sender: TObject);
     procedure AddGridPanelExecute      (Sender: TObject);
@@ -251,7 +244,6 @@ type
     procedure FormWindowStateChange    (Sender: TObject);
     procedure LoadFileExecute          (Sender: TObject);
     procedure ExitProgramExecute       (Sender: TObject);
-    procedure LayerBoxPanelClick       (Sender: TObject);
     procedure PointExtrudeExecute      (Sender: TObject);
     procedure PointsCoincideExecute    (Sender: TObject);
     procedure SelectionDialogExecute   (Sender: TObject);
@@ -260,10 +252,8 @@ type
     procedure LayerVisibilityDialogExecute(Sender: TObject);
     procedure FormShow                 (Sender: TObject);
     procedure MainClientPanelClick     (Sender: TObject);
-    procedure MenuItem1Click           (Sender: TObject);
     procedure PanelMainResize          (Sender: TObject);
     procedure PointAnchorExecute       (Sender: TObject);
-    procedure SelectAllControlPoints1Click(Sender: TObject);
     procedure SelectAllControlPointsExecute(Sender: TObject);
     procedure ShowControlNetExecute    (Sender: TObject);
     procedure ShowInteriorEdgesExecute (Sender: TObject);
@@ -317,7 +307,6 @@ type
     procedure RotateModelMExecute      (Sender: TObject);
     procedure ScaleModelExecute        (Sender: TObject);
     procedure ShowGridExecute          (Sender: TObject);
-    procedure ToolButtonSelectClick    (Sender: TObject);
     procedure UndoExecute              (Sender: TObject);
     procedure FreeShipUpdateUndoData   (Sender: TObject);
     procedure HydrostaticsDialogExecute(Sender: TObject);
@@ -387,7 +376,7 @@ type
 //  procedure LoadNamedFile(FileName:AnsiString);
     procedure InitiallyLoadModel;
    private                                             { Private declarations }
-      FAllToolbarsControlsWidth,
+{     FAllToolbarsControlsWidth,
       FToolBarFileControlsWidth,
       FToolBarVisibilityControlsWidth,
       FToolBarLayersControlsWidth,
@@ -396,7 +385,7 @@ type
       FToolBarEdgesControlsWidth,
       FToolBarFacesControlsWidth,
       FToolBarCurvesControlsWidth : integer;
-      FDestroying: boolean;
+}     FDestroying: boolean;
       FSplitSectionDialog: TFreeSplitSectionDialog;
       function  Load_and_Scale( FileName: AnsiString ): Boolean;
       procedure FLoadRecentFile(sender:TObject);
@@ -422,8 +411,8 @@ type
 ///+++ {$IFDEF FPC}
       function  ActiveMDIChild: TFreeHullWindow; reintroduce;
       function  MDIChildCount: Integer; reintroduce;
-      function  GetMDIChildren(AIndex: Integer): TFreeHullWindow; reintroduce;
-      procedure AbandonMDIChildren(AIndex: Integer);
+      function  GetMDIChildren( AIndex: Integer ): TFreeHullWindow; reintroduce;
+      procedure AbandonMDIChildren( AIndex: Integer );
 ///+++ {$ENDIF}
       procedure Tile;
       procedure Cascade;
@@ -439,25 +428,19 @@ type
 var MainForm: TMainForm;
 
 implementation
-
 uses FreeLinesplanForm,
      FreeKeelWizardDlg,
      FreeEmptyModelChooserDlg,
      TileDialog,
      FreePointGroupForm;
-
 {$R *.lfm}
 
 procedure TMainForm.CustomExceptionHandler( Sender:TObject; E:Exception );
-begin WriteLn( 'Exception: '+E.Message );   // Halt; = End of program execution
-end;
+    begin WriteLn( 'Exception: '+E.Message ); end;    // Halt; = End of program
 
 constructor TMainForm.Create( AOwner:TComponent );
-begin
-  Application.OnException:=CustomExceptionHandler;
-inherited Create(AOwner);
-  PanelManager:=WinPanelManager.Create;
-  FFileName:='';
+begin Application.OnException:=CustomExceptionHandler;
+  inherited Create(AOwner); PanelManager:=WinPanelManager.Create; FFileName:='';
 //FreeShip.Preferences.SetDefaults;
 end;
 (*
@@ -472,8 +455,7 @@ begin
  FreeShip.Surface.RemoveOnChangeActiveControlPointListener(self.OnChangeActiveControlPoint);
  {al:=FActionListHull;
  ptr:=pointer(FActionListHull);
- if assigned(FActionListHull)
-    then FreeAndNil(FActionListHull);}
+ if assigned(FActionListHull) then FreeAndNil(FActionListHull);}
  if assigned(PanelManager) then
  for i:=0 to PanelManager.PanelCount-1 do
    if assigned(PanelManager.Panels[i]) then begin
@@ -488,22 +470,19 @@ begin
 end;
 *)
 procedure TMainForm.AbandonMDIChildren(AIndex: Integer);
-begin PanelManager.Delete(AIndex); end;
+begin PanelManager.Delete( AIndex ); end;
 
 function TMainForm.ActiveMDIChild: TFreeHullWindow;
 begin Result:=PanelManager.FindActivePanel as TFreeHullWindow; end;
 
 function TMainForm.MDIChildCount: Integer;
-begin Result:=PanelManager.MList.Count; end;
+   begin Result:=PanelManager.MList.Count; end;
 
 function TMainForm.GetMDIChildren( AIndex: Integer ): TFreeHullWindow;
-begin
-   Result:=nil;
-// if not (FormStyle in [fsMDIForm, fsMDIChild]) then  exit;
-// if (AIndex<0) or (AIndex>=PanelManager.MList.Count) then exit;
-   if AIndex<0 then AIndex:=0 else
-   if AIndex>=PanelManager.MList.Count then AIndex:=PanelManager.MList.Count-1;
-   Result:=TFreeHullWindow( PanelManager.Panels[AIndex] ) ;
+begin Result:=nil;
+// if not (FormStyle in [fsMDIForm,fsMDIChild]) then  exit;
+   if (AIndex>=0) and (AIndex<PanelManager.MList.Count) then
+       Result:=TFreeHullWindow( PanelManager.MDIPanels[AIndex] ) ;
 end;
 
 procedure TMainForm.FormChangeBounds(Sender: TObject); begin end;
@@ -513,9 +492,9 @@ begin
   // if MainForm.IsResizing then exit;
   // PanelMain.Invalidate;
   // Application.ProcessMessages;
-  //// AlignAllToolbars;
+  // AlignAllToolbars;
 end;
-procedure TMainForm.FormWindowStateChange(Sender: TObject);
+procedure TMainForm.FormWindowStateChange( Sender: TObject );
 begin // this is just to kick toolbar to autoresize
 { Self.Height:=Self.Height+1;
   Self.Resize;
@@ -530,7 +509,7 @@ var FileExt: AnsiString; Est: Boolean;
 begin
   if FFileName='' then LoadMostRecentFile;                  // default if no recent file defined
   if (FFileName='') and not FreeShip.ModelIsLoaded then NewModelExecute(Self) else
-  if (FFileName<>'') and not FreeShip.ModelIsLoaded and not FreeShip.IsLoadError
+  if (FFileName<>'') and not FreeShip.ModelIsLoaded         // and not FreeShip.IsLoadError
   then begin                                                // Skip translation
     FileExt:=Uppercase( ExtractFileExt( FFileName ) );
        Est:=(FileExt='.FBM') or (FileExt='.FTM');
@@ -562,9 +541,8 @@ begin
   BringToFront;
   Application.BringToFront;
   Application.ProcessMessages;
-  if not FModelInitallyLoaded then begin
-       InitiallyLoadModel;
-       FModelInitallyLoaded:=true;
+  if not FModelInitallyLoaded then begin InitiallyLoadModel;
+         FModelInitallyLoaded:=true;
   end;
 //Freeship.Draw;
   inActivation:=false;
@@ -641,23 +619,19 @@ end;
 
 procedure TMainForm.OnChangeActiveControlPoint(Sender: TObject);
 begin
-   if (Sender = nil)
-      and assigned(FreeShip)
-      and assigned(FreeShip.ControlpointForm) then
-     FreeShip.ControlpointForm.ActiveControlPoint:=nil;
+   if (Sender=nil) and assigned(FreeShip) and assigned(FreeShip.ControlpointForm)
+   then FreeShip.ControlpointForm.ActiveControlPoint:=nil;
    if (Sender is TFreeSubdivisionControlPoint) then
      FreeShip.ControlpointForm.ActiveControlPoint:=Sender as TFreeSubdivisionControlPoint;
    UpdateMenu;
 end;
 
 procedure TMainForm.OnChangeActiveControlEdge(Sender: TObject);
-begin UpdateMenu; end;
-
+    begin UpdateMenu; end;
 procedure TMainForm.OnChangeActiveControlFace(Sender: TObject);
-begin UpdateMenu; end;
-
+    begin UpdateMenu; end;
 procedure TMainForm.OnChangeActiveControlCurve(Sender: TObject);
-begin UpdateMenu; end;
+    begin UpdateMenu; end;
 
 procedure TMainForm.HullformWindowOnActivate(Sender:TObject);
 begin
@@ -690,7 +664,7 @@ procedure TMainForm.CloseHullWindows;
 var thw: TFreeHullWindow;
 begin
    if assigned(PanelManager) then while PanelManager.MList.Count>0 do begin
-     thw:=TFreeHullWindow(PanelManager.Panels[0]);
+     thw:=TFreeHullWindow(PanelManager.MDIPanels[0]);
             ///if assigned(thw) and assigned(thw.FreeHullForm)
             ///  and assigned(thw.FreeHullForm.ActionListHull)
             ///  then self.RemoveComponent(thw.FreeHullForm.ActionListHull);
@@ -899,19 +873,20 @@ begin
 end;
 
 procedure TMainForm.RecentFilesDialogActivate( Sender: TObject );
-var dlg: TTileDialog; i:integer;
+var dlg: TTileDialog; I:integer;
     vFileName,sTime: AnsiString;
-    jpg:TJPEGImage;
-    pic:TPicture;
+    jpg: TJPEGImage;
+    pic: TPicture;
 begin
   dlg:=Sender as TTileDialog;
   dlg.Cursor:=crHourGlass;
   Screen.Cursor:=crHourGlass;
   Application.ProcessMessages;
-  for i:=0 to FreeShip.Edit.RecentFileCount-1 do begin
-    vFileName:=Freeship.Edit.RecentFile[i];
+  for I:=0 to FreeShip.Edit.RecentFileCount-1 do begin
+    vFileName:=Freeship.Edit.RecentFile[I];
     if not FileExists( vFileName ) then continue;
-    sTime:=FormatDateTime('YYYY-MM-DD hh:mm:ss',FileDateToDateTime(FileAgeUTF8(vFileName)));
+    sTime:=FormatDateTime( 'YYYY-MM-DD hh:mm:ss',
+                           FileDateToDateTime( FileAgeUTF8( vFileName ) ) );
     Screen.Cursor:=crHourGlass;
     dlg.Cursor:=crHourGlass;
     Application.ProcessMessages;
@@ -934,6 +909,7 @@ var dlg: TTileDialog; i:integer; Answer: Word;
     jpg:TJPEGImage;
     pic:TPicture;
 begin
+  FreeShip.Edit.Selection_Clear;                        ///***  Selection_Clear
   dlg:=TTileDialog.create( Self );
   dlg.FileList:=Freeship.Edit.RecentFiles;
   dlg.onActivate:=RecentFilesDialogActivate;
@@ -962,8 +938,6 @@ end;
 procedure TMainForm.ExitProgramExecute(Sender: TObject);
 begin UpdateMenu; Close; end;
 
-procedure TMainForm.LayerBoxPanelClick(Sender: TObject); begin end;
-
 procedure TMainForm.PointExtrudeExecute(Sender: TObject);
 begin Freeship.Edit.Point_Extrude; UpdateMenu; end;
 
@@ -991,20 +965,20 @@ procedure TMainForm.SplitSectionDialogExecute(Sender: TObject);
 begin
   if FSplitSectionDialog = nil then
      FSplitSectionDialog:=TFreeSplitSectionDialog.Create(Self);
-  FSplitSectionDialog.SetDimensions(FreeShip.Surface.Max.X,
-                         FreeShip.Surface.Max.X/2, //TODO replace with real Widest
-                         FreeShip.Surface.Max.X/2);
+  FSplitSectionDialog.SetDimensions;
+                     { FreeShip.Surface.Max.X+FreeShip.Surface.Min.X)/2,
+                       FreeShip.DesignHydrostatics.Data.CenterOfBuoyancy.X }
   if FreeShip.ProjectSettings.ProjectSplitSectionLocation > 0
     then FSplitSectionDialog.SplitSectionLocation:=FreeShip.ProjectSettings.ProjectSplitSectionLocation
-    else FSplitSectionDialog.SplitSectionLocation:=FreeShip.Surface.Max.X/2;
+    else FSplitSectionDialog.SplitSectionLocation:=(FreeShip.Surface.Max.X+FreeShip.Surface.Min.X)/2;
   FSplitSectionDialog.OnSplitSectionLocationChange:=OnSplitSectionLocationChange;
   FreeShip.ProjectSettings.UseDefaultSplitSectionLocation:=false;
   FSplitSectionDialog.Show;
   FreeShip.ProjectSettings.ProjectSplitSectionLocation:=FSplitSectionDialog.SplitSectionLocation;
-  //FSplitSectionDialog.Free;
-  //FreeShip.FileChanged:=True;
-  //FreeShip.Redraw;
-  //UpdateMenu;
+//FSplitSectionDialog.Free;
+  FreeShip.FileChanged:=True;
+  FreeShip.Redraw;
+  UpdateMenu;
 end;
 
 procedure TMainForm.OnSplitSectionLocationChange(Sender: TObject; aValue: TFloatType);
@@ -1055,8 +1029,6 @@ begin    // Initialize some data
 end;
 
 procedure TMainForm.MainClientPanelClick(Sender: TObject); begin end;
-procedure TMainForm.MenuItem1Click(Sender: TObject); begin end;
-
 procedure TMainForm.PanelMainResize(Sender: TObject);
    // var I:Integer=0;
    // TP: Tpanel;
@@ -1082,29 +1054,30 @@ begin
 end;
 
 procedure TMainForm.ShowInteriorEdgesExecute(Sender: TObject);
-begin
-   FreeShip.Visibility.ShowInteriorEdges:=not FreeShip.Visibility.ShowInteriorEdges;
-   UpdateMenu;
+begin FreeShip.Visibility.ShowInteriorEdges := not
+      FreeShip.Visibility.ShowInteriorEdges; UpdateMenu;
 end;
 
 procedure TMainForm.NewWindowSet( Sender: TObject; ViewType: TFreeViewType );
-var HullformWindow : TFreeHullWindow; I : Integer;
-begin // open a new window
-  I:=MainClientPanel.ControlCount;
-  HullformWindow:=TFreeHullWindow.Create( Self );
-  HullformWindow.CaptionButtons:=[cbSystemMenu,cbMaximize,cbMinimize,cbRestore];
-  HullformWindow.Name:='HullformWindow'+IntToStr( I );
-  HullformWindow.Viewport.Name :='Viewport'+IntToStr( I );
-  HullformWindow.FreeShip:=FreeShip;
-  PanelManager.Add( HullformWindow );
-  HullformWindow.Parent:=MainClientPanel;
-  HullformWindow.OnActivate:=HullformWindowOnActivate;
-  HullformWindow.OnDeactivate:=HullformWindowOnDeactivate;
-  HullformWindow.OnClose:=HullformWindowOnClose;
-  HullformWindow.OnDestroy:=HullformWindowOnDeactivate;
-  HullformWindow.Viewport.ViewType:=ViewType;
-  if ViewType=fvPerspective then HullformWindow.Viewport.ViewportMode:=vmShade;
-  HullformWindow.SetCaption;
+var HullformWindow: TFreeHullWindow; I: Integer;
+begin                                                      // open a new window
+//with HullformWindow do begin
+    I:=MainClientPanel.ControlCount;
+    HullformWindow:=TFreeHullWindow.Create( Self );
+    HullformWindow.CaptionButtons:=[cbSystemMenu,cbMaximize,cbMinimize,cbRestore];
+    HullformWindow.Name:='HullformWindow'+IntToStr( I );
+    HullformWindow.Viewport.Name :='Viewport'+IntToStr( I );
+    HullformWindow.FreeShip:=FreeShip;
+    PanelManager.Add( HullformWindow );
+    HullformWindow.Parent:=MainClientPanel;
+    HullformWindow.OnActivate:=HullformWindowOnActivate;
+    HullformWindow.OnDeactivate:=HullformWindowOnDeactivate;
+    HullformWindow.OnClose:=HullformWindowOnClose;
+    HullformWindow.OnDestroy:=HullformWindowOnDeactivate;
+    HullformWindow.Viewport.ViewType:=ViewType;
+    if ViewType=fvPerspective then HullformWindow.Viewport.ViewportMode:=vmShade;
+    HullformWindow.SetCaption;
+//end;
   UpdateMenu;
 end;
 
@@ -1116,12 +1089,12 @@ var w: integer;  vp:TFreeViewport;
 begin
   FreeShip.Preferences.FontSize:=SpinEditFontSize.value;
 //if SpinEditFontSize.value < 10
-//  then SpinEditFontSize.Constraints.MinWidth:=16+24+2
-//  else SpinEditFontSize.Constraints.MinWidth:=16+16+24+2;
+//   then SpinEditFontSize.Constraints.MinWidth:=16+24+2
+//   else SpinEditFontSize.Constraints.MinWidth:=16+16+24+2;
   SpinEditFontSize.Width:=SpinEditFontSize.Constraints.MinWidth;
 
   for w:=0 to PanelManager.MList.Count-1 do begin
-    vp:=TFreeHullWindow(PanelManager.Panels[w]).Viewport;
+    vp:=TFreeHullWindow(PanelManager.MDIPanels[w]).Viewport;
     vp.invalidate;
   end;
 end;
@@ -1204,7 +1177,6 @@ begin
          N:=Pos('&',Filename);
          if N<>0 then system.Delete( Filename,N,1 );
       until N=0;
-
    Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
    if (Answer=mrCancel) or FreeShip.FileChanged then exit;
    if not Load_and_Scale( FileName ) then begin
@@ -1343,10 +1315,10 @@ object ColorButton1: TColorButton
   ParentFont = False
 end
 *)
-procedure TMainForm.DeleteEmptyLayersExecute(Sender: TObject);
+procedure TMainForm.DeleteEmptyLayersExecute( Sender: TObject );
 begin Freeship.Edit.Layer_DeleteEmpty(False); UpdateMenu; end;
 
-procedure TMainForm.LayerDialogExecute(Sender: TObject);
+procedure TMainForm.LayerDialogExecute( Sender: TObject );
 begin FreeShip.Edit.Layer_Dialog; UpdateMenu; end;
 
 procedure TMainForm.NewModelExecute(Sender: TObject);
@@ -1365,10 +1337,10 @@ begin
    UpdateMenu;
 end;
 
-procedure TMainForm.FormCreate(Sender: TObject);
+procedure TMainForm.FormCreate( Sender: TObject );
 begin
 {$ifndef Windows}
-   if self.Align = alTop then self.Top:=0;
+   if self.Align=alTop then self.Top:=0;
 {$endif}                                        // Removed from LFM, moved here
    FreeShip:=TFreeShip.Create( self );
    FreeShip.MainForm:=self;
@@ -1381,12 +1353,12 @@ begin
    FreeShip.OnUpdateRecentFileList :=FreeShipUpdateRecentFileList;
    FreeShip.OnUpdateUndoData       :=FreeShipUpdateUndoData;
    FreeShip.Precision:=fpLow;
-   FAllToolbarsControlsWidth:=0;
-   GlobalFreeship   :=Freeship;          // копия для воссоздания новых моделей
+// FAllToolbarsControlsWidth:=0;
+   Ship:=Freeship;                       // копия для воссоздания новых моделей
    FModelInitallyLoaded:=false;
 end;
 
-procedure TMainForm.ShowStationsExecute(Sender: TObject);
+procedure TMainForm.ShowStationsExecute( Sender: TObject );
 begin FreeShip.Visibility.ShowStations:=not FreeShip.Visibility.ShowStations;
       UpdateMenu;
 end;
@@ -1499,8 +1471,6 @@ begin
    Freeship.Visibility.ShowGrid:=not Freeship.Visibility.ShowGrid;
    UpdateMenu;
 end;
-
-procedure TMainForm.ToolButtonSelectClick(Sender: TObject); begin end;
 
 procedure TMainForm.UndoExecute(Sender: TObject);
 begin FreeShip.Edit.Undo; UpdateMenu; SetCaption; end;
@@ -1619,7 +1589,7 @@ begin                                                  // delete old menu items
       Item:=TMenuItem.Create(self);
       Item.Caption:=Freeship.Edit.RecentFile[I-1];
       Item.OnClick:=FLoadRecentFile;
-      RecentFiles.Add(Item);
+      RecentFiles.Add( Item );
    end;
    UpdateMenu;
 end;
@@ -1735,8 +1705,6 @@ begin Freeship.Edit.Point_ProjectStraightLinePermanentConstraint; UpdateMenu; en
 
 procedure TMainForm.PointAnchorExecute(Sender: TObject);
 begin Freeship.Edit.Point_AnchorToPoint; UpdateMenu; end;
-
-procedure TMainForm.SelectAllControlPoints1Click(Sender: TObject); begin end;
 
 procedure TMainForm.SelectAllControlPointsExecute(Sender: TObject);
 begin Freeship.Edit.Selection_SelectAllControlPoints; UpdateMenu; end;

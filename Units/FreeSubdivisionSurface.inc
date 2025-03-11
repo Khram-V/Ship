@@ -1180,7 +1180,7 @@ begin                                                   // Remove double points
   MaxError:=1 / Power(10, Decimals);
   while I < NoPoints-1 do begin J:=I+1;
     while J < NoPoints do begin
-      Dist:=DistPP3D(Points[I], Points[j]);
+      Dist:=Distance3D(Points[I], Points[j]);
       if Dist <= MaxError then begin
         for N:=J to NoPoints-2 do Points[N]:=Points[N+1];
         Dec(NoPoints);
@@ -2172,12 +2172,12 @@ begin
       end;
       if NoPoints > 1 then begin
         if IntArray[0].Edge = IntArray[NoPoints-1].Edge then
-          if DistPP3D(IntArray[0].Point, IntArray[NoPoints-1].Point) < 1e-4
+          if Distance3D(IntArray[0].Point, IntArray[NoPoints-1].Point) < 1e-4
           then begin Dec(NoPoints); end;
         K:=2;
         while K <= NoPoints do  begin
           if IntArray[K-1].Edge = IntArray[K-2].Edge then begin
-            if DistPP3D(IntArray[K-1].Point, IntArray[K-2].Point) < 1e-4 then
+            if Distance3D(IntArray[K-1].Point, IntArray[K-2].Point) < 1e-4 then
             begin
               Move(IntArray[K-1],IntArray[K-2],(NoPoints-K+1)*SizeOf(T3DVector));
               Dec(NoPoints);
@@ -2215,7 +2215,7 @@ begin
     while J <= NSegments do begin
       Segment:=Segments[J-1];
       if (EndP.Edge = Segment.StartP.Edge) then begin
-        AddEdge:=DistPP3D(EndP.Point, Segment.StartP.Point) < 1e-4;
+        AddEdge:=Distance3D(EndP.Point, Segment.StartP.Point) < 1e-4;
         if AddEdge then begin
           Spline.Knuckle[Spline.NumberOfPoints-1] :=
             Segment.StartP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
@@ -2225,7 +2225,7 @@ begin
         end;
       end else
       if (EndP.Edge = Segment.EndP.Edge) then begin
-        AddEdge:=DistPP3D(EndP.Point, Segment.EndP.Point) < 1e-4;
+        AddEdge:=Distance3D(EndP.Point, Segment.EndP.Point) < 1e-4;
         if AddEdge then begin
           Spline.Knuckle[Spline.NumberOfPoints-1] :=
             Segment.EndP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
@@ -2235,7 +2235,7 @@ begin
         end;
       end else
       if (StartP.Edge = Segment.StartP.Edge) then begin
-        AddEdge:=DistPP3D(StartP.Point, Segment.StartP.Point) < 1e-4;
+        AddEdge:=Distance3D(StartP.Point, Segment.StartP.Point) < 1e-4;
         if AddEdge then begin
           Spline.Knuckle[0]:=Segment.StartP.Knuckle or Spline.Knuckle[0];
           Spline.Insert(0, Segment.EndP.Point);
@@ -2244,7 +2244,7 @@ begin
         end;
       end else
       if (StartP.Edge = Segment.EndP.Edge) then begin
-        AddEdge:=DistPP3D(StartP.Point, Segment.EndP.Point) < 1e-4;
+        AddEdge:=Distance3D(StartP.Point, Segment.EndP.Point) < 1e-4;
         if AddEdge then begin
           Spline.Knuckle[0]:=Segment.EndP.Knuckle or Spline.Knuckle[0];
           Spline.Insert(0, Segment.StartP.Point);
@@ -2261,7 +2261,7 @@ begin
         or (EndP.Edge.FStartpoint.FEdges.IndexOf(Segment.StartP.Edge) <> -1)
         or (EndP.Edge.FEndpoint.FEdges.IndexOf(Segment.StartP.Edge) <> -1)
         then begin
-          AddEdge:=DistPP3D(EndP.Point, Segment.StartP.Point) < 1e-4;
+          AddEdge:=Distance3D(EndP.Point, Segment.StartP.Point) < 1e-4;
           if AddEdge then begin
             Spline.Knuckle[Spline.NumberOfPoints-1] :=
               Segment.StartP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
@@ -2269,7 +2269,7 @@ begin
             Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.EndP.Knuckle;
             EndP:=Segment.EndP;
           end else begin
-            AddEdge:=DistPP3D(EndP.Point, Segment.EndP.Point) < 1e-4;
+            AddEdge:=Distance3D(EndP.Point, Segment.EndP.Point) < 1e-4;
             if AddEdge then begin
               Spline.Knuckle[Spline.NumberOfPoints-1] :=
                 Segment.EndP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
@@ -2277,14 +2277,14 @@ begin
               Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.StartP.Knuckle;
               EndP:=Segment.StartP;
             end else begin
-              AddEdge:=DistPP3D(StartP.Point, Segment.StartP.Point)<1e-4;
+              AddEdge:=Distance3D(StartP.Point, Segment.StartP.Point)<1e-4;
               if AddEdge then begin
                 Spline.Knuckle[0]:=Segment.StartP.Knuckle or Spline.Knuckle[0];
                 Spline.Insert(0, Segment.EndP.Point);
                 Spline.Knuckle[0]:=Segment.EndP.Knuckle;
                 StartP:=Segment.EndP;
               end else begin
-                AddEdge:=DistPP3D(StartP.Point, Segment.EndP.Point) < 1e-4;
+                AddEdge:=Distance3D(StartP.Point, Segment.EndP.Point) < 1e-4;
                 if AddEdge then begin
                   Spline.Knuckle[0]:=Segment.EndP.Knuckle or Spline.Knuckle[0];
                   Spline.Insert(0, Segment.StartP.Point);

@@ -141,8 +141,6 @@ type
     _Label16: TLabel;
     _Label17: TLabel;
     Panel6: TPanel;              // основное окно ??
-//    ScrollBar1: TScrollBar;
-//    ScrollBar2: TScrollBar;
     Viewport: TFreeViewport;
     procedure OKbuttonClick(Sender: TObject);
     procedure CancelButtonClick(Sender: TObject);

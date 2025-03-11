@@ -451,8 +451,8 @@ var
   ds,de: TFloatType;
 begin
   Result:=nil;
-  ds:=DistPP3D(P, FStartPoint.Coordinate);
-  de:=DistPP3D(P, FEndPoint.Coordinate);
+  ds:=Distance3D(P, FStartPoint.Coordinate);
+  de:=Distance3D(P, FEndPoint.Coordinate);
   if (abs(ds)<1e-4) or (abs(de)<1e-4) then exit;            //such point exists
   Result:=TFreeSubdivisionControlpoint.Create(Surface);
   Result.FCoordinate:=P;
@@ -576,14 +576,12 @@ procedure TFreesubdivisionControlEdge.SetEndPoint(aPoint:TFreeSubdivisionControl
 var i: integer;
 begin
   if aPoint = FEndPoint then exit;
-  if FCurve<>nil then
-    begin
+  if FCurve<>nil then begin
     i:=FCurve.ControlPoints.Indexof(FEndPoint as TFreesubdivisionControlPoint);
     if i > -1 then
-      if aPoint <> nil then
-        FCurve.ReplaceVertexPoint(FEndPoint,aPoint as TFreesubdivisionControlPoint)
-      else
-        FCurve.DeletePoint(FEndPoint as TFreesubdivisionControlPoint);
+      if aPoint <> nil
+      then FCurve.ReplaceVertexPoint(FEndPoint,aPoint as TFreesubdivisionControlPoint)
+      else FCurve.DeletePoint(FEndPoint as TFreesubdivisionControlPoint);
     FCurve.Built:=false;
     end;
   FEndPoint:=aPoint;
@@ -612,37 +610,31 @@ var
 begin
   P:=Startpoint as TFreeSubdivisionControlPoint;
 
-  //begin select point
+  // begin select point
   //   Point:=Entity as TFreeSubdivisionControlPoint;
   //   Point.Selected:=not Point.Selected;
   //   if not Point.Selected then Point:=SelectedControlPoint[NumberOfSelectedControlPoints-1];
   //   for J:=1 to NumberOfViewports do self.Viewport[J-1].Refresh;
-  //end select point
+  // end select point
 
-  if (P.RegularPoint) and (P.VertexType <> svCorner) then
-  begin
-    // Find next edge
+  if (P.RegularPoint) and (P.VertexType <> svCorner) then begin // Find next edge
     for I:=1 to P.NumberOfEdges do
-      if P.Edge[I-1] <> self then begin
-        Edge:=P.Edge[I-1] as TFreeSubdivisionControlEdge;
-        if (Edge.Selected<>self.Selected) and (Edge.Crease=self.Crease) then
-        begin
-          SharesFace:=False;
-          for J:=1 to self.NumberOfFaces do begin
-            Index:=Edge.FFaces.IndexOf(self.Face[J-1]);
-            if Index <> -1 then begin
-              SharesFace:=True;
-              Break;
-            end;
-          end;
-          if not SharesFace then begin
-            if Edge.StartPoint = self.StartPoint then Edge.SwapData;
-            Edge.Selected:=self.Selected;
-            Edge.Trace;
-            Break;
-          end;
+    if P.Edge[I-1] <> self then begin
+      Edge:=P.Edge[I-1] as TFreeSubdivisionControlEdge;
+      if (Edge.Selected<>self.Selected)
+      and (Edge.Crease=self.Crease) then begin SharesFace:=False;
+        for J:=1 to self.NumberOfFaces do begin
+          Index:=Edge.FFaces.IndexOf(self.Face[J-1]);
+          if Index <> -1 then begin SharesFace:=True; Break; end;
+        end;
+        if not SharesFace then begin
+          if Edge.StartPoint = self.StartPoint then Edge.SwapData;
+          Edge.Selected:=self.Selected;
+          Edge.Trace;
+          Break;
         end;
       end;
+    end;
   end;
   P:=Endpoint as TFreeSubdivisionControlPoint;
   if (P.RegularPoint) and (P.VertexType <> svCorner) then begin // Find next edge

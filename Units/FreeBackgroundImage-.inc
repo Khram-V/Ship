@@ -1,48 +1,57 @@
 {----------------------------------------------------------------}
-{              Background image properties for use in a viewport }
+{                                           TFreeBackgroundImage }
+{ Background image properties for use in a viewport              }
 {----------------------------------------------------------------}
-//procedure TFreeBackgroundImage.AssignData( var Data:TFreeBackgroundImageData );
-{procedure TFreeBackgroundImage.AssignData
-  Image: TGraphic;
-  View: TFreeViewType;
-  Origin: TPoint;
-  Scale: TFloatType;
-  Transp: boolean;
-  TranspCol: TColor;
-  Alpha, Quality, Tolerance: byte;
-  Quiet: boolean }
-procedure TFreeBackgroundImage.AssignData
-( I:TGraphic; V:TFreeViewType; O:TPoint; S:TFloatType;
-  T:boolean; C:TColor; A,Q,L:byte; Z:boolean );
-{ Image,View,Origin,Scale,Transp,TranspCol,Alpha,Quality,Tolerance,Quiet }
-  var Changed: boolean;
-begin Changed:=True;
-  if (I<>nil) and (Bitmap =nil) then begin Bitmap:=TBitmap.Create; Bitmap.Assign( I ); end else
-  if (I =nil) and (Bitmap<>nil) then begin Bitmap.Free; Bitmap:=nil; end else
-  if (I<>nil) and (Bitmap<>nil) then begin Bitmap.Assign( I ); end
-  else Changed:=false;;
-  ShowInView:=V;         FOrigin:=O;
-  Scale:=S;              FTransparent:=T;
-  FTransparentColor:=C;  Falpha:=A;
-  Quality:=Q;            FTolerance:=L;
-  if Changed and (not Z) then Owner.Refresh;
+procedure TFreeBackgroundImage.AssignData(Image: TGraphic; View: TFreeViewType;
+  Origin: TPoint; Scale: TFloatType; Transp: boolean; TranspCol: TColor;
+  Alpha, Quality, Tolerance: byte; Quiet: boolean);
+var
+  Changed: boolean;
+begin
+  Changed:=False;
+  if (Image <> nil) and (Bitmap = nil) then begin
+    Bitmap:=TBitmap.Create;
+    Bitmap.Assign(Image);
+    Changed:=True;
+  end
+  else if (Image = nil) and (Bitmap <> nil) then begin
+    Bitmap.Free;
+    Bitmap:=nil;
+    Changed:=True;
+  end
+  else if (Image <> nil) and (Bitmap <> nil) then begin
+    Bitmap.Assign(Image);
+    Changed:=True;
+  end;
+  ShowInView:=View;
+  FOrigin:=Origin;
+  FScale:=Scale;
+  FTransparent:=Transp;
+  FTransparentColor:=TranspCol;
+  Falpha:=Alpha;
+  FQuality:=Quality;
+  FTolerance:=Tolerance;
+  if Changed and (not Quiet) then Owner.Refresh;
   Invalidate;
 end;
 
 procedure TFreeBackgroundImage.Clear;
 begin
-  if Bitmap<>nil then begin FreeAndNil(Bitmap); Bitmap:=nil; end;
+  if Bitmap <> nil then begin
+    FreeAndNil(Bitmap);
+    Bitmap:=nil;
+  end;
   FOrigin.X:=0;
   FOrigin.Y:=0;
-  Scale:=1.0;
+  FScale:=1.0;
   FTransparent:=False;
   FTransparentColor:=ClBlack;
   FVisible:=True;
   if (not (csdestroying in owner.componentstate)) then
     if assigned(Owner.FOnChangeBackgroundImage) then
       Owner.FOnChangeBackgroundImage(Owner);
-  ShowInView:=fvBodyPlan;
-  Quality:=100;
+  FShowInView:=fvBodyPlan;
+  FQuality:=100;
   FAlpha:=255;
   FTolerance:=5;
   FCachedBmp.Free;
@@ -113,8 +122,10 @@ end;
 
 procedure TFreeBackgroundImage.FSetVisible(val: boolean);
 begin
-  if val<>FVisible then begin FVisible:=val;
-    if Bitmap<>nil then Owner.Refresh;
+  if val <> FVisible then
+  begin
+    FVisible:=val;
+    if Bitmap <> nil then Owner.Refresh;
     if (not (csdestroying in owner.componentstate)) then
       if assigned(Owner.FOnChangeBackgroundImage) then
         Owner.FOnChangeBackgroundImage(Owner);
@@ -122,10 +133,12 @@ begin
 end;
 
 constructor TFreeBackgroundImage.Create(Viewport: TFreeViewport);
-begin inherited Create;
-      Owner:=Viewport;
-      Bitmap:=nil;
-      FCachedBmp:=nil; Clear;
+begin
+  inherited Create;
+  Owner:=Viewport;
+  Bitmap:=nil;
+  FCachedBmp:=nil;
+  Clear;
 end;
 
 destructor TFreeBackgroundImage.Destroy;
@@ -160,22 +173,27 @@ var
   end;
 
 begin
-  if (Visible) and (Owner.ViewType = ShowInView) then begin
-    DestRect:=TargetRect;        // performance improvement this means that the
-    if assigned( FCachedBmp ) then begin  // background is already prepared and
-      Owner.StretchDraw( DestRect,FCachedBmp ); // we can just draw it and exit
-      if Owner.Backgroundmode=emSetFrame then drawFrame; exit;
+  if (Visible) and (Owner.ViewType = FShowInView) then begin
+    DestRect:=TargetRect;                            // performance improvement
+    if assigned(FCachedBmp) then
+    begin      // this means that the background is already prepared and we can
+      Owner.StretchDraw(DestRect, FCachedBmp);        // just draw it and exit
+      if Owner.Backgroundmode = emSetFrame then drawFrame; exit;
     end;
-    FCachedBmp:=TBitmap.Create;                    // TmpBmp.Assign( FBitmap );
-    FCachedBmp.SetSize(DestRect.Width,DestRect.Height); // bring bitmap to target size
-                      // Make bitmap same-size with destination-draw is faster.
+    FCachedBmp:=TBitmap.Create;
+    //TmpBmp.Assign(FBitmap);
+    FCachedBmp.SetSize(DestRect.Width, DestRect.Height); // bring bitmap to target size
+    //Make bitmap same-size with destination-draw is faster.
     DestRectC:=Rect(0, 0, DestRect.Width-1, DestRect.Height-1);
     FCachedBmp.Canvas.StretchDraw(DestRectC, Bitmap);
-    // if TmpBmp.PixelFormat<>pf24bit then TmpBmp.PixelFormat:=pf24bit;
+
+    //if TmpBmp.PixelFormat<>pf24bit then TmpBmp.PixelFormat:=pf24bit;
     BitmapFormatHelper:=TFreeBitmapFormatHelper.Create(FCachedBmp);
-    // DrawingToprinter:=False;
-    // if Printer<>nil then DrawingToPrinter:=(FOwner.DrawingCanvas=Printer.Canvas) and (Fowner.FPrinting);
+
+    //DrawingToprinter:=False;
+    //if Printer<>nil then DrawingToPrinter:=(FOwner.DrawingCanvas=Printer.Canvas) and (Fowner.FPrinting);
     DrawingToPrinter:=Owner.FGetPrinting;
+
     if DrawingToPrinter then begin // Use white background for transparent images
       Backgr.rgbtRed:=255;
       Backgr.rgbtGreen:=255;
@@ -185,10 +203,12 @@ begin
       Backgr.rgbtGreen:=GetGValue(Owner.Color);
       Backgr.rgbtBlue:=GetBValue(Owner.Color);
     end;
+
     Rt:=GetRValue(FTransparentColor);
     Gt:=GetGValue(FTransparentColor);
     Bt:=GetBValue(FTransparentColor);
     TmpVal:=255-FAlpha;
+
     if (Transparent) or (FAlpha<>255) then begin
       FCachedBmp.BeginUpdate(False);
       for I:=0 to FCachedBmp.Height-1 do begin
@@ -211,7 +231,7 @@ begin
           BitmapFormatHelper.FromTRGBTriple(Pixel, pPixel);
           //FCachedBmp.Canvas.Pixels[J,I]:= RGBtoColor(Pixel.rgbtRed,Pixel.rgbtGreen,Pixel.rgbtBlue);
         end;
-      end; //for I
+      end;  //for I
       FCachedBmp.EndUpdate( False );
     end;
     Owner.StretchDraw( DestRect,FCachedBmp );
@@ -234,13 +254,13 @@ var
   Pt: TPoint;
 begin
   Pt:=Owner.Project(ZERO);
-  Result.Left:=Pt.X-round(Owner.Scale * Owner.Zoom * Scale * FOrigin.X);
-  Result.Top:=Pt.Y-round(Owner.Scale * Owner.Zoom * Scale * FOrigin.Y);
-  Result.Right:=Result.Left+Round(Owner.Scale * Owner.Zoom * Scale * Bitmap.Width);
-  Result.Bottom:=Result.Top+Round(Owner.Scale * Owner.Zoom * Scale * Bitmap.Height);
+  Result.Left:=Pt.X-round(Owner.Scale * Owner.Zoom * FScale * FOrigin.X);
+  Result.Top:=Pt.Y-round(Owner.Scale * Owner.Zoom * FScale * FOrigin.Y);
+  Result.Right:=Result.Left+Round(Owner.Scale * Owner.Zoom * FScale * Bitmap.Width);
+  Result.Bottom:=Result.Top+Round(Owner.Scale * Owner.Zoom * FScale * Bitmap.Height);
 end;{TFreeBackgroundImage.TargetRect}
 
-procedure TFreeBackgroundImage.Open( InitialDir: AnsiString );
+procedure TFreeBackgroundImage.Open(InitialDir: string);
 var
   Dialog: TOpenDialog;
   Pt: TPoint;
@@ -255,24 +275,25 @@ begin
   Dialog.Options:=[ofHideReadOnly];
   if Dialog.Execute then begin
     Clear;
-    ShowInView:=Owner.ViewType;
+    FShowInView:=Owner.ViewType;
     Bitmap:=TBitmap.Create;
     if Uppercase(ExtractFileExt(Dialog.Filename)) = '.JPG' then begin
       JPEGImage:=TJPEGImage.Create;
       JPEGImage.LoadFromFile(Dialog.FileName);
       Bitmap.Assign(JPEGImage);
       FreeAndNil(JPEGImage);
-      Quality:=JPEGImage.CompressionQuality;
+      FQuality:=JPEGImage.CompressionQuality;
     end else begin
       Bitmap.LoadFromFile( Dialog.Filename );
-      Quality:=100;
-    end;                                                     // calculate scale
+      FQuality:=100;
+    end;
+    // calculate scale
     Pt:=Owner.Project(ZERO);
     Pt.X:=Owner.ClientWidth;
     P2D:=Owner.ProjectBackTo2D(Pt);
     FOrigin.X:=0;
     FOrigin.Y:=Bitmap.Height;
-    Scale:=P2D.X/Bitmap.Width;
+    FScale:=P2D.X/Bitmap.Width;
     Owner.Refresh;
     if (not (csdestroying in owner.componentstate)) then
       if assigned(Owner.FOnChangeBackgroundImage) then
@@ -282,24 +303,28 @@ begin
 end;
 
 procedure TFreeBackgroundImage.Save;
-var Image: TJPEGImage; SaveDialog: TSaveDialog;
+var
+  Image: TJPEGImage;
+  SaveDialog: TSaveDialog;
 begin
   SaveDialog:=TSaveDialog.Create(Owner);
   SaveDialog.FileName:='image.jpg';
-  SaveDialog.Filter:=createDialogFilter( rsJPEGFiles,['jpg'] );
+  SaveDialog.Filter:=createDialogFilter(rsJPEGFiles, ['jpg']);
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin
     Image:=TJPEGImage.Create;
     Image.Assign(Bitmap);
-    Image.CompressionQuality:=Quality;
-    Image.SaveToFile( ChangeFileExt(SaveDialog.Filename,'.jpg') );
+    Image.CompressionQuality:=FQuality;
+    Image.SaveToFile(ChangeFileExt(SaveDialog.Filename, '.jpg'));
     FreeAndNil(Image);
   end;
   FreeAndNil(SaveDialog);
 end;
 
 procedure TFreeBackgroundImage.SetBlendingValue;
-var Dialog: TFreeBackgroundBlendDialog; Old: byte;
+var
+  Dialog: TFreeBackgroundBlendDialog;
+  Old: byte;
 begin
   Dialog:=TFreeBackgroundBlendDialog.Create(Owner);
   ShowTranslatedValues(Dialog);
@@ -312,7 +337,9 @@ begin
 end;
 
 procedure TFreeBackgroundImage.SetToleranceValue;
-var Dialog: TFreeBackgroundToleranceDialog; Old: byte;
+var
+  Dialog: TFreeBackgroundToleranceDialog;
+  Old: byte;
 begin
   Dialog:=TFreeBackgroundToleranceDialog.Create(Owner);
   ShowTranslatedValues(Dialog);

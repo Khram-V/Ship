@@ -282,10 +282,10 @@ begin
                 P:=Grid[J-1][K-1].FCoordinate;
                 Strings.Add('0'+EOL+'VERTEX');
                 Strings.Add('8'+EOL+DXFName);
-                Strings.Add('10'+EOL+FloatToDec(P.X, 4));          ///***??? DXF-laeyr
+                Strings.Add('10'+EOL+FloatToDec(P.X, 4));   ///***??? DXF-layer
                 Strings.Add('20'+EOL+FloatToDec(P.Z, 4));
                 Strings.Add('30'+EOL+FloatToDec(P.Y, 4));
-                Strings.Add('70'+EOL+'64');    // polygon mesh vertex
+                Strings.Add('70'+EOL+'64');              // polygon mesh vertex
               end;
             end;
             Strings.add('0'+EOL+'SEQEND');
@@ -363,12 +363,12 @@ begin
       for I:=1 to Rows do begin
         for J:=1 to Cols do begin
           P:=Grid[I-1][J-1].FCoordinate;
-          Strings.Add('0'+EOL+'VERTEX');                           ///***??? DXF-face
+          Strings.Add('0'+EOL+'VERTEX');                     ///***??? DXF-face
           Strings.Add('8'+EOL+LayerName);
           Strings.Add('10'+EOL+FloatToDec(P.X,4));
           Strings.Add('20'+EOL+FloatToDec(P.Z,4));
           Strings.Add('30'+EOL+FloatToDec(P.Y,4));
-          Strings.Add('70'+EOL+'64');    // polygon mesh vertex
+          Strings.Add('70'+EOL+'64');                    // polygon mesh vertex
         end;
       end;
       Strings.add('0'+EOL+'SEQEND');
@@ -598,16 +598,16 @@ begin
     Layer.FMaterialDensity:=GetFloat( Str );
     Layer.FThickness:=GetFloat( Str );
   end;
-  if Assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+  if Assigned(FOnChangeLayerData) then FOnChangeLayerData( self );
   Inc(LineNr); Str:=Strings[LineNr];                      // Read controlpoints
-  N:=GetInteger( Str);                                    writeln( 'cp='+inttostr( N ) );
+  N:=GetInteger( Str );
   for I:=1 to N do begin
     Point:=TFreeSubdivisionControlPoint.Create(self);
     FControlPoints.Add(Point);
     Point.LoadFromStream(LineNr, Strings);
   end;
   Inc(LineNr); Str:=Strings[LineNr];                       // Read controlEdges
-  N:=GetInteger( Str);                                     writeln( 'ce='+inttostr( N ) );
+  N:=GetInteger( Str);
   for I:=1 to N do begin
     Edge:=TFreeSubdivisionControlEdge.Create(self);
     Edge.FControlEdge:=True;
@@ -615,7 +615,7 @@ begin
     Edge.LoadFromStream( LineNr,Strings );
   end;
   Inc(LineNr); Str:=Strings[LineNr];                       // Read controlFaces
-  N:=GetInteger( Str );                                    writeln( 'cf='+inttostr( N ) );
+  N:=GetInteger( Str );
   for I:=1 to N do begin
     Face:=TFreeSubdivisionControlFace.Create(self);
     FControlFaces.Add(Face);
@@ -629,7 +629,7 @@ begin
     for J:=1 to Face.FPoints.Count do begin
       P2:=Face.Point[J-1];
       Edge:=EdgeExists(P1,P2) as TFreeSubdivisionControlEdge;
-      if Edge<>nil then Edge.AddFace(Face); // else MessageDlg( 'Could not find edge!',mtError,[mbOK],0);
+      if Edge<>nil then Edge.AddFace(Face);                              // else MessageDlg( 'Could not find edge!',mtError,[mbOK],0);
       P1:=P2;
     end;
     Index:=GetInteger( Str);                                 // Read Layerindex

@@ -41,7 +41,7 @@ var P: T2DCoordinate;
   Tmp: T3DVector;
 begin
   P:=F2DCoordinates[index].Coordinate;
-  Tmp:=SetPoint(P.X, P.Y, 0.0);
+  Tmp:=Vector( P.X,P.Y );
   Tmp:=MirrorPlane(Tmp, FMirrorplane);
   P.X:=Tmp.X;
   P.Y:=Tmp.Y;
@@ -648,7 +648,7 @@ begin
       Side1:=Side2;
     end;
     if NoPoints > 1 then begin
-      if DistPP3D(IntArray[0].Point, IntArray[NoPoints-1].Point) < 1e-4 then
+      if Distance3D(IntArray[0].Point, IntArray[NoPoints-1].Point) < 1e-4 then
       begin
         Dec(NoPoints);
       end;
@@ -1335,8 +1335,9 @@ begin                        // first assemble all points, edges and faces used
                     FMirrorPlane:=PlanePPP(P3D1, P3D2, P3D3);
                       // calculate min/max coordinates in 2D of the mirror part
                     for J:=1 to FPoints.Count do begin
-                      P3D2:=SetPoint(F2DCoordinates[J-1].Coordinate.X, F2DCoordinates[J-1].Coordinate.Y, 0.0);
-                      P3D1:=MirrorPlane(P3D2, FMirrorplane);
+                      P3D2:=Vector( F2DCoordinates[J-1].Coordinate.X,
+                                    F2DCoordinates[J-1].Coordinate.Y );
+                      P3D1:=MirrorPlane( P3D2,FMirrorplane );
                       if P3D1.X < FMin2D.X then FMin2D.X:=P3D1.X else
                       if P3D1.X > FMax2D.X then FMax2D.X:=P3D1.X;
                       if P3D1.Y < FMin2D.Y then FMin2D.Y:=P3D1.Y else
@@ -1349,8 +1350,7 @@ begin                        // first assemble all points, edges and faces used
           end;
         end;
       end;
-      if (TmpEdges <> nil) and Assigned(TmpEdges) then
-        FreeAndNil(TmpEdges);
+      if (TmpEdges <> nil) and Assigned(TmpEdges) then FreeAndNil(TmpEdges);
     end;
                                       // Assemble cornerpoints for dimensioning
     for I:=1 to FPoints.Count do begin

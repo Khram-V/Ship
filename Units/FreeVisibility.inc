@@ -17,7 +17,7 @@ end;
 
 procedure TFreeVisibility.FSetCursorIncrement(val: TFloatType);
 begin
-  if Val < 1e-7 then Val:=1e-7;
+  if Val<1e-7 then Val:=1e-7;
   if FCursorIncrement <> val then FreeShip.FileChanged:=True;
   FCursorIncrement:=val;
   if assigned(FreeShip.FOnChangeCursorIncrement) then
@@ -95,15 +95,15 @@ procedure TFreeVisibility.FSetShowMarkers(Val: boolean);
 var
   I: integer;
 begin
-  if Val <> FShowMarkers then begin
+  if Val<>FShowMarkers then begin
     FShowMarkers:=val;
     FreeShip.FileChanged:=True;
     if FreeShip.NumberofMarkers > 0 then
-//  if FreeShip.NumberOfViewports > 0 then
+    if FreeShip.NumberOfViewports > 0 then
     for I:=1 to FreeShip.NumberOfViewports do
      if FreeShip.Viewport[I-1].Zoom=1.0
-      then FreeShip.Viewport[I-1].ZoomExtents
-      else FreeShip.Viewport[I-1].Refresh;
+       then FreeShip.Viewport[I-1].ZoomExtents
+       else FreeShip.Viewport[I-1].Refresh;
   end;
 end;
 

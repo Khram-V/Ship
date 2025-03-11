@@ -40,8 +40,9 @@ end;
 *)
 function TFreeProjectSettings.FGetProjectSplitSectionLocation: TFloatType;
 begin
-  if UseDefaultSplitSectionLocation then Result:=FProjectLength / 2
-                                    else Result:=FProjectSplitSectionLocation;
+  if UseDefaultSplitSectionLocation
+     then Result:=(FreeShip.Surface.Max.X+FreeShip.Surface.Min.X)/2
+     else Result:=FProjectSplitSectionLocation;
 end;
 
 procedure TFreeProjectSettings.FSetProjectAppendageCoefficient(Val: TFloatType);
@@ -69,7 +70,7 @@ end;
 procedure TFreeProjectSettings.FSetProjectSplitSectionLocation(val: TFloatType);
 begin
   if Val<>FProjectSplitSectionLocation then begin
-    FProjectSplitSectionLocation:=val; FreeShip.FileChanged:=True;
+     FProjectSplitSectionLocation:=val; FreeShip.FileChanged:=True;
   end;
 end;
 
@@ -105,24 +106,7 @@ procedure TFreeProjectSettings.FSetUseDefaultSplitSectionLocation(Val: boolean);
 begin if val<>FUseDefaultSplitSectionLocation then
       begin FUseDefaultSplitSectionLocation:=Val; FreeShip.FileChanged:=True; end;
 end;
-{
-procedure TFreeProjectSettings.FSetProjectName( Val: string );
-begin if val<>FProjectName then            // CompareStr( val,FProjectName )<>0
-      begin FProjectName:=Val; FreeShip.FileChanged:=True; end;
-end;
-procedure TFreeProjectSettings.FSetProjectDesigner( Val: string );
-begin if val<>FProjectDesigner then
-      begin FProjectDesigner:=Val; FreeShip.FileChanged:=True; end;
-end;
-procedure TFreeProjectSettings.FSetProjectComment(Val: string);
-begin if val <> FProjectComment then
-      begin FProjectComment:=Val; FreeShip.FileChanged:=True; end;
-end;
-procedure TFreeProjectSettings.FSetProjectFileCreatedBy(Val: string);
-begin if val <> FProjectFileCreatedBy then
-      begin FProjectFileCreatedBy:=Val; FreeShip.FileChanged:=True; end;
-end;
-}
+
 procedure TFreeProjectSettings.FSetProjectShadeUnderwaterShip(Val: boolean);
 begin if val <> FProjectShadeUnderwaterShip then
       begin FProjectShadeUnderwaterShip:=Val; FreeShip.FileChanged:=True; end;
@@ -141,15 +125,7 @@ begin
                 FreeShip.HydrostaticCalculation[I-1].Calculated:=False;
   end;
 end;
-{
-procedure TFreeProjectSettings.FSetProjectUnderWaterColor(Val: TColor);
-begin if Val <> FProjectUnderWaterColor then begin
-          FProjectUnderWaterColor:=Val; FreeShip.FileChanged:=True; end;
-end;
-procedure TFreeProjectSettings.FSetProjectUnderWaterColorAlpha(Val: byte);
-begin FProjectUnderWaterColorAlpha:=Val;
-end;
-}
+
 procedure TFreeProjectSettings.FSetProjectUnits(Val: TFreeUnitType);
 var
   UnitConversionFactor: double;
@@ -223,7 +199,7 @@ begin
   FDisplIncrement:=0.1;
   FUseDisplIncrements:=True;
   FNoAngles:=19;
-  SetLength(FAngles, FNoAngles);
+  SetLength( FAngles, FNoAngles );
   FAngles[0]:=0.0;
   FAngles[1]:=2.0;
   FAngles[2]:=5.0;
@@ -402,53 +378,53 @@ begin
 end;
 
 procedure TFreeProjectSettings.SaveBinary( Destination: TFreeFileBuffer );
-var
-  Jpg: TJPegImage; I: integer;
+var Jpg: TJPegImage; I: integer;
 begin
-  if FreeShip.FileVersion >= fv120 then begin
-    Destination.Add(BlankOff(ProjectName));
-    Destination.Add(BlankOff(ProjectDesigner));
-    Destination.Add(FProjectlength);
-    Destination.Add(FProjectBeam);
-    Destination.Add(FProjectDraft);
-    Destination.Add(true);      // Destination.Add(FMainparticularsHasBeenset);
-    Destination.Add(FProjectWaterDensity); // Destination.Add(FProjectWaterTemper);
-    Destination.Add(FProjectAppendageCoefficient);
-    Destination.Add(FProjectShadeUnderwaterShip);
-    Destination.Add( (ProjectUnderWaterColor and $FFFFFF)
+  if FreeShip.FileVersion>=fv120 then begin
+    Destination.Add( BlankOff(ProjectName) );
+    Destination.Add( BlankOff(ProjectDesigner) );
+    Destination.Add( FProjectlength );
+    Destination.Add( FProjectBeam );
+    Destination.Add( FProjectDraft );
+    Destination.Add( true );    // Destination.Add(FMainparticularsHasBeenset);
+    Destination.Add( FProjectWaterDensity );
+ // Destination.Add( FProjectWaterTemper );
+    Destination.Add( FProjectAppendageCoefficient );
+    Destination.Add( FProjectShadeUnderwaterShip );
+    Destination.Add( (ProjectUnderWaterColor and $FFFFFF )
                   or (TColor( 255-ProjectUnderWaterColorAlpha ) shl 24) );
-    Destination.Add(Ord(FProjectUnits));
-    if FreeShip.FileVersion >= fv160 then begin
-      Destination.Add(FUseDefaultSplitSectionLocation);
-      Destination.Add(FProjectSplitSectionLocation);
-      if FreeShip.FileVersion >= fv165 then Destination.Add(DisableModelCheck);
+    Destination.Add( Ord(FProjectUnits) );
+    if FreeShip.FileVersion>=fv160 then begin
+       Destination.Add(FUseDefaultSplitSectionLocation);
+       Destination.Add(FProjectSplitSectionLocation);
+       if FreeShip.FileVersion>=fv165 then Destination.Add( DisableModelCheck );
     end;
-    Destination.Add(BlankOff(FProjectComment));
-    Destination.Add(BlankOff(FProjectFileCreatedBy));
-    if FreeShip.FileVersion >= fv210 then begin
+    Destination.Add( BlankOff(FProjectComment) );
+    Destination.Add( BlankOff(FProjectFileCreatedBy) );
+    if FreeShip.FileVersion>=fv210 then begin
       Destination.Add( Ord( ProjectCoefficients ) );
       Jpg:=FreeShip.FGetPreview;
       FSetSavePreview( Jpg<>nil );
       Destination.Add( FSavePreview );
       if FSavePreview then begin Destination.Add( Jpg ); FreeAndNil( Jpg ); end;
-      if FreeShip.FileVersion >= fv230 then Destination.Add(FProjectSimplifyIntersections);
-      if FreeShip.Fileversion >= fv250 then begin // save settings for hydrostatics
-        Destination.Add(FStartdraft);
-        Destination.Add(FEndDraft);
-        Destination.Add(FDraftStep);
-        Destination.Add(FTrim);                         // Crosscurves settings
-        Destination.Add(FNoDisplacements);
-        for I:=1 to FNoDisplacements do Destination.Add(FDisplacements[I-1]);
-        Destination.Add(FMinimumDisplacement);
-        Destination.Add(FMaximumDisplacement);
-        Destination.Add(FDisplIncrement);
-        Destination.Add(FUseDisplIncrements);
-        Destination.Add(FNoAngles);
-        for I:=1 to FNoAngles do Destination.Add(FAngles[I-1]);
-        Destination.Add(FNoStabTrims);
-        for I:=1 to FNoStabTrims do Destination.Add(FStabTrims[I-1]);
-        Destination.Add(FFreeTrim);
-        Destination.Add(FVCG);
+      if FreeShip.FileVersion>=fv230 then Destination.Add(FProjectSimplifyIntersections);
+      if FreeShip.Fileversion>=fv250 then begin // save settings for hydrostatics
+        Destination.Add( FStartdraft );
+        Destination.Add( FEndDraft );
+        Destination.Add( FDraftStep );
+        Destination.Add( FTrim );                       // Crosscurves settings
+        Destination.Add( Integer( 0 ) );                //  FNoDisplacements );
+//      for I:=0 to FNoDisplacements-1 do Destination.Add( FDisplacements[I] );
+        Destination.Add( FMinimumDisplacement );
+        Destination.Add( FMaximumDisplacement );
+        Destination.Add( FDisplIncrement );
+        Destination.Add( FUseDisplIncrements );
+        Destination.Add( Integer( 0 ) );                    ///*** FNoAngles );
+//      for I:=1 to FNoAngles do Destination.Add( FAngles[I-1] );
+        Destination.Add( Integer( 0 ) );                     // FNoStabTrims );
+//      for I:=1 to FNoStabTrims do Destination.Add( FStabTrims[I-1] );
+        Destination.Add( FFreeTrim );
+        Destination.Add( FVCG );
       end;
 //    if FreeShip.Fileversion>=fv317 then Destination.Add(EnableModelAutoMove);
 //    if FreeShip.Fileversion>=fv332 then Destination.Add(EnableBonjeanSAC); !!
@@ -459,5 +435,5 @@ begin
 end;
 
 //writeln( 'ready: C=$'+HexStr( FProjectUnderWaterColor,8 )
-//             +', A=$'+HexStr( FProjectUnderWaterColorAlpha,8 ) );
+//            + ', A=$'+HexStr( FProjectUnderWaterColorAlpha,8 ) );
 

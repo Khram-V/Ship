@@ -1,10 +1,10 @@
 {%MainUnit FreeShipUnit.pas}
 {-------------------------------------------------------------}
-{   TFreeEdit                                                 }
+{   TFreeEdit <== FreeShipUnit                                }
 {   Container class for all editing commandsns for the hull   }
 {-------------------------------------------------------------}
 
-function TFreeEdit.FGetRecentFile(Index: integer): string;
+function TFreeEdit.FGetRecentFile( Index: integer ): AnsiString;
 begin
   if (index<0) or (index>=FRecentFiles.Count) then exit;
   Result:=FRecentFiles[index];
@@ -43,9 +43,9 @@ begin
 end;
 
 // Delete the backgrundimage associated with this view
+
 procedure TFreeEdit.BackgroundImage_Delete(Viewport: TFreeViewport);
-var
-  I: integer;
+var I: integer;
 begin
   if MessageDlg(Userstring(68), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
@@ -57,10 +57,10 @@ begin
         FFreeShip.FileChanged:=True;
         break;
       end;
-    for I:=1 to FreeShip.NumberOfViewports do
-      if FreeShip.Viewport[I-1].ViewType = Viewport.ViewType then begin
-         FreeShip.Viewport[I-1].BackgroundImage.Clear;
-         FreeShip.Viewport[I-1].Refresh;
+    for I:=0 to FreeShip.NumberOfViewports-1 do
+      if FreeShip.Viewport[I].ViewType = Viewport.ViewType then begin
+         FreeShip.Viewport[I].BackgroundImage.Clear;
+         FreeShip.Viewport[I].Refresh;
       end;
   end;
 end;
@@ -151,7 +151,7 @@ begin
     UndoObject.FFileChanged:=FreeShip.FileChanged;
     UndoObject.FFileName:=FreeShip.Filename;
     UndoObject.FEditMode:=FreeShip.EditMode;
-    UndoObject.FFilenameSet:=FreeShip.FFilenameSet;
+    UndoObject.FFilenameSet:=FreeShip.FilenameSet;
     UndoObject.FIsTempRedoObject:=True;
     FreeShip.SaveProject(UndoObject.FUndoData);
     UndoObject.Accept;
@@ -186,7 +186,7 @@ begin
     UndoObject.FFileChanged:=FreeShip.FileChanged;
     UndoObject.FFileName:=FreeShip.Filename;
     UndoObject.FEditMode:=FreeShip.EditMode;
-    UndoObject.FFilenameSet:=FreeShip.FFilenameSet;
+    UndoObject.FFilenameSet:=FreeShip.FilenameSet;
     FreeShip.SaveProject(UndoObject.FUndoData);
     if Accept then UndoObject.Accept;
 //finally
@@ -414,12 +414,12 @@ begin
 end;
 
 // Create new controlpoints by splitting an controledge into two.
+
 procedure TFreeEdit.Edge_Split;
 var
-  I, N: integer;
+  I,N: integer;
   Edge: TFreeSubdivisionControlEdge;
-  Point: TFreeSubdivisionControlPoint;
-  Last: TFreeSubdivisionControlPoint;
+  Point,Last: TFreeSubdivisionControlPoint;
   vUndo: TFreeUndoObject;
 begin
   N:=0;
@@ -428,33 +428,26 @@ begin
 
   FreeShip.Surface.ClearMesh;
 
-  for I:=FreeShip.NumberOfSelectedControlEdges downto 1 do
-  begin
+  for I:=FreeShip.NumberOfSelectedControlEdges downto 1 do begin
     Edge:=FreeShip.Surface.SelectedControlEdge[I-1];
     Edge.Selected:=False;
     Point:=Edge.InsertControlPoint(
       MidPoint(Edge.StartPoint.Coordinate, Edge.EndPoint.Coordinate));
-    if Point <> nil then
-    begin
+    if Point <> nil then begin
       Point.Selected:=True;
       Last:=Point;
       Inc(N);
     end;
   end;
-  if Last <> nil then
-    FreeShip.ActiveControlPoint:=Last;
-  if N > 0 then
-  begin
+  if Last <> nil then FreeShip.ActiveControlPoint:=Last;
+  if N > 0 then begin
     vUndo.Accept;
     FreeShip.Built:=False;
     FreeShip.FileChanged:=True;
     Freeship.RebuildModel;
-    if Assigned(FreeShip.OnUpdateGeometryInfo) then
-      FreeShip.OnUpdateGeometryInfo(self);
-  end
-  else
-    vUndo.Delete;
-end;{TFreeEdit.Edge_Split}
+    if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
+  end else vUndo.Delete;
+end;
 
 procedure TFreeEdit.Face_Assemble;
 var
@@ -708,14 +701,14 @@ var
   Marker: TFreeMarker;
 begin
   Points:=TFasterListTFreeSubdivisionControlPoint.Create;
-  if FreeShip.ActiveControlPoint <> nil then
-    Points.Add(FreeShip.ActiveControlPoint);
+  if FreeShip.ActiveControlPoint<>nil then
+       Points.Add( FreeShip.ActiveControlPoint );
   FreeShip.Surface.ExtractPointsFromSelection( Points,NLocked );
   if Points.Count = 0 then begin
-    SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
-    ShowTranslatedValues(SelectDlg);
-    if SelectDlg.Execute( FFreeShip,fsPoints ) then
-       SelectDlg.ExtractSelectedPoints(Points)
+    SelectDlg:=TFreeSelectLayersDialog.Create( FreeShip );
+    ShowTranslatedValues( SelectDlg );
+    if SelectDlg.Execute( FFreeShip,fsPoints )
+    then SelectDlg.ExtractSelectedPoints(Points)
     else begin
       for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do FreeShip.SelectedControlPoint[I-1].Selected:=False;
       for I:=1 to FreeShip.NumberOfViewports do FreeShip.Viewport[I-1].Refresh;
@@ -723,8 +716,8 @@ begin
     FreeAndNil(SelectDlg);
   end;
   if Points.Count>0 then begin
-    if NLocked > 0 then
-      Proceed:=MessageDlg(Userstring(86)+EOL+Userstring(87),mtWarning,[mbYes,mbNo],0)=mrYes
+    if NLocked>0
+    then Proceed:=MessageDlg(Userstring(86)+EOL+Userstring(87),mtWarning,[mbYes,mbNo],0)=mrYes
     else Proceed:=True;
     if Proceed then begin
       Dialog:=TFreeRotateDialog.Create( FreeShip );
@@ -1094,77 +1087,64 @@ begin
     end;
 end;
 
-function TFreeEdit.getPreviewImage(aFileName: string): TJPegImage;
-var
-  TempFreeShip: TFreeShip;
-  vp: TFreeViewPort;
-//  thumbNail: TBitmap;
-  Source: TFreeFileBuffer;
-  ext: string;
-  pvWidth, pvHeight: integer;
+function TFreeEdit.getPreviewImage(aFileName: AnsiString): TJPegImage;
+var TempFreeShip: TFreeShip; vp: TFreeViewPort;  //  thumbNail: TBitmap;
+    Source: TFreeFileBuffer; ext: AnsiString; pvWidth,pvHeight: integer;
 begin
-  if not FileExists( aFileName ) then exit;
-  pvWidth:=600;
-  pvHeight:=400;
+  if not FileExists( aFileName ) then exit; pvWidth:=600; pvHeight:=400;
   Result:=TJPegImage.Create;
   TempFreeShip:=TFreeShip.Create(nil);
-//  try
-      TempFreeShip.Clear;
-      TempFreeShip.LoadPreview( aFileName,Result );
-      if not assigned( Result ) or ( Result.Width=0 ) then begin
-        Ext:=LowerCase(ExtractFileExt(aFileName));
-        if Ext = '.fbm' then Source:=TFreeFileBuffer.Create else
-        if Ext = '.ftm' then Source:=TFreeTextBuffer.Create else
-           begin WriteLN( 'Unsupported file format: '+Ext); exit; end;
+  TempFreeShip.Clear;
+  TempFreeShip.LoadPreview( aFileName,Result );
+  if not assigned( Result ) or ( Result.Width=0 ) then begin
+     Ext:=LowerCase(ExtractFileExt(aFileName));
+     if Ext='.fbm' then Source:=TFreeFileBuffer.Create else
+     if Ext='.ftm' then Source:=TFreeTextBuffer.Create else
+                   begin WriteLN( 'Unsupported file format: '+Ext); exit; end;
 
-        TempFreeShip.ModelIsLoaded:=False;
-        Source.LoadFromFile( aFileName );       // Load everything into memory
-        // TempFreeShip.Preferences.OpenDirectory:=ExtractFilePath(aFileName);
-        TempFreeShip.Filename:=aFileName;
-        TempFreeShip.LoadProject( Source ); // Now read the information from memory
-
-        TempFreeShip.Surface.DesiredSubdivisionLevel:=0; // no need to build it in preview in very details
-        if not TempFreeShip.Visibility.ShowControlNet
-           and TempFreeShip.Visibility.ShowInteriorEdges
-          then TempFreeShip.Surface.DesiredSubdivisionLevel:=1;
-
-    //  if assigned(FOnFaceRebuilt) then FOnFaceRebuilt( self,I+1,NumberOfControlFaces );
-        TempFreeShip.Surface.OnFaceRebuilt:=@OnFaceRebuilt;
-
-        TempFreeShip.ModelIsLoaded:=True;
-    //  TempFreeShip.Preferences.Load;
-
-        vp:=TFreeViewPort.Create(nil);
-        with vp do begin
+     TempFreeShip.ModelIsLoaded:=False;
+     Source.LoadFromFile( aFileName );           // Load everything into memory
+  // TempFreeShip.Preferences.OpenDirectory:=ExtractFilePath(aFileName);
+     TempFreeShip.Filename:=aFileName;
+     TempFreeShip.LoadProject( Source );// Now read the information from memory
+     TempFreeShip.Surface.DesiredSubdivisionLevel:=0; // no need to build it in preview in very details
+//   TempFreeShip.Visibility.ShowInteriorEdges:=True;
+     if not TempFreeShip.Visibility.ShowControlNet
+        and TempFreeShip.Visibility.ShowInteriorEdges
+       then TempFreeShip.Surface.DesiredSubdivisionLevel:=1;
+  // if assigned(FOnFaceRebuilt) then FOnFaceRebuilt( self,I+1,NumberOfControlFaces );
+     TempFreeShip.Surface.OnFaceRebuilt:=@OnFaceRebuilt;
+     TempFreeShip.ModelIsLoaded:=True;
+  // TempFreeShip.Preferences.Load;
+     vp:=TFreeViewPort.Create(nil);
+     with vp do begin
           CameraType:=ftStandard;
-          Color:=10461087;
+          Color:=$9F9F9F; //10461087;
           DoubleBuffer:=True;
           Angle:=30;
           Elevation:=20;
           PopupMenu:=PopupMenu;
           ViewType:=fvPerspective;
-          ViewportMode := vmWireFrame;    // vmShade;
+          ViewportMode := vmWireFrame; // vmShade;
           Width:=pvWidth;
           Height:=pvHeight;
-        end;
-//        vp.DestinationWidth :=pvWidth;  // shadow does not work here
-//        vp.DestinationHeight:=pvHeight;
-//        vp.ZBuffer.Initialize;
-//        vp.AlphaBuffer.Initialize;
-        Result.PixelFormat:=pf24bit;
-        Result.SetSize( pvWidth,pvHeight );
-        Result.Canvas.AntialiasingMode:=amOn;
-        vp.DrawingCanvas:=Result.Canvas;
-        TempFreeShip.AddViewport( vp );                      // fill background
-        vp.BrushColor:=vp.Color;
-        vp.Rectangle( 0,0,pvWidth,pvHeight );
-        vp.ZoomExtents;
-        TempFreeShip.DrawToViewport( vp );
-        vp.Free;
-      end;
-//  finally
-    TempFreeShip.Free;
-//  end;
+     end;
+  // vp.DestinationWidth :=pvWidth;                // shadow does not work here
+  // vp.DestinationHeight:=pvHeight;
+  // vp.ZBuffer.Initialize;
+  // vp.AlphaBuffer.Initialize( vp );
+     Result.PixelFormat:=pf24bit;
+     Result.SetSize( pvWidth,pvHeight );
+     Result.Canvas.AntialiasingMode:=amOn;
+     vp.DrawingCanvas:=Result.Canvas;
+     TempFreeShip.AddViewport( vp );                         // fill background
+     vp.BrushColor:=vp.Color;
+     vp.Rectangle( 0,0,pvWidth,pvHeight );
+     vp.ZoomExtents;
+     TempFreeShip.DrawToViewport( vp );
+     vp.Free;
+  end;
+  TempFreeShip.Free;
 end;
 
 resourcestring
@@ -1175,74 +1155,67 @@ resourcestring
   rsFreeShipTextFiles = 'FreeShip Text files';
   rsFreeShipBinaryFiles = 'FreeShip Binary files';
 
-procedure TFreeEdit.File_Load;
-var Answer     : word;
-    OpenDialog : TOpenDialog;
+procedure TFreeEdit.File_Load; var Answer: word; OpenDialog: TOpenDialog;
 begin
-   OpenDialog:=TOpenDialog.Create( FreeShip );
-   OpenDialog.InitialDir:=FreeShip.Preferences.OpenDirectory; //+ConfigDirectory
-   OpenDialog.Filter:=createDialogFilter(rsFreeShipFiles,['fbm','ftm'],False )
-             +'|'+createDialogFilter(rsFreeShipTextFiles,['ftm'],False)
-             +'|'+createDialogFilter(rsFreeShipBinaryFiles,['fbm'] );
-   Opendialog.Options:=[ofHideReadOnly];
-//  try
-     if OpenDialog.Execute then begin
-        Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
-        if (Answer=mrCancel) or FreeShip.FileChanged then exit;
-        File_Load( Opendialog.FileName );        // Load everything into memory
-     end;
-//  finally
-     Opendialog.Destroy;
-//  end
+  FreeShip.Edit.Selection_Clear;                       ///***  Selection_Clear
+  OpenDialog:=TOpenDialog.Create( FreeShip );
+  OpenDialog.InitialDir:=FreeShip.Preferences.OpenDirectory; //+ConfigDirectory
+  OpenDialog.Filter:=createDialogFilter(rsFreeShipFiles,['fbm','ftm'],False )
+            +'|'+createDialogFilter(rsFreeShipTextFiles,['ftm'],False)
+            +'|'+createDialogFilter(rsFreeShipBinaryFiles,['fbm'] );
+  Opendialog.Options:=[ofHideReadOnly];
+  if OpenDialog.Execute then begin
+     Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+     if (Answer=mrCancel) or FreeShip.FileChanged then exit;
+     File_Load( Opendialog.FileName );        // Load everything into memory
+  end;
+  Opendialog.Destroy;
 end;
 
 procedure TFreeEdit.File_Load( FileName: string );
-var
-  Source: TFreeFileBuffer; I: Integer;
-  ext: string;
+var Source: TFreeFileBuffer; I: Integer; ext: string;
 begin
   if FileName = '' then exit;
   Ext:=LowerCase( ExtractFileExt( FileName ) );
-  if Ext = '.fbm' then Source:=TFreeFileBuffer.Create else
-  if Ext = '.ftm' then Source:=TFreeTextBuffer.Create else
-     begin WriteLN( 'Unsupported file format: '+Ext); halt; end;
-//  try
-    FreeShip.Surface.Clearselection;    // Make sure no items are selected
-    FreeShip.FSelectedFlowlines.Clear;
-    FreeShip.FSelectedMarkers.Clear;
-    FreeShip.ModelIsLoaded:=False;
-    FreeShip.FileIsReadOnly:=True;
-    Source.LoadFromFile( FileName );
-    FreeShip.Filename:=FileName;
-    FreeShip.LoadProject( Source );
-//  if FileExists( FreeShip.Filename ) then
-    FreeShip.FileIsReadOnly:=( FileGetAttr( FileName ) and faReadOnly )<>0;
-    FreeShip.FFilenameSet:=True;
-    FreeShip.FStopAskingForFileVersion:=False;
-    FreeShip.ModelIsLoaded:=True;
-    Application.ProcessMessages;
-    with FreeShip do begin
-      ZoomFitAllViewports;
-      Surface.Rebuild;
-      for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;
-      Draw;
-    end;
-    TMainForm(MainForm).SetCaption;
-    TMainForm(MainForm).UpdateMenu;
-    // Freeship.RebuildModel;
-    // Freeship.ZoomFitAllViewports;
-    // SetCaption;
-    // UpdateMenu;
-    Freeship.Edit.ProgressBar:=nil;
-    if FreeShip.LinesplanFrame<>nil then
-      TFreeLinesplanframe(FreeShip.LinesplanFrame).FreeShip:=FreeShip;
-    // with TFreeLinesplanframe(FreeShip.LinesplanFrame) do begin
-    //      Viewport.ZoomExtents; UpdateMenu; end;
-//  finally
-    FreeAndNil( Source );
-    if FreeShip.ModelIsLoaded then AddToRecentFiles( FileName );
-    Undo_Clear;
-//  end;
+  if Ext='.fbm' then Source:=TFreeFileBuffer.Create else
+  if Ext='.ftm' then Source:=TFreeTextBuffer.Create else begin
+               WriteLN( 'Unsupported file format: '+Ext); halt;
+  end;
+//FreeShip.Surface.Clearselection;         // Make sure no items are selected
+  FreeShip.Edit.Selection_Clear;
+  FreeShip.FSelectedFlowlines.Clear;
+  FreeShip.FSelectedMarkers.Clear;
+  FreeShip.ModelIsLoaded:=False;
+  FreeShip.FileIsReadOnly:=True;
+  Source.LoadFromFile( FileName );
+  FreeShip.Filename:=FileName;
+  FreeShip.LoadProject( Source );
+//if FileExists( FreeShip.Filename ) then
+  FreeShip.FileIsReadOnly:=( FileGetAttr( FileName ) and faReadOnly )<>0;
+  FreeShip.FilenameSet:=True;
+  FreeShip.StopAskingForFileVersion:=False;
+  FreeShip.ModelIsLoaded:=True;
+  Application.ProcessMessages;
+  with FreeShip do begin
+    ZoomFitAllViewports;
+    Surface.Rebuild;
+    for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;
+    Draw;
+  end;
+  TMainForm( MainForm ).SetCaption;
+  TMainForm( MainForm ).UpdateMenu;
+  // Freeship.RebuildModel;
+  // Freeship.ZoomFitAllViewports;
+  // SetCaption;
+  // UpdateMenu;
+  Freeship.Edit.ProgressBar:=nil;
+  if FreeShip.LinesplanFrame<>nil then
+    TFreeLinesplanframe( FreeShip.LinesplanFrame ).FreeShip:=FreeShip;
+  // with TFreeLinesplanframe( FreeShip.LinesplanFrame ) do begin
+  //      Viewport.ZoomExtents; UpdateMenu; end;
+  FreeAndNil( Source );
+  if FreeShip.ModelIsLoaded then AddToRecentFiles( FileName );
+  Undo_Clear;
   FreeShip.FileChanged:=False;
 end;
 
@@ -1290,7 +1263,7 @@ begin
   end
   else FreeShip.FileVersion:=MinFileVersion;
 
-  FreeShip.FFilenameSet:=True;
+  FreeShip.FilenameSet:=True;
   // Check if the file already exists
   if FileExistsUTF8(FreeShip.Filename) then
   begin
@@ -1385,9 +1358,9 @@ begin result:=false;
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin WestPoint;
       FreeShip.Preferences.SaveDirectory:=ExtractFilePath( SaveDialog.FileName );
-      if CurrentVersion>FreeShip.FileVersion then FreeShip.FStopAskingForFileVersion:=False;
+      if CurrentVersion>FreeShip.FileVersion then FreeShip.StopAskingForFileVersion:=False;
       FreeShip.Filename:=Savedialog.Filename;
-      FreeShip.FFilenameSet:=True;
+      FreeShip.FilenameSet:=True;
       Result:=File_Save;
       if Result then FreeShip.Preferences.LastDirectory
                  :=ExtractFilePath( SaveDialog.FileName );
@@ -1436,14 +1409,13 @@ var
 begin
   Dialog:=TFreeCylinderDialog.Create(FreeShip);
   ShowTranslatedValues(Dialog);
-  Dialog.StartPoint:=SetPoint(0.0, 0.0, 0.0);
-  Dialog.EndPoint:=SetPoint(0.0, 1.0, 0.0);
+  Dialog.StartPoint:=Vector( 0 );
+  Dialog.EndPoint:=Vector( 0,1 );
   Dialog.Radius.Value:=1.0;
   Dialog.NoOfPoints.Value:=Dialog.NoOfPoints.MinValue+2;
 
-  if Dialog.Execute(LengthStr(FreeShip.ProjectSettings.ProjectUnits)) then
-  begin
-    CreateUndoObject(Userstring(131), True);
+  if Dialog.Execute(LengthStr(FreeShip.ProjectSettings.ProjectUnits)) then begin
+    CreateUndoObject( Userstring(131),True );
     Layer:=FreeShip.Surface.ActiveLayer;
     StartPoint:=Dialog.StartPoint;
     EndPoint:=Dialog.EndPoint;
@@ -1451,9 +1423,7 @@ begin
     NPoints:=Dialog.NoOfPoints.Value;
     Setlength(Points, 2);
     setlength(Points[0], NPoints+1);
-    setlength(Points[1], NPoints+1);
-
-    // Prepare matrices
+    setlength(Points[1], NPoints+1);                        // Prepare matrices
     Matrix:=TFreeMatrix.Create;
     Matrix.SetSize(NPoints+4, NPoints+4);
     Matrix.Fill(0.0);
@@ -1463,10 +1433,9 @@ begin
       Matrix.Value[I-1, I-1]:=2 / 3;
       Matrix.Value[I-1, I]:=1 / 6;
     end;
-    Matrix.Value[NPoints+3, NPoints+3]:=1.0;             // Invert matrix
+    Matrix.Value[NPoints+3, NPoints+3]:=1.0;                   // Invert matrix
     Inv:=Matrix.Invert;
     FreeAndNil(Matrix);
-
     OrgPts:=TFreeMatrix.Create;
     OrgPts.SetSize(3, NPoints+4);
     for I:=1 to NPoints do begin
@@ -1484,16 +1453,16 @@ begin
       OrgPts.Value[0, I]:=OrgPts.Value[NPoints, I];
       OrgPts.Value[NPoints+2, I]:=OrgPts.Value[2, I];
       OrgPts.Value[NPoints+3, I]:=OrgPts.Value[3, I];
-    end;
-    // calculate new points
+    end;                                                // calculate new points
     NewPts:=Inv.Multiply(OrgPts);
     for I:=1 to NPoints do begin
       P1.X:=NewPts.Value[I+1, 0];
       P1.Y:=NewPts.Value[I+1, 1];
       P1.Z:=NewPts.Value[I+1, 2];
       Points[0][I-1]:=P1;
-      Points[1][I-1]:=SetPoint(P1.X+EndPoint.X-StartPoint.X,
-        P1.Y+EndPoint.Y-StartPoint.Y, P1.Z+EndPoint.Z-StartPoint.Z);
+      Points[1][I-1]:=Vector( P1.X+EndPoint.X-StartPoint.X,
+                              P1.Y+EndPoint.Y-StartPoint.Y,
+                              P1.Z+EndPoint.Z-StartPoint.Z );
     end;
     Points[0][NPoints]:=Points[0][0];
     Points[1][NPoints]:=Points[1][0];
@@ -1529,9 +1498,7 @@ end;
 
 procedure TFreeEdit.Geometry_AddGridPanel;
 var
-  StartPoint: T3DVector;
-  Point: T3DVector;
-  P1, P2: T3DVector;
+  StartPoint,Point, P1,P2: T3DVector;
   I,J, Cols,Rows, Plane, Ne: integer;
   CPoints:TFasterListTFreeSubdivisionControlPoint;
   SizeA,SizeB, x,y,z, dX,dY,dZ: TFloatType;
@@ -1539,11 +1506,9 @@ var
   Layer: TFreeSubdivisionLayer;
   Grid: TFreeSubdivisionControlPointGrid;
 begin
-  Dialog:=TFreeGridDialog.Create(FreeShip);
-  Dialog.StartPoint:=SetPoint(0.0, 0.0, 0.0);
-
-  if Dialog.Execute(LengthStr(FreeShip.ProjectSettings.ProjectUnits)) then
-  begin
+  Dialog:=TFreeGridDialog.Create( FreeShip );
+  Dialog.StartPoint:=Vector( 0 );
+  if Dialog.Execute(LengthStr(FreeShip.ProjectSettings.ProjectUnits)) then begin
     CreateUndoObject(Userstring(131), True);
     Layer:=FreeShip.Surface.ActiveLayer;
     StartPoint:=Dialog.StartPoint;
@@ -1573,7 +1538,7 @@ begin
             z:=StartPoint.Z+j * SizeB / Rows;
             end;
         end;
-        Point:=SetPoint(x,y,z);
+        Point:=Vector(x,y,z);
         Grid[I][J]:=FreeShip.Surface.AddControlPoint(Point);
       end;
     end;
@@ -2001,10 +1966,10 @@ begin
           for J:=1 to Edge1.StartPoint.NumberOfEdges do begin
             Edge2:=Edge1.StartPoint.Edge[J-1] as TFreeSubdivisionControlEdge;
             if (Edge1 <> Edge2) and (Edge2.NumberOfFaces = 1) then
-              if ((DistPP3D( Edge1.StartPoint.Coordinate,Edge2.StartPoint.Coordinate ) <  EdgeError)
-              and (DistPP3D(Edge1.EndPoint.Coordinate,Edge2.EndPoint.Coordinate) < EdgeError))
-              or ((DistPP3D(Edge1.StartPoint.Coordinate, Edge2.EndPoint.Coordinate) < EdgeError)
-              and (DistPP3D(Edge1.EndPoint.Coordinate,Edge2.StartPoint.Coordinate) < EdgeError))
+              if ((Distance3D( Edge1.StartPoint.Coordinate,Edge2.StartPoint.Coordinate ) <  EdgeError)
+              and (Distance3D(Edge1.EndPoint.Coordinate,Edge2.EndPoint.Coordinate) < EdgeError))
+              or ((Distance3D(Edge1.StartPoint.Coordinate, Edge2.EndPoint.Coordinate) < EdgeError)
+              and (Distance3D(Edge1.EndPoint.Coordinate,Edge2.StartPoint.Coordinate) < EdgeError))
               then
               if DoubleEdges.IndexOf(Edge2)=-1 then DoubleEdges.AddObject( Edge1,Edge2 );
           end;
@@ -2025,29 +1990,22 @@ begin
           Point:=CtrlFace.Point[J-1];
           if Point = Edge2.StartPoint then
           begin
-            if DistPP3D(Edge2.StartPoint.Coordinate, Edge1.StartPoint.Coordinate) <
-              EdgeError then
-            begin
-              if Points.IndexOf(Edge1.StartPoint) = -1 then
-                points.Add(Edge1.StartPoint);
-            end
-            else if DistPP3D(Edge2.StartPoint.Coordinate, Edge1.EndPoint.Coordinate) <
-              EdgeError then
-              if Points.IndexOf(Edge1.EndPoint) = -1 then
-                points.Add(Edge1.EndPoint);
-          end
-          else if Point = Edge2.EndPoint then
-          begin
-            if DistPP3D(Edge2.EndPoint.Coordinate, Edge1.StartPoint.Coordinate) <
-              EdgeError then
-            begin
-              if Points.IndexOf(Edge1.StartPoint) = -1 then
-                points.Add(Edge1.StartPoint);
-            end
-            else if DistPP3D(Edge2.EndPoint.Coordinate, Edge1.EndPoint.Coordinate) <
-              EdgeError then
-              if Points.IndexOf(Edge1.EndPoint) = -1 then
-                points.Add(Edge1.EndPoint);
+            if Distance3D(Edge2.StartPoint.Coordinate, Edge1.StartPoint.Coordinate)
+             < EdgeError then begin
+               if Points.IndexOf(Edge1.StartPoint) = -1 then points.Add(Edge1.StartPoint);
+            end else
+            if Distance3D(Edge2.StartPoint.Coordinate, Edge1.EndPoint.Coordinate)
+             < EdgeError then
+               if Points.IndexOf(Edge1.EndPoint) = -1 then points.Add(Edge1.EndPoint);
+          end else
+          if Point = Edge2.EndPoint then begin
+            if Distance3D(Edge2.EndPoint.Coordinate, Edge1.StartPoint.Coordinate)
+             < EdgeError then begin
+               if Points.IndexOf(Edge1.StartPoint) = -1 then points.Add(Edge1.StartPoint);
+            end else
+            if Distance3D(Edge2.EndPoint.Coordinate, Edge1.EndPoint.Coordinate)
+             < EdgeError then
+               if Points.IndexOf(Edge1.EndPoint) = -1 then points.Add(Edge1.EndPoint);
           end
           else if Points.IndexOf(Point) = -1 then
             Points.Add(Point);
@@ -2251,41 +2209,41 @@ begin
     L:=FreeNewModelDialog.Length;
     B:=FreeNewModelDialog.Breadth;
     D:=FreeNewModelDialog.Draft/2;
-    Default[0,0]:=SetPoint(0.06, 0,   0   );   // station 0, stern
-    Default[0,1]:=SetPoint(0.04, 0.0, 1.8 );
-    Default[0,2]:=SetPoint(0,    0.01,2   );
-    Default[0,3]:=SetPoint(-0.005,0.3,2.6 );
-    Default[0,4]:=SetPoint(-0.01,0.3, 3.6 );
-    Default[1,0]:=SetPoint(0.2,  0,   0   );   // station 1
-    Default[1,1]:=SetPoint(0.18, 0.15,0.9 );
-    Default[1,2]:=SetPoint(0.17, 0.34,1.2 );
-    Default[1,3]:=SetPoint(0.16, 0.44,2   );
-    Default[1,4]:=SetPoint(0.16, 0.42,3.45);
-    Default[2,0]:=SetPoint(0.4,  0,   0   );   // station 2
-    Default[2,1]:=SetPoint(0.4,  0.32,0.3 );
-    Default[2,2]:=SetPoint(0.4,  0.45,0.6 );
-    Default[2,3]:=SetPoint(0.4,  0.5, 2   );
-    Default[2,4]:=SetPoint(0.4,  0.45,3.4 );
-    Default[3,0]:=SetPoint(0.6,  0,   0   );   // station 3
-    Default[3,1]:=SetPoint(0.6,  0.32,0.3 );
-    Default[3,2]:=SetPoint(0.6,  0.45,0.6 );
-    Default[3,3]:=SetPoint(0.6,  0.5, 2.1 );
-    Default[3,4]:=SetPoint(0.6,  0.45,3.5 );
-    Default[4,0]:=SetPoint(0.8,  0,   0   );   // station 4
-    Default[4,1]:=SetPoint(0.8,  0.12,0.5 );
-    Default[4,2]:=SetPoint(0.8,  0.2 ,1   );
-    Default[4,3]:=SetPoint(0.8,  0.36,2.3 );
-    Default[4,4]:=SetPoint(0.8,  0.42,3.8 );
-    Default[5,0]:=SetPoint(0.92, 0,   0.15);   // station 5
-    Default[5,1]:=SetPoint(0.92, 0.05,0.95);
-    Default[5,2]:=SetPoint(0.92, 0.1, 1.9 );
-    Default[5,3]:=SetPoint(0.92, 0.18,2.85);
-    Default[5,4]:=SetPoint(0.94, 0.26,3.95);
-    Default[6,0]:=SetPoint(1,    0,   1   );   // station 6, stem
-    Default[6,1]:=SetPoint(0.99, 0,   1.75);
-    Default[6,2]:=SetPoint(0.983,0,   2.5 );
-    Default[6,3]:=SetPoint(0.98, 0,   3.25);
-    Default[6,4]:=SetPoint(0.98, 0,   4   );
+    Default[0,0]:=Vector(0.06, 0,   0   );   // station 0, stern
+    Default[0,1]:=Vector(0.04, 0.0, 1.8 );
+    Default[0,2]:=Vector(0,    0.01,2   );
+    Default[0,3]:=Vector(-0.005,0.3,2.6 );
+    Default[0,4]:=Vector(-0.01,0.3, 3.6 );
+    Default[1,0]:=Vector(0.2,  0,   0   );   // station 1
+    Default[1,1]:=Vector(0.18, 0.15,0.9 );
+    Default[1,2]:=Vector(0.17, 0.34,1.2 );
+    Default[1,3]:=Vector(0.16, 0.44,2   );
+    Default[1,4]:=Vector(0.16, 0.42,3.45);
+    Default[2,0]:=Vector(0.4,  0,   0   );   // station 2
+    Default[2,1]:=Vector(0.4,  0.32,0.3 );
+    Default[2,2]:=Vector(0.4,  0.45,0.6 );
+    Default[2,3]:=Vector(0.4,  0.5, 2   );
+    Default[2,4]:=Vector(0.4,  0.45,3.4 );
+    Default[3,0]:=Vector(0.6,  0,   0   );   // station 3
+    Default[3,1]:=Vector(0.6,  0.32,0.3 );
+    Default[3,2]:=Vector(0.6,  0.45,0.6 );
+    Default[3,3]:=Vector(0.6,  0.5, 2.1 );
+    Default[3,4]:=Vector(0.6,  0.45,3.5 );
+    Default[4,0]:=Vector(0.8,  0,   0   );   // station 4
+    Default[4,1]:=Vector(0.8,  0.12,0.5 );
+    Default[4,2]:=Vector(0.8,  0.2 ,1   );
+    Default[4,3]:=Vector(0.8,  0.36,2.3 );
+    Default[4,4]:=Vector(0.8,  0.42,3.8 );
+    Default[5,0]:=Vector(0.92, 0,   0.15);   // station 5
+    Default[5,1]:=Vector(0.92, 0.05,0.95);
+    Default[5,2]:=Vector(0.92, 0.1, 1.9 );
+    Default[5,3]:=Vector(0.92, 0.18,2.85);
+    Default[5,4]:=Vector(0.94, 0.26,3.95);
+    Default[6,0]:=Vector(1,    0,   1   );   // station 6, stem
+    Default[6,1]:=Vector(0.99, 0,   1.75);
+    Default[6,2]:=Vector(0.983,0,   2.5 );
+    Default[6,3]:=Vector(0.98, 0,   3.25);
+    Default[6,4]:=Vector(0.98, 0,   4   );
     FreeShip.Clear;
     FreeShip.ProjectSettings.ProjectUnits :=
       TFreeUnitType(FreeNewModelDialog.ComboBox1.ItemIndex);
@@ -2777,7 +2735,7 @@ begin
         if not Point.Locked
         and not((Point.AnchorPoint<>nil) and Point.IsAnchorHard) then begin
           P:=ProjectPointOnline(Point.Coordinate, P1.Coordinate, P2.Coordinate);
-          if DistPP3D(P, Point.Coordinate) > 1e-7 then begin
+          if Distance3D(P, Point.Coordinate) > 1e-7 then begin
             Point.Coordinate:=P;
             Inc(NChanged);
           end;
@@ -2889,32 +2847,30 @@ end;
 
 // Select all visible items
 procedure TFreeEdit.Selection_SelectAll;
-var
-  I, J: integer;
+  var I,J: integer;
 begin
-  for I:=1 to FreeShip.NumberOfLayers do
-    if FreeShip.Layer[I-1].SurfaceVisible then
-      for J:=1 to FreeShip.Layer[I-1].Count do
-        FreeShip.Layer[I-1].Items[J-1].Selected:=True;
-  for I:=1 to FreeShip.Surface.NumberOfControlEdges do
-    if FreeShip.Surface.ControlEdge[I-1].Visible then
-      FreeShip.Surface.ControlEdge[I-1].Selected:=True;
-  for I:=1 to FreeShip.Surface.NumberOfControlPoints do
-    if FreeShip.Surface.ControlPoint[I-1].Visible then
-      FreeShip.Surface.ControlPoint[I-1].Selected:=True;
-  for I:=1 to FreeShip.Surface.NumberOfControlCurves do
-    if FreeShip.Surface.ControlCurve[I-1].Visible then
-      FreeShip.Surface.ControlCurve[I-1].Selected:=True;
-  for I:=1 to FreeShip.NumberofMarkers do
-    if FreeShip.Marker[I-1].Visible then
-      FreeShip.Marker[I-1].Selected:=True;
-  for I:=1 to FreeShip.NumberofFlowlines do
-    if FreeShip.Flowline[I-1].Visible then
-      FreeShip.Flowline[I-1].Selected:=True;
+  for I:=1 to FreeShip.NumberOfLayers do if FreeShip.Layer[I-1].SurfaceVisible then
+    for J:=1 to FreeShip.Layer[I-1].Count do FreeShip.Layer[I-1].Items[J-1].Selected:=True;
+
+  for I:=1 to FreeShip.Surface.NumberOfControlEdges do if FreeShip.Surface.ControlEdge[I-1].Visible
+    then FreeShip.Surface.ControlEdge[I-1].Selected:=True;
+
+  for I:=1 to FreeShip.Surface.NumberOfControlPoints do if FreeShip.Surface.ControlPoint[I-1].Visible
+    then FreeShip.Surface.ControlPoint[I-1].Selected:=True;
+
+  for I:=1 to FreeShip.Surface.NumberOfControlCurves do if FreeShip.Surface.ControlCurve[I-1].Visible
+    then FreeShip.Surface.ControlCurve[I-1].Selected:=True;
+
+  for I:=1 to FreeShip.NumberofMarkers do if FreeShip.Marker[I-1].Visible
+    then FreeShip.Marker[I-1].Selected:=True;
+
+  for I:=1 to FreeShip.NumberofFlowlines do if FreeShip.Flowline[I-1].Visible
+    then FreeShip.Flowline[I-1].Selected:=True;
+
   Freeship.ReDraw;
 end;
 
-// Select all control points
+///*** Select all control points
 procedure TFreeEdit.Selection_SelectAllControlPoints;
 var  I, J: integer;
 begin
@@ -2922,9 +2878,9 @@ begin
     if FreeShip.Layer[I-1].SurfaceVisible then
       for J:=1 to FreeShip.Layer[I-1].Count do
         FreeShip.Layer[I-1].Items[J-1].Selected:=True;}
-  for I:=1 to FreeShip.Surface.NumberOfControlPoints do
-    if FreeShip.Surface.ControlPoint[I-1].Visible then
-      FreeShip.Surface.ControlPoint[I-1].Selected:=True;
+  for I:=0 to FreeShip.Surface.NumberOfControlPoints-1 do
+    if FreeShip.Surface.ControlPoint[I].Visible then
+      FreeShip.Surface.ControlPoint[I].Selected:=True;
   Freeship.ReDraw;
 end;
 
