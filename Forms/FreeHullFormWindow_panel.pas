@@ -7,91 +7,72 @@ interface uses SysUtils,
      Dialogs,  Menus,
      ActnList, LightDialog,
      Printers, PrintersDlgs,
-     FreeTypes,FreeGeometry,FreeShipUnit,MDIPanel;
+     FreeTypes,FreeGeometry,FreeShipUnit,MDIPanel,
+     FreeLanguageSupport;
 type
  TFreeHullWindow = class( TMDIPanel )                       { TFreeHullWindow }
    Viewport: TFreeViewport;
-   BackgroundFrame: TAction;  Frame: TMenuItem;
-   SetLight: TAction;         Light: TMenuItem;
    ActionListHull: TActionList;
    ImagesHull: TImageList;
    PopupMenuHull: TPopupMenu;
    PrintDialogHull: TPrintDialog;
-   StandardLens: TAction;
-   WideLens: TAction;
-   Camera1: TMenuItem;
-   Widelens28mm1: TMenuItem;
-   Standard50mm1: TMenuItem;
-   ShortTeleLens: TAction;
-   Shorttelelens90mm1: TMenuItem;
-   MediumTeleLens: TAction;
-   Mediumtelelens130mm1: TMenuItem;
-   LongTeleLens: TAction;
-   Longtelelens200mm1: TMenuItem;
-   View1: TMenuItem;
-   Bodyplan1: TMenuItem;
-   Profile1: TMenuItem;
-   Planview1: TMenuItem;
-   Perspective1: TMenuItem;
-   ViewBodyPlan: TAction;
-   ViewProfile: TAction;
-   ViewPlan: TAction;
-   ViewPerspective: TAction;
-   ZoomIn: TAction;
-   Zoom1: TMenuItem;
-   ZoomIn1: TMenuItem;
-   ZoomExtents: TAction;
-   ZoomOut: TAction;
-   Zoomout1: TMenuItem;
-   All1: TMenuItem;
-   DeselectAll: TAction;
-   Deselectall1: TMenuItem;
-   Print: TAction;
-   ShowWireFrame: TAction;
-   Mode1: TMenuItem;
-   Wireframe1: TMenuItem;
-   ShowFlatShade: TAction;
-   Shade1: TMenuItem;
-   ShowGaussCurvature: TAction;
-   Gausscurvature1: TMenuItem;
-   ShowDevelopablity: TAction;
-   Developablitycheck1: TMenuItem;
-   Print1: TMenuItem;
-   SaveAsBitmap: TAction;
-   Saveimage1: TMenuItem;
-   ShadeZebra: TAction;
-   Zebrashading1: TMenuItem;
-   ImportBackGround: TAction;
-   Backgroundimage1: TMenuItem;
-   BackgroundOrigin: TAction;
-   Backgroundimage2: TMenuItem;
-   Origin1: TMenuItem;
-   BackgroundScale: TAction;
-   Setscale1: TMenuItem;
+   SetLight: TAction;            Light: TMenuItem;
+   BackgroundFrame: TAction;     Frame: TMenuItem;
+                                 Camera1: TMenuItem;
+   StandardLens: TAction;        Standard50mm1: TMenuItem;
+   WideLens: TAction;            Widelens28mm1: TMenuItem;
+   ShortTeleLens: TAction;       Shorttelelens90mm1: TMenuItem;
+   MediumTeleLens: TAction;      Mediumtelelens130mm1: TMenuItem;
+   LongTeleLens: TAction;        Longtelelens200mm1: TMenuItem;
+                                 View1: TMenuItem;
+   ViewBodyPlan: TAction;        Bodyplan1: TMenuItem;
+   ViewProfile: TAction;         Profile1: TMenuItem;
+   ViewPlan: TAction;            Planview1: TMenuItem;
+   ViewPerspective: TAction;     Perspective1: TMenuItem;
+   ZoomIn: TAction;              Zoom1: TMenuItem;
+   ZoomExtents: TAction;         ZoomIn1: TMenuItem;
+   ZoomOut: TAction;             Zoomout1: TMenuItem;
+                                 All1: TMenuItem;
+   DeselectAll: TAction;         Deselectall1: TMenuItem;
+   ShowWireFrame: TAction;       Wireframe1: TMenuItem;
+                                 Mode1: TMenuItem;
+   ShowFlatShade: TAction;       Shade1: TMenuItem;
+   ShowGaussCurvature:TAction;   Gausscurvature1: TMenuItem;
+   ShadeZebra: TAction;          Zebrashading1: TMenuItem;
+   ShowDevelopablity: TAction;   Developablitycheck1: TMenuItem;
+   Print: TAction;               Print1: TMenuItem;
+   SaveAsBitmap: TAction;        Saveimage1: TMenuItem;
+   ImportBackGround: TAction;    Backgroundimage1: TMenuItem;
+   BackgroundOrigin: TAction;    Backgroundimage2: TMenuItem;
+                                 Origin1: TMenuItem;
+   BackgroundScale: TAction;     Setscale1: TMenuItem;
    BackgroundTransparentColor: TAction;
-   Transparentcolor1: TMenuItem;
-   Backgroundclear: TAction;
-   Clear1: TMenuItem;
-   BackgroundBlending: TAction;
-   Blending1: TMenuItem;
-   BackgroundExport: TAction;
-   Export1: TMenuItem;
-   BackgroundTolerance: TAction;
-   Tolerance1: TMenuItem;
-   BackgroundVisible: TAction;
-   Visible1: TMenuItem;
+                                 Transparentcolor1: TMenuItem;
+   Backgroundclear: TAction;     Clear1: TMenuItem;
+   BackgroundBlending: TAction;  Blending1: TMenuItem;
+   BackgroundExport: TAction;    Export1: TMenuItem;
+   BackgroundTolerance: TAction; Tolerance1: TMenuItem;
+   BackgroundVisible: TAction;   Visible1: TMenuItem;
 
    //FreeHullForm: TFreeHullForm;
 
-   procedure BackgroundFrameExecute(Sender: TObject);
-   procedure FormDestroy(Sender: TObject);
    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
    procedure FormKeyPress(Sender: TObject; var Key: char);
    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+   procedure ViewportKeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
+   procedure ViewportKeyUp(Sender: TObject; var Key: Word;Shift: TShiftState);
+   procedure ViewportKeyPress(Sender: TObject; var Key: Char);
    procedure FrameClick(Sender: TObject);
+   procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
+   procedure ViewportMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
+   procedure ViewportMouseUp(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
+   procedure ViewportMouseLeave(Sender: TObject);
    procedure SetLightExecute(Sender: TObject);
+   procedure FormDestroy(Sender: TObject);
+
    procedure ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
    procedure ViewportRedraw(Sender: TObject);
+   procedure BackgroundFrameExecute(Sender: TObject);
    procedure FormActivate(Sender: TObject);
    procedure FormCreate(Sender: TObject);
    procedure FormClose(Sender: TObject; var aAction: TCloseAction);
@@ -110,20 +91,13 @@ type
    procedure ZoomInExecute(Sender: TObject);
    procedure ZoomExtentsExecute(Sender: TObject);
    procedure ZoomOutExecute(Sender: TObject);
-   procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
-   procedure ViewportMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
-   procedure ViewportMouseUp(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
    procedure DeselectAllExecute(Sender: TObject);
-   procedure ViewportMouseLeave(Sender: TObject);
    procedure PrintExecute(Sender: TObject);
    procedure ShowWireFrameExecute(Sender: TObject);
    procedure ShowFlatShadeExecute(Sender: TObject);
    procedure ShowGaussCurvatureExecute(Sender: TObject);
    procedure ShowDevelopablityExecute(Sender: TObject);
    procedure SaveAsBitmapExecute(Sender: TObject);
-   procedure ViewportKeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
-   procedure ViewportKeyUp(Sender: TObject; var Key: Word;Shift: TShiftState);
-   procedure ViewportKeyPress(Sender: TObject; var Key: Char);
    procedure ShadeZebraExecute(Sender: TObject);
    procedure ImportBackGroundExecute(Sender: TObject);
    procedure BackgroundOriginExecute(Sender: TObject);
@@ -139,33 +113,31 @@ type
 
 private                                                { Private declarations }
    FOnClose: TCloseEvent;
-   FLCLVersion: AnsiString;
-   FFormState : TFormState;
-   FFreeShip  : TFreeShip;
-   FPanned    : Boolean;  // Private variable from which can be seen if the popup menu has to be shown or not
-   FInitialPosition: TPoint;   // Initial position of the mouse cursor when the left or right button was pressed
-   FAllowPanOrZoom : Boolean;  // Flag to check whether panning or zooming is allowed or not (not when an item has just been selected)
+   FFormState: TFormState;
+   FFreeShip : TFreeShip;
+   FPanned  : Boolean;  // Private variable from which can be seen if the popup menu has to be shown or not
+   FInitialPosition: TPoint;  // Initial position of the mouse cursor when the left or right button was pressed
+   FAllowPanOrZoom : Boolean; // Flag to check whether panning or zooming is allowed or not (not when an item has just been selected)
 
    procedure FSetFreeShip( Val:TFreeShip );
    function FCaptionText: AnsiString;
    procedure CreateFreeViewport;
-   // procedure CreateComponents;
-   // procedure CopyComponentsFromFreeHullForm;
-   // protected
-   // procedure ProcessResource; virtual;
+// procedure CreateComponents;
+// procedure CopyComponentsFromFreeHullForm;
+// protected
+// procedure ProcessResource; virtual;
 public                                                  { Public declarations }
   LightDialog:TLightDialog;
   constructor Create( AOwner: TComponent ); override;
-  //constructor CreateNew(AOwner: TComponent); virtual;
   destructor Destroy; override;
   procedure SetCaption;
   procedure UpdateMenu;
   property FreeShip:TFreeShip read FFreeShip write FSetFreeShip;
-//  property OnClose: TCloseEvent read FOnClose write FOnClose;
+//constructor CreateNew(AOwner: TComponent); virtual;
+//property OnClose: TCloseEvent read FOnClose write FOnClose;
 published
   property Caption;
   property Color;
-  property LCLVersion:string read FLCLVersion write FLCLVersion;
   property PopupMenu;
   property ClientHeight;
   property ClientWidth;
@@ -180,9 +152,7 @@ end;
 
 var FreeHullWindow: TFreeHullWindow;
 
-implementation
-uses main;
-
+implementation uses main;
 {$R *.lfm}
 
 Function Hex2Bin( hex:PChar ): Pchar; var Len:Integer;
@@ -191,33 +161,37 @@ begin Len:=Length( hex ) div 2;
       HexToBin( hex,Result,Len );
 end;
 
-//{$I freehullformwindow_panel.inc}
-
 constructor TFreeHullWindow.Create(AOwner: TComponent);
-begin inherited Create(AOwner); if assigned(OnCreate) then OnCreate(Self);
-end;
+begin inherited Create(AOwner); if assigned(OnCreate) then OnCreate(Self); end;
 
 destructor TFreeHullWindow.Destroy;
-begin if assigned(ViewPort) then FreeAndNil(ViewPort); inherited;
-end;
+begin if assigned(ViewPort) then FreeAndNil(ViewPort); inherited; end;
 
 function TFreeHullWindow.FCaptionText: String;
 begin Case Viewport.ViewType of
-        fvBodyplan   : Result:='Bodyplan';
-        fvProfile    : Result:='Profile';
-        fvPlan       : Result:='Plan';
-        fvPerspective: Result:='Perspective'; else Result:='';
+        fvBodyplan   : Result:=userstring(215); // 'Bodyplan';
+        fvProfile    : Result:=userstring(216); // 'Profile';
+        fvPlan       : Result:=userstring(217); // 'Plan';
+        fvPerspective: Result:=userstring(218); // 'Perspective';
+                  else Result:='';
       end;
 end;
 
-procedure TFreeHullWindow.SetCaption; begin Caption:=FCaptionText; end;
+procedure TFreeHullWindow.SetCaption;
+    begin CaptionPanel.font.Color:=clTeal;
+          CaptionPanel.font.Name:='Times';
+          CaptionPanel.Font.Quality:=fqDefault; //Draft
+          CaptionPanel.font.Pitch:=fpFixed;
+          CaptionPanel.font.CharSet:=0;
+          Caption:=FCaptionText;
+    end;
 
 procedure TFreeHullWindow.FSetFreeShip( Val:TFreeShip );
 begin if Val<>FFreeShip then begin        // Disconnect from Freeship component
          if FFreeShip<>nil then FFreeShip.DeleteViewport( Viewport );
             FFreeShip:=Val;                    // Connect to Freeship component
          if FFreeShip<>nil then FFreeShip.AddViewport( Viewport );
-   end; // FreeHullForm.FreeShip:=FreeShip;
+   end;  // FreeHullForm.FreeShip:=FreeShip;
 end;
 
 procedure TFreeHullWindow.UpdateMenu;
@@ -228,19 +202,16 @@ begin                                        // Update all menuitems and action
    StandardLens.Checked:=Viewport.CameraType=ftStandard;
    ShortTeleLens.Checked:=Viewport.CameraType=ftShortTele;
    MediumTeleLens.Checked:=Viewport.CameraType=ftMediumTele;
-   LongTeleLens.Checked:=Viewport.CameraType=ftFarTele;
-   // viewport view
+   LongTeleLens.Checked:=Viewport.CameraType=ftFarTele;        // viewport view
    ViewBodyplan.Checked:=Viewport.ViewType=fvBodyplan;
    ViewProfile.Checked:=Viewport.ViewType=fvProfile;
    ViewPlan.Checked:=Viewport.ViewType=fvPlan;
-   ViewPerspective.Checked:=Viewport.ViewType=fvPerspective;
-   // Drawingmode
+   ViewPerspective.Checked:=Viewport.ViewType=fvPerspective;     // Drawingmode
    ShowWireframe.Checked:=Viewport.ViewportMode=vmWireframe;
    ShowFlatShade.Checked:=Viewport.ViewportMode=vmShade;
    ShowGaussCurvature.Checked:=Viewport.ViewportMode=vmShadeGauss;
    ShowDevelopablity.Checked:=Viewport.ViewportMode=vmShadeDevelopable;
-   ShadeZebra.Checked:=Viewport.ViewportMode=vmShadeZebra;
-   // background image properties
+   ShadeZebra.Checked:=Viewport.ViewportMode=vmShadeZebra; // background image properties
    ImportBackGround.Enabled:=Viewport.ViewType<>fvPerspective;
    Backgroundclear.Enabled:=Viewport.BackgroundImage.Bitmap<>nil;
    BackgroundOrigin.Enabled:=(Viewport.ViewType<>fvPerspective)
@@ -258,7 +229,9 @@ begin                                        // Update all menuitems and action
                                 (Viewport.BackgroundImage.ShowInView=Viewport.ViewType) and
                                 (Viewport.BackgroundImage.Transparent);
    BackgroundVisible.Checked:=Viewport.BackgroundImage.Visible;
-   BackgroundVisible.Enabled:=(Viewport.ViewType<>fvPerspective) and (Viewport.BackgroundImage.Bitmap<>nil) and (Viewport.BackgroundImage.ShowInView=Viewport.ViewType);
+   BackgroundVisible.Enabled:=(Viewport.ViewType<>fvPerspective)
+                          and (Viewport.BackgroundImage.Bitmap<>nil)
+                          and (Viewport.BackgroundImage.ShowInView=Viewport.ViewType);
 end;
 
 procedure TFreeHullWindow.ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
@@ -326,17 +299,16 @@ begin
     BackgroundImage.Visible:=True;
     BevelInner:=bvNone;
     BevelOuter:=bvNone;
-    BorderStyle:=bsNone;                                         // bsSingle;
+    BorderStyle:=bsNone;                                           // bsSingle;
     BorderWidth:=0;
-    CameraType:=ftStandard;                             // Color:=10461087;
+    CameraType:=ftStandard;                                 // Color:=10461087;
     ParentColor:=true;
     DoubleBuffer:=True;
     Elevation:=20;
     Margin:=1;
     PopupMenuHull:=PopupMenuHull;
-    ViewType     :=fvPerspective;  // fvBodyplan;    //
-    ViewportMode :=vmWireFrame;    // vmShade; //
-
+    ViewType     :=fvPerspective;  // fvBodyplan;
+    ViewportMode :=vmWireFrame;    // vmShade;
     OnChangeBackground:=@ViewportChangeBackground;
     OnChangeViewType  :=@ViewportChangeViewType;
     OnKeyPress        :=@ViewportKeyPress;
@@ -368,7 +340,6 @@ end;
 
 procedure TFreeHullWindow.FormClose( Sender: TObject; var aAction: TCloseAction );
     begin Freeship:=nil; aAction:=caFree; end;
-
 procedure TFreeHullWindow.PopupMenuHullPopup(Sender: TObject);
     begin UpdateMenu; end;
 procedure TFreeHullWindow.StandardLensExecute(Sender: TObject);
@@ -434,24 +405,25 @@ var P    : TPoint;
 begin
 // if (Shift <> []) then => ошибка ///*** мышка
 // if Viewport.ViewType<>fvPerspective then begin SetFocus;
-      P.X:=X;
-      P.Y:=Y;
-      P2D:=Viewport.ProjectBackTo2D( P );
-      if abs(P2D.X)<1e-6 then P2D.X:=0;
-      if abs(P2D.X)>1e+6 then P2D.X:=1e+6;
-      if abs(P2D.Y)<1e-6 then P2D.Y:=0;
-      if abs(P2D.Y)>1e+6 then P2D.Y:=1e+6;
+      P.X:=X;                               CaptionPanel.font.Color:=clBlue;
+      P.Y:=Y;                               CaptionPanel.font.Name:='Courier'; //Consolas
+      P2D:=Viewport.ProjectBackTo2D( P );   CaptionPanel.font.Style:=[fsBold];
+      if abs( P2D.X )<1e-6 then P2D.X:=0;
+      if abs( P2D.X )>1e+6 then P2D.X:=1e+6;
+      if abs( P2D.Y )<1e-6 then P2D.Y:=0;
+      if abs( P2D.Y )>1e+6 then P2D.Y:=1e+6;
       Case Viewport.ViewType of
-         fvBodyplan: Str:='Bodyplan.  Y='+FloatToStrF(P2D.X,ffFixed,6,4)+'  Z='+FloatToStrF(P2D.Y,ffFixed,6,4);
-         fvProfile : Str:='Profile.  X='+FloatToStrF(P2D.X,ffFixed,6,4)+'  Z='+FloatToStrF(P2D.Y,ffFixed,6,4);
-         fvPlan    : Str:='Plan.  X='+FloatToStrF(P2D.X,ffFixed,6,4)+'  Y='+FloatToStrF(P2D.Y,ffFixed,6,4);
+         fvBodyplan: Str:='.  Y='+FloatToStrF(P2D.X,ffFixed,6,4)+'  Z='+FloatToStrF(P2D.Y,ffFixed,6,4);
+         fvProfile : Str:='.  X='+FloatToStrF(P2D.X,ffFixed,6,4)+'  Z='+FloatToStrF(P2D.Y,ffFixed,6,4);
+         fvPlan    : Str:='.  X='+FloatToStrF(P2D.X,ffFixed,6,4)+'  Y='+FloatToStrF(P2D.Y,ffFixed,6,4);
          fvPerspective: begin
-         { Str:=format('Perspective. Pan.X=%d Pan.Y=%d Elevation=%6.2f Rotation=%6.2f Zoom=%6.4f Scale=%6.3f',
+         { Str:=format('. Pan.X=%d Pan.Y=%d Elevation=%6.2f Rotation=%6.2f Zoom=%6.4f Scale=%6.3f',
              [Viewport.Pan.X,Viewport.Pan.Y,Viewport.Elevation,Viewport.Angle,Viewport.Zoom,Viewport.Scale] );
          } P3D:=Viewport.ProjectBack( Point(X,Y),ZERO );
-           Str:=format('Perspective.  X=%-4.2f  Y=%-4.2f  Z=%-4.2f',[P3D.X,P3D.Y,P3D.Z]);
+           Str:=format( '.  X=%-4.2f  Y=%-4.2f  Z=%-4.2f',[P3D.X,P3D.Y,P3D.Z]);
          end else Str:='';
-      end; Caption:=Str;
+      end;
+      Caption:=FCaptionText+Str;
 // end;
    if (Shift=[ssLeft]) and (FAllowPanOrZoom) then begin // Zoom in or zoom out
       if (Viewport.ViewType<>fvPerspective) and (abs(FInitialPosition.Y-Y)>4)
@@ -532,23 +504,22 @@ procedure TFreeHullWindow.ShowDevelopablityExecute(Sender: TObject);
 procedure TFreeHullWindow.SaveAsBitmapExecute( Sender: TObject );
 var Str,vpt: AnsiString;
 begin
-  Case Viewport.ViewType of
-     fvBodyplan     : vpt:='_Bodyplan';
-     fvProfile      : vpt:='_Profile';
-     fvPlan         : vpt:='_Plan';
-     fvPerspective  : vpt:='_Perspective'; else vpt:='';
-  end;
+{  Case Viewport.ViewType of
+     fvBodyplan   : vpt:='_Bodyplan';
+     fvProfile    : vpt:='_Profile';
+     fvPlan       : vpt:='_Plan';       +FCaptionText+
+     fvPerspective: vpt:='_Perspective'; else vpt:='';
+   end; }
   Str:=Freeship.Preferences.ExportDirectory
-     + ChangeFileExt( ExtractFilename(
-       ChangeFileExt( Freeship.Filename,'' ) )+vpt,'.png' );
+     + ChangeFileExt( ExtractFilename
+     ( ChangeFileExt( Freeship.Filename,'' ) )+'_'+FCaptionText,'.png' );
   Viewport.SaveAsBitmap( Str,true );
 end;
 
 procedure TFreeHullWindow.ViewportKeyDown
 ( Sender:TObject; var Key:Word; Shift:TShiftState );
-begin
-   if not Viewport.Focused then Viewport.SetFocus;
-   Freeship.KeyDown(Sender,Key,Shift);
+begin if not Viewport.Focused then Viewport.SetFocus;
+      Freeship.KeyDown(Sender,Key,Shift);
 end;
 
 procedure TFreeHullWindow.ViewportKeyUp(Sender: TObject; var Key: Word;Shift: TShiftState);
@@ -570,33 +541,32 @@ procedure TFreeHullWindow.BackgroundTransparentColorExecute(Sender: TObject);
 procedure TFreeHullWindow.BackgroundBlendingExecute(Sender: TObject);
     begin Viewport.BackgroundImage.SetBlendingValue; end;
 
-procedure TFreeHullWindow.BackgroundclearExecute(Sender: TObject);
+procedure TFreeHullWindow.BackgroundclearExecute( Sender: TObject );
 begin
-   if (Viewport.BackgroundImage.Bitmap<>nil) and (Viewport.BackgroundImage.Visible)
-   then begin if Freeship<>nil then Freeship.Edit.BackgroundImage_Delete(Viewport);
-   end;
+  if (Viewport.BackgroundImage.Bitmap<>nil) and (Viewport.BackgroundImage.Visible)
+  then begin if Freeship<>nil then Freeship.Edit.BackgroundImage_Delete(Viewport);
+  end;
 end;
 
 procedure TFreeHullWindow.ViewportRequestBackgroundImage(Sender: TObject);
 var I:Integer; Data:TFreeBackgroundImageData; Pt:TPoint;
 begin
-   if Freeship<>nil then begin
-      Data:=nil;
-      for I:=1 to Freeship.NumberofBackgroundImages
-       do if Freeship.BackgroundImage[I-1].AssignedView=Viewport.ViewType then
-         Data:=Freeship.BackgroundImage[I-1];
-      if Data<>nil
-      then Viewport.BackgroundImage.AssignData
-                  ( Data.Image,Data.AssignedView,Data.Origin,Data.Scale,
-                    Data.Transparent,Data.TransparentColor,Data.BlendingValue,
-                    Data.Quality,Data.Tolerance,True )
-      else if Viewport.BackgroundImage.Bitmap<>nil then begin
-         Pt.X:=0;
-         Pt.Y:=0;
-         Viewport.BackgroundImage.AssignData
-                  ( nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True );
-      end;
-   end;
+  if Freeship<>nil then begin Data:=nil;
+     for I:=0 to Freeship.NumberofBackgroundImages-1
+      do if Freeship.BackgroundImage[I].AssignedView=Viewport.ViewType then
+      Data:=Freeship.BackgroundImage[I];
+     if Data<>nil
+     then Viewport.BackgroundImage.AssignData
+                 ( Data.Image,Data.AssignedView,Data.Origin,Data.Scale,
+                   Data.Transparent,Data.TransparentColor,Data.BlendingValue,
+                   Data.Quality,Data.Tolerance,True )
+     else if Viewport.BackgroundImage.Bitmap<>nil then begin
+        Pt.X:=0;
+        Pt.Y:=0;
+        Viewport.BackgroundImage.AssignData
+               ( nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True );
+     end;
+  end;
 end;
 
 procedure TFreeHullWindow.ViewportChangeBackground(Sender: TObject);

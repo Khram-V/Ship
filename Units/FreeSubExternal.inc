@@ -527,8 +527,6 @@ begin
       ExportSpline(FDiagonals[I-1], 'diagonals');
   FreeAndNil(Dest);
 end;{TFreeDevelopedPatch.SaveToDXF}
-
-
 //
 // The Fef file format (FREE!ship Exchange Format) 
 // is of no interest to most users since it is mainly
@@ -566,7 +564,7 @@ procedure TFreeSubdivisionSurface.ImportFEFFile(Strings: TStringList; var LineNr
 var
   Str: AnsiString;
   I,J,N,Np, Index: integer;
-  Point, P1, P2: TFreeSubdivisionControlPoint;
+  Point,P1,P2: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
   Face: TFreeSubdivisionControlFace;
   Layer: TFreeSubdivisionLayer;
@@ -577,9 +575,10 @@ var
         FControlPoints.Add( Result );
   end;{NewPoint}
 begin
-  FIsLoading:=true;  // Read layer information
-  Inc(LineNr); Str:=Strings[LineNr];
-  N:=GetInteger( Str );
+  FIsLoading:=true;                                   // Read layer information
+  Inc( LineNr ); Str:=Strings[LineNr]; N:=GetInteger( Str );
+  if N=0 then               ///*** в преобразованиях из Delft есть лишний нолик
+     begin Inc( LineNr ); Str:=Strings[LineNr]; N:=GetInteger( Str ); end;
   for I:=1 to N do begin
     if I>NumberOfLayers then Layer:=self.AddNewLayer
                         else Layer:=self.Layer[I-1];
@@ -629,7 +628,7 @@ begin
     for J:=1 to Face.FPoints.Count do begin
       P2:=Face.Point[J-1];
       Edge:=EdgeExists(P1,P2) as TFreeSubdivisionControlEdge;
-      if Edge<>nil then Edge.AddFace(Face);                              // else MessageDlg( 'Could not find edge!',mtError,[mbOK],0);
+      if Edge<>nil then Edge.AddFace(Face);                                     // else MessageDlg( 'Could not find edge!',mtError,[mbOK],0);
       P1:=P2;
     end;
     Index:=GetInteger( Str);                                 // Read Layerindex
@@ -659,22 +658,20 @@ begin
   FIsLoading:=true;
   GridPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
   FacePoints:=TFasterListTFreeSubdivisionControlPoint.Create;
-  for I:=1 to Rows-1 do begin
-    for J:=1 to Cols-1 do begin
-      FacePoints.Clear;
+  for I:=1 to Rows-1 do
+  for J:=1 to Cols-1 do begin FacePoints.Clear;
       P11:=Grid[I-1,J-1];
       P12:=Grid[I-1,J];
       P22:=Grid[I,J];
       P21:=Grid[I,J-1];
-      if FacePoints.IndexOf(P11) = -1 then FacePoints.Add(P11);
-      if FacePoints.IndexOf(P12) = -1 then FacePoints.Add(P12);
-      if FacePoints.IndexOf(P22) = -1 then FacePoints.Add(P22);
-      if FacePoints.IndexOf(P21) = -1 then FacePoints.Add(P21);
-      if FacePoints.Count >= 3 then
-        if Layer <> nil then AddControlFace(FacePoints, True, Layer)
-                        else AddControlFace(FacePoints, True);
+      if FacePoints.IndexOf(P11)=-1 then FacePoints.Add(P11);
+      if FacePoints.IndexOf(P12)=-1 then FacePoints.Add(P12);
+      if FacePoints.IndexOf(P22)=-1 then FacePoints.Add(P22);
+      if FacePoints.IndexOf(P21)=-1 then FacePoints.Add(P21);
+      if FacePoints.Count>=3 then
+      if Layer<>nil then AddControlFace( FacePoints,True,Layer )
+                    else AddControlFace( FacePoints,True );
       GridPoints.AddList(FacePoints);
-    end;
   end;
 { // set crease edges
   for I:=2 to Cols do begin

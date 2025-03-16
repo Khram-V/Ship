@@ -595,16 +595,17 @@ begin
 }         end;
         ExitDo:               // Рассчитываем новую осадку по грузовому размеру
           id:=id-1;
-        //    Strings.Add(S4+MakeLength('Id=',50)+' : '+Makelength(id,-1,8));
-        SFINEX1(id, Displ, T, HydObject.Data.Weight_, Tr);
-        //    Strings.Add(S4+MakeLength('T raschet=',50)+' : '+Makelength(Tr,-1,8));
+        // Strings.Add(S4+MakeLength('Id=',50)+' : '+Makelength(id,-1,8));
+        Interpolation( HydObject.Data.Weight_,id,Displ,T,Tr );
+//      SFINEX1( id,Displ,T,HydObject.Data.Weight_,Tr );
+        // Strings.Add(S4+MakeLength('T raschet=',50)+' : '+Makelength(Tr,-1,8));
         Owner.ProjectSettings.ProjectDraft:=Tr;        // Уточняем новую осадку
-        //    Strings.Add(S4+MakeLength('Максимальная осадка',50)+' : '+Makelength(h_min+Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        //    Strings.Add(S4+MakeLength('Новая осадка',50)+' : '+Makelength(Tr,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+        // Strings.Add(S4+MakeLength('Максимальная осадка',50)+' : '+Makelength(h_min+Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+        // Strings.Add(S4+MakeLength('Новая осадка',50)+' : '+Makelength(Tr,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
         HydObject.Draft:=Tr;
         HydObject.Calculate;
         HydObject.CalculateGravity;
-        //    dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement)/HydObject.Data.WaterplaneArea/Owner.ProjectSettings.ProjectWaterDensity;
+        // dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement)/HydObject.Data.WaterplaneArea/Owner.ProjectSettings.ProjectWaterDensity;
         if HydObject.Data.WaterplaneArea > 0.1 then
           dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement) /
             HydObject.Data.WaterplaneArea / Owner.ProjectSettings.ProjectWaterDensity
@@ -613,7 +614,7 @@ begin
             Owner.ProjectSettings.ProjectLength / Owner.ProjectSettings.ProjectBeam /
             Owner.ProjectSettings.ProjectWaterDensity;
         Owner.ProjectSettings.ProjectDraft:=Tr+dT_;
-        if abs(Tr / (Tr+dT_)-1) > 0.1 then begin dT:=Tr/9; goto new; end;
+        if abs( Tr/(Tr+dT_)-1)>0.1 then begin dT:=Tr/9; goto new; end;
         if Owner.ProjectSettings.ProjectDraft > 1.1 * Tr then
           Owner.ProjectSettings.ProjectDraft:=Draft+dT+FData.ModelMin.Z;
 {
@@ -1803,7 +1804,7 @@ begin
 
   Calculated:=True;
 end;{TFreeHydrostaticCalc.Calculate}
-
+(*
 procedure TFreeHydrostaticCalc.CalculateVolume(WaterlinePlane: T3DPlane);
 var
   I, J, K, L: integer;
@@ -2021,7 +2022,7 @@ begin
   end;
   Calculated:=True;
 end;
-
+*)
 procedure TFreeHydrostaticCalc.Clear;
 begin
   Calculated:=False;
@@ -2035,25 +2036,21 @@ begin
 end;
 
 constructor TFreeHydrostaticCalc.Create(Owner: TFreeShip);
-begin
-  inherited Create;
+begin inherited Create;
   FOwner:=Owner;
   FMidshipSection:=TFreeIntersection.Create(Owner);
   Owner.FHydrostaticCalculations.Add(self);
   Clear;
 end;
 
-destructor TFreeHydrostaticCalc.Destroy;
-var
-  Index: integer;
+destructor TFreeHydrostaticCalc.Destroy; var Index: integer;
 begin
   Clear;
   Index:=Owner.FHydrostaticCalculations.IndexOf(self);
-  if Index <> -1 then
-    Owner.FHydrostaticCalculations.Delete(Index);
+  if Index <> -1 then Owner.FHydrostaticCalculations.Delete(Index);
   FreeAndNil(FMidshipSection);
   inherited Destroy;
-end;{TFreeHydrostaticCalc.Destroy}
+end;
 
 procedure TFreeHydrostaticCalc.ShowData(Mode: TFreeHydrostaticsMode);
 var Strings: TStringList;
@@ -2065,18 +2062,13 @@ begin
   AddData( Strings,Mode,';' );
   Dialog:=TFreeHydrostaticsDialog.Create( Owner );
   ShowTranslatedValues( Dialog );
-//Strings.SaveToFile('FreeHydrostaticsMode.ShowData.Strings.txt');
-//try
+//  Strings.SaveToFile( 'FreeHydrostaticsMode.ShowData.Strings.txt' );
     Dialog.Edit.Lines.BeginUpdate;
-    Dialog.Edit.Clear;                              //writeln('FreeHydrostaticsMode: Text >>>');
-    for I:=0 to Strings.Count-1 do
-      Dialog.Edit.Lines.Add( Strings.Strings[I] );  //writeln(Strings.Strings[I-1]);
-                                                    //writeln('FreeHydrostaticsMode: Text <<<');
+    Dialog.Edit.Clear;
+    for I:=0 to Strings.Count-1 do Dialog.Edit.Lines.Add( Strings.Strings[I] );
     Dialog.Edit.Lines.EndUpdate;
     Dialog.ShowModal;
-//finally
     FreeAndNil(Strings);
     FreeAndNil(Dialog);
-//end;
 end;
 

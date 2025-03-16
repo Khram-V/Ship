@@ -463,7 +463,7 @@ begin
     for I:=1 to Fragments do begin
       V2:=Value((I-1) / (Fragments-1));
       P2:=Viewport.Project(V2);
-      Tmp:=Round(DistanceToLine(P1, P2, X, Y, Param));
+      Tmp:=Round( DistanceToLine( P1,P2, X,Y, Param ) );
       if Tmp < Result then begin
         Result:=Tmp;
         P:=Interpolate(V1, V2, Param);

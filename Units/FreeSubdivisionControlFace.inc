@@ -768,7 +768,7 @@ begin
       // blend layer color with underwater color
       uwR:=GetRValue(Surface.UnderWaterColor);
       uwG:=GetGValue(Surface.UnderWaterColor);
-      uwB:=GetGValue(Surface.UnderWaterColor);
+      uwB:=GetBValue(Surface.UnderWaterColor);
       uwA:=Surface.UnderWaterColorAlpha;
       Ru:=(R * (255-uwA)+ uwR * uwA) div 255;
       Gu:=(G * (255-uwA)+ uwG * uwA) div 255;

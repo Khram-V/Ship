@@ -127,8 +127,7 @@ end;
 
 procedure TFreeVisibility.FSetShowButtocks(Val: boolean);
 begin
-  if Val <> FShowButtocks then
-  begin
+  if Val <> FShowButtocks then begin
     FShowButtocks:=val;
     FreeShip.FileChanged:=True;
     FreeShip.Redraw;
@@ -137,8 +136,7 @@ end;
 
 procedure TFreeVisibility.FSetShowDiagonals(Val: boolean);
 begin
-  if Val <> FShowDiagonals then
-  begin
+  if Val <> FShowDiagonals then begin
     FShowDiagonals:=val;
     FreeShip.FileChanged:=True;
     FreeShip.Redraw;
@@ -151,16 +149,15 @@ begin
     FShowFlowlines:=val;
     if not FShowFlowlines then FreeShip.FSelectedFlowlines.Clear;
     FreeShip.FileChanged:=True;
-    if FreeShip.NumberOfFlowLines > 0 then
-      FreeShip.Redraw;
+    if FreeShip.NumberOfFlowLines>0 then FreeShip.Redraw;
   end;
 end;
 
 procedure TFreeVisibility.FSetShowFreeObjects(Val: boolean);
 begin
-  if Val <> ShowFreeObjects then begin
+  if Val<>ShowFreeObjects then begin
     FShowFreeObjects:=val;
-    //FreeShip.FileChanged:=True;
+    FreeShip.FileChanged:=True;
     FreeShip.Redraw;
   end;
 end;
@@ -182,8 +179,7 @@ begin
     if not val then
       for I:=FreeShip.Surface.NumberOfControlCurves downto 1 do
         FreeShip.Surface.ControlCurve[I-1].Selected:=False;
-    if FreeShip.Surface.NumberOfControlCurves > 0 then
-      FreeShip.Redraw;
+    if FreeShip.Surface.NumberOfControlCurves > 0 then FreeShip.Redraw;
     FreeShip.Filechanged:=True;
   end;
 end;

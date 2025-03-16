@@ -8,34 +8,26 @@
 {-----------------------------------------------------------------}
 // calculates the amount of bytes used for each undo object
 function TFreeUndoObject.FGetMemory: integer;
-begin
-  Result:=4+             // pointer to self
-    4+                     // pointer to owner
-    length( Undotext )+    // length of string
-    length( FFilename )+   // length of filename string
-    FUndoData.Count;         // Actual saved data
-end;
-
+   begin Result:= sizeof( Pointer )  +  // pointer to self
+                  sizeof( Pointer )  +  // pointer to owner
+                  length( Undotext ) +  // length of string
+                  length( FFilename) +  // length of filename string
+                  FUndoData.Count;      // Actual saved data
+   end;
 function TFreeUndoObject.FGetTime: string;
-begin Result:=TimeToStr(FTime); end;
-
+   begin Result:=TimeToStr(FTime); end;
 function TFreeUndoObject.FGetUndoText: string;
-begin Result:=FUndoText; end;
+   begin Result:=FUndoText; end;
 
-procedure TFreeUndoObject.Accept;
-var I: integer; Obj: TFreeUndoObject;
-begin
-//try
-    // Add the undo data to the undolist
+procedure TFreeUndoObject.Accept; Var I: integer; Obj: TFreeUndoObject;
+begin                                      // Add the undo data to the undolist
     if Owner.UndoCount > 0 then
-      if Owner.UndoObject[Owner.UndoCount-1].FIsTempRedoObject then
-        Owner.UndoObject[Owner.UndoCount-1].Delete;
-    // delete all undo objects after the current one
-    for I:=FOwner.FUndoObjects.Count downto Owner.FUndoPosition+1 do
-      Owner.UndoObject[I-1].Delete;
+    if Owner.UndoObject[Owner.UndoCount-1].FIsTempRedoObject then
+       Owner.UndoObject[Owner.UndoCount-1].Delete; // delete all undo objects after the current one
+    for I:=FOwner.FUndoObjects.Count downto Owner.FUndoPosition+1 do Owner.UndoObject[I-1].Delete;
     Owner.FUndoObjects.Add(self);
     Owner.FUndoPosition:=Owner.FUndoObjects.Count;
-    while (FOwner.UndoMemory / (1024 * 1024) > Owner.Preferences.MaxUndoMemory)
+    while (FOwner.UndoMemory / (1024*1024) > Owner.Preferences.MaxUndoMemory)
       and (Owner.FUndoObjects.Count > 2)
     do begin
       Obj:=TFreeUndoObject(FOwner.FUndoObjects[0]);
@@ -44,9 +36,7 @@ begin
       Dec(Owner.FUndoPosition);
       Dec(Owner.FPreviousUndoPosition);
     end;
-//finally
     if Assigned(Owner.FOnUpdateUndoData) then Owner.FOnUpdateUndoData(Owner);
-//end;
 end;
 
 constructor TFreeUndoObject.Create(Owner: TFreeShip);

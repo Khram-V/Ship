@@ -7,7 +7,7 @@ uses
      Forms,    Dialogs,
      Math,     StdCtrls,
      Buttons,  ExtCtrls,
-     Spin,FreeTypes,FreeGeometry;
+     Spin,FreeTypes,FreeGeometry,FreeStringUtils;
 type
   TEntryMethod = ( emNone, emTyping, emArrowKeys, emMouse, emPaste );
 
@@ -79,19 +79,8 @@ end;
 var FreeControlPointForm: TFreeControlPointForm;
 
 implementation
-
 uses FreeShipUnit;
-  {$R *.lfm}
-resourcestring                  //UTF8 degree sign   °αβγ
-  rsAngle = 'Angle';
-  rsAngles = 'Angles';
-  rsLength = 'Length';
-  rsNameIsNotUnique='Name Is Not Unique';
-  rsPointNameChanged='Point Name Changed';
-  rsXCoordinate = 'X Coordinate';
-  rsYCoordinate = 'Y Coordinate';
-  rsZCoordinate = 'Z Coordinate';
-
+{$R *.lfm}
 
 procedure TFreeControlPointForm.FSetActiveControlPoint(Val:TFreeSubdivisionControlPoint);
 var I,N,Npoi : Integer;
@@ -137,15 +126,15 @@ begin
       if Npoi>=4 then begin
          R:=Distance3D( C0,CN );
          EditDistance.Value:=R;
-         len:=0;
-         for i:=1 to Npoi do begin
+         Len:=0;
+         for I:=1 to Npoi do begin
            Cp:=TFreeShip(FreeShip).SelectedControlPoint[i-1].Coordinate;
            Ci:=TFreeShip(FreeShip).SelectedControlPoint[i].Coordinate;
            R:=Distance3D( Cp,Ci );
-           len:=len+R;
+           Len:=Len+R;
          end;
-         Label5.Caption:=rsLength;
-         EditAngles.Value:=len;
+         Label5.Caption:='Length';
+         EditAngles.Value:=Len;
       end;
       if R=0 then R:=0.0001;
       if Npoi=1 then begin
@@ -385,7 +374,7 @@ begin
             //if abs(P.X-Val)>1e-5 then
             begin
                if not saved then begin
-                  TFreeShip(FreeShip).Edit.CreateUndoObject(rsXCoordinate,True);
+                  TFreeShip(FreeShip).Edit.CreateUndoObject('X Coordinate',True);
                   saved:=true;
                end;
                if (OrdEdit = EditX) then P.X:=Val;
@@ -496,7 +485,7 @@ begin
             Val:=EditY.Value;
             if abs(P.Y-Val)>1e-5 then begin
                if not saved then begin
-                  TFreeShip(FreeShip).Edit.CreateUndoObject(rsYCoordinate,True);
+                  TFreeShip(FreeShip).Edit.CreateUndoObject('Y Coordinate',True);
                   saved:=true;
                end;
                P.Y:=Val;
@@ -548,7 +537,7 @@ begin
             Val:=EditZ.Value;
             if abs(P.Z-Val)>1e-5 then begin
                if not saved then begin
-                  TFreeShip(FreeShip).Edit.CreateUndoObject(rsZCoordinate,True);
+                  TFreeShip(FreeShip).Edit.CreateUndoObject('Z Coordinate',True);
                   saved:=true;
                end;
                P.Z:=Val;
@@ -704,7 +693,7 @@ begin
    if (S='') or (TFreeShip(FreeShip).FindByName(S) = nil) then begin
       EditName.Color:=clDefault;
       if not saved then begin
-         TFreeShip(FreeShip).Edit.CreateUndoObject(rsPointNameChanged,True);
+         TFreeShip(FreeShip).Edit.CreateUndoObject('Point Name Changed',True);
          saved:=true;
       end;
       ActiveControlPoint.Name:=S;
@@ -717,7 +706,7 @@ begin
       end;
    end else begin
      EditName.Color:=clYellow;
-     ShowMessage( rsNameIsNotUnique );
+     ShowMessage( 'Name Is Not Unique' );
    end;
 end;
 

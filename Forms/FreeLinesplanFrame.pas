@@ -58,7 +58,7 @@ type
   public                                                { Public declarations }
     Viewport: TFreeViewport;
     FontSize: integer;
-    constructor Create(TheOwner: TComponent); override;
+    constructor Create( TheOwner: TComponent ); override;
     procedure UpdateMenu;
     property FreeShip: TFreeShip read FFreeShip write FSetFreeShip;
   end;
@@ -76,7 +76,7 @@ function CalculateSpace( Percentage, Min,Max: TFloatType): TFloatType;
 
 procedure TFreeLinesplanFrame.CreateViewport;
 begin
-  Viewport:=TFreeViewport.Create(Self);
+  Viewport:=TFreeViewport.Create( Self );
   with Viewport do begin
     Parent:=Self;
     Left:=0;
@@ -110,7 +110,7 @@ begin
 end;
 
 constructor TFreeLinesplanFrame.Create( TheOwner: TComponent );
-      begin inherited Create(TheOwner); CreateViewport; end;
+      begin inherited Create( TheOwner ); CreateViewport; end;
 
 procedure TFreeLinesplanFrame.UpdateMenu;
 begin
@@ -146,7 +146,7 @@ begin
 end;
 
 
-procedure TFreeLinesplanFrame.PrintExecute(Sender: TObject);
+procedure TFreeLinesplanFrame.PrintExecute( Sender: TObject );
 begin
   if Viewport.Width > Viewport.Height then Printer.Orientation:=poLandscape
                                       else Printer.Orientation:=poPortrait;

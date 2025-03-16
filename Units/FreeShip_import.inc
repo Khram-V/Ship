@@ -9,7 +9,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create( FreeShip );
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory; //+ConfigDirectory
-  OpenDialog.Filter:=createDialogFilter( rsOBJfile,['obj'] );
+  OpenDialog.Filter:=createDialogFilter( 'OBJ file',['obj'] );
   if OpenDialog.Execute then begin
     if not CheckIfChangedAndAskToSave() then begin
       FreeAndNil( OpenDialog ); exit;
@@ -17,7 +17,7 @@ begin
     PrevCursor:=Screen.Cursor;
     Screen.Cursor:=crHourglass;
 //    try
-      CreateUndoObject( rsOBJfile,True );
+      CreateUndoObject( 'OBJ file',True );
       FreeShip.Clear;
 
       Strings:=TStringList.Create;
@@ -199,10 +199,7 @@ begin
     end else MessageDlg( UserString(97), mtError, [mbOK], 0);
 end;
 //
-//  Virtual Modeling
-resourcestring
-rsVRMLFiles = 'VRML files';
-//
+// Virtual Modeling
 // Load a VRML file
 procedure TFreeEdit.File_ImportVRML;
 var
@@ -212,7 +209,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsVRMLFiles, ['wrl','vrml']);
+  OpenDialog.Filter:=createDialogFilter('VRML files',['wrl','vrml']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
@@ -263,7 +260,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=ExtractFilepath(Application.ExeName);
-  OpenDialog.Filter:=createDialogFilter( rs3DTextFile,['txt'] );
+  OpenDialog.Filter:=createDialogFilter( '3D text file',['txt'] );
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     Frames:=TFasterListTFreeSpline.Create;
@@ -697,7 +694,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rs3DTextFile, ['txt']);
+  OpenDialog.Filter:=createDialogFilter('3D text file',['txt']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then
   begin
@@ -901,9 +898,6 @@ begin
   FreeAndNil(OpenDialog);
 end;
 
-resourcestring
-rsMichletWaveElevationsFile = 'Michlet wave elevations file';
-
 procedure TFreeEdit.File_Import_MichletWaves;
 var
   FFile: TextFile;
@@ -921,7 +915,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory; //+ConfigDirectory
-  OpenDialog.Filter:=createDialogFilter(rsMichletWaveElevationsFile,['mlt']);
+  OpenDialog.Filter:=createDialogFilter('Michlet wave elevations file',['mlt']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     assignfile( FFile,Opendialog.Filename );
@@ -1167,7 +1161,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsCareneXYZFiles, ['xyz']);
+  OpenDialog.Filter:=createDialogFilter( 'Carene XYZ files',['xyz'] );
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
 
@@ -1260,7 +1254,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsTextFiles, ['txt']);
+  OpenDialog.Filter:=createDialogFilter(rsTextFile, ['txt']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then
   begin
@@ -1407,9 +1401,6 @@ begin
    OpenDialog.Destroy;
 end; {TFreeEdit.File_ImportFEF}
 *)
-resourcestring
-rsFREEShipExchangeFormatFile = 'FREE!ship Exchange Format file';
-
 procedure TFreeEdit.File_ImportFEF;
 var
   OpenDialog: TOpenDialog;
@@ -1420,7 +1411,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsFREEShipExchangeFormatFile, ['fef']);
+  OpenDialog.Filter:=createDialogFilter('FREE!ship Exchange Format file',['fef']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
@@ -1466,7 +1457,7 @@ var OpenDialog: TOpenDialog; Answer: word;
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsCarlssonHullFiles, ['hul']);
+  OpenDialog.Filter:=createDialogFilter( 'Carlsson Hull files',['hul'] );
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
@@ -1906,7 +1897,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsPolyCadFiles, ['geo']);
+  OpenDialog.Filter:=createDialogFilter('PolyCad files',['geo']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     if not CheckIfChangedAndAskToSave() then begin FreeAndNil(OpenDialog); exit; end;
@@ -2187,7 +2178,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsTextFiles, ['txt']);
+  OpenDialog.Filter:=createDialogFilter(rsTextFile, ['txt']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     assignFile(FFile, ChangeFileExt(Opendialog.FileName, '.txt'));

@@ -36,7 +36,7 @@ function UserString( Index:Integer ):AnsiString;
 implementation
 
 function LoadLanguage( aName:AnsiString; aFileName:AnsiString ):TLanguageIniFile;
-var Filename:AnsiString;
+var Filename: AnsiString;
 begin
    if aName='' then exit;                // leave with default English language
    if FileExistsUTF8( aFilename ) then begin

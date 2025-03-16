@@ -1,6 +1,6 @@
 program FreeShip;                                                 { FREE!ship }
 {$mode objfpc}{$H+}
-uses Controls, Forms, Dialogs,
+uses Controls, Forms, Dialogs,  Windows,
      SysUtils, Math, LazUTF8,                 // this includes the LCL widgetset
      DefaultTranslator, Interfaces,
      Main                  in 'Main.pas',                           {MainForm}
@@ -14,27 +14,28 @@ uses Controls, Forms, Dialogs,
 procedure InitByParameters; var S: AnsiString; p: integer; begin
   for p:=1 to ParamCount do begin S:=ParamStr(p);
     if S='--help' then ParametersHelp:=True else
-    if ( lowerCase(UTF8RightStr( S,4 ))='.ftm' )
-    or ( lowerCase(UTF8RightStr( S,4 ))='.fbm' ) then sOpenFile:=S;
+    if ( lowerCase(RightStr( S,4 ))='.ftm' )
+    or ( lowerCase(RightStr( S,4 ))='.fbm' ) then sOpenFile:=S; //? UTF8
   end;
 end;
 procedure PrintParametersHelp( Ans: Boolean ); begin
-  sHelp:=#10+'Usage: Free!Ship [parameter] [model]'
-        +#10+'Where parameter is: --help = this screen'
-        +#10+'    model file: <Ship>.ftm or <Ship>.fbm'+#10
-        +#10+'«Free!Ship» in Pascal.'
-        +#10+'Compiled at '+ ReleasedDate+' '+COMPILE_TIME
-        +#10+'Compiler version: '+ FPCVERSION
-        +#10+'Target CPU:       '+ TARGET_CPU
-        +#10+'Target OS:        '+ TARGET_OS
-        +#10+'Free!Ship version: '+ FREESHIP_VERSION
+  sHelp:='Usage: Free!Ship [parameter] [model]' // #226+#149+#169 + #10 = '╩'
+    +#10+'Where parameter is: --help = this screen'
+    +#10+'    model file: <Ship>.ftm or <Ship>.fbm'+#10
+    +#10+'«Free!Ship» in Pascal.'
+    +#10+'Compiled at '+ ReleasedDate+' '+COMPILE_TIME
+    +#10+'Compiler version: '+ FPCVERSION
+    +#10+'Target CPU:       '+ TARGET_CPU
+    +#10+'Target OS:        '+ TARGET_OS
+    +#10+'Free!Ship version: '+ FREESHIP_VERSION
         +' для ['+VersionString(low(TFreeFileVersion))+'..5.0]';
-  if Ans then ShowMessage( sHelp )                       // ResourceVersionInfo
-         else WriteLn( sHelp );
+  if Ans then ShowMessage( sHelp )                      // ResourceVersionInfo
+         else WriteLn( sHelp );                        // UTF8ToConsole( sHelp )
 end;
 {$R *.res}
 begin
   WestPoint;
+//SetConsoleCP( CP_UTF8 ); // SetConsoleOutputCP( CP_UTF8 ); //==65001
   InitByParameters;
   PrintParametersHelp( false );
   RequireDerivedFormResource:=True;                                      // new

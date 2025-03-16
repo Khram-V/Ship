@@ -355,18 +355,16 @@ procedure TFreeIntersection.Delete(Redraw: boolean);
   var Index: integer;
 begin
   case IntersectionType of
-    fiStation:
-    begin
+    fiStation: begin
       Index:=FreeShip.FStations.IndexOf(self);
-      if Index <> -1 then begin
+      if Index<>-1 then begin
         FreeShip.FStations.Delete(Index);
         FreeShip.FileChanged:=True;
         if Redraw then FreeShip.Redraw;
         Destroy;
       end;
     end;
-    fiButtock:
-    begin
+    fiButtock: begin
       Index:=FreeShip.FButtocks.IndexOf(self);
       if Index <> -1 then begin
         FreeShip.FButtocks.Delete(Index);
@@ -707,16 +705,13 @@ begin
   end;
 end;
 
-procedure TFreeIntersection.Rebuild;
-var I: integer;
-begin
-  // Force to destroy all current Items
+procedure TFreeIntersection.Rebuild; var I: integer;
+begin // Force to destroy all current Items
   Built:=False;
-  FreeShip.Surface.IntersectPlane(Plane, FUseHydrostaticsSurfacesOnly, FItems);
+  FreeShip.Surface.IntersectPlane( Plane,FUseHydrostaticsSurfacesOnly,FItems );
   // Use a low simplification factor to remove only points that are (nearly) on a line
   if FreeShip.ProjectSettings.ProjectSimplifyIntersections then
-    for I:=1 to Count do
-      self.Items[I-1].Simplify(2.0);
+    for I:=1 to Count do self.Items[I-1].Simplify(2.0);
   Built:=True;
 end;
 

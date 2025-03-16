@@ -4,6 +4,7 @@ unit FreeTypes;
 Interface
 Uses Classes,SysUtils,Graphics;
 Const PixelCountMax=32768; // used for faster pixel acces when shading to viewport
+      Foot = 0.3048;
 
 Type
   TFloatType   = single;        // All floatingpoint variables are of this type
@@ -13,6 +14,8 @@ Type
   T3DLine      = record A,B:T3DVector; end;    // 3D line type
   T3DPlane     = record a,b,c,d:TFloatType; end;
                                      // Description 3D plane: a*x+b*y+c*z-d=0.0
+  TFreeUnitType=(fuMetric,fuImperial); // Switch between metric and imperial units
+
 
   operator <>( const A,B: T3DVector): boolean;
   operator = ( const A,B: T3DVector): boolean;
@@ -77,10 +80,6 @@ Type
 Const
   ZERO : T3DVector = (X:0.0;Y:0.0;Z:0.0);
   EOL              = #13#10;
-//Var
-//  FUnderWaterColor: TColor; // Default color used for shading underwaterpart of the vessel
-//  FUnderWaterColorAlpha: byte;
-
 
 Function F2S( Value: TFloatType ): TFloatType;
 function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
@@ -97,12 +96,13 @@ Function BlankOff( S: AnsiString ): AnsiString;
 function Abs( const V: T3DVector ): extended; overload;
 Function Distance2D( const P1,P2: T2DCoordinate ): extended;
 Function Distance3D( const P1,P2: T3DVector ): extended;
-//function GetUnderwaterColor: TColor;
-//function GetUnderwaterColorAlpha: byte;
-//procedure SetUnderwaterColor(Val: TColor);
-//procedure SetUnderwaterColorAlpha(AValue: byte);
-//property UnderWaterColor: TColor read GetUnderWaterColor write SetUnderwaterColor;
-//property UnderWaterColorAlpha: byte read GetUnderWaterColorAlpha write SetUnderwaterColorAlpha;
+procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
+( XX: TFloatType;            // аргумент поиска
+  N: integer;                // наверное, длина массива
+  X,Y: array of TFloatType;  // собственно аргумент и функция
+  var YY: TFloatType         // результат
+);                           // и без проверок интервалов аргумента !!!
+function FindWaterViscosity( Temper:TFloatType; Units:TFreeUnitType ):TFloatType;
 
 Implementation
 function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
@@ -157,6 +157,22 @@ begin dX:=P2.X-P1.X;
       dY:=P2.Y-P1.Y;
       dZ:=P2.Z-P1.Z; Result:=sqrt( sqr( dX )+sqr( dY )+sqr( dZ ) );
 end;
+
+procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
+( XX: TFloatType;             // аргумент поиска
+  N: integer;                 // наверное, длина массива
+  X,Y: array of TFloatType;   // собственно аргумент и функция
+  var YY: TFloatType );       // результат
+var I:integer; B:boolean;     // и без проверок интервалов аргумента !!!
+begin
+//if XX<=Xs[0] then YY:=Y[0]+(XX-X[0])*(Y[1]-Y[0])/(X[1]-X[0]) else
+//if XX>=Xs[N-1] then YY:=Y[N-2]+(XX-X[N-2])*(Y[N-2]-Y[N-1])/(X[N-2]-X[N-1]) else
+  B:=XX<=X[0];
+  for I:=0 to N-1 do if B or (XX>=X[I]) or (I=N-2) then
+    begin YY:=Y[I]+((XX-X[I]))*(Y[I+1]-Y[I])/(X[I+1]-X[I]); break; end;
+end;
+
+
 
 //Function Length( Str: AnsiString ): Integer; overload; // ??? reintroduce; override; virtual;
 //   begin Result:=UTF8Length( Str ); end;
@@ -234,20 +250,80 @@ begin J:=1; K:=1; L:=Length( S );       // вычистка лишних про�
     SetLength( S,J-1 );
     Result:=S;
 end;
+
+//      function to find the corresponding water viscosity based on the density
+
+function FindWaterViscosity(Temper:TFloatType; Units:TFreeUnitType):TFloatType;
+const
+Temp: array of TFloatType =  //  t,grad C  [0..17]
+(0.0, 3.8, 5.0, 7.2,  10.0, 12.2, 15.0, 17.2, 20.0, 22.2,25.0,30.0,40, 50, 60,  70,  80,  90);
+Visc: array of TFloatType =  //  Nu*1000
+(1.82,1.61,1.56,1.462,1.352,1.274,1.189,1.125,1.02,0.95,0.910,0.817,0.666,0.56,0.479,0.414,0.362,0.321);
+{ t   0     1.0 2.0  3.0  4.0  5.0  6.0   7.0  8.0  9.0  10   11   12   13   14   ++  15   16   17   18   19   ++  20   21   22   23   24
+ Ro<999>.841~.9~.941~.965~.973~.965~.909 ~.849~.782~.701~.606~.498~.377~.244~.099<998>.943~.775~.594~.406~.205<997>.994~.772~.540~.299~.047
+ Nu=(1.75+0.014*s+t*(0.000645*t-0.0503))*1e      -6      ~~~ для соленой воды }
+begin Result:=1.02;
+    Interpolation( Temper, Length( Temp), Temp,Visc, Result );
+    if Units=fuImperial then Result:=Result/(Foot*Foot); // convert to imperial
+end;
+
 (*
+Var FUnderWaterColor:TColor;                  // Default color used for shading
+    FUnderWaterColorAlpha: byte;              //   underwaterpart of the vessel
+function GetUnderwaterColor: TColor;
+function GetUnderwaterColorAlpha: byte;
+procedure SetUnderwaterColor(Val: TColor);
+procedure SetUnderwaterColorAlpha(AValue: byte);
+property UnderWaterColor: TColor read GetUnderWaterColor write SetUnderwaterColor;
+property UnderWaterColorAlpha: byte read GetUnderWaterColorAlpha write SetUnderwaterColorAlpha;
+Implementation
 function GetUnderwaterColor: TColor;
 begin Result:=(FUnderWaterColor and $FFFFFF) or (FUnderWaterColorAlpha shl 24 );
 end;
 function GetUnderwaterColorAlpha: byte;
-begin Result:=FUnderWaterColorAlpha; end; // shr 24; end;
-
+   begin Result:=FUnderWaterColorAlpha; end; // shr 24; end;
 procedure SetUnderwaterColorAlpha( AValue: byte );
 begin FUnderWaterColor:=(FUnderWaterColor and $FFFFFF) or (AValue shl 24 );  ///***???
-      FUnderWaterColorAlpha:=AValue;
-end;
+      FUnderWaterColorAlpha:=AValue; end;
 procedure SetUnderwaterColor( Val: TColor );
 begin FUnderWaterColor:=(Val and $FFFFFF) or (FUnderWaterColorAlpha shl 24 );
 end;
-*)
+                             //...странный блок, но тоже был включен в работу...
+procedure SFINEX1            // всё то же, но в ином порядке...
+( N: integer; X,Y: array of single; X0: single; var YY: single );
+var                     // Нелинейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
+  N1,J1,J2,J3,I: integer; SFIN: single;
+label exlabel;
+begin SFIN:=0; J1:=0; J2:=1; J3:=2; N1:=N-1;
+  if N1 = 0 then begin SFIN:=Y[J1]; goto exlabel; end;
+  if (X0 <= X[0]) and (N1 > 1) then begin
+    SFIN:=Y[J1]+(Y[J2]-Y[J1]) * (X0-X[J1]) / (X[J2]-X[J1]); goto exlabel;
+  end;
+  if (X0 > X[N1]) then begin
+    SFIN:=Y[N1]+(Y[N1]-Y[N1-1]) * (X0-X[N1]) / (X[N1]-X[N1-1]); goto exlabel;
+  end;
+  if (X0 <= X[J2]) and (N1 >= 2) then begin
+    SFIN:=(X0-X[J3]) / (X[J1]-X[J2]) * ((X0-X[J2]) / (X[J1]-X[J3]) *
+      Y[J1]-(X0-X[J1]) / (X[J2]-X[J3]) * Y[J2])+(X0-X[J1]) *
+      (X0-X[J2]) * Y[J3] / ((X[J3]-X[J1]) * (X[J3]-X[J2]));
+    goto exlabel;
+  end;
+  if (X0 > X[N1-1]) then begin SFIN:=(X0-X[N1]) / (X[N1-2]-X[N1-1]) *
+      ((X0-X[N1-1]) / (X[N1-2]-X[N1]) * Y[N1-2]-(X0-X[N1-2]) *
+      Y[N1-1] / (X[N1-1]-X[N1]))+(X0-X[N1-2]) * (X0-X[N1-1]) /
+      (X[N1]-X[N1-2]) * Y[N1] / (X[N1]-X[N1-1]); goto exlabel;
+  end;
+  N1:=N-2;
+  for I:=1 to N1 do if (X0 > X[I-1]) and (X0 <= X[I]) then
+      SFIN:=0.5 * ((X0-X[I-1]) * (X0-X[I]) *
+        (Y[I-2] / ((X[I-2]-X[I-1]) * (X[I-2]-X[I])) +
+        Y[I+1] / ((X[I+1]-X[I-1]) * (X[I+1]-X[I]))) +
+        (X0-X[I]) * ((X0-X[I-2]) / (X[I-1]-X[I-2]) +
+        (X0-X[I+1]) / (X[I-1]-X[I+1])) * Y[I-1] /
+        (X[I-1]-X[I])+(X0-X[I-1]) * ((X0-X[I-2]) /
+        (X[I]-X[I-2])+(X0-X[I+1]) / (X[I]-X[I+1])) * Y[I] /
+        (X[I]-X[I-1]));
+exlabel: yy:=SFIN;
+end; *)
 end.
 

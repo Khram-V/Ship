@@ -11,14 +11,10 @@ object MainForm: TMainForm
   Constraints.MinWidth = 300
   Menu = MainMenu1
   OnActivate = FormActivate
-  OnChangeBounds = FormChangeBounds
   OnClose = MainFormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
-  OnResize = FormResize
   OnShow = FormShow
-  OnWindowStateChange = FormWindowStateChange
   Position = poDefault
   ShowHint = True
   LCLVersion = '3.4.0.0'
@@ -1192,13 +1188,6 @@ object MainForm: TMainForm
       ImageIndex = 51
       OnExecute = LayerIntersectionExecute
     end
-    object KeelRudderWizard: TAction
-      Category = 'Tools'
-      Caption = 'Keel and rudder wizard'
-      Hint = 'Create a default rudder or keel.'
-      ImageIndex = 52
-      OnExecute = KeelRudderWizardExecute
-    end
     object Redo: TAction
       Category = 'Edit'
       Caption = 'Redo'
@@ -2219,9 +2208,6 @@ object MainForm: TMainForm
       end
       object Developplates1: TMenuItem
         Action = DevelopLayers
-      end
-      object Deleteempty3: TMenuItem
-        Action = KeelRudderWizard
       end
       object Markers2: TMenuItem
         Caption = 'Markers'

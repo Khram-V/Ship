@@ -39,17 +39,16 @@ function VolStr(Units: TFreeUnitType): string;
 begin if Units = fuImperial then Result:='ft^3 '
                             else Result:='m^3 ';
 end;
-
+{
 function DensStr(Units: TFreeUnitType): string;
 begin if Units = fuImperial then Result:='lbs/ft^3 '
                             else Result:='t/m^3 ';
 end;
-
 function ViscStr(Units: TFreeUnitType): string;
 begin if Units = fuImperial then Result:='ft^2/s '
                             else Result:='m^2/s ';
 end;
-
+}
 function DegrStr(Units: TFreeUnitType): string;
 begin result:='degr ';
 //if Units = fuImperial then Result:='degr '
@@ -435,12 +434,12 @@ begin
   B:=Adjust(Blue);
 end;{FillColor}
 
-function Interpolate(P1, P2: T3DVector; Param: TFloatType): T3DVector;
+function Interpolate( P1,P2: T3DVector; Param: TFloatType): T3DVector;
 begin
-  Result.X:=P1.X+Param * (P2.X-P1.X);
-  Result.Y:=P1.Y+Param * (P2.Y-P1.Y);
-  Result.Z:=P1.Z+Param * (P2.Z-P1.Z);
-end;{Interpolate}
+  Result.X:=P1.X + Param*(P2.X-P1.X);
+  Result.Y:=P1.Y + Param*(P2.Y-P1.Y);
+  Result.Z:=P1.Z + Param*(P2.Z-P1.Z);
+end;
 
 // This procedure takes a lot of linesegments and tries to connect them into
 // as few as possible splines
@@ -457,67 +456,53 @@ procedure JoinSplineSegments
 //  TSegmentdata = array[0..0] of TSegmentRecord;
 //PSegmentdata = ^TSegmentdata;
 var
-  I, J: integer;
-  Fixed: TFreeSpline;
-  Match, Nearest: TFreeSpline;
-  NearestDist: TFloatType;
-  Min: TFloatType;
-  MatchIndex: integer;
-  FixedClosed: boolean;
-  MatchClosed: boolean;
-  D1, D2, D3, D4: TFloatType;
+  I,J,MatchIndex: integer;
+  Fixed, Match, Nearest: TFreeSpline;
+  D1,D2,D3,D4, NearestDist, Min: TFloatType;
+  FixedClosed,MatchClosed: boolean;
 
-  function Minimum(D1, D2, D3, D4: TFloatType): TFloatType;
-  begin
-    Result:=D1;
+  function Minimum( D1,D2,D3,D4: TFloatType): TFloatType;
+  begin Result:=D1;
     if D2 < Result then Result:=D2;
     if D3 < Result then Result:=D3;
     if D4 < Result then Result:=D4;
   end;{Minimum}
 
-begin
-  // First remove any single linesegments;
+begin                                  // First remove any single linesegments;
   I:=1;
-  while I < List.Count do
-  begin
+  while I < List.Count do begin
     Fixed:=List.Items[I-1];
     if Fixed.NumberOfPoints > 1 then
       FixedClosed:=Distance3D(Fixed.Point[0], Fixed.Point[Fixed.NumberOfPoints-1]) < 1e-5
     else
       FixedClosed:=False;
-    if (Fixed.NumberOfPoints > 1) and (not FixedClosed) then
-    begin
+    if (Fixed.NumberOfPoints > 1) and (not FixedClosed) then begin
       NearestDist:=1e30;
       Nearest:=nil;
       MatchIndex:=-1;
       for J:=1 to List.Count do
-        if I <> J then
-        begin
+        if I <> J then begin
           Match:=List.Items[J-1];
           if Match.NumberOfPoints > 1 then
-            MatchClosed:=Distance3D(Match.Point[0], Match.Point[Match.NumberOfPoints-1]) < 1e-5
+            MatchClosed:=Distance3D(Match.Point[0], Match.Point[Match.NumberOfPoints-1])<1e-5
           else
             MatchClosed:=False;
-          if (Match.NumberOfPoints > 1) and (not MatchClosed) then
-          begin
+          if (Match.NumberOfPoints > 1) and (not MatchClosed) then begin
             D1:=SquaredDistPP(Fixed.Point[0], Match.Point[0]);
             D2:=SquaredDistPP(Fixed.Point[0], Match.Point[Match.NumberOfPoints-1]);
             D3:=SquaredDistPP(Fixed.Point[Fixed.NumberOfPoints-1], Match.Point[0]);
             D4:=SquaredDistPP(Fixed.Point[Fixed.NumberOfPoints-1],
-              Match.Point[Match.NumberOfPoints-1]);
+                              Match.Point[Match.NumberOfPoints-1] );
             Min:=Minimum(D1, D2, D3, D4);
-            if Min < NearestDist then
-            begin
+            if Min < NearestDist then begin
               NearestDist:=Min;
               Nearest:=Match;
               MatchIndex:=J;
-              if Min < 1e-5 then
-                break;
+              if Min<1e-5 then break;
             end;
           end;
         end;
-      if Nearest <> nil then
-      begin
+      if Nearest <> nil then begin
         Match:=Nearest;
         D1:=SquaredDistPP(Fixed.Point[0], Match.Point[0]);
         D2:=SquaredDistPP(Fixed.Point[0], Match.Point[Match.NumberOfPoints-1]);
@@ -1162,18 +1147,18 @@ function SquaredDistPP( P1,P2: T3DVector): TFloatType; // calculates the squared
 begin Result:=Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z);
 end;
 
-function MakeLength(Value: TFloatType; Decimals, DesLength: integer): string;
+function MakeLength(Value: TFloatType; Decimals, DesLength: integer): AnsiString;
 var Input: string;
 begin
   if Decimals = -1 then Decimals:=NumberOfDecimals(Value);
   Input:=FloatToStrF(Value, ffFixed, 10, Decimals);
   while Length(Input) < DesLength do Input:=' '+Input;
   Result:=Input;
-end;{MakeLength}
+end;
 
-function MakeLength(Value: string; DesLength: integer): string;
-begin while UTF8Length(Value) < DesLength do Value:=Value+' '; Result:=Value;
-end;{MakeLength}
+function MakeLength(Value: string; DesLength: integer): AnsiString;
+begin while Len(Value) < DesLength do Value:=Value+' '; Result:=Value;
+end;
 
 procedure MinMax(P: T3DVector; var Min, Max: T3DVector);
 begin
@@ -1194,7 +1179,7 @@ begin
   Result.y:=Result.y / L;
   Result.z:=Result.z / L;
 end;
-
+{
 function UnitVector(P: T3DVector): T3DVector;
 var L: TFloatType;
 begin
@@ -1203,15 +1188,14 @@ begin
   Result.X:=P.X / L;
   Result.Y:=P.Y / L;
   Result.Z:=P.Z / L;
-end;{UnitVector}
-
-//function Subtract( AVec1,AVec2: T3DVector ): T3DVector;
-//begin
-//  Result.X:=AVec1.X-AVec2.X;
-//  Result.Y:=AVec1.Y-AVec2.Y;
-//  Result.Z:=AVec1.Z-AVec2.Z;
-//end;{Subtract}
-
+end;
+function Subtract( AVec1,AVec2: T3DVector ): T3DVector;
+begin
+  Result.X:=AVec1.X-AVec2.X;
+  Result.Y:=AVec1.Y-AVec2.Y;
+  Result.Z:=AVec1.Z-AVec2.Z;
+end;
+}
 function Normalize(P: T3DVector): T3DVector; // Normalize a vector to unit length
 var L: TFloatType;
 begin
@@ -1224,12 +1208,6 @@ begin
   end;
 end;{Normalize}
 
-function VectorLength(Normal: T3DVector): TFloatType; // calculate the length of a vector
-var Tmp: TFloatType;
-begin
-  Tmp:=(Normal.X * Normal.X)+(Normal.Y * Normal.Y)+(Normal.Z * Normal.Z);
-  if tmp < 0 then Tmp:=0;
-  Result:=Sqrt(Tmp);
-  if Result = 0 then Result:=0.0000001;
-end;{VectorLength}
+function VectorLength( Normal: T3DVector ): TFloatType; // calculate the length of a vector
+   begin Result:=Abs( Normal ); if Result=0 then Result:=0.0000001; end;
 

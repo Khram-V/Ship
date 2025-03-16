@@ -6,9 +6,6 @@
 //
 // Export for Aurora-Hull computational experiments
 //
-resourcestring
-  rsAuroraHullFile = 'Aurora+Hull Vessel(db)file';
-
 procedure TFreeEdit.File_Export_Aurora_Experiments;
 var
   Str: AnsiString;
@@ -81,8 +78,7 @@ begin
   Dialog:=TSaveDialog.Create( FreeShip );
   Dialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
   Dialog.FileName:=ChangeFileExt( Title,'.vsl');
-//Dialog.Filter:=createDialogFilter('Aurora+Hull Vessel(db)file',['vsl']);
-  Dialog.Filter:=createDialogFilter( rsAuroraHullFile,['vsl'] );
+  Dialog.Filter:=createDialogFilter( 'Aurora+Hull Vessel(db)file',['vsl'] );
   dialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if Dialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
@@ -165,10 +161,6 @@ end;
 //
 //  WaveFront.obj
 //
-resourcestring
-  rsWavefrontFile_NC = 'Wavefront export subdivided surface';   // 1
-  rsWavefrontFile_CN = 'Wavefront export the controlnet only';  // 2
-
 procedure TFreeEdit.File_ExportObj;
 var
   SaveDialog: TSaveDialog;
@@ -177,8 +169,8 @@ begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
   SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.obj');
-  SaveDialog.Filter:=createDialogFilter( rsWavefrontFile_NC,['obj'],false )
-               +'|'+ createDialogFilter( rsWavefrontFile_CN,['obj'],false );
+  SaveDialog.Filter:=createDialogFilter( 'Wavefront export subdivided surface',['obj'],false )
+               +'|'+ createDialogFilter( 'Wavefront export the controlnet only',['obj'],false );
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   SaveDialog.FilterIndex:=1;
   if SaveDialog.Execute then begin WestPoint;
@@ -733,14 +725,13 @@ begin
     SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
     SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '');
     SaveDialog.Filter :=
-      createDialogFilter(rsArchimedesMBMultiBodyHullData, ['hll'], False)
-     +'|'+createDialogFilter(rsArchimedesSingleBodyHullData, ['app']);
+     createDialogFilter( 'ArchimedesMB multi body hull data',['hll'], False)
+     +'|'+createDialogFilter('Archimedes single body hull data',['app']);
     SaveDialog.FilterIndex:=1;
     Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
     if SaveDialog.Execute then begin WestPoint;
       FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
-      if SaveDialog.FilterIndex = 2 then begin
-        // Single body Archimedes
+      if SaveDialog.FilterIndex = 2 then begin       // Single body Archimedes
         assignfile(ffile, ChangeFileExt(SaveDialog.FileName, '.app'));
         rewrite(FFile);
         Write(FFile,
@@ -1117,9 +1108,6 @@ begin
   FreeAndNil(Dialog);
 end;
 
-resourceString
- rsFREEShipExchangeFormat = 'FREE!ship Exchange Format';
-
 procedure TFreeEdit.File_ExportFEF;
 var
   SaveDialog: TSaveDialog;
@@ -1128,7 +1116,7 @@ begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
   SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.fef');
-  SaveDialog.Filter:=createDialogFilter(rsFREEShipExchangeFormat,['fef']);
+  SaveDialog.Filter:=createDialogFilter('FREE!ship Exchange Format',['fef']);
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
@@ -1177,7 +1165,7 @@ begin
     if I <> 0 then Delete(Str, I, 1);
   until I = 0;
   Savedialog.FileName:=Str;
-  SaveDialog.Filter:=createDialogFilter(rsGHSFiles,['gf']);
+  SaveDialog.Filter:=createDialogFilter( 'GHS files',['gf'] );
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if not SaveDialog.Execute then begin FreeAndNil(Savedialog); exit; end;
   WestPoint;
@@ -1318,66 +1306,48 @@ begin
     for I:=1 to FreeShip.NumberOfSelectedControlFaces do
       Faces.Add(FreeShip.SelectedControlFace[I-1]);
   end;
-  if Faces.Count > 0 then FreeShip.SavePart(Faces);
-  FreeAndNil(Faces);
+  if Faces.Count>0 then FreeShip.SavePart(Faces);
+  FreeAndNil( Faces );
 end;
 
 // Save NURBS patches to an IGES file
 procedure TFreeEdit.File_ExportIGES;
-const
-  MinimizeFaces = True;
-  SendTriangles = False;//true;
+const MinimizeFaces = True;
+      SendTriangles = False;//true;
 var
-  I, J, K, LI: integer;
-  Cols, Rows: integer;
+  I,J,K,LI, Cols,Rows, NAssembled, PrevLevel,ColorIndex,NSurfaces : integer;
   Dialog: TSaveDialog;
   Prev: TCursor;
   Layers: TFasterListTFreeSubdivisionLayer;
   Layer: TFreeSubdivisionLayer;
   FaceData: TFreeFaceGrid;
   Assembled: TFreeFaceArray;
-  NAssembled: integer;
   IGESList: TFreeIGESList;
   Grid: TFreeSubdivisionPointGrid;
   CtrlFace: TFreeSubdivisionControlFace;
   Face: TFreeSubdivisionFace;
-  PrevLevel: integer;
   ColorIndices: array of integer;
-  ColorIndex: integer;
-  NSurfaces: integer;
   CheckFaces: TFasterListTFreeSubdivisionFace;
 
-
-  function FindFourtPoint(P1, P2, p3: TFreeSubdivisionPoint): TFreeSubdivisionPoint;
-  var
-    Face: TFreeSubdivisionFace;
-    I, J: integer;
-    List: TList;
+  function FindFourtPoint( P1,P2,p3: TFreeSubdivisionPoint ): TFreeSubdivisionPoint;
+  var Face: TFreeSubdivisionFace;
+      I, J: integer;
+      List: TList;
   begin
     Result:=nil;
     if (P1 <> P2) and (P2 <> P3) and (P1 <> P3) then
-      for I:=1 to P2.NumberOfFaces do
-      begin
+      for I:=1 to P2.NumberOfFaces do begin
         Face:=P2.Face[I-1];
-        if (Face.IndexOfPoint(P1) <> -1) and
-          // (Face.IndexOfPoint(P2)<>-1) and
-          (Face.IndexOfPoint(P3) <> -1) then
-        begin
+        if (Face.IndexOfPoint(P1)<>-1)
+     // and (Face.IndexOfPoint(P2)<>-1)
+        and (Face.IndexOfPoint(P3)<>-1) then begin
           List:=TList.Create;
-          for J:=1 to face.NumberOfpoints do
-            list.Add(Face.Point[J-1]);
-          J:=List.IndexOf(P1);
-          if J <> -1 then
-            list.Delete(J);
-          J:=List.IndexOf(P2);
-          if J <> -1 then
-            list.Delete(J);
-          J:=List.IndexOf(P3);
-          if J <> -1 then
-            list.Delete(J);
-          if list.Count > 0 then
-            Result:=TFreeSubdivisionPoint(List[0]);
-          FreeAndNil(List);
+          for J:=1 to face.NumberOfpoints do list.Add(Face.Point[J-1]);
+          J:=List.IndexOf( P1 ); if J<>-1 then list.Delete( J );
+          J:=List.IndexOf( P2 ); if J<>-1 then list.Delete( J );
+          J:=List.IndexOf( P3 ); if J<>-1 then list.Delete( J );
+          if list.Count>0 then Result:=TFreeSubdivisionPoint(List[0]);
+          FreeAndNil( List );
         end;
       end;
   end;{FindFourtPoint}
@@ -1395,33 +1365,24 @@ var
     Edge:=FreeShip.Surface.EdgeExists(P2, P3);
     if Edge <> nil then
       if not Edge.Crease then
-        for I:=1 to Edge.NumberOfFaces do
-        begin
+        for I:=1 to Edge.NumberOfFaces do begin
           Face:=Edge.Face[I-1];
           if (Face.IndexOfPoint(P1) = -1) or (Face.IndexOfPoint(P2) = -1) or
             (Face.IndexOfPoint(P3) = -1) or (Face.IndexOfPoint(P4) = -1) then
           begin
             Index:=Face.IndexOfPoint(P3);
-            if Index <> -1 then
-            begin
+            if Index <> -1 then begin
               Index:=(Index+1) mod Face.NumberOfpoints;
-              if Face.Point[index] = P2 then
-              begin
-                // face is oriented CCW
+              if Face.Point[index] = P2 then begin      // face is oriented CCW
                 Index:=(Index+1) mod Face.NumberOfpoints;
                 OppPoint2:=Face.Point[index];
                 Index:=(Index+1) mod Face.NumberOfpoints;
                 OppPoint3:=Face.Point[index];
-              end
-              else
-              begin
+              end else begin
                 Index:=Face.IndexOfPoint(P2);
-                if Index <> -1 then
-                begin
+                if Index <> -1 then begin
                   Index:=(Index+1) mod Face.NumberOfpoints;
-                  if Face.Point[index] = P3 then
-                  begin
-                    // face is oriented CW
+                  if Face.Point[index] = P3 then begin   // face is oriented CW
                     Index:=(Index+1) mod Face.NumberOfpoints;
                     OppPoint3:=Face.Point[index];
                     Index:=(Index+1) mod Face.NumberOfpoints;
@@ -1429,8 +1390,7 @@ var
                   end;
                 end;
               end;
-            end;
-            break;
+            end; break;
           end;
         end;
   end;{FindOpposingPoints}
@@ -1438,35 +1398,28 @@ var
   procedure AssembleTriangle(var Cols, Rows: integer; var Grid: TFreeSubdivisionPointGrid;
     Face: TFreeSubdivisionControlface);
   var
-    I, J, N: integer;
-    Index: integer;
+    I,J,N, Index: integer;
     Points: TFasterListTFreeSubdivisionPoint;
     Faces: TFasterListTFreeSubdivisionface;
     Child: TFreeSubdivisionface;
-    P: TFreeSubdivisionPoint;
-    InteriorPoint: TFreeSubdivisionPoint;
-  begin
-    // Initialize grid
+    P, InteriorPoint: TFreeSubdivisionPoint;
+  begin // Initialize grid
     Cols:=0;
     Rows:=0;
-
     Points:=TFasterListTFreeSubdivisionPoint.Create;
     Faces:=TFasterListTFreeSubdivisionFace.Create;
-    for I:=1 to Face.ChildCount do
-    begin
+    for I:=1 to Face.ChildCount do begin
       Child:=Face.Child[I-1];
       Faces.Add(Child);
-      for J:=1 to Child.NumberOfpoints do
-      begin
+      for J:=1 to Child.NumberOfpoints do begin
         P:=Child.Point[J-1];
         if Points.IndexOf(P) = -1 then Points.Add(P);
       end;
     end;
-//    Faces.Sort;
+//  Faces.Sort;
     // Try to isolate the interior point
     InteriorPoint:=nil;
-    for I:=1 to Points.Count do
-    begin
+    for I:=1 to Points.Count do begin
       P:=Points[I-1];
       // check how many of the childfaces are connected (interior point must have 3)
       N:=0;
@@ -1480,35 +1433,27 @@ var
       Setlength(Grid, Rows);
       for I:=1 to Rows do begin
         Setlength(Grid[I-1], Cols);
-        for J:=1 to Cols do
-          Grid[I-1][J-1]:=nil;
+        for J:=1 to Cols do Grid[I-1][J-1]:=nil;
       end;
-
       Grid[1][1]:=InteriorPoint;
       Child:=Face.Child[2];
       Index:=Child.IndexOfPoint(InteriorPoint);
       Grid[1][0]:=Child.Point[(index+1) mod 4];
       Grid[0][0]:=Child.Point[(index+2) mod 4];
       Grid[0][1]:=Child.Point[(index+3) mod 4];
-      FindOpposingPoints(Grid[0][0], Grid[0][1], Grid[1][1], Grid[1]
-        [0], Grid[0][2], Grid[1][2]);
-      FindOpposingPoints(Grid[0][1], Grid[1][1], Grid[1][0], Grid[0]
-        [0], Grid[2][1], Grid[2][0]);
-
+      FindOpposingPoints(Grid[0][0], Grid[0][1], Grid[1][1], Grid[1][0], Grid[0][2], Grid[1][2]);
+      FindOpposingPoints(Grid[0][1], Grid[1][1], Grid[1][0], Grid[0][0], Grid[2][1], Grid[2][0]);
       Grid[2][2]:=Grid[2][1];
 //      for I:=1 to Rows do
 //        for J:=1 to cols do
 //          if grid[I-1][j-1] = nil then WriteLn(Userstring(98));
-    end
-    else
-      MessageDlg(Userstring(99), mtError, [mbOK], 0);
+    end else ShowMessage( Userstring( 99 ) );
     FreeAndNil(Faces);
     FreeAndNil(Points);
-  end;{AssembleTriangle}
+  end; {AssembleTriangle}
 
-  procedure ProcessGrid(Cols, Rows: integer; Grid: TFreeSubdivisionPointGrid;
-    ColorInd: integer; LayerIsSymmetric: boolean);
-  // convert grid to a NURB
+  procedure ProcessGrid( Cols, Rows: integer; Grid: TFreeSubdivisionPointGrid;
+     ColorInd: integer; LayerIsSymmetric: boolean);   // convert grid to a NURB
   var
     NURB, NURB2: TFreeNURBsurface;
     I, J: integer;
@@ -1516,14 +1461,8 @@ var
     TopRow: array of TFreeSubdivisionPoint;
     LeftColumn: array of TFreeSubdivisionPoint;
     RightColumn: array of TFreeSubdivisionPoint;
-    BottomLeft: TFreeSubdivisionPoint;
-    BottomRight: TFreeSubdivisionPoint;
-    TopLeft: TFreeSubdivisionPoint;
-    TopRight: TFreeSubdivisionPoint;
-    BottomPresent: boolean;
-    LeftPresent: boolean;
-    RightPresent: boolean;
-    TopPresent: boolean;
+    BottomLeft,BottomRight,TopLeft,TopRight: TFreeSubdivisionPoint;
+    BottomPresent,LeftPresent,RightPresent,TopPresent: boolean;
     P: T3DVector;
 
     function PhantomPoint(BorderPoint, InnerPoint: T3DVector): T3DVector;
@@ -1541,34 +1480,26 @@ var
       P3:=PhantomPoint(P6, P9);
       P4:=PhantomPoint(P5, P6);
       P7:=PhantomPoint(P8, P9);
-      Result.X:=20 * P5.X-4 * P2.X-P3.X-4 * P4.X-4 * P6.X -
-        P7.X-4 * P8.X-P9.X;
-      Result.Y:=20 * P5.Y-4 * P2.Y-P3.Y-4 * P4.Y-4 * P6.Y -
-        P7.Y-4 * P8.Y-P9.Y;
-      Result.Z:=20 * P5.Z-4 * P2.Z-P3.Z-4 * P4.Z-4 * P6.Z -
-        P7.Z-4 * P8.Z-P9.Z;
+      Result.X:=20 * P5.X-4 * P2.X-P3.X-4 * P4.X-4 * P6.X - P7.X-4 * P8.X-P9.X;
+      Result.Y:=20 * P5.Y-4 * P2.Y-P3.Y-4 * P4.Y-4 * P6.Y - P7.Y-4 * P8.Y-P9.Y;
+      Result.Z:=20 * P5.Z-4 * P2.Z-P3.Z-4 * P4.Z-4 * P6.Z - P7.Z-4 * P8.Z-P9.Z;
     end;{CornerPoint}
 
   begin
-    if (Cols > 0) and (Rows > 0) then
-    begin
+    if (Cols > 0) and (Rows > 0) then begin
       Setlength(BottomRow, Cols);
       Setlength(TopRow, Cols);
       Setlength(LeftColumn, Rows);
-      Setlength(RightColumn, Rows);
-
-      // assemble bottom row to set tangency
+      Setlength(RightColumn, Rows);      // assemble bottom row to set tangency
       BottomPresent:=True;
-      for I:=2 to Cols do
-      begin
+      for I:=2 to Cols do begin
         FindOpposingPoints(Grid[Rows-2][I-2], Grid[Rows-1][I-2],
           Grid[Rows-1][I-1], Grid[Rows-2][I-1], BottomRow[I-2],
           BottomRow[I-1]);
         if (BottomRow[I-2] = nil) or (BottomRow[I-1] = nil) then
           BottomPresent:=False;
       end;
-      RightPresent:=True;
-      // assemble right column to set tangency
+      RightPresent:=True;              // assemble right column to set tangency
       for I:=2 to Rows do
       begin
         FindOpposingPoints(Grid[I-1][Cols-2], Grid[I-1][Cols-1],
@@ -1579,8 +1510,7 @@ var
       end;
       // assemble top row
       TopPresent:=True;
-      for I:=2 to Cols do
-      begin
+      for I:=2 to Cols do begin
         FindOpposingPoints(Grid[1][I-1], Grid[0][I-1], Grid[0][I-2],
           Grid[1][I-2], TopRow[I-1], TopRow[I-2]);
         if (TopRow[I-2] = nil) or (TopRow[I-1] = nil) then
@@ -1588,8 +1518,7 @@ var
       end;
       // Assemble left column
       LeftPresent:=True;
-      for I:=2 to Rows do
-      begin
+      for I:=2 to Rows do begin
         FindOpposingPoints(Grid[I-2][1], Grid[I-2][0], Grid[I-1]
           [0], Grid[I-1][1], LeftColumn[I-2], LeftColumn[I-1]);
         if (LeftColumn[I-1] = nil) or (LeftColumn[I-2] = nil) then
@@ -1599,14 +1528,11 @@ var
       BottomRight:=nil;
       TopLeft:=nil;
       TopRight:=nil;
-
       if BottomPresent and leftPresent then
-        BottomLeft:=FindFourtPoint(LeftColumn[Rows-1], Grid[Rows-1][0],
-          BottomRow[0]);
+        BottomLeft:=FindFourtPoint(LeftColumn[Rows-1],Grid[Rows-1][0],BottomRow[0]);
       // find bottomleft cornerpoint
       if BottomPresent and RightPresent then
-        BottomRight:=FindFourtPoint(RightColumn[Rows-1],
-          Grid[Rows-1][Cols-1], BottomRow[Cols-1]);
+        BottomRight:=FindFourtPoint(RightColumn[Rows-1],Grid[Rows-1][Cols-1],BottomRow[Cols-1]);
       // find bottomRight cornerpoint
       if TopPresent and leftPresent then
         TopLeft:=FindFourtPoint(LeftColumn[0], Grid[0][0], TopRow[0]);
@@ -1624,77 +1550,50 @@ var
           NURB.Point[J, I]:=Grid[I-1][J-1].Coordinate;
 
       if SendTriangles then
-        if (Grid[Rows-1][Cols-1] = Grid[Rows-1][Cols-2]) and
-          (Grid[Rows-1][Cols-1] = Grid[Rows-2][Cols-1]) then
-        begin
+        if (Grid[Rows-1][Cols-1] = Grid[Rows-1][Cols-2])
+        and (Grid[Rows-1][Cols-1] = Grid[Rows-2][Cols-1]) then begin
           Nurb.Point[Cols, Rows]:=Grid[Rows-1][Cols-1].LimitPoint;
           Nurb.Point[Cols-1, Rows]:=Grid[Rows-1][Cols-1].LimitPoint;
           Nurb.Point[Cols, Rows-1]:=Grid[Rows-1][Cols-1].LimitPoint;
           Nurb.RowCount:=Nurb.RowCount-1+1;
-        end// check for special triangle case
-      ;
+        end;                                // check for special triangle case
 
+      if TopPresent
+      then for I:=1 to Cols do Nurb.Point[I,0]:=TopRow[I-1].Coordinate
+      else for I:=1 to Cols do Nurb.Point[I,0]:=PhantomPoint(Nurb.Point[I,1],Nurb.Point[I,2]);
+      if BottomPresent
+      then for I:=1 to Cols do Nurb.Point[I,Rows+1]:=BottomRow[I-1].Coordinate
+      else for I:=1 to Cols do Nurb.Point[I,Rows+1]:=PhantomPoint(Nurb.Point[I,Rows],Nurb.Point[I,Rows-1]);
+      if LeftPresent
+      then for I:=1 to Rows do Nurb.Point[0,I]:=LeftColumn[I-1].Coordinate
+      else for I:=1 to Rows do Nurb.Point[0,I]:=PhantomPoint(Nurb.Point[1,I],Nurb.Point[2,I]);
+      if RightPresent
+      then for I:=1 to Rows do Nurb.Point[Cols+1, I]:=RightColumn[I-1].Coordinate
+      else for I:=1 to Rows do Nurb.Point[Cols+1, I]:=PhantomPoint(Nurb.Point[Cols,I],Nurb.Point[Cols-1,I]);
 
-      if TopPresent then
-        for I:=1 to Cols do
-          Nurb.Point[I, 0]:=TopRow[I-1].Coordinate
-      else
-        for I:=1 to Cols do
-          Nurb.Point[I, 0]:=PhantomPoint(Nurb.Point[I, 1], Nurb.Point[I, 2]);
-      if BottomPresent then
-        for I:=1 to Cols do
-          Nurb.Point[I, Rows+1]:=BottomRow[I-1].Coordinate
-      else
-        for I:=1 to Cols do
-          Nurb.Point[I, Rows+1] :=
-            PhantomPoint(Nurb.Point[I, Rows], Nurb.Point[I, Rows-1]);
-      if LeftPresent then
-        for I:=1 to Rows do
-          Nurb.Point[0, I]:=LeftColumn[I-1].Coordinate
-      else
-        for I:=1 to Rows do
-          Nurb.Point[0, I]:=PhantomPoint(Nurb.Point[1, I], Nurb.Point[2, I]);
-      if RightPresent then
-        for I:=1 to Rows do
-          Nurb.Point[Cols+1, I]:=RightColumn[I-1].Coordinate
-      else
-        for I:=1 to Rows do
-          Nurb.Point[Cols+1, I] :=
-            PhantomPoint(Nurb.Point[Cols, I], Nurb.Point[Cols-1, I]);
-
-      if TopLeft <> nil then
-        Nurb.Point[0, 0]:=TopLeft.Coordinate
-      else
-        Nurb.Point[0, 0]:=CornerPoint(Nurb.Point[1, 1], Nurb.Point[2, 1],
-          Nurb.Point[1, 2], Nurb.Point[2, 2]);
-      if TopRight <> nil then
-        Nurb.Point[Nurb.ColCount-1, 0]:=TopRight.Coordinate
-      else
-        Nurb.Point[Nurb.ColCount-1, 0] :=
-          CornerPoint(Nurb.Point[Nurb.Colcount-2, 1],
-          Nurb.Point[Nurb.Colcount-3, 1], Nurb.Point[Nurb.Colcount-2, 2],
-          Nurb.Point[Nurb.Colcount-3, 2]);
-      if BottomLeft <> nil then
-        Nurb.Point[0, Nurb.RowCount-1]:=BottomLeft.Coordinate
-      else
-        Nurb.Point[0, Nurb.RowCount-1] :=
-          CornerPoint(Nurb.Point[1, Nurb.Rowcount-2],
-          Nurb.Point[2, Nurb.Rowcount-2], Nurb.Point[1, Nurb.Rowcount-3],
-          Nurb.Point[2, Nurb.Rowcount-3]);
-      if BottomRight <> nil then
-        Nurb.Point[Nurb.ColCount-1, Nurb.RowCount-1]:=BottomRight.Coordinate
-      else
-        Nurb.Point[Nurb.ColCount-1, Nurb.RowCount-1] :=
-          CornerPoint(Nurb.Point[Nurb.Colcount-2, Nurb.Rowcount-2],
+      if TopLeft <> nil
+      then Nurb.Point[0,0]:=TopLeft.Coordinate
+      else Nurb.Point[0,0]:=CornerPoint(Nurb.Point[1,1],Nurb.Point[2,1],Nurb.Point[1,2], Nurb.Point[2,2]);
+      if TopRight <> nil
+      then Nurb.Point[Nurb.ColCount-1,0]:=TopRight.Coordinate
+      else Nurb.Point[Nurb.ColCount-1,0]:=CornerPoint(Nurb.Point[Nurb.Colcount-2, 1],
+           Nurb.Point[Nurb.Colcount-3,1],Nurb.Point[Nurb.Colcount-2,2],
+           Nurb.Point[Nurb.Colcount-3,2] );
+      if BottomLeft <> nil
+      then Nurb.Point[0, Nurb.RowCount-1]:=BottomLeft.Coordinate
+      else Nurb.Point[0, Nurb.RowCount-1]:=CornerPoint(Nurb.Point[1, Nurb.Rowcount-2],
+           Nurb.Point[2, Nurb.Rowcount-2], Nurb.Point[1,Nurb.Rowcount-3],
+           Nurb.Point[2, Nurb.Rowcount-3]);
+      if BottomRight <> nil
+      then Nurb.Point[Nurb.ColCount-1, Nurb.RowCount-1]:=BottomRight.Coordinate
+      else Nurb.Point[Nurb.ColCount-1, Nurb.RowCount-1]:=CornerPoint(Nurb.Point[Nurb.Colcount-2, Nurb.Rowcount-2],
           Nurb.Point[Nurb.Colcount-3, Nurb.Rowcount-2],
           Nurb.Point[Nurb.Colcount-2, Nurb.Rowcount-3],
           Nurb.Point[Nurb.Colcount-3, Nurb.Rowcount-3]);
-
       NURB.ColDegree:=3;
       NURB.RowDegree:=3;
       NURB.SetUniformColKnotvector;
       NURB.SetUniformRowKnotvector;
-
       // Insert knots to force the patch to interpolate start and endknots
       for I:=1 to Nurb.ColDegree do Nurb.InsertColKnot(Nurb.Colknotvector[Nurb.ColDegree]);
       for I:=1 to Nurb.ColDegree do Nurb.InsertColKnot(Nurb.Colknotvector[Nurb.ColCount]);
@@ -1756,7 +1655,7 @@ begin
   Dialog:=TSaveDialog.Create(FreeShip);
   Dialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
   Dialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.igs');
-  Dialog.Filter:=createDialogFilter(rsIGESFiles,['igs']);
+  Dialog.Filter:=createDialogFilter('IGES files',['igs']);
   dialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if Dialog.Execute then begin WestPoint;
     Prev:=Screen.Cursor;
@@ -1879,9 +1778,6 @@ begin
   FreeAndNil(Dialog);
 end;
 
-resourcestring
-rsMichletInputFile = 'Michlet input file';
-
 // Creates a file to be read by the CFD program Michlet
 procedure TFreeEdit.File_Export_Michlet;
 var
@@ -1924,7 +1820,7 @@ begin
       SaveDialog:=TSaveDialog.Create(FreeShip);
       SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
       SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.mlt');
-      SaveDialog.Filter:=createDialogFilter(rsMichletInputFile,['mlt']);
+      SaveDialog.Filter:=createDialogFilter('Michlet input file',['mlt']);
       Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
       if SaveDialog.Execute then begin WestPoint;
         Dialog.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.mlt'));

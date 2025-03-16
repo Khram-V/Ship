@@ -37,7 +37,7 @@ const // Cursors
 // Cursor used when setting the transparent color of a background image
 
 const
-  Foot = 0.3048;
+//Foot = 0.3048;
   Lbs = 0.44642857;
   WeightConversionFactor = (1000 / Lbs) / ((1 / Foot) * (1 / Foot) * (1 / Foot));
   IncrementSize = 25;   // amount of points which is automaticly allocated extra memory for
@@ -60,7 +60,6 @@ type
   TFreeVertexType=(svRegular, svCrease, svDart, svCorner); // Different types of subdivisionvertices
   TFreeCameraType=(ftWide,ftStandard,ftShortTele,ftMediumTele,ftFarTele); // Different types of camera lenses, corresponding to focalpoints 20mm, 50mm, 90mm, 130mm, 200mm
   TFreeViewType=( fvBodyplan, fvProfile, fvPlan, fvPerspective );
-  TFreeUnitType=( fuMetric,fuImperial ); // Switch between metric and imperial units
   TFreeViewportMode = (vmWireFrame, vmShade, vmShadeGauss, vmShadeDevelopable, vmShadeZebra);
   TFreeSubdivisionMode = (fmQuadTriangle, fmCatmullClark);
   TFreeAssembleMode = (amRegular, amNURBS);
@@ -130,8 +129,7 @@ type
   TFreeFaceGrid = record
     Faces: array of array of
     TFreeSubdivisionControlFace;
-    NCols: integer;
-    NRows: integer
+    NCols, NRows: integer
   end;
   TFreeFaceArray = array of TFreeFaceGrid;
   TFreeSubdivisionPointArray = array of array of TFreeSubdivisionPoint;
@@ -159,8 +157,7 @@ type
                          // Event raised when the active lyers has been changed
 
   TAlphaBlendData = record
-    R, G, B: byte;
-    Alpha: byte;
+    R,G,B, Alpha: byte;
     zvalue: single;
   end;
 
@@ -184,14 +181,10 @@ type
   private
     FViewport: TFreeViewport;
     FBuffer: array of TAlphaBlendArray;
-    FWidth: integer;
-    FHeight: integer;
-    FFirstRow: integer;
-    FLastRow: integer;
+    FWidth,FHeight,FFirstRow,FLastRow: integer;
   public
     constructor Create;
-    procedure AddPixelData(X, Y: integer;
-      R, G, B, Alpha: byte; Z: single);
+    procedure AddPixelData( X,Y: integer; R,G,B,Alpha: byte; Z: single );
     procedure Initialize(aViewport: TFreeViewport);
     procedure Draw;
   end;
@@ -203,8 +196,7 @@ type
   private
     FViewport: TFreeViewport;
     FBuffer: array of TFreeZBufferRow;
-    FWidth: integer;
-    FHeight: integer;
+    FWidth, FHeight: integer;
   public
     procedure Initialize;
   end;
@@ -386,7 +378,7 @@ type
     procedure DetachEventHandlers;
     procedure DrawLineToZBuffer(Point1, Point2: T3DVector; R, G, B: byte); virtual;
     procedure InitializeViewport(Min, Max: T3DVector); virtual;
-    procedure Print(Units: TFreeUnitType; AskPrintScale: boolean; Jobname: string); virtual;
+    procedure Print(Units: TFreeUnitType; AskPrintScale: boolean; Jobname: AnsiString ); virtual;
     function Project(P: T3DVector): TPoint;
     function ProjectBack(P: TPoint; Input: T3DVector): T3DVector;
     function ProjectBackTo2D(P: TPoint): T2DCoordinate;                           // Takes the cursor position and projects it to 2D object space
@@ -408,7 +400,7 @@ type
     procedure Polyline(const Points: array of TPoint); virtual;
     procedure Polygon(const Points: array of TPoint); virtual;
     function GetDrawingBuffer:TBitmap;
-    procedure SaveAsBitmap(Filename: string; const ShowDialog: boolean = True); virtual;
+    procedure SaveAsBitmap( Filename: AnsiString; const ShowDialog: boolean = True); virtual;
     procedure SetFocus; override;
     procedure SetPenWidth(Width: integer); virtual;
     procedure StretchDraw(DestRect: TRect; bmp: TBitmap); virtual;
@@ -1631,7 +1623,7 @@ function Interpolate(P1, P2: T3DVector; Param: TFloatType): T3DVector; // perfor
 procedure JoinSplineSegments(JoinError: TFloatType; ForceToOneSegment: boolean; List: TFasterListTFreeSpline);// Takes multiple splines and tries to connect them to as few as possible
 function Lines3DIntersect(P1, P2, P3, P4: T3DVector; var Param: double; var Int: T3DVector): boolean;
 function LengthStr(Units: TFreeUnitType): string;           // Returns a string value with the length units
-function MakeLength(Value: TFloatType; Decimals, DesLength: integer): string; overload;
+function MakeLength(Value: TFloatType; Decimals, DesLength: integer): AnsiString; overload;
 function MakeLength(Value: Ansistring; DesLength: integer): Ansistring; overload;
 procedure MinMax(P: T3DVector; var Min, Max: T3DVector);
 function Midpoint(P1, P2: T3DVector): T3DVector;          // Calculate the mid-point between P1 and P2
@@ -1659,17 +1651,17 @@ function SetPlane( a,b,c,d: TFloatType): T3DPlane;
 procedure SortFloatArray(var FloatArray: TFloatArray; var N: integer); // sorts an array with floatingpoint values and removes double entries
 function SquaredDistPP(P1, P2: T3DVector): TFloatType;    // calculates the squared distance between two points
 function UnifiedNormal(P1, P2, P3: T3DVector): T3DVector; // calculate the normal of a plane defined by points P1,P2,P3 and scale to unit-length
-function UnitVector(P: T3DVector): T3DVector;             // Scale a vector sucht that it's length is 1.0
 function VectorLength(Normal: T3DVector): TFloatType;     // Calculate the length of a vector
 function VolStr(Units: TFreeUnitType): string;            // Returns a string value with the volume units
-function DensStr(Units: TFreeUnitType): string;           // Returns a string value with the density units
-function ViscStr(Units: TFreeUnitType): string;           // Returns a string value with the viscosity units
 function VolumeToDisplacement( Volume,Density,AppCoeff: TFloatType;  Units: TFreeUnitType): TFloatType; // Converts a volume to displacement
-function WeightStr(Units: TFreeUnitType): string;         // Returns a string value with the weight units
-function DegrStr(Units: TFreeUnitType): string;           // Returns a string value with the degr units
-function LenMMStr(Units: TFreeUnitType): string;          // Returns a string value with the length (mm or inch) units
-var
-  DelayedDestroyList: TFreeDestroyList;
+function WeightStr(Units: TFreeUnitType): string; // Returns a string value with the weight units
+function DegrStr(Units: TFreeUnitType): string;   // Returns a string value with the degr units
+function LenMMStr(Units: TFreeUnitType): string;  // Returns a string value with the length (mm or inch) units
+//function UnitVector(P: T3DVector): T3DVector;   // Scale a vector sucht that it's length is 1.0
+//function DensStr(Units: TFreeUnitType): string; // Returns a string value with the density units
+//function ViscStr(Units: TFreeUnitType): string; // Returns a string value with the viscosity units
+
+var DelayedDestroyList: TFreeDestroyList;
 
 procedure Register;
 

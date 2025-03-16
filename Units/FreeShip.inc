@@ -26,7 +26,7 @@ function TFreeShip.FGetViewport(Index: integer): TFreeViewport;
 {$endif}
 
 procedure TFreeShip.AddViewport( Viewport: TFreeViewport );
-begin          // Add a viewport to the list of viewports connected to the model
+begin         // Add a viewport to the list of viewports connected to the model
   if FViewports.IndexOf( Viewport )=-1 then begin
     Viewport.Color:=Preferences.ViewportColor;
     FViewports.Add( Viewport );
@@ -82,6 +82,7 @@ begin
 //    or (FFileVersion <= High(FFileVersion) ) then    // !! без ограничений...
       begin
         WriteLN( '[',FFileVersion,'] "',ExtractFilename( FFilename ),'"'   );
+//                       UTF8ToConsole( ExtractFilename( FFilename ) ),'"'   );
         Source.LoadInteger( I );
         FPrecision:=TFreePrecisionType( I );
         Visibility.LoadBinary( Source );
@@ -218,40 +219,30 @@ begin Result:=Surface.OnSelectItem; end;
 }
 function TFreeShip.FGetSelectedControlCurve(Index: integer): TFreeSubdivisionControlCurve;
    begin Result:=Surface.SelectedControlCurve[index]; end;
-
 function TFreeShip.FGetControlCurve(Index: integer): TFreeSubdivisionControlCurve;
    begin Result:=Surface.ControlCurve[index]; end;
-
 function TFreeShip.FGetSelectedControlEdge(Index: integer): TFreeSubdivisionControlEdge;
    begin Result:=Surface.SelectedControlEdge[index]; end;
-
 function TFreeShip.FGetSelectedControlPoint(Index: integer): TFreeSubdivisionControlPoint;
    begin Result:=Surface.SelectedControlPoint[index]; end;
-
 function TFreeShip.FGetSelectedControlPointGroup(Index: integer): TFreeSubdivisionControlPointGroup;
    begin Result:=Surface.SelectedControlPointGroup[index]; end;
-
 function TFreeShip.FGetSelectedControlFace(Index: integer): TFreeSubdivisionControlFace;
    begin Result:=Surface.SelectedControlFace[index]; end;
-
 function TFreeShip.FGetSelectedFlowline(index: integer): TFreeFlowline;
    begin Result:=FSelectedFlowlines[index]; end;
-
 function TFreeShip.FGetSelectedMarker(index: integer): TFreeMarker;
    begin Result:=FSelectedMarkers[index]; end;
-
 function TFreeShip.IsObjectSelected(aObject:TFreeNamedObject): boolean;
 begin
   if (aObject is TFreeSubdivisionControlPoint)
-    or (aObject is TFreeSubdivisionControlPointGroup)
-    or (aObject is TFreeSubdivisionControlFace)
-    or (aObject is TFreeSubdivisionControlEdge)
-    or (aObject is TFreeSubdivisionControlCurve)
-  then Result:=Surface.IsObjectSelected(aObject);
+  or (aObject is TFreeSubdivisionControlPointGroup)
+  or (aObject is TFreeSubdivisionControlFace)
+  or (aObject is TFreeSubdivisionControlEdge)
+  or (aObject is TFreeSubdivisionControlCurve) then Result:=Surface.IsObjectSelected(aObject);
   if (aObject is TFreeMarker) then Result:=(aObject as TFreeMarker).Selected;
   if (aObject is TFreeFlowLine) then Result:=(aObject as TFreeFlowLine).Selected;
 end;
-
 procedure TFreeShip.SetObjectSelected(aObject:TFreeNamedObject; aSelected: boolean);
 begin
   if (aObject is TFreeSubdivisionControlPoint)
@@ -263,59 +254,50 @@ begin
   if (aObject is TFreeMarker) then (aObject as TFreeMarker).Selected:=true;
   if (aObject is TFreeFlowLine) then (aObject as TFreeFlowLine).Selected:=true;
 end;
-
 function TFreeShip.FGetStation(Index: integer): TFreeIntersection;
-begin
-   if Index<0 then Index:=0 else
-   if Index>=Fstations.Count then Index:=Fstations.Count-1;
-   Result:=FStations[ index]
+begin if Index<0 then Index:=0 else
+      if Index>=Fstations.Count then Index:=Fstations.Count-1;
+      Result:=FStations[index]
 end;
 
 function TFreeShip.FGetMarker(Index: integer): TFreeMarker;
-begin
-  if Index<0 then Index:=0 else
-  if Index>=FMarkers.Count then Index:=FMarkers.Count-1;
-  Result:=FMarkers[index]
+begin if Index<0 then Index:=0 else
+      if Index>=FMarkers.Count then Index:=FMarkers.Count-1;
+      Result:=FMarkers[index]
 end;
-
 function TFreeShip.FGetNumberofBackgroundImages: integer;
-begin Result:=FBackgroundImages.Count; end;
-
+   begin Result:=FBackgroundImages.Count; end;
 function TFreeShip.FGetUndoCount: integer;
-begin Result:=FUndoObjects.Count; end;
-
+   begin Result:=FUndoObjects.Count; end;
 function TFreeShip.FGetUndoMemory: integer; var I: integer;
 begin Result:=0; for I:=1 to UndoCount do Result:=Result+UndoObject[I-1].Memory;
 end;
-
 function TFreeShip.FGetUndoObject(Index: integer): TFreeUndoObject;
-begin Result:=FUndoObjects[Index]; end;
+   begin Result:=FUndoObjects[Index]; end;
 
 function TFreeShip.FGetButtock(Index: integer): TFreeIntersection;
-begin
-  if Index<0 then Index:=0 else
-  if Index>=FButtocks.Count then Index:=FButtocks.Count-1;
-  Result:=FButtocks[index]
+begin if Index<0 then Index:=0 else
+      if Index>=FButtocks.Count then Index:=FButtocks.Count-1;
+      Result:=FButtocks[index]
 end;
 
 function TFreeShip.FGetDiagonal(Index: integer): TFreeIntersection;
-begin
-  if Index<0 then Index:=0 else
-  if Index>=FDiagonals.Count then Index:=FDiagonals.Count-1;
-  Result:=FDiagonals[index]
+begin if Index<0 then Index:=0 else
+      if Index>=FDiagonals.Count then Index:=FDiagonals.Count-1;
+      Result:=FDiagonals[index]
 end;
 
 function TFreeShip.FGetFlowline(Index: integer): TFreeFlowline;
-begin Result:=FFlowlines[index]; end;
+   begin Result:=FFlowlines[index]; end;
 
 function TFreeShip.FGetWaterline(Index: integer): TFreeIntersection;
-begin
-  if Index<0 then Index:=0 else
-  if Index>=FWaterlines.Count then Index:=FWaterlines.Count-1;
-  Result:=FWaterlines[index]
+begin if Index<0 then Index:=0 else
+      if Index>=FWaterlines.Count then Index:=FWaterlines.Count-1;
+      Result:=FWaterlines[index]
 end;
 
 // Assembles all stations and builds a 2D bodyplan for export to other calculating programs
+
 procedure TFreeShip.FBuildValidFrameTable( Destination: TFasterListTFreeSpline; CloseAtDeck: boolean );
 var
   I,J: integer;
@@ -531,19 +513,16 @@ begin
 end;
 
 procedure TFreeShip.FSetFileChanged(Val: boolean);
-begin
-  if Val <> FFileChanged then begin
-    FFileChanged:=Val;
-    if assigned(FOnFileChanged) then FOnFileChanged(self);
-  end;
+begin if Val<>FFileChanged then begin
+      FFileChanged:=Val;
+      if assigned( FOnFileChanged ) then FOnFileChanged( self ); end;
 end;
 
-procedure TFreeShip.FSetFileName(Val: string);
+procedure TFreeShip.FSetFileName( Val: AnsiString );
 var Tmp: string;
-begin
-    if val = '' then val:='Example Ship';
-    Tmp:=ChangeFileExt( Val,FreeShipExtention );
-    if FFilename <> val then FFilename:=Val;
+begin if val='' then val:='Example Ship';
+      Tmp:=ChangeFileExt( Val,FreeShipExtention );
+      if FFilename<>val then FFilename:=Val;
 end;
 
 procedure TFreeShip.FSetFileVersion( Val: TFreeFileVersion );
@@ -700,21 +679,19 @@ begin
 end;
 *)
 
-procedure TFreeShip.Clear;
-var I: integer; Pt: TPoint;
+procedure TFreeShip.Clear; var I: integer; Pt: TPoint;
 begin                                                    // Initialize all data
   FPrecision:=fpLow;
   FFileVersion:=CurrentVersion;
-  FFileChanged:=False;
+//FFileChanged:=False;
   ModelIsLoaded:=False;
   FileIsReadOnly:=False;
   FSurface.Clear;
   FFilename:=Userstring(179);
   FVisibility.Clear;
-  FEditMode:=emSelectItems; // Set editmode to select items
-                              //FFontSize:=8; // use Preferences
-  ActiveControlPoint:=nil;
-                              // delete Markers
+  FEditMode:=emSelectItems;      // Set editmode to select items
+                                 // FFontSize:=8; // use Preferences
+  ActiveControlPoint:=nil;       // delete Markers
   for I:=1 to NumberOfMarkers do Marker[I-1].Destroy;
           FMarkers.Clear;
   FSelectedMarkers.Clear;        // delete stations
@@ -734,10 +711,10 @@ begin                                                    // Initialize all data
   Fillchar(FResistanceKaperData, SizeOf(TFreeKAPERResistanceData), 0);
 
   // Delete backgroundimages
-  for I:=1 to NumberofBackgroundImages do BackgroundImage[I-1].Destroy;
+  for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].Destroy;
   FBackGroundImages.Clear;
   // Clear flowlines
-  for I:=1 to NumberOfFlowlines do Flowline[I-1].Destroy;
+  for I:=0 to NumberOfFlowlines-1 do Flowline[I].Destroy;
   FFlowlines.Clear;
   FSelectedFlowlines.Clear;
   if not (csDestroying in componentState) then begin // remove backgroundimages from viewports
@@ -749,7 +726,7 @@ begin                                                    // Initialize all data
                 (nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True);
     if assigned(FOnFileChanged) then FOnFileChanged(self);
     if Assigned(OnUpdateGeometryInfo) then OnUpdateGeometryInfo(self);
-  end;
+  end; FileChanged:=False;
 end;
 
 procedure TFreeShip.ClearUndo;
@@ -854,9 +831,8 @@ begin // Redraws model to all viewports using the current min/max coordinates of
 end;
 *)
 
-resourcestring rsSplitSection = 'Split Section';
-
 procedure TFreeShip.DrawToViewport( Viewport: TFreeViewport );   /// !!!
+const clBlue=$FF8000; // осветление синего цвета
 var
   I, Size: integer;
   Plane: T3DPlane;
@@ -1137,8 +1113,7 @@ var
           Viewport.TextOut(Pt1.X-Width div 2, Pt1.Y-Height, Str);
           Viewport.TextOut(Pt2.X-Width div 2, Pt2.Y-Height, str);
 //      end;
-      end;
-      // Draw Split Section (formerly Mainframe)
+      end;                           // Draw Split Section (formerly Mainframe)
       if not (Viewport.Viewtype in [fvBodyplan,fvPerspective]) then begin
         Viewport.FontColor:=clBlue;
         Viewport.PenColor:=clBlue;
@@ -1146,7 +1121,8 @@ var
         P1:=Vector( Surface.SplitSectionLocation,Min.Y,Min.Z );
         P2:=Vector( Surface.SplitSectionLocation,Max.Y,Max.Z );
         Position:=Surface.SplitSectionLocation;
-        Str:=rsSplitSection +':'+ConvertDimension(Position, ProjectSettings.ProjectUnits);
+//      Str:='Split Section:'+ConvertDimension( Position,ProjectSettings.ProjectUnits );
+        Str:=UserString(1671)+': '+ConvertDimension( Position,ProjectSettings.ProjectUnits );
         Pt1:=Viewport.Project( P1 );
         Pt2:=Viewport.Project( P2 );
         Viewport.MoveTo(Pt1.X, Pt1.Y+30);
@@ -1159,11 +1135,9 @@ var
   end;{DrawGrid}
 
 begin
-
-  if Surface.IsBuilding then exit; // no double entries
+  if Surface.IsBuilding then exit;            // no double entries
   if not Surface.Built then surface.Rebuild; // temporary rebuilding here. TODO-dont
                                     //exit; // do not rebuild in painting cycle
-
   // Draw intersectionlines BEFORE the surface is drawn,
   // so that the controlnet appears on top
   // But the intersections that should be drawn last depends on the view
@@ -1849,10 +1823,8 @@ begin
     Points:=TFasterListTFreeSubdivisionControlPoint.Create;
     Edges:=TFasterListTFreeSubdivisionControlEdge.Create;
     Curves:=TFasterListTFreeSubdivisionControlCurve.Create;
-    for I:=1 to Faces.Count do begin WestPoint;
-      Face:=Faces[I-1];
-      if Layers.IndexOf(Face.Layer) = -1 then
-         Layers.Add(Face.Layer);
+    for I:=1 to Faces.Count do begin WestPoint; Face:=Faces[I-1];
+      if Layers.IndexOf(Face.Layer) = -1 then Layers.Add(Face.Layer);
       P1:=Face.Point[Face.NumberOfPoints-1] as TFreeSubdivisionControlPoint;
       for J:=1 to face.NumberOfpoints do begin
         P2:=Face.Point[J-1] as TFreeSubdivisionControlPoint;
@@ -1862,27 +1834,20 @@ begin
           if Edges.IndexOf(Edge) = -1 then Edges.Add(Edge);
         P1:=P2;
       end;
-    end;
-
-    // process control curves
-    for I:=1 to Surface.NumberOfControlCurves do
-    begin
+    end;                                             // process control curves
+    for I:=1 to Surface.NumberOfControlCurves do begin
       Curve:=Surface.ControlCurve[I-1];
       // In order to export this curve, all associated controledges must be in the edges list
       AddCurve:=True and (Curve.NumberOfControlPoints > 1);
-      for J:=2 to Curve.NumberOfControlPoints do
-      begin
+      for J:=2 to Curve.NumberOfControlPoints do begin
         P1:=Curve.ControlPoint[J-2];
         P2:=Curve.ControlPoint[J-1];
         Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
         if Edge <> nil then begin
           if Edges.IndexOf(Edge) = -1 then AddCurve:=False;
-        end
-        else
-          AddCurve:=False;
+        end else AddCurve:=False;
       end;
-      if AddCurve then
-        Curves.Add(Curve);
+      if AddCurve then Curves.Add(Curve);
     end;
 
 //    Curves.Sort;

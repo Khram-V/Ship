@@ -270,11 +270,6 @@ object FreeIntersectionDialog: TFreeIntersectionDialog
       Top = 2
       Action = CloseDialog
     end
-    object ToolButton8: TToolButton
-      Left = 197
-      Top = 2
-      Caption = 'ToolButton8'
-    end
   end
   object MenuImages: TImageList
     Left = 232
@@ -371,12 +366,6 @@ object FreeIntersectionDialog: TFreeIntersectionDialog
       Hint = 'Add a whole range of intersection curves.'
       ImageIndex = 6
       OnExecute = AddRangeExecute
-    end
-    object DeleteAll: TAction
-      Caption = 'Delete all'
-      Hint = 'Delete all stations.'
-      ImageIndex = 5
-      OnExecute = DeleteAllExecute
     end
     object DeleteSelected: TAction
       Caption = 'DeleteSelected'

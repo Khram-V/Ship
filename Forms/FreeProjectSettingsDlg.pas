@@ -11,8 +11,7 @@ uses
   Dialogs,   ExtCtrls,
   StdCtrls,  Buttons,
   ComCtrls,  Spin,
-  FreeGeometry,FreeLanguageSupport;
-
+  FreeTypes,FreeGeometry,FreeLanguageSupport;
 type                                             { TFREEProjectSettingsDialog }
   TFREEProjectSettingsDialog = class( TForm )
     ColorDialog:                              TColorDialog;

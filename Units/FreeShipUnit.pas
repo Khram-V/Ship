@@ -29,22 +29,11 @@ const
 //FontheightFactor = 140;   // used for calculating fontheight
 
 resourcestring
-  rsPointMove = 'point move';
   rsPointLinearConstraintChanged = 'ControlPoint Linear Constraint Changed';
   rsPointAnchorConstraintChanged = 'ControlPoint Anchor Constraint Changed';
-  rsTextFile = 'Text file';
   rsAutocadDxfFile = 'Autocad dxf file';
-  rsGHSFiles = 'GHS files';
-  rsIGESFiles = 'IGES files';
-  rsOBJfile = 'OBJ file';
   rsSTLFile = 'STL file';
-  rsCareneXYZFiles = 'Carene XYZ files';
-  rsTextFiles = 'Text files';
-  rsPolyCadFiles = 'PolyCad files';
   rsFREEShipGeometryPart = 'FREE!ship geometry part';
-  rsCarlssonHullFiles = 'Carlsson Hull files';
-  rsArchimedesMBMultiBodyHullData = 'ArchimedesMB multi body hull data';
-  rsArchimedesSingleBodyHullData = 'Archimedes single body hull data';
 
 type
   TFreeShip = class;                                    // to be declared later
@@ -213,6 +202,8 @@ type
     procedure FSetHeelingAngle(Val: TFloatType);
     procedure FSetTrim(Val: TFloatType);
   public
+    constructor Create(Owner: TFreeShip); virtual;
+    destructor Destroy; override;
     procedure AddData(Strings: TStringList; Mode: TFreeHydrostaticsMode; Separator: char);
 //  Add calculated data to a stringlist to either show in a report or save to disc
     procedure AddHeader(Strings: TStringList);
@@ -222,11 +213,9 @@ type
 //  The actual calculation of the hydrostatics finds place in this procedure
     procedure CalculateGravity;
     procedure CalculateMidshipLocation;
-    procedure CalculateVolume(WaterlinePlane: T3DPlane);
+//  procedure CalculateVolume(WaterlinePlane: T3DPlane);
     procedure Clear;
     procedure Face_MoveZAuto;
-    constructor Create(Owner: TFreeShip); virtual;
-    destructor Destroy; override;
     procedure ShowData(Mode: TFreeHydrostaticsMode);
     property Calculated: boolean read FCalculated write FSetCalculated;
     property Calculations: TFreeHydrostaticsCalculate read FCalculations write FCalculations;
@@ -671,11 +660,8 @@ type
     FEnableModelAutoMove: boolean;       // Unable the automatic moving model along Z
 //  FEnableBonjeanSAC: boolean;          // Unable calculation and save in file Bonjean scale and SAC
     FProjectAppendageCoefficient: TFloatType;
-    FProjectBeam: TFloatType;
-    FProjectDraft: TFloatType;
-    FProjectLength: TFloatType;
-    FProjectWaterDensity: TFloatType;
-    FProjectWaterTemper: TFloatType;
+    FProjectBeam,FProjectDraft,FProjectLength: TFloatType;
+    FProjectWaterDensity,FProjectWaterTemper: TFloatType;
     FProjectSplitSectionLocation: TFloatType;
     FUseDefaultSplitSectionLocation: boolean; // If set to true, the midship/mainframe location is set to 0.5*project length, if false then value in FProjectMainframeLocation is used
     FProjectName: AnsiString;
@@ -789,22 +775,14 @@ type
     FSurface           : TFreeSubdivisionSurface;
     FFilename          : AnsiString; // Filename of the current project;
     FEdit              : TFreeEdit;  // Containerclass for all editing commands
-    FStations          : TFasterListTFreeIntersection;
-    FButtocks          : TFasterListTFreeIntersection;
-    FWaterlines        : TFasterListTFreeIntersection;
-    FDiagonals         : TFasterListTFreeIntersection;
-    FMarkers           : TFasterListTFreeMarker;
+    FStations,FButtocks,FWaterlines,FDiagonals: TFasterListTFreeIntersection;
+    FMarkers,FSelectedMarkers : TFasterListTFreeMarker;
+    FFlowLines,FSelectedFlowlines : TFasterListTFreeFlowLine;
     FBackgroundImages  : TFasterListTFreebackgroundImagedata;
-    FFlowLines         : TFasterListTFreeFlowLine;
-    FSelectedFlowlines : TFasterListTFreeFlowLine;
-    FSelectedMarkers   : TFasterListTFreeMarker;
     FVisibility        : TFreeVisibility;
-    FOnFileChanged     : TNotifyEvent;
-    FOnUpdateUndoData  : TNotifyEvent;
-    FOnUpdateRecentFileList: TNotifyEvent;
-    FOnChangeCursorIncrement: TNotifyEvent;
-    FOnUpdateGeometryInfo: TNotifyEvent; // This event is raised whenever items are added or deleted from the surface
-    FFreeLinesplanFrme: TFrame;
+    FOnFileChanged,FOnUpdateUndoData,FOnUpdateRecentFileList: TNotifyEvent;
+    FOnUpdateGeometryInfo,FOnChangeCursorIncrement: TNotifyEvent;
+    FFreeLinesplanFrme: TFrame; // This event is raised whenever items are added or deleted from the surface
 //    FFilenameSet: boolean; // Flag to determine if the filename already has been set
 //    FModelIsLoaded: boolean; // Flag to determine if the model is created new or loaded.
 //    FFileIsReadOnly: boolean; // The folowing private variables are for moving controlpoints with the mouse
@@ -817,8 +795,7 @@ type
     FProjectSettings: TFreeProjectSettings;
     FHydrostaticCalculations: TFasterListTFreeHydrostaticCalc; // List containing all hydrostatic calculations
     FUndoObjects: TFasterListTFreeUndoObject;
-    FUndoPosition: integer;                 // Index of the current undo object
-    FPreviousUndoPosition: integer;
+    FUndoPosition,FPreviousUndoPosition: integer; // Index of the current undo object
     FResistanceDelftData: TFreeDelftSeriesResistanceData;
     FResistanceKaperData: TFreeKAPERResistanceData;
     FDesignHydrostatics: TFreeHydrostaticCalc;
@@ -879,8 +856,8 @@ type
     procedure FSetActiveLayer(Val: TFreeSubdivisionLayer);
     procedure FSetBuilt(Val: boolean);
     procedure FSetEditMode(Val: TFreeEditMode);
-    procedure FSetFileChanged(Val: boolean);
-    procedure FSetFileName(Val: AnsiString);
+    procedure FSetFileChanged( Val: boolean );
+    procedure FSetFileName( Val: AnsiString );
     procedure FSetFileVersion( Val: TFreeFileVersion );
     function FGetNumberOfSelectedControlCurves: integer;
     function FGetNumberOfSelectedControlEdges: integer;
@@ -1045,17 +1022,11 @@ type
     procedure WriteColor(const Section, Ident: AnsiString; Value: TColor); virtual;
   end;
 
-// function to find the corresponding water viscosity based on the density
-function FindWaterViscosity(Temper: TFloatType; Units: TFreeUnitType): TFloatType;
-procedure INEXTR(XX: single; N: integer; Xs, Ws: array of single; var YY: single);
-procedure SFINEX1(N: integer; X, Y: array of single; X0: single; var YY: single);
 procedure Register;
 var Ship: TFreeShip;
 
-implementation
-
-uses Math,
-  Main,
+implementation uses
+  Math, Main,
   FreeHydrostaticsDlg,
   FreeIntersectionDlg,
   FreeNewModelDlg,
@@ -1086,7 +1057,6 @@ uses Math,
   FreeGridDlg,
   FreeDeleteDlg;
 
-{$I FreeShipUnit_Functions.inc}
 {$I FreeUndoObject.inc}
 {$I FreeBackgroundImageData.inc}
 {$I FreeHydrostaticCalc.inc}

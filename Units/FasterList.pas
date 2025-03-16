@@ -91,8 +91,10 @@ end;
 procedure TFasterList.Delete( Index: integer );
 begin
   if FCount<=0 then exit;
+//  if (Index<0) or (Index>=FCount) then exit;
   if Index<0 then Index:=0 else
-  if Index>=FCount then Index:=FCount-1; Dec( FCount );
+  if Index>=FCount then Index:=FCount-1;
+  Dec( FCount );
   if Index<FCount then begin
     Move( FList[Index+1],FList[Index],(FCount-Index)*SizeOf(TItemType) );
     if FUseUserData then

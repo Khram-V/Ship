@@ -24,58 +24,40 @@ begin
 end;
 
 procedure TFreeViewport.FSetBrushStyle(Val: TBrushStyle);
-begin
-  if FDrawingcanvas.Brush.Style <> val then FDrawingcanvas.Brush.Style:=Val;
+begin if FDrawingcanvas.Brush.Style<>val then FDrawingcanvas.Brush.Style:=Val;
 end;
-
 function TFreeViewport.FGetPenStyle: TPenStyle;
-begin Result:=FDrawingCanvas.Pen.Style; end;
-
+   begin Result:=FDrawingCanvas.Pen.Style; end;
 function TFreeViewport.FGetPenWidth: integer;
-begin Result:=FDrawingCanvas.Pen.Width; end;
-
+   begin Result:=FDrawingCanvas.Pen.Width; end;
 function TFreeViewport.FGetPrinting: boolean;
-begin if Printer = nil then Result:=False
-      else Result:=FPrinting and (FDrawingcanvas = printer.Canvas);
-end;
-
+   begin if Printer = nil then Result:=False
+         else Result:=FPrinting and (FDrawingcanvas = printer.Canvas);
+   end;
 function TFreeViewport.FGetBrushStyle: TBrushStyle;
-begin Result:=FDrawingcanvas.Brush.Style; end;
-
+   begin Result:=FDrawingcanvas.Brush.Style; end;
 function TFreeViewport.FGetPenColor: TColor;
-begin Result:=FDrawingCanvas.Pen.Color; end;
-
+   begin Result:=FDrawingCanvas.Pen.Color; end;
 function TFreeViewport.FGetBrushColor: TColor;
-begin Result:=FDrawingCanvas.Brush.Color; end;
-
+   begin Result:=FDrawingCanvas.Brush.Color; end;
 function TFreeViewport.FGetFontColor: TColor;
-begin Result:=FDrawingCanvas.Font.Color; end;
-
+   begin Result:=FDrawingCanvas.Font.Color; end;
 function TFreeViewport.FGetFontName: string;
-begin Result:=FDrawingcanvas.Font.Name; end;
-
+   begin Result:=FDrawingcanvas.Font.Name; end;
 function TFreeViewport.FGetFontSize: integer;
-begin Result:=FDrawingCanvas.Font.Size; end;
-
+   begin Result:=FDrawingCanvas.Font.Size; end;
 procedure TFreeViewport.StretchDraw(DestRect: TRect; bmp: TBitmap);
-begin FDrawingCanvas.StretchDraw(DestRect, bmp); end;
-
+    begin FDrawingCanvas.StretchDraw(DestRect, bmp); end;
 function TFreeViewport.TextWidth(val: string): integer;
-begin Result:=FDrawingCanvas.TextWidth(val); end;
-
+   begin Result:=FDrawingCanvas.TextWidth(val); end;
 function TFreeViewport.TextHeight(val: string): integer;
-begin Result:=FDrawingCanvas.TextHeight(val); end;
-
+   begin Result:=FDrawingCanvas.TextHeight(val); end;
 procedure TFreeViewport.TextOut(x, y: integer; val: string);
-begin FDrawingCanvas.TextOut(x, y, val); end;
-
+    begin FDrawingCanvas.TextOut(x, y, val); end;
 procedure TFreeViewport.FSetCameraType(Val: TFreeCameraType);
-var
-  Film: TFloatType;
-  Dist: TFloatType;
+var Film,Dist: TFloatType;
 begin
-  if Val <> FCameraType then begin
-    Film:=35;                                          // standard 35mm. film
+  if Val <> FCameraType then begin Film:=35;             // standard 35mm. film
     case Val of
       ftWide: Dist:=20;
       ftStandard: Dist:=50;
@@ -102,27 +84,26 @@ end;
 
 procedure TFreeViewport.FSetLight(val: TFreeLight);
 begin
-  if (FLight.Position.X = Val.Position.X) and
-     (FLight.Position.Y = Val.Position.Y) and (FLight.Position.Z = Val.Position.Z) and
-     (FLight.Ambient = Val.Ambient) and (FLight.Intensity = Val.Intensity) then exit;
+  if  ( FLight.Position.X = Val.Position.X )
+  and ( FLight.Position.Y = Val.Position.Y )
+  and ( FLight.Position.Z = Val.Position.Z )
+  and ( FLight.Ambient = Val.Ambient )
+  and ( FLight.Intensity = Val.Intensity ) then exit;
   FLight:=Val;
-  FLightIntensity:=FLight.Intensity / 255.0;
-  FAmbientIntencity:=FLight.Ambient / 255.0;
+  FLightIntensity:=FLight.Intensity/255.0;
+  FAmbientIntencity:=FLight.Ambient/255.0;
   Refresh;
 end;
 
 procedure TFreeViewport.FSetPan(Val: TPoint);
 begin if (FPan.X<>Val.X) or (FPan.Y<>Val.Y) then begin FPan:=Val; Refresh; end;
 end;
-
 procedure TFreeViewport.FSetPenColor(Val: TColor);
 begin if FDrawingcanvas.Pen.Color<>val then FDrawingcanvas.Pen.Color:=Val;
 end;
-
 procedure TFreeViewport.FSetBrushColor(Val: TColor);
 begin if FDrawingcanvas.Brush.Color<>val then FDrawingcanvas.Brush.Color:=Val;
 end;
-
 procedure TFreeViewport.FSetFontColor(Val: TColor);
 begin if FDrawingcanvas.Font.Color<>val then FDrawingcanvas.Font.Color:=Val;
 end;
@@ -131,7 +112,6 @@ procedure TFreeViewport.FSetFontName(val: string);
 begin if Uppercase(FDrawingcanvas.Font.Name)<>uppercase(Name) then
       FDrawingcanvas.Font.Name:=Name;
 end;
-
 procedure TFreeViewport.FSetFontSize(val: integer);
 begin if FDrawingcanvas.Font.Size <> val then FDrawingcanvas.Font.Size:=val;
 end;
@@ -140,11 +120,9 @@ function TFreeViewport.FGetFontHeight: integer;
 begin //Result:=FDrawingCanvas.TextHeight('Xy');
         Result:=FDrawingCanvas.Font.Height;
 end;
-
 procedure TFreeViewport.FSetFontHeight(val: integer);
-var
-  Height: TFloatType;
-  CurrentHeight: integer;
+var Height: TFloatType;
+    CurrentHeight: integer;
 begin
    if FDrawingCanvas.Font.Height <> val then
       FDrawingCanvas.Font.Height:=val;
@@ -152,8 +130,7 @@ begin
    {Height:=val*Self.Scale*Self.Zoom;
    FSetFontSize(8);
    CurrentHeight:=FDrawingCanvas.TextHeight('Xy');
-   while CurrentHeight>Height do
-   begin
+   while CurrentHeight>Height do begin
      FDrawingCanvas.Font.Size:=FDrawingCanvas.Font.Size-1;
      CurrentHeight:=FDrawingCanvas.TextHeight('Xy');
      if FDrawingCanvas.Font.Size<3 then break;
@@ -163,11 +140,9 @@ end;
 procedure TFreeViewport.SetSelectionFrameRect(Rect: TRect);
 begin FSelectionFrameRect:=Rect; if FSelectionFrameActive then refresh;
 end;
-
 procedure TFreeViewport.SetSelectionFrameActive(Val: boolean);
 begin FSelectionFrameActive:=Val; if FSelectionFrameActive then refresh;
 end;
-
 procedure TFreeViewport.DrawSelectionFrame;
 begin
   if not FSelectionFrameActive then exit; // draw it last
@@ -178,26 +153,21 @@ end;
 
 procedure TFreeViewport.FSetMargin(Val: TFloatType);
 begin
-  if Val < 0 then Val:=0;
-  if Val <> FMargin then begin
-    FMargin:=Val;
+  if Val<0 then Val:=0;
+  if Val<>FMargin then begin FMargin:=Val;
     if not (csDesigning in ComponentState) then begin
        if Zoom <> 1.0 then Refresh else ZoomExtents;
     end;
   end;
 end;
-
 procedure TFreeViewport.FSetPenStyle(Val: TPenStyle);
-begin if FDrawingcanvas.Pen.Style <> val then FDrawingcanvas.Pen.Style:=Val;
-end;
-
+    begin if FDrawingcanvas.Pen.Style<>val then FDrawingcanvas.Pen.Style:=Val;
+    end;
 procedure TFreeViewport.FSetPenWidth(Val: integer);
-begin if FDrawingcanvas.Pen.Width <> val then FDrawingcanvas.Pen.Width:=Val;
-end;
-
+    begin if FDrawingcanvas.Pen.Width<>val then FDrawingcanvas.Pen.Width:=Val;
+    end;
 function TFreeViewport.FGetPrintScaleFactor: TFloatType;
-begin Result:=FPrintScaleFactor; end;
-
+   begin Result:=FPrintScaleFactor; end;
 procedure TFreeViewport.FSetViewType(Val: TFreeViewType);
 begin
   if Val <> FViewType then begin
@@ -242,7 +212,7 @@ begin
   if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
 end;
 
-constructor TFreeViewport.Create(AOwner: TComponent);
+constructor TFreeViewport.Create( AOwner: TComponent );
 var curRes:string;
 begin
   inherited Create( AOwner );
@@ -268,7 +238,6 @@ begin
   FViewType:=fvPerspective;
   FDoubleBuffer:=True;
   FBackgroundImage:=TFreeBackgroundImage.Create( Self );
-
   // Inherited create(AOwner);
   FDrawingBuffer:=TBitmap.Create;
   // FDrawingBuffer.PixelFormat:=pf24bit; // Use 24 bit for faster pixel-access when shading
@@ -277,41 +246,36 @@ begin
   // We will create native buffer Bitmap and convert ScanLine pixels to/from TRGBTriple using TFreeBitmapFormatHelper
   // NO. It does not work. Currently all works via Canvas.Pixels[x,y]. Quite good.
   // NO2. It does work. Currently Canvas.Pixels[x,y] causes severe memory leak SetPixel creates Pen each call.
-  //      TFreeBitmapFormatHelper works Quite good though requires native 24/32-bit formats RGB or BGR.
+  // TFreeBitmapFormatHelper works Quite good though requires native 24/32-bit formats RGB or BGR.
   FDrawingBuffer.Width:=10;
   FDrawingBuffer.Height:=10;
   // Canvas.Pen.Color:=clBlack;
   // Canvas.Brush.Color:=clWhite;
-  // FDrawingBuffer.Canvas.FillRect(0,0,10,10); // to init handles
-  FBitmapFormatHelper:=TFreeBitmapFormatHelper.Create(FDrawingBuffer);
+  // FDrawingBuffer.Canvas.FillRect( 0,0,10,10 ); // to init handles
+  FBitmapFormatHelper:=TFreeBitmapFormatHelper.Create( FDrawingBuffer );
   FDrawingCanvas:=Canvas;
   FZBuffer:=TFreeZBuffer.Create;
   FZBuffer.FViewport:=self;
   FAlphaBuffer:=TFreeAlphaBuffer.Create;
   FAlphaBuffer.FViewport:=Self;
-
   FLight.Position.X:=50;
   FLight.Position.Y:=20;
   FLight.Position.Z:=50;
   FLight.Ambient   :=64;
-  FLight.Intensity :=192;
-
-  FViewportmode:=vmWireFrame;
-
-  // Load cursors from resource file
-
-  if Forms.Screen.PixelsPerInch >= 144 then curRes:='48' else curRes:='32';
-  Screen.Cursors[crRotate]   :=LoadCursor(hInstance, pchar('ROTATE_'+curRes));
-  Screen.Cursors[crSetOrigin]:=LoadCursor(hInstance, pchar('SETORIGIN_'+curRes));
-  Screen.Cursors[crSetScale] :=LoadCursor(hInstance, pchar('SETSCALE_'+curRes));
-  Screen.Cursors[crTranspCol]:=LoadCursor(hInstance, pchar('COLORPICKER_'+curRes));
-  Screen.Cursors[crSetPoint] :=LoadCursor(hInstance, pchar('SETPOINT_'+curRes));
-  Screen.Cursors[crSetLine]  :=LoadCursor(hInstance, pchar('SETLINE_'+curRes));
-  Screen.Cursors[crSetSpline]:=LoadCursor(hInstance, pchar('SETSPLINE_'+curRes));
-//Screen.Cursors[crPan]      :=LoadCursor(hInstance, 'PANVIEWPORT');
-  FontName:='Consolas'; //'Times New Roman'; // 'Courier';
+  FLight.Intensity:=192;
+  FViewportmode:=vmWireFrame;                // Load cursors from resource file
+  if Forms.Screen.PixelsPerInch>=144 then curRes:='48' else curRes:='32';
+  Screen.Cursors[crRotate]   :=LoadCursor(hInstance,pchar('ROTATE_'+curRes));
+  Screen.Cursors[crSetOrigin]:=LoadCursor(hInstance,pchar('SETORIGIN_'+curRes));
+  Screen.Cursors[crSetScale] :=LoadCursor(hInstance,pchar('SETSCALE_'+curRes));
+  Screen.Cursors[crTranspCol]:=LoadCursor(hInstance,pchar('COLORPICKER_'+curRes));
+  Screen.Cursors[crSetPoint] :=LoadCursor(hInstance,pchar('SETPOINT_'+curRes));
+  Screen.Cursors[crSetLine]  :=LoadCursor(hInstance,pchar('SETLINE_'+curRes));
+  Screen.Cursors[crSetSpline]:=LoadCursor(hInstance,pchar('SETSPLINE_'+curRes));
+//Screen.Cursors[crPan]      :=LoadCursor(hInstance,'PANVIEWPORT');
+  FontName:='Consolas';      //'Times New Roman'; // 'Courier';
   FontSize:=8;
-  FontColor:=clNavy; //clOlive; //clWhite;
+  FontColor:=clNavy;         //clOlive; //clWhite;
 end;
 
 procedure TFreeViewport.DetachEventHandlers;
@@ -342,30 +306,25 @@ begin
   if Assigned(FBitmapFormatHelper) then FreeAndNil(FBitmapFormatHelper);
   inherited Destroy;
 end;
-
 procedure TFreeViewport.BeginUpdate;
 begin
   if not FUpdating then
   begin FDrawingBuffer.BeginUpdate(False); FUpdating:=True; end;
 end;
-
 procedure TFreeViewport.EndUpdate;
 begin
   if FUpdating then begin FDrawingBuffer.EndUpdate; FUpdating:=False; end;
 end;
-
 procedure TFreeViewport.GetPixel( X,Y: integer; out R,G,B: byte );
-var
-  pRow, pPixel: pointer;
-  Pixel: TRGBTriple;
-  A: byte;
-  //Row           : pRGBTripleArray;
-  //Clr:TColor;
+var A: byte;
+// pRow,pPixel: pointer;
+// Pixel: TRGBTriple;
+// Row : pRGBTripleArray;
+// Clr:TColor;
 begin
-  // Scanline method. Came from Delphy
-  //Row:=FDrawingBuffer.Scanline[P1.Y];
-
-  // My method via FBitmapFormatHelper
+// Scanline method. Came from Delphy
+// Row:=FDrawingBuffer.Scanline[P1.Y];
+// My method via FBitmapFormatHelper
    {pRow:=FDrawingBuffer.RawImage.GetLineStart(Y);
    pPixel:=pRow+FBitmapFormatHelper.BytesPerPixel * X;
    Pixel:=FBitmapFormatHelper.ToTRGBTriple(pPixel);
@@ -373,9 +332,8 @@ begin
    G:=Pixel.rgbtGreen;
    B:=Pixel.rgbtBlue;}
   FBitmapFormatHelper.GetPixel( FDrawingBuffer,X,Y, R,G,B,A );
-
-  // Canvas.Pixels method.
-  // temporary draw via canvas. Appeared it works well in QT.
+// Canvas.Pixels method.
+// temporary draw via canvas. Appeared it works well in QT.
   { //Clr:=FDrawingBuffer.Canvas.Pixels[P1.X,P1.Y];  // this causes mem leak in LibQt4 DCSetPixel (qtobject.inc) calling QPen_create5
       B:=Blue(Clr);
       G:=Green(Clr);
@@ -387,17 +345,12 @@ procedure TFreeViewport.SetPixel( X,Y: integer; R,G,B: byte);
 //var Row : pRGBTripleArray;
 begin
   //BeginUpdate;   //do it on higher level
-
   // Scanline method. Came from Delphy
   //Row:=FDrawingBuffer.Scanline[Y];
   //with TRGBTriple(Row^[X]) do begin rgbtBlue:=B; rgbtGreen:=G; rgbtRed:=R; end;
-
   // My method via FBitmapFormatHelper
-
   FBitmapFormatHelper.SetPixel( FDrawingBuffer, X,Y, R,G,B,255 );
-
   //EndUpdate;    //do it on higher level
-
   // Canvas.Pixels method.
   // temporary draw via canvas. Appeared it works well in QT.
   //FDrawingBuffer.Canvas.Pixels[P1.X,P1.Y]:=RGBtoColor(R,G,B);  // this causes mem leak in LibQt4 DCSetPixel (qtobject.inc) calling QPen_create5
@@ -436,17 +389,13 @@ begin
           end;
         end;
       end;
-      if D >= 0 then begin
-        Inc(P1.Y, sy);
-        Dec(d, ax);
-      end;
+      if D>=0 then begin Inc( P1.Y,sy ); Dec( d,ax ); end;
       P1.Z:=P1.Z+dZ;
-      Inc(P1.X, sx);
-      Inc(d, ay);
+      Inc( P1.X,sx );
+      Inc( d,ay );
     end;
-  end
-  else begin
-    if dy = 0 then dZ:=0 else dz:=(P2.Z-P1.Z) / abs(dy);
+  end else begin
+    if dy=0 then dZ:=0 else dz:=(P2.Z-P1.Z) / abs(dy);
     d:=ax-ay shr 1;
     while P1.Y <> P2.Y do begin
       if (P1.Y > 0) and (P1.Y < H) then begin
@@ -457,10 +406,7 @@ begin
           end;
         end;
       end;
-      if d >= 0 then begin
-        Inc(P1.X, sx);
-        Dec(d, ay);
-      end;
+      if d>=0 then begin Inc( P1.X,sx ); Dec( d,ay ); end;
       Inc(P1.Y, sy);
       P1.Z:=P1.Z+dZ;
       Inc(d, ax);
@@ -478,15 +424,13 @@ var
   I,VertCorr,HorCorr:  integer;
   Width,Height, Tmp,XScale,YScale: TFloatType;
   Pt1, Pt2: TPoint;
-
   procedure MinMax( P: T2DCoordinate ); begin
     if P.X < Min2D.X then Min2D.X:=P.X;
     if P.Y < Min2D.Y then Min2D.Y:=P.Y;
     if P.X > Max2D.X then Max2D.X:=P.X;
     if P.Y > Max2D.Y then Max2D.Y:=P.Y;
   end;
-
-begin // Add margin
+begin                                                             // Add margin
   Diff  :=0.01*FMargin*( Max-Min );
   FMin3D:=Min-Diff;
   Diff  :=-1.0*Diff;
@@ -495,9 +439,9 @@ begin // Add margin
   FMidPoint:=MidPoint( FMin3D, FMax3D );
   // Calculate the distance of the camera to the center of the model, following from the field of view from the camera
   Tmp:=Sqrt( Sqr( FMax3D.Y-FMin3D.Y )+Sqr( FMax3D.Z-FMin3D.Z ) );
-  if Tmp = 0 then Tmp:=1e-2;
-  if FViewtype = fvPerspective then begin
-    if ArcTan( DegToRad( FFieldOfView ) ) <> 0 then begin
+  if Tmp=0 then Tmp:=1e-2;
+  if FViewtype=fvPerspective then begin
+    if ArcTan( DegToRad( FFieldOfView ) )<>0 then begin
       FDistance:=1.5 * Tmp / ArcTan( DegToRad( FFieldOfView ) );
       if FDistance > 1e5 then FDistance:=1e5;
     end else FDistance:=1e5;
@@ -573,7 +517,7 @@ end;
 
 procedure TFreeViewport.Print( Units: TFreeUnitType;
                                AskPrintScale: boolean;
-                               Jobname: string );
+                               Jobname: AnsiString );
 var
   CanvasWidth,CanvasHeight,Resolution,I: integer;
   PrintScale,NewPrintScale,XScale,OldZoom,YScale: extended;
@@ -758,28 +702,20 @@ begin
 end;
 
 function TFreeViewport.ProjectBack(P: TPoint; Input: T3DVector): T3DVector;
-var
-  P2D: T2DCoordinate;
-  P1, P2: T3DVector;
-  P3D: T3DVector;
-  Dist: TFloatType;
-
-  function Dist_PL_3D(P, P1, P2: T3DVector): T3DVector;
-  var
-    t: TFloatType;
+var P2D: T2DCoordinate;
+    P1,P2,P3D: T3DVector;
+    Dist: TFloatType;
+  function Dist_PL_3D( P,P1,P2: T3DVector ): T3DVector; var T: TFloatType;
   begin
-    t:=-((P1.X-P.X) * (P2.X-P1.X)+(P1.Y-P.Y) * (P2.Y-P1.Y)+(P2.Z-P.Z) * (P2.Z-P1.Z)) /
-      (sqr(P2.X-P1.X)+sqr(P2.Y-P1.Y)+sqr(P2.Z-P1.Z));
+    T:=-((P1.X-P.X)*(P2.X-P1.X)+(P1.Y-P.Y)*(P2.Y-P1.Y)+(P2.Z-P.Z)*(P2.Z-P1.Z))
+      / (sqr(P2.X-P1.X)+sqr(P2.Y-P1.Y)+sqr(P2.Z-P1.Z));
     Result.X:=P1.X+T * (P2.X-P1.X);
     Result.Y:=P1.Y+T * (P2.Y-P1.Y);
     Result.Z:=P1.Z+T * (P2.Z-P1.Z);
-  end;{Dist_PL_3D}
-
-begin
-  // convert from screencoordinate to 2D world coordinate
+  end; {Dist_PL_3D}
+begin                   // convert from screencoordinate to 2D world coordinate
   P2D.X:=(P.X-FPan.X-FScreencenter.X) / (FZoom * FScale);
   P2D.Y:=(P.Y-FPan.Y-FScreencenter.Y) / -(FZoom * FScale);
-
   // Now correct for perspective projection and create a 3D ray through the screen coordinate
   P3D.X:=FMin3D.X;
   Dist:=FCameralocation.X-P3D.X;
@@ -800,10 +736,8 @@ end;
 function TFreeViewport.ProjectBackTo2D(P: TPoint): T2DCoordinate;
 var
   P2D: T2DCoordinate;
-  P1, P2: T3DVector;
-  P3D: T3DVector;
+  P1,P2,P3D: T3DVector;
   Dist: TFloatType;
-
 begin
   // convert from screencoordinate to 2D world coordinate
   P2D.X:=(P.X-FPan.X-FScreencenter.X) / (FZoom * FScale);
@@ -835,8 +769,7 @@ var
   Dist: TFloatType;
 begin
   P3D:=RotatedPoint(P);
-  Dist:=FCameralocation.X-P3D.X;
-  // apply perspective correction
+  Dist:=FCameralocation.X-P3D.X;                // apply perspective correction
   P2D.X:=FCameralocation.X * P3D.Y / Dist;
   P2D.Y:=FCameralocation.X * P3D.Z / Dist;
   Result.X:=FPan.X+FScreencenter.X+Round(FZoom * FScale * P2D.X);
@@ -852,7 +785,7 @@ var
   Dist: TFloatType;
 begin
   P3D:=RotatedPoint(P);
-  Dist:=FCameralocation.X-P3D.X;            // apply perspective correction
+  Dist:=FCameralocation.X-P3D.X;                // apply perspective correction
   P2D.X:=FCameralocation.X * P3D.Y / (Dist);
   P2D.Y:=FCameralocation.X * P3D.Z / (Dist);
   Result.X:=FPan.X+FScreencenter.X+Round(FZoom * FScale * P2D.X);
@@ -938,13 +871,12 @@ var
   P,P0,PC,p1,p2,p3: TPoint;
 begin
   inherited;
-  if (not (csDestroying in ComponentState)) and
-     (not (csLoading in ComponentState)) and
-     (not (csReading in ComponentState)) and
-     (not (csWriting in ComponentState)) and (Parent <> nil) then
-  begin                          // See if the contents is drawn to the printer
-    if ViewportMode <> vmWireframe then
-    begin
+  if  (not (csDestroying in ComponentState))
+  and (not (csLoading in ComponentState))
+  and (not (csReading in ComponentState))
+  and (not (csWriting in ComponentState))
+  and (Parent <> nil) then begin // See if the contents is drawn to the printer
+    if ViewportMode <> vmWireframe then begin
       L:=7.5 * Distance3D(FMin3D, FMax3D);
       N:=Normalize(FLight.Position);
       N.X:=N.X * L;
@@ -952,15 +884,13 @@ begin
       N.Z:=N.Z * L;
       FLight.Position:=N;
     end;
-    if Printer = nil then DrawingToPrinter:=False
-    else
-      DrawingToPrinter:=(FPrinting) and (FDrawingCanvas = Printer.Canvas);
+    if Printer = nil then DrawingToPrinter:=False else
+       DrawingToPrinter:=(FPrinting) and (FDrawingCanvas = Printer.Canvas);
     if DrawingToPrinter then begin
       FPrinting:=True;
       if BackgroundImage.Bitmap <> nil then BackgroundImage.Draw;
       if Assigned(OnRedraw) then OnRedraw(Self);
-    end
-    else begin
+    end else begin
       OldCanvas:=FDrawingCanvas;
       if not FPrinting then begin
         FDestinationWidth:=ClientWidth;
@@ -968,31 +898,25 @@ begin
       end;
       if (FDoubleBuffer) or (ViewportMode <> vmWireframe) then begin
         if FDrawingBuffer.Width <> FDestinationWidth then
-          FDrawingBuffer.Width:=FDestinationWidth;
+           FDrawingBuffer.Width:=FDestinationWidth;
         if FDrawingBuffer.Height <> FDestinationHeight then
-          FDrawingBuffer.Height:=FDestinationHeight;
+           FDrawingBuffer.Height:=FDestinationHeight;
         FDrawingCanvas:=FDrawingBuffer.Canvas;
       end
-      else FDrawingCanvas:=OldCanvas;
-
-      // Reset Pen
+      else FDrawingCanvas:=OldCanvas;                              // Reset Pen
       FDrawingCanvas.Pen.Color:=Color;
       FDrawingCanvas.Pen.Cosmetic:=true;
       FDrawingCanvas.Pen.EndCap:=pecRound;
       FDrawingCanvas.Pen.JoinStyle:=pjsRound;
       FDrawingCanvas.Pen.Mode:=pmCopy;
       FDrawingCanvas.Pen.Style:=psSolid;
-      FDrawingCanvas.Pen.Width:=1;
-
-      // Reset Brush. Clear buffer
+      FDrawingCanvas.Pen.Width:=1;                 // Reset Brush. Clear buffer
       FDrawingCanvas.Brush.Color:=Color;
       FDrawingCanvas.Brush.Style:=bsSolid;
-      FDrawingCanvas.FillRect(-1, -1, FDestinationWidth+2, FDestinationHeight+2);
+      FDrawingCanvas.FillRect(-1,-1,FDestinationWidth+2,FDestinationHeight+2);
 
-      if BackgroundImage.Bitmap <> nil then
-        BackgroundImage.Draw;
-
-      // Turn clipping back on
+      if BackgroundImage.Bitmap<>nil then BackgroundImage.Draw;
+                                                       // Turn clipping back on
       if ViewportMode <> vmWireframe then begin
         ZBuffer.Initialize;
         AlphaBuffer.Initialize(Self);
@@ -1001,17 +925,13 @@ begin
         SetPixel(FDestinationWidth-1, FDestinationHeight-1,
                  GetRValue(Color), GetGValue(Color), GetBValue(Color));
       end;
-
       if Assigned(OnRedraw) //and (ViewportMode=vmWireframe)
-      then
-        OnRedraw(Self);
-
+         then OnRedraw(Self);
       if ViewportMode <> vmWireframe then AlphaBuffer.Draw;
-
       if (FDoubleBuffer) or (ViewportMode <> vmWireframe) then begin
         // Copy buffer to screen
         //Bitblt(OldCanvas.Handle,0,0,FDestinationWidth,FDestinationHeight,FDrawingBuffer.Canvas.Handle,0,0,SRCCOPY);
-        OldCanvas.Draw(0, 0, FDrawingBuffer);
+        OldCanvas.Draw( 0,0,FDrawingBuffer );
         FDrawingCanvas:=OldCanvas;
       end;
     end;
@@ -1028,10 +948,9 @@ begin
     FDrawingCanvas.Rectangle(P.X-3,P.Y-3,P.X+3,P.Y+3);
     P0:=Project(ZERO);
     FDrawingCanvas.Ellipse(P0.X-3,P0.Y-3,P0.X+3,P0.Y+3);
-
-    if (FDebugCamera.X < 100000000) then begin
+    if (FDebugCamera.X<100000000) then begin
       PC:=Project(FDebugCamera);
-      if (abs(PC.X) > 1000000) or (abs(PC.Y) > 1000000) then begin
+      if (abs(PC.X)>1000000) or (abs(PC.Y)>1000000) then begin
         PC.X:=PC.X div 1000;
         PC.Y:=PC.Y div 1000;
       end;
@@ -1039,18 +958,15 @@ begin
       FDrawingCanvas.Ellipse(PC.X-3,PC.Y-3,PC.X+3,PC.Y+3);
       FDrawingCanvas.Line(PC,P);
     end;
-
     P:=Project(FDebugIntersection);
     FDrawingCanvas.Line(P.X-5,P.Y-5,P.X+5,P.Y+5);
     FDrawingCanvas.Line(P.X+5,P.Y-5,P.X-5,P.Y+5);
-
     p1:=Project(FDebugT1);
     p2:=Project(FDebugT2);
     p3:=Project(FDebugT3);
     FDrawingCanvas.Line(p1,p2);
     FDrawingCanvas.Line(p3,p2);
     FDrawingCanvas.Line(p1,p3);
-
     P0:=Project(FMidPoint);
     FDrawingCanvas.Pen.Color:=clRed;
     FDrawingCanvas.Ellipse(P0.X-1,P0.Y-1,P0.X+1,P0.Y+1);
@@ -1060,42 +976,32 @@ begin
   end;
 end;
 
-procedure TFreeViewport.MoveTo(x, y: integer);
-   begin FDrawingCanvas.MoveTo(x, y); end;
-
-procedure TFreeViewport.LineTo(x, y: integer);
-   begin FDrawingCanvas.LineTo(x, y); end;
-
-procedure TFreeViewport.Line(x1, y1, x2, y2: integer);
-   begin FDrawingCanvas.Line(x1, y1, x2, y2); end;
-
-procedure TFreeViewport.Rectangle(x1, y1, x2, y2: integer);
-   begin FDrawingCanvas.Rectangle(x1, y1, x2, y2); end;
-
-procedure TFreeViewport.Rectangle(rect: TRect);
-   begin FDrawingCanvas.Rectangle(rect); end;
-
-procedure TFreeViewport.Ellipse(x1, y1, x2, y2: integer);
-   begin FDrawingCanvas.Ellipse(x1, y1, x2, y2); end;
-
-procedure TFreeViewport.Pie(EllipseX1, EllipseY1, EllipseX2, EllipseY2,
-  StartX, StartY, EndX, EndY: integer);
-begin
-  FDrawingCanvas.Pie(EllipseX1, EllipseY1, EllipseX2, EllipseY2,
-    StartX, StartY, EndX, EndY);
-end;
-
+procedure TFreeViewport.MoveTo( x,y: integer );
+   begin FDrawingCanvas.MoveTo( x,y ); end;
+procedure TFreeViewport.LineTo( x,y: integer );
+   begin FDrawingCanvas.LineTo( x,y ); end;
+procedure TFreeViewport.Line( x1,y1,x2,y2: integer );
+   begin FDrawingCanvas.Line( x1,y1,x2,y2); end;
+procedure TFreeViewport.Rectangle( x1,y1,x2,y2: integer );
+   begin FDrawingCanvas.Rectangle( x1,y1,x2,y2); end;
+procedure TFreeViewport.Rectangle( rect: TRect );
+   begin FDrawingCanvas.Rectangle( rect ); end;
+procedure TFreeViewport.Ellipse( x1,y1,x2,y2: integer );
+   begin FDrawingCanvas.Ellipse( x1,y1,x2,y2 ); end;
+procedure TFreeViewport.Pie
+ ( EllipseX1,EllipseY1,EllipseX2,EllipseY2,
+   StartX,   StartY,   EndX,     EndY: integer );
+   begin FDrawingCanvas.Pie( EllipseX1,EllipseY1,EllipseX2,EllipseY2,
+                             StartX,   StartY,   EndX,     EndY );
+   end;
 procedure TFreeViewport.Polyline(const Points: array of TPoint);
-   begin FDrawingCanvas.Polyline(points); end;
-
+    begin FDrawingCanvas.Polyline(points); end;
 procedure TFreeViewport.Polygon(const Points: array of TPoint);
-   begin FDrawingCanvas.Polygon(points); end;
-
+    begin FDrawingCanvas.Polygon(points); end;
 function TFreeViewport.GetDrawingBuffer:TBitmap;
-begin result:=FDrawingBuffer; end;
-
+   begin result:=FDrawingBuffer; end;
 procedure TFreeViewport.SaveAsBitmap
-  ( Filename:AnsiString;
+  ( Filename: AnsiString;
     const ShowDialog:boolean=true );
 var CanvasWidth,CanvasHeight     : Integer;
     XScale,YScale,Scale,OldScale : TFloatType;
@@ -1176,23 +1082,19 @@ begin
 end;
 
 procedure TFreeViewport.KeyPress(var Key: char);
-begin
-  inherited;
-  if key in ['a', 'A'] then begin ZoomExtents; end else
-  if key in ['i', 'I'] then begin ZoomIn; end else
-  if key in ['o', 'O'] then begin ZoomOut; end;
+begin inherited;
+  if key in ['a','A'] then begin ZoomExtents; end else
+  if key in ['i','I'] then begin ZoomIn; end else
+  if key in ['o','O'] then begin ZoomOut; end;
+///*** '.' и ',' - на привязку и подтягивание к ближайшей и следующим по удалённости точкам
 end;
 
-procedure TFreeViewport.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-var
-  Pt: TPoint;
-  Diff: TPoint;
-  str: ansistring;
-  Tmp: string;
-  I, Ind: integer;
-  XVal: TFloattype;
-  YVal: TFloatType;
-  OK: boolean;
+procedure TFreeViewport.MouseDown( Button: TMouseButton; Shift: TShiftState; X,Y: integer );
+var Str,Tmp: AnsiString;
+    I,Ind: Integer;
+    XVal,YVal: TFloatType;
+    Pt,Diff: TPoint;
+    OK: boolean;
 begin
   FMouseShift:=Shift;
   inherited;
@@ -1216,8 +1118,7 @@ begin
       BackgroundImage.Scale * Diff.Y, 4);
     if InputQuery( 'Scale ','New coordinate: ', str ) then begin
       Ind:=Pos(',', Str);
-      if Ind <> 0 then begin
-        OK:=True;
+      if Ind <> 0 then begin OK:=True;
         Tmp:=trim( Copy( Str,1,Ind-1 ) );
         if Tmp<>'' then begin Val( Tmp,XVal,I );
           if I<>0 then OK:=False;
@@ -1232,8 +1133,8 @@ begin
             else BackgroundImage.Scale:=YVal / Diff.Y;
           Refresh;
           BackgroundMode:=emNormal;
-          if assigned(FOnChangeBackgroundImage) then
-            FOnChangeBackgroundImage(Owner);
+          if assigned( FOnChangeBackgroundImage ) then
+                       FOnChangeBackgroundImage( Owner );
         end;  // else MessageDlg('Invalid coordinate!', mtError, [mbOK], 0);
       end;    // else MessageDlg('Invalid coordinate!', mtError, [mbOK], 0);
     end;
@@ -1261,7 +1162,7 @@ begin
     Pt.X:=BackgroundImage.FOrigin.X-Diff.X;
     Pt.Y:=BackgroundImage.FOrigin.Y-Diff.Y;
     if (Pt.X >= 0) and (Pt.X < BackgroundImage.Bitmap.Width) and
-      (Pt.Y >= 0) and (Pt.Y <= BackgroundImage.Bitmap.Height) then begin
+       (Pt.Y >= 0) and (Pt.Y <= BackgroundImage.Bitmap.Height) then begin
       BackgroundImage.Transparent:=True;
       BackGroundImage.TransparentColor:=BackgroundImage.Bitmap.Canvas.Pixels[Pt.X,Pt.Y];
       Refresh;

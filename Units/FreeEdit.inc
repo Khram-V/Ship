@@ -1147,22 +1147,14 @@ begin
   TempFreeShip.Free;
 end;
 
-resourcestring
-  FileDialogFilterFreeship = 'FreeShip files (*.ftm *.fbm)|*.ftm;*.fbm';
-  FileDialogFilterFreeshipText = 'FreeShip Text (*.ftm)|*.ftm';
-  FileDialogFilterFreeshipBinary = 'FreeShip Binary (*.fbm)|*.fbm';
-  rsFreeShipFiles = 'FreeShip files';
-  rsFreeShipTextFiles = 'FreeShip Text files';
-  rsFreeShipBinaryFiles = 'FreeShip Binary files';
-
 procedure TFreeEdit.File_Load; var Answer: word; OpenDialog: TOpenDialog;
 begin
   FreeShip.Edit.Selection_Clear;                       ///***  Selection_Clear
   OpenDialog:=TOpenDialog.Create( FreeShip );
   OpenDialog.InitialDir:=FreeShip.Preferences.OpenDirectory; //+ConfigDirectory
-  OpenDialog.Filter:=createDialogFilter(rsFreeShipFiles,['fbm','ftm'],False )
-            +'|'+createDialogFilter(rsFreeShipTextFiles,['ftm'],False)
-            +'|'+createDialogFilter(rsFreeShipBinaryFiles,['fbm'] );
+  OpenDialog.Filter:=createDialogFilter('FreeShip files',['fbm','ftm'],False )
+                +'|'+createDialogFilter('FreeShip Text files',['ftm'],False)
+                +'|'+createDialogFilter('FreeShip Binary files',['fbm'] );
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
      Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
@@ -1219,12 +1211,6 @@ begin
   FreeShip.FileChanged:=False;
 end;
 
-resourcestring
-//rsUnableDeleteBackupFile='Unable to delete backup file';
-//rsUnableCreateBackupFile='Unable to create backup file';
-  rsSaveWithHigherFileVersion='The current file version is %s.%sDo you want to save the file as version %s ?';
-//rsUnableToSaveFile='Unable to save file';
-
 // save as FREE!ship file without prompting for a filename (must already been set)
 
 function TFreeEdit.File_Save: boolean;
@@ -1256,7 +1242,8 @@ begin
 
   if (FreeShip.FileVersion < MinFileVersion) //and (not FreeShip.FStopAskingForFileVersion)
   then begin
-    Str:=format(rsSaveWithHigherFileVersion,[VersionString(FreeShip.FileVersion),EOL,VersionString(MinFileVersion)]);
+    Str:=format('The current file version is %s.%sDo you want to save the file as version %s ?',
+        [VersionString(FreeShip.FileVersion),EOL,VersionString(MinFileVersion)]);
     Answer:=MessageDlg(Str, mtInformation, [mbYes, mbNo], 0);
     if Answer = mrYes then FreeShip.FileVersion:=MinFileVersion
     else exit;                    //FreeShip.FStopAskingForFileVersion:=True;
@@ -1325,16 +1312,13 @@ begin
   end;
 end;
 *)
-resourcestring rsSaveFile = 'Save file';
-               rs3DTextFile = '3D text file';
-               rsConfirmation =
-        'The current model has been modified!'+EOL+'Do you need to keep this?';
 
 function TFreeEdit.File_SaveCheck( Check:boolean ): word;
-begin
-  result:=mrOk;
+begin result:=mrOk;
   if Check then begin              // корпрус редактировался или дорасчитывался
-     result:=MessageDlg( rsConfirmation,mtConfirmation,[mbYes,mbNo,mbCancel],0);
+     result:=MessageDlg
+     ( 'The current model has been modified!'+EOL+'Do you need to keep this?',
+        mtConfirmation,[mbYes,mbNo,mbCancel],0 );
      if result=mrOk then File_SaveAs;
      if result<>mrCancel then begin          // mrCancel-отмена операций
         FreeShip.ClearUndo;                  // здесь корпус просто расчищается
@@ -1352,9 +1336,9 @@ begin result:=false;
    SaveDialog:=TSaveDialog.Create( FreeShip );
    SaveDialog.InitialDir:=FreeShip.Preferences.SaveDirectory; //+ConfigDirectory
    Savedialog.FileName:=ExtractFilename( FreeShip.Filename );
-   SaveDialog.Filter:=FileDialogFilterFreeship +
-                '|'+FileDialogFilterFreeshipText +
-                '|'+FileDialogFilterFreeshipBinary;
+   SaveDialog.Filter:='FreeShip files (*.ftm *.fbm)|*.ftm;*.fbm' +
+                     '|FreeShip Text (*.ftm)|*.ftm' +
+                     '|FreeShip Binary (*.fbm)|*.fbm';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin WestPoint;
       FreeShip.Preferences.SaveDirectory:=ExtractFilePath( SaveDialog.FileName );
@@ -2118,23 +2102,23 @@ begin
     end;
 
     FreeAndNil(NewGroup);
-    if (Leaks.Count > 0) and (ShowResult) then begin
+    if (Leaks.Count>0) and (ShowResult) then begin
       Str:=Userstring(149)+' '+IntToStr(Leaks.Count)+' '+Userstring(150)+'.';
-      if Leaks.Count > 10 then Str:=Str+EOL+Userstring(151)+':';
+      if Leaks.Count>12 then Str:=Str+EOL+Userstring(151)+':';
       Str:=Str+EOL;
       for I:=1 to Leaks.Count do begin
         Point:=Leaks[I-1];
-        Str:=Str+EOL+FloatToStrF(Point.Coordinate.X, ffFixed, 7, 3) +
-          ', '+FloatToStrF(Point.Coordinate.Y, ffFixed, 7, 3) +
-          ', '+FloatToStrF(Point.Coordinate.Z, ffFixed, 7, 3);
-        if I = 10 then break;
+        Str:=Str+EOL+FloatToStrF( Point.Coordinate.X,ffFixed,7,3 ) +
+                ', '+FloatToStrF( Point.Coordinate.Y,ffFixed,7,3 ) +
+                ', '+FloatToStrF( Point.Coordinate.Z,ffFixed,7,3 );
+        if I=12 then break;
       end;
-      MessageDlg(Str, mtWarning, [mbOK], 0);
+      MessageDlg( Str,mtWarning,[mbOK],0 );
     // begin Victor T
-       Point:=Leaks[0];
+{      Point:=Leaks[0];
        if Point.Coordinate.Z-Z_min < FreeShip.ProjectSettings.ProjectDraft then
           MessageDlg(Userstring(899), mtWarning, [mbOK], 0);
-    // end Victor T
+}   // end Victor T
     end;
 
     if (Changed) or (Inconsistent > 0) or (NonManifold > 0) or (DblEdges > 0) then
@@ -2209,6 +2193,43 @@ begin
     L:=FreeNewModelDialog.Length;
     B:=FreeNewModelDialog.Breadth;
     D:=FreeNewModelDialog.Draft/2;
+{$if true }
+    Default[0,0]:=Vector( 0.06,0,    0    );   // station 0, stern
+    Default[0,1]:=Vector( 0.04,0.01, 1.9  );
+    Default[0,2]:=Vector( 0,   0.16, 2    );
+    Default[0,3]:=Vector(-0.01,0.19, 2.25 );
+    Default[0,4]:=Vector(-0.02,0.2,  5.3  );
+    Default[1,0]:=Vector( 0.2, 0,    0    );   // station 1
+    Default[1,1]:=Vector( 0.18,0.12, 1    );
+    Default[1,2]:=Vector( 0.17,0.25, 1.25 );
+    Default[1,3]:=Vector( 0.16,0.27, 2.2  );
+    Default[1,4]:=Vector( 0.16,0.26, 4.8  );
+    Default[2,0]:=Vector( 0.4, 0,    0    );   // station 2
+    Default[2,1]:=Vector( 0.4, 0.2,  0.2  );
+    Default[2,2]:=Vector( 0.4, 0.43, 1    );
+    Default[2,3]:=Vector( 0.4, 0.37, 2.2  );
+    Default[2,4]:=Vector( 0.4, 0.35, 3.8  );
+    Default[3,0]:=Vector( 0.6, 0,    0    );   // station 3
+    Default[3,1]:=Vector( 0.6, 0.22, 0.1  );
+    Default[3,2]:=Vector( 0.6, 0.45, 0.9  );
+    Default[3,3]:=Vector( 0.6, 0.4,  2.2  );
+    Default[3,4]:=Vector( 0.6, 0.38, 3.6  );
+    Default[4,0]:=Vector( 0.8, 0,    0    );   // station 4
+    Default[4,1]:=Vector( 0.8, 0.2,  0.15 );
+    Default[4,2]:=Vector( 0.8, 0.3,  1.2  );
+    Default[4,3]:=Vector( 0.8, 0.33, 2.5  );
+    Default[4,4]:=Vector( 0.8, 0.34, 3.8  );
+    Default[5,0]:=Vector( 0.92,0,    0.15 );   // station 5
+    Default[5,1]:=Vector( 0.92,0.05, 1    );
+    Default[5,2]:=Vector( 0.92,0.075,2    );
+    Default[5,3]:=Vector( 0.92,0.125,3    );
+    Default[5,4]:=Vector( 0.94,0.2,  4    );
+    Default[6,0]:=Vector( 1,    0,   1    );   // station 6, stem
+    Default[6,1]:=Vector( 0.99, 0,  1.75  );
+    Default[6,2]:=Vector( 0.983,0,  2.5   );
+    Default[6,3]:=Vector( 0.98, 0,  3.25  );
+    Default[6,4]:=Vector( 0.98, 0,  4     );
+{$else}
     Default[0,0]:=Vector(0.06, 0,   0   );   // station 0, stern
     Default[0,1]:=Vector(0.04, 0.0, 1.8 );
     Default[0,2]:=Vector(0,    0.01,2   );
@@ -2244,6 +2265,7 @@ begin
     Default[6,2]:=Vector(0.983,0,   2.5 );
     Default[6,3]:=Vector(0.98, 0,   3.25);
     Default[6,4]:=Vector(0.98, 0,   4   );
+{$endif}
     FreeShip.Clear;
     FreeShip.ProjectSettings.ProjectUnits :=
       TFreeUnitType(FreeNewModelDialog.ComboBox1.ItemIndex);
