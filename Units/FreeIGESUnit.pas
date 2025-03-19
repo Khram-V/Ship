@@ -1,14 +1,6 @@
-
-
 unit FreeIGESUnit;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+  {$MODE Delphi}{$H+}
+interface uses
      {$ifdef Windows}
       Windows,
      {$else}
@@ -42,7 +34,7 @@ type TFreeIgesString     = string[80];
                                  FMaxCoordinate             : TFloatType;
                                  FSystemID                  : TFreeIgesString;
                                  FFileCreatedBy             : TFreeIgesString;
-                                 FFileName                  : String;
+                                 FFileName                  : AnsiString;
                                  procedure FProcessParameterData(Str:AnsiString;ParamData:TStringList);
                               public
                                  procedure Add_Entity_128(NURB:TFreeNURBSurface;ColorIndex:Integer);
@@ -50,9 +42,9 @@ type TFreeIgesString     = string[80];
                                  procedure Clear;
                                  constructor Create;
                                  destructor Destroy; override;
-                                 procedure SaveToFile(Filename:String);
+                                 procedure SaveToFile(Filename:AnsiString);
                                  property FileCreatedBy  : TFreeIgesString read FFileCreatedBy write FFileCreatedBy;
-                                 property FileName       : String read FFileName write FFileName;
+                                 property FileName       : AnsiString read FFileName write FFileName;
                                  property IGESUnits      : TFreeUnitType read FIGESunits write FIGESunits;
                                  property SystemID       : TFreeIgesString read FSystemID write FSystemID;
                            end;
@@ -65,7 +57,7 @@ begin
                else Result:=IntToStr(Length(Input))+'H'+Input;
 end;{ConvertString}
 
-function CheckString(Str:AnsiString;MaxLength:integer;SectionCharacter:Char;index:Integer):string;
+function CheckString(Str:AnsiString;MaxLength:integer;SectionCharacter:Char;index:Integer):AnsiString;
 const Spaces ='                                                                                ';
 var L,C:Integer;
 begin
@@ -82,7 +74,7 @@ begin
    Result:=Result+Copy(Spaces,1,C)+IntToStr(Index);
 end;{CheckString}
 
-function IndexStr(Index,MaxLength:Integer):String;
+function IndexStr(Index,MaxLength:Integer):AnsiString;
 begin
    Result:=IntToStr(Index);
    while length(Result)<MaxLength do Result:=#32+result;
@@ -314,15 +306,11 @@ begin
    inherited Destroy;
 end;{TFreeIGESList.Destroy}
 
-procedure TFreeIGESList.SaveToFile(Filename:String);
-var Str     : AnsiString;
-    TimeStr : string;
-    Tmp     : AnsiString;
+procedure TFreeIGESList.SaveToFile(Filename:AnsiString);
+var Str,TimeStr,Tmp: AnsiString;
     Strings : TStringList;
-    Index   : Integer;
-    LastCol : Integer;
-
-    function CreateTimeStamp:string;
+    Index,LastCol : Integer;
+    function CreateTimeStamp:AnsiString;
     var Time: TDateTime;
     begin
        Time:=now;

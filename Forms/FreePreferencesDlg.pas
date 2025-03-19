@@ -1,8 +1,6 @@
-
 unit FreePreferencesDlg;
-{$MODE Delphi}
-  interface
-uses
+{$MODE Delphi}{$H+}
+interface uses
   LCLIntf, LCLType,
   SysUtils,Variants,
   Classes, Graphics,
@@ -84,8 +82,8 @@ type                                                 { TFreePreferencesDialog }
 var
   FreePreferencesDialog: TFreePreferencesDialog;
 
-const rs_Save: String = 'Are you sure you want to reset the preferences?'
-            +#13#10+'The current settings will be lost.';
+const rs_Save = 'Are you sure you want to reset the preferences?'
+                +#13#10+'The current settings will be lost.';
 
 implementation
 {$R *.lfm}

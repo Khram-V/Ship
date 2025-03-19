@@ -723,8 +723,8 @@ var
             for J:=2 to NCols do begin
               Face:=GetFace(Grid[I-2][J-1], Grid[I-2][J-2],
                 Grid[I-1][J-2], Grid[I-1][J-1]);
-              if Face <> nil then begin NewFace.Faces[I-2][J-2]:=Face; end
-              else WriteLn('Error while assembling faces'+#32+IntToStr(ErrInd));
+              if Face <> nil then begin NewFace.Faces[I-2][J-2]:=Face; end;
+              // else WriteLn('Error while assembling faces'+#32+IntToStr(ErrInd));
             end;
           end;
           AddFace(NewFace);
@@ -736,7 +736,7 @@ var
           NewFace.Faces[0][0]:=Face;
           AddFace(NewFace);
         end;
-      end else WriteLn('No valid cornerface found!');
+      end; // else WriteLn('No valid cornerface found!');
     end;
     FreeAndNil(Checkfaces);
   end;{AssembleFaces}
@@ -2600,7 +2600,7 @@ begin
 end;{TFreeSubdivisionSurface.ExtractPointsFromSelection}
 
 function TFreeSubdivisionSurface.FindLayer
-( AName: String ): TFreeSubdivisionLayer;
+( AName: AnsiString ): TFreeSubdivisionLayer;
 var i:integer;
 begin
   result:=nil;
@@ -2713,14 +2713,14 @@ begin
     Edges:=TFasterListTFreeSubdivisionEdge.Create;
     for I:=0 to CPoints.Count-1 do begin
       P1:=CPoints[I]; // as TFreeSubdivisionControlPoint;
-      //writeln('InsertPlane: Point[',I,'].NumberOfFaces=',P1.NumberOfFaces);
+                      // writeln('InsertPlane: Point[',I,'].NumberOfFaces=',P1.NumberOfFaces);
       J:=1;
       while J <= P1.Faces.Count do begin
         Face:=P1.Face[J-1] as TFreeSubdivisionControlface;
         K:=1;
         Inserted:=False;
         while (K <= Face.Points.Count) and (not Inserted) do begin
-          //writeln('InsertPlane:  K=',K);
+                                               //writeln('InsertPlane:  K=',K);
           P2:=Face.Point[K-1]; // as TFreeSubdivisionControlPoint;
           if (P1 <> P2) and (CPoints.IndexOf(P2) <> -1) then begin
             // this is also a new point, first check if an edge already exists between P1 and P2
@@ -2896,7 +2896,7 @@ end;
 
 procedure TFreeSubdivisionSurface.LoadFromStream(var LineNr: integer; Strings: TStringList);
 var
-  Str: string;
+  Str: AnsiString;
   I, N: integer;
   Point: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
@@ -3005,7 +3005,7 @@ begin
       Curve.FSubdividedPoints.AddList(TFasterList(Curve.FControlPoints));
     end;
 
-    if not self.CheckIntegrity then WriteLn( 'Before build Model integrity corruption' );
+//  if not self.CheckIntegrity then WriteLn( 'Before build Model integrity corruption' );
 
     while (FCurrentSubdivisionLevel<FDesiredSubdivisionlevel) do begin
       for I:=0 to FControlCurves.Count-1 do
@@ -3049,7 +3049,7 @@ begin
     FMax.Y:=1.0;
     FMax.Z:=1.0;
   end;
-  if not self.CheckIntegrity then WriteLn( 'After Build Model integrity corruption' );
+//if not self.CheckIntegrity then WriteLn( 'After Build Model integrity corruption' );
   FIsBuilding:=false;
   FBuilt:=true;
   FRebuildRequested:=false;

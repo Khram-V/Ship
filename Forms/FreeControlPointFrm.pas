@@ -1,5 +1,5 @@
 unit FreeControlPointFrm;
-{$MODE Delphi}
+{$MODE Delphi}{$H+}
 interface
 uses
      SysUtils, Classes,
@@ -589,7 +589,7 @@ end;
 
 procedure TFreeControlPointForm.PopulateFilterComboBoxLinearConstraintA(
   Sender: TObject);
-var PL:TStringList; i:integer; N,PN,LCAN,LCBN:String;
+var PL:TStringList; i:integer; N,PN,LCAN,LCBN:AnsiString;
 begin
   FilterComboBoxLinearConstraintAPopulating:=true;
    LCAN:=''; LCBN:='';
@@ -650,7 +650,7 @@ end;
 
 procedure TFreeControlPointForm.PopulateFilterComboBoxLinearConstraintB(
   Sender: TObject);
-var PL:TStringList; i:integer; N,PN,LCAN,LCBN:String;
+var PL:TStringList; i:integer; N,PN,LCAN,LCBN:AnsiString;
 begin
   FilterComboBoxLinearConstraintBPopulating:=true;
   LCAN:=''; LCBN:='';
@@ -681,7 +681,7 @@ begin ActiveControlPoint.IsAnchorHard:=CheckBoxAnchorHard.Checked;
 end;
 
 procedure TFreeControlPointForm.EditNameEditingDone(Sender: TObject);
-var S: String;
+var S: AnsiString;
     Saved: Boolean;
 begin
    Saved:=false;

@@ -1,11 +1,8 @@
 
 unit FreeFileBuffer;
-
 { $mode objfpc}
-{$mode Delphi}
-
+{$mode Delphi}{$H+}
 interface
-
 uses
   Classes,
   SysUtils,
@@ -19,7 +16,7 @@ const FileBufferBlockSize = 4096;
 // used for reading and writing files using TFilebuffer
 
 type
-  TNameData = record N:integer; Name:String; end;
+  TNameData = record N:integer; Name:AnsiString; end;
   TLinearConstraintData = record N, LinearConstraintPointA, LinearConstraintPointB:integer; end;
   TAnchorData = record N, AnchorPoint:integer; IsAnchorHard:boolean; end;
 
@@ -410,7 +407,7 @@ begin
 end;
 
 procedure TFreeFileBuffer.LoadTStrings(var Output: TStrings);
-var i,c: integer; S:String;
+var i,c: integer; S:AnsiString;
 begin
   LoadInteger( c );
   for i:=1 to c do begin

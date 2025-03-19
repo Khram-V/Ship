@@ -1,10 +1,6 @@
-
-
 unit FreeLackenbyDlg;
-{$MODE Delphi}
-
-interface
-uses
+{$MODE Delphi}{$H+}
+interface uses
   SysUtils,  Classes,
   Graphics,  Controls,
   CheckLst,  Forms,
@@ -768,7 +764,7 @@ begin
       UpdateData(FNewSectionalAreaCurve);
       TopView.ZoomExtents;
     end;
-  end else WriteLn( 'Invalid displacement<=0!' );//, mtError, [mbOK], 0);
+  end else WriteLn( '?Displacement<=0' );
 end;
 
 procedure TFreeLackenbyDialog.Input1AfterSetValue(Sender: TObject);

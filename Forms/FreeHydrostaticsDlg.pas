@@ -1,28 +1,23 @@
 unit FreeHydrostaticsDlg;
 {$MODE Delphi}
-
-interface
-uses
+interface uses
   LResources, LCLType, Classes, SysUtils,
   PrintersDlgs, Printers, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Buttons,
   FreePrinter,FreeLanguageSupport;
 type                                                { TFreeHydrostaticsDialog }
   TFreeHydrostaticsDialog = class(TForm)
-    Panel1: TPanel;
     Edit: TMemo;
-    Panel22: TPanel;
-    ButtonClose: TSpeedButton;
-    ButtonPrint: TSpeedButton;
+    Panel1,Panel22: TPanel;
+    ButtonClose,ButtonSave,ButtonPrint: TSpeedButton;
     PrintDialog: TPrintDialog;
-    ButtonSave: TSpeedButton;
     SaveDialog: TSaveDialog;
     procedure ButtonCloseClick(Sender: TObject);
     procedure ButtonPrintClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-  private   { Private declarations }
-  public    { Public declarations }
+  private { Private declarations }
+  public  { Public declarations }
   end;
 
 var FreeHydrostaticsDialog: TFreeHydrostaticsDialog;
@@ -53,14 +48,13 @@ procedure TFreeHydrostaticsDialog.ButtonSaveClick(Sender: TObject);
 begin
   if SaveDialog.Execute then
     case SaveDialog.FilterIndex of
-      1: Edit.Lines.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.txt')); // save as plain text
+      1: Edit.Lines.SaveToFile(ChangeFileExt(SaveDialog.FileName,'.txt')); // save as plain text
     end;
 end;
-
 procedure TFreeHydrostaticsDialog.FormShow(Sender: TObject);
 var
   I: integer;
-  S: string;
+  S: AnsiString;
 begin
   I:=Edit.Lines.Count;
   S:=Edit.Lines.CommaText;                       // Place cursor at beginning

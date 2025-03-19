@@ -1,13 +1,6 @@
-
 unit FreeBackgroundBlendingDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+{$MODE Delphi}{$H+}
+interface uses
     {$IFDEF Windows}
   Windows,
     {$ELSE}

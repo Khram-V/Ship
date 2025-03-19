@@ -1079,7 +1079,7 @@ procedure TFreeLinesplanFrame.ExportDXFExecute(Sender: TObject);
 var
   SaveDialog: TSaveDialog;
   Strings: TStringList;
-  Str: string;
+  Str: AnsiString;
   Space, Tmp: TFloatType;
   SplitSectionLocation: TFloatType;
   Min, Max: TFloatType;
@@ -1102,7 +1102,7 @@ var
   procedure AddLine
   ( P1, P2: T3DVector;
     Views: TLinesplanViews;
-    Layername: string;
+    Layername: AnsiString;
     Color: TColor );
   var Startp, Endp: T3DVector;
   begin
@@ -1146,7 +1146,7 @@ var
   end;{AddLine}
 
   procedure AddSpline(Spline: TFreeSpline; Views: TLinesplanViews;
-    Layername: string; Color: TColor);
+    Layername: AnsiString; Color: TColor);
   var
     Points: array of T3DVector;
     P: T3DVector;
@@ -1242,7 +1242,7 @@ var
 
   procedure AddEdgeLoop
   ( const Points: TFasterListTFreeSubdivisionPoint;
-    Views: TLinesplanViews; Layername: string; Color: TColor );
+    Views: TLinesplanViews; Layername: AnsiString; Color: TColor );
   var
     Point: TFreeSubdivisionPoint;
     P: T3DVector;
@@ -1313,7 +1313,7 @@ var
   end;{AddSpline}
 
   procedure AddIntersection(Intersection: TFreeIntersection;
-    Views: TLinesplanViews; Layername: string; Color: TColor);
+    Views: TLinesplanViews; Layername: AnsiString; Color: TColor);
   var I: integer;
   begin
     if not Intersection.Built then Intersection.Rebuild;

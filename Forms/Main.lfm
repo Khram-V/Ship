@@ -56,7 +56,7 @@ object MainForm: TMainForm
         Height = 15
         Top = 5
         Width = 111
-        Caption = 'Undo memory : 0 kb.'
+        Caption = 'Память отката: 0 kb.'
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
@@ -85,7 +85,7 @@ object MainForm: TMainForm
         Height = 15
         Top = 5
         Width = 53
-        Caption = 'distance : '
+        Caption = 'Шаг приращений : 0.1'
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
@@ -115,7 +115,7 @@ object MainForm: TMainForm
         Height = 15
         Top = 5
         Width = 77
-        Caption = 'LabelNumbers'
+        Caption = 'счётчики'
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
@@ -337,16 +337,16 @@ object MainForm: TMainForm
         Tag = 16
         Left = 404
         Height = 23
-        Hint = 'Precision'
+        Hint = 'Подробность аппроксимаций'
         Top = 0
         Width = 64
         ItemHeight = 15
         ItemIndex = 1
         Items.Strings = (
-          'Low'
-          'Medium'
-          'High'
-          'Highest'
+          'Черновая'
+          'Средняя'
+          'Подробная'
+          'Предельная'
         )
         ParentFont = False
         Style = csDropDownList
@@ -424,7 +424,7 @@ object MainForm: TMainForm
         Tag = 3
         Left = 147
         Height = 24
-        Hint = 'Change the color of the currently active layer.'
+        Hint = 'Изменить цвет активного слоя.'
         Top = 0
         Width = 24
         BorderWidth = 3
@@ -437,6 +437,7 @@ object MainForm: TMainForm
         Tag = 5
         Left = 171
         Height = 23
+        Hint = 'Назначить выбранные грани на новый слой или изменить текущий слой.'
         Top = 0
         Width = 128
         ItemHeight = 15

@@ -1,13 +1,6 @@
-
 unit FreeCylinderDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+{$MODE Delphi}{$H+}
+interface uses
     {$IFDEF Windows}
   Windows,
     {$ELSE}
@@ -63,7 +56,7 @@ type
     function FGetEndPoint: T3DVector;
     procedure FSetEndPoint(val: T3DVector);
   public    { Public declarations }
-    function Execute(Str: string): boolean;
+    function Execute(Str: AnsiString): boolean;
     property StartPoint: T3DVector read FGetStartPoint write FSetStartPoint;
     property EndPoint: T3DVector read FGetEndPoint write FSetEndPoint;
   end;
@@ -98,7 +91,7 @@ begin
   EndPointZ.Value:=Val.Z;
 end;
 
-function TFreeCylinderDialog.Execute(Str: string): boolean;
+function TFreeCylinderDialog.Execute(Str: AnsiString): boolean;
 begin
   _label3.Caption:=Str;
   _label6.Caption:=Str;

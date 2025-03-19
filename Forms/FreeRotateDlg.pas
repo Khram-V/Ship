@@ -1,10 +1,6 @@
-
-
 unit FreeRotateDlg;
-{$MODE Delphi}
-
-interface
-uses
+{$MODE Delphi}{$H+}
+interface uses
   Controls,
   Forms,
   StdCtrls,
@@ -25,7 +21,7 @@ type
     function  FGetZValue: extended;    procedure FSetZValue(val: extended);
   public                                                 { Public declarations }
 //  Caption: AnsiString;
-    function Execute( Units: String; Rotat:boolean=false ): boolean;
+    function Execute( Units: AnsiString; Rotat:boolean=false ): boolean;
     property XValue: extended read FGetXValue write FSetXValue;
     property YValue: extended read FGetYValue write FSetYValue;
     property ZValue: extended read FGetZValue write FSetZValue;
@@ -50,7 +46,7 @@ procedure TFreeRotateDialog.FSetYValue(val: extended);
 procedure TFreeRotateDialog.FSetZValue(val: extended);
     begin FloatSpinEdit3.Value:=val; end;
 
-function TFreeRotateDialog.Execute( Units: String; Rotat: boolean ): boolean;
+function TFreeRotateDialog.Execute( Units: AnsiString; Rotat: boolean ): boolean;
 begin
   Label3.Caption:=Units;
   Label6.Caption:=Units;

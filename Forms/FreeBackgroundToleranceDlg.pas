@@ -1,13 +1,8 @@
 unit FreeBackgroundToleranceDlg;
-
 {$mode ObjFPC}{$H+}
-
-interface
-
-uses
+interface uses
   SysUtils, Forms, Controls, Dialogs, ExtCtrls, Buttons, Spin, StdCtrls,
   FreeGeometry,FreeShipUnit,FreeLanguageSupport;
-
 type                                         { TFreeBackgroundToleranceDialog }
 
   TFreeBackgroundToleranceDialog = class(TForm)

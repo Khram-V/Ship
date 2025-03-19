@@ -25,24 +25,24 @@ Type
   operator * ( const D:TFloatType; const B:T3DVector ): T3DVector;  // D*B
   operator / ( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/D
 Type
-  TRGBTriple = packed record rgbtBlue : BYTE;
-                             rgbtGreen: BYTE;
-                             rgbtRed  : BYTE; end;
+  TRGBTriple=packed record rgbtBlue : BYTE;
+                           rgbtGreen: BYTE;
+                           rgbtRed  : BYTE; end;
 
-  pRGBTripleArray              = ^TRGBTripleArray;
-  TRGBTripleArray              = array[0..PixelCountMax-1] of TRGBTriple;
-//TRGBTripleArray              = array of TRGBTriple;
-  T3DVectorArray               = array of T3DVector;
-  TPointArray                  = array of TPoint;
-  TFreePrecisionType           = (fpLow,fpMedium,fpHigh,fpVeryHigh);                  // Precision of the ship-model
-  TFreeIntersectionType        = (fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal); // Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
-  TFreeModelView               = (mvPort,mvBoth);                                     // Show half the hull or the entire hull
-  TFreeEditMode                = (emSelectItems,emAddPoint,emAddFlowLine);            // The program responds differnt to mouse actions depending on the editmode of the component
-  TFreeHydrostaticsMode        = (fhSingleCalculation,fhMultipleCalculations);        // Used when creating hydrostatic reports
-  TFreeHydrostaticsCalculation = (hcAll,hcVolume,hcMidship,hcWaterline,hcSAC,hcLateralArea,hcBulbSection);
-  TFreeHydrostaticsCalculate   = set of TFreeHydrostaticsCalculation;                 // Set with all calculations to be performed
+  pRGBTripleArray      = ^TRGBTripleArray;
+  TRGBTripleArray      = array[0..PixelCountMax-1] of TRGBTriple;
+//TRGBTripleArray      = array of TRGBTriple;
+  T3DVectorArray       = array of T3DVector;
+  TPointArray          = array of TPoint;
+  TFreePrecisionType   =(fpLow,fpMedium,fpHigh,fpVeryHigh);                  // Precision of the ship-model
+  TFreeIntersectionType=(fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal); // Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
+  TFreeModelView       =(mvPort,mvBoth);                                     // Show half the hull or the entire hull
+  TFreeEditMode        =(emSelectItems,emAddPoint,emAddFlowLine);            // The program responds differnt to mouse actions depending on the editmode of the component
+  TFreeHydrostaticsMode=(fhSingleCalculation,fhMultipleCalculations);        // Used when creating hydrostatic reports
+  TFreeHydrostaticsCalculation= (hcAll,hcVolume,hcMidship,hcWaterline,hcSAC,hcLateralArea,hcBulbSection);
+  TFreeHydrostaticsCalculate  = set of TFreeHydrostaticsCalculation;         // Set with all calculations to be performed
   TFreeHydrostaticsCalculateGravity = set of TFreeHydrostaticsCalculation;
-  TFreeHydrostaticCoeff        = (fcProjectSettings,fcActualData);
+  TFreeHydrostaticCoeff       = (fcProjectSettings,fcActualData);
   TFreeDelftSeriesResistanceData=record
                                     StartSpeed,
                                     EndSpeed,
@@ -76,7 +76,6 @@ Type
                                     EntranceAngle     : TFloatType;
                                     Extract           : Boolean;
                                  end;
-
 Const
   ZERO : T3DVector = (X:0.0;Y:0.0;Z:0.0);
   EOL              = #13#10;
@@ -172,15 +171,12 @@ begin
     begin YY:=Y[I]+((XX-X[I]))*(Y[I+1]-Y[I])/(X[I+1]-X[I]); break; end;
 end;
 
-
-
 //Function Length( Str: AnsiString ): Integer; overload; // ??? reintroduce; override; virtual;
 //   begin Result:=UTF8Length( Str ); end;
 
 function F2S( Value: TFloatType ): TFloatType; var W: extended;
-begin
-  if abs( Value )<1e-5 then Result:=0 else begin
-  W:=Value; W:=Round( W*1e6 ); Result:=W/1e6; end;
+begin if abs( Value )<1e-5 then Result:=0 else begin
+           W:=Value; W:=Round( W*1e6 ); Result:=W/1e6; end;
 end;
 
 function FloatTypeToStr( Value: TFloatType ): AnsiString;
@@ -212,8 +208,6 @@ begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
   end;
   if I>0 then Result:=StrToFloat( copy( S,I,K-I ),LocalFormatSettings );
   Delete( S,1,K-1 ); // удаление считанного с последующим пробелом ??
-
-//if K>0 then begin WriteLn( copy( S,I,K-I )+'['+IntToStr(Length(S))+'] <- '+S ); ReadLn; end;
 end;
 
 Function GetInteger( var S: AnsiString ): Integer;

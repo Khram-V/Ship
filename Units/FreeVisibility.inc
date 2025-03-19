@@ -6,7 +6,7 @@ procedure TFreeVisibility.FSetCurvatureScale(Val: TFloatType);
 var
   I: integer;
 begin
-  if abs( Val-FCurvatureScale )>1e-7 then begin
+  if abs( Val-FCurvatureScale )>1e-6 then begin
     FCurvatureScale:=Val;
     FreeShip.FileChanged:=True;
     for I:=1 to FreeShip.NumberOfViewports do
@@ -17,11 +17,10 @@ end;
 
 procedure TFreeVisibility.FSetCursorIncrement(val: TFloatType);
 begin
-  if Val<1e-7 then Val:=1e-7;
+  if Val<1e-6 then Val:=1e-6;
   if FCursorIncrement <> val then FreeShip.FileChanged:=True;
   FCursorIncrement:=val;
-  if assigned(FreeShip.FOnChangeCursorIncrement) then
-    FreeShip.FOnChangeCursorIncrement(self);
+  if assigned(FreeShip.OnChangeCursorIncrement) then FreeShip.OnChangeCursorIncrement(self);
 end;
 
 procedure TFreeVisibility.FSetModelView(Val: TFreeModelView);
@@ -224,8 +223,7 @@ begin
   FShowHydrostMetacentricHeight:=True;
   FShowHydrostLCF:=True;
   FShowFlowlines:=True;
-  if assigned(FreeShip.FOnChangeCursorIncrement) then
-    FreeShip.FOnChangeCursorIncrement(self);
+  if assigned(FreeShip.OnChangeCursorIncrement) then FreeShip.OnChangeCursorIncrement(self);
 end;
 
 procedure TFreeVisibility.DecreaseCurvatureScale;
@@ -255,8 +253,8 @@ begin
     Source.LoadBoolean(FShowControlCurves);
     if FreeShip.FileVersion >= fv210 then begin
       Source.LoadTFloatType(FCursorIncrement);
-      if abs(FCursorIncrement) < 1e-7 then FCursorIncrement:=0.1;
-      if assigned(FreeShip.FOnChangeCursorIncrement) then FreeShip.FOnChangeCursorIncrement(self);
+      if abs(FCursorIncrement) < 1e-6 then FCursorIncrement:=0.1;
+      if assigned(FreeShip.OnChangeCursorIncrement) then FreeShip.OnChangeCursorIncrement(self);
       if FreeShip.FileVersion >= fv220 then begin
         Source.LoadBoolean(FShowHydrostaticData);
         Source.LoadBoolean(FShowHydrostDisplacement);

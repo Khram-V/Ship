@@ -14,9 +14,9 @@ function TFreeUndoObject.FGetMemory: integer;
                   length( FFilename) +  // length of filename string
                   FUndoData.Count;      // Actual saved data
    end;
-function TFreeUndoObject.FGetTime: string;
+function TFreeUndoObject.FGetTime: AnsiString;
    begin Result:=TimeToStr(FTime); end;
-function TFreeUndoObject.FGetUndoText: string;
+function TFreeUndoObject.FGetUndoText: AnsiString;
    begin Result:=FUndoText; end;
 
 procedure TFreeUndoObject.Accept; Var I: integer; Obj: TFreeUndoObject;
@@ -36,7 +36,7 @@ begin                                      // Add the undo data to the undolist
       Dec(Owner.FUndoPosition);
       Dec(Owner.FPreviousUndoPosition);
     end;
-    if Assigned(Owner.FOnUpdateUndoData) then Owner.FOnUpdateUndoData(Owner);
+    if Assigned(Owner.OnUpdateUndoData) then Owner.OnUpdateUndoData(Owner);
 end;
 
 constructor TFreeUndoObject.Create(Owner: TFreeShip);
@@ -56,10 +56,8 @@ var
   Index: integer;
 begin
   Index:=FOwner.FUndoObjects.IndexOf(self);
-  if Index <> -1 then
-    Owner.FUndoObjects.Delete(Index);
-  if Assigned(Owner.FOnUpdateUndoData) then
-    Owner.FOnUpdateUndoData(Owner);
+  if Index <> -1 then Owner.FUndoObjects.Delete(Index);
+  if Assigned(Owner.OnUpdateUndoData) then Owner.OnUpdateUndoData(Owner);
   Destroy;
 end;
 

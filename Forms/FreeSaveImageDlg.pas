@@ -1,6 +1,5 @@
-
 unit FreeSaveImageDlg;
-{$MODE Delphi}
+{$MODE Delphi}{$H+}
 interface uses
      Classes,   SysUtils,
      Controls,  Forms,

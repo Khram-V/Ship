@@ -1,8 +1,6 @@
 unit FreeGeometry;
 {$MODE Delphi} {$H+}
-
-interface
-uses
+interface uses
   LCLIntf,  LazUTF8,
   Classes,  Messages,
   SysUtils, StrUtils,
@@ -323,7 +321,7 @@ type
     function FGetBrushColor: TColor;
     function FGetBrushStyle: TBrushStyle;
     function FGetFontColor: TColor;
-    function FGetFontName: string;
+    function FGetFontName: AnsiString;
     function FGetFontSize: integer;
     function FGetFontHeight: integer;
     function FGetPenColor: TColor;
@@ -338,7 +336,7 @@ type
     procedure FSetElevation(Val: TFloatType);
     procedure FSetLight(val: TFreeLight);
     procedure FSetFontColor(Val: TColor);
-    procedure FSetFontName(val: string);
+    procedure FSetFontName(val: AnsiString);
     procedure FSetFontSize(val: integer);
     procedure FSetFontHeight(val: integer);
     procedure FSetMargin(Val: TFloatType);
@@ -408,9 +406,9 @@ type
     procedure ShadeTriangle(P_1, P_2, P_3: T3DVector; R, G, B: byte; Alpha: byte); overload; virtual;
     procedure ShadeTriangle(P_1, P_2, P_3: T3DVector; C1, C2, C3: extended); virtual; //reintroduce;overload;
     procedure ShadeTriangle(P_1, P_2, P_3: T3DVector; R1, G1, B1, R2, G2, B2, R3, G3, B3: byte); virtual; //reintroduce;overload;
-    function TextWidth(val: string): integer; virtual;
-    function TextHeight(val: string): integer; virtual;
-    procedure TextOut(x, y: integer; val: string); virtual;
+    function TextWidth(val: AnsiString): integer; virtual;
+    function TextHeight(val: AnsiString): integer; virtual;
+    procedure TextOut(x, y: integer; val: AnsiString); virtual;
     procedure ZoomIn; virtual;
     procedure ZoomExtents; virtual;
     procedure ZoomOut; virtual;
@@ -424,7 +422,7 @@ type
     property DrawingCanvas: TCanvas read FDrawingCanvas write FDrawingCanvas;
     property FieldOfView: TFloatType read FFieldOfView;
     property FontColor: TColor read FGetFontColor write FSetFontColor;
-    property FontName: string read FGetFontname write FSetFontName;
+    property FontName: AnsiString read FGetFontname write FSetFontName;
     property FontSize: integer read FGetFontSize write FSetFontSize;
     property FontHeight: integer read FGetFontHeight write FSetFontHeight;
 
@@ -488,7 +486,7 @@ type
   TFreeDevelopedPatch = class
   private
     FOwner: TFreeSubdivisionLayer;
-    FName: string;
+    FName: AnsiString;
     FConnectedMirror: TFreeDevelopedPatch;
     FPoints: TFasterListTFreeSubdivisionPoint;  // All original 3D points
     FEdges: TFasterListTFreeSubdivisionEdge;    // All original edges
@@ -529,7 +527,7 @@ type
     FNoIterations: integer;
     FUnits: TFreeUnitType;
     FDimFontColor: TColor;
-    FDimFontName: string;
+    FDimFontName: AnsiString;
     FDimFontSize: integer;
 
     function FGetShowErrorEdges: boolean;
@@ -559,7 +557,7 @@ type
     property MinError: extended read FGetMinError;
     property MidPoint: T2DCoordinate read FGetMidPoint;
     property MirrorOnScreen: boolean read FMirrorOnScreen write FSetMirrorOnScreen;
-    property Name: string read FName write FName;
+    property Name: AnsiString read FName write FName;
     property NumberOfIterations: integer read FNoIterations;
     property Owner: TFreeSubdivisionLayer read FOwner;
     property MirrorPoint[index: integer]: T3DVector read FGetMirrorPoint;
@@ -577,7 +575,7 @@ type
     property ShowStations: boolean read FShowStations write FShowStations;
     property ShowWaterlines: boolean read FShowWaterlines write FShowWaterlines;
     property DimFontColor: TColor read FDimFontColor write FDimFontColor;
-    property DimFontName: string read FDimFontName write FDimFontName;
+    property DimFontName: AnsiString read FDimFontName write FDimFontName;
     property DimFontSize: integer read FDimFontSize write FDimFontSize;
     property TotalAreaError: extended read FTotalAreaError;
     property Translation: T2DCoordinate read FTranslation write FSetTranslation;
@@ -884,12 +882,12 @@ type
     property Color: TColor read FGetColor write FSetColor;
     property Count: integer read FGetCount;
     property Developable: boolean read FDevelopable write FSetFDevelopable;
-    property DXFLayername: string read FGetDXFLayername;
+    property DXFLayername: AnsiString read FGetDXFLayername;
     property Items[Index: integer] : TFreeSubdivisionControlFace read FGetItems;
     property LayerID: integer read FLayerID write FLayerID;
     property LayerIndex: integer read FGetLayerIndex;
     property MaterialDensity: TFloatType read FMaterialDensity write FMaterialDensity;
-    property Name: string read FGetName write FSetName;
+    property Name: AnsiString read FGetName write FSetName;
     property Surface: TFreeSubdivisionSurface read FOwner write FOwner;
     property ShowInLinesplan: boolean read FShowInLinesplan write FSetShowInLinesplan;
     property SurfaceProperties: TLayerProperties read FGetSurfaceProperties;
@@ -1472,7 +1470,7 @@ type
     // extracts all points that are used by the faces in the selectedfaces list
     procedure ExtractPointsFromSelection(SelectedPoints: TFasterListTFreeSubdivisionControlPoint;
           var LockedPoints: integer);
-    function FindLayer(AName:String): TFreeSubdivisionLayer;
+    function FindLayer(AName:AnsiString): TFreeSubdivisionLayer;
     procedure ImportFEFFile(Strings: TStringList; var LineNr: integer);
     procedure ImportCoordGrid(Points: TFreeCoordinateGrid; Cols, Rows: integer;
        Layer: TFreesubdivisionLayer);
@@ -1487,7 +1485,7 @@ type
               const Destination: TFasterListTFreeSubdivisionFace); //overload; virtual;
     procedure LoadBinary(Source: TFreeFileBuffer);
     procedure LoadFromStream(var LineNr: integer; Strings: TStringList);
-    procedure LoadVRMLFile(Filename: string);
+    procedure LoadVRMLFile(Filename: AnsiString);
     function PointExists(P: TFreeSubdivisionControlPoint): boolean;
     procedure Average;
 //  procedure ReverseAverage;
@@ -1603,26 +1601,26 @@ type
 
 function AddPoint(P1, P2: T3DVector): T3DVector;     // Add two vectors
 function AddPointSymm(P1, P2: T3DVector): T3DVector; // Add two vectors for symmetric layers
-function AreaStr(Units: TFreeUnitType): string; // Returns a string value with the area units
-function BoolToStr(Val: boolean): string;       // In contrast to delphis own BoolToStrF this procedure returns '0' when false and '1' when true
+function AreaStr(Units: TFreeUnitType): AnsiString; // Returns a string value with the area units
+function BoolToStr(Val: boolean): AnsiString;       // In contrast to delphis own BoolToStrF this procedure returns '0' when false and '1' when true
 procedure ClipTriangle(P1, P2, P3: T3DVector; s1, s2, s3: TFloatType; var Nf, Nb: integer; var Front, Back: TFreeCoordinateArray); overload;
 procedure ClipTriangle(P1, P2, P3: T3DVector; Plane: T3DPlane; var Nf, Nb: integer; var Front, Back: TFreeCoordinateArray); overload;
-function ConvertDimension(Value: TFloatType; Units: TFreeUnitType): string; // Converts a dimesnion to a string
-function ConvertCoordinate(Coord: string; OldCoord: TFloatType): TFloatType; // converts a string to a floatingpoint value, possibly using imperial units
+function ConvertDimension(Value: TFloatType; Units: TFreeUnitType): AnsiString; // Converts a dimesnion to a string
+function ConvertCoordinate(Coord: AnsiString; OldCoord: TFloatType): TFloatType; // converts a string to a floatingpoint value, possibly using imperial units
 function CrossProduct(U, V: T3DVector): T3DVector;
 function DisplacementToVolume(Displ, Density, AppCoeff: TFloatType;  Units: TFreeUnitType): TFloatType; // Converts a displacement to volume
-function DensityStr(Units: TFreeUnitType): string;  // Returns a string value with the density units
+function DensityStr(Units: TFreeUnitType): AnsiString;  // Returns a string value with the density units
 //function DistPP3D(P1, P2: T3DVector): TFloatType; // Calculates the distance between two points
 function DistanceToLine(P1, P2: TPoint; X, Y: integer; var Parameter: TFloatType): TFloatType;
 function DistancePointToPlane(P: T3DVector; Plane: T3DPlane): TFloatType;
 function DotProduct(U, V: T3DVector): TFloatType;
 function FindDXFColorIndex(Color: TColor): integer;         // find nearest DXF color corresponding to a windows color
 procedure FillColor(Parameter: TFloatType; var R, G, B: byte);
-function InertiaStr(Units: TFreeUnitType): string;          // Returns a string value with the moment of inertia units
+function InertiaStr(Units: TFreeUnitType): AnsiString;          // Returns a string value with the moment of inertia units
 function Interpolate(P1, P2: T3DVector; Param: TFloatType): T3DVector; // perform linear interpolation between two 3D points
 procedure JoinSplineSegments(JoinError: TFloatType; ForceToOneSegment: boolean; List: TFasterListTFreeSpline);// Takes multiple splines and tries to connect them to as few as possible
 function Lines3DIntersect(P1, P2, P3, P4: T3DVector; var Param: double; var Int: T3DVector): boolean;
-function LengthStr(Units: TFreeUnitType): string;           // Returns a string value with the length units
+function LengthStr(Units: TFreeUnitType): AnsiString;           // Returns a string value with the length units
 function MakeLength(Value: TFloatType; Decimals, DesLength: integer): AnsiString; overload;
 function MakeLength(Value: Ansistring; DesLength: integer): Ansistring; overload;
 procedure MinMax(P: T3DVector; var Min, Max: T3DVector);
@@ -1652,14 +1650,14 @@ procedure SortFloatArray(var FloatArray: TFloatArray; var N: integer); // sorts 
 function SquaredDistPP(P1, P2: T3DVector): TFloatType;    // calculates the squared distance between two points
 function UnifiedNormal(P1, P2, P3: T3DVector): T3DVector; // calculate the normal of a plane defined by points P1,P2,P3 and scale to unit-length
 function VectorLength(Normal: T3DVector): TFloatType;     // Calculate the length of a vector
-function VolStr(Units: TFreeUnitType): string;            // Returns a string value with the volume units
+function VolStr(Units: TFreeUnitType): AnsiString;            // Returns a string value with the volume units
 function VolumeToDisplacement( Volume,Density,AppCoeff: TFloatType;  Units: TFreeUnitType): TFloatType; // Converts a volume to displacement
-function WeightStr(Units: TFreeUnitType): string; // Returns a string value with the weight units
-function DegrStr(Units: TFreeUnitType): string;   // Returns a string value with the degr units
-function LenMMStr(Units: TFreeUnitType): string;  // Returns a string value with the length (mm or inch) units
+function WeightStr(Units: TFreeUnitType): AnsiString; // Returns a string value with the weight units
+function DegrStr(Units: TFreeUnitType): AnsiString;   // Returns a string value with the degr units
+function LenMMStr(Units: TFreeUnitType): AnsiString;  // Returns a string value with the length (mm or inch) units
 //function UnitVector(P: T3DVector): T3DVector;   // Scale a vector sucht that it's length is 1.0
-//function DensStr(Units: TFreeUnitType): string; // Returns a string value with the density units
-//function ViscStr(Units: TFreeUnitType): string; // Returns a string value with the viscosity units
+//function DensStr(Units: TFreeUnitType): AnsiString; // Returns a string value with the density units
+//function ViscStr(Units: TFreeUnitType): AnsiString; // Returns a string value with the viscosity units
 
 var DelayedDestroyList: TFreeDestroyList;
 

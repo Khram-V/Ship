@@ -120,7 +120,7 @@
         <PackageName Value="Printer4Lazarus"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="90">
+    <Units Count="91">
       <Unit0>
         <Filename Value="Forms/FreeShip.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -594,6 +594,10 @@
         <ResourceBaseClass Value="Frame"/>
         <UnitName Value="FreeLinesPlanFrame"/>
       </Unit89>
+      <Unit90>
+        <Filename Value="Units/Russian.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit90>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -613,6 +617,9 @@
     </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
+      <TargetProcessor Value="80386"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="win32"/>
       <Optimizations>
         <OptimizationLevel Value="4"/>
       </Optimizations>
@@ -634,7 +641,6 @@
         <ShowWarn Value="False"/>
         <ShowNotes Value="False"/>
         <ShowHints Value="False"/>
-        <ShowLineNum Value="True"/>
         <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
         <ShowHintsForSenderNotUsed Value="True"/>
       </Verbosity>

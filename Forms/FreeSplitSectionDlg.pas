@@ -1,18 +1,11 @@
 unit FreeSplitSectionDlg;
-
 {$mode objfpc}{$H+}
-
-interface
-
-uses
+interface uses
   Classes,SysUtils,Forms,Controls,Dialogs,ComCtrls,ExtCtrls,Buttons,Spin,Types,
   FreeTypes,FreeShipUnit;
-
 type
   TEditMode = (emProgrammatic, emMouse, emKeyboard);
-
   TFreeSplitSectionDialogChangeEvent = procedure ( Sender: TObject; aValue: TFloatType ) of object;
-
   TFreeSplitSectionDialog = class(TForm)            { TFreeSplitSectionDialog }
     BitBtn1: TBitBtn;
     fseSplitSectionLocation: TFloatSpinEdit;

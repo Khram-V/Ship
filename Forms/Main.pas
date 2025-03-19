@@ -1,8 +1,6 @@
 unit Main;
-
 //{$mode objfpc}{$H+}
-  {$MODE Delphi}
-
+  {$MODE Delphi}{$H+}
 interface
 uses SysUtils,     // = exception ...
      Classes,      // constructor Create
@@ -59,6 +57,7 @@ type
      ShowNormals,                   CrossCurves,
      ImportVRML,ImportSTL,ImportOBJ,ImportFEF,
      ResistanceDelft,               ResistanceKaper: TAction;
+
      AuroraHullVsl,                 MichletCFD1,
      miSelectionDialog,             miShowLayerVisibilityDialog,
      miSetSplitSection,             miShowFreeObjects,
@@ -857,8 +856,7 @@ begin
    PointsCoincide.Enabled:=Freeship.NumberOfSelectedControlPoints>1;
    PointExtrude.Enabled:=Freeship.NumberOfSelectedControlPoints>0;
    TransformLackenby.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
-   if cbPrecision.ItemIndex <> ord(FreeShip.Precision) then
-      cbPrecision.ItemIndex:=ord(FreeShip.Precision);
+   if cbPrecision.ItemIndex<>ord(FreeShip.Precision) then cbPrecision.ItemIndex:=ord(FreeShip.Precision);
    FreeShip.ControlpointForm.Reload;
    FreeShip.ControlpointForm.FormStyle:=fsSystemStayOnTop;
    if FreeShip.ActiveControlPoint <> nil then
@@ -902,12 +900,11 @@ begin
 end;
 
 procedure TMainForm.ShowRecentFilesDialog;
-var dlg: TTileDialog; i:integer; Answer: Word;
-    vFileName,sTime: AnsiString;
-    jpg:TJPEGImage;
-    pic:TPicture;
+var dlg: TTileDialog; I:integer; Answer: Word; vFileName,sTime: AnsiString;
+    jpg: TJPEGImage;
+    pic: TPicture;
 begin
-  FreeShip.Edit.Selection_Clear;                        ///***  Selection_Clear
+  FreeShip.Edit.Selection_Clear;                         ///*** Selection_Clear
   dlg:=TTileDialog.create( Self );
   dlg.FileList:=Freeship.Edit.RecentFiles;
   dlg.onActivate:=RecentFilesDialogActivate;
@@ -928,16 +925,14 @@ begin
 end;
 
 procedure TMainForm.ExitProgramExecute(Sender: TObject);
-begin UpdateMenu; Close; end;
-
+    begin UpdateMenu; Close; end;
 procedure TMainForm.PointExtrudeExecute(Sender: TObject);
-begin Freeship.Edit.Point_Extrude; UpdateMenu; end;
+    begin Freeship.Edit.Point_Extrude; UpdateMenu; end;
 
 procedure TMainForm.PointsCoincideExecute(Sender: TObject);
-begin   // get multiple selected points to the location of a first selected one
-  Freeship.Edit.Point_CoinsideToPoint;
-  UpdateMenu;
-end;
+    begin   // get multiple selected points to location of a first selected one
+      Freeship.Edit.Point_CoinsideToPoint; UpdateMenu;
+    end;
 
 procedure TMainForm.SelectionDialogExecute(Sender: TObject);
 begin
@@ -1131,7 +1126,7 @@ begin Result:=false;
   end;
 end;
 
-procedure TMainForm.FLoadRecentFile(sender:TObject);
+procedure TMainForm.FLoadRecentFile( sender:TObject );
 var Menu    : TMenuItem;
     Filename: AnsiString;
     N       : Integer;
@@ -1140,9 +1135,7 @@ begin
    if sender is TMenuItem then begin
       Menu:=sender as TMenuItem;      // Skip translation
       Filename:=Menu.Caption;
-      repeat
-         N:=Pos('&',Filename);
-         if N<>0 then system.Delete( Filename,N,1 );
+      repeat N:=Pos('&',Filename); if N<>0 then system.Delete( Filename,N,1 );
       until N=0;
    Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
    if (Answer=mrCancel) or FreeShip.FileChanged then exit;
@@ -1449,8 +1442,8 @@ procedure TMainForm.FreeShipUpdateUndoData(Sender: TObject);
 var Memory : Integer;
 begin
    Memory:=Trunc(Freeship.UndoMemory/1024);
-   if Memory<1024 then LabelUndoMemory.Caption:='Undo memory : '+IntToStr(Memory)+' Kb.'
-                  else LabelUndoMemory.Caption:='Undo memory : '+FloatToDec(Memory/1024,3)+' Mb.';
+   if Memory<1024 then LabelUndoMemory.Caption:=UserString(283)+' : '+IntToStr(Memory)+' Kb.'
+                  else LabelUndoMemory.Caption:=UserString(283)+' : '+FloatToDec(Memory/1024,3)+' Mb.';
    Undo.Enabled:=FreeShip.UndoCount>0;
    SetCaption;
    UpdateMenu;
@@ -1650,7 +1643,7 @@ procedure TMainForm.ExportMichletExecute(Sender: TObject);
 procedure TMainForm.FreeShipChangeCursorIncrement(Sender: TObject);
 begin
   if (csdestroying in componentstate) then exit;
-  LabelDistance.Caption:='Increase distance: '+FloatToDec(Freeship.Visibility.CursorIncrement,7);
+  LabelDistance.Caption:=UserString(284)+' : '+FloatToDec(Freeship.Visibility.CursorIncrement,7);
 end;
 
 procedure TMainForm.StatusPanel3Click(Sender: TObject);
@@ -1660,7 +1653,7 @@ var Str  : Ansistring;
 begin
    if Freeship.Surface.NumberOfControlPoints=0 then exit;
    Str:=FloatToDec(Freeship.Visibility.CursorIncrement,5);
-   if InputQuery('','New increment distance : ',Str) then begin
+   if InputQuery('',UserString(285)+' : ',Str) then begin
       Val(Str,Value,I);
       if I=0 then Freeship.Visibility.CursorIncrement:=Value;
    end;
@@ -1695,10 +1688,10 @@ begin Freeship.Edit.File_ExportDXF_2DPolylines; UpdateMenu; end;
 
 procedure TMainForm.FreeShipUpdateGeometryInfo(Sender: TObject);
 begin LabelNumbers.Caption
-                 :=IntToStr(Freeship.Surface.NumberOfControlFaces) +' Faces, '
-                +IntToStr(Freeship.Surface.NumberOfControlEdges) +' Edges, '
-                +IntToStr(Freeship.Surface.NumberOfControlPoints)+' Points, '
-                +IntToStr(Freeship.Surface.NumberOfControlCurves)+' Curves';
+               :=IntToStr(Freeship.Surface.NumberOfControlFaces) +' '+UserString(286)+', ' // Faces
+                +IntToStr(Freeship.Surface.NumberOfControlEdges) +' '+UserString(287)+', ' // Edges
+                +IntToStr(Freeship.Surface.NumberOfControlPoints)+' '+UserString(288)+', ' // Points
+                +IntToStr(Freeship.Surface.NumberOfControlCurves)+' '+UserString(289);     // Curves
    if Freeship.Surface.Changed then UpdateMenu;
 end;
 

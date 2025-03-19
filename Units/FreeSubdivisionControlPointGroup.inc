@@ -116,7 +116,7 @@ end;
 
 procedure TFreeSubdivisionControlPointGroup.LoadFromStream
 ( var LineNr: integer; Strings: TStringList );
-var Str: string; Strs:TStringArray;
+var Str: AnsiString; Strs:TStringArray;
     I,N,CPN: integer;
     sel: boolean;
 begin
@@ -144,8 +144,7 @@ begin
 end;
 
 procedure TFreeSubdivisionControlPointGroup.SaveToStream(Strings: TStringList);
-var I,N,CPN: integer;
-  Str: string;
+  var I,N,CPN: integer; Str: AnsiString;
 begin
   Strings.Add(Name);
   CPN:=Surface.FControlPoints.IndexOf(FControlPoints[0]);

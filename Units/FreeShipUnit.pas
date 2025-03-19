@@ -1,24 +1,13 @@
-unit FreeShipUnit; //  FreeShipUnit
-{$IFDEF FPC}
-//  {$MODE Delphi}{$H+}
-    {$mode objfpc}{$H+}
-{$ENDIF}
-
-interface
-
-uses SysUtils,      // this declaration must be at the start, before the FreeGeometry unit
-  Windows,LazFileUtils,LazUTF8,
-  IniFiles,Interfaces,Graphics,Controls,
-  Forms,Dialogs,Classes,ExtCtrls,ExtDlgs,
-  ComCtrls,FreeTypes,
-  FreeVersionUnit,
-  FasterList,
-  FreeFileBuffer,
-  FreeGeometry,
-  FreeMatrices,
-  FreeLanguageSupport,
-  FreeControlPointFrm,
-  FreeStringUtils;
+unit FreeShipUnit;
+  {$mode objfpc}{$H+}
+interface uses
+  SysUtils, // this declaration must be at the start, before the FreeGeometry unit
+  Windows, LazFileUtils, LazUTF8, IniFiles,
+  Interfaces, Graphics, Controls, Forms,
+  Dialogs,    Classes,  ExtCtrls, ExtDlgs, ComCtrls,
+  FreeTypes,  FreeVersionUnit,  FasterList,
+  FreeFileBuffer,  FreeGeometry,  FreeMatrices,
+  FreeLanguageSupport,  FreeControlPointFrm,  FreeStringUtils;
 
 // FREE!ship uses British imperial format, eg 1 long ton=2240 lbs
 
@@ -504,10 +493,12 @@ type
 //  procedure Hydrostatics_Crosscurves; // Opens the dialog to calculate crosscurves
     procedure Hydrostatics_Dialog; // Opens the hydrostatics dialog and calculates hydrostatic data for a range of inputdata
     procedure ImportFrames;    // Loads a bodyplane and tries to fit a surface to it
+
     function Intersection_Add(IntType: TFreeIntersectionType; Distance: TFloatType): TFreeIntersection; // Add a new intersection at the specified location
     procedure Intersection_AddToList(Intersection: TFreeIntersection);    // Adds an intersection to the appropriate list
     procedure Intersection_Change(Intersection: TFreeIntersection; Distance: TFloatType);
     procedure Intersection_Dialog; // Pops up the dialog in whcih to add or delete stations, buttocks and waterlines
+
     procedure Layer_AutoGroup;     // All connected patches surrounded by crease edges are grouped together into a new layer
     procedure Layer_Develop;       // Developes all developable layers
     procedure Layer_Dialog;        // Show layer dialog window
@@ -654,7 +645,7 @@ type
   {------------------------------------------------------------}
   TFreeProjectSettings = class
   private
-    FFreeShip: TFreeShip;
+//  FFreeShip: TFreeShip;
 //  FMainparticularsHasBeenset: boolean; // Flag to check if the main particulars have been set before hydrostatic calculationss are being performed
     FDisableModelCheck: boolean;         // Disable the automatic checking of the surface
     FEnableModelAutoMove: boolean;       // Unable the automatic moving model along Z
@@ -671,7 +662,7 @@ type
     FProjectShadeUnderwaterShip: boolean;
     FSavePreview: boolean;
     FProjectUnits: TFreeUnitType;
-    FProjectPrecision: TFreePrecisionType;
+//  FProjectPrecision: TFreePrecisionType;
     FProjectSimplifyIntersections: boolean;
     FFreeHydrostaticCoefficients: TFreeHydrostaticCoeff; // General hydrostatics calculation settings
     FStartDraft: TFloatType;
@@ -712,39 +703,37 @@ type
     procedure FSetTrim(Val: TFloatType);
     procedure FSetUseDefaultSplitSectionLocation(Val: boolean);
   public
-    ProjectUnderWaterColorAlpha: byte;
+    FreeShip: TFreeShip;
     ProjectUnderWaterColor: TColor;
-
+    ProjectUnderWaterColorAlpha: byte;
+    ProjectPrecision: TFreePrecisionType;
+    constructor Create( Owner: TFreeShip );
     procedure Clear;
-    constructor Create(Owner: TFreeShip);
-    procedure Edit; // User input of mainparticulars and project setting
+    procedure Edit;        // User input of mainparticulars and project setting
     procedure LoadBinary(Source: TFreeFilebuffer; Image: TJPegImage); overload; virtual;
     procedure SaveBinary(Destination: TFreeFileBuffer);
     property DisableModelCheck: boolean read FDisableModelCheck write FSetDisableModelCheck;
     property EnableModelAutoMove: boolean read FEnableModelAutoMove write FSetEnableModelAutoMove;
-//  property EnableBonjeanSAC: boolean read FEnableBonjeanSAC write FSetEnableBonjeanSAC;
     property Hydrostatics_Startdraft: TFloatType read FStartDraft write FSetStartDraft;
-    property Hydrostatics_EndDraft: TFloatType read FEndDraft write FSetEndDraft;
-    property Hydrostatics_DraftStep: TFloatType read FDraftStep write FSetDraftStep;
-    property Hydrostatics_Trim: TFloatType read FTrim write FSetTrim;
+    property Hydrostatics_EndDraft: TFloatType   read FEndDraft write FSetEndDraft;
+    property Hydrostatics_DraftStep: TFloatType  read FDraftStep write FSetDraftStep;
+    property Hydrostatics_Trim: TFloatType       read FTrim write FSetTrim;
+//  property EnableBonjeanSAC: boolean read FEnableBonjeanSAC write FSetEnableBonjeanSAC;
 //  property MainparticularsHasBeenset: boolean read FMainparticularsHasBeenset;
-    property FreeShip: TFreeShip read FFreeShip write FFreeShip;
+//  property FreeShip: TFreeShip read FFreeShip write FFreeShip;
     property ProjectAppendageCoefficient: TFloatType read FProjectAppendageCoefficient write FSetProjectAppendageCoefficient;
     property ProjectBeam: TFloatType read FProjectBeam write FSetProjectBeam;
     property ProjectCoefficients: TFreeHydrostaticCoeff read FFreeHydrostaticCoefficients write FSetFreeHydrostaticCoefficients;
     property ProjectDraft: TFloatType read FProjectDraft write FSetProjectDraft;
     property ProjectLength: TFloatType read FProjectLength write FSetProjectLength;
     property ProjectSplitSectionLocation: TFloatType read FGetProjectSplitSectionLocation write FSetProjectSplitSectionLocation;
-
     property ProjectName: AnsiString read FProjectName;         // write FSetProjectName;
     property ProjectDesigner: AnsiString read FProjectDesigner; // write FSetProjectDesigner;
     property ProjectComment: AnsiString read FProjectComment;   // write FSetProjectComment;
     property ProjectFileCreatedBy: AnsiString read FProjectFileCreatedBy; // write FSetProjectFileCreatedBy;
-
     property ProjectShadeUnderwaterShip: boolean read FProjectShadeUnderwaterShip write FSetProjectShadeUnderwaterShip;
     property ProjectSimplifyIntersections: boolean read FProjectSimplifyIntersections write FSetProjectSimplifyIntersections;
     property ProjectUnits: TFreeUnitType read FProjectUnits write FSetProjectUnits;
-    property ProjectPrecision: TFreePrecisionType read FProjectPrecision write FProjectPrecision;
     property ProjectWaterDensity: TFloatType read FProjectWaterDensity write FSetProjectWaterDensity;
     property ProjectWaterTemper: TFloatType read FProjectWaterTemper write FSetProjectWaterTemper;
     property SavePreview: boolean read FSavePreview write FSetSavePreview;
@@ -757,12 +746,11 @@ type
   TFasterListTFreeFlowLine        = specialize TFasterList<TFreeFlowLine>; ///+++
   TFasterListTFreeHydrostaticCalc = specialize TFasterList<TFreeHydrostaticCalc>;
   TFasterListTFreeUndoObject      = specialize TFasterList<TFreeUndoObject>;
-
-  {---------------------------------------------------------------------------------------------------}
-  {                                       TFreeShip                                                   }
-  {   TFreeShip is the actual component used for modelling and representing the ship                  }
-  {---------------------------------------------------------------------------------------------------}
-
+  {-------------------------------------------------}
+  {                                       TFreeShip }
+  {   TFreeShip is the actual component used        }
+  {   for modelling and representing the ship       }
+  {-------------------------------------------------}
   TFreeShip = class( TComponent )
   private                                              { Private declarations }
     FViewports         : TFasterListTFreeViewPort; // List containing all viewports associated with the hullform
@@ -780,9 +768,9 @@ type
     FFlowLines,FSelectedFlowlines : TFasterListTFreeFlowLine;
     FBackgroundImages  : TFasterListTFreebackgroundImagedata;
     FVisibility        : TFreeVisibility;
-    FOnFileChanged,FOnUpdateUndoData,FOnUpdateRecentFileList: TNotifyEvent;
-    FOnUpdateGeometryInfo,FOnChangeCursorIncrement: TNotifyEvent;
-    FFreeLinesplanFrme: TFrame; // This event is raised whenever items are added or deleted from the surface
+//  FOnFileChanged,FOnUpdateUndoData,FOnUpdateRecentFileList: TNotifyEvent;
+//  FOnUpdateGeometryInfo,FOnChangeCursorIncrement: TNotifyEvent;
+//    FFreeLinesplanFrme: TFrame; // This event is raised whenever items are added or deleted from the surface
 //    FFilenameSet: boolean; // Flag to determine if the filename already has been set
 //    FModelIsLoaded: boolean; // Flag to determine if the model is created new or loaded.
 //    FFileIsReadOnly: boolean; // The folowing private variables are for moving controlpoints with the mouse
@@ -884,6 +872,13 @@ type
     ModelIsLoaded,  // Flag to determine if the model is created new or loaded.
     FileIsReadOnly, // The folowing private variables are for moving controlpoints with the mouse
     StopAskingForFileVersion: boolean;
+
+    LinesplanFrame: TFrame;                  // read FFreeLinesplanFrme write FFreeLinesplanFrme;
+    OnFileChanged: TNotifyEvent;             // read FOnFileChanged write FOnFileChanged;
+    OnChangeCursorIncrement: TNotifyEvent;   // read FOnChangeCursorIncrement write FOnChangeCursorIncrement;
+    OnUpdateGeometryInfo: TNotifyEvent;      // read FOnUpdateGeometryInfo write FOnUpdateGeometryInfo;
+    OnUpdateRecentFileList: TNotifyEvent;    // read FOnUpdateRecentFileList write FOnUpdateRecentFileList;
+    OnUpdateUndoData: TNotifyEvent;          // read FOnUpdateUndoData write FOnUpdateUndoData;
 
     constructor Create( AOwner: TComponent ); override;
     destructor Destroy; override;
@@ -999,14 +994,14 @@ type
 //  property OnSelectItem: TNotifyEvent read FGetOnSelectItem write FSetOnSelectItem;
 //  property OnChangeActiveControlPoint: TNotifyEvent read GetOnChangeActiveControlPoint write SetOnChangeActiveControlPoint;
   published                                          { Published declarations }
-
+{
     property LinesplanFrame: TFrame read FFreeLinesplanFrme write FFreeLinesplanFrme;
     property OnFileChanged: TNotifyEvent read FOnFileChanged write FOnFileChanged;
     property OnChangeCursorIncrement: TNotifyEvent read FOnChangeCursorIncrement write FOnChangeCursorIncrement;
     property OnUpdateGeometryInfo: TNotifyEvent read FOnUpdateGeometryInfo write FOnUpdateGeometryInfo;
     property OnUpdateRecentFileList: TNotifyEvent read FOnUpdateRecentFileList write FOnUpdateRecentFileList;
     property OnUpdateUndoData: TNotifyEvent read FOnUpdateUndoData write FOnUpdateUndoData;
-
+}
     property FileChanged: boolean read FFileChanged write FSetFileChanged;
     property Filename: AnsiString read FGetFilename write FSetFileName;
     property FileVersion: TFreeFileVersion read FFileVersion write FSetFileVersion;
@@ -1015,8 +1010,7 @@ type
     property ProjectSettings: TFreeProjectSettings read FProjectSettings;
     property Visibility: TFreeVisibility read FVisibility;
   end;
-
-  TColorIniFile = class(TIniFile)
+  TColorIniFile = class( TIniFile )
   public
     function ReadColor(const Section, Ident: AnsiString; Default: TColor): TColor; virtual;
     procedure WriteColor(const Section, Ident: AnsiString; Value: TColor); virtual;

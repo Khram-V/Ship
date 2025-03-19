@@ -64,7 +64,7 @@ var
   Tmp: TFasterListTFreeSubdivisionPoint;
   CFace: TFreeSubdivisionControlFace;
   Child: TFreeSubdivisionFace;
-  Str: string;
+  Str: AnsiString;
   P: TFreeSubdivisionPoint;
   C3d: T3DVector;
 begin
@@ -167,9 +167,9 @@ end;
 // is a standard file format for representing 3-dimensional (3D) interactive vector graphics,
 // designed particularly with the World Wide Web in mind. It has been superseded by X3D.[1]
 //
-procedure TFreeSubdivisionSurface.LoadVRMLFile(Filename: string);
+procedure TFreeSubdivisionSurface.LoadVRMLFile(Filename: AnsiString);
 var VRMLList: TVRMLList;
-    VRMLVersion: String;
+    VRMLVersion: AnsiString;
 begin
 //if FileExists(Filename) then begin
 //  VRMLList:=TVRMLList.Create;
@@ -251,8 +251,7 @@ var
   AssFace: TFreeFaceGrid;
   Face: TFreeSubdivisionControlFace;
   Grid: TFreeSubdivisionPointGrid;
-
-  DXFName: string;
+  DXFName: AnsiString;
 begin
   if SurfaceVisible then
   begin
@@ -336,7 +335,7 @@ procedure TFreeSubdivisionControlFace.SaveToDXF(Strings: TStringList);
 var
   I,J,K, Cols,Rows, ColorIndex: integer;   P: T3DVector;
   Child: TFreeSubdivisionFace;
-  LayerName: string;
+  LayerName: AnsiString;
   Grid: TFreeSubdivisionPointGrid;
   FaceData: TFreeFaceGrid;
 begin
@@ -439,13 +438,13 @@ var
   Index: integer;
   P: TFreeSubdivisionPoint;
   P3D: T3DVector;
-  Layer: string;
+  Layer: AnsiString;
   Source: TFasterListTFreeSubdivisionEdge;
   Dest: TFasterListTFreeSubdivisionFace;
   Edge:TFreeSubdivisionEdge;
   Face:TFreeSubdivisionFace;
 
-  procedure ExportSpline(Spline: TFreeSpline; Layername: string);
+  procedure ExportSpline(Spline: TFreeSpline; Layername: AnsiString);
   var
     I, Col: integer;
     P2D: T2DCoordinate;

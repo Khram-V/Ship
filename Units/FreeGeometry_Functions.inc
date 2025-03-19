@@ -17,45 +17,45 @@ begin
 end;
 
 // Returns a string value with the area units
-function AreaStr(Units: TFreeUnitType): string;
+function AreaStr(Units: TFreeUnitType): AnsiString;
 begin if Units = fuImperial then Result:='ft^2 '
                             else Result:='m^2 ';
 end;
 
 // Returns a string value with the length units
-function LengthStr(Units: TFreeUnitType): string;
+function LengthStr(Units: TFreeUnitType): AnsiString;
 begin if Units = fuImperial then Result:='ft '
                             else Result:='m ';
 end;
 
 // Returns a string value with the moment of inertia units
-function InertiaStr(Units: TFreeUnitType): string;
+function InertiaStr(Units: TFreeUnitType): AnsiString;
 begin
   if Units = fuImperial then Result:='ft^4 '
                         else Result:='m^4 ';
 end;
 
-function VolStr(Units: TFreeUnitType): string;
+function VolStr(Units: TFreeUnitType): AnsiString;
 begin if Units = fuImperial then Result:='ft^3 '
                             else Result:='m^3 ';
 end;
 {
-function DensStr(Units: TFreeUnitType): string;
+function DensStr(Units: TFreeUnitType): AnsiString;
 begin if Units = fuImperial then Result:='lbs/ft^3 '
                             else Result:='t/m^3 ';
 end;
-function ViscStr(Units: TFreeUnitType): string;
+function ViscStr(Units: TFreeUnitType): AnsiString;
 begin if Units = fuImperial then Result:='ft^2/s '
                             else Result:='m^2/s ';
 end;
 }
-function DegrStr(Units: TFreeUnitType): string;
+function DegrStr(Units: TFreeUnitType): AnsiString;
 begin result:='degr ';
 //if Units = fuImperial then Result:='degr '
 //                      else Result:='degr ';
 end;
 
-function LenMMStr(Units: TFreeUnitType): string;
+function LenMMStr(Units: TFreeUnitType): AnsiString;
 begin if Units = fuImperial then Result:='in '
                             else Result:='mm ';
 end;
@@ -67,16 +67,16 @@ begin         // convert to British imperial tons (1 imperial LONG ton=2240 lb)
                         else Result:=Volume * AppCoeff * Density;
 end;
 
-function DensityStr(Units: TFreeUnitType): string;
+function DensityStr(Units: TFreeUnitType): AnsiString;
 begin if Units = fuImperial then Result:='lbs/ft^3 '
                             else Result:='t/m^3 ';
 end;
 
-function WeightStr(Units: TFreeUnitType): string;
+function WeightStr(Units: TFreeUnitType): AnsiString;
 begin if Units = fuImperial then Result:='tons '
                             else Result:='tonnes';
 end;
-function BoolToStr(Val: boolean): string;
+function BoolToStr(Val: boolean): AnsiString;
   // In contrast to delphi's own BoolToStrF this procedure
   // returns '0' when false and '1' when true
 begin
@@ -200,7 +200,7 @@ begin
   ClipTriangle(P1, P2, P3, s1, s2, s3, Nf, Nb, Front, Back);
 end; {ClipTriangle}
 
-function ConvertDimension(Value: TFloatType; Units: TFreeUnitType): string;
+function ConvertDimension(Value: TFloatType; Units: TFreeUnitType): AnsiString;
 var Feet: integer; Inches: TFloatType;
 begin
   if Units = fuImperial then begin
@@ -214,7 +214,7 @@ begin
   Result:=FloatToStr( Round( Value*100 )/100 );
 end; {ConvertDimension}
 
-function ConvertCoordinate(Coord: string; OldCoord: TFloatType): TFloatType;
+function ConvertCoordinate(Coord: AnsiString; OldCoord: TFloatType): TFloatType;
   { parses input "Coord" and and returns the new value of a coordinate    }
   { if first character of input is (RelIdentifier-currently '@')          }
   {    then the input value is added to the old value "OldCoord".         }
@@ -224,15 +224,11 @@ function ConvertCoordinate(Coord: string; OldCoord: TFloatType): TFloatType;
   {    then the part after that '-' is considered as a fraction of a unit }
   {    The size of the fraction is const. "InchFractions"                 }
 var
-  myString: string;
-  myFactor: TFloatType;
-  myOldValue: TFloatType;
-  myWholeFeet: TFloatType;
-  myWholeInch: TFloatType;
-  myFracInch: TFloatType;
+  myString: AnsiString;
+  myFactor,myOldValue,myWholeFeet,myWholeInch,myFracInch: TFloatType;
   myFracPos: integer;
 const
-  RelIdentifier: string = '@';
+  RelIdentifier: AnsiString = '@';
   InchFractions: TFloatType = 8;
 begin
   myString:=Coord;
@@ -1138,7 +1134,7 @@ begin                                        //  begin procedure SortFloatarray
   end;
 end; {SortFloatArray}
 (*
-function Space( Index: integer ): string; // Outputs a string with a number of spaces
+function Space( Index: integer ): AnsiString; // Outputs a string with a number of spaces
 var I: integer;
 begin Result:=''; for I:=1 to Index do Result:=Result+' ';
 end; {Space}
@@ -1148,7 +1144,7 @@ begin Result:=Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z);
 end;
 
 function MakeLength(Value: TFloatType; Decimals, DesLength: integer): AnsiString;
-var Input: string;
+var Input: AnsiString;
 begin
   if Decimals = -1 then Decimals:=NumberOfDecimals(Value);
   Input:=FloatToStrF(Value, ffFixed, 10, Decimals);
@@ -1156,7 +1152,7 @@ begin
   Result:=Input;
 end;
 
-function MakeLength(Value: string; DesLength: integer): AnsiString;
+function MakeLength(Value: AnsiString; DesLength: integer): AnsiString;
 begin while Len(Value) < DesLength do Value:=Value+' '; Result:=Value;
 end;
 

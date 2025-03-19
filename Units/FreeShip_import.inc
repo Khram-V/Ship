@@ -392,7 +392,7 @@ begin
       P2:=nil;
       for I:=1 to Frames.Count do begin
         for J:=1 to NoPoints do
-          if abs(ControlPoints[I-1][J-1].Coordinate.Z-MinMaxData[I-1].MinZ)<1e-7
+          if abs(ControlPoints[I-1][J-1].Coordinate.Z-MinMaxData[I-1].MinZ)<1e-6
           then begin
             P2:=ControlPoints[I-1][J-1];
             if P2.Coordinate.Y <> 0.0 then begin  // Force point to centerplane
@@ -425,7 +425,7 @@ begin
       P2:=nil;
       for I:=1 to Frames.Count do begin
         for J:=1 to NoPoints do
-          if abs(ControlPoints[I-1][J-1].Coordinate.Z-MinMaxData[I-1].MaxZ)<1e-7
+          if abs(ControlPoints[I-1][J-1].Coordinate.Z-MinMaxData[I-1].MaxZ)<1e-6
           then begin P2:=ControlPoints[I-1][J-1];
             K:=J+1;
             while K <= NoPoints do begin
@@ -634,8 +634,8 @@ begin
             for J:=1 to point.NumberOfEdges do
             begin
                Edge:=Point.Edge[J-1] as TFreeSubdivisionControlEdge;
-               if ((Edge.Crease) and (Edge.StartPoint=Point) and (abs(Edge.EndPoint.Coordinate.Y)<1e-7)) or
-                  ((Edge.Crease) and (Edge.EndPoint=Point) and (abs(Edge.StartPoint.Coordinate.Y)<1e-7)) then Edge.Crease:=False;
+               if ((Edge.Crease) and (Edge.StartPoint=Point) and (abs(Edge.EndPoint.Coordinate.Y)<1e-6)) or
+                  ((Edge.Crease) and (Edge.EndPoint=Point) and (abs(Edge.StartPoint.Coordinate.Y)<1e-6)) then Edge.Crease:=False;
             end;
          end;
       end;
@@ -1340,7 +1340,7 @@ procedure TFreeEdit.File_ImportFEF;
 var OpenDialog : TOpenDialog;
     Answer     : word;
     Strings    : TStringList;
-    Str        : string;
+    Str        : AnsiString;
     LineNr,I   : integer;
 begin
    OpenDialog:=TOpenDialog.Create(FreeShip);
@@ -1821,7 +1821,7 @@ var
     end else Abort:=True;
   end;{GetFloat}
 
-  function NextParameter(var input: string): string;
+  function NextParameter(var input: AnsiString): AnsiString;
   var Index: integer;
   begin
     Index:=pos(#32, Input);

@@ -1,9 +1,6 @@
 unit FreeHydrostaticsResultsDlg;
-{$MODE Delphi}
-
-interface
-
-uses LCLIntf,
+{$MODE Delphi}{$H+}
+interface uses LCLIntf,
      SysUtils, Classes,
      Graphics, Grids,
      Controls, Forms,
@@ -138,7 +135,8 @@ begin
    if PrintDialog.Execute then begin
       AssignPrn( PrintText ); Rewrite( PrintText );
       Printer.Canvas.Font.Assign( Header.Font );
-      for I:=0 to Header.Lines.Count-1 do Writeln(PrintText,#32,Header.Lines[I]);
+      for I:=0 to Header.Lines.Count-1
+       do Writeln( PrintText,#32,Header.Lines[I] );
       Setlength(MaxWidth,Grid.ColCount);
       for I:=1 to Grid.ColCount do begin MaxWidth[I-1]:=0;
          for J:=1 to Grid.RowCount do begin

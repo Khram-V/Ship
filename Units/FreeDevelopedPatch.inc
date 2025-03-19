@@ -877,8 +877,8 @@ var
     if (Fie1 < 0) and (P2.Y > P1.Y) then Fie1:=Fie1+Pi;
     if (Fie1 > 0) and (P2.Y < P1.Y) then Fie1:=Fie1+Pi;
     if 2 * a * c = 0 then begin
-      if a = 0.0 then a:=1e-7;
-      if c = 0.0 then c:=1e-7;
+      if a = 0.0 then a:=1e-6;
+      if c = 0.0 then c:=1e-6;
     end;
     begin
       Tmp:=(a * a+c * c-b * b) / (2 * a * c);
@@ -1315,10 +1315,7 @@ begin                        // first assemble all points, edges and faces used
                     P3D3.Y:=F2DCoordinates[BestIndex].Coordinate.Y;
                     P3D3.Z:=0.0;
                     Dist:=DistancepointToLine(P3D1, P3D2, P3D3);
-                    if Dist > 1e-3 then begin
-                      FMirror:=False;
-                      break;
-                    end;
+                    if Dist > 1e-3 then begin FMirror:=False; break; end;
                   end;
                   if FMirror then begin
                     J:=FPoints.IndexOf(P1);
@@ -1360,7 +1357,7 @@ begin                        // first assemble all points, edges and faces used
         if FFaces.IndexOf(P1.Face[J-1]) <> -1 then begin Inc(N); end;
       if (N = 1) or (P1.VertexType = svCorner) then begin FCorners.Add(P1); end;
     end;
-  end else WriteLn('UnRoll: Seed could not be found!');
+  end; // else WriteLn('UnRoll: Seed could not be found!');
   {  Seedfaces.Destroy;
      Seedfaces:=nil;
      FreeAndNil( FFaces );

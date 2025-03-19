@@ -1,12 +1,6 @@
 unit VRML2Unit;
-
-{$IFDEF FPC}
   {$MODE ObjFPC}{$H+}
-{$ENDIF}
-
-interface
-
-uses
+interface uses
     {$IFDEF Windows}
   Windows,
     {$ENDIF}
@@ -44,8 +38,7 @@ type
 
 TVRML2object = class(TVRMLObject)
 private
-  FName: String;
-  FType: String;
+  FName,FType: AnsiString;
   FScene: TVRML2Scene;
   FParent: TVRML2object;
 public
@@ -200,10 +193,10 @@ end;
 
 
   TToken = class
-    FString: String;
+    FString: AnsiString;
     FLine: integer;
     FPosition: integer;
-    constructor Create(val:String; ln,pos:integer);
+    constructor Create(val:AnsiString; ln,pos:integer);
   end;
 
   TFasterListTToken = specialize TFasterList<TToken>;
@@ -220,14 +213,14 @@ end;
     constructor Create;
     destructor Destroy; override;
     procedure Clear;
-    function Tokenize(Str:String; ln:integer):TFasterListTToken;
-    function LoadId(var token:TToken):String;
+    function Tokenize(Str:AnsiString; ln:integer):TFasterListTToken;
+    function LoadId(var token:TToken):AnsiString;
     function LoadFloat(var token:TToken):Float;
     function LoadInteger(var token:TToken):Integer;
     function LoadBoolean(var token:TToken): boolean;
     function LoadColor(var token:TToken):TColor;
     procedure SkipObject;
-    procedure LoadFromFile(Filename: string); override;
+    procedure LoadFromFile(Filename: AnsiString); override;
     procedure LoadVrml2;
     procedure Import( Filename:AnsiString; SubdivisionSurface: TFreeSubdivisionSurface); override;
     procedure Add(VRMLObject: TVRML2Object);
@@ -236,7 +229,7 @@ end;
 
 implementation
 
-constructor TToken.Create(val:String; ln,pos:integer);
+constructor TToken.Create(val:AnsiString; ln,pos:integer);
 begin FString:=val; FLine:=ln; FPosition:=pos; end;
 
 constructor TVRML2Object.Create(Scene: TVRML2Scene; Parent: TVRML2object);
@@ -276,8 +269,7 @@ end;
 procedure TVRML2Scene.LoadVrml2;
   var LineNr: integer;
       I, Index, NObj: integer;
-      Str: string;
-      word, ObjectName, ObjectType: string;
+      Str, word, ObjectName, ObjectType: AnsiString;
       VRMLObject: TVRML2Object;
       token: TToken;
       ValidFile: boolean;
@@ -299,8 +291,8 @@ begin
   end;
 end;
 
-function TVRML2Scene.Tokenize(Str:String; ln:integer):TFasterListTToken;
-  var i,b:Integer; C:char; W:String; InSQString,InDQString:boolean; token:TToken;
+function TVRML2Scene.Tokenize(Str:AnsiString; ln:integer):TFasterListTToken;
+  var i,b:Integer; C:char; W:AnsiString; InSQString,InDQString:boolean; token:TToken;
 begin
   Result:=TFasterListTToken.Create;
   W:=''; InSQString:=false; InDQString:=false; b:=1;
@@ -345,7 +337,7 @@ begin
   if W > '' then Result.Add(TToken.Create(W,ln,i));
 end;
 
-function TVRML2Scene.LoadId(var token:TToken):String;
+function TVRML2Scene.LoadId(var token:TToken):AnsiString;
 begin
      inc(FCurrentToken);
      token:=FTokens[FCurrentToken];
@@ -400,7 +392,7 @@ end;
     end;
 
     procedure TVRML2Scene.SkipObject;
-    var curLevel: integer;  token: TToken; word: String;
+    var curLevel: integer;  token: TToken; word: AnsiString;
     begin
      curLevel:=FLevel;
      while (FCurrentToken < FTokens.Count)
@@ -412,15 +404,15 @@ end;
      //dec(FCurrentToken);
     end;
 
-    procedure TVRML2Scene.LoadFromFile(Filename: string);
+    procedure TVRML2Scene.LoadFromFile(Filename: AnsiString);
     var
       Strings: TStringList;
       LineNr: integer;
       I,L, Index, NObj: integer;
-      Str: string;
+      Str: AnsiString;
       token:TToken;
       tokens: TFasterListTToken;
-      ObjectName: string;
+      ObjectName: AnsiString;
       FFile: TextFile;
       VRMLObject: TVRMLObject;
       ValidFile: boolean;
@@ -582,7 +574,7 @@ end;{TVRML2Group.Destroy}
 procedure TVRML2Group.Load;
 var
   token:TToken;
-  word,ObjectName: string;
+  word,ObjectName: AnsiString;
   coord: T3DVector;
   child: TVRML2Object;
 begin
@@ -661,7 +653,7 @@ end;{TVRML2Transform.Destroy}
 procedure TVRML2Transform.Load;
 var
   token:TToken;
-  word,ObjectName: string;
+  word,ObjectName: AnsiString;
   coord: T3DVector;
   child: TVRML2Object;
 begin
@@ -782,7 +774,7 @@ end;{TVRML2Material.Destroy}
 
 procedure TVRML2Material.Load;
 var
-  token: TToken; word:string;
+  token: TToken; word:AnsiString;
 begin
   word:=FScene.LoadId(token);
   if word <> '{' then
@@ -831,7 +823,7 @@ begin Clear; inherited Destroy; end;
 procedure TVRML2Appearance.Load;
 var
   token: TToken;
-  word: string;
+  word: AnsiString;
 begin
     word:=FScene.LoadId(token);
     if word <> '{' then  begin
@@ -874,7 +866,7 @@ begin Clear; inherited Destroy; end;
 procedure TVRML2Shape.Load;
 var
   token: TToken;
-  word, ObjectName: string;
+  word, ObjectName: AnsiString;
   coord: T3DVector;
   VRMLObject: TVRML2Object;
 begin
@@ -917,7 +909,7 @@ function TVRML2Coordinates.FGetPoint(Index: integer): T3DVector;
 begin
   if (Index >= 0) and (Index < FCount) then Result:=FCoordinates[index]
   else begin Result:=ZERO;
-    WriteLn('Point index out of bounds in TVRML2Coordinates.FGetPoint');
+    //WriteLn('Point index out of bounds in TVRML2Coordinates.FGetPoint');
   end;
 end;
 
@@ -955,11 +947,11 @@ begin FreeAndNil(FFaceSets); inherited Destroy; end;
 procedure TVRML2Coordinates.Load;
 var
   token, tokenX, tokenY, tokenZ:TToken;
-  word, ObjectName: string;
+  word, ObjectName: AnsiString;
   coord: T3DVector;
 {
-  procedure detectPrecision(D:string);
-  var i:integer; dc, code:integer; ss:string;
+  procedure detectPrecision(D:AnsiString);
+  var i:integer; dc, code:integer; ss:AnsiString;
   begin
     if D.IndexOf('e') < 0 then begin i:=D.IndexOf('.');
       if i > -1 then dc:=D.length-i-1;
@@ -1014,7 +1006,7 @@ function TVRML2IndexedFaceSet.FGetFace(Index: integer): TIntArray;
 begin
   if (Index >= 0) and (Index < FGetCount) then Result:=FFaces[index]
   else begin
-    Result:=nil; WriteLn( 'Face index out of bounds in TVRMLIndexedFaceSet.FGetFace' );
+    Result:=nil; //WriteLn( 'Face index out of bounds in TVRMLIndexedFaceSet.FGetFace' );
   end;
 end;
 
@@ -1046,7 +1038,7 @@ end;
 
 procedure TVRML2IndexedFaceSet.Load;
   var token:TToken;
-      word, ObjectName: string;
+      word, ObjectName: AnsiString;
       VRMLObject: TVRMLObject;
       FaceCoords:TStringList;
       fc: ^TIntArray;
@@ -1105,7 +1097,7 @@ procedure TVRML2Scene.Import
       Points,FacePoints: TFasterListTFreeSubdivisionControlPoint;
       AddedCtrlPts: TFasterListTVRML2Coordinates;
       CtrPoint: TFreeSubdivisionControlPoint;
-      VRMLVersion: String;
+      VRMLVersion: AnsiString;
 
   function AddedCtrlPtsIndexOf(V3Point: T3DVector): Integer;
     var I: integer;

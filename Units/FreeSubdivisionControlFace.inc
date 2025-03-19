@@ -1142,9 +1142,8 @@ begin
     FLayer:=Surface.Layer[0];
     // Reference to an invalid layer. Assign to owners default layer
   end;
-  if FLayer <> nil then
-    FLayer.AddControlFace(self)
-  else WriteLn('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadBinary!');
+  if FLayer <> nil then FLayer.AddControlFace( self );
+  //else WriteLn('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadBinary!');
 
   Source.LoadBoolean(Sel);
   if sel then
@@ -1173,9 +1172,8 @@ end;{TFreeSubdivisionControlFace.LoadBinary}
 procedure TFreeSubdivisionControlFace.LoadFromStream(
   var LineNr: integer; Strings: TStringList);
 var
-  Str: string;
-  I, N: integer;
-  Index: integer;
+  Str: AnsiString;
+  I, N, Index: integer;
   P1, P2: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
   Sel: boolean;
@@ -1208,7 +1206,8 @@ begin
   for I:=1 to NumberOfPoints do begin
     P2:=Point[I-1];
     Edge:=Surface.EdgeExists( P1,P2 ) as TFreeSubdivisionControlEdge;
-    if Edge <> nil then Edge.FFaces.Add( Self );                                //  else MessageDlg(rs_Could_not_find_edge {UserString[201]}+'!',mtError,[mbOK],0);
+    if Edge <> nil then Edge.FFaces.Add( Self );
+                     //  else MessageDlg(rs_Could_not_find_edge {UserString[201]}+'!',mtError,[mbOK],0);
     P1:=P2;
   end;
 end; {TFreeSubdivisionControlFace.LoadFromStream}
@@ -1246,7 +1245,7 @@ end;
 
 procedure TFreeSubdivisionControlFace.SaveToStream(Strings: TStringList);
 var
-  Str: string;
+  Str: AnsiString;
   I, Index: integer;
 begin
   Str:=IntToStr(NumberOfPoints);

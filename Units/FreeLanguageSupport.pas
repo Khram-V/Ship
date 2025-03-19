@@ -6,13 +6,10 @@
 // Modified to suit FREEship and adapted to new components
 
 unit FreeLanguageSupport;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-uses LCLType,LazFileUtils,
+//{$MODE Delphi}{$H+}
+{$mode objfpc}{$H+}
+interface uses
+     LCLType,LazFileUtils,
      SysUtils,
      Classes,
      stdCtrls,
@@ -20,18 +17,25 @@ uses LCLType,LazFileUtils,
      extCtrls,
      iniFiles,
      FreeStringUtils;
+
 type TLanguageIniFile = class( TMemIniFile )               { TLanguageIniFile }
+
 public
   Name: AnsiString;
   constructor Create( const AName: AnsiString;const AFileName:AnsiString );
 end;
 
+
 var CurrentLanguage:TLanguageIniFile=nil; // Global variable for current language
+
+{ const U: array of record L:Integer; C:String; end =
+      ( ( L:1; C:'первый'; ),
+        ( L:2; C:'второй'; ) ); }
 
 //user procs
 function LoadLanguage(aName:AnsiString; aFileName:AnsiString):TLanguageIniFile;overload;
 procedure ShowTranslatedValues( Component:TComponent );
-function UserString( Index:Integer ):AnsiString;
+function UserString( Index:Integer ): AnsiString;
 
 implementation
 
@@ -46,11 +50,15 @@ begin
    Result:=CurrentLanguage;
 end;
 
-function UserString(Index:Integer):AnsiString;
-var Str,Section,Val : AnsiString;
-    Key : AnsiString='User0000'; // I,N: Integer;
+function UserString( Index:Integer ):AnsiString;    // == Languages\Russian.ini
+const U: array of record L:Integer; C:AnsiString; end =( {$I Russian.inc} ); // ’
+  var Str,Section,Val : AnsiString;
+      Key : AnsiString='User0000'; I: Integer;
 begin Result:='';
-   if CurrentLanguage<>nil then begin Section:='User';
+   if CurrentLanguage=nil then begin // при отсутствии текстовых строк в файле
+      for I:=1 to Length( U )-1 do   // [216]
+        if U[I].L=Index then begin Str:=U[I].C; Result:=Str; exit; end;
+   end else begin Section:='User';
       Val:=IntToStr( Index );
       Key:=Copy( Key,1,8-len(Val) )+Val;
       Str:=CurrentLanguage.readString( Section,Key,'' );
@@ -72,10 +80,10 @@ var I,J,Index : Integer;
     Str,Tmp   : TTranslateString;
 
 // Assign the value value to prop property of comp component
-    procedure setProp( comp:TComponent; {const }prop,value:AnsiString );
+    procedure setProp( comp:TComponent; {const } prop, value:AnsiString );
     var ppi:PPropInfo;
     begin if value<>'' then begin ppi:=getPropInfo( comp.classInfo,prop );
-             if ppi<>nil then setStrProp(comp,ppi,value);
+             if ppi<>nil then setStrProp( comp,ppi,value );
           end;
     end;
 begin

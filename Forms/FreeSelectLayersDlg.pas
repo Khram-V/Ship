@@ -1,15 +1,6 @@
-
-
-
 unit FreeSelectLayersDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+{$MODE Delphi}{$H+}
+interface uses
     {$IFDEF Windows}
      Windows,
     {$ELSE}
@@ -28,39 +19,36 @@ uses
      FreeGeometry,
      FreeLanguageSupport;
 
-type TFreeSelectMode          = (fsFaces,fsPoints);
-
-     { TFreeSelectLayersDialog }
-
-     TFreeSelectLayersDialog  = class(TForm)
-                                BitBtn1: TSpeedButton;
-                                BitBtn2: TSpeedButton;
-                                Panel2: TPanel;
-                                 Panel3: TPanel;
-                                 LayerBox: TCheckListBox;
-                                 Panel4: TPanel;
-                                 CheckBox: TCheckBox;
-                                 Panel5: TPanel;
-                                 procedure BitBtn1Click(Sender: TObject);
-                                 procedure BitBtn2Click(Sender: TObject);
-                                 procedure LayerBoxClickCheck(Sender: TObject);
-                                 procedure CheckBoxClick(Sender: TObject);
-                              private   { Private declarations }
-                                 FFreeship   : TFreeShip;
-                                 FSelectMode : TFreeSelectMode;
-                                 function FGetLayer(Index:Integer):TFreeSubdivisionLayer;
-                                 function FGetNumberOfLayers:Integer;
-                                 function FGetSelected(Index:Integer):boolean;
-                                 procedure FFillBox;
-                                 procedure FUpdateSelection(Destination:TFasterListTFreeSubdivisionControlPoint);
-                              public    { Public declarations }
-                                 function Execute(Freeship:TFreeShip;SelectMode:TFreeSelectMode):Boolean;
-                                 procedure ExtractSelectedFaces(var Destination:TFasterListTFreeSubdivisionControlFace);
-                                 procedure ExtractSelectedPoints(var Destination:TFasterListTFreeSubdivisionControlPoint);
-                                 property Layer[index:integer]    : TFreeSubdivisionLayer read FGetLayer;
-                                 property NumberOfLayers          : Integer read FGetNumberOfLayers;
-                                 property Selected[index:integer] : Boolean read FGetSelected;
-                           end;
+type TFreeSelectMode = (fsFaces,fsPoints);
+  TFreeSelectLayersDialog  = class(TForm)
+     BitBtn1: TSpeedButton;
+     BitBtn2: TSpeedButton;
+     Panel2: TPanel;
+      Panel3: TPanel;
+      LayerBox: TCheckListBox;
+      Panel4: TPanel;
+      CheckBox: TCheckBox;
+      Panel5: TPanel;
+      procedure BitBtn1Click(Sender: TObject);
+      procedure BitBtn2Click(Sender: TObject);
+      procedure LayerBoxClickCheck(Sender: TObject);
+      procedure CheckBoxClick(Sender: TObject);
+   private   { Private declarations }
+      FFreeship   : TFreeShip;
+      FSelectMode : TFreeSelectMode;
+      function FGetLayer(Index:Integer):TFreeSubdivisionLayer;
+      function FGetNumberOfLayers:Integer;
+      function FGetSelected(Index:Integer):boolean;
+      procedure FFillBox;
+      procedure FUpdateSelection(Destination:TFasterListTFreeSubdivisionControlPoint);
+   public    { Public declarations }
+      function Execute(Freeship:TFreeShip;SelectMode:TFreeSelectMode):Boolean;
+      procedure ExtractSelectedFaces(var Destination:TFasterListTFreeSubdivisionControlFace);
+      procedure ExtractSelectedPoints(var Destination:TFasterListTFreeSubdivisionControlPoint);
+      property Layer[index:integer]    : TFreeSubdivisionLayer read FGetLayer;
+      property NumberOfLayers          : Integer read FGetNumberOfLayers;
+      property Selected[index:integer] : Boolean read FGetSelected;
+ end;
 
 var FreeSelectLayersDialog: TFreeSelectLayersDialog;
 

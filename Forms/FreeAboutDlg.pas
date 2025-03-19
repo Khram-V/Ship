@@ -1,5 +1,5 @@
 unit FreeAboutDlg;
-{$mode delphi}
+{$mode delphi}{$H+}
        {###############################################################}
        {                                                               }
        {    You should write to the Free Software Foundation, Inc.,    }
@@ -19,7 +19,7 @@ type                                                          { TFreeAboutDlg }
     StringGridVersionInfo: TStringGrid;
     procedure FormCreate(Sender: TObject);
   private
-    procedure AddInfo( sName,sValue: String );
+    procedure AddInfo( sName,sValue: AnsiString );
   end;
 
 var FreeAboutDlg: TFreeAboutDlg;
@@ -27,7 +27,7 @@ var FreeAboutDlg: TFreeAboutDlg;
 implementation
 {$R *.lfm}
 
-procedure TFreeAboutDlg.AddInfo( sName, sValue:String );
+procedure TFreeAboutDlg.AddInfo( sName, sValue:AnsiString );
 begin with StringGridVersionInfo do begin RowCount:=RowCount+1;
                                  Cells[ 0,RowCount-1 ]:=sName;
                                  Cells[ 1,RowCount-1 ]:=sValue; end;

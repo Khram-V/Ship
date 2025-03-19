@@ -1,17 +1,10 @@
-
 unit Free2DDXFExportDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
-  SysUtils,Forms,
-  Controls,Dialogs,
-  StdCtrls,Buttons,
-  ExtCtrls,Spin,
+{$MODE Delphi}{$H+}
+interface uses
+  SysUtils, Forms,
+  Controls, Dialogs,
+  StdCtrls, Buttons,
+  ExtCtrls, Spin,
   LazFileUtils, FreeLanguageSupport;
 type                                                     { TDXFExport2DDialog }
 
@@ -36,19 +29,17 @@ type                                                     { TDXFExport2DDialog }
     procedure BitBtn2Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
   private                                              { Private declarations }
-    function FGetExportDirectory: string;
-    procedure FSetExportDirectory(val: string);
+    function FGetExportDirectory: AnsiString;
+    procedure FSetExportDirectory(val: AnsiString);
     function FGetSegmentLength: double;
     procedure FSetSegmentLength(val: double);
     procedure FSetUnits;
   public                                                { Public declarations }
     function BrowseForFolder
-           ( const browseTitle: PAnsiChar; initialFolder: string = ''): string;
+    ( const browseTitle: PAnsiChar; initialFolder: AnsiString = ''): AnsiString;
     function Execute: boolean;
-    property ExportDirectory: string
-      read FGetExportDirectory write FSetExportDirectory;
-    property SegmentLength: double
-      read FGetSegmentLength write FSetSegmentLength;
+    property ExportDirectory: AnsiString read FGetExportDirectory write FSetExportDirectory;
+    property SegmentLength: double read FGetSegmentLength write FSetSegmentLength;
   end;
 
 var DXFExport2DDialog: TDXFExport2DDialog;
@@ -56,7 +47,7 @@ var DXFExport2DDialog: TDXFExport2DDialog;
 implementation
   {$R *.lfm}
 
-var lg_StartFolder: string;
+var lg_StartFolder: AnsiString;
 
 {$IFnDEF FPC}
 ///////////////////////////////////////////////////////////////////
@@ -82,7 +73,7 @@ end;
 //          user clicked cancel), otherwise the full folder path.
 ///////////////////////////////////////////////////////////////////
 function TDXFExport2DDialog.BrowseForFolder(const browseTitle: PAnsiChar;
-  initialFolder: string = ''): string;
+  initialFolder: AnsiString = ''): AnsiString;
 var browse_info: TBrowseInfo;
   folder: array[0..MAX_PATH] of char;
   find_context: PItemIDList;
@@ -110,7 +101,7 @@ end;
 {$ENDIF}
 
 function TDXFExport2DDialog.BrowseForFolder(const browseTitle: PAnsiChar;
-  initialFolder: string = ''): string;
+  initialFolder: AnsiString = ''): AnsiString;
 var dlg: TSelectDirectoryDialog;
 begin
   dlg:=TSelectDirectoryDialog.Create(Self);
@@ -119,10 +110,10 @@ begin
   if dlg.Execute then Result:=dlg.FileName else Result:='';
 end;
 
-function TDXFExport2DDialog.FGetExportDirectory: string;
+function TDXFExport2DDialog.FGetExportDirectory: AnsiString;
 begin Result:=Edit3.Text; end;
 
-procedure TDXFExport2DDialog.FSetExportDirectory(val: string);
+procedure TDXFExport2DDialog.FSetExportDirectory(val: AnsiString);
 begin Edit3.Text:=Val; end;
 
 function TDXFExport2DDialog.FGetSegmentLength: double;
@@ -132,7 +123,7 @@ procedure TDXFExport2DDialog.FSetSegmentLength(val: double);
 begin if Val < 1e-5 then Val:=1e-5; Edit1.Value:=Val; end;
 
 procedure TDXFExport2DDialog.FSetUnits;
-var Str: string;
+var Str: AnsiString;
 begin Str:=ComboBox1.Text+' ';  //Label3.Caption:=Str;
 end;
 
@@ -144,7 +135,7 @@ begin
 end;
 
 procedure TDXFExport2DDialog.SpeedButton1Click( Sender: TObject );
-var Tmp: string;
+var Tmp: AnsiString;
 begin
   Tmp:=BrowseForFolder( 'Choose a directory where you want to save the dxf files to: ', ExportDirectory);
   if DirectoryExistsUTF8(Tmp) then self.ExportDirectory:=Tmp; { *Converted from DirectoryExists* }

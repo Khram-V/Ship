@@ -96,7 +96,7 @@ type
     destructor Destroy; override;
     procedure Clear;
     function ExtractFaceSetData: TFasterListTVRMLIndexedFaceSet;
-    class function CheckVRMLFileVersion( Filename: AnsiString ):String;
+    class function CheckVRMLFileVersion( Filename: AnsiString ):AnsiString;
     procedure LoadFromFile(Filename:AnsiString); virtual;  // загрузка в память
     procedure LoadVrml1( Strings: TStringList );
     procedure Import( Filename:AnsiString;
@@ -171,7 +171,7 @@ end;
 procedure GetEmbeddedObjects( Source: TStringList; Dest: TStringList );
 var ToDo: TList;
     I,Line,NObj: integer;
-    Current,OutPut: TStringList; ObjName: string;
+    Current,OutPut: TStringList; ObjName: AnsiString;
 begin
   ToDo:=TList.Create;
   ToDo.Add( Source ); I:=1;
@@ -252,7 +252,7 @@ function TVRMLCoordinate3.FGetPoint(Index: integer): T3DVector;
 begin
   if (Index >= 0) and (Index < FCount) then Result:=FCoordinates[index] else
   begin Result:=ZERO;
-    WriteLn( 'Point index out of bounds in TVRMLCoordinate3.FGetPoint' );
+     // WriteLn( 'Point index out of bounds in TVRMLCoordinate3.FGetPoint' );
   end;
 end;
 
@@ -317,7 +317,8 @@ end;
 function TVRMLIndexedFaceSet.FGetFace(Index: integer): TIntArray;
 begin
   if (Index >= 0) and (Index < FCount) then Result:=FFaces[index]
-  else begin Result:=nil; WriteLn('Face index out of bounds in TVRMLIndexedFaceSet.FGetFace'); end;
+  else begin Result:=nil; // WriteLn('Face index out of bounds in TVRMLIndexedFaceSet.FGetFace');
+  end;
 end;
 procedure TVRMLIndexedFaceSet.FSetCapacity(val: integer);
 begin FCapacity:=val;
@@ -458,8 +459,8 @@ begin
   end; FreeAndNil( words );
 end;
 *)
-class function TVRMLList.CheckVRMLFileVersion( Filename: AnsiString ):String;
-  var Str: string; FFile: TextFile;
+class function TVRMLList.CheckVRMLFileVersion( Filename: AnsiString ):AnsiString;
+  var Str: AnsiString; FFile: TextFile;
 begin CheckVRMLFileVersion:='noVRML';
   if FileExistsUTF8( Filename ) { *Converted from FileExists* } then begin
     AssignFile( FFile,FileName ); Reset(FFile);
@@ -470,7 +471,7 @@ begin CheckVRMLFileVersion:='noVRML';
   end;
 end;
 
-procedure TVRMLList.LoadFromFile( Filename: string );
+procedure TVRMLList.LoadFromFile( Filename: AnsiString );
 var
   Strings: TStringList; I: integer; Str: AnsiString; FFile: TextFile;
 begin

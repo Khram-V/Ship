@@ -3,9 +3,9 @@
 {   Container class for all program settings                   }
 {--------------------------------------------------------------}
 
-const iniFileName: String = 'FreeShip.ini';
-const G: String = 'Graphic';
-const D: String = 'Directories';
+const iniFileName = 'FreeShip.ini';
+const G = 'Graphic';
+const D = 'Directories';
 
 procedure TFreePreferences.FSetViewportColor( Val: TColor );
 var I: integer;
@@ -26,13 +26,13 @@ constructor TFreePreferences.Create(Owner: TFreeShip);
 
 procedure TFreePreferences.Edit;
 var Dialog: TFreePreferencesDialog;
-    Dir, Lang: string;
+    Dir, Lang: AnsiString;
     I: integer;
 const DS = DirectorySeparator;
-  procedure Browse( Dir: string );
+  procedure Browse( Dir: AnsiString );
   var SearchRec: TSearchRec;
-    procedure Add( FileName:string );
-    var Tmp: string; I: integer; Found: boolean;
+    procedure Add( FileName:AnsiString );
+    var Tmp: AnsiString; I: integer; Found: boolean;
     begin
       Tmp:=ChangeFileExt( ExtractFilename( Filename ),'' ); found:=False;
       for I:=1 to Dialog.ComboBox1.Items.Count do
@@ -117,17 +117,17 @@ begin
     FFbmEncoding:=string( Dialog.ComboBoxEncoding.Items.Objects[Dialog.ComboBoxEncoding.ItemIndex] );
     FMaxUndoMemory:=Dialog.FreeNumInput1.Value;
 
-    if assigned(Owner.FOnFileChanged) then Owner.FOnFileChanged(Owner);
-    if assigned(Owner.FOnUpdateUndoData) then Owner.FOnUpdateUndoData(Owner);
-    if assigned(Owner.FOnUpdateRecentFileList) then Owner.FOnUpdateRecentFileList(Owner);
-    if assigned(Owner.FOnChangeCursorIncrement) then Owner.FOnChangeCursorIncrement(Owner);
-    if assigned(Owner.FOnUpdateGeometryInfo) then Owner.FOnUpdateGeometryInfo(owner);
+    if assigned(Owner.OnFileChanged) then Owner.OnFileChanged(Owner);
+    if assigned(Owner.OnUpdateUndoData) then Owner.OnUpdateUndoData(Owner);
+    if assigned(Owner.OnUpdateRecentFileList) then Owner.OnUpdateRecentFileList(Owner);
+    if assigned(Owner.OnChangeCursorIncrement) then Owner.OnChangeCursorIncrement(Owner);
+    if assigned(Owner.OnUpdateGeometryInfo) then Owner.OnUpdateGeometryInfo(owner);
     Owner.Redraw;
     end;
   FreeAndNil(Dialog);
 end;
 (*
-procedure TFreePreferences.detectApplicationScope; var appPath:string;
+procedure TFreePreferences.detectApplicationScope; var appPath:AnsiString;
 begin appPath:=ExtractFilePath( Application.Exename );
 {$ifdef Windows}
    if appPath.StartsWith( windirs.GetWindowsSpecialDir( CSIDL_LOCAL_APPDATA) )
@@ -137,10 +137,10 @@ begin appPath:=ExtractFilePath( Application.Exename );
 {$endif}
 end;
 *)
-function TColorIniFile.ReadColor(const Section,Ident:string; Default:TColor): TColor;
+function TColorIniFile.ReadColor(const Section,Ident:AnsiString; Default:TColor): TColor;
 begin Result:=StringToColor(ReadString(Section, Ident, ColorToString(Default)));
 end;
-procedure TColorIniFile.WriteColor(const Section,Ident:string; Value:TColor);
+procedure TColorIniFile.WriteColor(const Section,Ident:AnsiString; Value:TColor);
 begin WriteString( Section,Ident,'$'+HexStr(Value,6) ); // ColorToString( Value ) );
 end;
 procedure TFreePreferences.LoadFromIni;
@@ -204,8 +204,7 @@ begin
   for I:=0 to RecentFileNames.Count-1 do
     Owner.Edit.FRecentFiles.Add( RecentFileNames.ValueFromIndex[I] );
   FreeAndNil( RecentFileNames );
-  if assigned( Owner.FOnUpdateRecentFileList )
-          then Owner.FOnUpdateRecentFileList( self ); //Readln(FFile,T,L,H,W,S);
+  if assigned( Owner.OnUpdateRecentFileList ) then Owner.OnUpdateRecentFileList( self );
   T:=params.ReadInteger( 'Window','Top',0 );
   L:=params.ReadInteger( 'Window','Left',0 );
   H:=params.ReadInteger( 'Window','Height',Screen.WorkAreaHeight);
@@ -227,7 +226,7 @@ begin
   FLanguage:=params.ReadString( 'General','Language',FLanguage );
   LanguageFile:=LanguagesDirectory+DirectorySeparator+Flanguage+'.ini'; //+ConfigDirectory
   if not FileExistsUTF8( LanguageFile ) then begin
-    Writeln( '! нет файла: '+LanguageFile );
+    Writeln( '?no file: '+LanguageFile );
     FLanguage:='English';
     LanguageFile:=ConfigDirectory+LanguagesDirectory+'\English.ini';
   end;
@@ -263,7 +262,7 @@ end;
 
 procedure TFreePreferences.Load; begin setDefaults; LoadFromIni; end;
 
-function TFreePreferences.OnlyName( const S: string ): string;
+function TFreePreferences.OnlyName( const S: AnsiString ): AnsiString;
   var L:Integer;
 begin L:=Length( ConfigDirectory ); Result:=S;
   if S.StartsWith( ConfigDirectory ) then Result:=S.SubString( L,Length(S)-L );
@@ -362,7 +361,6 @@ begin
   for I:=0 to Owner.Edit.FRecentFiles.Count-1 do
     params.WriteString('RecentFiles','File'+IntToStr(I+1),
                         OnlyName( Owner.Edit.FRecentFiles[I] ) );
-  if assigned( Owner.FOnUpdateRecentFileList ) then
-               Owner.FOnUpdateRecentFileList( self );
+  if assigned( Owner.OnUpdateRecentFileList ) then Owner.OnUpdateRecentFileList( self );
 end;
 

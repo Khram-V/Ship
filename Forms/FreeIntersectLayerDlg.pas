@@ -1,16 +1,11 @@
 unit FreeIntersectLayerDlg;
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-uses
+{$MODE Delphi}{$H+}
+interface uses
   SysUtils,  Classes,
   Controls,  Forms,
   Buttons,   StdCtrls,
   ExtCtrls,  Freegeometry,
   FreeShipUnit,FreeLanguageSupport;
-
 type                                              { TFreeIntersectLayerDialog }
   TFreeIntersectLayerDialog = class(TForm)
     BitBtn1,BitBtn2: TSpeedButton;

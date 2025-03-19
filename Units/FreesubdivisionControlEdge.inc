@@ -508,7 +508,7 @@ end;
 procedure TFreesubdivisionControlEdge.LoadFromStream(
   var LineNr: integer; Strings: TStringList);
 var
-  Str: string;
+  Str: AnsiString;
   Index: integer;
   Sel: boolean;
 begin

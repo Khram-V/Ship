@@ -1,15 +1,6 @@
-
-//   FreeLayerDlg
-
 unit FreeLayerDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+{$MODE Delphi}{$H+}
+interface uses
 {$IFnDEF FPC}
   Windows,
 {$ELSE}

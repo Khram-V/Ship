@@ -1,18 +1,10 @@
 unit LightDialog;
-
 {$mode objfpc}{$H+}
-
-interface
-
-uses
+interface uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs,
   StdCtrls, ComCtrls, ButtonPanel,
   FreeGeometry;
-
 type
-
-  { TLightDialog }
-
   TLightDialog = class(TForm)
     ButtonPanel: TButtonPanel;
     GroupBoxPosition: TGroupBox;

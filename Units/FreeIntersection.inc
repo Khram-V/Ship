@@ -32,7 +32,7 @@ begin if self = nil then Result:=0
                     else Result:=FItems.Count;
 end;
 
-function TFreeIntersection.FGetDescription: string;
+function TFreeIntersection.FGetDescription: AnsiString;
 begin
   case IntersectionType of
     fiStation: Result:='Station ';

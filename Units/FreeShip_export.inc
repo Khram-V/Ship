@@ -274,7 +274,7 @@ end;
 procedure TFreeIntersection.SaveToDXF(Strings: TStringList);
 var
   I: integer;
-  Layer: string;
+  Layer: AnsiString;
   Spline: TFreeSpline;
 begin
   if not Built then Rebuild;
@@ -356,11 +356,11 @@ var
   ScaleFactor: double;
   SegLength: double;
   PrevCursor: TCursor;
-  Filename, Layername: string;
+  Filename, Layername: AnsiString;
   Intersections: TFasterListTFreeIntersection;
   CreateIndividualLayers: Boolean;
 
-  function getLayerName(IntersectionType:TFreeIntersectionType):String;
+  function getLayerName(IntersectionType:TFreeIntersectionType):AnsiString;
   begin Result:='';
     case IntersectionType of
       fiStation:      Result:=Userstring(62);
@@ -370,7 +370,7 @@ var
 //    else begin Messagedlg(Userstring(66)+'!',mtError,[mbOK],0); exit; end;
     end;
   end;
-  procedure DefineLayers(Stringlist: TStringList; LayerPrefix:string;
+  procedure DefineLayers(Stringlist: TStringList; LayerPrefix:AnsiString;
     StartLayer,LayerNumbers:integer);
   var I:integer;
   begin
@@ -434,10 +434,8 @@ var
   end;
 
   procedure CreateDXFData(Intersection: TFreeIntersection; IntersectionNumber:integer;
-    Stringlist: TStringList; Scale: double; var Filename: string);
-  var
-    I, N: integer;
-    Layername: string;
+    Stringlist: TStringList; Scale: double; var Filename: AnsiString);
+  var I,N: integer; Layername: AnsiString;
 
     procedure SaveSpline(Spline: TFreeSpline; Strings: TStringList;
       IntersectionType: TFreeIntersectiontype);
@@ -711,7 +709,7 @@ procedure TFreeEdit.File_ExportArchimedes;
 var
   Frames: TFasterListTFreeSpline;
   Frame: TFreeSpline;
-  Tmp, Str: string;
+  Tmp, Str: AnsiString;
   I, J, Np: integer;
   P: T3DVector;
   SaveDialog: TSaveDialog;
@@ -936,7 +934,7 @@ var
   Strings: TStringList;
   I: integer;
   procedure SendSpline( Spline:TFreespline );
-  var J: integer; Str: string; P: T3DVector;
+  var J: integer; Str: AnsiString; P: T3DVector;
   begin
     for J:=1 to Spline.NumberOfPoints do begin P:=Spline.Point[J-1];
       Str:='        '+MakeLength( P.X,4,10 ) +
@@ -947,7 +945,7 @@ var
     end;
   end;
   procedure SendIntersection( Intersection: TFreeIntersection );
-  var I: integer; Str: string; Spline: TFreeSpline;
+  var I: integer; Str: AnsiString; Spline: TFreeSpline;
   begin
     if not Intersection.Built then Intersection.Rebuild;
     if Intersection.Count > 0 then begin
@@ -995,7 +993,7 @@ var
   EdgePointLists: TFasterListTFasterListTFreeSubdivisionPoint;
   Points: TFasterListTFreeSubdivisionPoint;
   Point: TFreeSubdivisionPoint;
-  Layername: string;
+  Layername: AnsiString;
 begin
   Dialog:=TSaveDialog.Create( FreeShip );
   Dialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
@@ -1151,7 +1149,7 @@ var
   PrevCursor: TCursor;
   Scale: TFloatType;
   Frames: TFasterListTFreeSpline;
-  Str: string;
+  Str: AnsiString;
   P, Pkn: T3DVector;
   NParams: integer;
   Params: TFloatArray;
@@ -1417,17 +1415,15 @@ var
       end;
     end;
 //  Faces.Sort;
-    // Try to isolate the interior point
-    InteriorPoint:=nil;
+    InteriorPoint:=nil;                    // Try to isolate the interior point
     for I:=1 to Points.Count do begin
-      P:=Points[I-1];
-      // check how many of the childfaces are connected (interior point must have 3)
+      P:=Points[I-1]; // check how many of the childfaces are connected (interior point must have 3)
       N:=0;
       for J:=1 to P.NumberOfFaces do
         if Faces.IndexOf(P.Face[J-1]) <> -1 then Inc(N);
       if N = 3 then begin InteriorPoint:=P; break; end;
     end;
-    if Interiorpoint <> nil then begin
+    if Interiorpoint<>nil then begin
       Cols:=3;
       Rows:=3;
       Setlength(Grid, Rows);
@@ -1447,7 +1443,7 @@ var
 //      for I:=1 to Rows do
 //        for J:=1 to cols do
 //          if grid[I-1][j-1] = nil then WriteLn(Userstring(98));
-    end else ShowMessage( Userstring( 99 ) );
+    end else ShowMessage( Userstring(99) );
     FreeAndNil(Faces);
     FreeAndNil(Points);
   end; {AssembleTriangle}

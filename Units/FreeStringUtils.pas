@@ -1,5 +1,5 @@
 unit FreeStringUtils;
-{$mode delphi}
+{$mode delphi}{$H+}
 interface uses SysUtils,LazUTF8;
 resourcestring rsTextFile = 'Text file';
                rsJPEGFiles = 'JPEG files';
@@ -59,7 +59,7 @@ begin
   if NeedsAll then Result += '|All files (*.*)|*.*';
 end;
 
-//Procedure WriteLn( const Str: String ); overload; var tmp:string;
+//Procedure WriteConole( const Str: AnsiString ); overload; var tmp:AnsiString;
 //    begin tmp:=UTF8ToConsole( Str ); Write( tmp ); end;
 
 end.

@@ -1,14 +1,6 @@
-
-
 unit FreeExpanedPlatesDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+{$MODE Delphi}{$H+}
+interface uses
   LCLIntf, PrintersDlgs,
   SysUtils,Classes,
   Graphics,Controls,
@@ -298,7 +290,6 @@ begin
   //USE ONCE!
   ////Freeship.Preferences.dumpIcons(MenuImages,ActionList1);
 
-//Freeship.Preferences.LoadImageListByActions(MenuImages, ActionList1);
 //ToolBar1.ButtonHeight:= MenuImages.Height+4;
 //ToolBar1.ButtonWidth:=MenuImages.Width +4;
 //FUpdateListBox;
@@ -377,7 +368,7 @@ var
   Pt1, Pt2: TPoint;
   Space: TFloatType;
   Suppress: boolean;
-  Str: string;
+  Str: AnsiString;
 begin
   if FPlates <> nil then begin                              // Skip translation
     Viewport.DrawingCanvas.Font.Color:=clBlack;
@@ -614,8 +605,7 @@ procedure TFreeExpanedplatesDialog.ZoomExtentsExecute(Sender: TObject);
 begin Viewport.ZoomExtents; end;
 
 procedure TFreeExpanedplatesDialog.SaveBitmapExecute(Sender: TObject);
-var
-  Str: string;
+var Str: AnsiString;
 begin
   Str:=FFreeShip.Preferences.ExportDirectory;
   if Str[Length(Str)] <> '\' then Str:=Str+'\';
@@ -841,7 +831,7 @@ var
   Strings: TStringList;
   Patch: TFreeDevelopedPatch;
   SaveDialog: TSaveDialog;
-  Str: string;
+  Str: AnsiString;
 begin
   SaveDialog:=TSaveDialog.Create(Owner);
   SaveDialog.InitialDir:=FFreeship.Preferences.ExportDirectory;

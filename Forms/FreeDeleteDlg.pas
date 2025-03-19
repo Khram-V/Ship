@@ -1,19 +1,11 @@
 unit FreeDeleteDlg;
-
 {$mode objfpc}{$H+}
-
-interface
-
-uses
+interface uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   StdCtrls, Grids,
   FreeShipUnit,
   FreeGeometry;
-
 type
-
-  { TFreeDeleteDialog }
-
   TFreeDeleteDialog = class(TForm)
     bbDelete: TBitBtn;
     bbCancel: TBitBtn;
@@ -26,7 +18,7 @@ type
     procedure CheckBox1Click( Sender:TObject );
     procedure FormResize( Sender:TObject );
     procedure sgObjectsCheckboxToggled( sender:TObject; aCol,aRow:Integer; aState:TCheckboxState );
-    procedure sgObjectsGetCellHint( Sender:TObject; ACol,ARow:Integer; var HintText: String );
+    procedure sgObjectsGetCellHint( Sender:TObject; ACol,ARow:Integer; var HintText: AnsiString );
   private
     FFreeShip: TFreeShip;
     procedure UpdateMenu;
@@ -83,14 +75,14 @@ begin
 end;
 
 procedure TFreeDeleteDialog.sgObjectsGetCellHint(Sender: TObject; ACol, ARow: Integer;
-  var HintText: String);
+  var HintText: AnsiString);
 begin
   if ARow = 0 then HintText:=sgObjects.Columns[aCol].Title.Caption
               else HintText:='';
 end;
 
 procedure TFreeDeleteDialog.UpdateMenu;
-var i,N:integer; C: string; S: TCheckboxState;
+var i,N:integer; C: AnsiString; S: TCheckboxState;
 begin
   N:=0;
   for i:=1 to sgObjects.RowCount-1 do begin

@@ -563,7 +563,7 @@ end;
 procedure TFreeSubdivisionControlPoint.LoadFromStream
 ( var LineNr: integer; Strings: TStringList );
 var
-  Str: string; I: integer; sel: boolean;
+  Str: AnsiString; I: integer; sel: boolean;
 begin                                                       // FCoordinate
   Inc(LineNr);
   Str:=Strings[LineNr];
@@ -597,7 +597,7 @@ begin
 end;
 
 procedure TFreeSubdivisionControlPoint.SaveToStream(Strings: TStringList);
-var Str: string;
+var Str: AnsiString;
 begin
   Str:=FloatToDec(Fcoordinate.X, 5)
     +#32+FloatToDec(Fcoordinate.Y, 5)

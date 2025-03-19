@@ -1,9 +1,6 @@
-
 unit FreeNewModelDlg;
-{$MODE Delphi}
-
-interface
-uses
+{$MODE Delphi}{$H+}
+interface uses
     Controls, Forms,
     StdCtrls, Buttons,
     ExtCtrls, Spin, FreeLanguageSupport;

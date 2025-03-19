@@ -9,9 +9,9 @@ function TFreeSubdivisionLayer.FGetColor: TColor;
    begin Result:=FColor; end;
 function TFreeSubdivisionLayer.FGetCount: integer;
    begin Result:=FPatches.Count; end;
-function TFreeSubdivisionLayer.FGetDXFLayername: string;
+function TFreeSubdivisionLayer.FGetDXFLayername: AnsiString;
    begin Result:=self.Name; end;
-function TFreeSubdivisionLayer.FGetName: string;
+function TFreeSubdivisionLayer.FGetName: AnsiString;
 begin
   if FDescription = '' then Result:='Layer '+IntToStr( LayerId )
                        else Result:=FDescription;
@@ -120,41 +120,32 @@ end;
 
 procedure TFreeSubdivisionLayer.FSetFDevelopable(Val: boolean);
 begin
-  if val <> FDevelopable then
-  begin
-    FDevelopable:=Val;
-    if assigned(Surface.FOnChangeLayerData) then
-      Surface.FOnChangeLayerData(self);
+  if val<>FDevelopable then begin FDevelopable:=Val;
+    if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
   end;
 end;
 
-procedure TFreeSubdivisionLayer.FSetName(Val: string);
+procedure TFreeSubdivisionLayer.FSetName(Val: AnsiString);
 begin
-  if Uppercase(Val) <> Uppercase(FDescription) then
-  begin
+  if Uppercase(Val)<>Uppercase(FDescription) then begin
     FDescription:=Val;
-    if assigned(Surface.FOnChangeLayerData) then
-      Surface.FOnChangeLayerData(self);
-    if (self = Surface.ActiveLayer) and (assigned(Surface.FOnChangeActiveLayer)) then
+    if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
+    if (self=Surface.ActiveLayer) and (assigned(Surface.FOnChangeActiveLayer)) then
       Surface.FOnChangeActiveLayer(Surface, Surface.ActiveLayer);
   end;
 end;
 
 procedure TFreeSubdivisionLayer.FSetSymmetric(Val: boolean);
 begin
-  if Val <> FSymmetric then
-  begin
-    FSymmetric:=Val;
-    if assigned(Surface.FOnChangeLayerData) then
-      Surface.FOnChangeLayerData(self);
+  if Val<>FSymmetric then begin FSymmetric:=Val;
+    if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
   end;
 end;
 
 procedure TFreeSubdivisionLayer.FSetColor(Val: TColor);
 begin
-  if Val <> FColor then begin FColor:=Val;
-    if assigned(Surface.FOnChangeLayerData) then
-      Surface.FOnChangeLayerData(self);
+  if Val<>FColor then begin FColor:=Val;
+    if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
     if (self = Surface.ActiveLayer) and (assigned(Surface.FOnChangeActiveLayer)) then
       Surface.FOnChangeActiveLayer(Surface, Surface.ActiveLayer);
   end;
@@ -162,17 +153,14 @@ end;
 
 procedure TFreeSubdivisionLayer.FSetShowInLinesplan(val: boolean);
 begin
-  if Val <> FShowInLinesplan then begin
-    FShowInLinesplan:=val;
-    if assigned(Surface.FOnChangeLayerData) then
-      Surface.FOnChangeLayerData(self);
+  if Val <> FShowInLinesplan then begin FShowInLinesplan:=val;
+    if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
   end;
 end;
 
 procedure TFreeSubdivisionLayer.FSetUseInHydrostatics(val: boolean);
 begin
-  if val<>FUseInHydrostatics then begin
-    FUseInHydrostatics:=Val;
+  if val<>FUseInHydrostatics then begin FUseInHydrostatics:=Val;
     if FUseInHydrostatics and (not FSymmetric) then FSymmetric:=True;
     if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
   end;
@@ -226,7 +214,7 @@ begin
   FThickness:=Source.FThickness;
 end;
 
-function ToStr( c: T3DVector ): string;
+function ToStr( c: T3DVector ): AnsiString;
 begin
   Result:='('+FloatToStr( c.X )+','
              +FloatToStr( c.Y )+','
@@ -928,7 +916,7 @@ end;
 
 procedure TFreeSubdivisionLayer.LoadFromStream(var LineNr: integer; Strings: TStringList);
 var
-  Str: string;
+  Str: AnsiString;
 begin                                        // read description
   Inc(LineNr);
   FDescription:=Strings[LineNr];           // read Layer identification
@@ -992,7 +980,7 @@ end;
 
 procedure TFreeSubdivisionLayer.SaveToStream(Strings: TStringList);
 var
-  Str: string;
+  Str: AnsiString;
 begin
   Strings.Add(FDescription);
   Str:=IntToStr(FLayerID)+#32+IntToStr(FColor)+#32 +
@@ -1016,7 +1004,7 @@ var
   I: integer;
   Face, Face1: TFreeSubdivisionControlFace;
   Patch, Copy: TFreeDevelopedPatch;
-  Str: string;
+  Str: AnsiString;
 
   procedure FindAttachedFaces(List: TFasterListTFreeSubdivisionControlFace;
     Face: TFreeSubdivisionControlFace);

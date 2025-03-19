@@ -1,11 +1,6 @@
 unit FreeProjectSettingsDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-uses
+{$MODE Delphi}{$H+}
+interface uses
   Graphics,
   Controls,  Forms,
   Dialogs,   ExtCtrls,
@@ -142,7 +137,7 @@ procedure TFREEProjectSettingsDialog.FSetXWindAreaMax(Val: double);
     begin Edit27.Value:=Val; end;
 
 procedure TFREEProjectSettingsDialog.FSetUnitCaptions;
-var Str: string;
+var Str: AnsiString;
 begin
   if UnitBox.ItemIndex = 1 then Str:=LengthStr( fuImperial )
                            else Str:=Lengthstr( fuMetric );

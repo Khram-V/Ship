@@ -3,7 +3,7 @@
    as with BGR 24-bit bitmap using ScanLine
 }
 unit FreeBitmap;
-{$mode delphi}
+{$mode delphi}{$H+}
 interface
 uses
   SysUtils, Graphics, FreeTypes;

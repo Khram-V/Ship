@@ -24,12 +24,12 @@ public
    procedure Clear;
    function  Copy:TFreeMatrix;
    procedure CreateIdentity;
-// procedure DumpToFile(Filename:string;Length,Digits:Integer);
+// procedure DumpToFile(Filename:AnsiString;Length,Digits:Integer);
    procedure Fill(Value:TFreeMatrixType);
    function  Invert:TFreeMatrix;
    function  Multiply(Matrix:TFreeMatrix):TFreeMatrix;
    procedure SetSize(Cols,Rows:Integer);
-   procedure Save(Strings:TStringList;Description:string);
+   procedure Save(Strings:TStringList;Description:AnsiString);
    function  Solve(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
    function  Gauss(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
    function  GaussJordan(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
@@ -54,7 +54,7 @@ begin
          Target:=FRows[I];
          for J:=0 to ColCount-1 do Target[J]:=Target[J]+Source[J];
       end;
-   end else WriteLn('Matrix size does not match in Add');
+   end; // else WriteLn('Matrix size does not match in Add');
 end;
 
 procedure TFreeMatrix.Assign(Matrix:TFreeMatrix);
@@ -70,15 +70,15 @@ begin Result:=(ColCount=RowCount) and (ColCount>0); end;
 
 function TFreeMatrix.FGetValue(Row,Col:Integer):TFreeMatrixType;
 begin
-   if (Col>=0) and (Col<FNoColumns) and
-      (Row>=0) and (Row<FNoRows) then Result:=FRows[Row][Col]
-   else WriteLn('Error in accesing matrix');
+// if (Col>=0) and (Col<FNoColumns) and
+//    (Row>=0) and (Row<FNoRows) then
+   Result:=FRows[Row][Col]; // else WriteLn('Error in accesing matrix');
 end;
 
 procedure TFreeMatrix.FSetValue(Row,Col:Integer;Value:TFreeMatrixType);
-begin if (Col>=0) and (Col<FNoColumns) and
-         (Row>=0) and (Row<FNoRows) then FRows[Row][Col]:=Value
-      else WriteLn('Error in accesing matrix');
+begin //if (Col>=0) and (Col<FNoColumns) and
+      //   (Row>=0) and (Row<FNoRows) then
+      FRows[Row][Col]:=Value; // else WriteLn('Error in accesing matrix');
 end;
 
 procedure TFreeMatrix.Clear;
@@ -96,13 +96,13 @@ procedure TFreeMatrix.CreateIdentity;
 var i : integer;
 begin if (RowCount=ColCount) and (RowCount>0) then begin Fill(0.0);
          for I:=0 to RowCount-1 do Value[I,I]:=1.0;
-      end else WriteLn('Matrix must be square to create identity');
+      end; // else WriteLn('Matrix must be square to create identity');
 end;
 
 destructor TFreeMatrix.Destroy;
 begin Clear; inherited Destroy; end;
 (*
-procedure TFreeMatrix.DumpToFile(Filename:string;Length,Digits:Integer);
+procedure TFreeMatrix.DumpToFile(Filename:AnsiString;Length,Digits:Integer);
 var I,J:Integer;
     FFile:TextFile;
 begin
@@ -211,24 +211,23 @@ begin
          end;
          Assign(Back);
          Back.Destroy;
-      end else WriteLn('Matrix size must match to be solved');
-   end else WriteLn('Matrix must be square to invert');
+      end; // else WriteLn('Matrix size must match to be solved');
+   end; // else WriteLn('Matrix must be square to invert');
 end;
 
 function TFreeMatrix.Multiply(Matrix:TFreeMatrix):TFreeMatrix;
 var i,j,k : integer;
 begin
-   if ColCount<>Matrix.RowCount
-   then WriteLn('Matrix size do not match in multiply') else begin
+  if ColCount=Matrix.RowCount then begin
      Result:=TFreeMatrix.Create;
      Result.SetSize(Matrix.ColCount,RowCount);
      for I:=0 to Result.RowCount-1 do begin
-        for J:=0 to Result.ColCount-1 do begin
-           for K:=0 to ColCount-1 do
-           Result.Value[I,J]:=Result.Value[I,J]+Value[I,K]*Matrix.Value[K,J];
-        end;
+       for J:=0 to Result.ColCount-1 do begin
+          for K:=0 to ColCount-1 do
+          Result.Value[I,J]:=Result.Value[I,J]+Value[I,K]*Matrix.Value[K,J];
+       end;
      end;
-   end;
+  end; // else WriteLn('Matrix size do not match in multiply');
 end;
 
 procedure TFreeMatrix.SetSize(Cols,Rows:Integer);
@@ -240,10 +239,10 @@ begin SetLength(FRows,Rows);
       Fill( 0.0 );
 end;
 
-procedure TFreeMatrix.Save( Strings:TStringList; Description:string );
+procedure TFreeMatrix.Save( Strings:TStringList; Description:AnsiString );
 var I,J:Integer;
     V:Single;
-    Str,Tmp:String;
+    Str,Tmp:AnsiString;
 begin
    Strings.Add(Description);
    for I:=1 to RowCount do begin Str:='';
@@ -319,9 +318,9 @@ begin
                end;
             end;
             Result:=True;
-         end else WriteLn('Matrix could not be solved.');
-      end else WriteLn('Matrix size must match to be solved');
-   end else WriteLn('Matrix must be square to be solved');
+         end; // else WriteLn('Matrix could not be solved.');
+      end; // else WriteLn('Matrix size must match to be solved');
+   end; // else WriteLn('Matrix must be square to be solved');
 end;
 
 function TFreeMatrix.Gauss(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
@@ -387,9 +386,9 @@ begin
                   Solution.Value[L-1,K]:=Solution.Value[L-1,K]/Value[L-1,L-1];
                end;
             end;  Result:=True;
-         end else WriteLn('Matrix could not be solved.');
-      end else WriteLn('Matrix size must match to be solved');
-   end else WriteLn('Matrix must be square to be solved');
+         end; // else WriteLn('Matrix could not be solved.');
+      end; // else WriteLn('Matrix size must match to be solved');
+   end; // else WriteLn('Matrix must be square to be solved');
 end;
 
 function TFreeMatrix.GaussJordan(Matrix:TFreeMatrix;var Solution:TFreeMatrix):Boolean;
@@ -409,7 +408,7 @@ begin
          Result:=True;
          Inverted.Destroy;
       end;
-   end else WriteLn('Matrix must be square to be solved');
+   end; // else WriteLn('Matrix must be square to be solved');
 end;
 
 procedure TFreeMatrix.Subtract(Matrix:TFreeMatrix);
@@ -421,7 +420,7 @@ begin
          Target:=FRows[I];
          for J:=0 to ColCount-1 do Target[J]:=Target[J]-Source[J];
       end;
-   end else WriteLn('Matrix size does not match in Subtract');
+   end; // else WriteLn('Matrix size does not match in Subtract');
 end;
 
 procedure TFreeMatrix.Transpose;

@@ -1,6 +1,5 @@
 unit FreeUndoHistoryDlg;
-{$MODE Delphi}
-
+{$MODE Delphi}{$H+}
 interface
 uses
      Graphics, Forms,

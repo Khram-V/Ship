@@ -1,14 +1,6 @@
-
-
 unit FreeGridDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+{$MODE Delphi}{$H+}
+interface uses
   SysUtils,
   Classes,
   Controls,
@@ -21,9 +13,6 @@ uses
   ExtCtrls, Spin,
   FreeShipUnit,FreeLanguageSupport;
 type
-
-  { TFreeGridDialog }
-
   TFreeGridDialog = class(TForm)
     Plane: TComboBox;
     SizeA: TFloatSpinEdit;
@@ -56,7 +45,7 @@ type
     function GetStartPoint: T3DVector;
     procedure SetStartPoint(val: T3DVector);
   public    { Public declarations }
-    function Execute(Str: string): boolean;
+    function Execute(Str: AnsiString): boolean;
     property StartPoint: T3DVector
       read GetStartPoint write SetStartPoint;
   end;
@@ -79,7 +68,7 @@ begin
   StartPointZ.Value:=Val.Z;
 end;
 
-function TFreeGridDialog.Execute(Str: string): boolean;
+function TFreeGridDialog.Execute(Str: AnsiString): boolean;
 begin
   lbUnit1.Caption:=Str;
   lbUnit2.Caption:=Str;

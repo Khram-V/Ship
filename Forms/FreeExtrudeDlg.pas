@@ -1,5 +1,5 @@
 unit FreeExtrudeDlg;
-{$MODE Delphi}
+{$MODE Delphi}{$H+}
 interface uses
   Classes,  Controls,
   Forms,    StdCtrls,
@@ -41,7 +41,7 @@ type
     function FGetZValue: extended;
     procedure FSetZValue(val: extended);
   public    { Public declarations }
-    function Execute(Str: string): boolean;
+    function Execute(Str: AnsiString): boolean;
     property XValue: extended read FGetXValue write FSetXValue;
     property YValue: extended read FGetYValue write FSetYValue;
     property ZValue: extended read FGetZValue write FSetZValue;
@@ -82,7 +82,7 @@ begin
   FloatSpinEdit3.Value:=Val;
 end;
 
-function TFreeExtrudeDialog.Execute(Str: string): boolean;
+function TFreeExtrudeDialog.Execute(Str: AnsiString): boolean;
 begin
   _label3.Caption:=Str;
   _label6.Caption:=Str;

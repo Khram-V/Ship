@@ -1,5 +1,5 @@
 unit FreeBitmapFormatHelper;
-{$mode delphi}
+{$mode delphi}{$H+}
 //{$mode objfpc}{$H+}
 
 interface
@@ -112,7 +112,7 @@ TFreeBitmapFormatHelper = class
     procedure GetPixelInLine(pLineStart:pByte; X: integer; out R, G, B, A: byte);
     procedure SetPixel(const BM:TBitmap; X,Y: integer; R, G, B, A: byte);
     procedure SetPixelInLine(pLineStart:pByte; X: integer; R, G, B, A: byte);
-    function AsString:String;
+    function AsString:AnsiString;
 end;
 
 implementation
@@ -332,7 +332,7 @@ begin
 
 end;
 
-function TFreeBitmapFormatHelper.AsString:String;
+function TFreeBitmapFormatHelper.AsString:AnsiString;
 begin
   result:='FBytesPerPixel='+IntToStr(FBytesPerPixel);
   result:=result+' FBitMapDataFormat=';

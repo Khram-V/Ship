@@ -1,14 +1,6 @@
-
-
 unit FreeMichletOutputDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+{$MODE Delphi}{$H+}
+interface uses
 {$IFnDEF FPC}
   jpeg, Windows,
 {$ELSE}
@@ -204,7 +196,7 @@ type
     procedure createViewport();
   public { Public declarations }
     function Execute(Freeship: TFreeShip): boolean;
-    procedure SaveToFile(Filename: string);
+    procedure SaveToFile(Filename: AnsiString);
     property Beta: single           read FGetBeta write FSetBeta;
     property Draft: single          read FGetDraft write FSetDraft;
     property G: single              read FGetG write FSetG;
@@ -689,7 +681,7 @@ begin
   Viewport.PenColor:=FFreeship.Preferences.ButtockColor;
 end;
 
-procedure TFreeMichletOutputDialog.SaveToFile( Filename: string );
+procedure TFreeMichletOutputDialog.SaveToFile( Filename: AnsiString );
 var
   HydObject: TFreeHydrostaticCalc;
   Strings: TStringList;

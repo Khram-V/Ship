@@ -38,8 +38,7 @@ begin
        FRecentFiles.Insert(0,Tmp);// file not yet in the list, add at the front
                                  // delete items until no more than 36 are left
   while FRecentFiles.Count>36 do FRecentFiles.Delete(FRecentFiles.Count-1); ///***!!!
-  if assigned( FreeShip.FOnUpdateRecentFileList ) then
-               FreeShip.FOnUpdateRecentFileList( self );
+  if assigned( FreeShip.OnUpdateRecentFileList ) then FreeShip.OnUpdateRecentFileList( self );
 end;
 
 // Delete the backgrundimage associated with this view
@@ -158,13 +157,12 @@ begin
 //finally // Restore the original fileversion
     FreeShip.FileVersion:=Version;
     FreeShip.ProjectSettings.SavePreview:=Preview;
-    if Assigned( FreeShip.FOnUpdateUndoData ) then
-       FreeShip.FOnUpdateUndoData( FreeShip );
+    if Assigned( FreeShip.OnUpdateUndoData ) then FreeShip.OnUpdateUndoData( FreeShip );
 //end;
 end;
 
 // Creates undodata just prior to modifications
-function TFreeEdit.CreateUndoObject(UndoText: string; Accept: boolean): TFreeUndoObject;
+function TFreeEdit.CreateUndoObject(UndoText: AnsiString; Accept: boolean): TFreeUndoObject;
 var
   UndoObject: TFreeUndoObject;
   Version: TFreeFileVersion;
@@ -193,7 +191,7 @@ begin
     // Restore the original fileversion
     FreeShip.FileVersion:=Version;
     FreeShip.ProjectSettings.SavePreview:=Preview;
-    if Assigned(FreeShip.FOnUpdateUndoData) then FreeShip.FOnUpdateUndoData(FreeShip);
+    if Assigned(FreeShip.OnUpdateUndoData) then FreeShip.OnUpdateUndoData(FreeShip);
 //end;
 end;{TFreeEdit.CreateUndoObject}
 
@@ -323,7 +321,7 @@ var
   Vector: T3DVector;
   Points, NewPoints: TFasterListTFreeSubdivisionControlPoint;
   I: integer;
-  Str: string;
+  Str: AnsiString;
   vUndo: TFreeUndoObject;
 begin
   Dialog:=TFreeExtrudeDialog.Create(FreeShip);
@@ -372,7 +370,7 @@ var
   Vector: T3DVector;
   Edges: TFasterListTFreeSubdivisionEdge;
   I: integer;
-  Str: string;
+  Str: AnsiString;
   vUndo: TFreeUndoObject;
 begin
   Dialog:=TFreeExtrudeDialog.Create(FreeShip);
@@ -635,7 +633,7 @@ begin
               Index:=Points.IndexOf(P2);
               if Index = -1 then Points.Add(P2);
             end;
-//          else WriteLn(Userstring(85));
+//          else WriteLn( Userstring(85) );
           end;
           if Points.Count > 2 then begin
             NewFace:=Face.Surface.AddControlFace(Points, False);
@@ -1099,9 +1097,8 @@ begin
   if not assigned( Result ) or ( Result.Width=0 ) then begin
      Ext:=LowerCase(ExtractFileExt(aFileName));
      if Ext='.fbm' then Source:=TFreeFileBuffer.Create else
-     if Ext='.ftm' then Source:=TFreeTextBuffer.Create else
-                   begin WriteLN( 'Unsupported file format: '+Ext); exit; end;
-
+     if Ext='.ftm' then Source:=TFreeTextBuffer.Create
+             else begin WriteLN( 'Unsupported model: '+Ext); exit; end;
      TempFreeShip.ModelIsLoaded:=False;
      Source.LoadFromFile( aFileName );           // Load everything into memory
   // TempFreeShip.Preferences.OpenDirectory:=ExtractFilePath(aFileName);
@@ -1159,19 +1156,19 @@ begin
   if OpenDialog.Execute then begin
      Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
      if (Answer=mrCancel) or FreeShip.FileChanged then exit;
-     File_Load( Opendialog.FileName );        // Load everything into memory
+     File_Load( Opendialog.FileName );           // Load everything into memory
   end;
   Opendialog.Destroy;
 end;
 
-procedure TFreeEdit.File_Load( FileName: string );
-var Source: TFreeFileBuffer; I: Integer; ext: string;
+procedure TFreeEdit.File_Load( FileName: AnsiString );
+var Source: TFreeFileBuffer; I: Integer; ext: AnsiString;
 begin
   if FileName = '' then exit;
   Ext:=LowerCase( ExtractFileExt( FileName ) );
   if Ext='.fbm' then Source:=TFreeFileBuffer.Create else
   if Ext='.ftm' then Source:=TFreeTextBuffer.Create else begin
-               WriteLN( 'Unsupported file format: '+Ext); halt;
+               WriteLN( 'Unsupported model: '+Ext); halt;
   end;
 //FreeShip.Surface.Clearselection;         // Make sure no items are selected
   FreeShip.Edit.Selection_Clear;
@@ -1194,8 +1191,8 @@ begin
     for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;
     Draw;
   end;
-  TMainForm( MainForm ).SetCaption;
-  TMainForm( MainForm ).UpdateMenu;
+//  TMainForm( MainForm ).SetCaption;
+//  TMainForm( MainForm ).UpdateMenu;
   // Freeship.RebuildModel;
   // Freeship.ZoomFitAllViewports;
   // SetCaption;
@@ -1215,10 +1212,10 @@ end;
 
 function TFreeEdit.File_Save: boolean;
 var
-  Backup, Str, Ext: string;
+  Backup, Str, Ext: AnsiString;
   Destination: TFreeFileBuffer;
   Answer: word;
-  fAttr:longint;  fh:THandle;
+  fAttr: longint;  fh:THandle;
   MinFileVersion: TFreeFileVersion;
 begin
   result:=false;
@@ -1242,7 +1239,7 @@ begin
 
   if (FreeShip.FileVersion < MinFileVersion) //and (not FreeShip.FStopAskingForFileVersion)
   then begin
-    Str:=format('The current file version is %s.%sDo you want to save the file as version %s ?',
+    Str:=format( 'The current file version is %s.%sDo you want to save the file as version %s ?',
         [VersionString(FreeShip.FileVersion),EOL,VersionString(MinFileVersion)]);
     Answer:=MessageDlg(Str, mtInformation, [mbYes, mbNo], 0);
     if Answer = mrYes then FreeShip.FileVersion:=MinFileVersion
@@ -1257,14 +1254,14 @@ begin
     Backup:=ChangeFileExt(FreeShip.Filename, '.Bak'); // First check for a backup, and delete when present
     if FileExistsUTF8(Backup) then
       if not DeleteFileUTF8(Backup) then begin
-        MessageDlg( 'Unable to delete backup file '+Backup, mtError, [mbOK], 0);
+        ShowMessage( 'Unable to delete backup file '+Backup );
         FreeShip.FileIsReadOnly:=true;
         result:=false;
         exit;
       end;
     // Then create a backup of the old file
     if not RenameFileUTF8(FreeShip.Filename, Backup) then begin
-      MessageDlg('Unable to create backup file '+Backup, mtError, [mbOK], 0);
+      ShowMessage( 'Unable to create backup file '+Backup );
       FreeShip.FileIsReadOnly:=true;
       result:=false;
       exit;
@@ -1291,7 +1288,7 @@ end;
 (*
 procedure TFreeEdit.SaveDialogTypeChange(Sender: TObject);
 var
-  FName, Ext: string; SD: TSaveDialog;
+  FName, Ext: AnsiString; SD: TSaveDialog;
 begin
   SD:=TSaveDialog(Sender);
   with SD do begin
@@ -1881,7 +1878,7 @@ var
   Inconsistent: integer;
   NonManifold: integer;
   DblEdges: integer;
-  Str: string;
+  Str: AnsiString;
   vUndo: TFreeUndoObject;
   Leaks: TFasterListTFreeSubdivisionControlPoint;
   Swap: boolean;
@@ -2116,8 +2113,7 @@ begin
       MessageDlg( Str,mtWarning,[mbOK],0 );
     // begin Victor T
 {      Point:=Leaks[0];
-       if Point.Coordinate.Z-Z_min < FreeShip.ProjectSettings.ProjectDraft then
-          MessageDlg(Userstring(899), mtWarning, [mbOK], 0);
+       if Point.Coordinate.Z-Z_min < FreeShip.ProjectSettings.ProjectDraft then MessageDlg(Userstring(899), mtWarning, [mbOK], 0);
 }   // end Victor T
     end;
 
@@ -2139,8 +2135,7 @@ begin
         if NonManifold > 0 then
           Str:=Str+EOL+IntToStr(NonManifold)+' '+Userstring(155);
         MessageDlg(Str, mtInformation, [mbOK], 0);
-        if assigned(FreeShip.FOnUpdateGeometryInfo) then
-          FreeShip.FOnUpdateGeometryInfo(self);
+        if assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
       end;
     end else begin
       vUndo.Delete;
@@ -2195,29 +2190,29 @@ begin
     D:=FreeNewModelDialog.Draft/2;
 {$if true }
     Default[0,0]:=Vector( 0.06,0,    0    );   // station 0, stern
-    Default[0,1]:=Vector( 0.04,0.01, 1.9  );
-    Default[0,2]:=Vector( 0,   0.16, 2    );
-    Default[0,3]:=Vector(-0.01,0.19, 2.25 );
-    Default[0,4]:=Vector(-0.02,0.2,  5.3  );
+    Default[0,1]:=Vector( 0.04,0.01, 1.8  );
+    Default[0,2]:=Vector(-0.01,0.16, 2    );
+    Default[0,3]:=Vector(-0.01,0.175,2.2  );
+    Default[0,4]:=Vector(-0.02,0.12, 5.3  );
     Default[1,0]:=Vector( 0.2, 0,    0    );   // station 1
     Default[1,1]:=Vector( 0.18,0.12, 1    );
-    Default[1,2]:=Vector( 0.17,0.25, 1.25 );
+    Default[1,2]:=Vector( 0.17,0.25, 1.2  );
     Default[1,3]:=Vector( 0.16,0.27, 2.2  );
-    Default[1,4]:=Vector( 0.16,0.26, 4.8  );
+    Default[1,4]:=Vector( 0.16,0.3,  4.8  );
     Default[2,0]:=Vector( 0.4, 0,    0    );   // station 2
     Default[2,1]:=Vector( 0.4, 0.2,  0.2  );
     Default[2,2]:=Vector( 0.4, 0.43, 1    );
     Default[2,3]:=Vector( 0.4, 0.37, 2.2  );
-    Default[2,4]:=Vector( 0.4, 0.35, 3.8  );
+    Default[2,4]:=Vector( 0.4, 0.36, 3.8  );
     Default[3,0]:=Vector( 0.6, 0,    0    );   // station 3
     Default[3,1]:=Vector( 0.6, 0.22, 0.1  );
     Default[3,2]:=Vector( 0.6, 0.45, 0.9  );
     Default[3,3]:=Vector( 0.6, 0.4,  2.2  );
     Default[3,4]:=Vector( 0.6, 0.38, 3.6  );
     Default[4,0]:=Vector( 0.8, 0,    0    );   // station 4
-    Default[4,1]:=Vector( 0.8, 0.2,  0.15 );
-    Default[4,2]:=Vector( 0.8, 0.3,  1.2  );
-    Default[4,3]:=Vector( 0.8, 0.33, 2.5  );
+    Default[4,1]:=Vector( 0.8, 0.2,  0.5  );
+    Default[4,2]:=Vector( 0.8, 0.24, 1.2  );
+    Default[4,3]:=Vector( 0.8, 0.3,  2.5  );
     Default[4,4]:=Vector( 0.8, 0.34, 3.8  );
     Default[5,0]:=Vector( 0.92,0,    0.15 );   // station 5
     Default[5,1]:=Vector( 0.92,0.05, 1    );
@@ -3008,7 +3003,7 @@ begin
   // First check if an intersection already exists at this location;
   for I:=1 to TargetList.Count do begin
     Intersection:=TargetList[I-1];
-    if Abs(-InterSection.FPlane.d-Distance) < 1e-7 then begin // Yes, it exists, so do not add a new one
+    if Abs(-InterSection.FPlane.d-Distance)<1e-6 then begin // Yes, it exists, so do not add a new one
       Result:=nil;
       exit;
     end;

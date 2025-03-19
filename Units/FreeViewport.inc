@@ -42,17 +42,17 @@ function TFreeViewport.FGetBrushColor: TColor;
    begin Result:=FDrawingCanvas.Brush.Color; end;
 function TFreeViewport.FGetFontColor: TColor;
    begin Result:=FDrawingCanvas.Font.Color; end;
-function TFreeViewport.FGetFontName: string;
+function TFreeViewport.FGetFontName: AnsiString;
    begin Result:=FDrawingcanvas.Font.Name; end;
 function TFreeViewport.FGetFontSize: integer;
    begin Result:=FDrawingCanvas.Font.Size; end;
 procedure TFreeViewport.StretchDraw(DestRect: TRect; bmp: TBitmap);
     begin FDrawingCanvas.StretchDraw(DestRect, bmp); end;
-function TFreeViewport.TextWidth(val: string): integer;
+function TFreeViewport.TextWidth(val: AnsiString): integer;
    begin Result:=FDrawingCanvas.TextWidth(val); end;
-function TFreeViewport.TextHeight(val: string): integer;
+function TFreeViewport.TextHeight(val: AnsiString): integer;
    begin Result:=FDrawingCanvas.TextHeight(val); end;
-procedure TFreeViewport.TextOut(x, y: integer; val: string);
+procedure TFreeViewport.TextOut(x, y: integer; val: AnsiString);
     begin FDrawingCanvas.TextOut(x, y, val); end;
 procedure TFreeViewport.FSetCameraType(Val: TFreeCameraType);
 var Film,Dist: TFloatType;
@@ -108,7 +108,7 @@ procedure TFreeViewport.FSetFontColor(Val: TColor);
 begin if FDrawingcanvas.Font.Color<>val then FDrawingcanvas.Font.Color:=Val;
 end;
 
-procedure TFreeViewport.FSetFontName(val: string);
+procedure TFreeViewport.FSetFontName(val: AnsiString);
 begin if Uppercase(FDrawingcanvas.Font.Name)<>uppercase(Name) then
       FDrawingcanvas.Font.Name:=Name;
 end;
@@ -213,7 +213,7 @@ begin
 end;
 
 constructor TFreeViewport.Create( AOwner: TComponent );
-var curRes:string;
+var curRes:AnsiString;
 begin
   inherited Create( AOwner );
   BevelOuter:=bvNone;
@@ -424,17 +424,14 @@ var
   I,VertCorr,HorCorr:  integer;
   Width,Height, Tmp,XScale,YScale: TFloatType;
   Pt1, Pt2: TPoint;
-  procedure MinMax( P: T2DCoordinate ); begin
-    if P.X < Min2D.X then Min2D.X:=P.X;
-    if P.Y < Min2D.Y then Min2D.Y:=P.Y;
-    if P.X > Max2D.X then Max2D.X:=P.X;
-    if P.Y > Max2D.Y then Max2D.Y:=P.Y;
-  end;
+  procedure MinMax( P:T2DCoordinate ); begin
+     if P.X<Min2D.X then Min2D.X:=P.X;
+     if P.Y<Min2D.Y then Min2D.Y:=P.Y;
+     if P.X>Max2D.X then Max2D.X:=P.X;
+     if P.Y>Max2D.Y then Max2D.Y:=P.Y; end;
 begin                                                             // Add margin
-  Diff  :=0.01*FMargin*( Max-Min );
-  FMin3D:=Min-Diff;
-  Diff  :=-1.0*Diff;
-  FMax3D:=Max-Diff;
+  Diff  :=0.01*FMargin*( Max-Min );  FMin3D:=Min-Diff;
+  Diff  :=-1.0*Diff;                 FMax3D:=Max-Diff;
   // Calculate the midpoint of the boundingbox, which is used as the center of the model for rotating the model
   FMidPoint:=MidPoint( FMin3D, FMax3D );
   // Calculate the distance of the camera to the center of the model, following from the field of view from the camera
@@ -482,16 +479,14 @@ begin                                                             // Add margin
   end;
   Width:=Max2D.X-Min2D.X;
   Height:=Max2D.Y-Min2D.Y;
-  if (abs( Width ) > 1e-7) and (abs(Height) > 1e-7) then begin
+  if (abs(Width)>1e-6) and (abs(Height)>1e-6) then begin
     XScale:=ClientWidth / Width;
     YScale:=ClientHeight / Height;
     if XScale < YScale then FScale:=XScale
                        else FScale:=YScale;
-  end else FScale:=1;
-
-  // Decrease Scale with 1% to keep the model free from the edges
-  FScale:=0.9 * FScale;                         ///+++ 0.99
-  if FViewtype = fvBodyplan then FScale *= 0.9;   ///+++
+  end else FScale:=1;                      // Decrease Scale with 1% to keep the model free from the edges
+  FScale:=0.9 * FScale;                    ///+++ 0.99
+  if FViewtype = fvBodyplan then FScale *= 0.9;
   FScreencenter.X:=ClientWidth div 2;
   FScreencenter.Y:=ClientHeight div 2;
   // Calculate correction (pan vector) to make sure
@@ -1851,11 +1846,10 @@ var
 
   procedure SetColor(var P: TShadePoint; Curvature: extended);
   // Set the color of each vertex based on it's curvature and triangle normal
-  var
-    R, G, B: byte;
+    var R,G,B: byte;
   begin
-    if abs(Curvature)<1e-4 then ShadedColor(LIntensityRatio, 0, 255, 0, R,G,B)
-                           else ShadedColor(LIntensityRatio, 255, 0, 0, R,G,B);
+    if abs(Curvature)<1e-4 then ShadedColor( LIntensityRatio,0,255,0,R,G,B )
+                           else ShadedColor( LIntensityRatio,255,0,0,R,G,B );
     P.R:=R shl 8;
     P.G:=G shl 8;
     P.B:=B shl 8;
@@ -1863,9 +1857,7 @@ var
 
   procedure ShadeLine(Left, Right: TShadePoint; Y: integer);
   var
-    Delta, Tmp: TShadePoint;
-    d: integer;
-    //Row        : pRGBTripleArray;
+    Delta,Tmp: TShadePoint; d: integer; // Row: pRGBTripleArray;
     pROw, pPixel: pointer;
     Pixel: TRGBTriple;
   begin

@@ -1,14 +1,6 @@
-
-
 unit FreeEmptyModelChooserDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+{$MODE Delphi}{$H+}
+interface uses
     SysUtils,
     Classes,
     Controls,
@@ -18,11 +10,7 @@ uses
     Buttons,
     ExtCtrls,
     FreeGeometry,FreeLanguageSupport;
-
 type
-
-{ TFreeEmptyModelChooserDialog }
-
  TFreeEmptyModelChooserDialog = class(TForm)
    Label1: TLabel;
     LabelFileName: TLabel;
@@ -40,7 +28,7 @@ type
  private   { Private declarations }
     FViewport: TFreeViewport;
  public    { Public declarations }
-    function Execute(FileName:String):Boolean;
+    function Execute(FileName:AnsiString):Boolean;
 end;
 
 var FreeEmptyModelChooserDialog:TFreeEmptyModelChooserDialog;
@@ -49,7 +37,7 @@ implementation
 
 {$R *.lfm}
 
-function TFreeEmptyModelChooserDialog.Execute(FileName:String):Boolean;
+function TFreeEmptyModelChooserDialog.Execute(FileName:AnsiString):Boolean;
 begin
    LabelFileName.Caption:=FileName;
    ShowTranslatedValues(Self); Showmodal;

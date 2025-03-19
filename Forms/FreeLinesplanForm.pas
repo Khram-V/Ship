@@ -1,6 +1,5 @@
 unit FreeLinesplanForm;
-{$MODE Delphi}
-
+{$MODE Delphi}{$H+}
 interface uses Classes,Forms,FreeGeometry,FreeLinesPlanFrame;
 type TFreeLinesplanForm  = class( TForm )                { TFreeLinesplanForm }
      LinesplanFrame: TFreeLinesplanFrame;

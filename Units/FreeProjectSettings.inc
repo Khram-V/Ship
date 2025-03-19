@@ -47,7 +47,7 @@ end;
 
 procedure TFreeProjectSettings.FSetProjectAppendageCoefficient(Val: TFloatType);
 begin
-  if abs(Val-FProjectAppendageCoefficient) > 1e-7 then begin
+  if abs(Val-FProjectAppendageCoefficient) > 1e-6 then begin
     FProjectAppendageCoefficient:=Val; FreeShip.FileChanged:=True;
   end;
 end;
@@ -227,7 +227,7 @@ begin
 end;
 
 constructor TFreeProjectSettings.Create(Owner: TFreeShip);
-begin inherited Create; FFreeShip:=Owner; Clear;
+begin inherited Create; FreeShip:=Owner; Clear;
 end;
 
 // User input of mainparticulars and project setting
@@ -236,7 +236,7 @@ var
   Dialog: TFreeProjectSettingsDialog;
 begin
   ProjectPrecision:=FreeShip.Precision;
-  Dialog:=TFreeProjectSettingsDialog.Create(FreeShip);
+  Dialog:=TFreeProjectSettingsDialog.Create( FreeShip );
   Dialog.Edit1.Text:=ProjectName;           //  'Project name'
   Dialog.Edit7.Text:=ProjectDesigner;       //  'Designer'
   Dialog.Edit9.Text:=ProjectComment;        //  'Comment'

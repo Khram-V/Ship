@@ -1,21 +1,13 @@
 unit FreeLayerVisibilityDlg;
-
 {$mode objfpc}{$H+}
-
-interface
-
-uses
+interface uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   StdCtrls, Grids,
      FreeShipUnit,
      FreeTypes,
      FreeGeometry,
      FasterList;
-
 type
-
-  { TFreeLayerVisibilityDialog }
-
   TFreeLayerVisibilityDialog = class(TForm)
     bbClose: TBitBtn;
     cbFreeStanding: TCheckBox;
@@ -32,7 +24,7 @@ type
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure sgLayersCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
-    procedure sgLayersGetCellHint(Sender: TObject; ACol, ARow: Integer; var HintText: String);
+    procedure sgLayersGetCellHint(Sender: TObject; ACol, ARow: Integer; var HintText: AnsiString);
   private
     FFreeShip : TFreeShip;
     FOnChange: TNotifyEvent;
@@ -135,7 +127,7 @@ begin
 end;
 
 procedure TFreeLayerVisibilityDialog.sgLayersGetCellHint(Sender: TObject; ACol,
-  ARow: Integer; var HintText: String);
+  ARow: Integer; var HintText: AnsiString);
 begin
   if ARow = 0 then begin HintText:=sgLayers.Columns[aCol].Title.Caption;
           end else HintText:=sgLayers.Cells[2,aRow];

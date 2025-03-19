@@ -1,23 +1,12 @@
-//
-//   FreeVersionUnit
-//
 unit FreeVersionUnit;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-// Unit to keep track of fileversions, bux fixes and release dates
-
-interface
-uses SysUtils;
+{$MODE Delphi}{$H+} // Unit to keep track of fileversions, bux fixes and release dates
+interface uses SysUtils;
 const
  ReleasedDate:string={$I %DATE%};
  COMPILE_TIME:string={$I %TIME%};
  TARGET_CPU:string={$I %FPCTARGETCPU%};
  TARGET_OS:string={$I %FPCTARGETOS%};
  FPCVERSION:string={$I %FPCVERSION%};
-
 
 type TFreeFileVersion=( fv100,fv110,fv120,fv130,fv140,fv150,fv160,fv165,fv170,
                         fv180,fv190,fv191,fv195,fv198,fv200,fv201,fv210,fv220,
@@ -38,12 +27,12 @@ var
 //FREESHIP_MAJOR_VERSION : string ='5.0';   // Major version
   FREESHIP_VERSION : string = '2.6.1.2';    // Current full version
 
-function VersionString( Version:TFreeFileVersion): String;
+function VersionString( Version:TFreeFileVersion): AnsiString;
 function VersionBinary( Version:String ):TFreeFileVersion;
 
 implementation
 
-function VersionString(Version:TFreeFileVersion):String; begin
+function VersionString(Version:TFreeFileVersion):AnsiString; begin
   Case Version of
     fv100  : Result:='1.0';  fv110  : Result:='1.1';  fv120  : Result:='1.2';
     fv130  : Result:='1.3';  fv140  : Result:='1.4';  fv150  : Result:='1.5';
@@ -55,7 +44,7 @@ function VersionString(Version:TFreeFileVersion):String; begin
      else    Result:='2.6'; // = fv261
   end
 end;
-function VersionBinary(Version:String):TFreeFileVersion; begin
+function VersionBinary(Version:AnsiString):TFreeFileVersion; begin
   if Version='1.0'   then Result:=fv100 else
   if Version='1.1'   then Result:=fv110 else
   if Version='1.2'   then Result:=fv120 else

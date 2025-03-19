@@ -1,4 +1,3 @@
-
 unit FreeHullFormWindow_Panel;
 {$mode objfpc}{$H+}
 interface uses SysUtils,
@@ -167,7 +166,7 @@ begin inherited Create(AOwner); if assigned(OnCreate) then OnCreate(Self); end;
 destructor TFreeHullWindow.Destroy;
 begin if assigned(ViewPort) then FreeAndNil(ViewPort); inherited; end;
 
-function TFreeHullWindow.FCaptionText: String;
+function TFreeHullWindow.FCaptionText: AnsiString;
 begin Case Viewport.ViewType of
         fvBodyplan   : Result:=userstring(215); // 'Bodyplan';
         fvProfile    : Result:=userstring(216); // 'Profile';
@@ -401,7 +400,7 @@ procedure TFreeHullWindow.ViewportMouseMove(Sender: TObject;Shift: TShiftState; 
 var P    : TPoint;
     P2D  : T2DCoordinate;
     P3D  : T3DVector;
-    Str  : string='';
+    Str  : AnsiString='';
 begin
 // if (Shift <> []) then => ошибка ///*** мышка
 // if Viewport.ViewType<>fvPerspective then begin SetFocus;

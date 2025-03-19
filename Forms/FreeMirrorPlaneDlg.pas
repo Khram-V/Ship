@@ -1,15 +1,6 @@
-
-
-
 unit FreeMirrorPlaneDlg;
-
-{$IFDEF FPC}
-  {$MODE Delphi}
-{$ENDIF}
-
-interface
-
-uses
+{$MODE Delphi}{$H+}
+interface uses
  {$IFDEF Windows}
   Windows,
  {$ELSE}
@@ -28,31 +19,28 @@ uses
      Spin;
 
 type
-
-{ TFreeMirrorPlaneDialog }
-
  TFreeMirrorPlaneDialog  = class(TForm)
-                                BitBtn1: TSpeedButton;
-                                BitBtn2: TSpeedButton;
-                                CheckBox1: TCheckBox;
-                                Edit1: TFloatSpinEdit;
-                                 GroupBox1: TGroupBox;
-                                 Label1: TLabel;
-                                 Panel1: TPanel;
-                                 Panel2: TPanel;
-                                 Panel4: TPanel;
-                                 RadioButton1: TRadioButton;
-                                 RadioButton2: TRadioButton;
-                                 RadioButton3: TRadioButton;
-                                 Panel3: TPanel;
-                                 procedure BitBtn1Click(Sender: TObject);
-                                 procedure BitBtn2Click(Sender: TObject);
-                              private   { Private declarations }
-                                 function FGetPlane:T3DPlane;
-                              public    { Public declarations }
-                                 function Execute:Boolean;
-                                 property Plane : T3DPlane read FGetPlane;
-                           end;
+     BitBtn1: TSpeedButton;
+     BitBtn2: TSpeedButton;
+     CheckBox1: TCheckBox;
+     Edit1: TFloatSpinEdit;
+     GroupBox1: TGroupBox;
+     Label1: TLabel;
+     Panel1: TPanel;
+     Panel2: TPanel;
+     Panel4: TPanel;
+     RadioButton1: TRadioButton;
+     RadioButton2: TRadioButton;
+     RadioButton3: TRadioButton;
+     Panel3: TPanel;
+     procedure BitBtn1Click(Sender: TObject);
+     procedure BitBtn2Click(Sender: TObject);
+   private   { Private declarations }
+     function FGetPlane:T3DPlane;
+   public    { Public declarations }
+     function Execute:Boolean;
+     property Plane : T3DPlane read FGetPlane;
+ end;
 
 var FreeMirrorPlaneDialog: TFreeMirrorPlaneDialog;
 

@@ -1,7 +1,6 @@
 unit FreeSelectedDlg;
 {$mode objfpc}{$H+}
-interface
-uses
+interface uses
   SysUtils, Forms,
   ExtCtrls, ComCtrls,
   Buttons,  StdCtrls,

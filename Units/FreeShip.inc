@@ -80,9 +80,9 @@ begin
       Source.Version:=FFileVersion;
 //    if (FFileVersion <= CurrentVersion)
 //    or (FFileVersion <= High(FFileVersion) ) then    // !! без ограничений...
-      begin
-        WriteLN( '[',FFileVersion,'] "',ExtractFilename( FFilename ),'"'   );
-//                       UTF8ToConsole( ExtractFilename( FFilename ) ),'"'   );
+//    begin
+        Write( '[',FFileVersion,'] "',ExtractFilename( FFilename ),'"'   );
+//                     UTF8ToConsole( ExtractFilename( FFilename ) ),'"'   );
         Source.LoadInteger( I );
         FPrecision:=TFreePrecisionType( I );
         Visibility.LoadBinary( Source );
@@ -146,20 +146,20 @@ begin
                   FFlowlines.Add(vFlowline);
                   vFlowline.LoadBinary(Source);
                 end;
-              end; // V >= fv250
-            end;   // V >= fv210
-          end;     // V >= fv191
-        end;       // V >= fv180                         // и к совместимости с
+              end;   // V >= fv250
+            end;     // V >= fv210
+          end;       // V >= fv191
+        end;         // V >= fv180                       // и к совместимости с
 //      if FFileVersion>fv261 then FFileVersion:=fv261;  // исходным оригиналом
         FileVersion:=fv261;
-      end  // (FFileVersion<=CurrentVersion) or (FFileVersion<=High(FFileVersion))
+        WriteLN( '.' );
+//    end // (FFileVersion<=CurrentVersion) or (FFileVersion<=High(FFileVersion))
 //    else
 //    MessageDlg( Userstring(113)+eol+UserString(188)+'. == '+VersionString(FFileVersion),mtError,[mbOK],0);
 //                          0113=This file was created with a later version of FREE!ship!
 //                          0188=and cannot be opened with this version
-    end // 'FREE!ship'
-    else MessageDlg( 'Not a FREE!ship file!',mtError,[mbOK],0 ); //=Userstring(189)
-
+    end else
+        MessageDlg( Userstring(189),mtError,[mbOK],0 ); //'Not a FREE!ship file!'
     Surface.UnderWaterColor:=ProjectSettings.ProjectUnderWaterColor;
     Surface.ShadeUnderWater:=ProjectSettings.ProjectShadeUnderwaterShip;
 
@@ -348,7 +348,7 @@ begin
     end;
 end;
 
-function TFreeShip.FindByName( aName:String ):TFreeNamedObject;
+function TFreeShip.FindByName( aName:AnsiString ):TFreeNamedObject;
 var i:integer;
 begin result:=nil;
   for i:=0 to Surface.NumberOfControlPoints-1 do
@@ -406,51 +406,38 @@ begin Surface.ActiveControlPoint:=aControlPoint; end;
 function TFreeShip.FGetBackgroundImage(Index: integer): TFreeBackgroundImageData;
 begin Result:=FBackgroundImages[index]; end;
 
-function TFreeShip.FGetBuilt: boolean;
-begin Result:=Surface.Built; end;
+function TFreeShip.FGetBuilt: boolean; begin Result:=Surface.Built; end;
 
-function TFreeShip.FGetFilename: string;
-var Ext: string;
-begin
-  if FFilename = '' then FFilename:='Example Ship';
-  Ext:=ExtractFileExt( FFilename );
-  if (Ext = '.ftm') or (Ext = '.fbm') then Result:=FFilename
-    else Result:=ChangeFileExt( FFilename,FreeShipExtention );
+function TFreeShip.FGetFilename: AnsiString; var Ext: AnsiString;
+begin if FFilename = '' then FFilename:='Example Ship';
+      Ext:=ExtractFileExt( FFilename );
+      if (Ext='.ftm') or (Ext='.fbm') then Result:=FFilename
+          else Result:=ChangeFileExt( FFilename,FreeShipExtention );
 end;
-
 function TFreeShip.FGetHydrostaticCalculation(Index: integer): TFreeHydrostaticCalc;
-begin Result:=FHydrostaticCalculations[index]; end;
-
+   begin Result:=FHydrostaticCalculations[index]; end;
 function TFreeShip.FGetLayer(Index: integer): TFreeSubdivisionLayer;
-begin Result:=Surface.Layer[index]; end;
-
+   begin Result:=Surface.Layer[index]; end;
 function TFreeShip.FGetNumberOfMarkers: integer;
-begin Result:=FMarkers.Count; end;
-
+   begin Result:=FMarkers.Count; end;
 function TFreeShip.FGetNumberOfStations: integer;
-begin Result:=FStations.Count; end;
-
+   begin Result:=FStations.Count; end;
 function TFreeShip.FGetNumberOfWaterlines: integer;
-begin Result:=FWaterlines.Count; end;
-
+   begin Result:=FWaterlines.Count; end;
 function TFreeShip.FGetNumberOfButtocks: integer;
-begin Result:=FButtocks.Count; end;
-
+   begin Result:=FButtocks.Count; end;
 function TFreeShip.FGetNumberOfDiagonals: integer;
-begin Result:=FDiagonals.Count; end;
-
+   begin Result:=FDiagonals.Count; end;
 function TFreeShip.FGetNumberOfFlowLines: integer;
-begin Result:=FFlowlines.Count; end;
-
+   begin Result:=FFlowlines.Count; end;
 function TFreeShip.FGetNumberOfHydrostaticCalculations: integer;
-begin Result:=FHydrostaticCalculations.Count; end;
-
+   begin Result:=FHydrostaticCalculations.Count; end;
 function TFreeShip.FGetNumberOfLockedPoints: integer;
-begin Result:=Surface.NumberOfLockedPoints; end;
-
+   begin Result:=Surface.NumberOfLockedPoints; end;
 function TFreeShip.FGetNumberOfLayers: integer;
-begin Result:=Surface.NumberOfLayers; end;
-
+   begin Result:=Surface.NumberOfLayers; end;
+procedure TFreeShip.FSetActiveLayer( Val: TFreeSubdivisionLayer );
+    begin Surface.ActiveLayer:=Val; end;
 procedure TFreeShip.FSetActiveControlPoint(Val: TFreeSubdivisionControlPoint);
 begin
   if Val<>FActiveControlPoint then begin
@@ -473,10 +460,6 @@ begin
   if FActiveControlPoint<>nil then           // Update controlpoint information
     FControlpointForm.ActiveControlPoint:=FActiveControlPoint;
 end;
-
-procedure TFreeShip.FSetActiveLayer(Val: TFreeSubdivisionLayer);
-begin Surface.ActiveLayer:=Val; end;
-
 procedure TFreeShip.FSetBuilt(Val: boolean);
 var I: integer;
 begin
@@ -511,65 +494,51 @@ begin
     Redraw;
   end;
 end;
-
 procedure TFreeShip.FSetFileChanged(Val: boolean);
 begin if Val<>FFileChanged then begin
       FFileChanged:=Val;
-      if assigned( FOnFileChanged ) then FOnFileChanged( self ); end;
+      if assigned( OnFileChanged ) then OnFileChanged( self ); end;
 end;
-
 procedure TFreeShip.FSetFileName( Val: AnsiString );
-var Tmp: string;
+var Tmp: AnsiString;
 begin if val='' then val:='Example Ship';
       Tmp:=ChangeFileExt( Val,FreeShipExtention );
       if FFilename<>val then FFilename:=Val;
 end;
-
 procedure TFreeShip.FSetFileVersion( Val: TFreeFileVersion );
 begin if Val<>FFileVersion then begin FFileVersion:=Val; FileChanged:=True; end;
 end;
-
 function TFreeShip.FGetNumberOfSelectedControlEdges: integer;
-begin Result:=Surface.NumberOfSelectedControlEdges; end;
-
+   begin Result:=Surface.NumberOfSelectedControlEdges; end;
 function TFreeShip.FGetNumberOfSelectedControlCurves: integer;
-begin Result:=Surface.NumberOfSelectedControlCurves; end;
-
+   begin Result:=Surface.NumberOfSelectedControlCurves; end;
 function TFreeShip.FGetNumberOfControlCurves: integer;
-begin Result:=Surface.NumberOfControlCurves; end;
-
+   begin Result:=Surface.NumberOfControlCurves; end;
 function TFreeShip.FGetNumberOfSelectedControlFaces: integer;
-begin Result:=Surface.NumberOfSelectedControlFaces; end;
-
+   begin Result:=Surface.NumberOfSelectedControlFaces; end;
 function TFreeShip.FGetNumberOfSelectedControlPoints: integer;
-begin Result:=Surface.NumberOfSelectedControlPoints; end;
-
+   begin Result:=Surface.NumberOfSelectedControlPoints; end;
 function TFreeShip.FGetNumberOfSelectedControlPointGroups: integer;
-begin Result:=Surface.NumberOfSelectedControlPointGroups; end;
-
+   begin Result:=Surface.NumberOfSelectedControlPointGroups; end;
 function TFreeShip.FGetNumberOfselectedFlowlines: integer;
-begin Result:=FselectedFlowlines.Count; end;
-
+   begin Result:=FselectedFlowlines.Count; end;
 function TFreeShip.FGetNumberOfselectedMarkers: integer;
-begin Result:=FselectedMarkers.Count; end;
-
+   begin Result:=FselectedMarkers.Count; end;
 function TFreeShip.FGetNumberOfSelectedLockedPoints: integer;
-begin Result:=Surface.NumberOfSelectedLockedPoints;
-end;
-
+   begin Result:=Surface.NumberOfSelectedLockedPoints; end;
 procedure TFreeShip.FSetOnChangeActiveLayer(val: TChangeActiveLayerEvent);
-begin Surface.OnChangeActiveLayer:=val; end;
-
+    begin Surface.OnChangeActiveLayer:=val; end;
 procedure TFreeShip.FSetOnChangeLayerData(Val: TNotifyEvent);
 begin Surface.OnChangeLayerData:=Val;
   // if Assigned(OnChangeLayerData) then OnChangeLayerData(Self);
   // if Assigned(OnChangeLayerData) then OnChangeLayerData;
 end;
 {
+TPixelFormat=(pfDevice,pf1bit,pf4bit,pf8bit,pf15bit,pf16bit,pf24bit,pf32bit,pfCustom);
+procedure TFreeShip.SetOnChangeActiveControlPoint(AValue: TNotifyEvent);
+    begin Surface.OnChangeActiveControlPoint:=AValue; end;
 procedure TFreeShip.FSetOnSelectItem(Val: TNotifyEvent);
-begin
-  Surface.OnSelectItem:=Val;
-end;
+    begin Surface.OnSelectItem:=Val; end;
 }
 procedure TFreeShip.FSetPrecision(Val: TFreePrecisionType);
 begin
@@ -581,13 +550,6 @@ begin
     Redraw;
   end;
 end;
-
-//TPixelFormat=(pfDevice,pf1bit,pf4bit,pf8bit,pf15bit,pf16bit,pf24bit,pf32bit,pfCustom);
-{
-procedure TFreeShip.SetOnChangeActiveControlPoint(AValue: TNotifyEvent);
-begin Surface.OnChangeActiveControlPoint:=AValue; end;
-}
-
 function TFreeShip.AdjustMarkers: boolean;
 begin Result:=False;
   if NumberofMarkers>0 then
@@ -599,9 +561,7 @@ var FreeShip: TFreeShip;
 begin
   inherited Create(AOwner);
   if AOwner is TMainForm then MainForm:=TForm( AOwner );
-
-  if not (csDesigning in ComponentState) then
-    FIntersectionDialog:=TFreeIntersectionDialog.Create(self);
+  if not (csDesigning in ComponentState) then FIntersectionDialog:=TFreeIntersectionDialog.Create(self);
   FEdit:=TFreeEdit.Create(Self);
   FPreferences:=TFreePreferences.Create(self);
   FPreferences.MainForm:=MainForm;
@@ -724,7 +684,7 @@ begin                                                    // Initialize all data
     for I:=0 to Viewports.Count-1 do
         Viewport[I].BackgroundImage.AssignData
                 (nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True);
-    if assigned(FOnFileChanged) then FOnFileChanged(self);
+    if assigned( OnFileChanged ) then OnFileChanged(self);
     if Assigned(OnUpdateGeometryInfo) then OnUpdateGeometryInfo(self);
   end; FileChanged:=False;
 end;
@@ -737,16 +697,16 @@ begin // clear undo
   FUndoPosition:=0;
   FPreviousUndoPosition:=FUndoPosition-1;
   if not (csdestroying in componentstate) then
-    if Assigned(FOnUpdateUndoData) then FOnUpdateUndoData(self);
+    if Assigned( OnUpdateUndoData ) then OnUpdateUndoData(self);
 end;
 
 destructor TFreeShip.Destroy;
 begin
-  FOnChangeCursorIncrement:=nil;
-  FOnFileChanged:=nil;
-  FOnUpdateGeometryInfo:=nil;
-  FOnUpdateRecentFileList:=nil;
-  FOnUpdateUndoData:=nil;
+  OnChangeCursorIncrement:=nil;
+  OnFileChanged:=nil;
+  OnUpdateGeometryInfo:=nil;
+  OnUpdateRecentFileList:=nil;
+  OnUpdateUndoData:=nil;
   Clear;
   ClearUndo;
   if Assigned(FControlpointForm) then FreeAndNil(FControlpointForm);
@@ -834,21 +794,17 @@ end;
 procedure TFreeShip.DrawToViewport( Viewport: TFreeViewport );   /// !!!
 const clBlue=$FF8000; // осветление синего цвета
 var
-  I, Size: integer;
+  I, Size, LegendHeight,LegendWidth, RectHeight, Nrect, NDecimal: integer;
   Plane: T3DPlane;
   Curve: TFreeSpline;
   P: T3DVector;
   Pt: TPoint;
-  Str: string;
-  LegendHeight: integer;
-  LegendWidth: integer;
+  Str: AnsiString;
   Rect: TRect;
-  RectHeight: integer;
-  Nrect, NDecimal: integer;
   R, G, B: byte;
   Tmp: TFloatType;
 
-  procedure DrawPoint(P: T3DVector; Text: string; CompensateHeight: boolean);
+  procedure DrawPoint(P: T3DVector; Text: AnsiString; CompensateHeight: boolean);
   var
     Pt: TPoint;
     Size: integer;
@@ -890,7 +846,7 @@ var
     Height, Width: integer;
     P1, P2, Diff: T3DVector;
     Pt1, Pt2: TPoint;
-    Str: string;
+    Str: AnsiString;
     Pts: array of TPoint;
     cl: TColor;
     pw: integer;
@@ -1322,7 +1278,7 @@ begin
   if Visibility.ShowFlowlines then                             // Drawflowlines
     for I:=1 to NumberOfFlowlines do Flowline[I-1].Draw( Viewport );
   if (Viewport.ViewportMode=vmShadeGauss) and (Surface.NumberOfControlFaces>0)
-  and (Surface.MaxGaussCurvature-Surface.MinGaussCurvature>1e-7) then begin
+  and (Surface.MaxGaussCurvature-Surface.MinGaussCurvature>1e-6) then begin
     NRect:=21;                    // Draw Legend with Gaussian curvature values
     LegendHeight:=round(0.5 * Viewport.ClientHeight);
     if LegendHeight < 100 then LegendHeight:=100;
@@ -1504,11 +1460,11 @@ end;
 *)
 // loads the preview image from a file
 
-procedure TFreeShip.LoadPreview(Filename: string; Image: TJPegImage);
+procedure TFreeShip.LoadPreview(Filename: AnsiString; Image: TJPegImage);
 var
   Source: TFreeFileBuffer;
   I: integer;
-  Str, Ext: string;
+  Str, Ext: AnsiString;
 begin
   Ext:=LowerCase(ExtractFileExt(FileName));
   if Ext = '.fbm' then Source:=TFreeFileBuffer.Create else
