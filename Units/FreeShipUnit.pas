@@ -654,26 +654,18 @@ type
     FProjectBeam,FProjectDraft,FProjectLength: TFloatType;
     FProjectWaterDensity,FProjectWaterTemper: TFloatType;
     FProjectSplitSectionLocation: TFloatType;
-    FUseDefaultSplitSectionLocation: boolean; // If set to true, the midship/mainframe location is set to 0.5*project length, if false then value in FProjectMainframeLocation is used
-    FProjectName: AnsiString;
-    FProjectDesigner: AnsiString;
-    FProjectComment: AnsiString;
-    FProjectFileCreatedBy: AnsiString;
-    FProjectShadeUnderwaterShip: boolean;
-    FSavePreview: boolean;
+    FProjectName,FProjectDesigner,FProjectComment,FProjectFileCreatedBy: AnsiString;
+    FUseDefaultSplitSectionLocation, // If set to true, the midship/mainframe location is set to 0.5*project length, if false then value in FProjectMainframeLocation is used
+    FProjectSimplifyIntersections,
+    FProjectShadeUnderwaterShip,FSavePreview: boolean;
     FProjectUnits: TFreeUnitType;
 //  FProjectPrecision: TFreePrecisionType;
-    FProjectSimplifyIntersections: boolean;
     FFreeHydrostaticCoefficients: TFreeHydrostaticCoeff; // General hydrostatics calculation settings
-    FStartDraft: TFloatType;
-    FEndDraft: TFloatType;
-    FDraftStep: TFloatType;
+    FStartDraft,FEndDraft,FDraftStep: TFloatType;
     FTrim: TFloatType;  // crosscurves settings
     FDisplacements: TFloatArray;
     FNoDisplacements: integer;
-    FMinimumDisplacement: TFloatType;
-    FMaximumDisplacement: TFloatType;
-    FDisplIncrement: TFloatType;
+    FMinimumDisplacement,FMaximumDisplacement,FDisplIncrement: TFloatType;
     FUseDisplIncrements: boolean;
     FNoAngles: integer;
     FAngles: TFloatArray;

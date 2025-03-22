@@ -1,30 +1,30 @@
 object FreeCylinderDialog: TFreeCylinderDialog
-  Left = 1020
-  Height = 251
-  Top = 419
-  Width = 554
+  Left = 86
+  Height = 168
+  Top = 136
+  Width = 461
   BorderStyle = bsDialog
   Caption = 'Add a cylinder.'
-  ClientHeight = 251
-  ClientWidth = 554
-  LCLVersion = '2.0.6.0'
+  ClientHeight = 168
+  ClientWidth = 461
+  LCLVersion = '3.8.0.0'
   object Panel2: TPanel
     Left = 0
-    Height = 221
-    Top = 30
-    Width = 554
+    Height = 144
+    Top = 24
+    Width = 461
     Align = alClient
     BevelOuter = bvNone
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 221
-    ClientWidth = 554
+    ClientHeight = 144
+    ClientWidth = 461
     TabOrder = 0
     object Panel3: TPanel
       Left = 0
-      Height = 86
+      Height = 68
       Top = 0
-      Width = 534
+      Width = 460
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 10
       ChildSizing.TopBottomSpacing = 10
@@ -32,142 +32,130 @@ object FreeCylinderDialog: TFreeCylinderDialog
       ChildSizing.VerticalSpacing = 2
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 6
-      ClientHeight = 86
-      ClientWidth = 534
+      ClientHeight = 68
+      ClientWidth = 460
       TabOrder = 0
       object Label1: TLabel
         Left = 10
-        Height = 32
+        Height = 23
         Top = 10
-        Width = 77
+        Width = 52
         Caption = 'Startpoint'
         Layout = tlCenter
         ParentColor = False
       end
       object StartPointX: TFloatSpinEdit
-        Left = 93
-        Height = 32
+        Left = 68
+        Height = 23
         Top = 10
         Width = 80
         Alignment = taRightJustify
         Constraints.MinWidth = 80
         DecimalPlaces = 3
         Increment = 0.1
-        MinValue = 0
         TabOrder = 0
-        Value = 0
       end
       object StartPointY: TFloatSpinEdit
-        Left = 179
-        Height = 32
+        Left = 154
+        Height = 23
         Top = 10
         Width = 80
         Alignment = taRightJustify
         Constraints.MinWidth = 80
         DecimalPlaces = 3
         Increment = 0.1
-        MinValue = 0
         TabOrder = 1
-        Value = 0
       end
       object StartPointZ: TFloatSpinEdit
-        Left = 265
-        Height = 32
+        Left = 240
+        Height = 23
         Top = 10
         Width = 80
         Alignment = taRightJustify
         Constraints.MinWidth = 80
         DecimalPlaces = 3
         Increment = 0.1
-        MinValue = 0
         TabOrder = 2
-        Value = 0
       end
       object _Label3: TLabel
-        Left = 351
-        Height = 32
+        Left = 326
+        Height = 23
         Top = 10
-        Width = 25
+        Width = 19
         Caption = '[m]'
         Layout = tlCenter
         ParentColor = False
       end
       object CloseStartDisk: TCheckBox
-        Left = 382
-        Height = 32
+        Left = 351
+        Height = 23
         Top = 10
-        Width = 142
+        Width = 99
         Caption = 'Close Start Disk'
         TabOrder = 3
       end
       object Label2: TLabel
         Left = 10
-        Height = 32
-        Top = 44
-        Width = 77
+        Height = 23
+        Top = 35
+        Width = 52
         Caption = 'Endpoint'
         Layout = tlCenter
         ParentColor = False
       end
       object EndPointX: TFloatSpinEdit
-        Left = 93
-        Height = 32
-        Top = 44
+        Left = 68
+        Height = 23
+        Top = 35
         Width = 80
         Alignment = taRightJustify
         DecimalPlaces = 3
         Increment = 0.1
-        MinValue = 0
         TabOrder = 4
-        Value = 0
       end
       object EndPointY: TFloatSpinEdit
-        Left = 179
-        Height = 32
-        Top = 44
+        Left = 154
+        Height = 23
+        Top = 35
         Width = 80
         Alignment = taRightJustify
         DecimalPlaces = 3
         Increment = 0.1
-        MinValue = 0
         TabOrder = 5
-        Value = 0
       end
       object EndPointZ: TFloatSpinEdit
-        Left = 265
-        Height = 32
-        Top = 44
+        Left = 240
+        Height = 23
+        Top = 35
         Width = 80
         Alignment = taRightJustify
         DecimalPlaces = 3
         Increment = 0.1
-        MinValue = 0
         TabOrder = 6
-        Value = 0
       end
       object _Label6: TLabel
-        Left = 351
-        Height = 32
-        Top = 44
-        Width = 25
+        Left = 326
+        Height = 23
+        Top = 35
+        Width = 19
         Caption = '[m]'
         Layout = tlCenter
         ParentColor = False
       end
       object CloseEndDisk: TCheckBox
-        Left = 382
-        Height = 32
-        Top = 44
-        Width = 142
+        Left = 351
+        Height = 23
+        Top = 35
+        Width = 99
         Caption = 'Close End Disk'
         TabOrder = 7
       end
     end
     object Panel4: TPanel
       Left = 0
-      Height = 86
-      Top = 86
-      Width = 534
+      Height = 68
+      Top = 68
+      Width = 460
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 10
       ChildSizing.TopBottomSpacing = 10
@@ -175,30 +163,30 @@ object FreeCylinderDialog: TFreeCylinderDialog
       ChildSizing.VerticalSpacing = 2
       ChildSizing.Layout = cclTopToBottomThenLeftToRight
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 86
-      ClientWidth = 534
+      ClientHeight = 68
+      ClientWidth = 460
       TabOrder = 1
       object Label4: TLabel
         Left = 10
-        Height = 32
+        Height = 23
         Top = 10
-        Width = 78
+        Width = 55
         Caption = 'Radius'
         Layout = tlCenter
         ParentColor = False
       end
       object Label3: TLabel
         Left = 10
-        Height = 32
-        Top = 44
-        Width = 78
+        Height = 23
+        Top = 35
+        Width = 55
         Caption = 'No. points'
         Layout = tlCenter
         ParentColor = False
       end
       object Radius: TFloatSpinEdit
-        Left = 94
-        Height = 32
+        Left = 71
+        Height = 23
         Top = 10
         Width = 80
         Alignment = taRightJustify
@@ -210,9 +198,9 @@ object FreeCylinderDialog: TFreeCylinderDialog
         Value = 0.001
       end
       object NoOfPoints: TSpinEdit
-        Left = 94
-        Height = 32
-        Top = 44
+        Left = 71
+        Height = 23
+        Top = 35
         Width = 80
         Alignment = taRightJustify
         MaxValue = 60
@@ -221,10 +209,10 @@ object FreeCylinderDialog: TFreeCylinderDialog
         Value = 4
       end
       object _Label9: TLabel
-        Left = 180
-        Height = 32
+        Left = 157
+        Height = 23
         Top = 10
-        Width = 25
+        Width = 19
         Caption = '[m]'
         Layout = tlCenter
         ParentColor = False
@@ -233,18 +221,18 @@ object FreeCylinderDialog: TFreeCylinderDialog
   end
   object Panel1: TPanel
     Left = 0
-    Height = 30
+    Height = 24
     Top = 0
-    Width = 554
+    Width = 461
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 30
-    ClientWidth = 554
+    ClientHeight = 24
+    ClientWidth = 461
     TabOrder = 1
     object BitBtn1: TSpeedButton
-      Left = 390
-      Height = 26
+      Left = 297
+      Height = 20
       Top = 2
       Width = 80
       Align = alRight
@@ -292,8 +280,8 @@ object FreeCylinderDialog: TFreeCylinderDialog
       OnClick = BitBtn1Click
     end
     object BitBtn2: TSpeedButton
-      Left = 472
-      Height = 26
+      Left = 379
+      Height = 20
       Top = 2
       Width = 80
       Align = alRight

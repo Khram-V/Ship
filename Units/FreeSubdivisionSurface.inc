@@ -2409,12 +2409,10 @@ begin
   FreeAndNil(FFreeStandingEdges);
   FreeAndNil(FFreeStandingPoints);
   inherited Destroy;
-end;{TFreeSubdivisionSurface.Destroy}
+end;
 
 procedure TFreeSubdivisionSurface.Draw(Viewport: TFreeViewport);
-var
-  I: integer;
-  Edge: TFreeSubdivisionEdge;
+var I: integer; Edge: TFreeSubdivisionEdge;
 begin
   if FIsBuilding then exit; // no double entries
   if not Built then Rebuild;
@@ -2441,7 +2439,7 @@ begin
   for I:=1 to NumberOfControlCurves do
     if ControlCurve[I-1].Visible then ControlCurve[I-1].Draw(Viewport);
 
-end;{TFreeSubdivisionSurface.Draw}
+end;
 
 function TFreeSubdivisionSurface.EdgeExists(P1, P2: TFreeSubdivisionPoint):
 TFreeSubdivisionEdge;

@@ -261,29 +261,8 @@ begin Result:=1.02;
     if Units=fuImperial then Result:=Result/(Foot*Foot); // convert to imperial
 end;
 
-(*
-Var FUnderWaterColor:TColor;                  // Default color used for shading
-    FUnderWaterColorAlpha: byte;              //   underwaterpart of the vessel
-function GetUnderwaterColor: TColor;
-function GetUnderwaterColorAlpha: byte;
-procedure SetUnderwaterColor(Val: TColor);
-procedure SetUnderwaterColorAlpha(AValue: byte);
-property UnderWaterColor: TColor read GetUnderWaterColor write SetUnderwaterColor;
-property UnderWaterColorAlpha: byte read GetUnderWaterColorAlpha write SetUnderwaterColorAlpha;
-Implementation
-function GetUnderwaterColor: TColor;
-begin Result:=(FUnderWaterColor and $FFFFFF) or (FUnderWaterColorAlpha shl 24 );
-end;
-function GetUnderwaterColorAlpha: byte;
-   begin Result:=FUnderWaterColorAlpha; end; // shr 24; end;
-procedure SetUnderwaterColorAlpha( AValue: byte );
-begin FUnderWaterColor:=(FUnderWaterColor and $FFFFFF) or (AValue shl 24 );  ///***???
-      FUnderWaterColorAlpha:=AValue; end;
-procedure SetUnderwaterColor( Val: TColor );
-begin FUnderWaterColor:=(Val and $FFFFFF) or (FUnderWaterColorAlpha shl 24 );
-end;
-                             //...странный блок, но тоже был включен в работу...
-procedure SFINEX1            // всё то же, но в ином порядке...
+(*                         //...странная интерполяция, но тоже была в работе...
+procedure SFINEX1         // всё то же, но в ином порядке...
 ( N: integer; X,Y: array of single; X0: single; var YY: single );
 var                     // Нелинейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
   N1,J1,J2,J3,I: integer; SFIN: single;

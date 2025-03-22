@@ -1,18 +1,17 @@
 unit Main;
 //{$mode objfpc}{$H+}
   {$MODE Delphi}{$H+}
-interface
-uses SysUtils,     // = exception ...
+interface uses Interfaces,
+     SysUtils,     // = exception ...
      Classes,      // constructor Create
      LCLIntf,      // openDocument
      LazFileUtils, // дата и время файла
-     Graphics,    Controls,
-     Forms,       Dialogs,
-     ExtCtrls,    ActnList,
-     StdCtrls,    ComCtrls,
-     Menus,       StdActns,
-     Spin,   //   Interfaces,
-     FreeTypes,   FreeGeometry,
+     Graphics, Controls,
+     Forms,    Dialogs,
+     ExtCtrls, ActnList,
+     StdCtrls, ComCtrls,
+     Menus,    StdActns, Spin,
+     FreeTypes,FreeGeometry,
      FreeShipUnit,FreeVersionUnit,
      FreeAboutDlg,FreehullFormWindow_panel,
      FreeLayerVisibilityDlg,FreeLanguageSupport,
@@ -20,14 +19,12 @@ uses SysUtils,     // = exception ...
 type
   TMainForm = class( TForm )                                       // TMainForm
      FreeShip: TFreeShip;
-     ToolBarCurves,
-     ToolBarFaces,
-     ToolBarFile,
-     ToolBarEdit,
-     ToolBarEdges,
-     ToolBarPoints,
-     ToolBarVisibility,
-     ToolBarLayers : TToolBar;
+     MainMenu1: TMainMenu;
+     MainClientPanel,PanelMain,StatusBar,StatusPanel5: TPanel;
+     ToolBarCurves,     ToolBarFaces,
+     ToolBarFile,       ToolBarEdit,
+     ToolBarEdges,      ToolBarPoints,
+     ToolBarVisibility, ToolBarLayers : TToolBar;
      ActionList1 : TActionList;
 //   FActionListHull : TActionList;
      AboutAction,                   NewModel,
@@ -92,24 +89,15 @@ type
      Calculations,                  Hydrostatics1,
      VRML1,MenuItemOBJ,MenuItemSTL,Normals1,Export1,Import1: TMenuItem;
 
-     cbPrecision               : TComboBox;
-     LayerBox                  : TComboBox;
+     LayerBox,cbPrecision      : TComboBox;
      ColorButton1              : TColorButton;
 //   ColorToolButton           : TToolButton;
      FontDialog1               : TFontDialog;
      HelpAction                : THelpAction;
-     LabelProgress             : TLabel;
-     LabelNumbers              : TLabel;
-     LabelDistance             : TLabel;
-     LabelUndoMemory           : TLabel;
-     MainClientPanel           : TPanel;
-     StatusPanel5              : TPanel;
-     PanelMain                 : TPanel;
-     StatusBar                 : TPanel;
+     LabelProgress,LabelNumbers,LabelDistance,LabelUndoMemory: TLabel;
      ProgressBarMain           : TProgressBar;
      SpinEditFontSize          : TSpinEdit;
      MenuImages                : TImageList;
-     MainMenu1                 : TMainMenu;
 
      tbShowFreeObjects,ToolButton1,   ToolButton39,
      ToolButtonSelect, ToolButtonRedo,ToolButtonUndo,
@@ -137,10 +125,11 @@ type
     RotateModelM  : TAction;     Rotatemodel2   : TMenuItem;
     ScaleModel    : TAction;     Scale3D1       : TMenuItem;
     Undo          : TAction;     Undo1          : TMenuItem;
+    Redo          : TAction;     Redo1          : TMenuItem;
     ShowGrid      : TAction;     Analyzesurface2: TMenuItem;
     HydrostaticsDialog:TAction;  Hydrostatics2  : TMenuItem;
     ExportObj     : TAction;     WavefrontfileObj1: TMenuItem;
-    InvertFace    : TAction;     Invert1          : TMenuItem;
+    InvertFace    : TAction;     Invert1         : TMenuItem;
     ExportDXF3DPolylines:TAction; ExportDXFPolylines1: TMenuItem;
     ExportDXFFaces: TAction;     DXF3Dfaces1     : TMenuItem;
     ImportHullFile: TAction;     Carlssonhulfile1: TMenuItem;
@@ -157,14 +146,14 @@ type
     PointsUnlockAll:TAction;     Unlockallpoints1: TMenuItem;
     IncreaseCurvatureScale:TAction; Incrcurvaturescale1: TMenuItem;
     DecreaseCurvatureScale:TAction; Decrcurvaturescale1: TMenuItem;
-    ExportArchimedes : TAction;     ArchimedesMB1 : TMenuItem;
-    ShowControlCurves: TAction;     Controlcurves1: TMenuItem;
-    ImportChines     : TAction;     Chines1       : TMenuItem;
-    ShowDiagonals    : TAction;     Diagonals1    : TMenuItem;
-    ShowMarkers      : TAction;     Markers1      : TMenuItem;
-    NewCurve         : TAction;     AddCurve1     : TMenuItem;
-    ExportCoordinates: TAction;     Coordinates1  : TMenuItem;
-    ImportCarene     : TAction;     Carenefile1   : TMenuItem;
+    ExportArchimedes : TAction;    ArchimedesMB1 : TMenuItem;
+    ShowControlCurves: TAction;    Controlcurves1: TMenuItem;
+    ImportChines     : TAction;    Chines1       : TMenuItem;
+    ShowDiagonals    : TAction;    Diagonals1    : TMenuItem;
+    ShowMarkers      : TAction;    Markers1      : TMenuItem;
+    NewCurve         : TAction;    AddCurve1     : TMenuItem;
+    ExportCoordinates: TAction;    Coordinates1  : TMenuItem;
+    ImportCarene     : TAction;    Carenefile1   : TMenuItem;
     N2 : TMenuItem;
     ImportBodyplan: TAction;
     MoveModel: TAction;
@@ -201,33 +190,19 @@ type
     Saveas1: TMenuItem;
 //  KeelRudderWizard: TAction;
     Deleteempty3: TMenuItem;
-    Redo: TAction;
-    Archimedes1: TMenuItem;
-    ClearUndo: TAction;
-    N7: TMenuItem;
-    Undohistory1: TMenuItem;
-    Clear1: TMenuItem;
-    ShowUndoHistory: TAction;
-    Show1: TMenuItem;
-    ImportPolyCad: TAction;
-    PolyCad1: TMenuItem;
-    RemoveUnusedPoints: TAction;
-    Removeunusedpoints1: TMenuItem;
-    ExportGHS: TAction;
-    GHS1: TMenuItem;
-    ShowFlowlines: TAction;
-    Flowlines1: TMenuItem;
-    AddCylinder: TAction;
-    AddCylinder1: TMenuItem;
-    SelectAll: TAction;
-    Selectall1: TMenuItem;
-    ExportSTL: TAction;
-    STL1: TMenuItem;
+    ClearUndo: TAction;          N7: TMenuItem;
+    Undohistory1: TMenuItem;     Clear1: TMenuItem;
+    ShowUndoHistory: TAction;    Show1: TMenuItem;
+    ImportPolyCad: TAction;      PolyCad1: TMenuItem;
+    RemoveUnusedPoints: TAction; Removeunusedpoints1: TMenuItem;
+    ExportGHS: TAction;          GHS1: TMenuItem;
+    ShowFlowlines: TAction;      Flowlines1: TMenuItem;
+    AddCylinder: TAction;        AddCylinder1: TMenuItem;
+    SelectAll: TAction;          Selectall1: TMenuItem;
+    ExportSTL: TAction;          STL1: TMenuItem;
  // CrossCurves: TAction;
  // Crosscurves1: TMenuItem;
- // SelectLeakPoints: TAction;
     SelectionSeparator1: TMenuItem;
-    Select_LeakPoints: TMenuItem;
 
  // FMDIChildList : TList;
     PanelManager: WinPanelManager;                       { FMDIPanelManager }
@@ -235,12 +210,14 @@ type
     procedure ActionCheckUpdatesExecute(Sender: TObject);
     procedure AddFlowLineExecute       (Sender: TObject);
     procedure AddGridPanelExecute      (Sender: TObject);
-    procedure AddPointToGroupExecute   (Sender: TObject);
+    procedure AddPointToGroupExecute   (Sender: TObject); //??
     procedure cbPrecisionChange        (Sender: TObject);
 //  procedure FormDestroy              (Sender: TObject); OnDestroy = FormDestroy
 //  procedure FormResize               (Sender: TObject); OnResize = FormResize
 //  procedure FormWindowStateChange    (Sender: TObject); OnWindowStateChange = FormWindowStateChange
 //  procedure FormChangeBounds         (Sender: TObject); OnChangeBounds = FormChangeBounds
+//  procedure PanelMainResize          (Sender: TObject);
+//  procedure MainClientPanelClick     (Sender: TObject);
     procedure LoadFileExecute          (Sender: TObject);
     procedure ExitProgramExecute       (Sender: TObject);
     procedure PointExtrudeExecute      (Sender: TObject);
@@ -250,13 +227,11 @@ type
     procedure ShowFreeObjectsExecute   (Sender: TObject);
     procedure LayerVisibilityDialogExecute(Sender: TObject);
     procedure FormShow                 (Sender: TObject);
-    procedure MainClientPanelClick     (Sender: TObject);
-    procedure PanelMainResize          (Sender: TObject);
     procedure PointAnchorExecute       (Sender: TObject);
     procedure SelectAllControlPointsExecute(Sender: TObject);
     procedure ShowControlNetExecute    (Sender: TObject);
     procedure ShowInteriorEdgesExecute (Sender: TObject);
-    procedure NewWindowSet(Sender: TObject; ViewType: TFreeViewType );
+    procedure NewWindowSet             (Sender: TObject; ViewType: TFreeViewType );
     procedure NewWindowExecute         (Sender: TObject);
     procedure SpinEditFontSizeChange   (Sender: TObject);
     procedure TileWindowExecute        (Sender: TObject);
@@ -838,12 +813,13 @@ begin
    MoveModel.Enabled:=FreeShip.Surface.NumberOfControlPoints>0;
    Mirrorface.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
    if (Freeship.Undoposition-1>=0) and (Freeship.Undoposition-1<Freeship.UndoCount)
-     then Undo.Caption:='Undo '+Freeship.UndoObject[Freeship.Undoposition-1].Undotext
-     else Undo.Caption:='Undo';
+     then Undo.Caption:='Отменить <'+Freeship.UndoObject[Freeship.Undoposition-1].Undotext+'>'
+     else Undo.Caption:='Отмена';
    Undo.Enabled:=(FreeShip.UndoCount>0) and (Freeship.UndoPosition>0);
+   Redo.Enabled:=(FreeShip.UndoCount>0) and (Freeship.UndoPosition<Freeship.UndoCount);
+
  //if Undo.Enabled then Undo.Caption:='Undo '+Freeship.UndoObject[Freeship.Undoposition-1].Undotext
  //                else Undo.Caption:='Undo';
-   Redo.Enabled:=(FreeShip.UndoCount>0) and (Freeship.UndoPosition<Freeship.UndoCount);
  //if Redo.Enabled then Redo.Caption:='Redo '+Freeship.UndoObject[Freeship.Undoposition].Undotext
  //                else Undo.Caption:='Redo';
    Undohistory1.Enabled:=Freeship.UndoCount>0;
@@ -995,7 +971,7 @@ begin UpdateMenu; end;
 
 procedure TMainForm.FormShow( Sender: TObject );
 var FileExt: AnsiString; L,T,W,H: Integer;
-begin    // Initialize some data
+begin                                                   // Initialize some data
    FreeShip.OnChangeActiveLayer:=FreeShipChangeActiveLayer;
    Freeship.OnChangeLayerData:=FreeShipChangeLayerData;
 // FreeShip.OnSelectItem:=OnSelectItem;
@@ -1012,28 +988,14 @@ begin    // Initialize some data
    if self.Height > Screen.Height then H:=Screen.Height;
    Self.SetBounds( L,T,W,H );
    SetCaption;                                                // LoadToolIcons;
-   UpdateMenu;                                 // ArrangeRibbonPanel(PanelMain);
+   UpdateMenu;                                // ArrangeRibbonPanel(PanelMain);
 end;
-
+{
 procedure TMainForm.MainClientPanelClick(Sender: TObject); begin end;
 procedure TMainForm.PanelMainResize(Sender: TObject);
-   // var I:Integer=0;
-   // TP: Tpanel;
-   // TB: TToolBar;
-begin
-   // TP:=TPanel( TObject );
-   // for I:=0 to TP.ControlCount-1 do
-   // if TP.Controls[I] is TToolBar then begin
-   //    TB:=TToolBar( TP.Controls[I] );
-   //    TB.ButtonHeight:=24;
-   //    TB.Height:=24;
-   //   end;
-  PanelMain.Height:=24;
-  PanelMain.ClientHeight:=24;
-   // if PanelMain.IsResizing then exit;
-   // ArrangeRibbonPanel(PanelMain);
-end;
-
+    begin PanelMain.Height:=24;
+          PanelMain.ClientHeight:=24; end;
+}
 procedure TMainForm.ShowControlNetExecute(Sender: TObject);
 begin
    FreeShip.Visibility.ShowControlNet:=not FreeShip.Visibility.ShowControlNet;
@@ -1502,7 +1464,7 @@ end;
 
 procedure TMainForm.DevelopLayersExecute(Sender: TObject);
 begin
-   Screen.Cursor:=crHourglass;
+   Screen.Cursor:=crCross; //Hourglass;
    Application.ProcessMessages;
    FreeShip.Edit.Layer_Develop;
    Screen.Cursor:=crDefault;
@@ -1623,8 +1585,7 @@ begin
 end;
 
 procedure TMainForm.NewCurveExecute(Sender: TObject);
-begin Freeship.Edit.Curve_Add; UpdateMenu; end;
-
+    begin Freeship.Edit.Curve_Add; UpdateMenu; end;
 procedure TMainForm.ExportCoordinatesExecute(Sender: TObject);
     begin Freeship.Edit.File_ExportCoordinates; UpdateMenu; end;
 procedure TMainForm.InsertPlaneExecute(Sender: TObject);
@@ -1639,127 +1600,96 @@ procedure TMainForm.ImportMarkersExecute(Sender: TObject);
     begin Freeship.Edit.Marker_Import; UpdateMenu; end;
 procedure TMainForm.ExportMichletExecute(Sender: TObject);
     begin Freeship.Edit.File_Export_Michlet; UpdateMenu; end;
-
 procedure TMainForm.FreeShipChangeCursorIncrement(Sender: TObject);
 begin
   if (csdestroying in componentstate) then exit;
   LabelDistance.Caption:=UserString(284)+' : '+FloatToDec(Freeship.Visibility.CursorIncrement,7);
 end;
-
 procedure TMainForm.StatusPanel3Click(Sender: TObject);
-var Str  : Ansistring;
-    I    : integer;
-    Value: TFloatType;
+  var Str: Ansistring; I: integer; Value: TFloatType;
 begin
    if Freeship.Surface.NumberOfControlPoints=0 then exit;
    Str:=FloatToDec(Freeship.Visibility.CursorIncrement,5);
-   if InputQuery('',UserString(285)+' : ',Str) then begin
-      Val(Str,Value,I);
+   if InputQuery('',UserString(285)+' : ',Str) then begin Val(Str,Value,I);
       if I=0 then Freeship.Visibility.CursorIncrement:=Value;
    end;
 end;
-
 procedure TMainForm.PointAlignExecute(Sender: TObject);
-begin Freeship.Edit.Point_ProjectStraightLine; UpdateMenu; end;
-
+    begin Freeship.Edit.Point_ProjectStraightLine; UpdateMenu; end;
 procedure TMainForm.PointAlighnPermanentlyExecute(Sender: TObject);
-begin Freeship.Edit.Point_ProjectStraightLinePermanentConstraint; UpdateMenu; end;
-
+    begin Freeship.Edit.Point_ProjectStraightLinePermanentConstraint; UpdateMenu; end;
 procedure TMainForm.PointAnchorExecute(Sender: TObject);
-begin Freeship.Edit.Point_AnchorToPoint; UpdateMenu; end;
-
+    begin Freeship.Edit.Point_AnchorToPoint; UpdateMenu; end;
 procedure TMainForm.SelectAllControlPointsExecute(Sender: TObject);
-begin Freeship.Edit.Selection_SelectAllControlPoints; UpdateMenu; end;
-
+    begin Freeship.Edit.Selection_SelectAllControlPoints; UpdateMenu; end;
 procedure TMainForm.ImportMichletWavesExecute(Sender: TObject);
-begin Freeship.Edit.File_Import_MichletWaves; UpdateMenu; end;
-
+    begin Freeship.Edit.File_Import_MichletWaves; UpdateMenu; end;
 procedure TMainForm.ShowHydrostaticsExecute(Sender: TObject);
 begin
    Freeship.Visibility.ShowHydrostaticData:=not Freeship.Visibility.ShowHydrostaticData;
    updatemenu;
 end;
-
 procedure TMainForm.MirrorFaceExecute(Sender: TObject);
-begin Freeship.Edit.Face_MirrorPlane; UpdateMenu; end;
-
+    begin Freeship.Edit.Face_MirrorPlane; UpdateMenu; end;
 procedure TMainForm.ExportDXF2DPolylinesExecute(Sender: TObject);
-begin Freeship.Edit.File_ExportDXF_2DPolylines; UpdateMenu; end;
-
+    begin Freeship.Edit.File_ExportDXF_2DPolylines; UpdateMenu; end;
 procedure TMainForm.FreeShipUpdateGeometryInfo(Sender: TObject);
-begin LabelNumbers.Caption
-               :=IntToStr(Freeship.Surface.NumberOfControlFaces) +' '+UserString(286)+', ' // Faces
-                +IntToStr(Freeship.Surface.NumberOfControlEdges) +' '+UserString(287)+', ' // Edges
-                +IntToStr(Freeship.Surface.NumberOfControlPoints)+' '+UserString(288)+', ' // Points
-                +IntToStr(Freeship.Surface.NumberOfControlCurves)+' '+UserString(289);     // Curves
-   if Freeship.Surface.Changed then UpdateMenu;
+begin LabelNumbers.Caption:=
+   IntToStr(Freeship.Surface.NumberOfControlFaces) +' '+UserString(286)+', ' // Faces
+  +IntToStr(Freeship.Surface.NumberOfControlEdges) +' '+UserString(287)+', ' // Edges
+  +IntToStr(Freeship.Surface.NumberOfControlPoints)+' '+UserString(288)+', ' // Points
+  +IntToStr(Freeship.Surface.NumberOfControlCurves)+' '+UserString(289);     // Curves
+  if Freeship.Surface.Changed then UpdateMenu;
 end;
-
 procedure TMainForm.TransformLackenbyExecute(Sender: TObject);
-begin Freeship.Edit.Model_LackenbyTransformation; UpdateMenu; end;
-
+    begin Freeship.Edit.Model_LackenbyTransformation; UpdateMenu; end;
 procedure TMainForm.ExportIGESExecute(Sender: TObject);
-begin Freeship.Edit.File_ExportIGES; UpdateMenu; end;
-
+    begin Freeship.Edit.File_ExportIGES; UpdateMenu; end;
 procedure TMainForm.ExportPartExecute(Sender: TObject);
-begin Freeship.Edit.File_ExportPart; UpdateMenu; end;
-
+    begin Freeship.Edit.File_ExportPart; UpdateMenu; end;
 procedure TMainForm.ImportPartExecute(Sender: TObject);
-begin Freeship.Edit.File_ImportPart; UpdateMenu; end;
-
+    begin Freeship.Edit.File_ImportPart; UpdateMenu; end;
 procedure TMainForm.LayerIntersectionExecute(Sender: TObject);
-begin Freeship.Edit.Point_IntersectLayer; UpdateMenu; end;
+    begin Freeship.Edit.Point_IntersectLayer; UpdateMenu; end;
 (*
 procedure TMainForm.KeelRudderWizardExecute(Sender: TObject);
 begin
-   if not Assigned(FreeKeelWizardDialog) then
-     FreeKeelWizardDialog:=TFreeKeelWizardDialog.Create(Self);
+   if not Assigned(FreeKeelWizardDialog) then FreeKeelWizardDialog:=TFreeKeelWizardDialog.Create(Self);
    ShowTranslatedValues(FreeKeelWizardDialog);
    FreeKeelWizardDialog.Execute(freeship);
    UpdateMenu;
 end;
 *)
 procedure TMainForm.RedoExecute(Sender: TObject);
-begin FreeShip.Edit.Redo; UpdateMenu; SetCaption; end;
-
+    begin FreeShip.Edit.Redo; UpdateMenu; SetCaption; end;
 procedure TMainForm.ClearUndoExecute(Sender: TObject);
-begin Freeship.Edit.Undo_Clear; UpdateMenu; end;
-
+    begin Freeship.Edit.Undo_Clear; UpdateMenu; end;
 procedure TMainForm.ShowUndoHistoryExecute(Sender: TObject);
-begin Freeship.Edit.Undo_ShowHistory; UpdateMenu; end;
-
+    begin Freeship.Edit.Undo_ShowHistory; UpdateMenu; end;
 procedure TMainForm.ImportPolyCadExecute(Sender: TObject);
-begin
-   Freeship.Edit.File_ImportPolycad;
-   FOpenHullWindows;
-   UpdateMenu;
-end;
-
+    begin Freeship.Edit.File_ImportPolycad;
+          FOpenHullWindows;
+          UpdateMenu;
+    end;
 procedure TMainForm.RemoveUnusedPointsExecute(Sender: TObject);
-begin Freeship.Edit.Point_RemoveUnused; Updatemenu; end;
+    begin Freeship.Edit.Point_RemoveUnused; Updatemenu; end;
 
 procedure TMainForm.ExportGHSExecute(Sender: TObject);
-begin FreeShip.Edit.File_ExportGHS; UpdateMenu; end;
-
+    begin FreeShip.Edit.File_ExportGHS; UpdateMenu; end;
 procedure TMainForm.ShowFlowlinesExecute(Sender: TObject);
-begin Freeship.Visibility.ShowFlowlines:=not Freeship.Visibility.ShowFlowlines;
-      updatemenu;
-end;
-
+    begin Freeship.Visibility.ShowFlowlines:=not Freeship.Visibility.ShowFlowlines;
+          updatemenu;
+    end;
 procedure TMainForm.AddCylinderExecute(Sender: TObject);
-begin Freeship.Edit.Geometry_AddCylinder; UpdateMenu; end;
-
+    begin Freeship.Edit.Geometry_AddCylinder; UpdateMenu; end;
 procedure TMainForm.SelectAllExecute(Sender: TObject);
-begin Freeship.Edit.Selection_SelectAll; UpdateMenu; end;
-
+    begin Freeship.Edit.Selection_SelectAll; UpdateMenu; end;
 procedure TMainForm.ExportSTLExecute(Sender: TObject);
-begin FreeShip.Edit.File_ExportSTL; UpdateMenu; end;
-
+    begin FreeShip.Edit.File_ExportSTL; UpdateMenu; end;
 //procedure TMainForm.CrossCurvesExecute(Sender: TObject);
 //begin Freeship.Edit.Hydrostatics_Crosscurves; UpdateMenu; end;
-
 procedure TMainForm.SelectLeakPointsExecute(Sender: TObject);
-begin Freeship.Edit.Selection_SelectLeakPoints; UpdateMenu; end;
+    begin Freeship.Edit.Selection_SelectLeakPoints; UpdateMenu; end;
 
 //initialization
 //  ExceptionDlg:=TExceptionDlg.create(nil);

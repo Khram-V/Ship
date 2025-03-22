@@ -17,11 +17,10 @@ function TFreeShip.FGetNumberOfViewports: integer;
    begin Result:=(MainForm as TmainForm).PanelManager.MList.Count; end;
 function TFreeShip.FGetViewport(Index: integer): TFreeViewport;
    begin if Index<0 then Index:=0 else
-//       if Index>=Viewports.Count then Index:=Viewports.Count-1;
-//       Result:=FViewports[Index]
          if Index>=NumberOfViewports then Index:=NumberOfViewports-1;
          Result:=(MainForm as TmainForm).GetMDIChildren(Index).Viewport;
-
+       { if Index>=Viewports.Count then Index:=Viewports.Count-1;
+         Result:=FViewports[Index]; }
    end;
 {$endif}
 
@@ -54,15 +53,15 @@ end;
 procedure TFreeShip.LoadProject( Source: TFreeFileBuffer );  //  «Free!Ship»
 var
   PrevCursor: TCursor;
-  I, N, PointN: integer;
-  Str, PointName: AnsiString;
+  I,N,PointN: Integer;
+  Str,PointName: AnsiString;
   Intersection: TFreeIntersection;
   vMarker: TFreeMarker;
   Data: TFreeBackgroundImageData;
   vFlowline: TFreeFlowline;
   // PreviewImg : TJPegImage;
   // CF0:TFreeSubdivisionControlFace;
-const WN: array[0..3] of Integer = ( 3,1,0,2 );
+const WN: array[0..3] of Integer=( 3,1,0,2 );
 begin
   // Remember the filename because it will be erased by the clear method
   Str:=FFilename;
@@ -70,7 +69,7 @@ begin
   FFilename:=Str;
   PrevCursor:=Screen.Cursor;
   Screen.Cursor:=crHourGlass;
-//  try               // finally
+//  try             // finally
 //  try             // except
     Source.Reset;
     Source.Encoding:=Preferences.FbmEncoding;
@@ -79,10 +78,10 @@ begin
       Source.LoadTFreeFileVersion( FFileVersion );
       Source.Version:=FFileVersion;
 //    if (FFileVersion <= CurrentVersion)
-//    or (FFileVersion <= High(FFileVersion) ) then    // !! без ограничений...
+//    or (FFileVersion <= High(FFileVersion) ) then ///*** !! без ограничений...
 //    begin
-        Write( '[',FFileVersion,'] "',ExtractFilename( FFilename ),'"'   );
-//                     UTF8ToConsole( ExtractFilename( FFilename ) ),'"'   );
+        Write( '[',FFileVersion,'] ',ExtractFilename( FFilename ) );
+//                     «' UTF8ToConsole( ExtractFilename( FFilename ) ),'»'   ); // SysToUTF8 UTF8ToWinCP WinCPToUTF8
         Source.LoadInteger( I );
         FPrecision:=TFreePrecisionType( I );
         Visibility.LoadBinary( Source );
@@ -91,38 +90,33 @@ begin
 //      if Surface.NumberOfControlFaces>0 then CF0:=Surface.ControlFace[0];
         Source.LoadInteger(N);                    // Load stations
         FStations.Capacity:=N;
-        for I:=1 to N do begin
-          Intersection:=TFreeIntersection.Create(self);
+        for I:=1 to N do begin Intersection:=TFreeIntersection.Create(self);
           FStations.Add(Intersection);
           Intersection.LoadBinary(Source);
         end;
         Source.LoadInteger(N);                    // Load Buttocks
         FButtocks.Capacity:=N;
-        for I:=1 to N do begin
-          Intersection:=TFreeIntersection.Create(self);
+        for I:=1 to N do begin Intersection:=TFreeIntersection.Create(self);
           FButtocks.Add(Intersection);
           Intersection.LoadBinary(Source);
         end;
         Source.LoadInteger(N);                    // Load Waterlines
         FWaterlines.Capacity:=N;
-        for I:=1 to N do begin
-          Intersection:=TFreeIntersection.Create(self);
+        for I:=1 to N do begin Intersection:=TFreeIntersection.Create(self);
           FWaterlines.Add(Intersection);
           Intersection.LoadBinary(Source);
         end;
         if FileVersion >= fv180 then begin        // Load Diagonals
           Source.LoadInteger(N);
           FDiagonals.Capacity:=N;
-          for I:=1 to N do begin
-            Intersection:=TFreeIntersection.Create(self);
+          for I:=1 to N do begin Intersection:=TFreeIntersection.Create(self);
             FDiagonals.Add(Intersection);
             Intersection.LoadBinary(Source);
           end;
           if FileVersion >= fv191 then begin      // Load markers
             Source.LoadInteger(N);
             FMarkers.Capacity:=N;
-            for I:=1 to N do begin
-              vMarker:=TFreeMarker.Create(Surface);
+            for I:=1 to N do begin vMarker:=TFreeMarker.Create(Surface);
               vMarker.FOwner:=Self;
               Edit.Marker_Add(vMarker);
               vMarker.LoadBinary(Source);
@@ -134,15 +128,13 @@ begin
               Source.LoadTFreeKAPERResistanceData(FResistanceKaperData);
               if FileVersion >= fv250 then begin
                 Source.LoadInteger(N);                      // BackgroundImages
-                for I:=1 to N do begin
-                  Data:=TFreeBackgroundImageData.Create(self);
+                for I:=1 to N do begin Data:=TFreeBackgroundImageData.Create(self);
                   FBackgroundImages.Add(Data);
                   Data.LoadBinary(Source);
                 end;
                 Source.LoadInteger(N);                         // TFreeFlowline
                 FFlowlines.Capacity:=N;
-                for I:=1 to N do begin
-                  vFlowline:=TFreeFlowline.Create(self);
+                for I:=1 to N do begin vFlowline:=TFreeFlowline.Create(self);
                   FFlowlines.Add(vFlowline);
                   vFlowline.LoadBinary(Source);
                 end;
@@ -1277,7 +1269,8 @@ begin
   end;
   if Visibility.ShowFlowlines then                             // Drawflowlines
     for I:=1 to NumberOfFlowlines do Flowline[I-1].Draw( Viewport );
-  if (Viewport.ViewportMode=vmShadeGauss) and (Surface.NumberOfControlFaces>0)
+  if (Viewport.ViewportMode=vmShadeGauss)
+  and (Surface.NumberOfControlFaces>0)
   and (Surface.MaxGaussCurvature-Surface.MinGaussCurvature>1e-6) then begin
     NRect:=21;                    // Draw Legend with Gaussian curvature values
     LegendHeight:=round(0.5 * Viewport.ClientHeight);
@@ -1773,42 +1766,38 @@ begin
   SaveDialog.Filter:=createDialogFilter(rsFREEShipGeometryPart,['part']);
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
-    Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
-    // Extract controlPoints and control edges
+    Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName); // Extract controlPoints and control edges
     Layers:=TFasterListTFreeSubdivisionLayer.Create;
     Points:=TFasterListTFreeSubdivisionControlPoint.Create;
     Edges:=TFasterListTFreeSubdivisionControlEdge.Create;
     Curves:=TFasterListTFreeSubdivisionControlCurve.Create;
     for I:=1 to Faces.Count do begin WestPoint; Face:=Faces[I-1];
-      if Layers.IndexOf(Face.Layer) = -1 then Layers.Add(Face.Layer);
+      if Layers.IndexOf(Face.Layer)=-1 then Layers.Add(Face.Layer);
       P1:=Face.Point[Face.NumberOfPoints-1] as TFreeSubdivisionControlPoint;
       for J:=1 to face.NumberOfpoints do begin
         P2:=Face.Point[J-1] as TFreeSubdivisionControlPoint;
-        if Points.IndexOf(P2) = -1 then Points.Add(P2);
+        if Points.IndexOf(P2)=-1 then Points.Add(P2);
         Edge:=P1.Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-        if Edge <> nil then
-          if Edges.IndexOf(Edge) = -1 then Edges.Add(Edge);
+        if Edge<>nil then
+          if Edges.IndexOf(Edge)=-1 then Edges.Add(Edge);
         P1:=P2;
       end;
-    end;                                             // process control curves
+    end;                                            // process control curves
     for I:=1 to Surface.NumberOfControlCurves do begin
-      Curve:=Surface.ControlCurve[I-1];
-      // In order to export this curve, all associated controledges must be in the edges list
+      Curve:=Surface.ControlCurve[I-1];             // In order to export this curve, all associated controledges must be in the edges list
       AddCurve:=True and (Curve.NumberOfControlPoints > 1);
       for J:=2 to Curve.NumberOfControlPoints do begin
         P1:=Curve.ControlPoint[J-2];
         P2:=Curve.ControlPoint[J-1];
         Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-        if Edge <> nil then begin
+        if Edge<>nil then begin
           if Edges.IndexOf(Edge) = -1 then AddCurve:=False;
         end else AddCurve:=False;
       end;
       if AddCurve then Curves.Add(Curve);
     end;
-
-//    Curves.Sort;
-//    Layers.Sort;
-
+//  Curves.Sort;
+//  Layers.Sort;
     PartFile:=TFreeFileBuffer.Create;
     PartFile.Version:=CurrentVersion;
     PartFile.Encoding:=Preferences.FbmEncoding;
@@ -1818,13 +1807,12 @@ begin
 //  try
       Partfile.Add('FREE!ship partfile');
       Partfile.Add(Ord(21));
-      //ord(CurrentVersion));                         // File version
+      //ord(CurrentVersion));                   // File version
       I:=Ord(ProjectSettings.ProjectUnits);
       Partfile.Add(I);
       // Write units type used (imperial or metric);
-      Partfile.Add(Layers.Count);
-      // Number of layers in the file
-      for I:=1 to Layers.Count do begin          // Save layer info
+      Partfile.Add(Layers.Count);               // Number of layers in the file
+      for I:=1 to Layers.Count do begin         // Save layer info
         vLayer:=Layers[I-1];
         vLayer.SaveBinary(Partfile);
       end;
@@ -1833,7 +1821,7 @@ begin
       for I:=1 to Points.Count do begin
         P2:=Points[I-1];
         P2.SaveBinary(PartFile);
-      end;                                          // Save control edges
+      end;                                                // Save control edges
       Partfile.Add(Edges.Count);
       for I:=1 to Edges.Count do begin
         Edge:=Edges[I-1];
@@ -1842,8 +1830,7 @@ begin
         Index:=Points.IndexOf(Edge.EndPoint);
         Partfile.Add(Index);
         Partfile.Add(Edge.Crease);
-      end;
-      // save controlfaces
+      end;                                                 // save controlfaces
       Partfile.Add(Faces.Count);
       for I:=1 to Faces.Count do begin
         Face:=Faces[I-1];
@@ -1854,8 +1841,7 @@ begin
         end;
         Index:=Layers.IndexOf(Face.Layer);
         Partfile.Add(Index);
-      end;
-      // Save controlcurves
+      end;                                                // Save controlcurves
       Partfile.Add(Curves.Count);
       for I:=1 to Curves.Count do begin
         Curve:=Curves[I-1];
@@ -1981,10 +1967,8 @@ begin
     end;
     Point.Coordinate:=P;
     //ActiveControlPoint:=Point;
-    if ControlpointForm.Visible then begin
-      // This lines updates the coordinate information in the controlpoint form
-      ControlPointform.ActiveControlPoint:=Point;
-      // and forces a repaint of the form
+    if ControlpointForm.Visible then begin // This lines updates the coordinate information in the controlpoint form
+      ControlPointform.ActiveControlPoint:=Point; // and forces a repaint of the form
       if not vViewport.Focused then vViewport.SetFocus;
       application.ProcessMessages;
     end;
@@ -2027,7 +2011,7 @@ begin
  if N > 1000000000 then N:=1000000000;
  if N>0 then Visibility.CursorIncrement:=N / 1000000
         else Visibility.CursorIncrement:=1e-6;
-end;{TFreeShip.KeyUp}
+end; {TFreeShip.KeyUp}
 
 procedure TFreeShip.SelectPointsInFrame(Viewport: TfreeViewport; rect: TRect);
 var I, J: integer;
@@ -2043,14 +2027,14 @@ begin
          I:=rect.Top; rect.Top:=rect.Bottom; rect.Bottom:=I;
       end;
       I:=0;
-      while I < Surface.NumberOfControlPoints do begin
+      while I<Surface.NumberOfControlPoints do begin
         if Surface.ControlPoint[I].Visible then begin
           Point:=Surface.ControlPoint[I];
           P2D:=Viewport.Project(Point.Coordinate);
           if (P2D.x >= rect.Left) and (P2D.x <= rect.Right)
              and (P2D.y >= rect.Top) and (P2D.y <= rect.Bottom)
           then self.Surface.Selection_Add(Point);
-            //ItemSelected:=True;
+            // ItemSelected:=True;
             // Draw the selected point to all viewports
 //          for J:=0 to NumberOfViewports-1 do
             for J:=0 to Viewports.Count-1 do
@@ -2087,8 +2071,8 @@ begin                                                    ///***??? mouse-select
       ItemSelected:=True;           // Draw the selected point to all viewports
 //    for J:=0 to NumberOfViewports-1 do
       for J:=0 to Viewports.Count-1 do
-          if self.Viewport[J].ViewportMode=vmWireframe then
-             Point.Draw( self.Viewport[J] );
+        if self.Viewport[J].ViewportMode=vmWireframe then
+           Point.Draw( self.Viewport[J] );
       break;
     end;
   end;
@@ -2104,7 +2088,7 @@ begin                                                    ///***??? mouse-select
 //      for J:=0 to NumberOfViewports-1 do
         for J:=0 to Viewports.Count-1 do
           if self.Viewport[J].ViewportMode=vmWireframe then
-          Point.Draw(self.Viewport[J]);
+             Point.Draw(self.Viewport[J]);
         break;
       end;
     end; Inc(I);
@@ -2165,8 +2149,8 @@ begin                                                    ///***??? mouse-select
           ItemSelected:=True;        // Draw the selected edge to all viewports
 //        for J:=0 to NumberOfViewports-1 do
           for J:=0 to Viewports.Count-1 do
-            if self.Viewport[J].ViewportMode=vmWireframe
-               then Curve.Draw(self.Viewport[J]);
+            if self.Viewport[J].ViewportMode=vmWireframe then
+               Curve.Draw(self.Viewport[J]);
           break;
         end;
       end; Inc(I);
@@ -2181,8 +2165,8 @@ begin                                                    ///***??? mouse-select
         ItemSelected:=True;      // Draw the selected flowline to all viewports
 //      for J:=0 to NumberOfViewports-1 do
         for J:=0 to Viewports.Count-1 do
-          if self.Viewport[J].ViewportMode = vmWireframe
-             then Flowline[I].Draw( self.Viewport[J] );
+          if self.Viewport[J].ViewportMode=vmWireframe then
+             Flowline[I].Draw( self.Viewport[J] );
         break;
       end; Inc( I );
     end;
@@ -2312,10 +2296,10 @@ begin
   end;
 end;
 
-procedure TFreeShip.MouseDown(Viewport: TFreeViewport; Button: TMouseButton;
-  Shift: TShiftState; X, Y: integer; var ItemSelected: boolean);
-begin
-  ItemSelected:=False;
+procedure TFreeShip.MouseDown
+( Viewport: TFreeViewport; Button: TMouseButton;
+  Shift: TShiftState; X,Y: integer; var ItemSelected: boolean );
+begin ItemSelected:=False;
   if Button = mbLeft then begin
     case EditMode of
       emSelectItems: DoSelectItems( ViewPort, X,Y,Button, Shift,ItemSelected );

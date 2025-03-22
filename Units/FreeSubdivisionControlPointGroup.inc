@@ -86,18 +86,17 @@ var
   Pz: TShadePoint;
   P3D: T3DVector;
 begin
-  if Viewport.ViewportMode = vmWireframe then begin
-    if ( Name>'' ) then begin
-      P3D:=CalculateCenterPoint;
-      if (Viewport.ViewType = fvBodyplan) then
-        if P3D.X <= Surface.SplitSectionLocation then P3D.Y:=-P3D.Y;
-      P:=Viewport.Project( P3D );
-      if FControlPoints.Count>0 then Viewport.FontColor:=FControlPoints[0].Color;
-      ViewPort.PenColor:=Viewport.FontColor;
-      ViewPort.Ellipse(P.X-2, P.Y-2, P.X+2, P.Y+2);
-      ViewPort.Ellipse(P.X-4, P.Y-4, P.X+4, P.Y+4);
-      ViewPort.TextOut(P.X+2, P.Y+2, Name);
-    end;
+  if Viewport.ViewportMode = vmWireframe then
+  if ( Name>'' ) then begin
+    P3D:=CalculateCenterPoint;
+    if (Viewport.ViewType = fvBodyplan) then
+    if P3D.X <= Surface.SplitSectionLocation then P3D.Y:=-P3D.Y;
+    P:=Viewport.Project( P3D );
+    if FControlPoints.Count>0 then Viewport.FontColor:=FControlPoints[0].Color;
+    ViewPort.PenColor:=Viewport.FontColor;
+    ViewPort.Ellipse(P.X-2, P.Y-2, P.X+2, P.Y+2);
+    ViewPort.Ellipse(P.X-4, P.Y-4, P.X+4, P.Y+4);
+    ViewPort.TextOut(P.X+2, P.Y+2, Name);
   end;
 end;
 

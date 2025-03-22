@@ -384,8 +384,8 @@ begin
       (MainForm as TmainForm).UpdateMenu; exit;
    end;
    FPanned:=False;
-   if Viewport.ViewportMode = vmWireframe then
-      FreeShip.MouseDown( Viewport,Button,Shift,X,Y,Select );
+///***!!! if Viewport.ViewportMode=vmWireframe then
+   FreeShip.MouseDown( Viewport,Button,Shift,X,Y,Select );
    FAllowPanOrZoom:=not Select;   // An item has just been selected or deselect,
                                   // so do NOT pan or zoom the vieport when the
                                   // user (accidently) moves the mouse
@@ -402,7 +402,7 @@ var P    : TPoint;
     P3D  : T3DVector;
     Str  : AnsiString='';
 begin
-// if (Shift <> []) then => ошибка ///*** мышка
+// if (Shift <> []) then => ошибка     ///*** координаты мышки в заголовке окна
 // if Viewport.ViewType<>fvPerspective then begin SetFocus;
       P.X:=X;                               CaptionPanel.font.Color:=clBlue;
       P.Y:=Y;                               CaptionPanel.font.Name:='Courier'; //Consolas

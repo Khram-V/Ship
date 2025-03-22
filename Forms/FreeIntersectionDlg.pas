@@ -375,11 +375,9 @@ var
   Intersection: TFreeIntersection;
   I: integer;
 begin
-  if ListBox.ItemIndex <> -1 then
-  begin
+  if ListBox.ItemIndex <> -1 then begin
     Intersection:=ListBox.Items.Objects[ListBox.ItemIndex] as TFreeIntersection;
-    if Intersection.ShowCurvature <> ListBox.Checked[ListBox.ItemIndex] then
-    begin
+    if Intersection.ShowCurvature <> ListBox.Checked[ListBox.ItemIndex] then begin
       Intersection.ShowCurvature:=ListBox.Checked[ListBox.ItemIndex];
       FFreeShip.FileChanged:=True;
       if FFreeship.Visibility.ShowCurvature then

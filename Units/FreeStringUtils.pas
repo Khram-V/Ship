@@ -17,6 +17,7 @@ procedure Insert(const source:AnsiString;var s:AnsiString;StartCharIndex:PtrInt)
 Function ReplaceText(const AText, AFromText, AToText: AnsiString): AnsiString;   // inline;
 function UpperCase(const s: AnsiString): AnsiString;
 function LowerCase(const s: AnsiString): AnsiString;
+//Procedure WriteLn( const Str: AnsiString ); overload;
 Function createDialogFilter
        ( FilterName:AnsiString;
          extensions:array of AnsiString;
@@ -58,9 +59,6 @@ begin
   Result += ext+')|'+fltr;
   if NeedsAll then Result += '|All files (*.*)|*.*';
 end;
-
-//Procedure WriteConole( const Str: AnsiString ); overload; var tmp:AnsiString;
-//    begin tmp:=UTF8ToConsole( Str ); Write( tmp ); end;
 
 end.
 

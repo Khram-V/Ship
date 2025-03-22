@@ -1,34 +1,14 @@
 unit FreeMichletOutputDlg;
 {$MODE Delphi}{$H+}
 interface uses
-{$IFnDEF FPC}
-  jpeg, Windows,
-{$ELSE}
-  LCLIntf, LCLType, //
-{$ENDIF}
-  //Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  Forms,
-  Dialogs,
-  Buttons,
-  ExtCtrls,
-  ComCtrls,
-  FreeShipUnit,
-  StdCtrls,
-  FreeTypes,
-  FreeGeometry,
-  ActnList,
-  Spin,
-  Math;
-
+  SysUtils,  Classes,
+  Graphics,  Controls,
+  Forms,     Buttons,
+  ExtCtrls,  ComCtrls,
+  StdCtrls,  ActnList,
+  Spin,      Math,
+  FreeTypes, FreeGeometry, FreeShipUnit;
 type
-
-  { TFreeMichletOutputDialog }
-
   TFreeMichletOutputDialog = class(TForm)
     Distance: TFloatSpinEdit;
     Group2: TRadioGroup;
@@ -453,39 +433,38 @@ begin
     _Label26.Caption:='Fn '+FloatToStrF((Val * 1852 / 3600) / Sqrt(g * Length), ffFixed, 7, 3)
   else _Label26.Caption:='';                            // End Skip translation
 end;
-
 function TFreeMichletOutputDialog.FGetWaterDepth: single;
-begin Result:=Edit9.Value; end;
+   begin Result:=Edit9.Value; end;
 procedure TFreeMichletOutputDialog.FSetWaterDepth(val: single);
-begin Edit9.Value:=val; end;
+    begin Edit9.Value:=val; end;
 function TFreeMichletOutputDialog.FGetNumberOfStations: integer;
-begin Result:=Edit1.Value; end;
+   begin Result:=Edit1.Value; end;
 procedure TFreeMichletOutputDialog.FSetNumberOfStations(val: integer);
-begin if not odd(val) then Inc(val);
-      if Edit1.Value <> Val then Edit1.Value:=Val; FBuildOffsets;
-end;
+    begin if not odd(val) then Inc(val);
+          if Edit1.Value <> Val then Edit1.Value:=Val; FBuildOffsets;
+    end;
 function TFreeMichletOutputDialog.FGetNumberOfSpeeds: integer;
-begin Result:=Edit14.Value; end;
+   begin Result:=Edit14.Value; end;
 procedure TFreeMichletOutputDialog.FSetNumberOfSpeeds(val: integer);
-begin Edit14.Value:=Val; end;
+    begin Edit14.Value:=Val; end;
 function TFreeMichletOutputDialog.FGetNr: integer;
-begin Result:=Edit18.Value; end;
+   begin Result:=Edit18.Value; end;
 procedure TFreeMichletOutputDialog.FSetNr(val: integer);
-begin Edit18.Value:=Val; end;
+    begin Edit18.Value:=Val; end;
 function TFreeMichletOutputDialog.FGetNx: integer;
-begin Result:=Edit24.Value; end;
+   begin Result:=Edit24.Value; end;
 procedure TFreeMichletOutputDialog.FSetNx(val: integer);
-begin Edit24.Value:=val; end;
+    begin Edit24.Value:=val; end;
 function TFreeMichletOutputDialog.FGetNy: integer;
-begin Result:=Edit25.Value; end;
+   begin Result:=Edit25.Value; end;
 procedure TFreeMichletOutputDialog.FSetNy(val: integer);
-begin Edit25.Value:=Val; end;
+    begin Edit25.Value:=Val; end;
 function TFreeMichletOutputDialog.FGetNBeta: integer;
-begin Result:=Edit19.Value; end;
+   begin Result:=Edit19.Value; end;
 procedure TFreeMichletOutputDialog.FSetNBeta(val: integer);
-begin Edit19.Value:=val; end;
+    begin Edit19.Value:=val; end;
 function TFreeMichletOutputDialog.FGetNumberOfWaterlines: integer;
-begin Result:=Edit2.Value; end;
+   begin Result:=Edit2.Value; end;
 
 procedure TFreeMichletOutputDialog.FSetNumberOfWaterlines(val: integer);
 begin
@@ -629,7 +608,6 @@ begin
       end;
     end;
   end;
-
   Viewport.PenColor:=FFreeship.Preferences.WaterlineColor;
   for I:=1 to NumberOfWaterlines do begin Tmp:=Dist+1e-4;
     for J:=1 to NumberOfStations do begin
@@ -813,8 +791,7 @@ begin
   Strings.Add('11');
   Strings.Add('# Nbz');
   Strings.Add('11');
-  for N:=1 to NumberOfHulls do
-  begin
+  for N:=1 to NumberOfHulls do begin
     if N = 1
     then Strings.Add('# ============================ FIRST HULL ==============================')
     else Strings.Add('# ============================ SECOND HULL =============================');
@@ -874,22 +851,21 @@ begin
 end;
 
 function TFreeMichletOutputDialog.FGetMultihull: boolean;
-begin Result:=(Radiobutton2.Checked) or (Radiobutton3.Checked); end;
-
+   begin Result:=(Radiobutton2.Checked) or (Radiobutton3.Checked); end;
 procedure TFreeMichletOutputDialog.RadioButton1Click(Sender: TObject);
-begin Distance.Enabled:=Multihull;
-      if not Multihull then Distance.Value:=0.0; FBuildOffsets;
-end;
+    begin Distance.Enabled:=Multihull;
+          if not Multihull then Distance.Value:=0.0; FBuildOffsets;
+    end;
 procedure TFreeMichletOutputDialog.DistanceAfterSetValue(Sender: TObject);
-begin FBuildOffsets; viewport.Zoomextents; end;
+    begin FBuildOffsets; viewport.Zoomextents; end;
 procedure TFreeMichletOutputDialog.Edit1AfterSetValue(Sender: TObject);
-begin NumberOfStations:=Edit1.Value; end;
+    begin NumberOfStations:=Edit1.Value; end;
 procedure TFreeMichletOutputDialog.Edit2AfterSetValue(Sender: TObject);
-begin NumberOfWaterLines:=Edit2.Value; end;
+    begin NumberOfWaterLines:=Edit2.Value; end;
 procedure TFreeMichletOutputDialog.Edit3AfterSetValue(Sender: TObject);
-begin Draft:=Edit3.Value; end;
+    begin Draft:=Edit3.Value; end;
 procedure TFreeMichletOutputDialog.Edit7AfterSetValue(Sender: TObject);
-begin WaterDensity:=Edit7.Value; end;
+    begin WaterDensity:=Edit7.Value; end;
 
 procedure TFreeMichletOutputDialog.Edit4AfterSetValue(Sender: TObject);
 begin Length:=Edit4.Value;
@@ -897,42 +873,42 @@ begin Length:=Edit4.Value;
       Edit21.MinValue:=2.5 * Length;
 end;
 procedure TFreeMichletOutputDialog.Edit5AfterSetValue(Sender: TObject);
-begin Volume:=Edit5.Value; end;
+    begin Volume:=Edit5.Value; end;
 procedure TFreeMichletOutputDialog.Edit6AfterSetValue(Sender: TObject);
-begin G:=Edit6.Value; end;
+    begin G:=Edit6.Value; end;
 procedure TFreeMichletOutputDialog.Edit9AfterSetValue(Sender: TObject);
-begin WaterDepth:=Edit9.Value; end;
+    begin WaterDepth:=Edit9.Value; end;
 procedure TFreeMichletOutputDialog.Edit12AfterSetValue(Sender: TObject);
-begin StartSpeed:=Edit12.Value; Edit13.MinValue:=StartSpeed; end;
+    begin StartSpeed:=Edit12.Value; Edit13.MinValue:=StartSpeed; end;
 procedure TFreeMichletOutputDialog.Edit13AfterSetValue(Sender: TObject);
-begin Endspeed:=Edit13.Value; end;
+    begin Endspeed:=Edit13.Value; end;
 procedure TFreeMichletOutputDialog.Edit14AfterSetValue(Sender: TObject);
-begin NumberOfSpeeds:=Edit14.Value; end;
+    begin NumberOfSpeeds:=Edit14.Value; end;
 procedure TFreeMichletOutputDialog.Edit15AfterSetValue(Sender: TObject);
-begin R0:=Edit15.Value; Edit16.MinValue:=R0+1.0; end;
+    begin R0:=Edit15.Value; Edit16.MinValue:=R0+1.0; end;
 procedure TFreeMichletOutputDialog.Edit16AfterSetValue(Sender: TObject);
-begin R1:=Edit16.Value; end;
+    begin R1:=Edit16.Value; end;
 procedure TFreeMichletOutputDialog.Edit17AfterSetValue(Sender: TObject);
-begin Beta:=Edit17.Value; end;
+    begin Beta:=Edit17.Value; end;
 procedure TFreeMichletOutputDialog.Edit18AfterSetValue(Sender: TObject);
-begin Nr:=Edit18.Value; end;
+    begin Nr:=Edit18.Value; end;
 procedure TFreeMichletOutputDialog.Edit19AfterSetValue(Sender: TObject);
-begin NBeta:=Edit19.Value; end;
+    begin NBeta:=Edit19.Value; end;
 procedure TFreeMichletOutputDialog.Edit20AfterSetValue(Sender: TObject);
-begin X0:=Edit20.Value; Edit21.MinValue:=max(Length*2.5,X0+1.0); X1:=X1; end;
+    begin X0:=Edit20.Value; Edit21.MinValue:=max(Length*2.5,X0+1.0); X1:=X1; end;
 procedure TFreeMichletOutputDialog.Edit21AfterSetValue(Sender: TObject);
-begin X1:=Edit21.Value; end;
+    begin X1:=Edit21.Value; end;
 procedure TFreeMichletOutputDialog.Edit22AfterSetValue(Sender: TObject);
-begin Y0:=Edit22.Value; Edit23.MinValue:=max(Length*2.5,Y0+1.0); Y1:=Y1; end;
+    begin Y0:=Edit22.Value; Edit23.MinValue:=max(Length*2.5,Y0+1.0); Y1:=Y1; end;
 procedure TFreeMichletOutputDialog.Edit23AfterSetValue(Sender: TObject);
-begin Y1:=Edit23.Value; end;
+    begin Y1:=Edit23.Value; end;
 procedure TFreeMichletOutputDialog.Edit24AfterSetValue(Sender: TObject);
-begin Nx:=Edit24.Value; end;
+    begin Nx:=Edit24.Value; end;
 procedure TFreeMichletOutputDialog.Edit25AfterSetValue(Sender: TObject);
-begin Ny:=Edit25.Value; end;
+    begin Ny:=Edit25.Value; end;
 procedure TFreeMichletOutputDialog.FormResize(Sender: TObject);
-begin OKButton.Left:=Panel1.Clientwidth-CancelButton.Width-OkButton.Width-5;
-      CancelButton.Left:=Panel1.Clientwidth-CancelButton.Width-5;
-end;
+    begin OKButton.Left:=Panel1.Clientwidth-CancelButton.Width-OkButton.Width-5;
+          CancelButton.Left:=Panel1.Clientwidth-CancelButton.Width-5;
+    end;
 
 end.

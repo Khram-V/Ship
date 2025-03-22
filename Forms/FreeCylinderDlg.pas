@@ -1,27 +1,11 @@
 unit FreeCylinderDlg;
 {$MODE Delphi}{$H+}
 interface uses
-    {$IFDEF Windows}
-  Windows,
-    {$ELSE}
-  LCLIntf, LCLType,
-  LazFileUtils,
-    {$ENDIF}
-  SysUtils,
-  Classes,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
-  FreeTypes,
-  FreeGeometry,
+  Controls, Forms,
+  StdCtrls, Buttons,
   ExtCtrls, Spin,
-  FreeShipUnit,FreeLanguageSupport;
+  FreeTypes,FreeLanguageSupport;
 type
-
-  { TFreeCylinderDialog }
-
   TFreeCylinderDialog = class(TForm)
     CloseEndDisk: TCheckBox;
     CloseStartDisk: TCheckBox;
@@ -64,52 +48,36 @@ type
 var FreeCylinderDialog: TFreeCylinderDialog;
 
 implementation
-
 {$R *.lfm}
 
 function TFreeCylinderDialog.FGetStartPoint: T3DVector;
-begin
-  Result:=Vector(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
+begin Result:=Vector(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
 end;
-
 procedure TFreeCylinderDialog.FSetStartPoint(val: T3DVector);
-begin
-  StartPointX.Value:=Val.X;
-  StartPointY.Value:=Val.Y;
-  StartPointZ.Value:=Val.Z;
+begin StartPointX.Value:=Val.X;
+      StartPointY.Value:=Val.Y;
+      StartPointZ.Value:=Val.Z;
 end;
-
 function TFreeCylinderDialog.FGetEndPoint: T3DVector;
-begin
-  Result:=Vector(EndPointX.Value, EndPointY.Value, EndPointZ.Value);
-end;
-
+   begin Result:=Vector(EndPointX.Value, EndPointY.Value, EndPointZ.Value);
+   end;
 procedure TFreeCylinderDialog.FSetEndPoint(val: T3DVector);
-begin
-  EndPointX.Value:=Val.X;
-  EndPointY.Value:=Val.Y;
-  EndPointZ.Value:=Val.Z;
+begin EndPointX.Value:=Val.X;
+      EndPointY.Value:=Val.Y;
+      EndPointZ.Value:=Val.Z;
 end;
-
 function TFreeCylinderDialog.Execute(Str: AnsiString): boolean;
-begin
-  _label3.Caption:=Str;
-  _label6.Caption:=Str;
-  _label9.Caption:=Str;
-  ShowTranslatedValues(Self); Showmodal;
-  Result:=ModalResult = mrOk;
+begin _label3.Caption:=Str;
+      _label6.Caption:=Str;
+      _label9.Caption:=Str; ShowTranslatedValues(Self);
+      Showmodal; Result:=ModalResult = mrOk;
 end;
-
 procedure TFreeCylinderDialog.OKButtonClick(Sender: TObject);
-begin ModalResult:=mrOk; end;
-
+    begin ModalResult:=mrOk; end;
 procedure TFreeCylinderDialog.CancelButtonClick(Sender: TObject);
-begin ModalResult:=mrCancel; end;
-
+    begin ModalResult:=mrCancel; end;
 procedure TFreeCylinderDialog.BitBtn1Click(Sender: TObject);
-begin ModalResult:=mrOk; end;
-
+    begin ModalResult:=mrOk; end;
 procedure TFreeCylinderDialog.BitBtn2Click(Sender: TObject);
-begin ModalResult:=mrCancel; end;
-
+    begin ModalResult:=mrCancel; end;
 end.

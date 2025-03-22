@@ -39,8 +39,7 @@ begin
   FTransparentColor:=ClBlack;
   FVisible:=True;
   if (not (csdestroying in owner.componentstate)) then
-    if assigned(Owner.FOnChangeBackgroundImage) then
-      Owner.FOnChangeBackgroundImage(Owner);
+    if assigned(Owner.OnChangeBackground) then Owner.OnChangeBackground(Owner);
   ShowInView:=fvBodyPlan;
   Quality:=100;
   FAlpha:=255;
@@ -66,8 +65,7 @@ begin
     Invalidate;
     if (FVisible) and (Bitmap <> nil) then Owner.Refresh;
     if (not (csdestroying in owner.componentstate)) then
-      if assigned(Owner.FOnChangeBackgroundImage) then
-        Owner.FOnChangeBackgroundImage(Owner);
+      if assigned(Owner.OnChangeBackground) then Owner.OnChangeBackground(Owner);
   end;
 end;
 
@@ -78,8 +76,7 @@ begin
     Invalidate;
     if (FVisible) and (Bitmap <> nil) and (FTransparent) then Owner.Refresh;
     if (not (csdestroying in owner.componentstate)) then
-      if assigned(Owner.FOnChangeBackgroundImage) then
-        Owner.FOnChangeBackgroundImage(Owner);
+      if assigned(Owner.OnChangeBackground) then Owner.OnChangeBackground(Owner);
   end;
 end;
 
@@ -90,8 +87,7 @@ begin
     Invalidate;
     if (FVisible) and (Bitmap <> nil) then Owner.Refresh;
     if (not (csdestroying in owner.componentstate)) then
-      if assigned(Owner.FOnChangeBackgroundImage) then
-        Owner.FOnChangeBackgroundImage(Owner);
+      if assigned(Owner.OnChangeBackground) then Owner.OnChangeBackground(Owner);
   end;
 end;
 
@@ -106,8 +102,7 @@ begin
     end
     else if FTransparentColor = Owner.Color then FTransparent:=False;
     if (not (csdestroying in owner.componentstate)) then
-      if assigned(Owner.FOnChangeBackgroundImage) then
-        Owner.FOnChangeBackgroundImage(Owner);
+      if assigned(Owner.OnChangeBackground) then Owner.OnChangeBackground(Owner);
   end;
 end;
 
@@ -116,8 +111,7 @@ begin
   if val<>FVisible then begin FVisible:=val;
     if Bitmap<>nil then Owner.Refresh;
     if (not (csdestroying in owner.componentstate)) then
-      if assigned(Owner.FOnChangeBackgroundImage) then
-        Owner.FOnChangeBackgroundImage(Owner);
+      if assigned(Owner.OnChangeBackground) then Owner.OnChangeBackground(Owner);
   end;
 end;
 
@@ -275,8 +269,7 @@ begin
     Scale:=P2D.X/Bitmap.Width;
     Owner.Refresh;
     if (not (csdestroying in owner.componentstate)) then
-      if assigned(Owner.FOnChangeBackgroundImage) then
-        Owner.FOnChangeBackgroundImage(Owner);
+      if assigned(Owner.OnChangeBackground) then Owner.OnChangeBackground(Owner);
   end;
   FreeAndNil(Dialog);
 end;
@@ -305,8 +298,7 @@ begin
   ShowTranslatedValues(Dialog);
   Old:=FAlpha;
   if Dialog.Execute(Owner) then begin
-    if assigned(Owner.FOnChangeBackgroundImage) then
-      Owner.FOnChangeBackgroundImage(Owner);
+    if assigned(Owner.OnChangeBackground) then Owner.OnChangeBackground(Owner);
   end else Alpha:=Old;
   FreeAndNil(Dialog);
 end;
@@ -318,8 +310,7 @@ begin
   ShowTranslatedValues(Dialog);
   Old:=FTolerance;
   if Dialog.Execute(Owner) then begin
-    if assigned(Owner.FOnChangeBackgroundImage) then
-      Owner.FOnChangeBackgroundImage(Owner);
+    if assigned(Owner.OnChangeBackground) then Owner.OnChangeBackground(Owner);
   end else Tolerance:=Old;
   FreeAndNil(Dialog);
 end;

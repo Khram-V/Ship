@@ -181,12 +181,12 @@ begin
       fvPlan:        begin FAngle:=90; FElevation:=90; end;
       fvPerspective: begin FAngle:=20; FElevation:=20; end;
     end;
-    if assigned(FOnRequestBackgroundImage) then FOnRequestBackgroundImage(self);
-    if assigned(FOnRequestExtents) then FOnRequestExtents( self,FMin3D,FMax3D );
+    if assigned(OnRequestBackgroundImage) then OnRequestBackgroundImage(self);
+    if assigned(OnRequestExtents) then OnRequestExtents( self,FMin3D,FMax3D );
     InitializeViewport( FMin3D,FMax3D );
-    if assigned(FOnChangeViewType) then begin
+    if assigned(OnChangeViewType) then begin
 //    InitializeViewport( FMin3D,FMax3D );
-      FOnChangeViewType(self);
+      OnChangeViewType(self);
     end;
   end;
 end;
@@ -201,7 +201,7 @@ begin if FZoom = val then exit; FZoom:=val; end;
 procedure TFreeViewport.WMMouseEnter(var Message: TMessage);
 begin
   inherited;
-  if assigned(FOnMouseEnter) then FOnMouseEnter(self);
+  if assigned(OnMouseEnter) then OnMouseEnter(self);
   //if not self.Focused then Setfocus;
 end;
 
@@ -209,7 +209,7 @@ procedure TFreeViewport.WMMouseLeave(var Message: TMessage);
 begin
   inherited;
   if self.Cursor <> crCross then Cursor:=crCross;
-  if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
+  if Assigned(OnMouseLeave) then OnMouseLeave(Self);
 end;
 
 constructor TFreeViewport.Create( AOwner: TComponent );
@@ -232,7 +232,7 @@ begin
   FZoom:=1.0;
   FPan.X:=0;
   FPan.Y:=0;
-  FOnRequestBackgroundImage:=nil;
+  OnRequestBackgroundImage:=nil;
   FCameraType:=ftStandard; // Standard 50mm. lens, field of view= 35/50 =35 degrees.
   FFieldOfView:=RadToDeg( ArcTan( 35/50 ) );
   FViewType:=fvPerspective;
@@ -280,16 +280,16 @@ end;
 
 procedure TFreeViewport.DetachEventHandlers;
 begin
-  FOnChangeBackgroundImage:=nil;
-  FOnMouseDown:=nil;
-  FOnMouseUp:=nil;
-  FOnMouseEnter:=nil;
-  FOnMouseMove:=nil;
-  FOnMouseLeave:=nil;
-  FOnRedraw:=nil;
-  FOnChangeViewType:=nil;
-  FOnRequestBackgroundImage:=nil;
-  FOnRequestExtents:=nil;
+  OnChangeBackground:=nil;
+  OnMouseDown:=nil;
+  OnMouseUp:=nil;
+  OnMouseEnter:=nil;
+  OnMouseMove:=nil;
+  OnMouseLeave:=nil;
+  OnRedraw:=nil;
+  OnChangeViewType:=nil;
+  OnRequestBackgroundImage:=nil;
+  OnRequestExtents:=nil;
 end;
 
 destructor TFreeViewport.Destroy;
@@ -1102,15 +1102,15 @@ begin
   then FBackgroundOrigin:=BackgroundImage.Origin else
   if (BackgroundMode=emSetScale) and (ssLeft in Shift) then begin
     Pt:=Project(ZERO);
-    if (Scale * Zoom * BackgroundImage.Scale) <> 0 then begin
-      Diff.X:=round((Pt.X-X) / (Scale * Zoom * BackgroundImage.Scale));
-      Diff.Y:=round((Pt.Y-Y) / (Scale * Zoom * BackgroundImage.Scale));
+    if (Scale*Zoom*BackgroundImage.Scale)<>0 then begin
+      Diff.X:=round((Pt.X-X)/(Scale*Zoom*BackgroundImage.Scale));
+      Diff.Y:=round((Pt.Y-Y)/(Scale*Zoom*BackgroundImage.Scale));
     end else begin
       Diff.X:=Pt.X-X;
       Diff.Y:=Pt.Y-Y;
     end;        //TODO-change InputQuery to a dialog with TFloatSpinEdit fields
-    Str:=FloatToDec(-BackgroundImage.Scale * Diff.X, 4)+', '+FloatToDec(
-      BackgroundImage.Scale * Diff.Y, 4);
+    Str:=FloatToDec(-BackgroundImage.Scale*Diff.X,4 )+', '
+       + FloatToDec( BackgroundImage.Scale*Diff.Y,4 );
     if InputQuery( 'Scale ','New coordinate: ', str ) then begin
       Ind:=Pos(',', Str);
       if Ind <> 0 then begin OK:=True;
@@ -1128,8 +1128,7 @@ begin
             else BackgroundImage.Scale:=YVal / Diff.Y;
           Refresh;
           BackgroundMode:=emNormal;
-          if assigned( FOnChangeBackgroundImage ) then
-                       FOnChangeBackgroundImage( Owner );
+          if assigned( OnChangeBackground ) then OnChangeBackground( Owner );
         end;  // else MessageDlg('Invalid coordinate!', mtError, [mbOK], 0);
       end;    // else MessageDlg('Invalid coordinate!', mtError, [mbOK], 0);
     end;
@@ -1138,12 +1137,12 @@ begin
     FBackgroundScale:=BackgroundImage.Scale;
     FBackgroundOrigin:=BackgroundImage.Origin;
     Refresh;
-    if assigned(FOnChangeBackgroundImage) then FOnChangeBackgroundImage(Owner);
+    if assigned(OnChangeBackground) then OnChangeBackground(Owner);
   end else
   if (BackgroundMode = emSetFrame) and (ssRight in Shift) then begin
     BackgroundMode:=emUnsetFrame;
     Refresh;
-    if assigned(FOnChangeBackgroundImage) then FOnChangeBackgroundImage(Owner);
+    if assigned(OnChangeBackground) then OnChangeBackground(Owner);
   end else
   if (BackgroundMode = emSetTransparentColor) and (ssLeft in Shift) then begin
     Pt:=Project(ZERO);
@@ -1162,28 +1161,24 @@ begin
       BackGroundImage.TransparentColor:=BackgroundImage.Bitmap.Canvas.Pixels[Pt.X,Pt.Y];
       Refresh;
       BackgroundMode:=emNormal;
-      if assigned(FOnChangeBackgroundImage) then FOnChangeBackgroundImage(Owner);
+      if assigned(OnChangeBackground) then OnChangeBackground(Owner);
     end else begin
       BackgroundImage.Transparent:=False;
       Refresh;
       BackgroundMode:=emNormal;
-      if assigned(FOnChangeBackgroundImage) then FOnChangeBackgroundImage(Owner);
+      if assigned(OnChangeBackground) then OnChangeBackground(Owner);
     end;
   end else begin
-    if Assigned( FOnMouseDown ) then OnMouseDown( Self,Button,Shift,X,Y );
+    if Assigned( OnMouseDown ) then OnMouseDown( Self,Button,Shift,X,Y );
     if not focused then SetFocus;
-    if (ssLeft in shift) and (Viewtype = fvPerspective) then begin //Cursor:=crRotate;
-    end;
+//  if (ssLeft in shift) and (Viewtype = fvPerspective) then begin Cursor:=crRotate; end;
   end;
 end;
 
 procedure TFreeViewport.MouseMove(Shift: TShiftState; X, Y: integer);
 var
-  Desired: TCursor;
-  Pt, Prev: TPoint;
-  Scl,S: TFloatType;
-  W,H,X0,Y0,dX,dY: Longint;
-  bgiRect: TRect;
+  Desired: TCursor; Pt,Prev: TPoint;
+  Scl,S: TFloatType; W,H,X0,Y0,dX,dY: Longint; bgiRect: TRect;
 begin
   if FMouseShift <> Shift then exit; // Mouse Move came before Mouse Down
   inherited;
@@ -1243,7 +1238,7 @@ begin
       end;
     end;
     Invalidate;
-    if assigned(FOnChangeBackgroundImage) then FOnChangeBackgroundImage(Owner);
+    if assigned(OnChangeBackground) then OnChangeBackground(Owner);
     exit;
   end else
   if (shift = []) and (Backgroundmode <> emNormal) then begin
@@ -1291,7 +1286,7 @@ begin
   end else if ssRight in shift then Cursor:=crPan;
   FPreviousPosition.X:=X;
   FPreviousPosition.Y:=Y;
-  if Assigned(FOnMouseMove) then OnMouseMove(Self, Shift, X, Y);
+  if Assigned(OnMouseMove) then OnMouseMove(Self, Shift, X, Y);
 end;
 
 procedure TFreeViewport.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: integer);
@@ -1302,23 +1297,21 @@ begin
     BackgroundMode:=emNormal;                // Check if origin has changed
     if (FBackgroundOrigin.X <> BackgroundImage.Origin.X) or
       (FBackgroundOrigin.Y <> BackgroundImage.Origin.Y) then begin
-      if assigned(FOnChangeBackgroundImage) then
-        FOnChangeBackgroundImage(Owner);
+      if assigned(OnChangeBackground) then OnChangeBackground(Owner);
     end;
   end else
   if BackgroundMode = emSetScale then begin // Finished scaling the background image
     BackgroundMode:=emNormal;               // Check if Scale has changed
     Refresh;
     if (FBackgroundScale <> BackgroundImage.Scale) then begin
-      if assigned(FOnChangeBackgroundImage) then
-        FOnChangeBackgroundImage(Owner);
+      if assigned(OnChangeBackground) then OnChangeBackground(Owner);
     end;
   end else
   if (BackgroundMode = emUnsetFrame) then begin // Finished framing the background image
     BackgroundMode:=emNormal;
     Refresh;
   end else begin
-    if Assigned(FOnMouseUp) then OnMouseUp(Self, Button, Shift, X, Y);
+    if Assigned(OnMouseUp) then OnMouseUp(Self, Button, Shift, X, Y);
     if Cursor <> crCross then Cursor:=crCross;
   end;
   if not focused then SetFocus;
@@ -1338,33 +1331,26 @@ begin
 //    MousePos:=self.ScreenToClient(MousePos);
 //  {$ENDIF}
 
-  if (MousePos.X >= 0) and (MousePos.Y >= 0) and (MousePos.X < Clientwidth) and
-     (MousePos.Y < Clientheight) then
-  begin
-    // zoom by using mousewheel
-    {$define UzeZoom}
-    {$ifdef UzeZoom}
+  if (MousePos.X>=0) and (MousePos.Y>=0)
+  and (MousePos.X < Clientwidth)
+  and (MousePos.Y < Clientheight) then begin        // zoom by using mousewheel
+{$define UzeZoom}
+{$ifdef UzeZoom}
     if WheelDelta > 0 then ZoomOut else ZoomIn;
-//  if WheelDelta < 0 then begin ZoomOut; ZoomOut; end;
-//  if WheelDelta > 0 then begin ZoomIn; ZoomIn; end;
-    {$else}
+{$else}
     Factor:=1.05;
     Mid.X:=ClientWidth div 2;
     Mid.Y:=ClientHeight div 2;
     mouseDX:=MousePos.X-Mid.X;
     mouseDY:=MousePos.Y-Mid.Y;
-
-    if WheelDelta > 0 then
-    begin
+    if WheelDelta>0 then begin
       FZoom:=FZoom * Factor;
       NewPan.X:=round(Pan.X * Factor);
       NewPan.Y:=round(Pan.Y * Factor);
       FPan.X:=FPan.X-round((mouseDX*Factor-mouseDX)-(NewPan.X-Pan.X));
       FPan.Y:=FPan.Y-round((mouseDY*Factor-mouseDY)-(NewPan.Y-Pan.Y));
       Refresh;
-    end
-    else
-    begin
+    end else begin
       FZoom:=FZoom / Factor;
       NewPan.X:=round(Pan.X / Factor);
       NewPan.Y:=round(Pan.Y / Factor);
@@ -1372,7 +1358,7 @@ begin
       FPan.Y:=FPan.Y-round((mouseDY/Factor-mouseDY)-(NewPan.Y-Pan.Y));
       Refresh;
     end;
-  {$endif}
+{$endif}
   end;
 end;
 
@@ -1426,52 +1412,25 @@ begin
 end;{TFreeViewport.ShadedColor}
 
 procedure TFreeViewport.ShadeTriangle(P_1, P_2, P_3: T3DVector; R, G, B: byte; Alpha: byte);
-var
-  Normal: T3DVector;
+var Center,Normal,LSourceDirection: T3DVector;
   Pt1, Pt2, Pt3, T: TShadePoint;
-  LSourceDirection: T3DVector;
-  Center: T3DVector;
-  LIntensityRatio, LIntensity: TFloatType;
-  Y: integer;
-  XLeft, dXLeft, XRight, dXRight: integer;
-  ZLeft, dZLeft, ZRight, dZRight: TFloatType;
+  Y, XLeft, dXLeft, XRight, dXRight: integer;
+     ZLeft, dZLeft, ZRight, dZRight, LIntensityRatio,LIntensity: TFloatType;
 
-(* {$ifdef Windows32}
-  procedure Swap(var A, B: integer); assembler;
-  asm
-           MOV     ECX,[EAX]
-           XCHG    ECX,[EDX]
-           MOV     [EAX],ECX
-  end;{Swap}
-    {$else}
-*)
-  procedure Swap( var A,B: integer );
-  var X: integer; begin X:=A; A:=B; B:=X; end; {Swap}
-// {$endif}
-
-
+  procedure Swap( var A,B:integer ); var X:integer; begin X:=A; A:=B; B:=X; end;
   procedure ShadeLine(X1, X2, Y: integer; Z1, Z2: TFloatType);
-  var
-    IncZ, T: TFloatType; //Row: pRGBTripleArray;
-    pRow, pPixel: pointer;
-    Pixel: TRGBTriple;
+  var  IncZ,T: TFloatType;   // Row: pRGBTripleArray;
+       pRow,pPixel: Pointer;
+       Pixel: TRGBTriple;
   begin
     if (Y<0) or (Y>FDestinationHeight-1) then exit;
     X1:=X1 div 256;
     X2:=X2 div 256;
-    if X1 > X2 then begin
-      Swap(X1, X2);
-      T:=Z1;
-      Z1:=Z2;
-      Z2:=T;
-    end;
+    if X1 > X2 then begin Swap( X1,X2 ); T:=Z1; Z1:=Z2; Z2:=T; end;
     if X1 <> X2 then IncZ:=(Z2-Z1) / (X2-X1)
                 else IncZ:=0;
     if (X1 > FDestinationWidth-1) or (X2 < 0) then exit;
-    if (X1 < 0) then begin
-      Z1:=Z1+abs(X1) * IncZ;
-      X1:=0;
-    end;
+    if (X1 < 0) then begin Z1:=Z1+abs(X1)*IncZ; X1:=0; end;
     if X2 > FDestinationWidth-1 then X2:=FDestinationWidth-1;
     if X1 >= 0 then begin
                // Use scanline property for faster pixel access
@@ -2076,10 +2035,10 @@ procedure TFreeViewport.ZoomExtents;
 var
   Min,Max: T3DVector;
 begin
-  if Assigned( FOnRequestExtents ) then begin
+  if Assigned( OnRequestExtents ) then begin
     Min:=ZERO;
     Max:=ZERO;
-    FOnRequestExtents( self,Min,Max );
+    OnRequestExtents( self,Min,Max );
     FZoom:=1.0;
     FPan.X:=0;
     FPan.Y:=0;

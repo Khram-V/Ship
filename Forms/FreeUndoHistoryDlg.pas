@@ -1,34 +1,30 @@
 unit FreeUndoHistoryDlg;
 {$MODE Delphi}{$H+}
-interface
-uses
-     Graphics, Forms,
-     Controls, Buttons,
-     StdCtrls, ExtCtrls,
-     FreeShipUnit, FreeVersionUnit, FreeTypes,
-     FreeGeometry, FreeLanguageSupport;
+interface uses
+    Graphics, Forms,
+    Controls, Buttons,
+    StdCtrls, ExtCtrls,
+    FreeShipUnit, FreeVersionUnit, FreeTypes,
+    FreeGeometry, FreeLanguageSupport;
 type
   TFreeUndoHistoryDialog = class(TForm)              { TFreeUndoHistoryDialog }
-    Panel: TPanel;
-    Panel1: TPanel;
-    UndoBox: TListBox;
     FreeShip1: TFreeShip;
+    Panel,Panel1: TPanel;
+    UndoBox: TListBox;
     Viewport: TFreeViewport;
     Splitter1: TSplitter;
-    SpeedButton1: TSpeedButton;
-    SpeedButton2: TSpeedButton;
+    SpeedButton1,SpeedButton2: TSpeedButton;
     procedure UndoBoxClick(Sender: TObject);
-    procedure ViewportRequestExtents(Sender: TObject; var Min,
-    Max: T3DVector);
+    procedure ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
     procedure ViewportRedraw(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    private { Private declarations }
-    public { Public declarations }
+  private                                              { Private declarations }
+  public                                                { Public declarations }
     procedure CreateFreeShip;
     procedure CreateViewPort;
-    function Execute(Freeship:TFreeShip):Boolean;
+    function Execute( Freeship:TFreeShip ):Boolean;
   end;
 
 var FreeUndoHistoryDialog: TFreeUndoHistoryDialog;
@@ -37,11 +33,10 @@ implementation
 {$R *.lfm}
 
 procedure TFreeUndoHistoryDialog.CreateFreeShip;
-begin
-  FreeShip1:= TFreeShip.Create(Self);
+begin  FreeShip1:= TFreeShip.Create(Self);
   with FreeShip1 do begin
     FileChanged:=True;
-    Filename:='Example_Ship.ftm';
+    Filename:='~uShip.fbm';
     FileVersion:=fv261;
     Precision:=fpLow;
   end;
@@ -52,11 +47,11 @@ begin
   Viewport:=TFreeViewport.Create(Self);
   Viewport.Parent:=Panel1;
   with Viewport do begin
-    Left:=264;
-    Height:=392;
+    Left:=200;
+    Height:=400;
     Top:=9;
-    Width:=411;
-    Angle:=20;
+    Width:=400;
+    Angle:=30;
     Align:=alClient;
     BackgroundImage.Alpha:=255;
     BackgroundImage.Owner:=Viewport;
@@ -74,46 +69,39 @@ begin
     Elevation:=20;
     Margin:=0;
     ViewType:=fvPerspective;
-    ViewportMode:=vmWireFrame;
+    ViewportMode:=vmShade; // vmWireFrame;
     OnRedraw:=ViewportRedraw;
     OnRequestExtents:=ViewportRequestExtents;
   end;
 end;
 
-function TFreeUndoHistoryDialog.Execute(Freeship:TFreeShip):Boolean;
-var I,Max: Integer;
-    Undo: TFreeUndoObject;
-    Str: AnsiString;
+function TFreeUndoHistoryDialog.Execute( Freeship:TFreeShip ):Boolean;
+var I,Max: Integer; Undo: TFreeUndoObject; Str: AnsiString;
 begin
    CreateFreeShip;
    CreateViewPort;
    UndoBox.Clear;
-//   try
-      UndoBox.Items.BeginUpdate;
-      Max:=0;
-      for I:=1 to Freeship.UndoCount do begin
-         Undo:=Freeship.UndoObject[I-1];
-         if length(Undo.UndoText)>Max then Max:=Length(Undo.UndoText);
-      end;
-      inc(Max,2);
-      for I:=1 to Freeship.UndoCount do begin
-         Undo:=Freeship.UndoObject[I-1];
-         Str:=Freeship.UndoObject[I-1].UndoText;
-         if Length(Str)>0 then Str[1]:=Upcase(Str[1]);
-         While length(Str)<Max do Str:=Str+#32;
-         Str:=Str+' ('+Undo.Time+')';
-         UndoBox.Items.AddObject(Str,Undo);
-      end;
-//   finally
-      UndoBox.Items.EndUpdate;
-      Freeship1.AddViewport(Viewport);
-      UndoBox.ItemIndex:=Freeship.UndoPosition-1;
-      Viewport.Color:=Freeship.Preferences.ViewportColor;
-      ShowTranslatedValues(Self); ShowModal;
-//   end;
-   Result:=ModalResult=mrOK;
+   UndoBox.Items.BeginUpdate;
+   Max:=0;
+   for I:=0 to Freeship.UndoCount-1 do begin
+      Undo:=Freeship.UndoObject[I];
+      if length( Undo.UndoText )>Max then Max:=Length( Undo.UndoText );
+   end;
+   inc( Max,2 );
+   for I:=0 to Freeship.UndoCount-1 do begin
+      Undo:=Freeship.UndoObject[I];
+      Str:=Freeship.UndoObject[I].UndoText;
+      Str:=Str+'  ('+Undo.Time+')';
+      UndoBox.Items.AddObject( Str,Undo );
+   end;
+   UndoBox.Items.EndUpdate;
+   Freeship.AddViewport( Viewport );
+   UndoBox.ItemIndex:=Freeship.UndoPosition-1;
+   Viewport.Color:=Freeship.Preferences.ViewportColor;
+   ShowTranslatedValues(Self);
+   ShowModal;
+   Result:=ModalResult=mrOK; ViewPort.Destroy; FreeShip1.Destroy;
 end;
-
 procedure TFreeUndoHistoryDialog.UndoBoxClick(Sender: TObject);
 var Undo:TFreeUndoObject;
 begin
@@ -123,22 +111,16 @@ begin
       Viewport.ZoomExtents;
    end;
 end;
-
-procedure TFreeUndoHistoryDialog.ViewportRequestExtents(Sender: TObject;var Min, Max: T3DVector);
-begin Freeship1.Extents(Min,Max); end;
-
+procedure TFreeUndoHistoryDialog.ViewportRequestExtents( Sender:TObject; var Min,Max:T3DVector );
+    begin Freeship1.Extents(Min,Max); end;
 procedure TFreeUndoHistoryDialog.ViewportRedraw(Sender: TObject);
-begin Freeship1.DrawToViewport( Viewport ); end;
-
+    begin Freeship1.DrawToViewport( Viewport ); end;
 procedure TFreeUndoHistoryDialog.SpeedButton1Click(Sender: TObject);
-begin ModalResult:=mrOK; end;
-
+    begin ModalResult:=mrOK; end;
 procedure TFreeUndoHistoryDialog.SpeedButton2Click(Sender: TObject);
-begin ModalResult:=mrCancel; end;
-
+    begin ModalResult:=mrCancel; end;
 procedure TFreeUndoHistoryDialog.FormResize(Sender: TObject);
-begin Speedbutton1.Left:=Panel.Width-132;
-      Speedbutton2.Left:=Speedbutton1.Left+SpeedButton1.Width+2;
-end;
+    begin Speedbutton1.Left:=Panel.Width-132;
+          Speedbutton2.Left:=Speedbutton1.Left+SpeedButton1.Width+2; end;
 
 end.

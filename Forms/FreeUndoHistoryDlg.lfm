@@ -1,29 +1,29 @@
 object FreeUndoHistoryDialog: TFreeUndoHistoryDialog
-  Left = 338
+  Left = 200
   Height = 434
-  Top = 177
-  Width = 684
+  Top = 100
+  Width = 632
   Caption = 'Undo history.'
   ClientHeight = 434
-  ClientWidth = 684
+  ClientWidth = 632
   OnResize = FormResize
   Position = poMainFormCenter
-  LCLVersion = '2.0.2.0'
+  LCLVersion = '3.8.0.0'
   object Panel: TPanel
     Left = 0
     Height = 24
     Top = 0
-    Width = 684
+    Width = 632
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 24
-    ClientWidth = 684
+    ClientWidth = 632
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
     object SpeedButton1: TSpeedButton
-      Left = 520
+      Left = 468
       Height = 20
       Top = 2
       Width = 80
@@ -72,7 +72,7 @@ object FreeUndoHistoryDialog: TFreeUndoHistoryDialog
       OnClick = SpeedButton1Click
     end
     object SpeedButton2: TSpeedButton
-      Left = 602
+      Left = 550
       Height = 20
       Top = 2
       Width = 80
@@ -125,15 +125,15 @@ object FreeUndoHistoryDialog: TFreeUndoHistoryDialog
     Left = 0
     Height = 410
     Top = 24
-    Width = 684
+    Width = 632
     Align = alClient
     BevelOuter = bvLowered
     BorderWidth = 8
     ClientHeight = 410
-    ClientWidth = 684
+    ClientWidth = 632
     TabOrder = 1
     object Splitter1: TSplitter
-      Left = 259
+      Left = 293
       Height = 392
       Top = 9
       Width = 5
@@ -143,15 +143,14 @@ object FreeUndoHistoryDialog: TFreeUndoHistoryDialog
       Left = 9
       Height = 392
       Top = 9
-      Width = 250
+      Width = 284
       Align = alLeft
       Font.Name = 'Courier New'
       ItemHeight = 0
-      OnClick = UndoBoxClick
       ParentFont = False
       ScrollWidth = 248
       TabOrder = 0
-      TopIndex = -1
+      OnClick = UndoBoxClick
     end
   end
 end

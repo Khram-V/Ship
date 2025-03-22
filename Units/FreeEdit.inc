@@ -1775,6 +1775,7 @@ begin
 //end;
 
   if Plates.Count > 0 then begin
+//  Screen.Cursor:=crCross; //Default;
     Dlg:=TFreeExpanedplatesDialog.Create(FreeShip);
     ShowTranslatedValues(Dlg);
     FreeShip.IsRebuildAsyncDisabled:=true;
@@ -2189,7 +2190,7 @@ begin
     B:=FreeNewModelDialog.Breadth;
     D:=FreeNewModelDialog.Draft/2;
 {$if true }
-    Default[0,0]:=Vector( 0.06,0,    0    );   // station 0, stern
+    Default[0,0]:=Vector( 0.06,0,    0    );   // station 0, stern = Галеон
     Default[0,1]:=Vector( 0.04,0.01, 1.8  );
     Default[0,2]:=Vector(-0.01,0.16, 2    );
     Default[0,3]:=Vector(-0.01,0.175,2.2  );
@@ -2225,7 +2226,7 @@ begin
     Default[6,3]:=Vector( 0.98, 0,  3.25  );
     Default[6,4]:=Vector( 0.98, 0,  4     );
 {$else}
-    Default[0,0]:=Vector(0.06, 0,   0   );   // station 0, stern
+    Default[0,0]:=Vector(0.06, 0,   0   );   // station 0, stern = Фелюга
     Default[0,1]:=Vector(0.04, 0.0, 1.8 );
     Default[0,2]:=Vector(0,    0.01,2   );
     Default[0,3]:=Vector(-0.005,0.3,2.6 );
@@ -2262,31 +2263,36 @@ begin
     Default[6,4]:=Vector(0.98, 0,   4   );
 {$endif}
     FreeShip.Clear;
-    FreeShip.ProjectSettings.ProjectUnits :=
-      TFreeUnitType(FreeNewModelDialog.ComboBox1.ItemIndex);
-    FreeShip.ProjectSettings.ProjectLength:=L;
-    FreeShip.ProjectSettings.ProjectBeam:=B;
-    FreeShip.ProjectSettings.ProjectDraft:=D*2;
-
+    with FreeShip.ProjectSettings do begin
+      ProjectUnits:=TFreeUnitType(FreeNewModelDialog.ComboBox1.ItemIndex);
+      ProjectLength:=L;
+      ProjectBeam:=B;
+      ProjectDraft:=D*2;
+      FProjectName:='Корпус всепогодного корабля среднего водоизмещения (галеон)';
+      FProjectDesigner:='Подсекция штормовой мореходности, Научно-инженерное общество корабелов им.А.Н.Крылова';
+      FProjectComment:='Вариант эволюционного совершенствования корабельных обводов из эпохи Великих Испанских географических открытий';
+      FProjectFileCreatedBy:='Free!Ship (c)'+FormatDateTime('YYYY-MM-DD_hh:nn',Now );
+      ProjectUnderWaterColorAlpha:=128;
+    end;
     TrvSplines:=TFasterListTFreeSpline.Create;
     StemPoint:=nil;        // First create tmp. splines in transverse direction
     for I:=0 to 6 do begin
-      Spline1:=TFreeSpline.Create(FreeShip.Surface);
-      for J:=0 to 4 do begin P:=Default[I, J];
-        P.X:=P.X * L;
-        P.Y:=P.Y * B;
-        P.Z:=P.Z * D;        Spline1.Add(P);
+      Spline1:=TFreeSpline.Create( FreeShip.Surface );
+      for J:=0 to 4 do begin P:=Default[I,J];
+        P.X:=P.X*L;
+        P.Y:=P.Y*B;
+        P.Z:=P.Z*D; Spline1.Add( P );
       end;
-      TrvSplines.Add(Spline1);
+      TrvSplines.Add( Spline1 );
     end;                   // now create tmp. splines in longitudinal direction
-    Setlength(Pts, Rows+1);
+    Setlength( Pts,Rows+1 );
     for I:=0 to rows do begin
-      Setlength(Pts[I], Cols+1);
-      Spline2:=TFreeSpline.Create(FreeShip.Surface);
+      Setlength( Pts[I],Cols+1 );
+      Spline2:=TFreeSpline.Create( FreeShip.Surface );
       for j:=0 to TrvSplines.Count-1 do begin
         Spline1:=TrvSplines[J];
         P:=Spline1.Value(I / Rows);
-        Spline2.Add(P);
+        Spline2.Add( P );
       end; // now calculate all points on the longitudinal spline and send it to the surface
       for J:=0 to Cols do begin P:=Spline2.Value(J/Cols);
         Pts[I,J]:=TFreeSubdivisionControlPoint.Create(FreeShip.Surface);
@@ -2296,9 +2302,9 @@ begin
       end;
       FreeAndNil(Spline2);
     end;
-    for I:=1 to TrvSplines.Count do begin                // Destroy tmp splines
-      Spline1:=TrvSplines[I-1];
-      FreeAndNil(Spline1);
+    for I:=0 to TrvSplines.Count-1 do begin              // Destroy tmp splines
+      Spline1:=TrvSplines[I];
+      FreeAndNil( Spline1 );
     end;
     TrvPoints:=TFasterListTFreeSubdivisionControlPoint.Create; // finally create the controlfaces over the newly calculated points
     for I:=1 to Rows do
@@ -2310,13 +2316,11 @@ begin
         TrvPoints.Add(Pts[I-1,J-1]);
         FreeShip.Surface.AddControlFace(TrvPoints, True);
     end;                         // recheck edges crease after all faces added.
-    for i:=0 to FreeShip.Surface.ControlEdges.Count-1 do
-       FreeShip.Surface.ControlEdge[i].Crease:=false;
-
+    for i:=0 to FreeShip.Surface.ControlEdges.Count-1 do FreeShip.Surface.ControlEdge[i].Crease:=false;
     FreeShip.Precision:=fpMedium;
-    FreeShip.Surface.Initialize(1, 1, 1);
+    FreeShip.Surface.Initialize( 1,1,1 );
     // Collapse stempoint to mage the grid irregular in order to demonstrate subdivision-surface capabilities
-    if StemPoint <> nil then
+    if StemPoint<>nil then
       if StemPoint.VertexType = svCorner then
         stempoint.VertexType:=svCrease;
     FreeShip.Built:=False;
@@ -2329,7 +2333,6 @@ begin
     D:=(FreeShip.Surface.Max.Z-FreeShip.Surface.Min.Z)/10;
     for I:=0 to 10 do Intersection_Add(fiWaterline,I*D ); //10*(FreeShip.Surface.Max.Z-FreeShip.Surface.Min.Z));
     for I:=1 to 4 do Intersection_Add( fiDiagonal,(I*2+1)*D ); //FreeShip.FProjectSettings.ProjectDraft );
-
     FreeShip.FileChanged:=True;
     FreeShip.ModelIsLoaded:=True;
     FreeShip.Filename:='Example_Ship.ftm';
@@ -2349,8 +2352,7 @@ procedure TFreeEdit.Model_LackenbyTransformation;
 var
   Dialog: TFreeLackenbyDialog;
   vUndo: TFreeUndoObject;
-  UndoIndex: integer;
-  I: integer;
+  UndoIndex,I: integer;
   Modified: boolean;
 begin
   Dialog:=TFreeLackenbyDialog.Create(FreeShip);
@@ -2374,20 +2376,19 @@ end;
 // Scale the entire model and all equivalent data such as stations etc.
 
 procedure TFreeEdit.Model_Scale
-( ScaleVector: T3DVector; OverrideLock, AdjustMarkers: boolean
-);
+( ScaleVector: T3DVector; OverrideLock, AdjustMarkers: boolean );
 var
-  I, J: integer;
+  I,J: integer;
   Point: TFreeSubdivisionControlPoint;
   P: T3DVector;
   Marker: TFreeMarker;
 begin
-  for I:=1 to FreeShip.Surface.NumberOfControlPoints do begin
-    Point:=FreeShip.Surface.ControlPoint[I-1];
+  for I:=0 to FreeShip.Surface.NumberOfControlPoints-1 do begin
+    Point:=FreeShip.Surface.ControlPoint[I];
     if (not Point.Locked) or (OverrideLock) then begin P:=Point.Coordinate;
-      P.X:=P.X * ScaleVector.X;
-      P.Y:=P.Y * ScaleVector.Y;
-      P.Z:=P.Z * ScaleVector.Z;
+      P.X:=P.X*ScaleVector.X;
+      P.Y:=P.Y*ScaleVector.Y;
+      P.Z:=P.Z*ScaleVector.Z;
       if Point.Locked then begin Point.Locked:=False;
         Point.Coordinate:=P;
         Point.Locked:=True;
@@ -2444,28 +2445,25 @@ end;
 
 // Merge two selected edges by removing their common controlpoint.
 procedure TFreeEdit.Point_Collapse;
-var
-  I, N: integer;
-  Point: TFreeSubdivisionControlPoint;
-  vUndo: TFreeUndoObject;
+var I,N: integer;
+    Point: TFreeSubdivisionControlPoint;
+    vUndo: TFreeUndoObject;
 begin
-  N:=0;
-  // count points to be collapsed
+  N:=0;                                         // count points to be collapsed
   for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do begin
     Point:=FreeShip.SelectedControlPoint[I-1];
     if (not Point.Locked) and (Point.NumberOfEdges = 2) then Inc(N);
   end;
-  if N > 0 then FreeShip.Surface.ClearMesh;
-
-  vUndo:=CreateUndoObject(Userstring(160), False);
+  if N>0 then FreeShip.Surface.ClearMesh;
+  vUndo:=CreateUndoObject( Userstring(160),False );
   for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do begin
     Point:=FreeShip.SelectedControlPoint[I-1];
     if (not Point.Locked) and (Point.NumberOfEdges = 2) then begin
       Point.Collapse;
-      Inc(N);
+      Inc( N );
     end;
   end;
-  if N > 0 then begin vUndo.Accept;
+  if N>0 then begin vUndo.Accept;
     FreeShip.Built:=False;
     Freeship.RebuildModel;
     FreeShip.FileChanged:=True;
@@ -2929,32 +2927,27 @@ begin
     FreeShip.ProjectSettings.SavePreview:=Preview;
   end;
 end;
-
-// Clear the undo history
+                                                      // Clear the undo history
 procedure TFreeEdit.Undo_Clear; begin  FreeShip.ClearUndo; end;
 
-// Show the undo history
-procedure TFreeEdit.Undo_ShowHistory;
-var
-  Dialog: TFreeUndoHistoryDialog;
-  vUndo: TFreeUndoObject;
-  Index: integer;
-  vRedo: TFreeUndoObject;
+procedure TFreeEdit.Undo_ShowHistory;                  // Show the undo history
+var Dialog: TFreeUndoHistoryDialog;
+    vUndo: TFreeUndoObject;
+    Index: integer;
+    vRedo: TFreeUndoObject;
 begin
   Dialog:=TFreeUndoHistoryDialog.Create(FreeShip);
   ShowTranslatedValues(Dialog);
   vRedo:=nil;
   if (FreeShip.FUndoPosition = FreeShip.UndoCount) and (FreeShip.UndoCount > 0) then
-    if not FreeShip.UndoObject[FreeShip.UndoCount-1].FIsTempRedoObject then
-    begin
-      vRedo:=CreateRedoObject;
-      Dec(FreeShip.FUndoPosition);
-    end;
+  if not FreeShip.UndoObject[FreeShip.UndoCount-1].FIsTempRedoObject then begin
+    vRedo:=CreateRedoObject;
+    Dec(FreeShip.FUndoPosition);
+  end;
   if Dialog.Execute(FreeShip) then begin
     if Dialog.UndoBox.ItemIndex <> -1 then begin
       vUndo:=Dialog.UndoBox.Items.Objects[Dialog.UndoBox.ItemIndex] as
         TFreeUndoObject;
-      ;
       Index:=FreeShip.FUndoObjects.IndexOf(vUndo);
       if Index <> -1 then begin //FreeShip.FPreviousUndoPosition:=Index+1;
         FreeShip.FUndoPosition:=Index;

@@ -34,10 +34,9 @@ const // Cursors
 
 // Cursor used when setting the transparent color of a background image
 
-const
-//Foot = 0.3048;
+const                                                          //Foot = 0.3048;
   Lbs = 0.44642857;
-  WeightConversionFactor = (1000 / Lbs) / ((1 / Foot) * (1 / Foot) * (1 / Foot));
+  WeightConversionFactor = (1000/Lbs) / ((1/Foot) * (1/Foot) * (1/Foot));
   IncrementSize = 25;   // amount of points which is automaticly allocated extra memory for
   Decimals = 4;          // When weilding points together this is the accuracy for comparing points
   PixelCountMax = 32768;  // used for faster pixel acces when shading to viewport
@@ -45,11 +44,9 @@ const
   Zoomfactor = 1.02;
 type
   TShadePoint = record                         // Used for drawing to the Z-buffer
-    X,Y: integer;
-    Z: TFloatType;
+    X,Y: integer; Z: TFloatType;
     R,G,B: integer;
   end;
-
   TLayerProperties = record
     SurfaceArea: TFloatType;
     Weight: TFloatType;
@@ -58,15 +55,13 @@ type
   TFreeVertexType=(svRegular, svCrease, svDart, svCorner); // Different types of subdivisionvertices
   TFreeCameraType=(ftWide,ftStandard,ftShortTele,ftMediumTele,ftFarTele); // Different types of camera lenses, corresponding to focalpoints 20mm, 50mm, 90mm, 130mm, 200mm
   TFreeViewType=( fvBodyplan, fvProfile, fvPlan, fvPerspective );
-  TFreeViewportMode = (vmWireFrame, vmShade, vmShadeGauss, vmShadeDevelopable, vmShadeZebra);
+  TFreeViewportMode=(vmWireFrame,vmShade,vmShadeGauss,vmShadeDevelopable,vmShadeZebra);
   TFreeSubdivisionMode = (fmQuadTriangle, fmCatmullClark);
   TFreeAssembleMode = (amRegular, amNURBS);
   TFreeViewportBackgroundMode = (emNormal, emSetOrigin, emSetScale, emSetFrame, emUnsetFrame, emSetTransparentColor);
-
   TFreeLight = record
-    Position: T3DVector;   // position of light in world
-    Intensity: byte;           // brightness
-    Ambient: byte;
+    Position: T3DVector;     // position of light in world
+    Intensity,Ambient: byte; // brightness
   end;
 
 type
@@ -101,10 +96,9 @@ type
   Edge  1---+  Face
   Face  1---2+ Point
   }
-
-  {---------------------------------------------------------------------------------------------------}
-  {                                           FasterList specializations                                     }
-  {---------------------------------------------------------------------------------------------------}
+  {----------------------------------------------------------------------}
+  {                                           FasterList specializations }
+  {----------------------------------------------------------------------}
 
   TFasterListTFreeNamedObject = TFasterList<TFreeNamedObject>;
   TFasterListTFreeSpline = TFasterList<TFreeSpline>;
@@ -112,11 +106,11 @@ type
   TFasterListTFreeSubdivisionPoint = TFasterList<TFreeSubdivisionPoint>;
   TFasterListTFreeSubdivisionEdge = TFasterList<TFreeSubdivisionEdge>;
   TFasterListTFreeSubdivisionFace = TFasterList<TFreeSubdivisionFace>;
-  //TFasterListTFreeSubdivisionCurve = TFasterList<TFreeSubdivisionCurve>;
-  TFasterListTFasterListTFreeSubdivisionPoint = TFasterList<TFasterListTFreeSubdivisionPoint>;
+//TFasterListTFreeSubdivisionCurve = TFasterList<TFreeSubdivisionCurve>;
+  TFasterListTFasterListTFreeSubdivisionPoint=TFasterList<TFasterListTFreeSubdivisionPoint>;
 
   TFasterListTFreeSubdivisionControlPoint = TFasterList<TFreeSubdivisionControlPoint>;
-  TFasterListTFreeSubdivisionControlPointGroup = TFasterList<TFreeSubdivisionControlPointGroup>;
+  TFasterListTFreeSubdivisionControlPointGroup=TFasterList<TFreeSubdivisionControlPointGroup>;
   TFasterListTFreeSubdivisionControlEdge = TFasterList<TFreeSubdivisionControlEdge>;
   TFasterListTFreeSubdivisionControlFace = TFasterList<TFreeSubdivisionControlFace>;
   TFasterListTFreeSubdivisionControlCurve = TFasterList<TFreeSubdivisionControlCurve>;
@@ -147,13 +141,11 @@ type
   TUnrolledPoint=record // points with extra information, used for unrolling plates
     Coordinate: T2DCoordinate;
   end;
-
   TOnRequestExtentsEvent = procedure( Sender: TObject; var Min,Max: T3DVector ) of object;
      // Event from TFreeviewport, which is raised when the viewport initializes
      // and needs the bounding box of the min/max coordinates of the 3D model
   TChangeActiveLayerEvent = procedure(Sender: TObject; Layer: TFreeSubdivisionLayer) of object;
                          // Event raised when the active lyers has been changed
-
   TAlphaBlendData = record
     R,G,B, Alpha: byte;
     zvalue: single;
@@ -290,7 +282,7 @@ type
     FDrawingCanvas: TCanvas;
     FDrawingBuffer: TBitmap;          // Drawingbuffer to prevent flickering. Everything is drawn on this bitmap, and then copied to the screen
     FBitmapFormatHelper: TFreeBitmapFormatHelper;
-    FOnChangeBackgroundImage: TNotifyEvent;
+{   FOnChangeBackgroundImage: TNotifyEvent;
     FOnMouseDown: TMouseEvent;
     FOnMouseUp: TMouseEvent;
     FOnMouseEnter: TNotifyEvent;
@@ -300,6 +292,7 @@ type
     FOnChangeViewType: TNotifyEvent;
     FOnRequestBackgroundImage: TNotifyEvent;
     FOnRequestExtents: TOnRequestExtentsEvent;
+}
     FScreencenter: TPoint;
     FPan: TPoint;
     FPreviousPosition: TPoint;
@@ -366,6 +359,16 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: integer); override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: integer;  MousePos: TPoint): boolean; override;
   public
+    OnMouseDown: TMouseEvent;         // read FOnMouseDown write FOnMouseDown;
+    OnMouseUp: TMouseEvent;           // read FOnMouseUp write FOnMouseUp;
+    OnChangeBackground: TNotifyEvent; //  read FOnChangeBackgroundImage write FOnChangeBackgroundImage;
+    OnChangeViewType: TNotifyEvent;   // read FOnChangeViewType write FOnChangeViewType;
+    OnMouseMove: TMouseMoveEvent;     // read FOnMouseMove write FOnMouseMove;
+    OnMouseEnter: TNotifyEvent;       // read FOnMouseEnter write FOnMouseEnter;
+    OnMouseLeave: TNotifyEvent;       // read FOnMouseLeave write FOnMouseLeave;
+    OnRedraw: TNotifyEvent;           // read FOnRedraw write FOnRedraw;
+    OnRequestBackgroundImage: TNotifyEvent;   // read FOnRequestBackgroundImage write FOnRequestBackgroundImage;
+    OnRequestExtents: TOnRequestExtentsEvent; // read FOnRequestExtents write FOnRequestExtents;
 {$ifdef DrawDebug}
         FDebugPoint:TPoint;
         FDebug3DPoint,FDebugCamera,FDebugIntersection,FDebugT1,FDebugT2,FDebugT3:T3DVector;
@@ -463,21 +466,23 @@ type
     property ViewType: TFreeViewtype read FViewType write FSetViewType;
     property ViewportMode: TFreeViewportMode read FViewportMode write FSetViewportMode;
     // Switch between wireframe mode or differentypes of shading
-    property OnChangeBackground: TNotifyEvent read FOnChangeBackgroundImage write FOnChangeBackgroundImage;
-    property OnChangeViewType: TNotifyEvent read FOnChangeViewType write FOnChangeViewType;
     property OnKeyDown;
     property OnKeyPress;
     property OnKeyUp;
+{
     property OnMouseDown: TMouseEvent  read FOnMouseDown write FOnMouseDown;
     property OnMouseUp: TMouseEvent read FOnMouseUp write FOnMouseUp;
+    property OnChangeBackground: TNotifyEvent read FOnChangeBackgroundImage write FOnChangeBackgroundImage;
+    property OnChangeViewType: TNotifyEvent read FOnChangeViewType write FOnChangeViewType;
     property OnMouseMove: TMouseMoveEvent read FOnMouseMove write FOnMouseMove;
     property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
     property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseWheel;
-    property OnResize;
     property OnRedraw: TNotifyEvent read FOnRedraw write FOnRedraw;
     property OnRequestBackgroundImage: TNotifyEvent read FOnRequestBackgroundImage write FOnRequestBackgroundImage;
     property OnRequestExtents: TOnRequestExtentsEvent read FOnRequestExtents write FOnRequestExtents;
+}
+    property OnMouseWheel;
+    property OnResize;
   end;
   {-----------------------------------}
   { TFreeDevelopedPatch               }
@@ -1042,9 +1047,9 @@ type
     property Visible: boolean read FGetVisible;
   end;
 
-  {--------------------------------------------------------------------------------------------------}
-  {                                           TFreeSubdivisionEdge                                   }
-  {--------------------------------------------------------------------------------------------------}
+  {----------------------------------------------------------------}
+  {                                           TFreeSubdivisionEdge }
+  {----------------------------------------------------------------}
   TFreeSubdivisionEdge = class(TFreeSubdivisionBase)
   private
     FStartpoint: TFreeSubdivisionPoint;

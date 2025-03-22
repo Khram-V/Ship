@@ -1,11 +1,11 @@
 object MainForm: TMainForm
-  Left = 823
-  Height = 520
-  Top = 254
-  Width = 1280
+  Left = 37
+  Height = 849
+  Top = 35
+  Width = 1290
   Align = alTop
-  ClientHeight = 520
-  ClientWidth = 1280
+  ClientHeight = 849
+  ClientWidth = 1290
   Color = clAppWorkspace
   Constraints.MinHeight = 200
   Constraints.MinWidth = 300
@@ -17,19 +17,19 @@ object MainForm: TMainForm
   OnShow = FormShow
   Position = poDefault
   ShowHint = True
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.8.0.0'
   object StatusBar: TPanel
     Left = 0
     Height = 27
-    Top = 493
-    Width = 1280
+    Top = 822
+    Width = 1290
     Align = alBottom
     AutoSize = True
     BevelOuter = bvLowered
     ChildSizing.Layout = cclTopToBottomThenLeftToRight
     ChildSizing.ControlsPerLine = 1
     ClientHeight = 27
-    ClientWidth = 962
+    ClientWidth = 1290
     Color = clMenuBar
     ParentBackground = False
     ParentColor = False
@@ -39,7 +39,7 @@ object MainForm: TMainForm
       Left = 1
       Height = 25
       Top = 1
-      Width = 133
+      Width = 132
       AutoSize = True
       BevelOuter = bvLowered
       ChildSizing.LeftRightSpacing = 10
@@ -47,7 +47,7 @@ object MainForm: TMainForm
       ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
       ChildSizing.ControlsPerLine = 1
       ClientHeight = 25
-      ClientWidth = 133
+      ClientWidth = 132
       ParentBackground = False
       ParentFont = False
       TabOrder = 0
@@ -55,7 +55,7 @@ object MainForm: TMainForm
         Left = 11
         Height = 15
         Top = 5
-        Width = 111
+        Width = 110
         Caption = 'Память отката: 0 kb.'
         Layout = tlCenter
         ParentColor = False
@@ -63,10 +63,10 @@ object MainForm: TMainForm
       end
     end
     object StatusPanel3: TPanel
-      Left = 134
+      Left = 133
       Height = 25
       Top = 1
-      Width = 100
+      Width = 143
       BevelOuter = bvLowered
       ChildSizing.LeftRightSpacing = 10
       ChildSizing.TopBottomSpacing = 4
@@ -74,7 +74,7 @@ object MainForm: TMainForm
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 1
       ClientHeight = 25
-      ClientWidth = 100
+      ClientWidth = 143
       Constraints.MinWidth = 100
       ParentBackground = False
       ParentFont = False
@@ -84,7 +84,7 @@ object MainForm: TMainForm
         Left = 11
         Height = 15
         Top = 5
-        Width = 53
+        Width = 121
         Caption = 'Шаг приращений : 0.1'
         Layout = tlCenter
         ParentColor = False
@@ -93,7 +93,7 @@ object MainForm: TMainForm
       end
     end
     object StatusPanel4: TPanel
-      Left = 234
+      Left = 276
       Height = 25
       Top = 1
       Width = 100
@@ -114,7 +114,7 @@ object MainForm: TMainForm
         Left = 11
         Height = 15
         Top = 5
-        Width = 77
+        Width = 51
         Caption = 'счётчики'
         Layout = tlCenter
         ParentColor = False
@@ -123,10 +123,10 @@ object MainForm: TMainForm
       end
     end
     object StatusPanel5: TPanel
-      Left = 334
+      Left = 376
       Height = 25
       Top = 1
-      Width = 251
+      Width = 245
       BevelInner = bvLowered
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 10
@@ -135,7 +135,7 @@ object MainForm: TMainForm
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
       ClientHeight = 25
-      ClientWidth = 251
+      ClientWidth = 245
       ParentBackground = False
       ParentFont = False
       TabOrder = 3
@@ -152,8 +152,8 @@ object MainForm: TMainForm
         Left = 167
         Height = 20
         Top = 3
-        Width = 73
-        Caption = 'LabelProgress'
+        Width = 67
+        Caption = 'исполнение'
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
@@ -164,18 +164,17 @@ object MainForm: TMainForm
     Left = 0
     Height = 24
     Top = 0
-    Width = 1280
+    Width = 1290
     Align = alTop
     BevelOuter = bvNone
     BorderWidth = 1
     ClientHeight = 24
-    ClientWidth = 1280
+    ClientWidth = 1290
     Color = clMenuBar
     ParentBackground = False
     ParentColor = False
     ParentFont = False
     TabOrder = 1
-    OnResize = PanelMainResize
     object ToolBarEdit: TToolBar
       Left = 0
       Height = 24
@@ -184,7 +183,6 @@ object MainForm: TMainForm
       Align = alNone
       ButtonHeight = 24
       ButtonWidth = 24
-      Caption = 'ToolBarFile'
       EdgeBorders = [ebLeft]
       EdgeOuter = esRaised
       Images = MenuImages
@@ -193,13 +191,13 @@ object MainForm: TMainForm
       Transparent = True
       object ToolButtonOpenFile: TToolButton
         Tag = 1
-        Left = 24
+        Left = 3
         Top = 0
         Action = LoadFile
       end
       object ToolButton38: TToolButton
         Tag = 2
-        Left = 44
+        Left = 27
         Top = 0
         Action = FileSave
       end
@@ -224,7 +222,6 @@ object MainForm: TMainForm
       Align = alNone
       ButtonHeight = 24
       ButtonWidth = 24
-      Caption = 'ToolBarFile'
       Color = clMenuBar
       EdgeBorders = [ebLeft]
       EdgeOuter = esRaised
@@ -322,7 +319,7 @@ object MainForm: TMainForm
         Tag = 15
         Left = 364
         Height = 23
-        Hint = 'Font Size'
+        Hint = 'Размер шрифта'
         Top = 0
         Width = 40
         Constraints.MinWidth = 40
@@ -345,13 +342,13 @@ object MainForm: TMainForm
         Items.Strings = (
           'Черновая'
           'Средняя'
-          'Подробная'
-          'Предельная'
+          'Частая'
+          'Мелкая'
         )
         ParentFont = False
         Style = csDropDownList
         TabOrder = 1
-        Text = 'Medium'
+        Text = 'Средняя'
         OnChange = cbPrecisionChange
       end
       object tbShowFreeObjects: TToolButton
@@ -378,7 +375,6 @@ object MainForm: TMainForm
       BorderSpacing.Left = 20
       ButtonHeight = 24
       ButtonWidth = 24
-      Caption = 'ToolBarFile'
       EdgeBorders = [ebLeft]
       EdgeOuter = esRaised
       Images = MenuImages
@@ -410,7 +406,7 @@ object MainForm: TMainForm
       end
       object ToolButton26: TToolButton
         Tag = 6
-        Left = 99 
+        Left = 99
         Top = 0
         Action = IntersectionDialog
       end
@@ -455,7 +451,6 @@ object MainForm: TMainForm
       Align = alNone
       ButtonHeight = 24
       ButtonWidth = 24
-      Caption = 'ToolBarPoints'
       Color = clMenuBar
       EdgeBorders = [ebLeft]
       EdgeOuter = esRaised
@@ -514,14 +509,13 @@ object MainForm: TMainForm
       Align = alNone
       ButtonHeight = 24
       ButtonWidth = 24
-      Caption = 'ToolBarFile'
       Color = clMenuBar
       EdgeBorders = [ebLeft]
       EdgeOuter = esRaised
       Images = MenuImages
       ParentColor = False
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 4
       Transparent = True
       object ToolButton27: TToolButton
         Left = 3
@@ -561,7 +555,6 @@ object MainForm: TMainForm
       Align = alNone
       ButtonHeight = 24
       ButtonWidth = 24
-      Caption = 'ToolBarFile'
       EdgeBorders = [ebLeft]
       EdgeOuter = esRaised
       Images = MenuImages
@@ -588,14 +581,13 @@ object MainForm: TMainForm
       Align = alNone
       ButtonHeight = 24
       ButtonWidth = 24
-      Caption = 'ToolBarFile'
       Color = clMenuBar
       EdgeBorders = [ebLeft]
       EdgeOuter = esRaised
       Images = MenuImages
       ParentColor = False
       ParentFont = False
-      TabOrder = 7
+      TabOrder = 5
       Transparent = True
       object ToolButton40: TToolButton
         Left = 3
@@ -607,15 +599,14 @@ object MainForm: TMainForm
   end
   object MainClientPanel: TPanel
     Left = 0
-    Height = 469
+    Height = 798
     Top = 24
-    Width = 1280
+    Width = 1290
     Align = alClient
     BevelOuter = bvNone
     ParentBackground = False
     ParentFont = False
     TabOrder = 2
-    OnClick = MainClientPanelClick
   end
   object ActionList1: TActionList
     Images = MenuImages
@@ -635,15 +626,15 @@ object MainForm: TMainForm
     end
     object LoadFile: TAction
       Category = 'File'
-      Caption = 'Open...'
-      Hint = 'Open a new file.'
+      Caption = 'Открыть...'
+      Hint = 'Открыть новую цифровую модель.'
       ImageIndex = 0
       OnExecute = LoadFileExecute
     end
     object ExitProgram: TAction
       Category = 'File'
-      Caption = 'Exit'
-      Hint = 'Quit FreeShip'
+      Caption = 'Выход'
+      Hint = 'Завершение работы программы Free!Ship'
       ImageIndex = 1
       OnExecute = ExitProgramExecute
     end
@@ -681,19 +672,19 @@ object MainForm: TMainForm
     end
     object NewWindow: TAction
       Category = 'Window'
-      Caption = 'New window'
+      Caption = 'Новый вид'
       ImageIndex = 33
       OnExecute = NewWindowExecute
     end
     object TileWindow: TAction
       Category = 'Window'
-      Caption = 'Tile'
+      Caption = 'Листы рядом'
       ImageIndex = 32
       OnExecute = TileWindowExecute
     end
     object CascadeWindow: TAction
       Category = 'Window'
-      Caption = 'Cascade'
+      Caption = 'Стопка листов'
       ImageIndex = 34
       OnExecute = CascadeWindowExecute
     end
@@ -706,8 +697,8 @@ object MainForm: TMainForm
     end
     object FileSaveas: TAction
       Category = 'File'
-      Caption = 'Save as...'
-      Hint = 'Prompt for filename and save file.'
+      Caption = 'Сохранить как...'
+      Hint = 'Сохранить с иным именем и местоположением.'
       ImageIndex = 39
       OnExecute = FileSaveasExecute
     end
@@ -734,8 +725,8 @@ object MainForm: TMainForm
     end
     object Delete: TAction
       Category = 'Edit'
-      Caption = 'Delete'
-      Hint = 'Delete all selected items.'
+      Caption = 'Удалить выбранное'
+      Hint = 'Удаление всех отмеченных объектов.'
       ImageIndex = 8
       OnExecute = DeleteExecute
       ShortCut = 16472
@@ -771,37 +762,37 @@ object MainForm: TMainForm
     end
     object PointCollapse: TAction
       Category = 'Point'
-      Caption = 'Collapse'
-      Hint = 'Merge two selected edges by removing their common controlpoint.'
+      Caption = 'Слияние'
+      Hint = 'Оставить совпадающее ребро со сбросом общих точек.'
       ImageIndex = 12
       OnExecute = PointCollapseExecute
     end
     object ActiveLayerColor: TAction
       Category = 'Layer'
-      Caption = 'Active layer color'
-      Hint = 'Change the color of the currently active layer.'
+      Caption = 'Цвет активного слоя'
+      Hint = 'Изменить цвет активного слоя.'
       ImageIndex = 25
       OnExecute = ActiveLayerColorExecute
     end
     object DeleteEmptyLayers: TAction
       Category = 'Layer'
-      Caption = 'Delete empty'
-      Hint = 'Delete empty layers from the model.'
+      Caption = 'Удалить пустые слои'
+      Hint = 'Удалить пустые слои из модели.'
       ImageIndex = 29
       OnExecute = DeleteEmptyLayersExecute
     end
     object LayerDialog: TAction
       Category = 'Layer'
-      Caption = 'Dialog'
-      Hint = 'Show the window with layer properties.'
+      Caption = 'Свойства графических слоёв'
+      Hint = 'Интерактивное управление свойствами слоя.'
       ImageIndex = 24
       OnExecute = LayerDialogExecute
       ShortCut = 16460
     end
     object NewModel: TAction
       Category = 'File'
-      Caption = 'New...'
-      Hint = 'Start a new model.'
+      Caption = 'Новая модель...'
+      Hint = 'Создать корпус по аналитической модели.'
       ImageIndex = 13
       OnExecute = NewModelExecute
       ShortCut = 16462
@@ -858,7 +849,7 @@ object MainForm: TMainForm
     end
     object EditProjectSettings: TAction
       Category = 'Project'
-      Caption = 'Project settings'
+      Caption = 'Установки по проекту'
       ImageIndex = 68
       OnExecute = EditProjectSettingsExecute
     end
@@ -935,15 +926,15 @@ object MainForm: TMainForm
     end
     object ShowGrid: TAction
       Category = 'Visibility'
-      Caption = 'Grid'
-      Hint = 'Show grid of intersections in plan, profile and bodyplan view.'
+      Caption = 'Сетка теоретических плоскостей'
+      Hint = 'Разметка плоскостей шпангоутов, ватерлинний, батоксов и рыбин.'
       ImageIndex = 22
       OnExecute = ShowGridExecute
     end
     object Undo: TAction
       Category = 'Edit'
-      Caption = 'Undo'
-      Hint = 'Undo the last modification.'
+      Caption = 'Отмена'
+      Hint = 'Отмена последних действий.'
       ImageIndex = 56
       OnExecute = UndoExecute
       ShortCut = 16474
@@ -968,7 +959,7 @@ object MainForm: TMainForm
     end
     object Preferences: TAction
       Category = 'Project'
-      Caption = 'Preferences'
+      Caption = 'Настройки'
       OnExecute = PreferencesExecute
     end
     object ImportBodyplan: TAction
@@ -1023,7 +1014,7 @@ object MainForm: TMainForm
     end
     object ShowLinesplan: TAction
       Category = 'Project'
-      Caption = 'Linesplan'
+      Caption = 'Теоретический чертёж'
       ImageIndex = 31
       OnExecute = ShowLinesplanExecute
     end
@@ -1069,8 +1060,8 @@ object MainForm: TMainForm
     end
     object FileSave: TAction
       Category = 'File'
-      Caption = 'Save'
-      Hint = 'Save file without prompting for the filename.'
+      Caption = 'Сохранить'
+      Hint = 'Сохранить модель как есть.'
       ImageIndex = 5
       OnExecute = FileSaveExecute
       ShortCut = 16467
@@ -1191,20 +1182,20 @@ object MainForm: TMainForm
     end
     object Redo: TAction
       Category = 'Edit'
-      Caption = 'Redo'
-      Hint = 'Undo the previous modification.'
+      Caption = 'Возврат'
+      Hint = 'Возврат отменённых действий.'
       ImageIndex = 57
       OnExecute = RedoExecute
       ShortCut = 16466
     end
     object ClearUndo: TAction
       Category = 'Edit'
-      Caption = 'Clear'
+      Caption = 'Сброс всех отмен'
       OnExecute = ClearUndoExecute
     end
     object ShowUndoHistory: TAction
       Category = 'Edit'
-      Caption = 'Browse...'
+      Caption = 'Контроль выполненных действий...'
       OnExecute = ShowUndoHistoryExecute
     end
     object ImportPolyCad: TAction
@@ -1297,7 +1288,7 @@ object MainForm: TMainForm
     end
     object ActionCheckUpdates: TAction
       Category = 'Help'
-      Caption = 'System info'
+      Caption = 'Справка по модели'
       Hint = 'Calculate hydrostatics for the design condition.'
       ImageIndex = 67
       OnExecute = ActionCheckUpdatesExecute
@@ -1334,8 +1325,8 @@ object MainForm: TMainForm
     end
     object LayerVisibilityDialog: TAction
       Category = 'Layer'
-      Caption = 'Layer visibility dialog'
-      Hint = 'Show Layer visibility dialog'
+      Caption = 'Скрыть/показать графические слои'
+      Hint = 'Выбор слоёв для показа и редактрования'
       ImageIndex = 62
       OnExecute = LayerVisibilityDialogExecute
     end
@@ -1867,7 +1858,7 @@ object MainForm: TMainForm
     Left = 112
     Top = 72
     object File1: TMenuItem
-      Caption = 'File'
+      Caption = 'Файл'
       object New3: TMenuItem
         Action = NewModel
       end
@@ -1882,7 +1873,7 @@ object MainForm: TMainForm
         Action = FileSaveas
       end
       object Import1: TMenuItem
-        Caption = 'Import'
+        Caption = 'Импорт'
         object Part2: TMenuItem
           Action = ImportPart
         end
@@ -1921,7 +1912,7 @@ object MainForm: TMainForm
         end
       end
       object Export1: TMenuItem
-        Caption = 'Export'
+        Caption = 'Экспорт'
         object Part1: TMenuItem
           Action = ExportPart
         end
@@ -1981,11 +1972,11 @@ object MainForm: TMainForm
         Caption = '-'
       end
       object Recentfiles: TMenuItem
-        Caption = 'Recent files'
+        Caption = 'Предыдущие модели'
       end
     end
     object Project1: TMenuItem
-      Caption = 'Project'
+      Caption = 'Проект'
       object Projectsettings1: TMenuItem
         Action = EditProjectSettings
       end
@@ -1994,11 +1985,11 @@ object MainForm: TMainForm
       end
     end
     object Edit1: TMenuItem
-      Caption = 'Edit'
+      Caption = 'Редактирование'
       object Undo1: TMenuItem
         Action = Undo
       end
-      object Archimedes1: TMenuItem
+      object Redo1: TMenuItem
         Action = Redo
       end
       object Delete1: TMenuItem
@@ -2008,7 +1999,7 @@ object MainForm: TMainForm
         Caption = '-'
       end
       object Undohistory1: TMenuItem
-        Caption = 'Undo history'
+        Caption = 'Возврат изменений'
         object Clear1: TMenuItem
           Action = ClearUndo
         end
@@ -2018,7 +2009,7 @@ object MainForm: TMainForm
       end
     end
     object Point1: TMenuItem
-      Caption = 'Point'
+      Caption = 'Точка'
       object Add1: TMenuItem
         Action = AddPoint
       end
@@ -2062,7 +2053,7 @@ object MainForm: TMainForm
       end
     end
     object Edge1: TMenuItem
-      Caption = 'Edge'
+      Caption = 'Ребро'
       object Extrude1: TMenuItem
         Action = EdgeExtrude
       end
@@ -2080,13 +2071,13 @@ object MainForm: TMainForm
       end
     end
     object Curve1: TMenuItem
-      Caption = 'Curve'
+      Caption = 'Контур'
       object AddCurve1: TMenuItem
         Action = NewCurve
       end
     end
     object Face1: TMenuItem
-      Caption = 'Face'
+      Caption = 'Грань'
       object New4: TMenuItem
         Action = NewFace
       end
@@ -2095,7 +2086,7 @@ object MainForm: TMainForm
       end
     end
     object Layer1: TMenuItem
-      Caption = 'Layer'
+      Caption = 'Слой'
       object Activelayercolor1: TMenuItem
         Action = ActiveLayerColor
       end
@@ -2116,7 +2107,7 @@ object MainForm: TMainForm
       end
     end
     object Visibility1: TMenuItem
-      Caption = 'Visibility'
+      Caption = 'Видимость'
       object ShowControlNet1: TMenuItem
         Action = ShowControlNet
       end
@@ -2176,7 +2167,7 @@ object MainForm: TMainForm
       end
     end
     object Selection1: TMenuItem
-      Caption = 'Selection'
+      Caption = 'Выбор'
       object Selectall1: TMenuItem
         Action = SelectAll
       end
@@ -2197,7 +2188,7 @@ object MainForm: TMainForm
       end
     end
     object ools1: TMenuItem
-      Caption = 'Tools'
+      Caption = 'Средства'
       object Analyzesurface1: TMenuItem
         Action = CheckModel
       end
@@ -2211,7 +2202,7 @@ object MainForm: TMainForm
         Action = DevelopLayers
       end
       object Markers2: TMenuItem
-        Caption = 'Markers'
+        Caption = 'Маркеры'
         object Import2: TMenuItem
           Action = ImportMarkers
         end
@@ -2230,7 +2221,7 @@ object MainForm: TMainForm
       end
     end
     object ransform1: TMenuItem
-      Caption = 'Transform'
+      Caption = 'Трансформация'
       object Scale3D1: TMenuItem
         Action = ScaleModel
       end
@@ -2251,7 +2242,7 @@ object MainForm: TMainForm
       end
     end
     object Calculations1: TMenuItem
-      Caption = 'Calculations'
+      Caption = 'Вычисления'
       object Intersections1: TMenuItem
         Action = IntersectionDialog
       end
@@ -2263,7 +2254,7 @@ object MainForm: TMainForm
       end
     end
     object Window1: TMenuItem
-      Caption = 'Window'
+      Caption = 'Кульман'
       object NewWindow1: TMenuItem
         Action = NewWindow
       end
@@ -2278,11 +2269,11 @@ object MainForm: TMainForm
       end
     end
     object Help1: TMenuItem
-      Caption = 'Help'
+      Caption = 'Тексты'
       ShortCut = 112
       object HelpContents: TMenuItem
         Action = HelpAction
-        Caption = 'Manual'
+        Caption = 'Руководство'
         ShortCut = 112
       end
       object CheckUpdates: TMenuItem
@@ -2290,7 +2281,7 @@ object MainForm: TMainForm
       end
       object HelpAbout: TMenuItem
         Action = AboutAction
-        Caption = 'About'
+        Caption = 'О Free!Ship'
       end
     end
   end

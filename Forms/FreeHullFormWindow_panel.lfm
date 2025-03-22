@@ -1,11 +1,11 @@
 object FreeHullWindow: TFreeHullWindow
-  Left = 589
-  Height = 262
-  Top = 173
-  Width = 469
+  Left = 200
+  Height = 480
+  Top = 100
+  Width = 640
   Caption = 'FreeHullWindow'
-  ClientHeight = 262
-  ClientWidth = 469
+  ClientHeight = 480
+  ClientWidth = 640
   FormStyle = fsMDIChild
   OnClose = FormClose
   OnCreate = FormCreate

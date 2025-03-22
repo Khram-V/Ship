@@ -1,41 +1,19 @@
 unit FreeLayerDlg;
-{$MODE Delphi}{$H+}
+{$mode objfpc}{$H+}  //{$MODE Delphi}{$H+}
 interface uses
-{$IFnDEF FPC}
-  Windows,
-{$ELSE}
-  LCLIntf, LCLType,
-{$ENDIF}
-  SysUtils,
-     Classes,
-     Graphics,
-     Controls,
-     StdCtrls,
-     ExtCtrls,
-     Forms,
-     FreeShipUnit,
-     FreeTypes,
-     FreeGeometry,
-     CheckLst,
-     Dialogs,
-     ComCtrls,
-     Spin;
+    SysUtils, Controls,
+    StdCtrls, ExtCtrls,
+    Forms,    CheckLst,
+    Dialogs,  ComCtrls,
+    Spin,
+    FreeTypes,FreeShipUnit,FreeGeometry;
 
 type
-
-{ TFreeLayerDialog }
-
   TFreeLayerDialog  = class(TForm)
-    CheckBox1: TCheckBox;
-    CheckBox2: TCheckBox;
-    CheckBox3: TCheckBox;
-    CheckBox4: TCheckBox;
-    CheckBox5: TCheckBox;
-    CheckBox6: TCheckBox;
     cbControlNetVisible: TCheckBox;
+    CheckBox1,CheckBox2,CheckBox3,CheckBox4,CheckBox5,CheckBox6: TCheckBox;
     Edit1: TEdit;
-    Edit2: TFloatSpinEdit;
-    Edit3: TFloatSpinEdit;
+    Edit2,Edit3: TFloatSpinEdit;
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
@@ -113,14 +91,10 @@ type
     procedure SelectLayer(Index: integer);
     procedure FFillBox;
     function FGetSelectedLayer:TFreeSubdivisionLayer;
-    function FGetWeight:single;
-    procedure FSetWeight(val:single);
-    function FGetXg:single;
-    procedure FSetXg(val:single);
-    function FGetYg:single;
-    procedure FSetYg(val:single);
-    function FGetZg:single;
-    procedure FSetZg(val:single);
+    function FGetWeight:single; procedure FSetWeight(val:single);
+    function FGetXg:single;     procedure FSetXg(val:single);
+    function FGetYg:single;     procedure FSetYg(val:single);
+    function FGetZg:single;     procedure FSetZg(val:single);
   public
     WeightS,XgS,YgS,ZgS : single;
     function Execute(FreeShip:TFreeShip):Boolean;
@@ -135,14 +109,8 @@ type
 var FreeLayerDialog : TFreeLayerDialog;
 
 implementation
-
 uses FreeLinesplanFrame;
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-{$ELSE}
   {$R *.lfm}
-{$ENDIF}
 
 procedure TFreeLayerDialog.UpdateMenu;
 var I,N : INteger;

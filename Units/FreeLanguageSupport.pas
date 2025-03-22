@@ -51,18 +51,14 @@ begin
 end;
 
 function UserString( Index:Integer ):AnsiString;    // == Languages\Russian.ini
-const U: array of record L:Integer; C:AnsiString; end =( {$I Russian.inc} ); // ’
-  var Str,Section,Val : AnsiString;
-      Key : AnsiString='User0000'; I: Integer;
+const U: array of record L:Word; C:AnsiString; end =( {$I Russian.inc} ); // ’
+  var Val: AnsiString; I: Integer;
 begin Result:='';
-   if CurrentLanguage=nil then begin // при отсутствии текстовых строк в файле
-      for I:=1 to Length( U )-1 do   // [216]
-        if U[I].L=Index then begin Str:=U[I].C; Result:=Str; exit; end;
-   end else begin Section:='User';
-      Val:=IntToStr( Index );
-      Key:=Copy( Key,1,8-len(Val) )+Val;
-      Str:=CurrentLanguage.readString( Section,Key,'' );
-      if Str<>'' then Result:=Str;
+   if CurrentLanguage=nil then begin  // при отсутствии текстовых строк в файле
+     for I:=1 to Length( U )-1 do     // [216+...]
+     if U[I].L=Index then begin Result:=U[I].C; break; end;
+   end else begin Val:=IntToStr( Index );
+     Result:=CurrentLanguage.readString('User',Copy('User0000',1,8-len(Val))+Val,'');
    end;
 end;
 
