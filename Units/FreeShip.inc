@@ -356,48 +356,35 @@ begin result:=nil;
        result:=Surface.ControlFace[i]; break; end;
 end;
 
-function TFreeShip.GetAllNamedPoints:TStringList;
-var i:integer;
-begin
-  result:=TStringList.Create;
+function TFreeShip.GetAllNamedPoints:TStringList; var i:integer;
+begin result:=TStringList.Create;
   for i:=0 to Surface.NumberOfControlPoints-1 do
-    if Surface.ControlPoint[i].Name <> '' then
-      result.AddObject(Surface.ControlPoint[i].Name, Surface.ControlPoint[i]);
+    if Surface.ControlPoint[i].Name<>'' then
+      result.AddObject( Surface.ControlPoint[i].Name,Surface.ControlPoint[i] );
 end;
 
-function TFreeShip.FGetActiveLayer: TFreeSubdivisionlayer;
-begin Result:=Surface.ActiveLayer; end;
-
 function TFreeShip.GetActiveControlCurve: TFreeSubdivisionControlCurve;
-begin Result:=Surface.ActiveControlCurve; end;
-
+   begin Result:=Surface.ActiveControlCurve; end;
 function TFreeShip.GetActiveControlEdge: TFreeSubdivisionControlEdge;
-begin Result:=Surface.ActiveControlEdge; end;
-
+   begin Result:=Surface.ActiveControlEdge; end;
 function TFreeShip.GetActiveControlFace: TFreeSubdivisionControlFace;
-begin Result:=Surface.ActiveControlFace; end;
-
+   begin Result:=Surface.ActiveControlFace; end;
 function TFreeShip.GetActiveControlPoint: TFreeSubdivisionControlPoint;
-begin Result:=Surface.ActiveControlPoint; end;
-
+   begin Result:=Surface.ActiveControlPoint; end;
 procedure TFreeShip.SetActiveControlCurve(AValue: TFreeSubdivisionControlCurve);
-begin Surface.ActiveControlCurve:=AValue; end;
-
+    begin Surface.ActiveControlCurve:=AValue; end;
 procedure TFreeShip.SetActiveControlEdge(AValue: TFreeSubdivisionControlEdge);
-begin Surface.ActiveControlEdge:=aValue; end;
-
+    begin Surface.ActiveControlEdge:=aValue; end;
 procedure TFreeShip.SetActiveControlFace(AValue: TFreeSubdivisionControlFace);
-begin Surface.ActiveControlFace:=aValue; end;
+    begin Surface.ActiveControlFace:=aValue; end;
 {
 function TFreeShip.GetOnChangeActiveControlPoint: TNotifyEvent;
 begin result:=Surface.OnChangeActiveControlPoint; end;
 }
 procedure TFreeShip.SetActiveControlPoint(aControlPoint: TFreeSubdivisionControlPoint);
-begin Surface.ActiveControlPoint:=aControlPoint; end;
-
+    begin Surface.ActiveControlPoint:=aControlPoint; end;
 function TFreeShip.FGetBackgroundImage(Index: integer): TFreeBackgroundImageData;
-begin Result:=FBackgroundImages[index]; end;
-
+   begin Result:=FBackgroundImages[index]; end;
 function TFreeShip.FGetBuilt: boolean; begin Result:=Surface.Built; end;
 
 function TFreeShip.FGetFilename: AnsiString; var Ext: AnsiString;
@@ -428,8 +415,11 @@ function TFreeShip.FGetNumberOfLockedPoints: integer;
    begin Result:=Surface.NumberOfLockedPoints; end;
 function TFreeShip.FGetNumberOfLayers: integer;
    begin Result:=Surface.NumberOfLayers; end;
+function TFreeShip.FGetActiveLayer: TFreeSubdivisionlayer;
+   begin Result:=Surface.ActiveLayer; end;
 procedure TFreeShip.FSetActiveLayer( Val: TFreeSubdivisionLayer );
     begin Surface.ActiveLayer:=Val; end;
+
 procedure TFreeShip.FSetActiveControlPoint(Val: TFreeSubdivisionControlPoint);
 begin
   if Val<>FActiveControlPoint then begin
@@ -760,22 +750,21 @@ begin
    if LinesplanFrame<>nil then TFreeLinesplanframe(LinesplanFrame).Viewport.Invalidate;
 end;
 
-procedure TFreeShip.ReDraw;
-var I: integer;  P: TFreeHullWindow;
+procedure TFreeShip.ReDraw; // Redraws model to all viewports using the current
+var I: integer;  P: TFreeHullWindow; //  min/max coordinates of the boundingbox
 begin
-   with MainForm as TMainForm do begin
-      for I:=0 to MDIChildCount-1 do begin
-        P:=GetMDIChildren(I);
-        if P.Viewport.Zoom=1.0 then P.Viewport.ZoomExtents
-                               else P.Viewport.Refresh;
-      end;
+   with MainForm as TMainForm do
+   for I:=0 to MDIChildCount-1 do begin
+     P:=GetMDIChildren(I);
+     if P.Viewport.Zoom=1.0 then P.Viewport.ZoomExtents
+                            else P.Viewport.Refresh;
    end;
    if LinesplanFrame<>nil then TFreeLinesplanframe(LinesplanFrame).Viewport.Refresh;
 end;
 (*
 procedure TFreeShip.Redraw;
 var I: integer;
-begin // Redraws model to all viewports using the current min/max coordinates of the boundingbox
+begin
   for I:=1 to Viewports.Count do
     if Viewport[I-1].Zoom=1.0 then Viewport[I-1].ZoomExtents
                               else Viewport[I-1].Refresh;
@@ -2060,7 +2049,7 @@ var
   Curve: TFreeSubdivisionControlCurve;
   Face:  TFreeSubdivisionControlFace;
   Entity:TFreeSubdivisionBase;
-begin                                                    ///***??? mouse-select
+begin                                  ///***??? mouse-select = выбор элементов
   Entity:=nil;                             // First check the selected vertices
   for I:=Surface.NumberOfSelectedControlPoints-1 downto 0 do begin
     Point:=Surface.SelectedControlPoint[I];

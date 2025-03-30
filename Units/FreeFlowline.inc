@@ -169,7 +169,8 @@ begin
         Param[NParam]:=Output.Parameters[I-1];
         Inc(NParam);
       end;
-      SortFloatArray(Param, NParam);
+      ArraySort( Param,NParam );
+//    SortFloatArray(Param, NParam);
     end;
     for I:=2 to NParam do begin
       P3D:=FFlowline.Value(0.5 * (Param[I-2]+Param[I-1]));
@@ -318,7 +319,7 @@ var
         P.Z:=StartPoint.Z+T*(EndPoint.Z-StartPoint.Z);
         if PointInTriangle(P, PointData[Triangle.P1].Coord,
            PointData[Triangle.P2].Coord,PointData[Triangle.P3].Coord) then begin
-           T:=Distance3D( StartPoint,P );
+           T:=Abs( StartPoint-P );
            if T<Distance then begin
               Distance:=T;
               Result:=I-1;

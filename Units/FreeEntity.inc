@@ -3,15 +3,9 @@
 { This is the base class of all 3D entities in the project }
 {----------------------------------------------------------}
 function TFreeEntity.GetMin: T3DVector;
-begin
-  if not Built then Rebuild; Result:=FMin;
-end;
-
+   begin if not Built then Rebuild; Result:=FMin; end;
 function TFreeEntity.GetMax: T3DVector;
-begin
-  if not Built then Rebuild; Result:=FMax;
-end;
-
+   begin if not Built then Rebuild; Result:=FMax; end;
 procedure TFreeEntity.SetBuilt(Val: boolean);
 begin
   if Val <> FBuilt then begin FBuilt:=Val;
@@ -19,8 +13,7 @@ begin
   end;
 end;
 
-constructor TFreeEntity.Create(Owner: TFreeSubdivisionSurface);
-  // Create and initialise all data
+constructor TFreeEntity.Create(Owner: TFreeSubdivisionSurface); // Create and initialise all data
 begin
   inherited Create( Owner ); //Clear;
   FBuilt:=False;

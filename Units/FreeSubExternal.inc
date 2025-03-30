@@ -27,12 +27,12 @@ begin
   Self.IsLoading:=true;
   for I:=0 to Strings.Count-1 do begin
     Str:=BlankOff( Strings[I] );
-    if Str.StartsWith( '#' ) then else
-    if Str.StartsWith( 'v ' ) then begin SetLength( Vindex,0 );
-      Vindex:=Str.Split( [' '] );
-      C3d.X:=StrtoFloat( Vindex[1] );
-      C3d.Y:=StrtoFloat( Vindex[3] );
-      C3d.Z:=StrtoFloat( Vindex[2] ); CPoints.Add( AddControlPoint( C3d ) );
+    if Str.StartsWith( '#' ) then {пропуск комментария} else
+    if Str.StartsWith( 'v ' ) then begin Str[1]:=' ';
+      C3d.X:=GetFloat( Str );    //X : -2
+      C3d.Z:=GetFloat( Str );    //Z :  1
+      C3d.Y:=GetFloat( Str );    //Y :  3
+      CPoints.Add( AddControlPoint( C3d ) );
     end else
     if Str.StartsWith('f ') then Faces.Append( Str );
   end;
@@ -41,11 +41,12 @@ begin
     K:=Length( Vindex )-1;           //?? с замыкаением контура много?угольника
     if K>2 then begin
       for J:=1 to K do begin
-        Index:=StrtoInt( Vindex[J].Replace( '/',' ' ) );       // впереди 'f'
+        Str:=Vindex[J].Replace( '/',' ' );
+        Index:=GetInteger( Str );                              // впереди 'f'
         FacePoints.Add( CPoints[Index-1] );
       end;
-      if  ( FacePoints[0]<>FacePoints[1] )  // нулевая площадь - приемлема
-      and ( FacePoints[1]<>FacePoints[2] )  // совпедение точек - недопустимо
+      if  ( FacePoints[0]<>FacePoints[1] )    // нулевая площадь - приемлема
+      and ( FacePoints[1]<>FacePoints[2] )    // совпедение точек - недопустимо
       and ( FacePoints[2]<>FacePoints[0] )
       then AddControlFace( FacePoints,True,Self.Layer[0] );
     end;
@@ -59,8 +60,7 @@ end;
 procedure TFreeSubdivisionSurface.ExportObjFile
         ( ExportControlNet: boolean; Strings: TStringList );
 var
-  I, J, K: integer;
-  Index: integer;
+  I,J,K, Index: integer;
   Tmp: TFasterListTFreeSubdivisionPoint;
   CFace: TFreeSubdivisionControlFace;
   Child: TFreeSubdivisionFace;
@@ -215,27 +215,19 @@ function FindDXFColorIndex(Color: TColor): integer;
     $9F7FFF, $2900A5, $6752A5, $1F007F, $4F3F7F, $13004C, $2F264C, $090026, $171326, $000000,
     $2D2D2D, $5B5B5B, $898989, $B7B7B7, $B3B3B3);
 var
-  R, G, B: byte;
-  R1, G1, B1: byte;
-  I: integer;
-  Dist, Tmp: single;
+  R,G,B, R1,G1,B1: byte; I: integer; Dist,Tmp: single;
 begin
   Result:=1;
   R:=GetRValue(Color);
   G:=GetGValue(Color);
   B:=GetBValue(Color);
-  Dist:=1e30;
-  for I:=1 to 255 do
-  begin
-    R1:=GetRValue(DXFLayerColors[I]);
-    G1:=GetGValue(DXFLayerColors[I]);
-    B1:=GetBValue(DXFLayerColors[I]);
-    Tmp:=Sqrt(Sqr(R1-R)+Sqr(G1-G)+Sqr(B1-B));
-    if Tmp < Dist then
-    begin
-      Dist:=Tmp;
-      Result:=I;
-    end;
+  Dist:=1e8;
+  for I:=1 to 255 do begin
+    R1:=GetRValue( DXFLayerColors[I] );
+    G1:=GetGValue( DXFLayerColors[I] );
+    B1:=GetBValue( DXFLayerColors[I] );
+    Tmp:=Sqrt( Sqr(R1-R)+Sqr(G1-G)+Sqr(B1-B) );
+    if Tmp<Dist then begin Dist:=Tmp; Result:=I; end;
   end;
 end;{FindDXFColorIndex}
 

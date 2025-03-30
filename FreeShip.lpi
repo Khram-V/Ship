@@ -584,7 +584,9 @@
       <Unit88>
         <Filename Value="Forms/FreeLinesplanForm.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FreeLinesplanForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit88>
       <Unit89>
         <Filename Value="Forms/FreeLinesplanFrame.pas"/>

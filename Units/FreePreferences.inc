@@ -275,12 +275,12 @@ begin
   GridFontColor:=clGray;
   LayerColor   :=$FFFFF0;     // Default color each layer
   NormalColor  :=clLime;      // color of surface normals
-   StationColor     :=$FF6464;    // =clBlue;
-   ButtockColor     :=clGray;
-   WaterlineColor   :=clGreen;
-   DiagonalColor    :=clSkyBlue;
-   UnderwaterColor:=clGreen;
-   UnderwaterColorAlpha:=255;  //  Color used for shading the underwater part opaque
+  StationColor  :=$FF6464;    // =clBlue;
+  ButtockColor  :=clGray;
+  WaterlineColor:=clGreen;
+  DiagonalColor :=$C08000;    //clSkyBlue;
+  UnderwaterColor:=clGreen;
+  UnderwaterColorAlpha:=255;  //  Color used for shading the underwater part opaque
   ControlCurveColor:=$FF0080;
   EdgeColor        :=$6F6F6F; // Color of normal edges (no crease)
   CreaseEdgeColor  :=$32CD9A; // Color of crease control edges

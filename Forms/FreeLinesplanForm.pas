@@ -1,6 +1,7 @@
 unit FreeLinesplanForm;
 {$MODE Delphi}{$H+}
-interface uses Classes,Forms,FreeGeometry,FreeLinesPlanFrame;
+interface uses Classes,Forms,
+               FreeGeometry,FreeLinesPlanFrame,FreeLanguageSupport;
 type TFreeLinesplanForm  = class( TForm )                { TFreeLinesplanForm }
      LinesplanFrame: TFreeLinesplanFrame;
      Viewport: TFreeViewport;
@@ -21,6 +22,8 @@ begin inherited Create( Owner );
       Viewport:=LinesplanFrame.Viewport;
       LinesplanFrame.FontSize:=7;
       LinesplanFrame.SpinEdit1.Value:=7;
+      LinesplanFrame.Caption:=Caption;
+      ShowTranslatedValues( Self );
 end;                                     // Disconnect from FreeShip component;
 procedure TFreeLinesplanForm.FormClose(Sender: TObject;var Action: TCloseAction);
     begin LinesplanFrame.FreeShip:=nil; Action:=caFree; end;

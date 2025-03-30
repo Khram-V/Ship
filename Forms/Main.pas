@@ -252,7 +252,7 @@ type
     procedure PointCollapseExecute     (Sender: TObject);
     procedure LayerBoxChange           (Sender: TObject);
     procedure ActiveLayerColorExecute  (Sender: TObject);
-    procedure ColorButton1Click        (Sender: TObject);
+    procedure ColorButton_Click        (Sender: TObject);
     procedure DeleteEmptyLayersExecute (Sender: TObject);
     procedure LayerDialogExecute       (Sender: TObject);
     procedure NewModelExecute          (Sender: TObject);
@@ -584,7 +584,7 @@ begin
       end;
       if not Diff then FreeShipChangeActiveLayer( self,Face1.Layer )
                   else FreeShipChangeActiveLayer( self,nil );
-   end else FreeShipChangeActiveLayer(self,FreeShip.ActiveLayer);
+   end else FreeShipChangeActiveLayer( self,FreeShip.ActiveLayer );
    UpdateMenu;
 end;
 
@@ -654,8 +654,8 @@ end;
 
 procedure TMainForm.SetCaption;
 begin if FreeShip.FileChanged
- then Caption:='«Free!Ship» :  '+ExtractFileName( FreeShip.Filename )+'  (modified)'
- else Caption:='«Free!Ship» :  '+ExtractFileName( FreeShip.Filename )+'  [not modified]';
+ then Caption:='«Free!Ship» :  '+ExtractFileName( FreeShip.Filename )+'  ('+UserString(280)+')'
+ else Caption:='«Free!Ship» :  '+ExtractFileName( FreeShip.Filename )+'  ['+UserString(281)+']';
 end;
 (*
 procedure TMainForm.SetAllActionsEnabled( val: boolean );
@@ -676,6 +676,15 @@ begin
    NLayers:=0;
    For I:=1 to Freeship.NumberOfLayers do
      if Freeship.Layer[I-1].Count>0 then inc(NLayers);             // File menu
+
+   {  I:=Layerbox.Items.IndexOfObject( Freeship.ActiveLayer ); if I<0 then I:=0;
+   LayerBox.TabOrder:=I;
+   ColorButton1.ButtonColor:=(Layerbox.Items.Objects[I] as TFreeSubdivisionLayer).Color;
+   Freeship.ActiveLayer.Color:=ColorButton1.ButtonColor; ///***???
+}
+// if Freeship.NumberOfSelectedControlFaces=0 then
+   ColorButton1.ButtonColor:=Freeship.ActiveLayer.Color {else ColorButton1.ButtonColor:=clBtnface};
+
    FileSaveas.Enabled:=(FreeShip.Surface.NumberOfControlPoints>0)
                       or (Freeship.FileChanged) or (Freeship.FilenameSet);
    FileSave.Enabled:= FileSaveas.Enabled and Freeship.FileChanged
@@ -741,10 +750,7 @@ begin
    DevelopLayers.Enabled:=False;
    for I:=1 to FreeShip.NumberOfLayers do
      if (FreeShip.Layer[I-1].Developable) and (FreeShip.Layer[I-1].Count>0)
-     then begin
-          DevelopLayers.Enabled:=True;
-          break;
-      end;
+       then begin DevelopLayers.Enabled:=True; break; end;
 // KeelRudderWizard.Enabled:=MDIChildCount>0;
    DeleteMarkers.Enabled:=Freeship.NumberofMarkers>0;
    // Calculations
@@ -1152,25 +1158,7 @@ begin // Fill the layerbox with the current layers
       I:=LayerBox.Items.IndexOfObject(FreeShip.ActiveLayer);
       Layerbox.ItemIndex:=I;
 // end;
-   if FreeLayerVisibilityDialog <> nil then FreeLayerVisibilityDialog.FillLayers;
-end;
-
-procedure TMainForm.FreeShipChangeActiveLayer(Sender: TObject;Layer: TFreeSubdivisionLayer);
-var Index : Integer;
-begin
-   if (FreeShip.NumberOfSelectedControlFaces<>0)
-   and (FreeShip.ActiveLayer=Layer) then else
-   begin    // do not switch to the active layer when controlfaces are selected
-     if Layer=nil then begin
-        Index:=-1;
-        Layerbox.ItemIndex:=Index;                                              //PanelActiveLayerColor.Color:=clBtnface;
-        ColorButton1.ButtonColor:=clBtnface;
-     end else begin
-        Index:=Layerbox.Items.IndexOfObject(Layer);
-        Layerbox.ItemIndex:=Index;                                              //PanelActiveLayerColor.Color:=Layer.Color;
-        ColorButton1.ButtonColor:=Layer.Color;
-     end;
-   end;
+   if FreeLayerVisibilityDialog<>nil then FreeLayerVisibilityDialog.FillLayers;
 end;
 
 procedure TMainForm.MainFormClose(Sender: TObject; var Action: TCloseAction);
@@ -1186,24 +1174,41 @@ begin
   end;
 end;
 
-procedure TMainForm.LayerBoxChange(Sender: TObject);
-var Layer: TFreeSubdivisionLayer; I,Index: Integer;
+procedure TMainForm.FreeShipChangeActiveLayer
+( Sender: TObject; Layer: TFreeSubdivisionLayer );
+  var Index: Integer;
+begin       // do not switch to the active layer when controlfaces are selected
+   if ( FreeShip.NumberOfSelectedControlFaces<>0 )
+   and (FreeShip.ActiveLayer=Layer) then {пропуск} else begin
+     if Layer=nil then begin    // Index:=-1;
+        Layerbox.ItemIndex:=-1; // Index;                                       //PanelActiveLayerColor.Color:=clBtnface;
+//      ColorButton1.ButtonColor:=clBtnface;
+     end else begin
+        Index:=Layerbox.Items.IndexOfObject( Layer );
+        Layerbox.ItemIndex:=Index;                                              //PanelActiveLayerColor.Color:=Layer.Color;
+//      ColorButton1.ButtonColor:=Layer.Color;
+     end;
+   end;
+end;
+
+procedure TMainForm.LayerBoxChange( Sender: TObject );
+  var Layer: TFreeSubdivisionLayer; I,Index: Integer;
 begin
-   Index:=Layerbox.ItemIndex;
-   if index=-1 then Index:=0;
+   Index:=Layerbox.ItemIndex; if index=-1 then Index:=0;
    Layer:=Layerbox.Items.Objects[index] as TFreeSubdivisionLayer;
    if Freeship.NumberOfSelectedControlFaces=0 then begin // change active layer
       if Layer<>FreeShip.ActiveLayer then FreeShip.ActiveLayer:=Layer;
+//    ColorButton1.ButtonColor:=Layer.Color;
    end else begin          // Assign all selected controlfaces to the new layer
       for I:=FreeShip.NumberOfSelectedControlFaces-1 downto 0
-       do FreeShip.SelectedControlFace[I].Layer:=Layer;
+          do FreeShip.SelectedControlFace[I].Layer:=Layer;
       FreeShip.FileChanged:=True;
       FreeShip.Redraw;
    end;
    UpdateMenu;
 end;
 
-procedure TMainForm.ActiveLayerColorExecute(Sender: TObject);
+procedure TMainForm.ActiveLayerColorExecute( Sender: TObject );
 begin                         // change the color of the currently active layer
    ColorDialog.Color:=FreeShip.ActiveLayer.Color;
    if ColorDialog.Execute then begin
@@ -1214,13 +1219,16 @@ begin                         // change the color of the currently active layer
       UpdateMenu;
    end;
 end;
-procedure TMainForm.ColorButton1Click( Sender:TObject );
+procedure TMainForm.ColorButton_Click( Sender:TObject ); //Var I:Integer;
 begin
-      FreeShip.ActiveLayer.Color:=ColorButton1.ButtonColor;
-      FreeShip.FileChanged:=True;
-      FreeShip.Redraw;
-      FreeShipChangeActiveLayer( self,Freeship.ActiveLayer );
-      UpdateMenu;
+// I:=Layerbox.Items.IndexOfObject( Freeship.ActiveLayer ); if I<0 then I:=0;
+   FreeShip.ActiveLayer.Color:=ColorButton1.ButtonColor;
+// (Layerbox.Items.Objects[I] as TFreeSubdivisionLayer).Color:=FreeShip.ActiveLayer.Color;
+// writeln( 'Color='+hexstr( ColorButton1.ButtonColor,8 )+'  Layer='+inttostr( I ) );
+   FreeShip.FileChanged:=True;
+   FreeShip.Redraw;
+   FreeShipChangeActiveLayer( self,Freeship.ActiveLayer );
+   UpdateMenu;
 end;
 (*
 object ColorButton1: TColorButton
@@ -1233,7 +1241,7 @@ object ColorButton1: TColorButton
   BorderWidth = 2
   ButtonColorSize = 32
   ButtonColor = clLime
-  OnClick = ColorButton1Click  -> OnColorChanged
+  OnClick = ColorButton _ Click  -> OnColorChanged
   ParentFont = False
 end
 *)
@@ -1297,8 +1305,8 @@ procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var Answer:word;
 begin
   if Freeship.FileChanged then  begin
-    Answer:=MessageDlg( 'The current model has been changed!'
-                + EOL + 'Are you sure you want to exit?',
+    Answer:=MessageDlg( UserString(103)
+                + EOL + UserString(282),
                         mtWarning,[mbNo,mbYes],0,mbNo );
     CanClose:=Answer=mrYes;
   end;

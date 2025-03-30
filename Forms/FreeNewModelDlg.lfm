@@ -5,7 +5,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
   Width = 500
   AutoSize = True
   BorderStyle = bsDialog
-  Caption = 'New Example Ship.'
+  Caption = 'Образец корпуса'
   ClientHeight = 300
   ClientWidth = 500
   ParentFont = True
@@ -169,7 +169,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           Width = 224
           BorderSpacing.Left = 4
           BorderSpacing.Around = 2
-          Caption = 'No. points in longitudinal direction'
+          Caption = 'Количество точек по длине корпуса'
           Layout = tlCenter
           ParentColor = False
         end
@@ -192,7 +192,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           Width = 224
           BorderSpacing.Left = 6
           BorderSpacing.Around = 2
-          Caption = 'No. points in vertical direction'
+          Caption = 'Узлы интерполяции по высоте'
           Layout = tlCenter
           ParentColor = False
         end
@@ -206,7 +206,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           MaxValue = 10000
           MinValue = 3
           TabOrder = 1
-          Value = 5
+          Value = 6
         end
         object Label3: TLabel
           Left = 10
@@ -215,7 +215,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           Width = 224
           BorderSpacing.Left = 6
           BorderSpacing.Around = 2
-          Caption = 'Length'
+          Caption = 'Длина'
           Layout = tlCenter
           ParentColor = False
         end
@@ -238,7 +238,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           Width = 224
           BorderSpacing.Left = 6
           BorderSpacing.Around = 2
-          Caption = 'Beam'
+          Caption = 'Ширина'
           Layout = tlCenter
           ParentColor = False
         end
@@ -261,7 +261,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           Width = 224
           BorderSpacing.Left = 6
           BorderSpacing.Around = 2
-          Caption = 'Draft'
+          Caption = 'Осадка'
           Layout = tlCenter
           ParentColor = False
         end
@@ -300,7 +300,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
           Align = alLeft
           BorderSpacing.Left = 6
           BorderSpacing.Around = 2
-          Caption = 'Units'
+          Caption = 'Единицы меры'
           Layout = tlCenter
           ParentColor = False
         end
@@ -314,11 +314,11 @@ object FreeNewModelDialog: TFreeNewModelDialog
           ItemHeight = 0
           ItemIndex = 0
           Items.Strings = (
-            'Meters'
-            'Feet'
+            'метры'
+            'футы'
           )
           TabOrder = 0
-          Text = 'Meters'
+          Text = 'метры'
         end
       end
     end

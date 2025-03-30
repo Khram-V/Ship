@@ -243,7 +243,7 @@ begin
       Edge:=FreeShip.SelectedControlEdge[I-1];
       Edge.Selected:=False;
     end;
-    FreeAndNil(SortedPointLists);
+    FreeAndNil( SortedPointLists );
     if FreeShip.Visibility.ShowControlCurves = False
        then FreeShip.Visibility.ShowControlCurves:=True
        else Freeship.RebuildModel;
@@ -1049,10 +1049,8 @@ begin
         FreeShip.OnUpdateGeometryInfo(self);
     end else vUndo.Delete;               // Initialize then new edges and faces
     FreeAndNil(Tmp);
-  end
-  else
-    MessageDlg(Userstring(95), mtInformation, [mbOK], 0);
-end;{TFreeEdit.Face_New}
+  end else ShowMessage(Userstring(95));
+end; {TFreeEdit.Face_New}
 
 function TFreeEdit.CheckIfChangedAndAskToSave():boolean;
   var Answer: word;
@@ -1229,37 +1227,30 @@ begin
     FileClose(fh);
   end;
 }
-  if not FreeShip.FilenameSet or FreeShip.FileIsReadOnly then
-  begin FreeShip.FilenameSet:=false; result:=File_SaveAs; exit;
-  end;
-
+  if not FreeShip.FilenameSet or FreeShip.FileIsReadOnly
+     then begin FreeShip.FilenameSet:=false; result:=File_SaveAs; exit; end;
   if not FreeShip.FilenameSet then exit;
 
   MinFileVersion:=FreeShip.DetectMinFileVersion;
 
-  if (FreeShip.FileVersion < MinFileVersion) //and (not FreeShip.FStopAskingForFileVersion)
+  if (FreeShip.FileVersion<MinFileVersion) //and (not FreeShip.FStopAskingForFileVersion)
   then begin
     Str:=format( 'The current file version is %s.%sDo you want to save the file as version %s ?',
-        [VersionString(FreeShip.FileVersion),EOL,VersionString(MinFileVersion)]);
-    Answer:=MessageDlg(Str, mtInformation, [mbYes, mbNo], 0);
-    if Answer = mrYes then FreeShip.FileVersion:=MinFileVersion
-    else exit;                    //FreeShip.FStopAskingForFileVersion:=True;
-  end
-  else FreeShip.FileVersion:=MinFileVersion;
-
-  FreeShip.FilenameSet:=True;
-  // Check if the file already exists
-  if FileExistsUTF8(FreeShip.Filename) then
-  begin
+      [VersionString(FreeShip.FileVersion),EOL,VersionString(MinFileVersion)]);
+    Answer:=MessageDlg( Str,mtInformation,[mbYes,mbNo],0 );
+    if Answer=mrYes then FreeShip.FileVersion:=MinFileVersion else exit;
+                                    //FreeShip.FStopAskingForFileVersion:=True;
+  end else FreeShip.FileVersion:=MinFileVersion;
+  FreeShip.FilenameSet:=True;               // Check if the file already exists
+  if FileExistsUTF8(FreeShip.Filename) then begin
     Backup:=ChangeFileExt(FreeShip.Filename, '.Bak'); // First check for a backup, and delete when present
     if FileExistsUTF8(Backup) then
-      if not DeleteFileUTF8(Backup) then begin
-        ShowMessage( 'Unable to delete backup file '+Backup );
-        FreeShip.FileIsReadOnly:=true;
-        result:=false;
-        exit;
-      end;
-    // Then create a backup of the old file
+    if not DeleteFileUTF8(Backup) then begin
+       ShowMessage( 'Unable to delete backup file '+Backup );
+       FreeShip.FileIsReadOnly:=true;
+       result:=false;
+       exit;
+    end;                               // Then create a backup of the old file
     if not RenameFileUTF8(FreeShip.Filename, Backup) then begin
       ShowMessage( 'Unable to create backup file '+Backup );
       FreeShip.FileIsReadOnly:=true;
@@ -1268,8 +1259,8 @@ begin
     end;
   end;
   Ext:=ExtractFileExt(FreeShip.Filename);
-  if Ext = '.fbm' then Destination:=TFreeFileBuffer.Create
-                  else Destination:=TFreeTextBuffer.Create;
+  if Ext='.fbm' then Destination:=TFreeFileBuffer.Create
+                else Destination:=TFreeTextBuffer.Create;
   Destination.Encoding:=FreeShip.Preferences.FbmEncoding;
   FreeShip.SaveProject( Destination );
 //try
@@ -1948,10 +1939,10 @@ begin
           for J:=1 to Edge1.StartPoint.NumberOfEdges do begin
             Edge2:=Edge1.StartPoint.Edge[J-1] as TFreeSubdivisionControlEdge;
             if (Edge1 <> Edge2) and (Edge2.NumberOfFaces = 1) then
-              if ((Distance3D( Edge1.StartPoint.Coordinate,Edge2.StartPoint.Coordinate ) <  EdgeError)
-              and (Distance3D(Edge1.EndPoint.Coordinate,Edge2.EndPoint.Coordinate) < EdgeError))
-              or ((Distance3D(Edge1.StartPoint.Coordinate, Edge2.EndPoint.Coordinate) < EdgeError)
-              and (Distance3D(Edge1.EndPoint.Coordinate,Edge2.StartPoint.Coordinate) < EdgeError))
+              if ((Abs( Edge1.StartPoint.Coordinate-Edge2.StartPoint.Coordinate ) <  EdgeError)
+              and (Abs(Edge1.EndPoint.Coordinate-Edge2.EndPoint.Coordinate) < EdgeError))
+              or ((Abs(Edge1.StartPoint.Coordinate-Edge2.EndPoint.Coordinate) < EdgeError)
+              and (Abs(Edge1.EndPoint.Coordinate-Edge2.StartPoint.Coordinate) < EdgeError))
               then
               if DoubleEdges.IndexOf(Edge2)=-1 then DoubleEdges.AddObject( Edge1,Edge2 );
           end;
@@ -1970,30 +1961,23 @@ begin
         for J:=1 to CtrlFace.NumberOfpoints do
         begin
           Point:=CtrlFace.Point[J-1];
-          if Point = Edge2.StartPoint then
-          begin
-            if Distance3D(Edge2.StartPoint.Coordinate, Edge1.StartPoint.Coordinate)
-             < EdgeError then begin
+          if Point = Edge2.StartPoint then begin
+            if Abs(Edge2.StartPoint.Coordinate-Edge1.StartPoint.Coordinate)<EdgeError then begin
                if Points.IndexOf(Edge1.StartPoint) = -1 then points.Add(Edge1.StartPoint);
             end else
-            if Distance3D(Edge2.StartPoint.Coordinate, Edge1.EndPoint.Coordinate)
-             < EdgeError then
+            if Abs(Edge2.StartPoint.Coordinate-Edge1.EndPoint.Coordinate)< EdgeError then
                if Points.IndexOf(Edge1.EndPoint) = -1 then points.Add(Edge1.EndPoint);
           end else
           if Point = Edge2.EndPoint then begin
-            if Distance3D(Edge2.EndPoint.Coordinate, Edge1.StartPoint.Coordinate)
-             < EdgeError then begin
+            if Abs(Edge2.EndPoint.Coordinate-Edge1.StartPoint.Coordinate)<EdgeError then begin
                if Points.IndexOf(Edge1.StartPoint) = -1 then points.Add(Edge1.StartPoint);
             end else
-            if Distance3D(Edge2.EndPoint.Coordinate, Edge1.EndPoint.Coordinate)
-             < EdgeError then
+            if Abs(Edge2.EndPoint.Coordinate-Edge1.EndPoint.Coordinate)<EdgeError then
                if Points.IndexOf(Edge1.EndPoint) = -1 then points.Add(Edge1.EndPoint);
-          end
-          else if Points.IndexOf(Point) = -1 then
-            Points.Add(Point);
+          end else
+          if Points.IndexOf( Point )=-1 then Points.Add(Point);
         end;
-        if Points.Count > 2 then
-        begin
+        if Points.Count>2 then begin
           NewLayer:=Ctrlface.Layer;
           FreeShip.Surface.AddControlFace(Points, False, NewLayer);
           CtrlFace.Delete;
@@ -2167,7 +2151,7 @@ end;
 function TFreeEdit.Model_New: boolean;
 var
   Answer: word; I,J,Cols,Rows: integer;
-  L,B,D: TFloatType; P: T3DVector;
+  L,B,D,dd: TFloatType; P: T3DVector;
   Default: array[0..6, 0..4] of T3DVector; // Default ship has 7 columns of 5 points(or rows)
   Spline1,Spline2: TFreeSpline;
   TrvSplines: TFasterListTFreeSpline;
@@ -2191,30 +2175,41 @@ begin
     D:=FreeNewModelDialog.Draft/2;
 {$if true }
     Default[0,0]:=Vector( 0.06,0,    0    );   // station 0, stern = Галеон
-    Default[0,1]:=Vector( 0.04,0.01, 1.8  );
-    Default[0,2]:=Vector(-0.01,0.16, 2    );
-    Default[0,3]:=Vector(-0.01,0.175,2.2  );
-    Default[0,4]:=Vector(-0.02,0.12, 5.3  );
+    Default[0,1]:=Vector( 0.04,0.02, 1.9  );
+    Default[0,2]:=Vector(-0.01,0.16, 2.2  );
+    Default[0,3]:=Vector(-0.02,0.175,2.8  );
+    Default[0,4]:=Vector(-0.02,0.11, 5.3  );
     Default[1,0]:=Vector( 0.2, 0,    0    );   // station 1
     Default[1,1]:=Vector( 0.18,0.12, 1    );
     Default[1,2]:=Vector( 0.17,0.25, 1.2  );
     Default[1,3]:=Vector( 0.16,0.27, 2.2  );
-    Default[1,4]:=Vector( 0.16,0.3,  4.8  );
+    Default[1,4]:=Vector( 0.16,0.29, 4.9  );
     Default[2,0]:=Vector( 0.4, 0,    0    );   // station 2
     Default[2,1]:=Vector( 0.4, 0.2,  0.2  );
     Default[2,2]:=Vector( 0.4, 0.43, 1    );
     Default[2,3]:=Vector( 0.4, 0.37, 2.2  );
-    Default[2,4]:=Vector( 0.4, 0.36, 3.8  );
+    Default[2,4]:=Vector( 0.4, 0.38, 3.8  );
     Default[3,0]:=Vector( 0.6, 0,    0    );   // station 3
     Default[3,1]:=Vector( 0.6, 0.22, 0.1  );
     Default[3,2]:=Vector( 0.6, 0.45, 0.9  );
     Default[3,3]:=Vector( 0.6, 0.4,  2.2  );
-    Default[3,4]:=Vector( 0.6, 0.38, 3.6  );
+    Default[3,4]:=Vector( 0.6, 0.4, 3.6  );
     Default[4,0]:=Vector( 0.8, 0,    0    );   // station 4
     Default[4,1]:=Vector( 0.8, 0.2,  0.5  );
     Default[4,2]:=Vector( 0.8, 0.24, 1.2  );
     Default[4,3]:=Vector( 0.8, 0.3,  2.5  );
-    Default[4,4]:=Vector( 0.8, 0.34, 3.8  );
+    Default[4,4]:=Vector( 0.8, 0.368,3.8  );
+    Default[5,0]:=Vector( 0.93,0,    0.15 );   // station 5
+    Default[5,1]:=Vector( 0.93,0.05, 1    );
+    Default[5,2]:=Vector( 0.93,0.075,2    );
+    Default[5,3]:=Vector( 0.93,0.125,3    );
+    Default[5,4]:=Vector( 0.95,0.2,  4    );
+    Default[6,0]:=Vector( 1.018,0,   1    );   // station 6, stem
+    Default[6,1]:=Vector( 1.008,0,  1.75  );
+    Default[6,2]:=Vector( 1,    0,  2.5   );
+    Default[6,3]:=Vector( 0.998,0,  3.25  );
+    Default[6,4]:=Vector( 0.998,0,  4     );
+    {
     Default[5,0]:=Vector( 0.92,0,    0.15 );   // station 5
     Default[5,1]:=Vector( 0.92,0.05, 1    );
     Default[5,2]:=Vector( 0.92,0.075,2    );
@@ -2225,6 +2220,7 @@ begin
     Default[6,2]:=Vector( 0.983,0,  2.5   );
     Default[6,3]:=Vector( 0.98, 0,  3.25  );
     Default[6,4]:=Vector( 0.98, 0,  4     );
+    }
 {$else}
     Default[0,0]:=Vector(0.06, 0,   0   );   // station 0, stern = Фелюга
     Default[0,1]:=Vector(0.04, 0.0, 1.8 );
@@ -2326,11 +2322,15 @@ begin
     FreeShip.Built:=False;
 
     // Add 21 stations
-    for I:=0 to 20 do Intersection_Add(fiStation,I/20*(FreeShip.Surface.Max.X-FreeShip.Surface.Min.X));
+    dd := Round( (L+1)/20+1e-6 );
+    for I:=0 to 20 do if I*dd<=L then Intersection_Add(fiStation,I*dd );
+//  for I:=0 to 20 do Intersection_Add(fiStation,I/20*(FreeShip.Surface.Max.X-FreeShip.Surface.Min.X));
     // Add 7 buttocks
-    for I:=1 to 6 do Intersection_Add(fiButtock,I/7*(FreeShip.Surface.Max.Y-FreeShip.Surface.Min.Y));
+    dd:=AxisStep( B/1.75 );
+    for I:=integer( B/dd )downto 0 do if I*dd<B then Intersection_Add( fiButtock,I*dd );
+//  for I:=1 to 6 do Intersection_Add(fiButtock,I/7*(FreeShip.Surface.Max.Y-FreeShip.Surface.Min.Y));
     // Add 11 waterlines
-    D:=(FreeShip.Surface.Max.Z-FreeShip.Surface.Min.Z)/10;
+    D:=AxisStep( FreeShip.Surface.Max.Z-FreeShip.Surface.Min.Z ); // /10;
     for I:=0 to 10 do Intersection_Add(fiWaterline,I*D ); //10*(FreeShip.Surface.Max.Z-FreeShip.Surface.Min.Z));
     for I:=1 to 4 do Intersection_Add( fiDiagonal,(I*2+1)*D ); //FreeShip.FProjectSettings.ProjectDraft );
     FreeShip.FileChanged:=True;
@@ -2750,8 +2750,7 @@ begin
         if not Point.Locked
         and not((Point.AnchorPoint<>nil) and Point.IsAnchorHard) then begin
           P:=ProjectPointOnline(Point.Coordinate, P1.Coordinate, P2.Coordinate);
-          if Distance3D(P, Point.Coordinate) > 1e-7 then begin
-            Point.Coordinate:=P;
+          if Abs( P-Point.Coordinate )>1e-7 then begin Point.Coordinate:=P;
             Inc(NChanged);
           end;
         end;

@@ -615,11 +615,12 @@ var icn:TIcon; sz,ch:integer; pf:TCustomForm;
     if (c.Parent is TCustomForm) then result:=TCustomForm(c.Parent)
                                  else getParentForm(c.Parent); end; }
 begin
-  pf:=getParentForm(Self);
-  if assigned(pf)
-  and assigned(TCustomForm(pf).Icon) and (TCustomForm(pf).Icon.Width>0)
-       then icn:=TCustomForm( pf ).Icon
-       else icn:=Application.Icon;
+  pf:=getParentForm( Self );
+  if assigned( pf )
+  and assigned( TCustomForm( pf ).Icon )
+  and ( TCustomForm( pf ).Icon.Width>0 )
+    then icn:=TCustomForm( pf ).Icon
+    else icn:=Application.Icon;
   FSystemButton.Parent:=nil;
   FSystemButton.Picture.Icon.Assign(icn);
   FSystemButton.Stretch:=true;
@@ -630,13 +631,13 @@ begin
   FSystemButton.BorderSpacing.Around:=(ch-sz)div 2;
   FSystemButton.Parent:=FCaptionPanel;
 end;
-procedure TCustomMDIPanel.SetParent(NewParent: TWinControl);
+procedure TCustomMDIPanel.SetParent( NewParent: TWinControl );
 var H:integer; //bv:TPanelBevel; bw:integer;  bs:TBorderStyle;
 begin
   if Parent = NewParent then exit;
   inherited SetParent( NewParent );
-  FParentForm:=GetParentForm(Self);
-  if assigned(FSystemButton) then setDefaultSystemIcon;
+  FParentForm:=GetParentForm( Self );
+  if assigned( FSystemButton ) then setDefaultSystemIcon;
    // with FSystemButton do begin setDefaultSystemIcon; end;
   Invalidate;
   FCaptionPanel.AdjustSize;

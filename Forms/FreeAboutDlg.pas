@@ -41,7 +41,7 @@ begin
   AddInfo('Target OS  ',      TARGET_OS );
   AddInfo('Build date ',ReleasedDate+' '+COMPILE_TIME );
   AddInfo('© 2005, Martijn van Engeland, DelftShip','Marine software developer, Netherlands' );
-  AddInfo('© 2007-2012 Виктор Фёдорович Тимошенко','Николавский кораблестроительный институт' );
+  AddInfo('© 2007-2012 Виктор Фёдорович Тимошенко','Николаевский кораблестроительный институт' );
   AddInfo('© 2015 Mark Malakanov','FreePascal Lazarus, Woodbridge, Canada' );
   AddInfo('© 2024… НТО Крылова, о.Сахалин','‏יְרוּשָׁלַיִם' );
        //  Timoshenko Victor F., vftim@rambler.ru

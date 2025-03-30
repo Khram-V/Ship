@@ -194,7 +194,7 @@ begin
           ' :  '+Makelength(Yd, -1, 12)+' ' +
           LengthStr(Owner.ProjectSettings.ProjectUnits));
         Zd:=(Z2 * D2-Z1 * D1) / (D2-D1);
-        //             Strings.Add(S4+MakeLength('VCF',43)+' :  '+Makelength(Zd,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+     // Strings.Add(S4+MakeLength('VCF',43)+' :  '+Makelength(Zd,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
         FData.WaterplaneCOG.X:=Xd;
         FData.WaterplaneCOG.Y:=Yd;
         FData.WaterplaneCOG.Z:=Zd+FData.ModelMin.Z;
@@ -202,7 +202,7 @@ begin
     end;
     Strings.Add(S4+MakeLength(Userstring(22), 43)+' : ' +
       Separator+MakeLength(FData.WaterplaneEntranceAngle, -1, 12) +
-      Separator+DegrStr(Owner.ProjectSettings.ProjectUnits));
+      Separator+'°' ); //DegrStr(Owner.ProjectSettings.ProjectUnits));
     if FData.WaterplaneMomInertia.X < 0.01 then
       if FData.BeamWaterline>2*Owner.ProjectSettings.ProjectBeam then begin // Strings.Add('As for catamaran :');
         FData.WaterplaneMomInertia.X:=FData.WaterplaneArea
@@ -818,8 +818,7 @@ begin
 //  Strings.Add(Userstring(494));
   end;
   Strings.Add('');
-  if Mode = fhMultipleCalculations then
-  begin
+  if Mode = fhMultipleCalculations then begin
     Strings.Add('Lwl    : '+Userstring(17));
     Strings.Add('Bwl    : '+Userstring(18));
     Strings.Add('Volume : '+Userstring(3));
@@ -1276,13 +1275,10 @@ var
       FData.CenterOfBuoyancy.Y:=FData.CenterOfBuoyancy.Y+VolumeMoment.Y;
       FData.CenterOfBuoyancy.Z:=FData.CenterOfBuoyancy.Z+VolumeMoment.Z;
     end;
-    ax:=0.5 * ((P1.y-P2.y) * (P1.z+P2.z)+(P2.y-P3.y) *
-      (P2.z+P3.z)+(P3.y-P1.y) * (P3.z+P1.z));
-    ay:=0.5 * ((P1.z-P2.z) * (P1.x+P2.x)+(P2.z-P3.z) *
-      (P2.x+P3.x)+(P3.z-P1.z) * (P3.x+P1.x));
-    az:=0.5 * ((P1.x-P2.x) * (P1.y+P2.y)+(P2.x-P3.x) *
-      (P2.y+P3.y)+(P3.x-P1.x) * (P3.y+P1.y));
-    FData.WettedSurface:=FData.WettedSurface+Sqrt(ax * ax+ay * ay+az * az);
+    ax:=0.5*((P1.y-P2.y)*(P1.z+P2.z)+(P2.y-P3.y)*(P2.z+P3.z)+(P3.y-P1.y)*(P3.z+P1.z));
+    ay:=0.5*((P1.z-P2.z)*(P1.x+P2.x)+(P2.z-P3.z)*(P2.x+P3.x)+(P3.z-P1.z)*(P3.x+P1.x));
+    az:=0.5*((P1.x-P2.x)*(P1.y+P2.y)+(P2.x-P3.x)*(P2.y+P3.y)+(P3.x-P1.x)*(P3.y+P1.y));
+    FData.WettedSurface:=FData.WettedSurface+Sqrt( ax*ax+ay*ay+az*az );
   end; {ProcessTriangle}
 
   procedure CheckSubmergedBody( P: T3DVector; Side: TFloatType );

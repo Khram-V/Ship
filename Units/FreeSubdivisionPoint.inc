@@ -33,19 +33,19 @@ var
     V2X:=P3.X-P2.X;
     V2Y:=P3.Y-P2.Y;
     V2Z:=P3.Z-P2.Z;
-    L:=Sqrt((V1X * V1X)+(V1Y * V1Y)+(V1Z * V1Z));
+    L:=Sqrt((V1X*V1X)+(V1Y*V1Y)+(V1Z*V1Z));
     if L <> 0 then begin
       V1X:=V1X / L;
       V1Y:=V1Y / L;
       V1Z:=V1Z / L;
     end;
-    L:=Sqrt((V2X * V2X)+(V2Y * V2Y)+(V2Z * V2Z));
+    L:=Sqrt((V2X*V2X)+(V2Y*V2Y)+(V2Z*V2Z));
     if L <> 0 then begin
       V2X:=V2X / L;
       V2Y:=V2Y / L;
       V2Z:=V2Z / L;
     end;
-    L:=(V1X * V2X)+(V1Y * V2Y)+(V1Z * V2Z);
+    L:=(V1X*V2X)+(V1Y*V2Y)+(V1Z*V2Z);
     if L < -1 then L:=-1 else
     if L > 1 then L:=1;
     Result:=ArcCos(L);

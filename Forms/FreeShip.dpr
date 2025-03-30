@@ -3,19 +3,18 @@ program FreeShip;                                                 { FREE!ship }
 uses Controls, Forms, Dialogs, //Windows,      // System,
      SysUtils, Math, LazUTF8,                // this includes the LCL widgetset
      DefaultTranslator, Interfaces,
-     Main                  in 'Main.pas',                            {MainForm}
-     FreeTypes             in '../Units/FreeTypes.pas',
-     FreeVersionUnit       in '../Units/FreeVersionUnit.pas',
-     FreeLanguageSupport   in '../Units/FreeLanguageSupport.pas';
+     Main                in 'Main.pas',                              {MainForm}
+     FreeTypes           in '../Units/FreeTypes.pas',
+     FreeVersionUnit     in '../Units/FreeVersionUnit.pas',
+     FreeLanguageSupport in '../Units/FreeLanguageSupport.pas';
  var ParametersHelp: boolean=false;
-     sOpenFile: AnsiString='';
-//Procedure WriteLn( const Str: AnsiString ); overload; begin Write( Str+#10 ); end; //UTF8ToWinCP(
+     sOpenFile: AnsiString='';                                  // UTF8ToWinCP(
 
 procedure InitByParameters; var S: AnsiString; p: integer; begin
   for p:=1 to ParamCount do begin S:=ParamStr(p);
     if S='--help' then ParametersHelp:=True else
-    if ( lowerCase(RightStr( S,4 ))='.ftm' )
-    or ( lowerCase(RightStr( S,4 ))='.fbm' ) then sOpenFile:=S; //? UTF8
+    if ( lowerCase( RightStr( S,4 ) )='.ftm' )
+    or ( lowerCase( RightStr( S,4 ) )='.fbm' ) then sOpenFile:=S;      //? UTF8
   end;
 end;
 procedure PrintParametersHelp( Ans: Boolean ); var sHelp: AnsiString;

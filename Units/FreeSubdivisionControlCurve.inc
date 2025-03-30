@@ -389,19 +389,14 @@ procedure TFreeSubdivisionControlCurve.Draw(Viewport: TFreeViewport);
 var
   Sel: boolean;
   P1, P2: TFreeSubdivisionControlPoint;
-  I, J: integer;
-  I1, I2, J1: integer;
-  Scale: integer;
-  Fragm: integer;
-  NParam: integer;
+  I,J,I1,I2,J1,Scale,Fragm,NParam: integer;
   Param: TFloatArray;
   Edge: TFreesubdivisionControlEdge;
   Plane: T3DPlane;
   Output: TFreeIntersectionData;
   PArray1: array of TPoint;
   PArray2: array of TPoint;
-  P3D, P3D2: T3DVector;
-  Normal: T3DVector;
+  P3D, P3D2,Normal: T3DVector;
   C, T, C2, L: TFloatType;
   iP1, iP2: TFreeSubdivisionPoint;
   p02, p01: TPoint;
@@ -425,7 +420,7 @@ begin
       iP2:=FSubdividedPoints[I];
       p01:=ViewPort.Project(iP1.Coordinate);
       p02:=ViewPort.Project(iP2.Coordinate);
-      T:=T+(DistPoint2D(p01,p02));
+      T:=T+Hypot( P01.x-P02.x,P01.Y-P02.Y );         // (DistPoint2D(p01,p02));
     end;
 
     if Surface.DesiredSubdivisionLevel > 0 then
@@ -470,41 +465,33 @@ begin
     end;
 
 
-    if (Viewport.ViewType = fvBodyPlan) and (not Surface.DrawMirror) then
-    begin
+    if (Viewport.ViewType = fvBodyPlan) and (not Surface.DrawMirror) then begin
       Plane:=SetPlane(1.0, 0.0, 0.0, -Surface.SplitSectionLocation);
       NParam:=2;
       Setlength(Param, NParam);
       Param[0]:=0.0;
       Param[1]:=1.0;
-      if FSpline.IntersectPlane(Plane, Output) then
-      begin
+      if FSpline.IntersectPlane(Plane, Output) then begin
         Setlength(Param, NParam+Output.NumberOfIntersections);
-        for I:=1 to Output.NumberOfIntersections do
-        begin
+        for I:=1 to Output.NumberOfIntersections do begin
           Param[NParam]:=Output.Parameters[I-1];
           Inc(NParam);
         end;
-        SortFloatArray(Param, NParam);
+        ArraySort( Param,NParam );
+//      SortFloatArray(Param, NParam);
       end;
-      for I:=2 to NParam do
-      begin
+      for I:=2 to NParam do begin
         I1:=I-1;
         I2:=I-2;
         P3D:=FSpline.Value(0.5 * (Param[I2]+Param[I1]));
-        if P3D.X < Surface.SplitSectionLocation then
-          Scale:=-1
-        else
-          scale:=1;
+        if P3D.X < Surface.SplitSectionLocation then Scale:=-1
+                                                else scale:=1;
         Fragm:=Round((Param[I1]-Param[I2]) * FSpline.Fragments);
-        if Fragm < 10 then
-          Fragm:=10;
-        if FSpline.ShowCurvature then
-        begin
+        if Fragm < 10 then Fragm:=10;
+        if FSpline.ShowCurvature then begin
           SetLength(PArray1, Fragm);
           SetLength(PArray2, Fragm);
-          for J:=1 to Fragm do
-          begin
+          for J:=1 to Fragm do begin
             J1:=J-1;
             T:=Param[I2]+(Param[I1]-Param[I2]) * (J1) / (Fragm-1);
             C:=FSpline.Curvature(T, P3D, Normal);

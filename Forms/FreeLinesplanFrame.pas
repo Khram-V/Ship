@@ -106,6 +106,7 @@ begin
     OnMouseMove:=ViewportMouseMove;
     OnRedraw:=ViewportRedraw;
     OnRequestExtents:=ViewportRequestExtents;
+    ShowTranslatedValues( Self );
   end;
 end;
 
@@ -296,8 +297,7 @@ begin                                         Min3D:=Vector(0); Max3D:=Min3D;
 end;
 
 procedure TFreeLinesplanFrame.SpinEdit1Change( Sender: TObject );
-begin
-      FontSize:=(Sender as TSpinEdit).Value;
+begin FontSize:=(Sender as TSpinEdit).Value;
       Viewport.invalidate;
 end;
 
@@ -329,8 +329,8 @@ var
     SubmColor: TColor;
 
   procedure DrawLineAtt
-  ( Attachpoint, P1,P2: T3DVector;
-    Text: AnsiString; CenterText: boolean; UpText: boolean = false
+  ( Attachpoint, P1,P2: T3DVector; Text: AnsiString;
+    CenterText: boolean; UpText: boolean = false
   );
   var
     Proj1,Proj2: T3DVector;
@@ -456,20 +456,20 @@ var
     Setlength( Pts,length(VPs) );
     if lvProfile in views then begin                 // батоксы и рыбины здесь?
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];
-        Pr:=Vector( FProfileOrigin.X+P.X,FProfileOrigin.Y+P.Z );
-        Pts[i]:=Viewport.Project(Pr);
+          Pr:=Vector( FProfileOrigin.X+P.X,FProfileOrigin.Y+P.Z );
+          Pts[i]:=Viewport.Project(Pr);
       end; Viewport.Polyline( Pts );
     end;
     if (lvAftBody in views) and (Spline.Max.X<=MidshipLocation) then begin
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];           // корпус - корма
-        Pr:=Vector( FAftOrigin.X-P.Y,FAftOrigin.Y+P.Z );
-        Pts[i]:=Viewport.Project(Pr);
+          Pr:=Vector( FAftOrigin.X-P.Y,FAftOrigin.Y+P.Z );
+          Pts[i]:=Viewport.Project(Pr);
       end; Viewport.Polyline(Pts);
     end;
     if (lvFrontBody in views) and (Spline.Min.X>=MidshipLocation) then begin
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];             // корпус - нос
-        Pr:=Vector( FFrontOrigin.X+P.Y,FFrontOrigin.Y+P.Z );
-        Pts[i]:=Viewport.Project(Pr);
+          Pr:=Vector( FFrontOrigin.X+P.Y,FFrontOrigin.Y+P.Z );
+          Pts[i]:=Viewport.Project(Pr);
       end; Viewport.Polyline(Pts);
     end;
     if lvPLan in views then for YSign:=-1 to +1 do
@@ -482,7 +482,6 @@ var
         end; Viewport.Polyline(Pts);
     end;
   end; {DrawSpline}
-
   procedure DrawIntersection
   (Intersection: TFreeIntersection; Views: TLinesplanViews; Style: TPenStyle );
   var I: integer;
@@ -490,7 +489,6 @@ var
     if not Intersection.Built then Intersection.Rebuild;
     for I:=0 to Intersection.Count-1 do DrawSpline( Intersection.Items[I],Views,Style );
   end;
-
   procedure AddTriangle
   ( P1,P2,P3: T3DVector; Color: TColor;
     var Destination: TriangleArray; Symmetric: boolean );
@@ -513,60 +511,39 @@ var
   end; {AddTriangle}
 
   procedure ProcessFace(Face: TFreeSubdivisionFace; Color: TColor; Symmetric: boolean);
-  var
-    I,J,Nabove,Nbelow: integer;
-    AbovePoints,BelowPoints: TFreeCoordinateArray;
+  var I,J,Nabove,Nbelow: integer;
+      AbovePoints,BelowPoints: TFreeCoordinateArray;
   begin
     for I:=3 to Face.NumberOfpoints do begin
-      ClipTriangle(Face.Point[0].Coordinate,
-        Face.Point[I-2].Coordinate,
-        Face.Point[I-1].Coordinate,
+      ClipTriangle( Face.Point[0].Coordinate,
+                    Face.Point[I-2].Coordinate,
+                    Face.Point[I-1].Coordinate,
         WlPlane, Nabove, Nbelow, AbovePoints, BelowPoints); // proces submerged area
       for J:=3 to NBelow do
-        AddTriangle(BelowPoints[0], BelowPoints[J-2], BelowPoints[J-1], SubmColor, Below, Symmetric);
+        AddTriangle(BelowPoints[0],BelowPoints[J-2],BelowPoints[J-1],SubmColor,Below,Symmetric);
       for J:=3 to NAbove do
-        AddTriangle(AbovePoints[0], AbovePoints[J-2], AbovePoints[J-1], Color, Above, Symmetric);
+        AddTriangle(AbovePoints[0],AbovePoints[J-2],AbovePoints[J-1],Color,Above,Symmetric);
     end;
   end; {Processface}
-
-  procedure SortTriangles( var Triangles: TriangleArray; SortType: byte );
-    procedure QuickSort( L,R: integer );              // Sorttype 1=X, 2=Y, 3=Z
-    var I,J: integer; T1: TriangleData;
-      procedure Swap( I,J: integer ); var Tmp: TriangleData;
-      begin Tmp:=Triangles.Triangles[I];
-            Triangles.Triangles[I]:=Triangles.Triangles[J];
-            Triangles.Triangles[J]:=Tmp;
-      end; {swap two triangles}
-    begin
-      I:=L; J:=R; T1:=Triangles.Triangles[(L+R) div 2];
-      repeat
-        if SortType = 1 then begin
-          while Triangles.Triangles[I].Center.X < T1.Center.X do Inc(I);
-          while T1.Center.X < Triangles.Triangles[J].Center.X do Dec(J); end else
-        if SortType = 2 then begin
-          while Triangles.Triangles[I].Center.Y < T1.Center.Y do Inc(I);
-          while T1.Center.Y < Triangles.Triangles[J].Center.Y do Dec(J); end else
-        begin
-          while Triangles.Triangles[I].Center.Z < T1.Center.Z do Inc(I);
-          while T1.Center.Z < Triangles.Triangles[J].Center.Z do Dec(J);
-        end;
-        if I<=J then begin Swap(I,J); Inc(I); Dec(J); end;
-      until I>J;
-      if L<J then QuickSort(L,J);
-      if I<R then QuickSort(I,R);
-    end; {QuickSort}
-  begin
-    if Triangles.Count > 1 then QuickSort(0, Triangles.Count-1);
+  procedure SortTriangles( var T: TriangleArray; SortType: byte );
+    var I,J,N:Integer; Tmp: TriangleData; Left: boolean;
+  begin if T.Count<2 then exit; N:=T.Count;
+    for i := 1 to N do
+    for j := 0 to N-i-1 do begin
+      if SortType=1 then Left:=T.Triangles[J].Center.X>T.Triangles[J+1].Center.X else
+      if SortType=2 then Left:=T.Triangles[J].Center.Y>T.Triangles[J+1].Center.Y
+                    else Left:=T.Triangles[J].Center.Z>T.Triangles[J+1].Center.Z;
+      if Left then begin Tmp:=T.Triangles[j];
+                              T.Triangles[j]:=T.Triangles[j+1];
+                              T.Triangles[j+1]:=Tmp;
+      end;
+    end;
   end; {SortTriangles}
-
   procedure DrawTriangles(Triangles: TriangleArray; Views: TLinesplanViews);
-  var
-    I: integer;
-    Triangle: TriangleData;
-    Pts: array[0..2] of TPoint;
-    P,L: T3DVector;
-    Col: TColor;
-
+  var I: integer; Triangle: TriangleData;
+      Pts: array[0..2] of TPoint;
+      P,L: T3DVector;
+      Col: TColor;
     function GetColor
     ( Lightvector: T3DVector;
       DpScale,Contrast: TFloatType;
@@ -839,12 +816,12 @@ begin
   if ShowMonochrome.Checked then Viewport.FontColor:=clBlack
                             else Viewport.FontColor:=clTeal;   // draw baseline
   DrawLineAtt( FProfileOrigin,
-               Vector( FMin3D.X-Space,FMin3D.Z),
-               Vector( FMax3D.X+Space,FMin3D.Z),' Base ',False ); //'Base '+ConvertDimension( FMin3D.Z,Freeship.ProjectSettings.ProjectUnits),False );
+       Vector( FMin3D.X-Space,FMin3D.Z),
+       Vector( FMax3D.X+Space,FMin3D.Z),' '+UserString(184){'Base'},False ); //'Base '+ConvertDimension( FMin3D.Z,Freeship.ProjectSettings.ProjectUnits),False );
   DrawLineAtt( FProfileOrigin,                                    // draw dwl
-               Vector(FMin3D.X-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
-               Vector(FMax3D.X+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
-               ' DWL ',false,true );                                            //'DWL '+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits), False);
+       Vector( FMin3D.X-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+       Vector( FMax3D.X+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
+               ' '+UserString(185){'DWL'},false,true );                        //'DWL '+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits), False);
   Viewport.SetPenWidth( PenwidthFactor );
   Viewport.FontColor:=clBlack;
   for I:=1 to FFreeship.NumberofWaterlines do begin
@@ -865,14 +842,14 @@ begin
   if ShowMonochrome.Checked then Viewport.FontColor:=clBlack
                             else Viewport.FontColor:=clTeal;;      // draw base
   DrawLineAtt( FAftOrigin,Vector(-FMax3D.Y-Space, FMin3D.Z),
-                          Vector(FMax3D.Y+Space, FMin3D.Z),' Base ',false); // +ConvertDimension(FMin3D.Z, Freeship.ProjectSettings.ProjectUnits),False);
+           Vector(FMax3D.Y+Space, FMin3D.Z),' '+UserString(184){'Base'},false); // +ConvertDimension(FMin3D.Z, Freeship.ProjectSettings.ProjectUnits),False);
   DrawLineAtt(FAftOrigin,                                           // draw dwl
     Vector(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
     Vector( FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
-    ' DWL ',false,true );                                                       //+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits),False);
+    ' '+UserString(185){'DWL '},false,true );                                                       //+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits),False);
   Space:=CalculateSpace( textspace,FMin3D.Z,FMax3D.Z );
-  DrawLineAtt(FAftOrigin, Vector(0.0,FMin3D.Z-space),              // ДП=Center
-                          Vector(0.0,FMax3D.Z+space),'ДП',True );
+  DrawLineAtt( FAftOrigin,Vector(0.0,FMin3D.Z-space),              // ДП=Center
+                          Vector(0.0,FMax3D.Z+space),UserString(183){'ДП'},true,true );
 
   Space:=CalculateSpace(textspace,FMin3D.Y,FMax3D.Y);
   Viewport.FontColor:=clGray;                 // ватерлинии на корпусе по корме
@@ -898,14 +875,14 @@ begin
                             else Viewport.FontColor:=clTeal;   // draw baseline
   DrawLineAtt(FFrontOrigin,
     Vector(-FMax3D.Y-Space,FMin3D.Z),
-    Vector(FMax3D.Y+Space,FMin3D.Z),' Base ',false );                       // + ConvertDimension(FMin3D.Z, Freeship.ProjectSettings.ProjectUnits),False);
+    Vector(FMax3D.Y+Space,FMin3D.Z),' '+UserString(184){'Base'},false );                       // + ConvertDimension(FMin3D.Z, Freeship.ProjectSettings.ProjectUnits),False);
   DrawLineAtt(FFrontOrigin,                         // draw dwl
     Vector(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
     Vector(FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
-    ' DWL ',false,true );                                                       //+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits), False);
-  Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);
-  DrawLineAtt( FFrontOrigin,Vector(0.0,FMin3D.Z-space),
-                            Vector(0.0,FMax3D.Z+space),' ДП ', True);
+    ' '+UserString(185){'DWL'},false,true );                                                       //+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits), False);
+Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);
+DrawLineAtt( FFrontOrigin,Vector(0.0,FMin3D.Z-space),
+                          Vector(0.0,FMax3D.Z+space),UserString(183){'ДП'},True);
   Space:=CalculateSpace( textspace,FMin3D.Y,FMax3D.Y );
   Viewport.FontColor:=clGray;
   Viewport.SetPenWidth( PenwidthFactor );                // Font.Height;
@@ -930,7 +907,7 @@ begin
   if ShowMonochrome.Checked then Viewport.FontColor:=clBlack
                             else Viewport.FontColor:=clTeal;
   DrawLineAtt( FPlanOrigin,Vector( FMin3D.X-Space ),
-               Vector( FMax3D.X+Space ),' Center ',False,true );
+               Vector( FMax3D.X+Space ),' '+UserString(183){'Center'},False,true );
   Viewport.FontColor:=clBlack;
   Viewport.SetPenWidth(PenwidthFactor);
   for I:=1 to FFreeship.NumberofButtocks do begin
@@ -1053,25 +1030,57 @@ begin
   Pt:=Viewport.Project(Vector(FAftOrigin.X-FModelBeam/2,FPlanOrigin.Y+FModelBeam/2));
 //Pt.y+=ViewPort.FontHeight; // div 2;
   Viewport.TextOut( Pt.X,Pt.Y,'Basic dimensions of a ship''s hull' );
-  Pt.y-=(3*ViewPort.FontHeight) div 2;
+  Pt.y-=(3*ViewPort.FontHeight) div 2;                    // длина максимальная
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(45)+' : '+
-         ConvertDimension( FModelLength,Freeship.ProjectSettings.ProjectUnits) ); //+' '+Freeship.ProjectSettings.ProjectUnits );
-  Pt.y-=ViewPort.FontHeight;
+         ConvertDimension( FModelLength,Freeship.ProjectSettings.ProjectUnits)  //+' '+Freeship.ProjectSettings.ProjectUnits );
+                  + '  ' + Lengthstr( FreeShip.ProjectSettings.ProjectUnits ) );
+  Pt.y-=ViewPort.FontHeight;                    // длина между перпендикулярами
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(44)+' : '+
-         ConvertDimension( FreeShip.ProjectSettings.ProjectLength,Freeship.ProjectSettings.ProjectUnits) );
-  Pt.y-=ViewPort.FontHeight;
+         ConvertDimension( FreeShip.ProjectSettings.ProjectLength,Freeship.ProjectSettings.ProjectUnits)
+                 + '  ' + Lengthstr( FreeShip.ProjectSettings.ProjectUnits ) );
+  Pt.y-=ViewPort.FontHeight;                             // ширина максимальная
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(47)+' : '+
-         ConvertDimension( FModelBeam,Freeship.ProjectSettings.ProjectUnits) );
-  Pt.y-=ViewPort.FontHeight;
+         ConvertDimension( FModelBeam,Freeship.ProjectSettings.ProjectUnits)
+                 + '  ' + Lengthstr( FreeShip.ProjectSettings.ProjectUnits ) );
+  Pt.y-=ViewPort.FontHeight;                       // ширина по мидельшпангоуту
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(46)+' : '+
-         ConvertDimension( FreeShip.ProjectSettings.ProjectBeam,Freeship.ProjectSettings.ProjectUnits) );
-  Pt.y-=ViewPort.FontHeight;
+         ConvertDimension( FreeShip.ProjectSettings.ProjectBeam,Freeship.ProjectSettings.ProjectUnits)
+                 + '  ' + Lengthstr( FreeShip.ProjectSettings.ProjectUnits ) );
+  Pt.y-=ViewPort.FontHeight;                                // проектная осадка
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(48)+' : '+
-         ConvertDimension( FreeShip.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits) );
-  Pt.y-=ViewPort.FontHeight;
+         ConvertDimension( FreeShip.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits)
+                 + '  ' + Lengthstr( FreeShip.ProjectSettings.ProjectUnits ) );
+  Pt.y-=ViewPort.FontHeight;                        // абсцисса мидельшпангоута
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(49)+' : '+
-         ConvertDimension( FreeShip.ProjectSettings.ProjectSplitSectionLocation,Freeship.ProjectSettings.ProjectUnits) );
-
+         ConvertDimension( FreeShip.ProjectSettings.ProjectSplitSectionLocation,Freeship.ProjectSettings.ProjectUnits)
+                 + '  ' + Lengthstr( FreeShip.ProjectSettings.ProjectUnits ) );
+  Pt.y-=(3*ViewPort.FontHeight) div 2;                // ?? объём=водоизмещение
+  ViewPort.TextOut( Pt.X,Pt.Y,Userstring(3)+' : '
+      + ConvertDimension( FreeShip.DesignHydrostatics.Data.Volume,Freeship.ProjectSettings.ProjectUnits)
+      + '  ' + VolStr( FreeShip.ProjectSettings.ProjectUnits ) );
+{ Pt.y-=(3*ViewPort.FontHeight) div 2;                         // водоизмещение
+  ViewPort.TextOut( Pt.X,Pt.Y,Userstring(4)+' : '
+      + ConvertDimension( FreeShip.DesignHydrostatics.Data.Displacement,Freeship.ProjectSettings.ProjectUnits)
+      + '  ' + WeightStr( FreeShip.ProjectSettings.ProjectUnits ) );
+} Pt.y-=ViewPort.FontHeight;
+   ViewPort.TextOut( Pt.X,Pt.Y,Userstring(7)+' : δ='
+          + FloatToStrF( FreeShip.DesignHydrostatics.Data.BlockCoefficient,ffFixed,4,3 ) );
+  Pt.y-=ViewPort.FontHeight;
+    ViewPort.TextOut( Pt.X,Pt.Y,Userstring(8)+' : φ='
+           + FloatToStrF( FreeShip.DesignHydrostatics.Data.PrismCoefficient,ffFixed,4,3 ) );
+  Pt.y-=ViewPort.FontHeight;                       // площадь смоченной обшивки
+    ViewPort.TextOut( Pt.X,Pt.Y,Userstring(10)+' : '
+      + ConvertDimension( FreeShip.DesignHydrostatics.Data.WettedSurface,Freeship.ProjectSettings.ProjectUnits)
+      + '  ' + Areastr( FreeShip.ProjectSettings.ProjectUnits ) );
+  Pt.y-=ViewPort.FontHeight;                  // площадь действующей ватерлинии
+    ViewPort.TextOut( Pt.X,Pt.Y,Userstring(19)+' : '
+      + ConvertDimension( FreeShip.DesignHydrostatics.Data.WaterplaneArea,Freeship.ProjectSettings.ProjectUnits)
+      + '  ' + Areastr( FreeShip.ProjectSettings.ProjectUnits ) );
+  Pt.y-=ViewPort.FontHeight;                 // аппликата поперчного метецентра
+    ViewPort.TextOut( Pt.X,Pt.Y,Userstring(26)+' : '
+      + ConvertDimension( FreeShip.DesignHydrostatics.Data.KMtransverse
+                        + FreeShip.DesignHydrostatics.Data.ModelMin.Z,Freeship.ProjectSettings.ProjectUnits )
+      + '  ' + Lengthstr( FreeShip.ProjectSettings.ProjectUnits ) );
   Screen.Cursor:=Prevcursor;
 end;
 
@@ -1167,8 +1176,8 @@ var
       Params[NParams]:=(I-1) / (Spline.Fragments-1);
       Inc(NParams);
     end;
-    SortFloatArray(Params, NParams);
-
+    ArraySort( Params,NParams );
+//  SortFloatArray(Params, NParams);
 {   Setlength( Points,NParams+Spline.NumberOfPoints );
     J:=0; Pn:=0;
     for I:=0 to NParams-1 do begin

@@ -436,69 +436,51 @@ var
 begin
   P1:=StartPoint.FCoordinate;
   P2:=EndPoint.FCoordinate;
-
-  if (DrawMirror = False) and (Viewport.ViewType = fvBodyplan) then
-  begin
-    if ((P1.X < Surface.SplitSectionLocation) and (P2.X > Surface.SplitSectionLocation)) or
-      ((P1.X > Surface.SplitSectionLocation) and (P2.X < Surface.SplitSectionLocation)) then
-    begin
-      if abs(P2.X-P1.X) > 1e-6 then
-        M:=Interpolate(P1, P2, (Surface.SplitSectionLocation-P1.X) / (P2.X-P1.X))
-      else
-        M:=MidPoint(P1, P2);
-      if P1.X <= Surface.SplitSectionLocation then
-      begin
-        // P2 lies on port
+  if (DrawMirror = False) and (Viewport.ViewType = fvBodyplan) then begin
+    if( (P1.X < Surface.SplitSectionLocation)
+    and (P2.X > Surface.SplitSectionLocation))
+     or ((P1.X > Surface.SplitSectionLocation)
+    and (P2.X < Surface.SplitSectionLocation)) then begin
+      if abs(P2.X-P1.X) > 1e-6
+        then M:=Interpolate(P1, P2, (Surface.SplitSectionLocation-P1.X) / (P2.X-P1.X))
+        else M:=MidPoint(P1, P2);
+      if P1.X <= Surface.SplitSectionLocation then begin     // P2 lies on port
         Pt1:=Viewport.Project(P2);
         Pt2:=Viewport.Project(M);
         Viewport.MoveTo(Pt1.X, Pt1.Y);
-        Viewport.LineTo(Pt2.X, Pt2.Y);
-        // P1 lies on starboard
+        Viewport.LineTo(Pt2.X, Pt2.Y);                  // P1 lies on starboard
         P1.Y:=-P1.Y;
         M.Y:=-M.Y;
         Pt1:=Viewport.Project(P1);
         Pt2:=Viewport.Project(M);
         Viewport.MoveTo(Pt1.X, Pt1.Y);
         Viewport.LineTo(Pt2.X, Pt2.Y);
-      end
-      else
-      begin
-        // P1 lies on port
+      end else begin                                        // P1 lies on port
         Pt1:=Viewport.Project(P1);
         Pt2:=Viewport.Project(M);
         Viewport.MoveTo(Pt1.X, Pt1.Y);
-        Viewport.LineTo(Pt2.X, Pt2.Y);
-        // P2 lies on starboard
+        Viewport.LineTo(Pt2.X, Pt2.Y);                  // P2 lies on starboard
         P2.Y:=-P2.Y;
         M.Y:=-M.Y;
         Pt1:=Viewport.Project(P2);
         Pt2:=Viewport.Project(M);
         Viewport.MoveTo(Pt1.X, Pt1.Y);
         Viewport.LineTo(Pt2.X, Pt2.Y);
-
       end;
-    end
-    else
-    begin
-      if P1.X <= Surface.SplitSectionLocation then
-        P1.Y:=-P1.Y;
-      if P2.X <= Surface.SplitSectionLocation then
-        P2.Y:=-P2.Y;
+    end else begin
+      if P1.X <= Surface.SplitSectionLocation then P1.Y:=-P1.Y;
+      if P2.X <= Surface.SplitSectionLocation then P2.Y:=-P2.Y;
       Pt1:=Viewport.Project(P1);
       Pt2:=Viewport.Project(P2);
       Viewport.MoveTo(Pt1.X, Pt1.Y);
       Viewport.LineTo(Pt2.X, Pt2.Y);
     end;
-
-  end
-  else
-  begin
+  end else begin
     Pt1:=Viewport.Project(P1);
     Pt2:=Viewport.Project(P2);
     Viewport.MoveTo(Pt1.X, Pt1.Y);
     Viewport.LineTo(Pt2.X, Pt2.Y);
-    if DrawMirror then
-    begin
+    if DrawMirror then begin
       P1.Y:=-P1.Y;
       P2.Y:=-P2.Y;
       Pt1:=Viewport.Project(P1);
@@ -507,5 +489,5 @@ begin
       Viewport.LineTo(Pt2.X, Pt2.Y);
     end;
   end;
-end;{TFreeSubdivisionEdge.Draw}
+end; {TFreeSubdivisionEdge.Draw}
 

@@ -133,8 +133,7 @@ var
     MomI:=C;
 
     if IntersectionType = fiWaterline then begin
-      ClosedSpline:=Distance3D(Spline.Point[0],
-        Spline.Point[Spline.NumberOfPoints-1]) < 1e-4;
+      ClosedSpline:=Abs(Spline.Point[0]-Spline.Point[Spline.NumberOfPoints-1])<1e-4;
       if not ClosedSpline then
       begin
         // make it closed
@@ -149,34 +148,29 @@ var
     Parameters[0]:=0.0;
     Parameters[1]:=1.0;
     if IntersectionType <> fiWaterline then
-      if Spline.IntersectPlane(Plane, IntersectionData) then
-      begin
-        Setlength(Parameters, NoPoints+Intersectiondata.NumberOfIntersections);
-        for I:=1 to Intersectiondata.NumberOfIntersections do
-        begin
-          Parameters[NoPoints]:=Intersectiondata.Parameters[I-1];
-          Inc(NoPoints);
-        end;
+    if Spline.IntersectPlane(Plane, IntersectionData) then begin
+      Setlength(Parameters, NoPoints+Intersectiondata.NumberOfIntersections);
+      for I:=1 to Intersectiondata.NumberOfIntersections do begin
+        Parameters[NoPoints]:=Intersectiondata.Parameters[I-1];
+        Inc(NoPoints);
       end;
-    SortFloatArray(Parameters, NoPoints);
-    if NoPoints > 0 then
-    begin
+    end;
+    ArraySort( Parameters,NoPoints );
+//  SortFloatArray(Parameters, NoPoints);
+    if NoPoints > 0 then begin
       T1:=0.0;
-      for I:=2 to NoPoints do
-      begin
+      for I:=2 to NoPoints do begin
         T2:=Parameters[I-1];
         T:=0.5 * (T1+T2);
         P:=Spline.Value(T);
         // check on which side of the plane this point is
         Side:=Plane.a * P.x+Plane.b * P.y+Plane.c * P.z+Plane.d;
         if (Side < 0) or (IntersectionType = fiWaterline) then
-          for J:=0 to 500 do
-          begin
+          for J:=0 to 500 do begin
             T:=T1+(J / 500) * (T2-T1);
             P:=Spline.Value(T);
             P2:=ProjectTo2D(P);
-            if J > 0 then
-            begin
+            if J > 0 then begin
               DeltaA:=0.5 * (P2.X+P1.X) * (P2.Y-P1.Y);
               SplineArea:=SplineArea+DeltaA;
               C.X:=C.X+DeltaA * 0.25 * (P2.X+P1.X);
@@ -192,8 +186,7 @@ var
         ;
         T1:=T2;
       end;
-      if SplineArea <> 0.0 then
-      begin
+      if SplineArea <> 0.0 then begin
         C.X:=C.X / SplineArea;
         C.Y:=C.Y / SplineArea;
         MomI.X:=abs(MomI.X);

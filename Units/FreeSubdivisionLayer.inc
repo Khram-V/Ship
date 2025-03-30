@@ -29,8 +29,7 @@ var
   Center: T3DVector;
 
   procedure ProcessTriangle(P1, P2, P3: T3DVector);
-  var
-    ax, ay, az: TFloatType;
+  var ax,ay,az: TFloatType;
   begin
     Center.X:=(P1.X+P2.X+P3.X)/3;
     Center.Y:=(P1.Y+P2.Y+P3.Y)/3;
@@ -125,13 +124,13 @@ begin
   end;
 end;
 
-procedure TFreeSubdivisionLayer.FSetName(Val: AnsiString);
+procedure TFreeSubdivisionLayer.FSetName( Val: AnsiString );
 begin
   if Uppercase(Val)<>Uppercase(FDescription) then begin
     FDescription:=Val;
     if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
     if (self=Surface.ActiveLayer) and (assigned(Surface.FOnChangeActiveLayer)) then
-      Surface.FOnChangeActiveLayer(Surface, Surface.ActiveLayer);
+      Surface.FOnChangeActiveLayer( Surface,Surface.ActiveLayer );
   end;
 end;
 
@@ -142,18 +141,19 @@ begin
   end;
 end;
 
-procedure TFreeSubdivisionLayer.FSetColor(Val: TColor);
+procedure TFreeSubdivisionLayer.FSetColor( Val: TColor );
 begin
-  if Val<>FColor then begin FColor:=Val;
+  if Val<>FColor then
+  begin FColor:=Val;
     if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
-    if (self = Surface.ActiveLayer) and (assigned(Surface.FOnChangeActiveLayer)) then
-      Surface.FOnChangeActiveLayer(Surface, Surface.ActiveLayer);
+    if (self = Surface.ActiveLayer) and (assigned(Surface.FOnChangeActiveLayer))
+       then Surface.FOnChangeActiveLayer(Surface, Surface.ActiveLayer);
   end;
 end;
 
-procedure TFreeSubdivisionLayer.FSetShowInLinesplan(val: boolean);
+procedure TFreeSubdivisionLayer.FSetShowInLinesplan( val: boolean );
 begin
-  if Val <> FShowInLinesplan then begin FShowInLinesplan:=val;
+  if Val<>FShowInLinesplan then begin FShowInLinesplan:=val;
     if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
   end;
 end;
@@ -834,15 +834,15 @@ begin
       if Surface.ShowInteriorEdges then begin
         Viewport.SetPenWidth(1);
         Viewport.PenColor:=Color;
-        for I:=1 to Count do Items[I-1].Draw(Viewport);
+        for I:=0 to Count-1 do Items[I].Draw(Viewport);
       end;
       // Draw all interior crease-edges
       Viewport.PenWidth:=Surface.InternalEdgeLineWidth;
       Viewport.PenStyle:=psSolid;
       Viewport.PenColor:=Surface.CreaseColor;
 
-      for I:=1 to Count do begin
-        Face:=Items[I-1];
+      for I:=0 to Count-1 do begin
+        Face:=Items[I];
         for J:=0 to Face.FEdges.Count-1 do begin
           Edge:=Face.FEdges[J];
           if Edge.FCrease or (Edge.NumberOfFaces<2) then begin
@@ -937,12 +937,10 @@ begin                                        // read description
 end;
 
 procedure TFreeSubdivisionLayer.MoveDown;
-var
-  Index: integer;
+var Index: integer;
 begin
   Index:=Surface.FLayers.IndexOf(self);
-  if index < Surface.Flayers.Count-1 then
-    Surface.FLayers.Exchange(Index+1, index);
+  if index < Surface.Flayers.Count-1 then Surface.FLayers.Exchange(Index+1,index);
 end;
 
 procedure TFreeSubdivisionLayer.MoveUp;
@@ -1040,35 +1038,26 @@ begin
   DoneList:=TFasterList<TFasterListTFreeSubdivisionControlFace>.Create;
 //  try
     ToDoList.Capacity:=FPatches.Count;
-    ToDoList.AddList(FPatches);
-    if ToDoList.Count > 0 then
-    begin
-      while ToDoList.Count > 0 do
-      begin
+    ToDoList.AddList( FPatches );
+    if ToDoList.Count > 0 then begin
+      while ToDoList.Count > 0 do begin
         Face:=ToDoList[ToDoList.Count-1];
         ToDoList.Delete(ToDoList.Count-1);
         Current:=TFasterListTFreeSubdivisionControlFace.Create;
         Current.Add(Face);
         FindAttachedFaces(Current, Face);
         DoneList.Add(Current);
-      end;
-      // Unroll each separate surface area
-      for I:=1 to DoneList.Count do
-      begin
+      end;                                 // Unroll each separate surface area
+      for I:=1 to DoneList.Count do begin
         Current:=DoneList[I-1];
-        if Current.Count > 0 then
-        begin
+        if Current.Count > 0 then begin
           Patch:=TFreeDevelopedPatch.Create(self);
           Patch.Unroll(Current);
-          if DoneList.Count = 1 then
-            Str:=Name
-          else
-            Str:=Name+' part '+IntToStr(I);
+          if DoneList.Count=1 then Str:=Name
+                              else Str:=Name+' part '+IntToStr(I);
           Patch.Name:=Str;
           Destination.Add(Patch);
-          if (not Patch.FMirror) and (self.Symmetric) then
-          begin
-            // Create the starboard half
+          if (not Patch.FMirror) and (self.Symmetric) then begin // Create the starboard half
             Patch.Name:=Str+' (SB)';
             Copy:=TFreeDevelopedPatch.Create(self);
             Copy.Assign(Patch, True);

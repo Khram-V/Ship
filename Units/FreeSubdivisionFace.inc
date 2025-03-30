@@ -6,17 +6,13 @@ var
   I: integer;
 
   function TriangleArea(P1, P2, P3: T3DVector): TFloatType;
-  var
-    ax, ay, az: TFloatType;
+    var ax, ay, az: TFloatType;
   begin
-    ax:=0.5 * ((P1.y-P2.y) * (P1.z+P2.z)+(P2.y-P3.y) * (P2.z+P3.z) +
-      (P3.y-P1.y) * (P3.z+P1.z));
-    ay:=0.5 * ((P1.z-P2.z) * (P1.x+P2.x)+(P2.z-P3.z) * (P2.x+P3.x) +
-      (P3.z-P1.z) * (P3.x+P1.x));
-    az:=0.5 * ((P1.x-P2.x) * (P1.y+P2.y)+(P2.x-P3.x) * (P2.y+P3.y) +
-      (P3.x-P1.x) * (P3.y+P1.y));
+    ax:=0.5*((P1.y-P2.y)*(P1.z+P2.z)+(P2.y-P3.y)*(P2.z+P3.z)+(P3.y-P1.y)*(P3.z+P1.z));
+    ay:=0.5*((P1.z-P2.z)*(P1.x+P2.x)+(P2.z-P3.z)*(P2.x+P3.x)+(P3.z-P1.z)*(P3.x+P1.x));
+    az:=0.5*((P1.x-P2.x)*(P1.y+P2.y)+(P2.x-P3.x)*(P2.y+P3.y)+(P3.x-P1.x)*(P3.y+P1.y));
     Result:=Sqrt(ax * ax+ay * ay+az * az);
-  end;{TriangleArea}
+  end; {TriangleArea}
 
 begin
   Result:=0.0;

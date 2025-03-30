@@ -32,7 +32,7 @@ TFreeFileBuffer = class
     FFileName: AnsiString;
     FFile: file;
 //  FEncoding: AnsiString;
-    procedure FGrow( size:integer );
+//  procedure FGrow( size:integer );
     procedure FSetCapacity(val: integer); virtual;
     function FGetCapacity: integer; virtual;
   public
@@ -141,19 +141,97 @@ implementation
 { TFreeFileBuffer                       }
 { Binary stream used to store file info }
 {---------------------------------------}
-procedure TFreeFileBuffer.FGrow( Size: Integer );
-    begin Capacity:=Capacity+Count+Size+FileBufferBlockSize; end;
+//procedure TFreeFileBuffer.FGrow( Size: Integer );
+//    begin Capacity:=Count+Size; end; // + FileBufferBlockSize; end;
 
 function TFreeFileBuffer.FGetCapacity: integer; begin Result:=FCapacity; end;
 procedure TFreeFileBuffer.FSetCapacity( Val: Integer ); //Var I: Integer;
-begin Setlength( FData,Val ); //for I:=FCapacity+1 to Val do FData[I-1]:=255;
-      FCapacity:=Val;
+begin FCapacity:=Val+32; Setlength( FData,Fcapacity ); //for I:=FCapacity+1 to Val do FData[I-1]:=255;
+end;
+
+
+constructor TFreeFileBuffer.Create;
+      begin inherited Create; Clear; end;
+procedure TFreeFileBuffer.Clear;
+begin
+  FCapacity:=0;
+  FCount:=0;
+  FPosition:=0;
+  Setlength( FData,0 );
+  FFileName:='';
+  Encoding:='cp1251';
+end;
+destructor TFreeFileBuffer.Destroy;
+     begin Clear; inherited Destroy; end;
+
+function TFreeFileBuffer.GetPosition:integer;
+   begin Result:=FPosition; end;
+
+procedure TFreeFileBuffer.LoadFromFile( Filename: AnsiString );
+var
+  DataLeft: integer;
+  Tmp: integer;
+  Size: integer;
+begin
+  FFileName:=Filename;
+  AssignFile( FFile,Filename );
+//TheStream:=TFileStream.Create(FileName,fmOpenRead or fmShareDenyWrite);
+//try
+    system.FileMode:=fmOpenRead;
+    system.Reset( FFile,1 );
+    FCount:=0;
+    DataLeft:=FileSize( FFile );
+    Capacity:=DataLeft;
+    FPosition:=0;
+    while DataLeft>0 do begin
+      if DataLeft<FileBufferBlockSize then Size:=DataLeft
+                                      else Size:=FileBufferBlockSize;
+      BlockRead( FFile,FData[FCount],Size,Tmp );
+      Dec( DataLeft,Tmp );
+      Inc( FCount,Tmp );
+    end;
+//finally
+    Closefile(FFile);
+//end;
+  FFileName:='';
+end;
+
+// reset the data before reading
+procedure TFreeFileBuffer.Reset; begin FPosition:=0; end;
+
+function TFreeFileBuffer.SaveToFile( Filename: AnsiString ):boolean;
+var
+  DataWritten: integer;
+  DataLeft: integer;
+  Tmp: integer;
+  Size: integer;
+begin
+  result:=false;
+  FFileName:=Filename;
+//try
+    AssignFile( FFile, Filename );
+    Rewrite( FFile, 1 );
+    DataWritten:=0;
+    DataLeft:=Count;
+    while DataWritten < Count do begin
+      if DataLeft < FileBufferBlockSize then Size:=DataLeft
+                                        else Size:=FileBufferBlockSize;
+      BlockWrite( FFile,FData[DataWritten],Size,Tmp );
+      Dec( DataLeft, Tmp );
+      Inc( DataWritten,Tmp );
+    end;
+//finally
+    Closefile( FFile );
+//end;
+  FFileName:='';
+  result:=true;
 end;
 
 procedure TFreeFileBuffer.Add( IntegerValue:Integer ); var Size:integer;
-begin Size:=SizeOf( Integer ); if Count+Size>Capacity then FGrow( Size );
+begin Size:=SizeOf( Integer );
+   if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
       Move( IntegerValue,FData[FCount],Size ); Inc( FCount,Size );
-end; // NtoLE( IntegerValue ) = Indian swap bytes
+  end;                            // NtoLE( IntegerValue ) = Indian swap bytes
 (*
 procedure TFreeFileBuffer.Add(NameData: TNameData);
 begin
@@ -181,7 +259,8 @@ var
 begin
   FVersion:=Version;
   Size:=SizeOf(Version);
-  if Count+Size > Capacity then FGrow(Size);
+  if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
+  //if Count+Size > Capacity then FGrow(Size);
   Move(Version, FData[FCount], Size);
   Inc(FCount, Size);
 end;
@@ -191,7 +270,8 @@ var
   Size: integer;
 begin
   Size:=SizeOf(Coordinate);
-  if Count+Size > Capacity then FGrow(Size);
+  if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
+//if Count+Size > Capacity then FGrow(Size);
   Move(Coordinate, FData[FCount], Size);
   Inc(FCount, Size);
 end;
@@ -200,7 +280,8 @@ procedure TFreeFileBuffer.Add(Plane: T3DPlane);
 var Size: integer;
 begin
   Size:=SizeOf(Plane);
-  if Count+Size > Capacity then FGrow(Size);
+  if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
+//if Count+Size > Capacity then FGrow(Size);
   Move(Plane, FData[FCount], Size);
   Inc(FCount, Size);
 end;
@@ -212,10 +293,7 @@ var S: PChar;
 begin
    S:=PChar(@Source);
    if Count+Size>Capacity then FGrow(Size);
-   for I:=0 to size-1 do
-   begin
-      FData[FCount]:=Byte(S[I]); Inc(FCount);
-   end;
+   for I:=0 to size-1 do begin FData[FCount]:=Byte(S[I]); Inc(FCount); end;
 end;
 }
 
@@ -230,8 +308,9 @@ begin
   JPEGImage.SaveToStream(Stream);
   Size:=Stream.Size;
   Stream.Position:=0;
-  Add(Size);
-  if Count+Size+20 > Capacity then FGrow( Size+20 );
+  Add( Size );
+  if Count+Size+20>Capacity then Capacity:=Count+Size+20;     // FGrow( Size );
+//if Count+Size+20 > Capacity then FGrow( Size+20 );
   Stream.Read(FData[FCount], Size);
   Inc(FCount, Size);
   FreeAndNil(Stream);
@@ -307,7 +386,8 @@ procedure TFreeFileBuffer.Add( Data: TFreeDelftSeriesResistanceData );
 var Size: integer = sizeof( Data ); bp: integer;
 begin
   bp:=FCount;
-  if Count+Size > Capacity then FGrow( Size );
+  if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
+//if Count+Size > Capacity then FGrow( Size );
   with Data do begin
     Add(StartSpeed);
     Add(EndSpeed);
@@ -336,46 +416,44 @@ procedure TFreeFileBuffer.Add(Data: TFreeKAPERResistanceData);
 var Size: integer = sizeof( Data ); bp: integer;
 begin
   bp:=FCount;
-  if Count+Size > Capacity then FGrow(Size);
+  if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
+//if Count+Size > Capacity then FGrow(Size);
   with Data do begin
-    Add(Draft);
-    Add(Lwl);
-    Add(Bwl);
-    Add(Cp);
-    Add(Displacement);
-    Add(LCB);
-    Add(WettedSurface);
-    Add(At_Ax);
-    Add(EntranceAngle);
-    Add(Extract);
+    Add( Draft );
+    Add( Lwl );
+    Add( Bwl );
+    Add( Cp );
+    Add( Displacement );
+    Add( LCB );
+    Add( WettedSurface );
+    Add( At_Ax );
+    Add( EntranceAngle );
+    Add( Extract );
   end;
   FCount:=bp+Size;
 end;
 
 procedure TFreeFileBuffer.LoadString( var Output: AnsiString );
-var
-  I,Size: integer; Ch: char; S: AnsiString;
-begin
-  Output:='';
-  if (FPosition=0) and (Integer(FData[0])<>9) then exit;
-  LoadInteger( Size );               //if FPosition+Size >= FCount then exit;
+var I,Size: integer; Ch: char; S: AnsiString;
+begin Output:='';
+  if FPosition=0 then
+  if (Integer(FData[0])<>9) and (Integer(FData[0])<>18) then exit;// 0-контроль
+  LoadInteger( Size );                // if FPosition+Size >= FCount then exit;
   for I:=1 to Size do begin
-     Ch:=char( FData[FPosition] ); Inc(FPosition);
+     Ch:=char( FData[FPosition] ); Inc( FPosition );
      Output:=Output+Ch;
   end;
-  S:=Output;
-     Output:=ConvertEncoding( S,Encoding,'utf8' );
+  S:=Output; Output:=ConvertEncoding( S,Encoding,'utf8' );
 end;
 
 procedure TFreeFileBuffer.LoadInteger( var Output: integer );
-var
-  Size: integer;
+var Size: integer;
 begin
   Size:=4;
   Output:=0;                       //if FPosition+Size >= FCount then exit;
-  Move( FData[FPosition], Output, Size );
-  Output:=LEtoN(Output);
-  Inc(FPosition, Size);
+  Move( FData[FPosition],Output,Size );
+  Output:=LEtoN( Output );
+  Inc( FPosition,Size );
 end;
 
 procedure TFreeFileBuffer.LoadTColor(var Output: TColor);
@@ -384,9 +462,9 @@ var
 begin
   Size:=4;
   Output:=0;                       //if FPosition+Size >= FCount then exit;
-  Move(FData[FPosition], Output, Size);
-  Output:=LEtoN(Output);
-  Inc(FPosition, Size);
+  Move( FData[FPosition],Output,Size );
+  Output:=LEtoN( Output );
+  Inc( FPosition, Size );
 end;
 
 procedure TFreeFileBuffer.LoadTStrings(var Output: TStrings);
@@ -474,7 +552,8 @@ begin                                 // convert text from UTF8 to Windows ANSI
   Size:=Length( Text );
   Add( Size );
   if Size = 0 then exit;
-  if Count+Size > Capacity then FGrow( Size );
+  if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
+//if Count+Size > Capacity then FGrow( Size );
   Move( Text[1],FData[FCount],Size );
   Inc(FCount, Size);
 end;
@@ -484,7 +563,8 @@ var
   Size: integer;
 begin
   Size:=1;//SizeOf(BooleanValue);
-  if Count+Size > Capacity then FGrow(Size);
+  if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
+//if Count+Size > Capacity then FGrow(Size);
   Move(BooleanValue, FData[FCount], Size);
   Inc(FCount, Size);
 end;
@@ -494,94 +574,20 @@ var
   Size: integer;
 begin
   Size:=SizeOf( FloatValue );
-  if Count+Size > Capacity then FGrow(Size);
+//if Count+Size > Capacity then FGrow(Size);
+  if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
   Move(FloatValue,FData[FCount], Size);
   Inc(FCount,Size);
 end;
 
 procedure TFreeFileBuffer.Add(words: TStrings); Var I: Integer;
-    begin Add( words.Count ); for i:=0 to words.Count-1 do Add(words[i]); end;
-constructor TFreeFileBuffer.Create;
-      begin inherited Create; Clear; end;
-procedure TFreeFileBuffer.Clear;
-begin
-  FCapacity:=0;
-  FCount:=0;
-  FPosition:=0;
-  Setlength( FData,0 );
-  FFileName:='';
-  Encoding:='cp1251';
-end;
-destructor TFreeFileBuffer.Destroy;
-begin Clear; inherited Destroy; end;
-
-procedure TFreeFileBuffer.LoadFromFile( Filename: AnsiString );
-var
-  DataLeft: integer;
-  Tmp: integer;
-  Size: integer;
-begin
-  FFileName:=Filename;
-  AssignFile( FFile,Filename );
-//TheStream:=TFileStream.Create(FileName,fmOpenRead or fmShareDenyWrite);
-//try
-    system.FileMode:=fmOpenRead;
-    system.Reset( FFile,1 );
-    FCount:=0;
-    DataLeft:=FileSize( FFile );
-    Capacity:=DataLeft;
-    FPosition:=0;
-    while DataLeft>0 do begin
-      if DataLeft<FileBufferBlockSize then Size:=DataLeft
-                                      else Size:=FileBufferBlockSize;
-      BlockRead( FFile,FData[FCount],Size,Tmp );
-      Dec( DataLeft,Tmp );
-      Inc( FCount,Tmp );
+    begin Add( words.Count ); for i:=0 to words.Count-1 do Add( words[i] );
     end;
-//finally
-    Closefile(FFile);
-//end;
-  FFileName:='';
-end;
 
-// reset the data before reading
-procedure TFreeFileBuffer.Reset; begin FPosition:=0; end;
-
-function TFreeFileBuffer.SaveToFile( Filename: AnsiString ):boolean;
-var
-  DataWritten: integer;
-  DataLeft: integer;
-  Tmp: integer;
-  Size: integer;
-begin
-  result:=false;
-  FFileName:=Filename;
-//try
-    AssignFile( FFile, Filename );
-    Rewrite( FFile, 1 );
-    DataWritten:=0;
-    DataLeft:=Count;
-    while DataWritten < Count do begin
-      if DataLeft < FileBufferBlockSize then Size:=DataLeft
-                                        else Size:=FileBufferBlockSize;
-      BlockWrite( FFile,FData[DataWritten],Size,Tmp );
-      Dec( DataLeft, Tmp );
-      Inc( DataWritten,Tmp );
-    end;
-//finally
-    Closefile( FFile );
-//end;
-  FFileName:='';
-  result:=true;
-end;
-
-function TFreeFileBuffer.GetPosition:integer;
-   begin Result:=FPosition; end;
-
-{-----------------------------------}
-{ TFreeTextBuffer                   }
-{ Text file used to store file info }
-{-----------------------------------}
+{-----------------------------------------------------------------------------}
+{                                           TFreeTextBuffer                   }
+{                                           Text file used to store file info }
+{-----------------------------------------------------------------------------}
 constructor TFreeTextBuffer.Create;
 begin FLines:=TStringList.Create; inherited Create; WestPoint; end;
 

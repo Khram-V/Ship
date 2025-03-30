@@ -119,18 +119,18 @@ begin
          CN:=TFreeShip(FreeShip).SelectedControlPoint[Npoi].Coordinate;;
       end;
       if Npoi>=1 then begin
-         R:=Distance3D( C0,CN );
+         R:=Abs( C0-CN );
          EditDistance.Value:=R;
          EditAngles.Value:=0.0;
       end else EditDistance.Value:=0.0;
       if Npoi>=4 then begin
-         R:=Distance3D( C0,CN );
+         R:=Abs( C0-CN );
          EditDistance.Value:=R;
          Len:=0;
          for I:=1 to Npoi do begin
            Cp:=TFreeShip(FreeShip).SelectedControlPoint[i-1].Coordinate;
            Ci:=TFreeShip(FreeShip).SelectedControlPoint[i].Coordinate;
-           R:=Distance3D( Cp,Ci );
+           R:=Abs( Cp-Ci );
            Len:=Len+R;
          end;
          Label5.Caption:='Length';
@@ -159,8 +159,8 @@ begin
       if  Npoi=2 then begin
         C1:=TFreeShip(FreeShip).SelectedControlPoint[1].Coordinate;
         C2:=TFreeShip(FreeShip).SelectedControlPoint[2].Coordinate;
-        R1:=Distance3D( C0,C1 );
-        R2:=Distance3D( C1,C2 );
+        R1:=Abs( C0-C1 );
+        R2:=Abs( C1-C2 );
         if R1>0 then begin
           cos1a:=abs(C0.X-C1.X)/R1;
           cos1b:=abs(C0.Y-C1.Y)/R1;
@@ -180,8 +180,8 @@ begin
         C1:=TFreeShip(FreeShip).SelectedControlPoint[1].Coordinate;
         C2:=TFreeShip(FreeShip).SelectedControlPoint[2].Coordinate;
         C3:=TFreeShip(FreeShip).SelectedControlPoint[3].Coordinate;
-        R1:=Distance3D( C0,C1 );
-        R2:=Distance3D( C2,C3 );
+        R1:=Abs( C0-C1 );
+        R2:=Abs( C2-C3 );
         if R1>0 then begin
           cos1a:=abs(C0.X-C1.X)/R1;
           cos1b:=abs(C0.Y-C1.Y)/R1;

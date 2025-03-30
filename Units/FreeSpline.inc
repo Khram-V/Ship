@@ -82,7 +82,7 @@ begin
   I:=2;
   FTotalLength:=0;
   while I <= FNoPoints do begin
-    Len:=Distance3D(FPoints[I-2],FPoints[I-1]);
+    Len:=Abs(FPoints[I-2]-FPoints[I-1]);
     FTotalLength:=FTotalLength+Len;
     Inc(I);
   end;
@@ -96,7 +96,7 @@ begin
     end else begin
       FParameters[0]:=0.0;
       for I:=2 to FNoPoints-1 do begin
-        Len:=Len+Distance3D( FPoints[I-2],FPoints[I-1] );
+        Len:=Len+Abs( FPoints[I-2]-FPoints[I-1] );
         FParameters[I-1]:=Len / FTotalLength;
       end;
       FParameters[FNoPoints-1]:=1.0;
@@ -208,8 +208,7 @@ function TFreeSpline.Simplify( Criterium: TFloatType ): boolean;
 var
   Weights: array of TFloatType;
   TotalLength: TFloatType;
-  I, Index: integer;
-  N1, N2: integer;
+  I,Index, N1,N2: integer;
 
   function Weight(Index: integer): TFloatType;
   var
@@ -221,8 +220,7 @@ var
       P1:=Point[Index-1];
       P2:=Point[Index];
       P3:=Point[Index+1];
-      Length:=Sqrt((P3.X-P1.X) * (P3.X-P1.X) +
-              (P3.Y-P1.Y) * (P3.Y-P1.Y)+(P3.Z-P1.Z) * (P3.Z-P1.Z));
+      Length:=Abs( P3-P1 );                                     //Sqrt((P3.X-P1.X)*(P3.X-P1.X) + (P3.Y-P1.Y)*(P3.Y-P1.Y)+(P3.Z-P1.Z)*(P3.Z-P1.Z));
       if Length < 1e-5 then begin Result:=0.0; end else begin
         Dist:=DistancepointToLine( P2,P1,P3 );
         if Dist < 1e-2 then begin
@@ -343,7 +341,7 @@ begin
   for I:=0 to Fragments do begin
     T:=T1+(I/Fragments)*(T2-T1);
     P2:=Value(T);
-    if I>0 then Result:=Result+Distance3D( P2,P1 ); // Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z));
+    if I>0 then Result:=Result+Abs( P2-P1 ); // Sqrt(Sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y)+Sqr(P2.Z-P1.Z));
     P1:=P2;
   end;
 end;
@@ -403,20 +401,21 @@ function TFreeSpline.Curvature(Parameter: TFloatType;
   var Value, Normal: T3DVector): TFloatType;
 var
   Vel1, Acc: T3DVector;
-  CrossProduct: T3DVector;
-  L, Denom: TFloatType;
-  VdotA, VdotV: TFloatType;
+//CrossProduct: T3DVector;
+  L,Denom, VdotA,VdotV: TFloatType;
 begin
   Value:=self.Value(Parameter);
   Vel1:=FirstDerive(Parameter);
   Acc:=SecondDerive(Parameter);      // Crossproduct of first and second derive
-  CrossProduct.X:= (Acc.Y * (Vel1.Z)-(Acc.Z) * Vel1.Y);
-  CrossProduct.Y:=-(Acc.X * (Vel1.Z)-(Acc.Z) * Vel1.X);
-  CrossProduct.Z:= (Acc.X * Vel1.Y-Acc.Y * Vel1.X);
-  L:=Abs( CrossProduct );            // Sqrt((CrossProduct.X*CrossProduct.X)+(CrossProduct.Y*CrossProduct.Y)+(CrossProduct.Z*CrossProduct.Z));
-  if L = 0 then L:=0.00001;
-  VdotA:=(Vel1.X * Acc.X)+(Vel1.Y * Acc.Y)+(Vel1.Z * Acc.Z);
-  VdotV:=(Vel1.X * Vel1.X)+(Vel1.Y * Vel1.Y)+(Vel1.Z * Vel1.Z);
+{ CrossProduct.X:= (Acc.Y*(Vel1.Z)-(Acc.Z)*Vel1.Y);
+  CrossProduct.Y:=-(Acc.X*(Vel1.Z)-(Acc.Z)*Vel1.X);
+  CrossProduct.Z:= (Acc.X* Vel1.Y - Acc.Y *Vel1.X);
+  L:=Abs( CrossProduct );                                              // Sqrt((CrossProduct.X*CrossProduct.X)+(CrossProduct.Y*CrossProduct.Y)+(CrossProduct.Z*CrossProduct.Z));
+}
+  L:=Abs( Acc*Vel1 );
+  if L=0 then L:=0.00001;
+  VdotA:=(Vel1.X*Acc.X)  + (Vel1.Y*Acc.Y)  + (Vel1.Z*Acc.Z );
+  VdotV:=Sqr( Vel1 );                                                   // (Vel1.X*Vel1.X) + (Vel1.Y*Vel1.Y) + (Vel1.Z*Vel1.Z );
   Denom:=Power( VdotV,1.5 );
   if Denom > 0 then Result:=L/Denom
                else Result:=0;

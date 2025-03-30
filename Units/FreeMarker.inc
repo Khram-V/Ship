@@ -144,7 +144,8 @@ begin
           Param[NParam]:=Output.Parameters[I-1];
           Inc(NParam);
         end;
-        SortFloatArray(Param, NParam);
+        ArraySort( Param,NParam );
+//      SortFloatArray(Param, NParam);
       end;
       for I:=2 to NParam do begin
         P3D:=Value(0.5 * (Param[I-2]+Param[I-1]));

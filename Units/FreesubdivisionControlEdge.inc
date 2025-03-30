@@ -451,8 +451,8 @@ var
   ds,de: TFloatType;
 begin
   Result:=nil;
-  ds:=Distance3D(P, FStartPoint.Coordinate);
-  de:=Distance3D(P, FEndPoint.Coordinate);
+  ds:=Abs(P-FStartPoint.Coordinate);
+  de:=Abs(P-FEndPoint.Coordinate);
   if (abs(ds)<1e-4) or (abs(de)<1e-4) then exit;            //such point exists
   Result:=TFreeSubdivisionControlpoint.Create(Surface);
   Result.FCoordinate:=P;
@@ -586,8 +586,7 @@ begin
     end;
   FEndPoint:=aPoint;
 end;
-
-
+{
 function TFreesubdivisionControlEdge.ConvertToFreeSubdivisionEdge:TFreeSubdivisionEdge;
 begin
   result:=TFreeSubdivisionEdge.Create(Surface);
@@ -598,7 +597,7 @@ begin
   result.FControlEdge:=false; //FControlEdge;
   result.FCurve:=FCurve;
 end;
-
+}
 procedure TFreesubdivisionControlEdge.Trace;
 var
   P: TFreeSubdivisionControlPoint;

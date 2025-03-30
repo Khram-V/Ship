@@ -110,7 +110,7 @@ object FreeLinesplanFrame: TFreeLinesplanFrame
     object SpinEdit1: TSpinEdit
       Left = 74
       Height = 25
-      Hint = 'Font Size'
+      Hint = 'Размер шрифта.'
       Top = 2
       Width = 45
       Font.Height = -13
@@ -128,76 +128,76 @@ object FreeLinesplanFrame: TFreeLinesplanFrame
     Top = 40
     object ZoomExtents: TAction
       Category = 'Zoom'
-      Caption = 'Extents'
-      Hint = 'Zoom all.'
+      Caption = 'Масштабировать'
+      Hint = 'Привести чертёж к размерам окна.'
       ImageIndex = 0
       OnExecute = ZoomExtentsExecute
       ShortCut = 16449
     end
     object SaveBitmap: TAction
       Category = 'Export'
-      Caption = 'Save bitmap'
-      Hint = 'Save the linesplan as a bitmap.'
+      Caption = 'Сохранить в растре'
+      Hint = 'Сохранить чертёж как PNG файл.'
       ImageIndex = 4
       OnExecute = SaveBitmapExecute
     end
     object ZoomIn: TAction
       Category = 'Zoom'
-      Caption = 'ZoomIn'
-      Hint = 'Zoom in'
+      Caption = 'Приблизить'
+      Hint = 'Увеличить масштаб изображения.'
       ImageIndex = 3
       OnExecute = ZoomInExecute
       ShortCut = 16457
     end
     object ZoomOut: TAction
       Category = 'Zoom'
-      Caption = 'Zoom out'
-      Hint = 'Zoom out.'
+      Caption = 'Отдалить'
+      Hint = 'Уменьшить видимый масштаб чертежа.'
       ImageIndex = 2
       OnExecute = ZoomOutExecute
       ShortCut = 16463
     end
     object ExportDXF: TAction
       Category = 'Export'
-      Caption = 'DXF'
-      Hint = 'Export the formatted linesplan to a DXF file.'
+      Caption = 'экспорт DXF'
+      Hint = 'Сохранить чертёж в формате AutoCad.dxf.'
       ImageIndex = 5
       OnExecute = ExportDXFExecute
     end
     object ShowFillColor: TAction
       Category = 'Visibility'
-      Caption = 'Solid'
+      Caption = 'Монотонная закраска'
       Checked = True
-      Hint = 'Show plates with fillcolor.'
+      Hint = 'Раскраска обшивки корпуса заданным цветом.'
       ImageIndex = 6
       OnExecute = ShowFillColorExecute
     end
     object Print: TAction
       Category = 'Export'
-      Caption = 'Print'
-      Hint = 'Send the linesplan to the printer.'
+      Caption = 'Печать'
+      Hint = 'Распечатать чертёж как есть на принтере.'
       ImageIndex = 1
       OnExecute = PrintExecute
     end
     object UseLights: TAction
       Category = 'Visibility'
-      Caption = 'Use lights'
+      Caption = 'Световое оттенение'
       Checked = True
-      Hint = 'Use lights in solid color drawing mode.'
+      Hint = 'Включить объёмное представление поверхностей.'
       ImageIndex = 7
       OnExecute = UseLightsExecute
     end
     object ShowMonochrome: TAction
       Category = 'Visibility'
-      Caption = 'Monochrome'
-      Hint = 'Draw the linesplan in black and white only.'
+      Caption = 'Чёрно-белое'
+      Hint = 'Представление чертежа чёрно-белыми линиями.'
       ImageIndex = 8
       OnExecute = ShowMonochromeExecute
     end
     object MirrorPlanView: TAction
       Category = 'Visibility'
-      Caption = 'MirrorPlanView'
-      Hint = 'Show both sides of the ship in plan view.'
+      Caption = 'Правый борт'
+      Hint = 'По правом борту рыбины, либо симметричный борт полушироты.'
       ImageIndex = 9
       OnExecute = MirrorPlanViewExecute
     end

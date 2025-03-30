@@ -2,7 +2,7 @@ unit FreeTypes;
 {$mode objfpc}{$H+}
 
 Interface
-Uses Classes,SysUtils,Graphics;
+Uses Classes,SysUtils,Graphics,Math;
 Const PixelCountMax=32768; // used for faster pixel acces when shading to viewport
       Foot = 0.3048;
 
@@ -24,6 +24,7 @@ Type
   operator * ( const A,B: T3DVector ): T3DVector;  // векторное пероизведение
   operator * ( const D:TFloatType; const B:T3DVector ): T3DVector;  // D*B
   operator / ( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/D
+  operator - ( const A,B: T2DCoordinate ): T2DCoordinate; // A-B
 Type
   TRGBTriple=packed record rgbtBlue : BYTE;
                            rgbtGreen: BYTE;
@@ -91,11 +92,12 @@ function FloatToDec( Value: TFloatType; Maxlength: integer ): AnsiString;
 Function FloatTypeToStr( Value: TFloatType ): AnsiString;
 Procedure WestPoint;
 Function BlankOff( S: AnsiString ): AnsiString;
-//Function Dist( A:T3DVector ): TFloatType;
+function Abs( const P: T2DCoordinate ): extended; overload;
+function Sqr( const V: T3DVector ): extended; overload;
 function Abs( const V: T3DVector ): extended; overload;
-Function Distance2D( const P1,P2: T2DCoordinate ): extended;
-Function Distance3D( const P1,P2: T3DVector ): extended;
-procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
+Function AxisStep( D: double ): double;            // для разметки осевых линий
+Procedure ArraySort( var inputArray: TFloatArray; arrayLength: Integer );
+Procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
 ( XX: TFloatType;            // аргумент поиска
   N: integer;                // наверное, длина массива
   X,Y: array of TFloatType;  // собственно аргумент и функция
@@ -133,29 +135,40 @@ begin result.x:=A.x/D;
       result.z:=A.z/D;
 end;
 
-operator * ( const D:TFloatType; const B:T3DVector): T3DVector;   // scalar product
+operator * ( const D:TFloatType; const B:T3DVector): T3DVector; // scalar product
 begin result.x:=D*B.x;
       result.y:=D*B.y;
       result.z:=D*B.z;
 end;
-
-operator * ( const A,B: T3DVector ): T3DVector;  // cross product
-begin result.x:=(A.y*B.z)-(A.z*B.y);
+operator * ( const A,B: T3DVector ): T3DVector;        // crossproduct
+begin result.x:=(A.y*B.z)-(A.z*B.y);                  // векторное произведение
       result.y:=(A.z*B.x)-(A.x*B.z);
       result.z:=(A.x*B.y)-(A.y*B.x);
 end;
 
-function Distance2D( const P1,P2: T2DCoordinate ): extended; var dX,dY: extended;
-begin dX:=P2.X-P1.X; dY:=P2.Y-P1.Y; Result:=sqrt( sqr( dX )+sqr( dY ) ); end;
-
+operator - ( const A,B: T2DCoordinate ): T2DCoordinate; // A-B
+   begin result.x:=(A.x-B.x);
+         result.y:=(A.y-B.y);
+   end;
+function Abs( const P: T2DCoordinate ): extended;
+   begin Result:=sqrt( sqr( P.X )+sqr( P.Y ) ); end;
+function Sqr( const V: T3DVector ): extended;
+   begin Result:=sqr( V.X )+sqr( V.Y )+sqr( V.Z ); end;
 function Abs( const V: T3DVector ): extended;
-begin Result:=sqrt( sqr( V.X )+sqr( V.Y )+sqr( V.Z ) ); end;
+   begin Result:=sqrt( sqr( V.X )+sqr( V.Y )+sqr( V.Z ) ); end;
 
-function Distance3D( const P1,P2: T3DVector ): extended; var dX,dY,dZ: extended;
-begin dX:=P2.X-P1.X;
-      dY:=P2.Y-P1.Y;
-      dZ:=P2.Z-P1.Z; Result:=sqrt( sqr( dX )+sqr( dY )+sqr( dZ ) );
-end;
+Function AxisStep( D: double ): double;            // для разметки осевых линий
+ const M_LN10=2.30258509299404568402;
+ var iPart: double;
+begin D:=log10( D );
+      iPart:=floor( D );
+      D:=exp( (D-iPart)*M_LN10 );
+      if D>=6 then D:=2 else
+      if D>=3 then D:=1 else
+      if D>=1.5 then D:=0.5 else D:=0.2;
+      Result:=power( 10.0,iPart )*D;
+end;{ Real iPart = floor( D=log10( D ) ); D=exp( (D-iPart)*M_LN10 );
+      return pow( 10.0,iPart )*( D>6 ?2 : D>3 ?1 : D>1.5 ?0.5:0.2 ); }
 
 procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
 ( XX: TFloatType;             // аргумент поиска
@@ -209,7 +222,6 @@ begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
   if I>0 then Result:=StrToFloat( copy( S,I,K-I ),LocalFormatSettings );
   Delete( S,1,K-1 ); // удаление считанного с последующим пробелом ??
 end;
-
 Function GetInteger( var S: AnsiString ): Integer;
 var I,J,K: Integer;
 begin I:=0; K:=0; Result:=0;
@@ -218,7 +230,6 @@ begin I:=0; K:=0; Result:=0;
     if I>0 then begin K:=J; break; end;
   if I>0 then Result:=StrToInt( copy( S,I,K-I ) ); Delete( S,1,K-1 );
 end;
-
 Function GetBoolean( var S: AnsiString ): Boolean;
 var I,J,K: Integer; Str: AnsiString;
 begin I:=0; K:=0; Result:=false;
@@ -243,6 +254,17 @@ begin J:=1; K:=1; L:=Length( S );       // вычистка лишних про�
     //for I:=J to L do S[I]:=' ';
     SetLength( S,J-1 );
     Result:=S;
+end;
+
+procedure ArraySort( var inputArray: TFloatArray; arrayLength: Integer );
+  var I,J: Integer;  tempValue: TFloatType;           { пузырьковая сортировка }
+begin
+  for i := 1 to arrayLength do
+  for j := 0 to arrayLength-i-1 do
+  if inputArray[j]>inputArray[j+1] then begin               { обмен элементов }
+     tempValue:=inputArray[j]; inputArray[j]:=inputArray[j+1];
+                               inputArray[j+1]:=tempValue;
+  end;
 end;
 
 //      function to find the corresponding water viscosity based on the density

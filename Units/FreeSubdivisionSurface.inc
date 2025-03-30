@@ -39,7 +39,7 @@ begin
     for I:=FControlPoints.Count-1 downto 0 do begin
       Point:=ControlPoint[I];
       if Point.NumberOfEdges > 0 then begin
-        if SquaredDistPP(P, Point.FCoordinate) <= MaxError then begin
+        if Sqr(P-Point.FCoordinate) <= MaxError then begin
           Result:=Point; break;
         end;
       end;
@@ -49,7 +49,7 @@ begin
     for I:=FControlPoints.Count-1 downto 0 do begin
       Point:=ControlPoint[I];
       if Point.NumberOfEdges = 0 then begin
-        if SquaredDistPP(P, Point.FCoordinate) <= MaxError then begin
+        if Sqr(P-Point.FCoordinate) <= MaxError then begin
           Result:=Point; break;
         end;
       end;
@@ -1154,16 +1154,11 @@ begin
 end;
 
 procedure TFreeSubdivisionSurface.SetUnderwaterColorAlpha(AValue: byte);
-begin
-  if FUnderWaterColorAlpha=AValue then Exit;
-  FUnderWaterColorAlpha:=AValue;
-end;
-
+    begin if FUnderWaterColorAlpha=AValue then Exit; FUnderWaterColorAlpha:=AValue;
+    end;
 procedure TFreeSubdivisionSurface.SetUnderwaterColor(Val: TColor);
-begin
-  if val <> FUnderwaterColor then begin FUnderwaterColor:=val;
-  end;
-end;
+    begin if val <> FUnderwaterColor then begin FUnderwaterColor:=val; end;
+    end;
 
 function TFreeSubdivisionSurface.AddControlFace(Points: array of T3DVector;
   NoPoints: integer): TFreeSubdivisionControlFace;
@@ -1180,7 +1175,7 @@ begin                                                   // Remove double points
   MaxError:=1 / Power(10, Decimals);
   while I < NoPoints-1 do begin J:=I+1;
     while J < NoPoints do begin
-      Dist:=Distance3D(Points[I], Points[j]);
+      Dist:=Abs(Points[I]-Points[j]);
       if Dist <= MaxError then begin
         for N:=J to NoPoints-2 do Points[N]:=Points[N+1];
         Dec(NoPoints);
@@ -2172,13 +2167,12 @@ begin
       end;
       if NoPoints > 1 then begin
         if IntArray[0].Edge = IntArray[NoPoints-1].Edge then
-          if Distance3D(IntArray[0].Point, IntArray[NoPoints-1].Point) < 1e-4
+          if Abs(IntArray[0].Point-IntArray[NoPoints-1].Point) < 1e-4
           then begin Dec(NoPoints); end;
         K:=2;
         while K <= NoPoints do  begin
           if IntArray[K-1].Edge = IntArray[K-2].Edge then begin
-            if Distance3D(IntArray[K-1].Point, IntArray[K-2].Point) < 1e-4 then
-            begin
+            if Abs(IntArray[K-1].Point-IntArray[K-2].Point) < 1e-4 then begin
               Move(IntArray[K-1],IntArray[K-2],(NoPoints-K+1)*SizeOf(T3DVector));
               Dec(NoPoints);
             end else Inc(K);
@@ -2215,7 +2209,7 @@ begin
     while J <= NSegments do begin
       Segment:=Segments[J-1];
       if (EndP.Edge = Segment.StartP.Edge) then begin
-        AddEdge:=Distance3D(EndP.Point, Segment.StartP.Point) < 1e-4;
+        AddEdge:=Abs(EndP.Point-Segment.StartP.Point)<1e-4;
         if AddEdge then begin
           Spline.Knuckle[Spline.NumberOfPoints-1] :=
             Segment.StartP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
@@ -2225,7 +2219,7 @@ begin
         end;
       end else
       if (EndP.Edge = Segment.EndP.Edge) then begin
-        AddEdge:=Distance3D(EndP.Point, Segment.EndP.Point) < 1e-4;
+        AddEdge:=Abs(EndP.Point-Segment.EndP.Point)<1e-4;
         if AddEdge then begin
           Spline.Knuckle[Spline.NumberOfPoints-1] :=
             Segment.EndP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
@@ -2235,7 +2229,7 @@ begin
         end;
       end else
       if (StartP.Edge = Segment.StartP.Edge) then begin
-        AddEdge:=Distance3D(StartP.Point, Segment.StartP.Point) < 1e-4;
+        AddEdge:=Abs(StartP.Point-Segment.StartP.Point) < 1e-4;
         if AddEdge then begin
           Spline.Knuckle[0]:=Segment.StartP.Knuckle or Spline.Knuckle[0];
           Spline.Insert(0, Segment.EndP.Point);
@@ -2244,7 +2238,7 @@ begin
         end;
       end else
       if (StartP.Edge = Segment.EndP.Edge) then begin
-        AddEdge:=Distance3D(StartP.Point, Segment.EndP.Point) < 1e-4;
+        AddEdge:=Abs(StartP.Point-Segment.EndP.Point) < 1e-4;
         if AddEdge then begin
           Spline.Knuckle[0]:=Segment.EndP.Knuckle or Spline.Knuckle[0];
           Spline.Insert(0, Segment.StartP.Point);
@@ -2261,7 +2255,7 @@ begin
         or (EndP.Edge.FStartpoint.FEdges.IndexOf(Segment.StartP.Edge) <> -1)
         or (EndP.Edge.FEndpoint.FEdges.IndexOf(Segment.StartP.Edge) <> -1)
         then begin
-          AddEdge:=Distance3D(EndP.Point, Segment.StartP.Point) < 1e-4;
+          AddEdge:=Abs(EndP.Point-Segment.StartP.Point) < 1e-4;
           if AddEdge then begin
             Spline.Knuckle[Spline.NumberOfPoints-1] :=
               Segment.StartP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
@@ -2269,7 +2263,7 @@ begin
             Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.EndP.Knuckle;
             EndP:=Segment.EndP;
           end else begin
-            AddEdge:=Distance3D(EndP.Point, Segment.EndP.Point) < 1e-4;
+            AddEdge:=Abs(EndP.Point-Segment.EndP.Point) < 1e-4;
             if AddEdge then begin
               Spline.Knuckle[Spline.NumberOfPoints-1] :=
                 Segment.EndP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
@@ -2277,14 +2271,14 @@ begin
               Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.StartP.Knuckle;
               EndP:=Segment.StartP;
             end else begin
-              AddEdge:=Distance3D(StartP.Point, Segment.StartP.Point)<1e-4;
+              AddEdge:=Abs(StartP.Point-Segment.StartP.Point)<1e-4;
               if AddEdge then begin
                 Spline.Knuckle[0]:=Segment.StartP.Knuckle or Spline.Knuckle[0];
                 Spline.Insert(0, Segment.EndP.Point);
                 Spline.Knuckle[0]:=Segment.EndP.Knuckle;
                 StartP:=Segment.EndP;
               end else begin
-                AddEdge:=Distance3D(StartP.Point, Segment.EndP.Point) < 1e-4;
+                AddEdge:=Abs(StartP.Point-Segment.EndP.Point) < 1e-4;
                 if AddEdge then begin
                   Spline.Knuckle[0]:=Segment.EndP.Knuckle or Spline.Knuckle[0];
                   Spline.Insert(0, Segment.StartP.Point);
@@ -2297,12 +2291,11 @@ begin
         end;
       end;
       if AddEdge then begin
-        Move(Segments[J], Segments[J-1], (NSegments-J) * SizeOf(TSegment));
+        Move( Segments[J],Segments[J-1], (NSegments-J)*SizeOf(TSegment));
         Dec(NSegments);
         J:=1;
         AddEdge:=False;
-      end
-      else Inc(J);
+      end else Inc(J);
     end;
     if not AddEdge then begin Spline:=nil; end;
   end;
@@ -2312,7 +2305,7 @@ begin
     for I:=Destination.Count downto 1 do begin // Remove tiny fragments of very small length
       Spline:=Destination[I-1];
       if Spline.NumberOfPoints > 1 then begin
-        Parameter:=SquaredDistPP(Spline.Min, Spline.Max);
+        Parameter:=Sqr(Spline.Min-Spline.Max);
         if Parameter < 1e-3 then begin
           FreeAndNil(Spline);
           Destination.Delete(I-1);
@@ -2849,10 +2842,10 @@ begin
   end else begin      // No layers in the file, so keep the current default one
   end;
   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-  Source.LoadInteger(N);                          // Read index of active layer
+  Source.LoadInteger( N );                        // Read index of active layer
   ActiveLayer:=self.Layer[N];
   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
-  Source.LoadInteger(N);                                  // Read controlpoints
+  Source.LoadInteger( N );                                // Read controlpoints
   FControlPoints.Capacity:=N;
   for I:=1 to N do begin
     Point:=TFreeSubdivisionControlPoint.Create(self);
@@ -3228,9 +3221,8 @@ begin
     Points:=TFasterListTFreeSubdivisionPoint.Create;
     Points.Capacity:=Edges.Count+1;
     SortEdges(Edges);
-    for I:=1 to Edges.Count do begin
-      Edge:=Edges[I-1];
-      if I = 1 then Points.Add(Edge.StartPoint);
+    for I:=1 to Edges.Count do begin Edge:=Edges[I-1];
+      if I = 1 then Points.Add( Edge.StartPoint );
       //if Edge.EndPoint<>Points[0] then Points.Add(Edge.EndPoint);
       Points.Add(Edge.EndPoint);
     end;

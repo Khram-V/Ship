@@ -24,36 +24,36 @@ begin
 end;
 
 procedure TFreeViewport.FSetBrushStyle(Val: TBrushStyle);
-begin if FDrawingcanvas.Brush.Style<>val then FDrawingcanvas.Brush.Style:=Val;
+begin if Drawingcanvas.Brush.Style<>val then Drawingcanvas.Brush.Style:=Val;
 end;
 function TFreeViewport.FGetPenStyle: TPenStyle;
-   begin Result:=FDrawingCanvas.Pen.Style; end;
+   begin Result:=DrawingCanvas.Pen.Style; end;
 function TFreeViewport.FGetPenWidth: integer;
-   begin Result:=FDrawingCanvas.Pen.Width; end;
+   begin Result:=DrawingCanvas.Pen.Width; end;
 function TFreeViewport.FGetPrinting: boolean;
    begin if Printer = nil then Result:=False
-         else Result:=FPrinting and (FDrawingcanvas = printer.Canvas);
+         else Result:=FPrinting and (Drawingcanvas = printer.Canvas);
    end;
 function TFreeViewport.FGetBrushStyle: TBrushStyle;
-   begin Result:=FDrawingcanvas.Brush.Style; end;
+   begin Result:=Drawingcanvas.Brush.Style; end;
 function TFreeViewport.FGetPenColor: TColor;
-   begin Result:=FDrawingCanvas.Pen.Color; end;
+   begin Result:=DrawingCanvas.Pen.Color; end;
 function TFreeViewport.FGetBrushColor: TColor;
-   begin Result:=FDrawingCanvas.Brush.Color; end;
+   begin Result:=DrawingCanvas.Brush.Color; end;
 function TFreeViewport.FGetFontColor: TColor;
-   begin Result:=FDrawingCanvas.Font.Color; end;
+   begin Result:=DrawingCanvas.Font.Color; end;
 function TFreeViewport.FGetFontName: AnsiString;
-   begin Result:=FDrawingcanvas.Font.Name; end;
+   begin Result:=Drawingcanvas.Font.Name; end;
 function TFreeViewport.FGetFontSize: integer;
-   begin Result:=FDrawingCanvas.Font.Size; end;
+   begin Result:=DrawingCanvas.Font.Size; end;
 procedure TFreeViewport.StretchDraw(DestRect: TRect; bmp: TBitmap);
-    begin FDrawingCanvas.StretchDraw(DestRect, bmp); end;
+    begin DrawingCanvas.StretchDraw(DestRect, bmp); end;
 function TFreeViewport.TextWidth(val: AnsiString): integer;
-   begin Result:=FDrawingCanvas.TextWidth(val); end;
+   begin Result:=DrawingCanvas.TextWidth(val); end;
 function TFreeViewport.TextHeight(val: AnsiString): integer;
-   begin Result:=FDrawingCanvas.TextHeight(val); end;
+   begin Result:=DrawingCanvas.TextHeight(val); end;
 procedure TFreeViewport.TextOut(x, y: integer; val: AnsiString);
-    begin FDrawingCanvas.TextOut(x, y, val); end;
+    begin DrawingCanvas.TextOut(x, y, val); end;
 procedure TFreeViewport.FSetCameraType(Val: TFreeCameraType);
 var Film,Dist: TFloatType;
 begin
@@ -99,33 +99,32 @@ procedure TFreeViewport.FSetPan(Val: TPoint);
 begin if (FPan.X<>Val.X) or (FPan.Y<>Val.Y) then begin FPan:=Val; Refresh; end;
 end;
 procedure TFreeViewport.FSetPenColor(Val: TColor);
-begin if FDrawingcanvas.Pen.Color<>val then FDrawingcanvas.Pen.Color:=Val;
+begin if Drawingcanvas.Pen.Color<>val then Drawingcanvas.Pen.Color:=Val;
 end;
 procedure TFreeViewport.FSetBrushColor(Val: TColor);
-begin if FDrawingcanvas.Brush.Color<>val then FDrawingcanvas.Brush.Color:=Val;
+begin if Drawingcanvas.Brush.Color<>val then Drawingcanvas.Brush.Color:=Val;
 end;
 procedure TFreeViewport.FSetFontColor(Val: TColor);
-begin if FDrawingcanvas.Font.Color<>val then FDrawingcanvas.Font.Color:=Val;
+begin if Drawingcanvas.Font.Color<>val then Drawingcanvas.Font.Color:=Val;
 end;
 
 procedure TFreeViewport.FSetFontName(val: AnsiString);
-begin if Uppercase(FDrawingcanvas.Font.Name)<>uppercase(Name) then
-      FDrawingcanvas.Font.Name:=Name;
+begin if Uppercase(Drawingcanvas.Font.Name)<>uppercase(Name) then
+      Drawingcanvas.Font.Name:=Name;
 end;
 procedure TFreeViewport.FSetFontSize(val: integer);
-begin if FDrawingcanvas.Font.Size <> val then FDrawingcanvas.Font.Size:=val;
+begin if Drawingcanvas.Font.Size <> val then Drawingcanvas.Font.Size:=val;
 end;
 
 function TFreeViewport.FGetFontHeight: integer;
-begin //Result:=FDrawingCanvas.TextHeight('Xy');
-        Result:=FDrawingCanvas.Font.Height;
+begin //Result:=DrawingCanvas.TextHeight('Xy');
+        Result:=DrawingCanvas.Font.Height;
 end;
 procedure TFreeViewport.FSetFontHeight(val: integer);
 var Height: TFloatType;
     CurrentHeight: integer;
 begin
-   if FDrawingCanvas.Font.Height <> val then
-      FDrawingCanvas.Font.Height:=val;
+   if DrawingCanvas.Font.Height <> val then DrawingCanvas.Font.Height:=val;
 // Sets the fontheight to a height in modelspace
    {Height:=val*Self.Scale*Self.Zoom;
    FSetFontSize(8);
@@ -146,9 +145,9 @@ end;
 procedure TFreeViewport.DrawSelectionFrame;
 begin
   if not FSelectionFrameActive then exit; // draw it last
-  FDrawingcanvas.Pen.Style:= psDash;    // psInsideframe;
-  FDrawingcanvas.Pen.Color:=clOlive; // clYellow; // clWhite;
-  FDrawingcanvas.Frame(FSelectionFrameRect);
+  Drawingcanvas.Pen.Style:= psDash;    // psInsideframe;
+  Drawingcanvas.Pen.Color:=clOlive; // clYellow; // clWhite;
+  Drawingcanvas.Frame(FSelectionFrameRect);
 end;
 
 procedure TFreeViewport.FSetMargin(Val: TFloatType);
@@ -161,10 +160,10 @@ begin
   end;
 end;
 procedure TFreeViewport.FSetPenStyle(Val: TPenStyle);
-    begin if FDrawingcanvas.Pen.Style<>val then FDrawingcanvas.Pen.Style:=Val;
+    begin if Drawingcanvas.Pen.Style<>val then Drawingcanvas.Pen.Style:=Val;
     end;
 procedure TFreeViewport.FSetPenWidth(Val: integer);
-    begin if FDrawingcanvas.Pen.Width<>val then FDrawingcanvas.Pen.Width:=Val;
+    begin if Drawingcanvas.Pen.Width<>val then Drawingcanvas.Pen.Width:=Val;
     end;
 function TFreeViewport.FGetPrintScaleFactor: TFloatType;
    begin Result:=FPrintScaleFactor; end;
@@ -253,7 +252,7 @@ begin
   // Canvas.Brush.Color:=clWhite;
   // FDrawingBuffer.Canvas.FillRect( 0,0,10,10 ); // to init handles
   FBitmapFormatHelper:=TFreeBitmapFormatHelper.Create( FDrawingBuffer );
-  FDrawingCanvas:=Canvas;
+  DrawingCanvas:=Canvas;
   FZBuffer:=TFreeZBuffer.Create;
   FZBuffer.FViewport:=self;
   FAlphaBuffer:=TFreeAlphaBuffer.Create;
@@ -433,9 +432,10 @@ begin                                                             // Add margin
   Diff  :=0.01*FMargin*( Max-Min );  FMin3D:=Min-Diff;
   Diff  :=-1.0*Diff;                 FMax3D:=Max-Diff;
   // Calculate the midpoint of the boundingbox, which is used as the center of the model for rotating the model
-  FMidPoint:=MidPoint( FMin3D, FMax3D );
+  SceneMidPoint:=MidPoint( FMin3D, FMax3D );
   // Calculate the distance of the camera to the center of the model, following from the field of view from the camera
-  Tmp:=Sqrt( Sqr( FMax3D.Y-FMin3D.Y )+Sqr( FMax3D.Z-FMin3D.Z ) );
+  Tmp:=Hypot( FMax3D.Y-FMin3D.Y,FMax3D.Z-FMin3D.Z );
+//Tmp:=Sqrt( Sqr( FMax3D.Y-FMin3D.Y )+Sqr( FMax3D.Z-FMin3D.Z ) );
   if Tmp=0 then Tmp:=1e-2;
   if FViewtype=fvPerspective then begin
     if ArcTan( DegToRad( FFieldOfView ) )<>0 then begin
@@ -444,9 +444,9 @@ begin                                                             // Add margin
     end else FDistance:=1e5;
   end else FDistance:=1e8;
 
-  FCameraLocation.X:=FMax3D.X+FDistance;
-  FCameraLocation.Y:=FMidPoint.Y;
-  FCameraLocation.Z:=FMidPoint.Z;
+  CameraLocation.X:=FMax3D.X+FDistance;
+  CameraLocation.Y:=SceneMidPoint.Y;
+  CameraLocation.Z:=SceneMidPoint.Z;
 
   FLightIntensity:=FLight.Intensity / 256.0;
   FAmbientIntencity:=FLight.Ambient / 256.0;
@@ -468,9 +468,9 @@ begin                                                             // Add margin
   P[8].X:=FMin3D.X;  P[8].Y:=FMax3D.Y;  P[8].Z:=FMax3D.Z;
   for I:=1 to 8 do begin
     P3D:=RotatedPoint( P[i] );                  // apply perspective projection
-    Tmp:=FCameralocation.X-P3D.X;               // apply perspective correction
-    Projected.X:=FCameralocation.X * P3D.Y / Tmp;
-    Projected.Y:=FCameralocation.X * P3D.Z / Tmp;
+    Tmp:=Cameralocation.X-P3D.X;               // apply perspective correction
+    Projected.X:=Cameralocation.X * P3D.Y / Tmp;
+    Projected.Y:=Cameralocation.X * P3D.Z / Tmp;
     if I = 1 then begin
       Min2D:=Projected;
       Max2D:=Projected;
@@ -534,7 +534,7 @@ begin
   if Printer <> nil then begin                              // Backup settings;
     OldScale:=FScale;
     OldPan:=FPan;
-    OldCanvas:=FDrawingCanvas;
+    OldCanvas:=DrawingCanvas;
     OldCenter:=FScreencenter;
     OldZoom:=FZoom;
 //  try
@@ -560,9 +560,9 @@ begin
       P[8].X:=FMin3D.X;      P[8].Y:=FMax3D.Y;      P[8].Z:=FMax3D.Z;
       for I:=1 to 8 do begin
         P3D:=RotatedPoint(P[i]);                // apply perspective projection
-        Tmp:=FCameralocation.X-P3D.X;           // apply perspective correction
-        Projected.X:=FScreenCenter.X+(FScale * FCameralocation.X * P3D.Y / Tmp);
-        Projected.Y:=FScreenCenter.Y-(FScale * FCameralocation.X * P3D.Z / Tmp);
+        Tmp:=Cameralocation.X-P3D.X;           // apply perspective correction
+        Projected.X:=FScreenCenter.X+(FScale*Cameralocation.X*P3D.Y/Tmp);
+        Projected.Y:=FScreenCenter.Y-(FScale*Cameralocation.X*P3D.Z/Tmp);
         if I = 1 then begin
           Min2D:=Projected;
           Max2D:=Projected;
@@ -619,7 +619,7 @@ begin
       ProjMidPoint.Y:=round(Min2D.Y+Max2D.Y) div 2;
       FPan.X:=(Canvaswidth div 2)-ProjMidPoint.X;
       FPan.Y:=(CanvasHeight div 2)-ProjMidPoint.Y;
-      FDrawingCanvas:=Printer.Canvas;
+      DrawingCanvas:=Printer.Canvas;
       FPrinting:=True;
       FDestinationWidth:=CanvasWidth;
       if not AbortPrinting then begin  //  printscale factor on basis of resolutin and printsize
@@ -638,7 +638,7 @@ begin
       FPrinting:=False;
       FPrintResolution:=1;
       FPrintScaleFactor:=1.0;
-      FDrawingCanvas:=OldCanvas;
+      DrawingCanvas:=OldCanvas;
       FScale:=OldScale;
       FPan:=OldPan;
       FZoom:=OldZoom;
@@ -656,9 +656,9 @@ var
   dX,dY:double;
 begin
   P3D:=RotatedPoint(P);
-  Dist:=FCameralocation.X-P3D.X;            // apply perspective correction
-  P2D.X:=FCameralocation.X * P3D.Y / Dist;
-  P2D.Y:=FCameralocation.X * P3D.Z / Dist;
+  Dist:=Cameralocation.X-P3D.X;            // apply perspective correction
+  P2D.X:=Cameralocation.X * P3D.Y / Dist;
+  P2D.Y:=Cameralocation.X * P3D.Z / Dist;
   dX:=FPan.X+FScreencenter.X+(FZoom * FScale * P2D.X);
   dY:=FPan.Y+FScreencenter.Y-(FZoom * FScale * P2D.Y);
   if dX > MAXINT then dX:=MAXINT;
@@ -684,15 +684,15 @@ begin
 
   // Now correct for perspective projection and create a 3D ray through the screen coordinate
   P3D.X:=FMin3D.X;
-  Dist:=FCameralocation.X-P3D.X;
-  P3D.Y:=P2D.X * Dist / FCameralocation.X;
-  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  Dist:=Cameralocation.X-P3D.X;
+  P3D.Y:=P2D.X * Dist / Cameralocation.X;
+  P3D.Z:=P2D.Y * Dist / Cameralocation.X;
   Result.A:=RotatedPointBack(P3D);
 
   P3D.X:=FMax3D.X;
-  Dist:=FCameralocation.X-P3D.X;
-  P3D.Y:=P2D.X * Dist / FCameralocation.X;
-  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  Dist:=Cameralocation.X-P3D.X;
+  P3D.Y:=P2D.X * Dist / Cameralocation.X;
+  P3D.Z:=P2D.Y * Dist / Cameralocation.X;
   Result.B:=RotatedPointBack(P3D);
 end;
 
@@ -713,15 +713,15 @@ begin                   // convert from screencoordinate to 2D world coordinate
   P2D.Y:=(P.Y-FPan.Y-FScreencenter.Y) / -(FZoom * FScale);
   // Now correct for perspective projection and create a 3D ray through the screen coordinate
   P3D.X:=FMin3D.X;
-  Dist:=FCameralocation.X-P3D.X;
-  P3D.Y:=P2D.X * dist / FCameralocation.X;
-  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  Dist:=Cameralocation.X-P3D.X;
+  P3D.Y:=P2D.X * dist / Cameralocation.X;
+  P3D.Z:=P2D.Y * Dist / Cameralocation.X;
   P1:=RotatedPointBack(P3D);
 
   P3D.X:=FMax3D.X;
-  Dist:=FCameralocation.X-P3D.X;
-  P3D.Y:=P2D.X * dist / FCameralocation.X;
-  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  Dist:=Cameralocation.X-P3D.X;
+  P3D.Y:=P2D.X * dist / Cameralocation.X;
+  P3D.Z:=P2D.Y * Dist / Cameralocation.X;
   P2:=RotatedPointBack(P3D);
 
   // Finally project point Input on the ray through P1 and P2
@@ -739,14 +739,14 @@ begin
   P2D.Y:=(P.Y-FPan.Y-FScreencenter.Y) / -(FZoom * FScale);
   // convert from screencoordinate to 2D world coordinate
   P3D.X:=FMin3D.X;
-  Dist:=FCameralocation.X-P3D.X;
-  P3D.Y:=P2D.X * dist / FCameralocation.X;
-  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  Dist:=Cameralocation.X-P3D.X;
+  P3D.Y:=P2D.X * dist / Cameralocation.X;
+  P3D.Z:=P2D.Y * Dist / Cameralocation.X;
   P1:=RotatedPointBack(P3D);
   P3D.X:=FMax3D.X;
-  Dist:=FCameralocation.X-P3D.X;
-  P3D.Y:=P2D.X * dist / FCameralocation.X;
-  P3D.Z:=P2D.Y * Dist / FCameralocation.X;
+  Dist:=Cameralocation.X-P3D.X;
+  P3D.Y:=P2D.X * dist / Cameralocation.X;
+  P3D.Z:=P2D.Y * Dist / Cameralocation.X;
   P2:=RotatedPointBack(P3D);
   case ViewType of
     fvBodyplan:  begin P2D.X:=P2.Y; P2D.Y:=P2.Z; end;
@@ -764,12 +764,12 @@ var
   Dist: TFloatType;
 begin
   P3D:=RotatedPoint(P);
-  Dist:=FCameralocation.X-P3D.X;                // apply perspective correction
-  P2D.X:=FCameralocation.X * P3D.Y / Dist;
-  P2D.Y:=FCameralocation.X * P3D.Z / Dist;
+  Dist:=Cameralocation.X-P3D.X;                // apply perspective correction
+  P2D.X:=Cameralocation.X * P3D.Y / Dist;
+  P2D.Y:=Cameralocation.X * P3D.Z / Dist;
   Result.X:=FPan.X+FScreencenter.X+Round(FZoom * FScale * P2D.X);
   Result.Y:=FPan.Y+FScreencenter.Y-Round(FZoom * FScale * P2D.Y);
-  Result.Z:=FCameralocation.X * P3D.X / Dist;
+  Result.Z:=Cameralocation.X * P3D.X / Dist;
 end;
 
 // Projects a 3D point with a certain z-buffer offset to the screen, used for drawing lines on top of shaded surfaces
@@ -780,12 +780,12 @@ var
   Dist: TFloatType;
 begin
   P3D:=RotatedPoint(P);
-  Dist:=FCameralocation.X-P3D.X;                // apply perspective correction
-  P2D.X:=FCameralocation.X * P3D.Y / (Dist);
-  P2D.Y:=FCameralocation.X * P3D.Z / (Dist);
+  Dist:=Cameralocation.X-P3D.X;                // apply perspective correction
+  P2D.X:=Cameralocation.X * P3D.Y / (Dist);
+  P2D.Y:=Cameralocation.X * P3D.Z / (Dist);
   Result.X:=FPan.X+FScreencenter.X+Round(FZoom * FScale * P2D.X);
   Result.Y:=FPan.Y+FScreencenter.Y-Round(FZoom * FScale * P2D.Y);
-  Result.Z:=FCameralocation.X * Scale * P3D.X / Dist;
+  Result.Z:=Cameralocation.X * Scale * P3D.X / Dist;
 end;
 
 {
@@ -819,17 +819,17 @@ begin
   // This function takes a point from worldspace and rotates it around the midpoint
   // of the scene as specified by the viewing-parameters (angle/elevation)
   // translate midpoint back to origin
-  P.X:=P.X-FMidpoint.X;
-  P.Y:=P.Y-FMidpoint.Y;
-  P.Z:=P.Z-FMidpoint.Z;
+  P.X:=P.X-SceneMidPoint.X;
+  P.Y:=P.Y-SceneMidPoint.Y;
+  P.Z:=P.Z-SceneMidPoint.Z;
   // Rotate around the origin
   Result.x:=(P.x * FCosAngle-P.y * FSinAngle) * FCosElevation+P.z * FSinElevation;
   Result.y:=P.x * FSinAngle+P.y * FCosAngle;
   Result.z:=-(P.x * FCosAngle-P.y * FSinAngle) * FSinElevation+P.z * FCosElevation;
   // Translate origin back to midpoint
-  Result.X:=Result.X+FMidPoint.X;
-  Result.Y:=Result.Y+FMidPoint.Y;
-  Result.Z:=Result.Z+FMidPoint.Z;
+  Result.X:=Result.X+SceneMidPoint.X;
+  Result.Y:=Result.Y+SceneMidPoint.Y;
+  Result.Z:=Result.Z+SceneMidPoint.Z;
 end;
 
 function TFreeViewport.RotatedPointBack(P: T3DVector): T3DVector;
@@ -844,17 +844,17 @@ begin
   SinAngle:=sin(DegToRad(-FAngle));
   CosElevation:=cos(DegToRad(-FElevation));
   SinElevation:=sin(DegToRad(-FElevation));
-  P.X:=P.X-FMidpoint.X;
-  P.Y:=P.Y-FMidpoint.Y;
-  P.Z:=P.Z-FMidpoint.Z;
+  P.X:=P.X-SceneMidPoint.X;
+  P.Y:=P.Y-SceneMidPoint.Y;
+  P.Z:=P.Z-SceneMidPoint.Z;
   // Rotate a point first around Y-axis then around the Z-axis
   Result.x:=(P.x * CosElevation+P.z * SinElevation) * CosAngle-P.y * SinAngle;
   Result.y:=(P.x * CosElevation+P.z * SinElevation) * SinAngle+P.y * CosAngle;
   Result.z:=(-P.x * SinElevation+P.z * CosElevation);
   // Translate origin back to midpoint
-  Result.X:=Result.X+FMidPoint.X;
-  Result.Y:=Result.Y+FMidPoint.Y;
-  Result.Z:=Result.Z+FMidPoint.Z;
+  Result.X:=Result.X+SceneMidPoint.X;
+  Result.Y:=Result.Y+SceneMidPoint.Y;
+  Result.Z:=Result.Z+SceneMidPoint.Z;
 end;
 
 procedure TFreeViewport.Paint;
@@ -872,7 +872,7 @@ begin
   and (not (csWriting in ComponentState))
   and (Parent <> nil) then begin // See if the contents is drawn to the printer
     if ViewportMode <> vmWireframe then begin
-      L:=7.5 * Distance3D(FMin3D, FMax3D);
+      L:=7.5*Abs(FMin3D-FMax3D);
       N:=Normalize(FLight.Position);
       N.X:=N.X * L;
       N.Y:=N.Y * L;
@@ -880,13 +880,13 @@ begin
       FLight.Position:=N;
     end;
     if Printer = nil then DrawingToPrinter:=False else
-       DrawingToPrinter:=(FPrinting) and (FDrawingCanvas = Printer.Canvas);
+       DrawingToPrinter:=(FPrinting) and (DrawingCanvas = Printer.Canvas);
     if DrawingToPrinter then begin
       FPrinting:=True;
       if BackgroundImage.Bitmap <> nil then BackgroundImage.Draw;
       if Assigned(OnRedraw) then OnRedraw(Self);
     end else begin
-      OldCanvas:=FDrawingCanvas;
+      OldCanvas:=DrawingCanvas;
       if not FPrinting then begin
         FDestinationWidth:=ClientWidth;
         FDestinationHeight:=ClientHeight;
@@ -896,19 +896,19 @@ begin
            FDrawingBuffer.Width:=FDestinationWidth;
         if FDrawingBuffer.Height <> FDestinationHeight then
            FDrawingBuffer.Height:=FDestinationHeight;
-        FDrawingCanvas:=FDrawingBuffer.Canvas;
+        DrawingCanvas:=FDrawingBuffer.Canvas;
       end
-      else FDrawingCanvas:=OldCanvas;                              // Reset Pen
-      FDrawingCanvas.Pen.Color:=Color;
-      FDrawingCanvas.Pen.Cosmetic:=true;
-      FDrawingCanvas.Pen.EndCap:=pecRound;
-      FDrawingCanvas.Pen.JoinStyle:=pjsRound;
-      FDrawingCanvas.Pen.Mode:=pmCopy;
-      FDrawingCanvas.Pen.Style:=psSolid;
-      FDrawingCanvas.Pen.Width:=1;                 // Reset Brush. Clear buffer
-      FDrawingCanvas.Brush.Color:=Color;
-      FDrawingCanvas.Brush.Style:=bsSolid;
-      FDrawingCanvas.FillRect(-1,-1,FDestinationWidth+2,FDestinationHeight+2);
+      else DrawingCanvas:=OldCanvas;                              // Reset Pen
+      DrawingCanvas.Pen.Color:=Color;
+      DrawingCanvas.Pen.Cosmetic:=true;
+      DrawingCanvas.Pen.EndCap:=pecRound;
+      DrawingCanvas.Pen.JoinStyle:=pjsRound;
+      DrawingCanvas.Pen.Mode:=pmCopy;
+      DrawingCanvas.Pen.Style:=psSolid;
+      DrawingCanvas.Pen.Width:=1;                 // Reset Brush. Clear buffer
+      DrawingCanvas.Brush.Color:=Color;
+      DrawingCanvas.Brush.Style:=bsSolid;
+      DrawingCanvas.FillRect(-1,-1,FDestinationWidth+2,FDestinationHeight+2);
 
       if BackgroundImage.Bitmap<>nil then BackgroundImage.Draw;
                                                        // Turn clipping back on
@@ -927,72 +927,34 @@ begin
         // Copy buffer to screen
         //Bitblt(OldCanvas.Handle,0,0,FDestinationWidth,FDestinationHeight,FDrawingBuffer.Canvas.Handle,0,0,SRCCOPY);
         OldCanvas.Draw( 0,0,FDrawingBuffer );
-        FDrawingCanvas:=OldCanvas;
+        DrawingCanvas:=OldCanvas;
       end;
-    end;
-
-    if FSelectionFrameActive then DrawSelectionFrame;
-
-{$ifdef DrawDebug}
-    FDrawingCanvas.Pen.Color:=clYellow;
-    FDrawingCanvas.Rectangle(FDebugPoint.X,FDebugPoint.Y,FDebugPoint.X,FDebugPoint.Y);
-    FDrawingCanvas.Rectangle(FDebugPoint.X-3,FDebugPoint.Y-3,FDebugPoint.X+3,FDebugPoint.Y+3);
-    P:=Project(FDebug3DPoint);
-    FDrawingCanvas.Pen.Color:=clWhite;
-    FDrawingCanvas.Rectangle(P.X,P.Y,P.X,P.Y);
-    FDrawingCanvas.Rectangle(P.X-3,P.Y-3,P.X+3,P.Y+3);
-    P0:=Project(ZERO);
-    FDrawingCanvas.Ellipse(P0.X-3,P0.Y-3,P0.X+3,P0.Y+3);
-    if (FDebugCamera.X<100000000) then begin
-      PC:=Project(FDebugCamera);
-      if (abs(PC.X)>1000000) or (abs(PC.Y)>1000000) then begin
-        PC.X:=PC.X div 1000;
-        PC.Y:=PC.Y div 1000;
-      end;
-      FDrawingCanvas.Ellipse(PC.X-5,PC.Y-5,PC.X+5,PC.Y+5);
-      FDrawingCanvas.Ellipse(PC.X-3,PC.Y-3,PC.X+3,PC.Y+3);
-      FDrawingCanvas.Line(PC,P);
-    end;
-    P:=Project(FDebugIntersection);
-    FDrawingCanvas.Line(P.X-5,P.Y-5,P.X+5,P.Y+5);
-    FDrawingCanvas.Line(P.X+5,P.Y-5,P.X-5,P.Y+5);
-    p1:=Project(FDebugT1);
-    p2:=Project(FDebugT2);
-    p3:=Project(FDebugT3);
-    FDrawingCanvas.Line(p1,p2);
-    FDrawingCanvas.Line(p3,p2);
-    FDrawingCanvas.Line(p1,p3);
-    P0:=Project(FMidPoint);
-    FDrawingCanvas.Pen.Color:=clRed;
-    FDrawingCanvas.Ellipse(P0.X-1,P0.Y-1,P0.X+1,P0.Y+1);
-    FDrawingCanvas.Ellipse(P0.X-3,P0.Y-3,P0.X+3,P0.Y+3);
-    FDrawingCanvas.Ellipse(P0.X-5,P0.Y-5,P0.X+5,P0.Y+5);
-{$endif DrawDebug}
+    end;  if FSelectionFrameActive then DrawSelectionFrame;
   end;
 end;
 
 procedure TFreeViewport.MoveTo( x,y: integer );
-   begin FDrawingCanvas.MoveTo( x,y ); end;
+   begin DrawingCanvas.MoveTo( x,y ); end;
 procedure TFreeViewport.LineTo( x,y: integer );
-   begin FDrawingCanvas.LineTo( x,y ); end;
+   begin DrawingCanvas.LineTo( x,y ); end;
 procedure TFreeViewport.Line( x1,y1,x2,y2: integer );
-   begin FDrawingCanvas.Line( x1,y1,x2,y2); end;
+   begin DrawingCanvas.Line( x1,y1,x2,y2); end;
 procedure TFreeViewport.Rectangle( x1,y1,x2,y2: integer );
-   begin FDrawingCanvas.Rectangle( x1,y1,x2,y2); end;
+   begin DrawingCanvas.Rectangle( x1,y1,x2,y2); end;
 procedure TFreeViewport.Rectangle( rect: TRect );
-   begin FDrawingCanvas.Rectangle( rect ); end;
+   begin DrawingCanvas.Rectangle( rect ); end;
 procedure TFreeViewport.Ellipse( x1,y1,x2,y2: integer );
-   begin FDrawingCanvas.Ellipse( x1,y1,x2,y2 ); end;
+   begin DrawingCanvas.Ellipse( x1,y1,x2,y2 ); end;
 procedure TFreeViewport.Pie
  ( EllipseX1,EllipseY1,EllipseX2,EllipseY2,
    StartX,   StartY,   EndX,     EndY: integer );
-   begin FDrawingCanvas.Pie( EllipseX1,EllipseY1,EllipseX2,EllipseY2,
+   begin DrawingCanvas.Pie( EllipseX1,EllipseY1,EllipseX2,EllipseY2,
                              StartX,   StartY,   EndX,     EndY );
    end;
 procedure TFreeViewport.Polyline(const Points: array of TPoint);
-    begin FDrawingCanvas.Polyline(points); end;
+    begin DrawingCanvas.Polyline(points); end;
 procedure TFreeViewport.Polygon(const Points: array of TPoint);
-    begin FDrawingCanvas.Polygon(points); end;
+    begin DrawingCanvas.Polygon(points); end;
 function TFreeViewport.GetDrawingBuffer:TBitmap;
    begin result:=FDrawingBuffer; end;
 procedure TFreeViewport.SaveAsBitmap
@@ -1017,7 +979,7 @@ begin
    if OK then begin                                         // Backup settings;
       OldScale:=FScale;
       OldPan:=FPan;
-      OldCanvas:=FDrawingCanvas;
+      OldCanvas:=DrawingCanvas;
       OldCenter:=FScreencenter;
 //   try
       if ShowDialog then begin
@@ -1031,7 +993,7 @@ begin
       Bitmap.PixelFormat:=pf24bit;
       Bitmap.Width:=CanvasWidth;
       Bitmap.Height:=CanvasHeight;
-      FDrawingCanvas:=Bitmap.Canvas;
+      DrawingCanvas:=Bitmap.Canvas;
       XScale:=CanvasWidth/ClientWidth;
       YScale:=CanvasHeight/ClientHeight;
       if XScale<YScale then Scale:=XScale
@@ -1047,7 +1009,7 @@ begin
       Bitmap.Destroy;
 //   finally                                              // Restore settings;
       FPrinting:=false;
-      FDrawingCanvas:=OldCanvas;
+      DrawingCanvas:=OldCanvas;
       FScale:=OldScale;
       FPan:=OldPan;
       FScreencenter:=OldCenter;
@@ -1369,8 +1331,8 @@ begin
 end;
 
 procedure TFreeViewport.SetPenWidth( Width: integer );
-  begin if FDrawingCanvas.Pen.Width<>Width then
-           FDrawingCanvas.Pen.Width:=Width;
+  begin if DrawingCanvas.Pen.Width<>Width then
+           DrawingCanvas.Pen.Width:=Width;
   end;
 
 procedure TFreeViewport.ShadedColor

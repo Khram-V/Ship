@@ -539,24 +539,21 @@ begin
   if (Viewport.ViewType = fvBodyplan) and (P.X <= Surface.SplitSectionLocation) then
     P.Y:=-P.Y;
   Pt:=Viewport.Project(P);
-  if (Pt.X >= 0) and (Pt.X <= Viewport.Width) and (Pt.Y >= 0) and (Pt.Y <= Viewport.Height) then
-    Result:=Round(Sqrt(Sqr(Pt.X-X)+SQR(Pt.Y-Y)))
-  else
-    Result:=1000000;
+  if (Pt.X>=0) and (Pt.X<=Viewport.Width)
+  and (Pt.Y>=0) and (Pt.Y<=Viewport.Height)
+  then Result:=Round( Hypot(Pt.X-X,Pt.Y-Y) ) // Sqrt(Sqr(Pt.X-X)+SQR(Pt.Y-Y)))
+  else Result:=1000000;
 end;
 
 procedure TFreeSubdivisionControlPoint.LoadBinary(Source: TFreeFileBuffer);
-var
-  I: integer;
-  Sel: boolean;
+var I: integer; Sel: boolean;
 begin
   Source.LoadT3DVector(FCoordinate);
   Source.LoadInteger(I);
   FVertextype:=TFreeVertexType(I);
   Source.LoadBoolean(Sel);
   if Sel then Selected:=True;
-  if Source.Version >= fv198 then begin
-    Source.LoadBoolean( FLocked );
+  if Source.Version >= fv198 then begin Source.LoadBoolean( FLocked );
   end;
 end;
 

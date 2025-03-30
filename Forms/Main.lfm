@@ -426,7 +426,7 @@ object MainForm: TMainForm
         BorderWidth = 3
         ButtonColorSize = 32
         ButtonColor = clLime
-        OnColorChanged = ColorButton1Click
+        OnColorChanged = ColorButton_Click
         ParentFont = False
       end
       object LayerBox: TComboBox
@@ -614,14 +614,14 @@ object MainForm: TMainForm
     Top = 400
     object ExportFEF: TAction
       Category = 'Export'
-      Caption = 'FEF file...'
-      Hint = 'Export to a FEF (Freeship Exchange Format) hull.'
+      Caption = 'обменный фоормат.FEF...'
+      Hint = 'Сохранение в формате .FEF (Freeship Exchange Format).'
       OnExecute = ExportFEFExecute
     end
     object ImportFEF: TAction
       Category = 'Import'
-      Caption = 'FEF file...'
-      Hint = 'Import a FEF (Freeship Exchange Format) hull.'
+      Caption = 'восстановить из.FEF'
+      Hint = 'Выбрать корпус из .FEF (Freeship Exchange Format).'
       OnExecute = ImportFEFExecute
     end
     object LoadFile: TAction
@@ -640,20 +640,34 @@ object MainForm: TMainForm
     end
     object ImportCarene: TAction
       Category = 'Import'
-      Caption = 'Carene XYZ file...'
+      Caption = 'Carene.XYZ...'
       ImageIndex = 35
       OnExecute = ImportCareneExecute
     end
     object ExportDXF2DPolylines: TAction
       Category = 'Export'
-      Caption = 'DXF 2D Polylines...'
-      Hint = 'Export all lines as 2D polylines.'
+      Caption = 'Чертёж.DXF...'
+      Hint = 'Сохранение в виде чертежа AutoCad.dxf (2D).'
       ImageIndex = 27
       OnExecute = ExportDXF2DPolylinesExecute
     end
+    object ExportDXF3DPolylines: TAction
+      Category = 'Export'
+      Caption = 'Контуры.DXF...'
+      Hint = 'Сохранение в контурах формата AutoCad.dxf (3D).'
+      ImageIndex = 27
+      OnExecute = ExportDXF3DPolylinesExecute
+    end
+    object ExportDXFFaces: TAction
+      Category = 'Export'
+      Caption = 'Модель.DXF с обшивкой'
+      Hint = 'Сохранение полной модели в формате AutoCad.dxf.'
+      ImageIndex = 27
+      OnExecute = ExportDXFFacesExecute
+    end
     object ExportCoordinates: TAction
       Category = 'Export'
-      Caption = 'Coordinates...'
+      Caption = 'Координаты в.TXT...'
       OnExecute = ExportCoordinatesExecute
     end
     object ShowControlNet: TAction
@@ -967,20 +981,6 @@ object MainForm: TMainForm
       Caption = 'Bodyplan...'
       Hint = 'Import a bodyplan and fit a surface.'
       OnExecute = ImportBodyplanExecute
-    end
-    object ExportDXF3DPolylines: TAction
-      Category = 'Export'
-      Caption = 'DXF 3D Polylines...'
-      Hint = 'Export all lines as 3D polylines.'
-      ImageIndex = 27
-      OnExecute = ExportDXF3DPolylinesExecute
-    end
-    object ExportDXFFaces: TAction
-      Category = 'Export'
-      Caption = 'DXF 3D mesh...'
-      Hint = 'Export all faces to a 3D DXF file.'
-      ImageIndex = 27
-      OnExecute = ExportDXFFacesExecute
     end
     object ImportHullFile: TAction
       Category = 'Import'

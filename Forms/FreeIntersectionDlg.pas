@@ -446,11 +446,9 @@ procedure TFreeIntersectionDialog.CloseDialogExecute(Sender: TObject);
 begin Close; UnselectAll; end;
 
 procedure TFreeIntersectionDialog.AddOneExecute(Sender: TObject);
-var
-  Str: ansistring;
-  Int: TFreeIntersection;
-begin
-  Str:='1.0';
+var Str: ansistring;
+    Int: TFreeIntersection;
+begin Str:='1.0';
   if InputQuery( 'New intersection ', 'Distance: ', Str) then begin
     Int:=nil;
     if ShowStations.Checked then
@@ -461,8 +459,8 @@ begin
       Int:=FFreeShip.Edit.Intersection_Add(fiWaterline, GetFloat(Str));
     if ShowDiagonals.Checked then
       Int:=FFreeShip.Edit.Intersection_Add(fiDiagonal, GetFloat(Str));
-    if Int <> nil then //FillBox// Added and sorted, refill the list
-       FillGrids;
+    if Int<>nil then FillGrids; //FillBox// Added and sorted, refill the list
+
     UpdateMenu;
   end;
 end;

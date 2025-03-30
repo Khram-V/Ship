@@ -384,7 +384,7 @@ begin
       (MainForm as TmainForm).UpdateMenu; exit;
    end;
    FPanned:=False;
-///***!!! if Viewport.ViewportMode=vmWireframe then
+// if Viewport.ViewportMode=vmWireframe then           ///***!!! выбор объектов
    FreeShip.MouseDown( Viewport,Button,Shift,X,Y,Select );
    FAllowPanOrZoom:=not Select;   // An item has just been selected or deselect,
                                   // so do NOT pan or zoom the vieport when the

@@ -84,14 +84,12 @@ procedure TFreeHydrostaticsForm.Edit2Exit(Sender: TObject);
 
 procedure TFreeHydrostaticsForm.Button2Click(Sender: TObject);
 var
-  Value: single;
-  HydObject: TFreeHydrostaticCalc;
-  I: integer;
-  PrevCursor: TCursor;
+  HydObject: TFreeHydrostaticCalc; I: integer;
   ResultsDlg: TFreeHydrostaticsResultsDialog;
   Units: TFreeUnitType;
   Strings: TStringList;
-  Cb, Cm, Cp, Zmin: single;
+  Value, Cb, Cm, Cp, Zmin: single;
+  PrevCursor: TCursor;
 begin
   if (StartDraft<EndDraft) and (DraftStep>0.0001) then begin
     Value:=StartDraft;
@@ -101,7 +99,8 @@ begin
     ResultsDlg:=TFreeHydrostaticsResultsDialog.Create(self);
     ShowTranslatedValues(ResultsDlg);
 //  try                                     // Quietly test for inconsistencies
-      if not FFreeShip.ProjectSettings.DisableModelCheck then FFreeShip.Edit.Model_Check(False);
+      if not FFreeShip.ProjectSettings.DisableModelCheck
+        then FFreeShip.Edit.Model_Check(False);
       HydObject:=TFreeHydrostaticCalc.Create(FFreeShip);
       ResultsDlg.Grid.RowCount:=Round((EndDraft-StartDraft)/DraftStep)+3;
       Units:=FFreeship.ProjectSettings.ProjectUnits;

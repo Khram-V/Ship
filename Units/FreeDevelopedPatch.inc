@@ -648,10 +648,7 @@ begin
       Side1:=Side2;
     end;
     if NoPoints > 1 then begin
-      if Distance3D(IntArray[0].Point, IntArray[NoPoints-1].Point) < 1e-4 then
-      begin
-        Dec(NoPoints);
-      end;
+      if Abs(IntArray[0].Point-IntArray[NoPoints-1].Point)<1e-4 then Dec(NoPoints);
       if NoPoints > 1 then begin
         Spline:=TFreeSpline.Create(Owner.Surface);
         Spline.Color:=Color;
@@ -671,7 +668,7 @@ begin
     for I:=Dest.Count downto 1 do begin // Remove tiny fragments of very small length
       Spline:=Dest[I-1];
       if Spline.NumberOfPoints > 1 then begin
-        Parameter:=SquaredDistPP(Spline.Min, Spline.Max);
+        Parameter:=Sqr( Spline.Min-Spline.Max );
         if Parameter < 1e-3 then begin
           FreeAndNil(Spline);
           Dest.Delete(I-1);
@@ -803,31 +800,12 @@ var
   SortedPointLists: TFasterListTFreeSubdivisionFace; // we use Face class here only as a list for Points
   sPointList: TFreeSubdivisionFace;
   sPoints: TFasterListTFreeSubdivisionPoint;
-(*
-  function Distance2D(P1, P2: T2DCoordinate): extended;
-  var
-    dX, dY: extended;
-  begin
-    dX:=P2.X-P1.X;
-    dY:=P2.Y-P1.Y;
-    Result:=sqrt(sqr(dX)+sqr(dY));
-  end;{Distance2D}
 
-  function Distance3D(P1, P2: T3DVector): extended;
-  var
-    dX, dY, dZ: extended;
-  begin
-    dX:=P2.X-P1.X;
-    dY:=P2.Y-P1.Y;
-    dZ:=P2.Z-P1.Z;
-    Result:=sqrt(sqr(dX)+sqr(dY)+sqr(dZ));
-  end;{Distance3D}
-*)
   // Crossproduct
   // Computes the crossproduct of three points
   // Returns whether their internal angle is clockwise or counter-clockwise.
   //
-  function Crossproduct(P1, P2, P3: T2DCoordinate): TPolygonOrientation;
+  function Crossproduct( P1,P2,P3: T2DCoordinate ): TPolygonOrientation;
   var  Tmp: extended;
   begin Result:=poCCW;
     Tmp:=(P2.X-P1.X) * (P3.Y-P2.Y)-(P2.Y-P1.Y) * (P3.X-P2.X);
@@ -838,17 +816,13 @@ var
   // Calculates the third point of a triangle when the length of its
   // three sides and two coordinates are known
   function CalculateTriangle(a, b, c: extended; P1, P2: T2DCoordinate): T2DCoordinate;
-  var
-    Fie1, Fie2: extended;
-    Fie3, P: extended;
+  var  Fie1, Fie2,Fie3, P: extended;
   begin
     if abs(P2.X-P1.X) <= 1e-6 then begin
       if P2.X = P1.X then begin
         if P2.Y > p1.Y then Fie1:=0.5 * Pi
                        else Fie1:=-0.5 * Pi;
-      end else begin
-        Fie1:=ArcTan((P2.Y-P1.Y) / (P2.X-P1.X));
-      end;
+      end else begin Fie1:=ArcTan((P2.Y-P1.Y) / (P2.X-P1.X)); end;
     end else Fie1:=ArcTan((P2.Y-P1.Y) / (P2.X-P1.X));
     if (Fie1 < 0) and (P2.Y > P1.Y) then Fie1:=Fie1+Pi;
     if (Fie1 > 0) and (P2.Y < P1.Y) then Fie1:=Fie1+Pi;
@@ -862,11 +836,10 @@ var
     Fie3:=Fie1-Fie2;
     Result.X:=b * Cos(Fie3)+P1.X;
     Result.Y:=b * Sin(Fie3)+P1.Y;
-  end;{CalculateTriangle}
+  end; {CalculateTriangle}
 
   function CalculateTriangle2(a, b, c: extended; P1, P2: T2DCoordinate): T2DCoordinate;
-  var
-    Fie1, Fie2, Beta, Tmp: extended;
+  var Fie1, Fie2, Beta, Tmp: extended;
   begin
     if abs(P2.X-P1.X) <= 1e-6 then begin
       if P2.X = P1.X then begin
@@ -880,40 +853,29 @@ var
       if a = 0.0 then a:=1e-6;
       if c = 0.0 then c:=1e-6;
     end;
-    begin
-      Tmp:=(a * a+c * c-b * b) / (2 * a * c);
-      if tmp > 1 then begin tmp:=1; end else
-      if tmp < -1 then begin tmp:=-1; end;
-      Beta:=ArcCos(Tmp);
-      Fie2:=Fie1+Beta;
-      Result.X:=c * Cos(Fie2)+P1.X;
-      Result.Y:=c * Sin(Fie2)+P1.Y;
-    end;
+    Tmp:=(a * a+c * c-b * b) / (2 * a * c);
+    if tmp > 1 then begin tmp:=1; end else
+    if tmp < -1 then begin tmp:=-1; end;
+    Beta:=ArcCos(Tmp);
+    Fie2:=Fie1+Beta;
+    Result.X:=c * Cos(Fie2)+P1.X;
+    Result.Y:=c * Sin(Fie2)+P1.Y;
   end;{CalculateTriangle}
 
   procedure Unroll2D(Face: TFreeSubdivisionFace; FirstFace: boolean; var Error: boolean);
-  var
-    I, S, E: integer;
-    Index1: integer;
-    Index2: integer;
-    Index3: integer;
+  var I,S,E, Index1,Index2,Index3: integer;
     P1, P2, P3: TFreeSubdivisionPoint;
     Indices: array of boolean;
 
     procedure ProcessTriangle(P1, P2, P3: TFreeSubdivisionPoint; Ind1, Ind2, Ind3: integer);
-    var
-      P1_2D: T2DCoordinate;
-      P2_2D: T2DCoordinate;
-      P3_2D: T2DCoordinate;
-      a, b, c: extended;
+    var P1_2D, P2_2D, P3_2D: T2DCoordinate; a,b,c: extended;
     begin
-      a:=Distance3D(P1.Coordinate, P2.Coordinate);
-      b:=Distance3D(P2.Coordinate, P3.Coordinate);
-      c:=Distance3D(P3.Coordinate, P1.Coordinate);
-      if (not Processed[Ind1]) and (not Processed[Ind2]) and
-        (not Processed[Ind3]) then
-      begin
-        // first face, calculate P1, P2 and P3
+      a:=Abs(P1.Coordinate-P2.Coordinate);
+      b:=Abs(P2.Coordinate-P3.Coordinate);
+      c:=Abs(P3.Coordinate-P1.Coordinate);
+      if (not Processed[Ind1])
+      and (not Processed[Ind2])
+      and (not Processed[Ind3]) then begin // first face, calculate P1,P2 and P3
         P1_2D.X:=P1.Coordinate.X;
         P1_2D.Y:=P1.Coordinate.Y;
         P2_2D.X:=P1_2D.X;
@@ -926,9 +888,10 @@ var
       P1_2D:=F2DCoordinates[Ind1].Coordinate;
       P2_2D:=F2DCoordinates[Ind2].Coordinate;
       P3_2D:=F2DCoordinates[Ind3].Coordinate;
-      if (Processed[Ind1]) and (Processed[Ind2]) and (not Processed[Ind3]) then
-      begin                                         // calculate position of P3
-        a:=Distance2D(P1_2D, P2_2D);
+      if (Processed[Ind1])
+      and (Processed[Ind2])
+      and (not Processed[Ind3]) then begin          // calculate position of P3
+        a:=Abs( P1_2D-P2_2D );
       //P3_2D:=CalculateTriangle( b,c,a, P1_2D,P2_2D );
         P3_2D:=CalculateTriangle2(a,b,c, P1_2D,P2_2D );
         if First then begin
@@ -951,8 +914,7 @@ var
     for I:=1 to Face.NumberOfpoints do begin
       Index1:=FPoints.IndexOf(Face.Point[I-1]);
       Indices[I-1]:=Processed[Index1];
-    end;
-    // find two succ. calculated points
+    end;                                    // find two succ. calculated points
     S:=-1;
     E:=-1;
     for I:=1 to Face.NumberOfpoints do begin
@@ -967,15 +929,10 @@ var
     end;
     if (S <> -1) and (E <> -1) then begin
       for I:=3 to Face.NumberOfpoints do begin
-        P1:=Face.Point[S];
-        Index1:=FPoints.IndexOf(P1);
-        E:=(S+I-2) mod face.NumberOfpoints;
-        P2:=Face.Point[E];
-        Index2:=FPoints.IndexOf(P2);
-        E:=(S+I-1) mod face.NumberOfpoints;
-        P3:=Face.Point[E];
-        Index3:=FPoints.IndexOf(P3);
-        ProcessTriangle(P1, P2, P3, Index1, Index2, index3);
+        P1:=Face.Point[S]; Index1:=FPoints.IndexOf(P1); E:=(S+I-2) mod face.NumberOfpoints;
+        P2:=Face.Point[E]; Index2:=FPoints.IndexOf(P2); E:=(S+I-1) mod face.NumberOfpoints;
+        P3:=Face.Point[E]; Index3:=FPoints.IndexOf(P3);
+        ProcessTriangle( P1,P2,P3,Index1,Index2,index3 );
       end;
     end else begin
       for I:=3 to Face.NumberOfpoints do begin
@@ -991,10 +948,8 @@ var
   end;{Unroll2D}
 
   function TriangleArea(P1, P2, P3: T2DCoordinate): extended;
-  const
-    half: extended = 0.5;
-  var
-    d12x, d12y, d23x, d23y, d31x, d31y: extended;
+  const half: extended = 0.5;
+    var d12x, d12y, d23x, d23y, d31x, d31y: extended;
   begin
     d12x:=(P1.x-P2.x);
     d12y:=(P1.y-P2.y);
@@ -1121,14 +1076,13 @@ begin                        // first assemble all points, edges and faces used
         if FPoints.IndexOf(P2) = -1 then FPoints.Add(P2);     // add this edge
         Edge:=Owner.Surface.EdgeExists(P1, P2);
         if Edge <> nil then
-          if FEdges.IndexOf(Edge) = -1 then FEdges.Add(Edge);
+        if FEdges.IndexOf(Edge) = -1 then FEdges.Add(Edge);
         P1:=P2;
       end;
     end;
   end;
   FPoints.Capacity:=FPoints.Count;
   FEdges.Capacity:=FEdges.Count;
-
               // Find the seed face, which is characterized by the face that it
               // has one cornerpoint with (possibly) multiple faces, but only 1
               // face is present in the list of faces to be unrolled.
@@ -1192,8 +1146,7 @@ begin                        // first assemble all points, edges and faces used
       if (ErrorIndex <> -1) and (Seedfaces.Count < 25) then begin
                          // Add faces where an error occured as new seedfaces,
                         // these are generally areas where gauss curvature<>0.0
-        if Seedfaces.IndexOf(FDonelist[ErrorIndex]) = -1 then
-          Seedfaces.Add(FDonelist[ErrorIndex]);
+        if Seedfaces.IndexOf(FDonelist[ErrorIndex])=-1 then Seedfaces.Add(FDonelist[ErrorIndex]);
       end;
       if Error < MaxError then begin
         MaxError:=Error;
@@ -1222,17 +1175,12 @@ begin                        // first assemble all points, edges and faces used
         FMin2D:=F2DCoordinates[I-1].Coordinate;
         FMax2D:=FMin2D;
       end else begin
-        if F2DCoordinates[I-1].Coordinate.X < FMin2D.X then
-          FMin2D.X:=F2DCoordinates[I-1].Coordinate.X;
-        if F2DCoordinates[I-1].Coordinate.Y < FMin2D.Y then
-          FMin2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
-        if F2DCoordinates[I-1].Coordinate.X > FMax2D.X then
-          FMax2D.X:=F2DCoordinates[I-1].Coordinate.X;
-        if F2DCoordinates[I-1].Coordinate.Y > FMax2D.Y then
-          FMax2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
+        if F2DCoordinates[I-1].Coordinate.X<FMin2D.X then FMin2D.X:=F2DCoordinates[I-1].Coordinate.X;
+        if F2DCoordinates[I-1].Coordinate.Y<FMin2D.Y then FMin2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
+        if F2DCoordinates[I-1].Coordinate.X>FMax2D.X then FMax2D.X:=F2DCoordinates[I-1].Coordinate.X;
+        if F2DCoordinates[I-1].Coordinate.Y>FMax2D.Y then FMax2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
       end;
-    end;
-                           // finally find optimal rotation angle such that the
+    end;                   // finally find optimal rotation angle such that the
                            // area of the bounding box is minimal
     OptArea:=0;
     OptAngle:=0;
@@ -1240,14 +1188,8 @@ begin                        // first assemble all points, edges and faces used
       Rotation:=I / 2;
       Extents(Min, Max);
       Area:=(Max.X-Min.X) * (Max.Y-Min.Y);
-      if I = 0 then begin
-        OptArea:=Area;
-        OptAngle:=Rotation;
-      end;
-      if Area < OptArea then begin
-        OptArea:=Area;
-        OptAngle:=Rotation;
-      end;
+      if I = 0 then begin OptArea:=Area; OptAngle:=Rotation;  end;
+      if Area<OptArea then begin OptArea:=Area; OptAngle:=Rotation; end;
     end;
     Rotation:=OptAngle;
     Extents(Min, Max);
@@ -1257,7 +1199,8 @@ begin                        // first assemble all points, edges and faces used
       TmpEdges:=TFasterListTFreeSubdivisionEdge.Create;
       for J:=1 to FEdges.Count do begin
         Edge:=FEdges[J-1];
-        if (Edge.NumberOfFaces = 1) and (abs(Edge.StartPoint.Coordinate.Y) <= 1e-4)
+        if (Edge.NumberOfFaces = 1)
+        and (abs(Edge.StartPoint.Coordinate.Y)<=1e-4)
         and (abs(Edge.EndPoint.Coordinate.Y) <= 1e-4) then begin
           FMirror:=True;
           TmpEdges.Add(Edge);
@@ -1267,8 +1210,7 @@ begin                        // first assemble all points, edges and faces used
         if FMirror then begin
               // Now if all facenormals have a Y-coordinate of approx. 0.0 then
               // this is probably a bottom panel, a deck or a transom
-          for J:=1 to FDoneList.Count do begin
-            Face:=FDonelist[J-1];
+          for J:=1 to FDoneList.Count do begin Face:=FDonelist[J-1];
             Normal:=Face.FaceNormal;
             if abs(Normal.Y) > 1e-2 then begin
               FMirror:=False;// Y-coordinate of Normal is too big, do not attach
@@ -1286,7 +1228,7 @@ begin                        // first assemble all points, edges and faces used
                                                       // MM: logic is not clear
             for J:=SortedPointLists.Count downto 1 do begin
               sPointList:=SortedPointLists[J-1];
-              if J > 1 then FreeAndNil(sPointList); // MM: ??
+              if J>1 then FreeAndNil( sPointList ); // MM: ??
             end;
             if sPointList <> nil then
               if sPointList.NumberOfpoints > 0 then begin
@@ -1355,7 +1297,7 @@ begin                        // first assemble all points, edges and faces used
       N:=0;
       for J:=1 to P1.NumberOfFaces do
         if FFaces.IndexOf(P1.Face[J-1]) <> -1 then begin Inc(N); end;
-      if (N = 1) or (P1.VertexType = svCorner) then begin FCorners.Add(P1); end;
+      if (N=1) or (P1.VertexType=svCorner) then begin FCorners.Add(P1); end;
     end;
   end; // else WriteLn('UnRoll: Seed could not be found!');
   {  Seedfaces.Destroy;

@@ -311,7 +311,8 @@ begin
    if Knuckle[I-1] then begin Params[NParams]:=Parameter[I-1]; Inc(NParams); end;
   Setlength(Params, NParams+Fragments);
   for I:=1 to Fragments do begin Params[NParams]:=(I-1)/(Fragments-1); Inc(NParams); end;
-  SortFloatArray(Params,NParams);
+  ArraySort( Params,NParams );
+//SortFloatArray(Params,NParams);
   Strings.Add('0'+EOL+'POLYLINE');
   Strings.Add('8'+EOL+LayerName);          // layername
   Strings.Add('62'+EOL+IntToStr(Ind));     // color by layer
@@ -505,26 +506,19 @@ var
         if N > 3500 then N:=3500;
         Spline.Fragments:=N;
         (*
-        Cap:=NParams+100;
-        Setlength(Params, Cap);
-        Inc(Nparams);
-        Params[NParams-1]:=0.0;
-        Inc(Nparams);
-        Params[NParams-1]:=1.0;
-
-        for I:=1 to Spline.Fragments do
-        begin
+        Cap:=NParams+100;        Setlength(Params, Cap);
+        Inc(Nparams);            Params[NParams-1]:=0.0;
+        Inc(Nparams);            Params[NParams-1]:=1.0;
+        for I:=1 to Spline.Fragments do begin
           T:=Spline.ChordlengthApproximation(I * SegLength / SplineLength);
-          if NParams >= Cap then
-          begin
+          if NParams >= Cap then begin
             Inc(Cap, 50);
             Setlength(Params, Cap);
           end;
           Inc(NParams);
           Params[NParams-1]:=T;
         end;
-
-        SortFloatArray(Params, NParams);
+        ArraySort(Params, NParams);
         *)
         // now export the actual calculated points
         Strings.Add('0'+EOL+'POLYLINE');
@@ -533,11 +527,9 @@ var
         Strings.Add('66'+EOL+'1');    // vertices follow
         (*
         Pn:=0;
-        for I:=0 to NParams-1 do
-        begin
+        for I:=0 to NParams-1 do begin
           P1:=Spline.Value(Params[I], Pn1, Pn2);
-          if (Pn <> Pn1) and Spline.Knuckle[Pn1] then
-          begin
+          if (Pn <> Pn1) and Spline.Knuckle[Pn1] then begin
             Pn:=Pn1;
             Pkn:=Spline.Point[Pn1];
             SaveVertex(Pkn);
@@ -551,7 +543,6 @@ var
           P1:=SplineValues[i];
           SaveVertex(P1);
         end;
-
         Strings.Add('0'+EOL+'SEQEND');
         if (Intersectiontype in [fiStation,fiWaterline])
         and (FreeShip.Visibility.ModelView=mvBoth) then begin // send the other half
@@ -1190,12 +1181,9 @@ begin
     Strings.Add('OV:Baseline');                             // Units preference
     if FreeShip.ProjectSettings.ProjectUnits = fuMetric then Strings.Add('P:M')
                                                         else Strings.Add('P:F');
-    // Add max. 10 comments
-    Strings.Add('\Generated with FREE!ship');
+    Strings.Add('\Generated with FREE!ship');           // Add max. 10 comments
 //  Strings.Add('\www.freeship.org');
-
-    // Save shape
-    Strings.Add('*');
+    Strings.Add('*');                                             // Save shape
     Strings.Add('HULL'); // shape name
     Strings.Add(IntToStr(Frames.Count)); // Number of sections
     for I:=Frames.Count downto 1 do begin
@@ -1226,14 +1214,13 @@ begin
           Inc(NParams);
         end;
       end;
-      SortFloatArray(Params, NParams);
+      ArraySort( Params,NParams );
+//    SortFloatArray(Params, NParams);
       Strings.Add(FloatToDec(-Scale * Section.Min.X, 4)+','+IntToStr(NParams));
       Pn:=0;
       for J:=0 to NParams-1 do begin
         P:=Section.Value(Params[J], Pn1, Pn2);
-        if (Pn <> Pn1) and Section.Knuckle[Pn1] then
-        begin
-          Pn:=Pn1;
+        if (Pn<>Pn1) and Section.Knuckle[Pn1] then begin Pn:=Pn1;
           Pkn:=Section.Point[Pn1];
           Strings.Add(FloatToDec(Scale * Pkn.Y, 4)+','+FloatToDec(Scale * Pkn.Z, 4));
         end;

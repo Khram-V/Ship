@@ -50,31 +50,18 @@ begin
 end;
 
 procedure TFreeAlphaBuffer.Draw;
-var
-  Y, X: integer;
+var Y,X: integer;
 
-  procedure ProcessPixel(X, Y: integer; PixData: TAlphaBlendPixelArray);
-
-    procedure QuickSort(L, R: integer);
-    var I, J: integer;
-        Val: TFloatType;
-      procedure Swap(I, J: integer);
-      var Tmp: TAlphaBlendData;
-      begin Tmp:=PixData.Data[I];
-            PixData.Data[I]:=PixData.Data[J];
-            PixData.Data[J]:=Tmp;
+  procedure ProcessPixel( X,Y: integer; PixData: TAlphaBlendPixelArray );
+    procedure ZSort; var I,J,N: integer; Tmp: TAlphaBlendData;
+    begin N:=PixData.Number;
+      for i:=1 to N do
+      for j:=0 to N-i-1 do
+      if PixData.Data[J].zvalue>PixData.Data[J+1].zvalue then begin
+         Tmp:=PixData.Data[J]; PixData.Data[J]:=PixData.Data[J+1];
+                               PixData.Data[J+1]:=Tmp;
       end;
-    begin
-      I:=L;
-      J:=R;
-      Val:=PixData.Data[(L+R) div 2].zvalue;
-      repeat while PixData.Data[I].zvalue < Val do Inc(I);
-        while Val < PixData.Data[J].zvalue do Dec(J);
-        if I <= J then begin Swap( I,J ); Inc(I); Dec(J); end;
-      until I > J; 
-      if L < J then QuickSort(L, J);
-      if I < R then QuickSort(I, R);
-    end;{QuickSort}
+    end;
   var
     Data: TAlphaBlendData;  //Row : pRGBTripleArray;
     pRow, pPixel: pointer;
@@ -84,12 +71,9 @@ var
     R, G, B: byte;
     dR, dG, dB, dA: smallint;
   begin
-    if PixData.Number > 1 then QuickSort(0, PixData.Number-1);
-
-    FViewport.GetPixel(X, Y, R, G, B);
-
-    for I:=0 to PixData.Number-1 do begin
-      Data:=PixData.Data[I];
+    if PixData.Number>1 then ZSort; // сортировка по Z
+    FViewport.GetPixel( X,Y, R,G,B );
+    for I:=0 to PixData.Number-1 do begin Data:=PixData.Data[I];
       if Data.zvalue > FViewport.ZBuffer.FBuffer[Y][X] then begin
         // Use div because Negative shr 8 causes range error
         R:=R+((Data.Alpha * (Data.R-R)) div 256);
@@ -97,11 +81,8 @@ var
         B:=B+((Data.Alpha * (Data.B-B)) div 256);
       end;
     end;
-
-    FViewport.SetPixel(X, Y, R, G, B);
-
-  end;
-  {ProcessPixel}
+    FViewport.SetPixel( X,Y, R,G,B );
+  end; {ProcessPixel}
 begin
   //FViewport.BeginUpdate; // doing that before working via Canvas causes black Canvas
   for Y:=FFirstRow to FLastRow do begin

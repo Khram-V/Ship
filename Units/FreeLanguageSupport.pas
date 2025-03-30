@@ -9,7 +9,8 @@ unit FreeLanguageSupport;
 //{$MODE Delphi}{$H+}
 {$mode objfpc}{$H+}
 interface uses
-     LCLType,LazFileUtils,
+     LCLType,
+     LazFileUtils,
      SysUtils,
      Classes,
      stdCtrls,
@@ -19,18 +20,12 @@ interface uses
      FreeStringUtils;
 
 type TLanguageIniFile = class( TMemIniFile )               { TLanguageIniFile }
-
 public
   Name: AnsiString;
-  constructor Create( const AName: AnsiString;const AFileName:AnsiString );
+  constructor Create( const AName:AnsiString; const AFileName:AnsiString );
 end;
 
-
 var CurrentLanguage:TLanguageIniFile=nil; // Global variable for current language
-
-{ const U: array of record L:Integer; C:String; end =
-      ( ( L:1; C:'первый'; ),
-        ( L:2; C:'второй'; ) ); }
 
 //user procs
 function LoadLanguage(aName:AnsiString; aFileName:AnsiString):TLanguageIniFile;overload;
@@ -55,7 +50,7 @@ const U: array of record L:Word; C:AnsiString; end =( {$I Russian.inc} ); // ’
   var Val: AnsiString; I: Integer;
 begin Result:='';
    if CurrentLanguage=nil then begin  // при отсутствии текстовых строк в файле
-     for I:=1 to Length( U )-1 do     // [216+...]
+     for I:=1 to Length( U )*2-1 do     // [216+...]
      if U[I].L=Index then begin Result:=U[I].C; break; end;
    end else begin Val:=IntToStr( Index );
      Result:=CurrentLanguage.readString('User',Copy('User0000',1,8-len(Val))+Val,'');
