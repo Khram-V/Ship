@@ -273,26 +273,26 @@ begin
   FViewportColor:=clWhite;
   GridColor    :=clSilver;
   GridFontColor:=clGray;
-  LayerColor   :=$FFFFF0;     // Default color each layer
-  NormalColor  :=clLime;      // color of surface normals
-  StationColor  :=$FF6464;    // =clBlue;
+  LayerColor   :=$FFFFF0;   // Default color each layer
+  NormalColor  :=clLime;    // color of surface normals
+  StationColor  :=$FF6464;  // =clBlue;
   ButtockColor  :=clGray;
   WaterlineColor:=clGreen;
-  DiagonalColor :=$C08000;    //clSkyBlue;
+  DiagonalColor :=$C08000;   //clSkyBlue;
   UnderwaterColor:=clGreen;
-  UnderwaterColorAlpha:=255;  //  Color used for shading the underwater part opaque
+  UnderwaterColorAlpha:=192; // Color used for shading the underwater part opaque
   ControlCurveColor:=$FF0080;
   EdgeColor        :=$6F6F6F; // Color of normal edges (no crease)
   CreaseEdgeColor  :=$32CD9A; // Color of crease control edges
   CreaseColor      :=$999966; // color of descendants from crease controledges
   RegularPointColor:=$E1E1E1; // Color of regular controlpoints
-  CreasePointColor :=$004080; // Color for vertices connected to two creaseedges
-  CornerPointColor :=$B95C00; // color of cornerpoints
-  DartPointColor   :=clFuchsia;
-  LeakPointColor   :=clRed;    //~~ color of leak points
-  SelectColor      :=clYellow; // Default color for selected items
+  CreasePointColor:=$004080; // Color for vertices connected to two creaseedges
+  CornerPointColor:=$B95C00; // color of cornerpoints
+  DartPointColor  :=clFuchsia;
+  LeakPointColor  :=clRed;    //~~ color of leak points
+  SelectColor     :=clYellow; // Default color for selected items
   CurvaturePlotColor:=clFuchsia; // color of the curvature plot of controlcurves
-  MarkerColor      :=$8000FF;
+  MarkerColor       :=$8000FF;
   HydrostaticsFontColor:=clGreen;
   ZebraStripeColor     :=clltGray;
   FIntersectionLineWidth:=1;

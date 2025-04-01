@@ -45,19 +45,18 @@ begin
     FreeShip.Redraw;
   end;
 end;
-
-procedure TFreeVisibility.FSetShowBothSides(Val: boolean);
+{
+procedure TFreeVisibility.FSetShowBothSides( Val: boolean );
 begin
-  if val = FShowBothSides then exit;
+  if val=FShowBothSides then exit; {???} FShowBothSides:=Val;
   FreeShip.FileChanged:=True;
   FreeShip.Redraw;
 end;
-
+}
 procedure TFreeVisibility.FSetShowControlNet(Val: boolean);
-var
-  I: integer;
+var I: integer;
 begin
-  if Val <> FShowControlNet then begin
+  if Val<>FShowControlNet then begin
     FShowControlNet:=val;
     if not FShowControlNet then begin
       for I:=FreeShip.NumberOfSelectedControlEdges downto 1 do

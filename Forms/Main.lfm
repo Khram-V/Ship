@@ -841,7 +841,7 @@ object MainForm: TMainForm
     end
     object IntersectionDialog: TAction
       Category = 'Edit'
-      Caption = 'Intersections...'
+      Caption = 'Теоретические контуры...'
       Hint = 'Show the window to add stations, buttocks, waterlines and diagonals.'
       ImageIndex = 14
       OnExecute = IntersectionDialogExecute
@@ -882,8 +882,8 @@ object MainForm: TMainForm
     end
     object DesignHydrostatics: TAction
       Category = 'Calculate'
-      Caption = 'Design hydrostatics'
-      Hint = 'Calculate hydrostatics for the design condition.'
+      Caption = 'Размерения и обводы корпуса'
+      Hint = 'Главные размерения и гидростатические расчёты по корпусу.'
       ImageIndex = 67
       OnExecute = DesignHydrostaticsExecute
     end
@@ -910,32 +910,32 @@ object MainForm: TMainForm
     end
     object RemoveNegative: TAction
       Category = 'Tools'
-      Caption = 'Remove negative'
-      Hint = 'Removes all faces on the starbaordside of the hull.'
+      Caption = 'Убрать отрицательные ординаты'
+      Hint = 'Удалить или вернуть на ДП все отрицательные ординаты.'
       OnExecute = RemoveNegativeExecute
     end
     object ScaleModel: TAction
       Category = 'Transform'
-      Caption = 'Scale...'
-      Hint = 'Scale selected items.'
+      Caption = 'Перемасштабирование...'
+      Hint = 'Линейное (афинное) преобразование пространственных координат.'
       OnExecute = ScaleModelExecute
     end
     object MoveModel: TAction
       Category = 'Transform'
-      Caption = 'Move...'
-      Hint = 'Move the entire model.'
+      Caption = 'Перемещение...'
+      Hint = 'Пространственное смещение координат модели.'
       OnExecute = MoveModelExecute
     end
     object RotateModel: TAction
       Category = 'Transform'
-      Caption = 'Rotate...'
-      Hint = 'Rotate selected items.'
+      Caption = 'Вращение...'
+      Hint = 'Пространственный поворот в главных осях корпуса.'
       OnExecute = RotateModelExecute
     end
     object RotateModelM: TAction
       Category = 'Transform'
-      Caption = 'Heeling and/or trimming...'
-      Hint = 'Rotate all model items.'
+      Caption = 'Кренование и/или дифферентование...'
+      Hint = 'Наклон ватерлиний с пересчётами гидростатики.'
       OnExecute = RotateModelMExecute
     end
     object ShowGrid: TAction
@@ -955,8 +955,8 @@ object MainForm: TMainForm
     end
     object HydrostaticsDialog: TAction
       Category = 'Calculate'
-      Caption = 'Hydrostatics...'
-      Hint = 'Calculate hydrostatics for a range of inputdata.'
+      Caption = 'Кривые элементов теоретического чертежа...'
+      Hint = 'Расчёт гидростатических параметров при изменении посадки.'
       OnExecute = HydrostaticsDialogExecute
     end
     object ExportObj: TAction
@@ -966,8 +966,8 @@ object MainForm: TMainForm
     end
     object InvertFace: TAction
       Category = 'Face'
-      Caption = 'Invert'
-      Hint = 'Flip the normal direction of the selected controlfaces.'
+      Caption = 'Обращение нормалей'
+      Hint = 'Переключить нормали поверхностей на обратные.'
       ImageIndex = 23
       OnExecute = InvertFaceExecute
     end
@@ -1142,19 +1142,19 @@ object MainForm: TMainForm
     end
     object ShowHydrostatics: TAction
       Category = 'Visibility'
-      Caption = 'Hydrostatic features'
-      Hint = 'Show certain hydrostatic key properties in the model.'
+      Caption = 'Строевая и центры гидростатики'
+      Hint = 'Строевая по шпангоутам и основные гидрорстатические центры.'
       ImageIndex = 49
       OnExecute = ShowHydrostaticsExecute
     end
     object MirrorFace: TAction
       Category = 'Transform'
-      Caption = 'Mirror...'
+      Caption = 'Зеркальное отображение...'
       OnExecute = MirrorFaceExecute
     end
     object TransformLackenby: TAction
       Category = 'Transform'
-      Caption = 'Lackenby...'
+      Caption = 'Преобразование Lackenby...'
       OnExecute = TransformLackenbyExecute
     end
     object ExportIGES: TAction

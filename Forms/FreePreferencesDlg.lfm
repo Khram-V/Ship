@@ -1622,7 +1622,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
       'ColorO=FFFF00'
       'ColorP=FFFFFF'
       'ColorQ=C0DCC0'
-      'ColorR=F0CAA6'
+      'ColorR=С08000'
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )

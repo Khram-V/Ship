@@ -3,16 +3,23 @@ unit FreeNewModelDlg;
 interface uses
     Controls, Forms,
     StdCtrls, Buttons,
-    ExtCtrls, Spin, FreeLanguageSupport;
-type TFreeNewModelDialog = class( TForm )
-    ComboBox1: TComboBox;
+    ExtCtrls, Spin, FreeLanguageSupport, Classes;
+type
+
+{ TFreeNewModelDialog }
+
+ TFreeNewModelDialog = class( TForm )
+    ComboBox2: TComboBox;
+    Label7: TLabel;
+    ShipBox,ComboBox1: TComboBox;
+    ShipType,Label1,Label2,Label3,Label4,Label5,Label6: TLabel;
+    ShipPanel,Panel1,Panel2,Panel3,Panel5: TPanel;
     FloatSpinEdit1,FloatSpinEdit2,FloatSpinEdit3: TFloatSpinEdit;
-    Label1,Label2,Label3,Label4,Label5,Label6: TLabel;
-    Panel2,Panel3,Panel1,Panel4,Panel5: TPanel;
     SpinEdit1,SpinEdit2: TSpinEdit;
     BitBtn1,BitBtn2: TSpeedButton;
     procedure BitBtn1Click( Sender:TObject );
     procedure BitBtn2Click( Sender:TObject );
+    procedure ComboBox2Change(Sender: TObject);
   private
     function FGetBreadth:single;  procedure FSetBreadth(Val: single);
     function FGetDraft:  single;  procedure FSetDraft(Val: single);
@@ -59,11 +66,18 @@ begin NCols:=NCols;
       Length:=Length;
       Breadth:=Breadth;
       Draft:=Draft;
-      ShowTranslatedValues(Self); Showmodal;
+      ShowTranslatedValues(Self);
+      Showmodal;
       Result:=ModalResult = mrOk;
 end;
 procedure TFreeNewModelDialog.BitBtn1Click(Sender: TObject);
     begin ModalResult:=mrOk; end;
 procedure TFreeNewModelDialog.BitBtn2Click(Sender: TObject);
     begin ModalResult:=mrCancel; end;
+
+procedure TFreeNewModelDialog.ComboBox2Change(Sender: TObject);
+begin
+
+end;
+
 end.

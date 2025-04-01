@@ -333,7 +333,6 @@ type
     procedure ExportPartExecute        (Sender: TObject);
     procedure ImportPartExecute        (Sender: TObject);
     procedure LayerIntersectionExecute (Sender: TObject);
-//  procedure KeelRudderWizardExecute  (Sender: TObject);
     procedure RedoExecute              (Sender: TObject);
     procedure ClearUndoExecute         (Sender: TObject);
     procedure ShowUndoHistoryExecute   (Sender: TObject);
@@ -347,19 +346,11 @@ type
 //  procedure CrossCurvesExecute       (Sender: TObject);
     procedure SelectLeakPointsExecute  (Sender: TObject);
     procedure LoadMostRecentFile;
-//  procedure LoadNamedFile(FileName:AnsiString);
     procedure InitiallyLoadModel;
+//  procedure LoadNamedFile(FileName:AnsiString);
+//  procedure KeelRudderWizardExecute  (Sender: TObject);
    private                                             { Private declarations }
-{     FAllToolbarsControlsWidth,
-      FToolBarFileControlsWidth,
-      FToolBarVisibilityControlsWidth,
-      FToolBarLayersControlsWidth,
-      FToolBarPointsControlsWidth,
-      FToolBarEditControlsWidth,
-      FToolBarEdgesControlsWidth,
-      FToolBarFacesControlsWidth,
-      FToolBarCurvesControlsWidth : integer;
-}     FDestroying: boolean;
+      FDestroying: boolean;
       FSplitSectionDialog: TFreeSplitSectionDialog;
       function  Load_and_Scale( FileName: AnsiString ): Boolean;
       procedure FLoadRecentFile(sender:TObject);
@@ -372,24 +363,18 @@ type
       procedure OnChangeActiveControlEdge(Sender:TObject);
       procedure OnChangeActiveControlFace(Sender:TObject);
       procedure OnChangeActiveControlCurve(Sender:TObject);
-
-//    procedure HullformWindowOnActivate(Sender:TObject);
-//    procedure HullformWindowOnDeactivate(Sender:TObject);
       procedure HullformWindowOnClose(Sender:TObject; var CloseAction:TCloseAction);
-
       procedure CloseHullWindows;
       procedure FOpenHullWindows;  // Creates 4 different views on the hullform
    public     { Public declarations }
       FFileName : AnsiString;
-      FModelInitallyLoaded : boolean;
+//    ModelInitallyLoaded : boolean;
       procedure RecentFilesDialogActivate(Sender: TObject);
       procedure ShowRecentFilesDialog;
-///+++ {$IFDEF FPC}
       function  MDIChildCount: Integer; reintroduce;
       function  GetMDIChildren( AIndex: Integer ): TFreeHullWindow; reintroduce;
 //    function  ActiveMDIChild: TFreeHullWindow; reintroduce;
 //    procedure AbandonMDIChildren( AIndex: Integer );
-///+++ {$ENDIF}
       procedure Tile;
       procedure Cascade;
       procedure CustomExceptionHandler(Sender: TObject; E: Exception);
@@ -402,7 +387,7 @@ type
 var MainForm: TMainForm;
 
 implementation
-uses FreeLinesplanForm,         // FreeKeelWizardDlg,
+uses FreeLinesplanForm,
      FreeEmptyModelChooserDlg,
      TileDialog,
      FreePointGroupForm;
@@ -456,7 +441,8 @@ begin Result:=nil;
        Result:=TFreeHullWindow( PanelManager.MDIPanels[AIndex] ) ;
 end;
 
-var inActivation: boolean = false;
+var inActivation: boolean=false;
+    ModelInitallyLoaded:boolean=false;
 
 procedure TMainForm.FormActivate(Sender: TObject);
 var i:integer; splashResult:TModalResult;
@@ -464,55 +450,39 @@ begin
   if FDestroying then exit;
   if inActivation then exit;
   inActivation:=true;
+//FreeShip.ModelIsLoaded:=false;
   Freeship.Edit.ProgressBar:=nil; // temporary turn off until empty VP resolved in Win10
   Freeship.Surface.OnFaceRebuilt:=Freeship.Edit.OnFaceRebuilt;
   BringToFront;
   Application.BringToFront;
   Application.ProcessMessages;
-  if not FModelInitallyLoaded then begin InitiallyLoadModel;
-         FModelInitallyLoaded:=true;
-  end;
+  if not ModelInitallyLoaded then begin InitiallyLoadModel;
+         ModelInitallyLoaded:=true; end;
 //Freeship.Draw;
   inActivation:=false;
 end;
 
-(*
-procedure TMainForm.FormChangeBounds(Sender: TObject); begin end;
-procedure TMainForm.FormDestroy(Sender: TObject); begin end;
-procedure TMainForm.FormResize( Sender: TObject );
-begin // if MainForm.IsResizing then exit;
-      // PanelMain.Invalidate;
-      // Application.ProcessMessages;
-      // AlignAllToolbars;
-end;
-procedure TMainForm.FormWindowStateChange( Sender: TObject );
-begin // this is just to kick toolbar to autoresize
-      { Self.Height:=Self.Height+1;
-        Self.Resize;
-        Self.Height:=Self.Height-1;
-        Self.Resize;
-        Self.Invalidate; }
-end;
-*)
-
 procedure TMainForm.InitiallyLoadModel;
-var FileExt: AnsiString; Est: Boolean;
+var FileExt: AnsiString;
 begin
-  if FFileName='' then LoadMostRecentFile;                  // default if no recent file defined
-  if (FFileName='') and not FreeShip.ModelIsLoaded then NewModelExecute(Self) else
-  if (FFileName<>'') and not FreeShip.ModelIsLoaded         // and not FreeShip.IsLoadError
-  then begin                                                // Skip translation
+  if FFileName='' then LoadMostRecentFile; // default if no recent file defined
+  if FreeShip.ModelIsLoaded then exit;
+  if FFileName<>'' then begin                   // and not FreeShip.IsLoadError
     FileExt:=Uppercase( ExtractFileExt( FFileName ) );
-       Est:=(FileExt='.FBM') or (FileExt='.FTM');
-    if Est then Est:=Load_and_Scale( FFileName );
-    if not Est then begin
-       FreeEmptyModelChooserDialog:=TFreeEmptyModelChooserDialog.Create(Self);
-       ShowTranslatedValues( FreeEmptyModelChooserDialog );
-       if FreeEmptyModelChooserDialog.Execute( FFileName ) then begin
-         if FreeEmptyModelChooserDialog.RbCreateNew.Checked then NewModelExecute(Self) else
-         if FreeEmptyModelChooserDialog.RbLoadFile.Checked then LoadFileExecute(Self)
-       end; FreeEmptyModelChooserDialog.Free;
-    end;                                                // End Skip translation
+    if FileExt='.FEF' then begin
+       FreeShip.Edit.File_ImportFEF( FFilename );
+       FOpenHullWindows;
+//       SetCaption;
+//       UpdateMenu;
+    end else
+    if (FileExt='.FBM') or (FileExt='.FTM') then Load_and_Scale( FFileName );
+  end;
+  if not FreeShip.ModelIsLoaded then begin
+     FreeEmptyModelChooserDialog:=TFreeEmptyModelChooserDialog.Create( Self );
+     if FreeEmptyModelChooserDialog.Execute( FFileName ) then begin
+       if FreeEmptyModelChooserDialog.RbCreateNew.Checked then NewModelExecute(Self) else
+       if FreeEmptyModelChooserDialog.RbLoadFile.Checked then LoadFileExecute(Self)
+     end; FreeEmptyModelChooserDialog.Free;
   end;
 //SetCaption;
 //LoadToolIcons;
@@ -603,31 +573,10 @@ procedure TMainForm.OnChangeActiveControlFace(Sender: TObject);
     begin UpdateMenu; end;
 procedure TMainForm.OnChangeActiveControlCurve(Sender: TObject);
     begin UpdateMenu; end;
-(*
-procedure TMainForm.HullformWindowOnActivate(Sender:TObject);
-begin // bring Action List here to process keys and shortcuts
-      // FActionListHull:=TFreeHullWindow(Sender).FreeHullForm.ActionListHull;
-      // self.InsertComponent(FActionListHull);
-end;
-procedure TMainForm.HullformWindowOnDeactivate(Sender:TObject);
-begin
- //remove Action List to free place for another MDI action list
- //if not assigned(FActionListHull) then exit;
- //if not assigned(Sender) then exit;
- //if not assigned(TFreeHullWindow(Sender).FreeHullForm) then exit;
- //if not assigned(TFreeHullWindow(Sender).FreeHullForm.ActionListHull) then exit;
- //if FActionListHull <> TFreeHullWindow(Sender).FreeHullForm.ActionListHull then exit;
- //if not FDestroying then
- //   RemoveComponent(FActionListHull);
- //FActionListHull:=nil;
-end;
-*)
-procedure TMainForm.HullformWindowOnClose
-( Sender:TObject; var CloseAction: TCloseAction );
-begin // HullformWindowOnDeactivate( Sender );
-      PanelManager.Remove(Sender as TFreeHullWindow);
-end;
-
+procedure TMainForm.HullformWindowOnClose( Sender:TObject; var CloseAction:TCloseAction );
+    begin // HullformWindowOnDeactivate( Sender );
+          PanelManager.Remove(Sender as TFreeHullWindow);
+    end;
 procedure TMainForm.CloseHullWindows;
 var thw: TFreeHullWindow;
 begin
@@ -898,7 +847,7 @@ begin
   Freeship.Surface.OnFaceRebuilt:=Freeship.Edit.OnFaceRebuilt;
   Freeship.Edit.ProgressBar:=self.ProgressBarMain;
   if (vFileName<>'') and (vFileName<>'*') then begin
-     Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+     Answer:=Freeship.Edit.File_SaveCheck;
      if (Answer=mrCancel) // then exit; //
      or FreeShip.FileChanged then exit;
      FreeShip.Edit.File_Load( vFileName );
@@ -1105,7 +1054,7 @@ begin
       Filename:=Menu.Caption;
       repeat N:=Pos('&',Filename); if N<>0 then system.Delete( Filename,N,1 );
       until N=0;
-   Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+   Answer:=Freeship.Edit.File_SaveCheck;
    if (Answer=mrCancel) or FreeShip.FileChanged then exit;
    if not Load_and_Scale( FileName ) then begin
      FreeEmptyModelChooserDialog:=TFreeEmptyModelChooserDialog.Create(Self);
@@ -1123,7 +1072,7 @@ var Menu    : TMenuItem;
     N       : Integer;
     Answer  : word;
 begin
-  if FreeShip.Edit.RecentFileCount = 0 then exit;
+  if FreeShip.Edit.RecentFileCount=0 then exit;
   Filename:=Freeship.Edit.RecentFile[0];
   FFilename:=Filename;
   Load_and_Scale( FileName );
@@ -1255,8 +1204,8 @@ procedure TMainForm.NewModelExecute(Sender: TObject);
 begin
    if FreeShip.Edit.Model_New then FOpenHullWindows;
    FreeShip.FileIsReadOnly:=false;
-   FreeShip.FileChanged:=true;
-// FreeShip.ModelIsLoaded:=true;
+//   FreeShip.FileChanged:=true;
+//   FreeShip.ModelIsLoaded:=true;
 // Freeship.RebuildModel;
 // Freeship.ZoomFitAllViewports;
 // FreeShip.Surface.Rebuild;
@@ -1285,7 +1234,7 @@ begin
    FreeShip.Precision:=fpLow;
 // FAllToolbarsControlsWidth:=0;
    Ship:=Freeship;                       // копия для воссоздания новых моделей
-   FModelInitallyLoaded:=false;
+// ModelInitallyLoaded:=false;
 end;
 
 procedure TMainForm.ShowStationsExecute( Sender: TObject );
@@ -1302,22 +1251,14 @@ begin FreeShip.Visibility.ShowWaterlines:=not FreeShip.Visibility.ShowWaterlines
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-var Answer:word;
-begin
-  if Freeship.FileChanged then  begin
-    Answer:=MessageDlg( UserString(103)
-                + EOL + UserString(282),
-                        mtWarning,[mbNo,mbYes],0,mbNo );
-    CanClose:=Answer=mrYes;
-  end;
+begin if (Freeship.FileChanged) and (FreeShip.ModelIsLoaded) then
+      CanClose:=mrYes=MessageDlg( UserString(103)+EOL+UserString(282),
+                mtWarning,[mbNo,mbYes],0,mbNo );
 end;
-
 procedure TMainForm.NewFaceExecute(Sender: TObject);
     begin FreeShip.Edit.Face_New; UpdateMenu; end;
-
 procedure TMainForm.IntersectionDialogExecute(Sender: TObject);
     begin FreeShip.Edit.Intersection_Dialog; UpdateMenu; end;
-
 procedure TMainForm.EdgeExtrudeExecute(Sender: TObject);
     begin FreeShip.Edit.Edge_Extrude; UpdateMenu; end;
 

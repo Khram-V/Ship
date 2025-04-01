@@ -212,7 +212,7 @@ begin
   OpenDialog.Filter:=createDialogFilter('VRML files',['wrl','vrml']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
-    Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+    Answer:=Freeship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
     PrevCursor:=Screen.Cursor;
     Screen.Cursor:=crHourglass;
@@ -1164,7 +1164,7 @@ begin
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
 
-  Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+  Answer:=Freeship.Edit.File_SaveCheck;
   if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
  (*                                                                     ////+++
     if FreeShip.FileChanged then begin
@@ -1257,7 +1257,7 @@ begin
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then
   begin
-    Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+    Answer:=Freeship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
 (*                                                                      ////+++
     if FreeShip.FileChanged then  begin
@@ -1334,12 +1334,44 @@ end;
 //
 // Import a Freeship Exchange Format (FEF) file
 //
+procedure TFreeEdit.File_ImportFEF( FileName: AnsiString );
+  var Strings: TStringList; Str: AnsiString; LineNr,I: integer;
+begin
+  Strings:=TStringList.Create;
+  Strings.LoadFromFile( Filename );
+  LineNr:=-1;                 // Read general information and mainparticulars
+  Inc(LineNr); FreeShip.ProjectSettings.FProjectName:=Strings[LineNr];
+  Inc(LineNr); FreeShip.ProjectSettings.FProjectDesigner:=Strings[LineNr];
+  Inc(LineNr); FreeShip.ProjectSettings.FProjectFileCreatedBy:=Strings[LineNr];
+  Inc(LineNr); FreeShip.ProjectSettings.FProjectComment:=Strings[LineNr];
+  Inc(LineNr); Str:=Strings[LineNr];
+  FreeShip.ProjectSettings.ProjectLength:=GetFloat(Str);
+  FreeShip.ProjectSettings.ProjectBeam:=GetFloat(Str);
+  FreeShip.ProjectSettings.ProjectDraft:=GetFloat(Str);
+  FreeShip.ProjectSettings.ProjectWaterDensity:=GetFloat(Str);
+               // FreeShip.ProjectSettings.ProjectWaterTemper:=GetFloat(Str);
+  FreeShip.ProjectSettings.ProjectAppendageCoefficient:=GetFloat(Str);
+  I:=GetInteger( Str );
+  FreeShip.ProjectSettings.FProjectUnits:=TFreeUnitType(I);
+  I:=Integer( GetBoolean( Str ) ); // FreeShip.ProjectSettings.FMainparticularsHasBeenset:=GetBoolean(Str);
+  I:=GetInteger( Str );
+  FreeShip.FPrecision:=TFreePrecisionType(I);
+  FreeShip.Surface.ImportFEFFile(Strings, LineNr);
+  FreeAndNil(Strings);
+  FreeShip.FileName:=FileName;
+  FreeShip.ModelIsLoaded:=True;
+  FreeShip.Built:=False;
+  FreeShip.RebuildModel;
+  if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
+end;
+
+
 procedure TFreeEdit.File_ImportFEF;
 var
   OpenDialog: TOpenDialog;
   Answer: word;
-  Strings: TStringList;
-  Str: AnsiString;
+//  Strings: TStringList;
+//  Str: AnsiString;
   LineNr, I: integer;
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
@@ -1347,13 +1379,15 @@ begin
   OpenDialog.Filter:=createDialogFilter('FREE!ship Exchange Format file',['fef']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
-    Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+    Answer:=Freeship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
     FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
     CreateUndoObject(Userstring(109),True);
     FreeShip.Clear;
+    File_ImportFEF( OpenDialog.Filename );
+(*
     Strings:=TStringList.Create;
-    Strings.LoadFromFile(OpenDialog.Filename);
+    Strings.LoadFromFile( OpenDialog.Filename );
     LineNr:=-1;                 // Read general information and mainparticulars
     Inc(LineNr); FreeShip.ProjectSettings.FProjectName:=Strings[LineNr];
     Inc(LineNr); FreeShip.ProjectSettings.FProjectDesigner:=Strings[LineNr];
@@ -1378,6 +1412,7 @@ begin
     FreeShip.Built:=False;
     FreeShip.RebuildModel;
     if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
+*)
   end;
   FreeAndNil(OpenDialog);
 end;
@@ -1392,7 +1427,7 @@ begin
   OpenDialog.Filter:=createDialogFilter( 'Carlsson Hull files',['hul'] );
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
-    Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+    Answer:=Freeship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
     CreateUndoObject(UserString(110), True);
     File_ImportHull(OpenDialog.FileName, False);

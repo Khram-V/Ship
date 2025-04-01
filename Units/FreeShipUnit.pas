@@ -348,7 +348,7 @@ type
     FModelView        : TFreeModelView; // Show half or entire ship
     FShowNormals      : boolean;        // Show normals of selected surface patches
     FShowGrid         : boolean;        // Show the grid of intersections in the plan,profile and bodyplan view
-    FShowBothSides    : boolean;        // show both sides
+//  FShowBothSides    : boolean;        // show both sides
 
     FShowMarkers: boolean;
     FShowControlCurves: boolean;
@@ -379,7 +379,7 @@ type
     procedure FSetShowWaterlines(Val: boolean);
     procedure FSetShowControlCurves(Val: boolean);
     procedure FSetShowHydrostaticData(Val: boolean);
-    procedure FSetShowBothSides(Val: boolean);
+//  procedure FSetShowBothSides(Val: boolean);
   public
     constructor Create(Owner: TFreeShip);
     procedure Clear;
@@ -406,7 +406,7 @@ type
     property ShowNormals: boolean read FShowNormals write FSetShowNormals;
     property ShowStations: boolean read FShowStations write FSetShowStations;
     property ShowWaterlines: boolean read FShowWaterlines write FSetShowWaterlines;
-    property ShowBothSides: boolean read FShowBothSides write FSetShowBothSides;
+//  property ShowBothSides: boolean read FShowBothSides write FSetShowBothSides;
   end;
 
   {-----------------------------------------------------------}
@@ -430,7 +430,7 @@ type
     procedure File_Load( FileName: AnsiString ); reintroduce; overload; // Loads the given filename quietly
     function File_Save:boolean;             // save as FREE!ship file without prompting for a filename (must already been set)
     function File_SaveAs:boolean;           // Ask for filename and save as FREE!ship file
-    function File_SaveCheck( Check:boolean ):word; // с запроосом необходимости -> mrOk,mrNo,mrCancel
+    function File_SaveCheck:word;           // с запроосом необходимости -> mrOk,mrNo,mrCancel
     function getPreviewImage(aFileName: AnsiString): TJPegImage;
     procedure AddToRecentFiles( Filename: AnsiString );            // Takes a filename and adds it to the list with recent files
 
@@ -480,6 +480,7 @@ type
     procedure File_ImportCarene;          // imports a Carene XYZ file and creates a multichine boat with developable surfaces
     procedure File_ImportChines;          // Import chines from a textfile and fit a surface through them
     procedure File_ImportFEF;             // Import a Freeship Exchange Format (FEF) file
+    procedure File_ImportFEF( FileName: AnsiString );
     procedure File_ImportHull; overload; virtual; // Imports a file created with Carlssons's Hulls program
     procedure File_ImportHull(Filename: AnsiString; Quiet: boolean); reintroduce; overload;    // Imports a file created with Carlssons's Hulls program
     procedure File_ImportPart;            // Import a partfile and add it to the current geometry

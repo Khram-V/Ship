@@ -586,32 +586,27 @@ begin
   Strings.Add('');
   Strings.Add(CalcHeader);
   Strings.Add('');
-  Strings.Add(Makelength( S+Userstring(39), 31)+' : ' + Separator+ProjectSettings.ProjectName);
-  Strings.Add(Makelength( S+Userstring(40), 31)+' : ' + Separator+ProjectSettings.ProjectDesigner);
-  if ProjectSettings.ProjectFileCreatedBy <> '' then
-    Strings.Add(Makelength( S+Userstring(41), 31)+' : ' + Separator+ProjectSettings.ProjectFileCreatedBy);
-  if ProjectSettings.ProjectComment <> '' then
-    Strings.Add(Makelength( S+Userstring(42), 31)+' : ' + Separator+ProjectSettings.ProjectComment);
-  Strings.Add(Makelength( S+Userstring(43), 31)+' : ' + Separator+ChangeFileExt(ExtractFilename(FileName), '.fbm'));
+  Strings.Add(Makelength( S+Userstring(39),31)+' : ' + Separator+ProjectSettings.ProjectName);
+  Strings.Add(Makelength( S+Userstring(40),31)+' : ' + Separator+ProjectSettings.ProjectDesigner);
+  if ProjectSettings.ProjectFileCreatedBy<>'' then
+    Strings.Add(Makelength( S+Userstring(41),31)+' : ' + Separator+ProjectSettings.ProjectFileCreatedBy);
+  if ProjectSettings.ProjectComment<>'' then
+    Strings.Add(Makelength( S+Userstring(42),31)+' : ' + Separator+ProjectSettings.ProjectComment);
+  Strings.Add(Makelength( S+Userstring(43),31)+' : ' + Separator+ChangeFileExt(ExtractFilename(FileName), '.fbm'));
   Strings.Add('');
 //if ProjectSettings.MainparticularsHasBeenset then
   begin
-    Strings.Add(MakeLength(S+Userstring(44), 31)+' : ' +
-      MakeLength(ProjectSettings.ProjectLength, -1, 10)+#32 +
-      LengthStr(ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(46), 31)+' : ' +
-      MakeLength(ProjectSettings.ProjectBeam, -1, 10)+#32+LengthStr(
-      ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(48), 31)+' : ' +
-      MakeLength(ProjectSettings.Projectdraft, -1, 10)+#32+LengthStr(
-      ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(49), 31)+' : ' +
-      MakeLength(ProjectSettings.ProjectSplitSectionLocation, -1, 10) +
-      #32+LengthStr(ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(50), 31)+' : ' +
-      MakeLength(ProjectSettings.ProjectWaterDensity, 3, 10)+#32 +
-      DensityStr(ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(51), 31)+' : ' +
+    Strings.Add(MakeLength(S+Userstring(44),31)+' : ' +
+      MakeLength(ProjectSettings.ProjectLength, -1, 10)+#32+LengthStr(ProjectSettings.ProjectUnits));
+    Strings.Add(MakeLength(S+Userstring(46),31)+' : ' +
+      MakeLength(ProjectSettings.ProjectBeam, -1, 10)+#32+LengthStr(ProjectSettings.ProjectUnits));
+    Strings.Add(MakeLength(S+Userstring(48),31)+' : ' +
+      MakeLength(ProjectSettings.Projectdraft, -1, 10)+#32+LengthStr(ProjectSettings.ProjectUnits));
+    Strings.Add(MakeLength(S+Userstring(49),31)+' : ' +
+      MakeLength(ProjectSettings.ProjectSplitSectionLocation,-1,10)+#32+LengthStr(ProjectSettings.ProjectUnits));
+    Strings.Add(MakeLength(S+Userstring(50),31)+' : ' +
+      MakeLength(ProjectSettings.ProjectWaterDensity, 3, 10)+#32+DensityStr(ProjectSettings.ProjectUnits));
+    Strings.Add(MakeLength(S+Userstring(51),31)+' : ' +
       MakeLength(ProjectSettings.ProjectAppendageCoefficient, 4, 10));
     Strings.Add('');
   end;
@@ -620,12 +615,11 @@ begin
   Strings.Add('');
 end;
 *)
-
 procedure TFreeShip.Clear; var I: integer; Pt: TPoint;
 begin                                                    // Initialize all data
   FPrecision:=fpLow;
   FFileVersion:=CurrentVersion;
-//FFileChanged:=False;
+  FFileChanged:=False;
   ModelIsLoaded:=False;
   FileIsReadOnly:=False;
   FSurface.Clear;
@@ -651,16 +645,15 @@ begin                                                    // Initialize all data
   StopAskingForFileVersion:=False;
   Fillchar(FResistanceDelftData, SizeOf(FResistanceDelftData), 0);
   Fillchar(FResistanceKaperData, SizeOf(TFreeKAPERResistanceData), 0);
-
-  // Delete backgroundimages
+                                                     // Delete backgroundimages
   for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].Destroy;
   FBackGroundImages.Clear;
-  // Clear flowlines
+                                                             // Clear flowlines
   for I:=0 to NumberOfFlowlines-1 do Flowline[I].Destroy;
   FFlowlines.Clear;
   FSelectedFlowlines.Clear;
-  if not (csDestroying in componentState) then begin // remove backgroundimages from viewports
-    Pt.X:=0;
+  if not (csDestroying in componentState) then begin // remove backgroundimages
+    Pt.X:=0;                                         //        from viewports
     Pt.Y:=0;
 //  for J:=0 to NumberOfViewports-1 do
     for I:=0 to Viewports.Count-1 do
@@ -668,13 +661,12 @@ begin                                                    // Initialize all data
                 (nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True);
     if assigned( OnFileChanged ) then OnFileChanged(self);
     if Assigned(OnUpdateGeometryInfo) then OnUpdateGeometryInfo(self);
-  end; FileChanged:=False;
+  end; //FileChanged:=False;
 end;
 
-procedure TFreeShip.ClearUndo;
-var I: integer;
-begin // clear undo
-  for I:=1 to UndoCount do UndoObject[I-1].Destroy;
+procedure TFreeShip.ClearUndo; var I: integer;
+begin
+  for I:=0 to UndoCount-1 do UndoObject[I].Destroy;               // clear undo
   FUndoObjects.Clear;
   FUndoPosition:=0;
   FPreviousUndoPosition:=FUndoPosition-1;

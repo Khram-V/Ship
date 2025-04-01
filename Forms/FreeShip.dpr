@@ -1,6 +1,6 @@
 program FreeShip;                                                 { FREE!ship }
 {$mode objfpc}{$H+}
-uses Controls, Forms, Dialogs, //Windows,      // System,
+uses Controls, Forms, Dialogs, //Windows,     // System,
      SysUtils, Math, LazUTF8,                // this includes the LCL widgetset
      DefaultTranslator, Interfaces,
      Main                in 'Main.pas',                              {MainForm}
@@ -11,22 +11,23 @@ uses Controls, Forms, Dialogs, //Windows,      // System,
      sOpenFile: AnsiString='';                                  // UTF8ToWinCP(
 
 procedure InitByParameters; var S: AnsiString; p: integer; begin
-  for p:=1 to ParamCount do begin S:=ParamStr(p);
+  for p:=1 to ParamCount do begin S:=ParamStr( p );
     if S='--help' then ParametersHelp:=True else
     if ( lowerCase( RightStr( S,4 ) )='.ftm' )
-    or ( lowerCase( RightStr( S,4 ) )='.fbm' ) then sOpenFile:=S;      //? UTF8
+    or ( lowerCase( RightStr( S,4 ) )='.fbm' )
+    or ( lowerCase( RightStr( S,4 ) )='.fef' ) then sOpenFile:=S;      //? UTF8
   end;
 end;
 procedure PrintParametersHelp( Ans: Boolean ); var sHelp: AnsiString;
 begin
   sHelp:='Usage: Free!Ship [parameter] [model]'   // #226+#149+#169 + #10 = '╩'
     +#10+'Where parameter is: --help = this screen'
-    +#10+'    model file: <Ship>.ftm or <Ship>.fbm'+#10
-    +#10+'«Free!Ship» in Pascal.'
-    +#10+'Compiled at '+ ReleasedDate+' '+COMPILE_TIME
-    +#10+'Compiler version: '+ FPCVERSION
-    +#10+'Target CPU:       '+ TARGET_CPU
-    +#10+'Target OS:        '+ TARGET_OS
+    +#10+'     digital model: <Ship>.[ftm,fbm,fef]'+#10
+    +#10+'«Free!Ship» in Free Pascal.'
+    +#10+'Compiled at '+ReleasedDate+' '+COMPILE_TIME
+    +#10+'Compiler version: ' + FPCVERSION
+    +#10+'Target CPU:       ' + TARGET_CPU
+    +#10+'Target OS:        ' + TARGET_OS
     +#10+'Free!Ship version: '+ FREESHIP_VERSION
         +' для ['+VersionString( low( TFreeFileVersion ) )+'..5.0]';
   if Ans then ShowMessage( sHelp )                    // ResourceVersionInfo

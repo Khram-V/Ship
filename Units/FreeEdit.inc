@@ -1056,11 +1056,12 @@ function TFreeEdit.CheckIfChangedAndAskToSave():boolean;
   var Answer: word;
 begin
   Result:=true;
+  if FreeShip.ModelIsLoaded then
   if FreeShip.FileChanged then begin
     Answer:=MessageDlg( UserString(103)+EOL+UserString(104),mtConfirmation,
                                                     [mbYes,mbNo,mbCancel],0 );
-    if Answer = mrCancel then begin Result:=false; end
-    else if Answer = mrYes then begin File_SaveAs;
+    if Answer=mrCancel then begin Result:=false; end
+    else if Answer=mrYes then begin File_SaveAs;
       if FreeShip.FileChanged then begin // Apparently saving was not successfull, abort
         Result:=false;
       end;
@@ -1152,7 +1153,7 @@ begin
                 +'|'+createDialogFilter('FreeShip Binary files',['fbm'] );
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
-     Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+     Answer:=Freeship.Edit.File_SaveCheck;
      if (Answer=mrCancel) or FreeShip.FileChanged then exit;
      File_Load( Opendialog.FileName );           // Load everything into memory
   end;
@@ -1300,21 +1301,20 @@ begin
   end;
 end;
 *)
-
-function TFreeEdit.File_SaveCheck( Check:boolean ): word;
+function TFreeEdit.File_SaveCheck: word;
 begin result:=mrOk;
-  if Check then begin              // корпрус редактировался или дорасчитывался
-     result:=MessageDlg
-     ( 'The current model has been modified!'+EOL+'Do you need to keep this?',
-        mtConfirmation,[mbYes,mbNo,mbCancel],0 );
-     if result=mrOk then File_SaveAs;
-     if result<>mrCancel then begin          // mrCancel-отмена операций
-        FreeShip.ClearUndo;                  // здесь корпус просто расчищается
-        FreeShip.Clear;                      // здесь FFileChanged:=False
-        FreeShip.Surface.ClearSelection;
-        FreeShip.Surface.ClearFaces;
-        FreeShip.Surface.Clear;
-     end;
+  if not FreeShip.ModelIsLoaded then FreeShip.FileChanged:=false else
+  if FreeShip.FileChanged then begin // корпрус редактировался и дорасчитывался
+    result:=MessageDlg
+    (UserString(103)+EOL+UserString(104),mtConfirmation,[mbYes,mbNo,mbCancel],0);
+    if result=mrOk then File_SaveAs;
+    if result<>mrCancel then begin          // mrCancel-отмена операций
+      FreeShip.ClearUndo;                  // здесь корпус просто расчищается
+      FreeShip.Clear;                      // здесь FFileChanged:=False
+      FreeShip.Surface.ClearSelection;
+      FreeShip.Surface.ClearFaces;
+      FreeShip.Surface.Clear;
+    end;
   end;
 end;
 
@@ -2036,12 +2036,9 @@ begin
       AllFaces.Delete(AllFaces.Count-1);
       NewGroup.Clear;
       NewGroup.Capacity:=AllFaces.Count;
-      NewGroup.Add(Face);
-      // use the first face as seed for the following procedure
+      NewGroup.Add(Face); // use the first face as seed for the following procedure
       FindConnectedFaces(NewGroup, AllFaces);
-//      NewGroup.Sort;
-
-      // find the lowest point of this group of faces
+//    NewGroup.Sort;      // find the lowest point of this group of faces
       Pt0:=nil;
       for I:=1 to NewGroup.Count do begin
         Face:=NewGroup[I-1];
@@ -2053,7 +2050,6 @@ begin
           else if Pt.Coordinate.Z < Pt.Coordinate.Z then Pt0:=Pt;
         end;
       end;
-
       if Pt0 <> nil then begin
         // select the a face connected to this point and also present in the
         // newgroup-list with faces and with the most vertical normal of all canditates
@@ -2071,8 +2067,7 @@ begin
               end;
             end;                                                                // MessageDlg('flip I='+FloatToStrF(I,ffFixed,7,3)+' N.X='+FloatToStrF(Normal.X,ffFixed,7,3)+' N.Y='+FloatToStrF(Normal.Y,ffFixed,7,3)+' N.Z='+FloatToStrF(Normal.Z,ffFixed,7,3),mtError,[mbOk],0);
         if Face <> nil then
-        if Normal.Z > 0.0 then begin
-              // normal points upward, all faces in this group must be inverted
+        if Normal.Z > 0.0 then begin // normal points upward, all faces in this group must be inverted
           for I:=0 to NewGroup.Count-1 do begin
             Face:=NewGroup[I];
             Face.FlipNormal;
@@ -2082,7 +2077,6 @@ begin
         end;
       end;
     end;
-
     FreeAndNil(NewGroup);
     if (Leaks.Count>0) and (ShowResult) then begin
       Str:=Userstring(149)+' '+IntToStr(Leaks.Count)+' '+Userstring(150)+'.';
@@ -2102,24 +2096,18 @@ begin
 }   // end Victor T
     end;
 
-    if (Changed) or (Inconsistent > 0) or (NonManifold > 0) or (DblEdges > 0) then
-    begin
+    if (Changed) or (Inconsistent>0) or (NonManifold>0) or (DblEdges>0) then begin
       vUndo.Accept;
       FreeShip.Built:=False;
       Freeship.RebuildModel;
       FreeShip.FileChanged:=True;
-      if ShowResult then
-      begin
+      if ShowResult then begin
         Str:=Userstring(152)+':';
-        if DblEdges > 0 then
-          Str:=Str+EOL+IntToStr(DblEdges)+' '+UserString(158)+'.';
-        if Inconsistent > 0 then
-          Str:=Str+EOL+IntToStr(Inconsistent)+' '+Userstring(153)+'.';
-        if InvertedFaces > 0 then
-          Str:=Str+EOL+IntToStr(InvertedFaces)+' '+Userstring(154)+'.';
-        if NonManifold > 0 then
-          Str:=Str+EOL+IntToStr(NonManifold)+' '+Userstring(155);
-        MessageDlg(Str, mtInformation, [mbOK], 0);
+        if DblEdges > 0 then Str:=Str+EOL+IntToStr(DblEdges)+' '+UserString(158)+'.';
+        if Inconsistent > 0 then Str:=Str+EOL+IntToStr(Inconsistent)+' '+Userstring(153)+'.';
+        if InvertedFaces > 0 then Str:=Str+EOL+IntToStr(InvertedFaces)+' '+Userstring(154)+'.';
+        if NonManifold > 0 then Str:=Str+EOL+IntToStr(NonManifold)+' '+Userstring(155);
+        MessageDlg( Str,mtInformation,[mbOK],0 );
         if assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
       end;
     end else begin
@@ -2148,11 +2136,11 @@ end;
 // Start a new model (with a predefined surface)
 // returns true if a new model has indeed been created
 
-function TFreeEdit.Model_New: boolean;
+function TFreeEdit.Model_New: boolean;  {$I HistoryExamples.inc }
 var
   Answer: word; I,J,Cols,Rows: integer;
   L,B,D,dd: TFloatType; P: T3DVector;
-  Default: array[0..6, 0..4] of T3DVector; // Default ship has 7 columns of 5 points(or rows)
+  Default: array[0..6,0..4] of T3DVector; // Default ship has 7 columns of 5 points(or rows)
   Spline1,Spline2: TFreeSpline;
   TrvSplines: TFasterListTFreeSpline;
   TrvPoints: TFasterListTFreeSubdivisionControlPoint;
@@ -2161,10 +2149,9 @@ var
   FreeNewModelDialog: TFreeNewModelDialog;
 begin
   Result:=False;
-  Answer:=Freeship.Edit.File_SaveCheck( Freeship.FileChanged );
+  Answer:=Freeship.Edit.File_SaveCheck;
   if (Answer=mrCancel) or FreeShip.FileChanged then exit;
-  FreeNewModelDialog:=TFreeNewModelDialog.Create(FreeShip);
-  ShowTranslatedValues(FreeNewModelDialog);
+  FreeNewModelDialog:=TFreeNewModelDialog.Create( FreeShip );
   if FreeNewModelDialog.Execute then begin
     FreeShip.ModelIsLoaded:=False;
     CreateUndoObject( Userstring(157), True );
@@ -2173,91 +2160,8 @@ begin
     L:=FreeNewModelDialog.Length;
     B:=FreeNewModelDialog.Breadth;
     D:=FreeNewModelDialog.Draft/2;
-{$if true }
-    Default[0,0]:=Vector( 0.06,0,    0    );   // station 0, stern = Галеон
-    Default[0,1]:=Vector( 0.04,0.02, 1.9  );
-    Default[0,2]:=Vector(-0.01,0.16, 2.2  );
-    Default[0,3]:=Vector(-0.02,0.175,2.8  );
-    Default[0,4]:=Vector(-0.02,0.11, 5.3  );
-    Default[1,0]:=Vector( 0.2, 0,    0    );   // station 1
-    Default[1,1]:=Vector( 0.18,0.12, 1    );
-    Default[1,2]:=Vector( 0.17,0.25, 1.2  );
-    Default[1,3]:=Vector( 0.16,0.27, 2.2  );
-    Default[1,4]:=Vector( 0.16,0.29, 4.9  );
-    Default[2,0]:=Vector( 0.4, 0,    0    );   // station 2
-    Default[2,1]:=Vector( 0.4, 0.2,  0.2  );
-    Default[2,2]:=Vector( 0.4, 0.43, 1    );
-    Default[2,3]:=Vector( 0.4, 0.37, 2.2  );
-    Default[2,4]:=Vector( 0.4, 0.38, 3.8  );
-    Default[3,0]:=Vector( 0.6, 0,    0    );   // station 3
-    Default[3,1]:=Vector( 0.6, 0.22, 0.1  );
-    Default[3,2]:=Vector( 0.6, 0.45, 0.9  );
-    Default[3,3]:=Vector( 0.6, 0.4,  2.2  );
-    Default[3,4]:=Vector( 0.6, 0.4, 3.6  );
-    Default[4,0]:=Vector( 0.8, 0,    0    );   // station 4
-    Default[4,1]:=Vector( 0.8, 0.2,  0.5  );
-    Default[4,2]:=Vector( 0.8, 0.24, 1.2  );
-    Default[4,3]:=Vector( 0.8, 0.3,  2.5  );
-    Default[4,4]:=Vector( 0.8, 0.368,3.8  );
-    Default[5,0]:=Vector( 0.93,0,    0.15 );   // station 5
-    Default[5,1]:=Vector( 0.93,0.05, 1    );
-    Default[5,2]:=Vector( 0.93,0.075,2    );
-    Default[5,3]:=Vector( 0.93,0.125,3    );
-    Default[5,4]:=Vector( 0.95,0.2,  4    );
-    Default[6,0]:=Vector( 1.018,0,   1    );   // station 6, stem
-    Default[6,1]:=Vector( 1.008,0,  1.75  );
-    Default[6,2]:=Vector( 1,    0,  2.5   );
-    Default[6,3]:=Vector( 0.998,0,  3.25  );
-    Default[6,4]:=Vector( 0.998,0,  4     );
-    {
-    Default[5,0]:=Vector( 0.92,0,    0.15 );   // station 5
-    Default[5,1]:=Vector( 0.92,0.05, 1    );
-    Default[5,2]:=Vector( 0.92,0.075,2    );
-    Default[5,3]:=Vector( 0.92,0.125,3    );
-    Default[5,4]:=Vector( 0.94,0.2,  4    );
-    Default[6,0]:=Vector( 1,    0,   1    );   // station 6, stem
-    Default[6,1]:=Vector( 0.99, 0,  1.75  );
-    Default[6,2]:=Vector( 0.983,0,  2.5   );
-    Default[6,3]:=Vector( 0.98, 0,  3.25  );
-    Default[6,4]:=Vector( 0.98, 0,  4     );
-    }
-{$else}
-    Default[0,0]:=Vector(0.06, 0,   0   );   // station 0, stern = Фелюга
-    Default[0,1]:=Vector(0.04, 0.0, 1.8 );
-    Default[0,2]:=Vector(0,    0.01,2   );
-    Default[0,3]:=Vector(-0.005,0.3,2.6 );
-    Default[0,4]:=Vector(-0.01,0.3, 3.6 );
-    Default[1,0]:=Vector(0.2,  0,   0   );   // station 1
-    Default[1,1]:=Vector(0.18, 0.15,0.9 );
-    Default[1,2]:=Vector(0.17, 0.34,1.2 );
-    Default[1,3]:=Vector(0.16, 0.44,2   );
-    Default[1,4]:=Vector(0.16, 0.42,3.45);
-    Default[2,0]:=Vector(0.4,  0,   0   );   // station 2
-    Default[2,1]:=Vector(0.4,  0.32,0.3 );
-    Default[2,2]:=Vector(0.4,  0.45,0.6 );
-    Default[2,3]:=Vector(0.4,  0.5, 2   );
-    Default[2,4]:=Vector(0.4,  0.45,3.4 );
-    Default[3,0]:=Vector(0.6,  0,   0   );   // station 3
-    Default[3,1]:=Vector(0.6,  0.32,0.3 );
-    Default[3,2]:=Vector(0.6,  0.45,0.6 );
-    Default[3,3]:=Vector(0.6,  0.5, 2.1 );
-    Default[3,4]:=Vector(0.6,  0.45,3.5 );
-    Default[4,0]:=Vector(0.8,  0,   0   );   // station 4
-    Default[4,1]:=Vector(0.8,  0.12,0.5 );
-    Default[4,2]:=Vector(0.8,  0.2 ,1   );
-    Default[4,3]:=Vector(0.8,  0.36,2.3 );
-    Default[4,4]:=Vector(0.8,  0.42,3.8 );
-    Default[5,0]:=Vector(0.92, 0,   0.15);   // station 5
-    Default[5,1]:=Vector(0.92, 0.05,0.95);
-    Default[5,2]:=Vector(0.92, 0.1, 1.9 );
-    Default[5,3]:=Vector(0.92, 0.18,2.85);
-    Default[5,4]:=Vector(0.94, 0.26,3.95);
-    Default[6,0]:=Vector(1,    0,   1   );   // station 6, stem
-    Default[6,1]:=Vector(0.99, 0,   1.75);
-    Default[6,2]:=Vector(0.983,0,   2.5 );
-    Default[6,3]:=Vector(0.98, 0,   3.25);
-    Default[6,4]:=Vector(0.98, 0,   4   );
-{$endif}
+    if FreeNewModelDialog.ShipBox.ItemIndex=0 then Default:=Ship_A
+                                              else Default:=Ship_B;
     FreeShip.Clear;
     with FreeShip.ProjectSettings do begin
       ProjectUnits:=TFreeUnitType(FreeNewModelDialog.ComboBox1.ItemIndex);
@@ -2317,22 +2221,19 @@ begin
     FreeShip.Surface.Initialize( 1,1,1 );
     // Collapse stempoint to mage the grid irregular in order to demonstrate subdivision-surface capabilities
     if StemPoint<>nil then
-      if StemPoint.VertexType = svCorner then
-        stempoint.VertexType:=svCrease;
+      if StemPoint.VertexType=svCorner then StemPoint.VertexType:=svCrease;
     FreeShip.Built:=False;
 
     // Add 21 stations
     dd := Round( (L+1)/20+1e-6 );
     for I:=0 to 20 do if I*dd<=L then Intersection_Add(fiStation,I*dd );
-//  for I:=0 to 20 do Intersection_Add(fiStation,I/20*(FreeShip.Surface.Max.X-FreeShip.Surface.Min.X));
     // Add 7 buttocks
     dd:=AxisStep( B/1.75 );
     for I:=integer( B/dd )downto 0 do if I*dd<B then Intersection_Add( fiButtock,I*dd );
-//  for I:=1 to 6 do Intersection_Add(fiButtock,I/7*(FreeShip.Surface.Max.Y-FreeShip.Surface.Min.Y));
     // Add 11 waterlines
-    D:=AxisStep( FreeShip.Surface.Max.Z-FreeShip.Surface.Min.Z ); // /10;
-    for I:=0 to 10 do Intersection_Add(fiWaterline,I*D ); //10*(FreeShip.Surface.Max.Z-FreeShip.Surface.Min.Z));
-    for I:=1 to 4 do Intersection_Add( fiDiagonal,(I*2+1)*D ); //FreeShip.FProjectSettings.ProjectDraft );
+    D:=AxisStep( FreeShip.Surface.Max.Z-FreeShip.Surface.Min.Z );
+    for I:=0 to 10 do Intersection_Add(fiWaterline,I*D );
+    for I:=1 to 4 do Intersection_Add( fiDiagonal,(I*2+1)*D );
     FreeShip.FileChanged:=True;
     FreeShip.ModelIsLoaded:=True;
     FreeShip.Filename:='Example_Ship.ftm';
@@ -2340,10 +2241,11 @@ begin
     Result:=True;
     FreeAndNil( TrvSplines );
     TrvPoints.Free;
+    FreeShip.Visibility.ModelView:=mvBoth;
     FreeShip.ZoomFitAllViewports;
     FreeShip.ReDraw;
   end;
-  FreeAndNil(FreeNewModelDialog);
+  FreeAndNil( FreeNewModelDialog );
 //FreeShip.ReDraw;
 end;
 
@@ -2355,19 +2257,18 @@ var
   UndoIndex,I: integer;
   Modified: boolean;
 begin
-  Dialog:=TFreeLackenbyDialog.Create(FreeShip);
-  ShowTranslatedValues(Dialog);
-  vUndo:=CreateUndoObject(Userstring(159), False);
+  Dialog:=TFreeLackenbyDialog.Create( FreeShip );
+  ShowTranslatedValues( Dialog );
+  vUndo:=CreateUndoObject( Userstring(159),False );
   UndoIndex:=FreeShip.UndoCount;
-  if Dialog.Execute(FreeShip, Modified) then begin
+  if Dialog.Execute( FreeShip,Modified ) then begin
     for I:=FreeShip.UndoCount downto UndoIndex+1 do
              FreeShip.UndoObject[I-1].Delete;
     if not Modified then vUndo.Delete else vUndo.Accept;
   end else begin
     for I:=FreeShip.UndoCount downto UndoIndex+1 do
              FreeShip.UndoObject[I-1].Delete;
-    if Modified then
-      vUndo.Restore;
+    if Modified then vUndo.Restore;
     vUndo.Delete;
   end;
   FreeAndNil(Dialog);
@@ -2399,9 +2300,8 @@ begin
   FreeShip.ProjectSettings.ProjectBeam:=abs(FreeShip.ProjectSettings.ProjectBeam * Scalevector.Y);
   FreeShip.ProjectSettings.ProjectDraft:=abs(FreeShip.ProjectSettings.ProjectDraft * Scalevector.Z);
   if not FreeShip.ProjectSettings.FUseDefaultSplitSectionLocation then
-   FreeShip.ProjectSettings.ProjectSplitSectionLocation
-   :=abs( FreeShip.ProjectSettings.ProjectSplitSectionLocation*ScaleVector.X );
-
+    FreeShip.ProjectSettings.ProjectSplitSectionLocation
+     :=abs( FreeShip.ProjectSettings.ProjectSplitSectionLocation*ScaleVector.X );
   if AdjustMarkers then                                       // Update markers
     for I:=0 to FreeShip.NumberOfMarkers-1 do begin Marker:=FreeShip.Marker[I];
       for j:=0 to Marker.NumberOfPoints-1 do begin P:=Marker.Point[J];
