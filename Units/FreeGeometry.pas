@@ -100,7 +100,7 @@ type
   {                                           FasterList specializations }
   {----------------------------------------------------------------------}
 
-  TFasterListTFreeNamedObject = TFasterList<TFreeNamedObject>;
+  TFasterListTFreeNamedObject =  TFasterList<TFreeNamedObject>;
   TFasterListTFreeSpline = TFasterList<TFreeSpline>;
 
   TFasterListTFreeSubdivisionPoint = TFasterList<TFreeSubdivisionPoint>;
@@ -578,15 +578,13 @@ type
   { This is the base class of all named objects in the project }
   {------------------------------------------------------------}
   TFreeNamedObject = class
-  private
-    FId:integer;
+  private FId:integer;
   protected
     function FGetSelected: boolean; virtual;
     procedure FSetSelected(AValue: boolean); virtual;
   public
-    Name:AnsiString;
     Surface: TFreeSubdivisionSurface;
-    constructor Create(Owner: TFreeSubdivisionSurface); virtual;
+    constructor Create( Owner: TFreeSubdivisionSurface ); virtual;
     property Id: Integer read FId;
     property Selected:boolean read FGetSelected write FSetSelected;
   end;
@@ -701,7 +699,6 @@ type
     procedure FSetPoint( Col,Row: integer; Val: T3DVector );
     procedure FSetColCapacity( Val: integer );
     procedure FSetRowCapacity( Val: integer );
-  protected
   public
     ColCount,RowCount: integer;
     procedure Clear; override;
@@ -1010,16 +1007,17 @@ type
     procedure FSetLocked(val: boolean);
     procedure FSetSelected(val: boolean); override;
   public
+    Names : AnsiString;
     procedure AddControlPoint(cp:TFreeSubdivisionControlPoint);
     procedure RemoveControlPoint(cp:TFreeSubdivisionControlPoint);
     procedure BreakGroup; virtual;
     constructor Create(Owner: TFreeSubdivisionSurface); override;
     procedure Delete;
     procedure Draw(Viewport: TFreeViewport);
-    procedure LoadBinary(Source: TFreeFileBuffer);
-    procedure LoadFromStream(var LineNr: integer; Strings: TStringList);
-    procedure SaveBinary(Destination: TFreeFileBuffer);
-    procedure SaveToStream(Strings: TStringList);
+//  procedure LoadBinary(Source: TFreeFileBuffer);
+//  procedure LoadFromStream(var LineNr: integer; Strings: TStringList);
+//  procedure SaveBinary(Destination: TFreeFileBuffer);
+//  procedure SaveToStream(Strings: TStringList);
     property ControlPoints:TFasterListTFreeSubdivisionControlPoint read FControlPoints;
     property Locked: boolean read FLocked write FSetLocked;
     property Selected: boolean read FGetSelected write FSetSelected;
@@ -1379,8 +1377,8 @@ type
     function AddControlPoint: TFreeSubdivisionControlPoint; reintroduce; overload;
     // Adds a new controlpoint at 0,0,0 without checking other points
 
-    function IsObjectSelected(aObject: TFreeNamedObject): boolean;
-    procedure SetObjectSelected(aObject: TFreeNamedObject; aSelected: boolean);
+//  function IsObjectSelected(aObject: TFreeNamedObject): boolean;
+//  procedure SetObjectSelected(aObject: TFreeNamedObject; aSelected: boolean);
 
     // Notifies all OnSelectItemNotificationReceivers
     procedure ExecuteOnSelectItem(Sender:TObject);

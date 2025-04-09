@@ -19,9 +19,9 @@ type
     ActionList1: TActionList;
     UseLights,ShowMonochrome,MirrorPlanView,ZoomExtents,ZoomIn,ZoomOut,
     Print,ShowFillColor,ExportDXF,SaveBitmap:                    TAction;
-    ToolButton1,ToolButton2,ToolButton3,ToolButton4,
-    ToolButton5,ToolButton7,ToolButton8,ToolButton9,ToolButton6,
-    ToolButton13,ToolButton14,ToolButton15,ToolButton19:      TToolButton;
+    ToolButton1,ToolButton2,ToolButton3,ToolButton4,ToolButton5,
+    ToolButton7,ToolButton8,ToolButton9,ToolButton6,ToolButton13,
+    ToolButton14,ToolButton15,ToolButton19:                  TToolButton;
     SpinEdit1: TSpinEdit;
     PrintDialog: TPrintDialog;
     procedure SpinEdit1Change(Sender: TObject);
@@ -63,10 +63,8 @@ type
     property FreeShip: TFreeShip read FFreeShip write FSetFreeShip;
   end;
 
-const
-  SpacePercentage = 0.20; Textspace = 0.05;
-var
-  FreeLinesplanFrame: TFreeLinesplanFrame;
+const SpacePercentage=0.20; Textspace=0.05;
+var FreeLinesplanFrame: TFreeLinesplanFrame;
 
 implementation
 {$R *.lfm}
@@ -112,6 +110,17 @@ end;
 
 constructor TFreeLinesplanFrame.Create( TheOwner: TComponent );
       begin inherited Create( TheOwner ); CreateViewport; end;
+procedure TFreeLinesplanFrame.ZoomExtentsExecute(Sender: TObject);
+    begin Viewport.ZoomExtents; end;
+procedure TFreeLinesplanFrame.ZoomInExecute(Sender: TObject);
+    begin Viewport.ZoomIn; end;
+procedure TFreeLinesplanFrame.ZoomOutExecute(Sender: TObject);
+    begin Viewport.ZoomOut; end;
+procedure TFreeLinesplanFrame.ShowFillColorExecute(Sender: TObject);
+    begin ShowFillcolor.Checked:=not ShowFillcolor.Checked;
+          UpdateMenu;
+          Viewport.Refresh;
+    end;
 
 procedure TFreeLinesplanFrame.UpdateMenu;
 begin
@@ -121,36 +130,18 @@ begin
 end;
 
 procedure TFreeLinesplanFrame.FSetFreeShip( Val:TFreeShip );
-begin
-  if FFreeShip<>nil then FFreeShip.LinesplanFrame:=nil; FFreeShip:=Val;
-  if FFreeShip<>nil then begin //USE ONCE!
-     FFreeShip.LinesplanFrame:=self;
-     ViewPort.ZoomExtents;
-     UpdateMenu;
-  end;
+begin if FFreeShip<>nil then FFreeShip.LinesplanFrame:=nil; FFreeShip:=Val;
+      if FFreeShip<>nil then begin // USE ONCE!
+         FFreeShip.LinesplanFrame:=self;
+         ViewPort.ZoomExtents;
+         UpdateMenu;
+      end;
 end;
-
-procedure TFreeLinesplanFrame.ZoomExtentsExecute(Sender: TObject);
-begin Viewport.ZoomExtents; end;
-
-procedure TFreeLinesplanFrame.ZoomInExecute(Sender: TObject);
-begin Viewport.ZoomIn; end;
-
-procedure TFreeLinesplanFrame.ZoomOutExecute(Sender: TObject);
-begin Viewport.ZoomOut; end;
-
-procedure TFreeLinesplanFrame.ShowFillColorExecute(Sender: TObject);
-begin
-  ShowFillcolor.Checked:=not ShowFillcolor.Checked;
-  UpdateMenu;
-  Viewport.Refresh;
-end;
-
 
 procedure TFreeLinesplanFrame.PrintExecute( Sender: TObject );
 begin
-  if Viewport.Width > Viewport.Height then Printer.Orientation:=poLandscape
-                                      else Printer.Orientation:=poPortrait;
+  if Viewport.Width>Viewport.Height then Printer.Orientation:=poLandscape
+                                    else Printer.Orientation:=poPortrait;
   if PrintDialog.Execute then
      Viewport.Print( FFreeship.ProjectSettings.ProjectUnits,True,
                     'FREE!ship linesplan ' );
@@ -189,11 +180,9 @@ begin
 end;
 
 procedure TFreeLinesplanFrame.SaveBitmapExecute( Sender: TObject );
-  var Str: Ansistring;
-begin Str:=FFreeShip.Preferences.ExportDirectory;
-  if Str[Length(Str)]<>'\' then Str:=Str+'\';
-  Str:=Str+ChangeFileExt( ExtractFilename(FFreeship.FileName),'')+'_Linesplan.png';
-  Viewport.SaveAsBitmap( Str );
+begin
+  Viewport.SaveAsBitmap( FFreeShip.Preferences.ExportDirectory+
+     ChangeFileExt( ExtractFilename(FFreeship.FileName),'')+'_Linesplan.png' );
 end;
 
 procedure TFreeLinesplanFrame.UseLightsExecute(Sender: TObject);
@@ -464,13 +453,13 @@ var
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];           // корпус - корма
           Pr:=Vector( FAftOrigin.X-P.Y,FAftOrigin.Y+P.Z );
           Pts[i]:=Viewport.Project(Pr);
-      end; Viewport.Polyline(Pts);
+      end; Viewport.Polyline( Pts );
     end;
     if (lvFrontBody in views) and (Spline.Min.X>=MidshipLocation) then begin
       for i:=0 to length(VPs)-1 do begin P:=VPs[i];             // корпус - нос
           Pr:=Vector( FFrontOrigin.X+P.Y,FFrontOrigin.Y+P.Z );
           Pts[i]:=Viewport.Project(Pr);
-      end; Viewport.Polyline(Pts);
+      end; Viewport.Polyline( Pts );
     end;
     if lvPLan in views then for YSign:=-1 to +1 do
     if (YSign=1) or ((YSign=-1)                 // (+) ватерлинии левого борта
@@ -482,6 +471,7 @@ var
         end; Viewport.Polyline(Pts);
     end;
   end; {DrawSpline}
+
   procedure DrawIntersection
   (Intersection: TFreeIntersection; Views: TLinesplanViews; Style: TPenStyle );
   var I: integer;
@@ -525,21 +515,60 @@ var
         AddTriangle(AbovePoints[0],AbovePoints[J-2],AbovePoints[J-1],Color,Above,Symmetric);
     end;
   end; {Processface}
+{$if 0}
   procedure SortTriangles( var T: TriangleArray; SortType: byte );
-    var I,J,N:Integer; Tmp: TriangleData; Left: boolean;
-  begin if T.Count<2 then exit; N:=T.Count;
-    for i := 1 to N do
-    for j := 0 to N-i-1 do begin
-      if SortType=1 then Left:=T.Triangles[J].Center.X>T.Triangles[J+1].Center.X else
-      if SortType=2 then Left:=T.Triangles[J].Center.Y>T.Triangles[J+1].Center.Y
-                    else Left:=T.Triangles[J].Center.Z>T.Triangles[J+1].Center.Z;
+    var I,J,N:Integer; Tmp,T2: TriangleData; Left: boolean;
+  begin //exit;
+    if T.Count<2 then exit; N:=T.Count;
+{   for i:=1 to N-1 do                                             // пузырьком
+    for j:=N-1 downto i do begin
+      if SortType=1 then Left:=T.Triangles[J-1].Center.X>T.Triangles[J].Center.X else
+      if SortType=2 then Left:=T.Triangles[J-1].Center.Y>T.Triangles[J].Center.Y else
+                         Left:=T.Triangles[J-1].Center.Z>T.Triangles[J].Center.Z;
       if Left then begin Tmp:=T.Triangles[j];
-                              T.Triangles[j]:=T.Triangles[j+1];
-                              T.Triangles[j+1]:=Tmp;
-      end;
+                              T.Triangles[j]:=T.Triangles[j-1];
+                              T.Triangles[j-1]:=Tmp; end;
+    end;
+}   for i:=1 to N-1 do begin T2:=T.Triangles[i]; j:=i;             // вставками
+      while j>0 do begin
+        if SortType=1 then Left:=T.Triangles[J-1].Center.X>T2.Center.X else
+        if SortType=2 then Left:=T.Triangles[J-1].Center.Y>T2.Center.Y else
+                           Left:=T.Triangles[J-1].Center.Z>T2.Center.Z;
+        if not Left then break;
+        Tmp:=T.Triangles[j]; T.Triangles[j]:=T.Triangles[j-1];
+                             T.Triangles[j-1]:=Tmp; dec( j );
+      end; T.Triangles[j]:=T2;
     end;
   end; {SortTriangles}
-  procedure DrawTriangles(Triangles: TriangleArray; Views: TLinesplanViews);
+{$else}
+  procedure SortTriangles( var Triangles: TriangleArray; SortType: byte ); // 1=X, 2=Y, 3=Z
+    procedure QuickSort( L,R: integer);  var I,J: integer; T1: TriangleData;
+      procedure Swap( I,J: integer ); var Tmp: TriangleData;
+      begin Tmp:=Triangles.Triangles[I];
+            Triangles.Triangles[I]:=Triangles.Triangles[J];
+            Triangles.Triangles[J]:=Tmp;
+      end; {swap two triangles}
+    begin I:=L;J:=R; T1:=Triangles.Triangles[(L+R) div 2];
+      repeat
+        if SortType=1 then begin
+          while Triangles.Triangles[I].Center.X < T1.Center.X do Inc(I);
+          while T1.Center.X < Triangles.Triangles[J].Center.X do Dec(J);
+        end else if SortType=2 then begin
+          while Triangles.Triangles[I].Center.Y < T1.Center.Y do Inc(I);
+          while T1.Center.Y < Triangles.Triangles[J].Center.Y do Dec(J);
+        end else begin
+          while Triangles.Triangles[I].Center.Z < T1.Center.Z do Inc(I);
+          while T1.Center.Z < Triangles.Triangles[J].Center.Z do Dec(J);
+        end;
+        if I<=J then begin Swap(I,J); Inc(I); Dec(J); end;
+      until I>J;
+      if L<J then QuickSort( L,J );
+      if I<R then QuickSort( I,R );
+    end; {QuickSort}
+  begin if Triangles.Count>1 then QuickSort( 0,Triangles.Count-1 );
+  end; {SortTriangles}
+{$endif}
+  procedure DrawTriangles( Triangles: TriangleArray; Views: TLinesplanViews );
   var I: integer; Triangle: TriangleData;
       Pts: array[0..2] of TPoint;
       P,L: T3DVector;
@@ -569,7 +598,10 @@ var
     if lvAftBody in views then begin P.Z:=0.0;           // (-) кормовые обводы
       L:=Vector( -1.0 );
       for I:=Triangles.Count downto 1 do begin
-        Triangle:=Triangles.Triangles[I-1];
+        Triangle:=Triangles.Triangles[I-1];             // корпус корма
+        if  (Triangle.P1.X>MidshipLocation)
+        and (Triangle.P2.X>MidshipLocation)
+        and (Triangle.P3.X>MidshipLocation) then continue;
         if not UseLights.Checked then begin
           Viewport.BrushColor:=Triangle.Color;
           Viewport.PenColor:=Triangle.Color;
@@ -579,14 +611,11 @@ var
           Viewport.PenColor:=Col;
         end;                                                // Draw in aft view
         P.X:=FAftOrigin.X-Triangle.P1.Y;
-        P.Y:=FAftOrigin.Y+Triangle.P1.Z;
-        Pts[0]:=Viewport.Project(P);
+        P.Y:=FAftOrigin.Y+Triangle.P1.Z; Pts[0]:=Viewport.Project(P);
         P.X:=FAftOrigin.X-Triangle.P2.Y;
-        P.Y:=FAftOrigin.Y+Triangle.P2.Z;
-        Pts[1]:=Viewport.Project(P);
+        P.Y:=FAftOrigin.Y+Triangle.P2.Z; Pts[1]:=Viewport.Project(P);
         P.X:=FAftOrigin.X-Triangle.P3.Y;
-        P.Y:=FAftOrigin.Y+Triangle.P3.Z;
-        Pts[2]:=Viewport.Project(P);
+        P.Y:=FAftOrigin.Y+Triangle.P3.Z; Pts[2]:=Viewport.Project(P);
         Viewport.Polygon(Pts);
 {       if Triangle.Symmetric then begin
           P.X:=FAftOrigin.X+Triangle.P1.Y;
@@ -627,7 +656,10 @@ var
           Pts[2]:=Viewport.Project(P);
           Viewport.Polygon(Pts);
         end;
-        if lvFrontBody in views then begin
+        if lvFrontBody in views then                      // корпус - нос
+        if (Triangle.P1.X>MidshipLocation)
+        or (Triangle.P2.X>MidshipLocation)
+        or (Triangle.P3.X>MidshipLocation) then begin
           L:=Vector( 1.0 );
           if not UseLights.Checked then begin
             Viewport.BrushColor:=Triangle.Color;
@@ -639,13 +671,13 @@ var
           end;                                            // Draw in Front view
           P.X:=FFrontOrigin.X+Triangle.P1.Y;              // (+) носовые обводы
           P.Y:=FFrontOrigin.Y+Triangle.P1.Z;
-          Pts[0]:=Viewport.Project(P);
+          Pts[0]:=Viewport.Project( P );
           P.X:=FFrontOrigin.X+Triangle.P2.Y;
           P.Y:=FFrontOrigin.Y+Triangle.P2.Z;
-          Pts[1]:=Viewport.Project(P);
+          Pts[1]:=Viewport.Project( P );
           P.X:=FFrontOrigin.X+Triangle.P3.Y;
           P.Y:=FFrontOrigin.Y+Triangle.P3.Z;
-          Pts[2]:=Viewport.Project(P);
+          Pts[2]:=Viewport.Project( P );
           Viewport.Polygon(Pts);
 {         if Triangle.Symmetric then begin
             P.X:=FFrontOrigin.X+Triangle.P1.Y;
@@ -716,9 +748,8 @@ var
          if Viewport.Font.Size<6 then break;
       end;}
   end;{SetFontHeight}
-
 begin
-  if Freeship = nil then exit;
+  if Freeship=nil then exit;
   if Viewport.Printing then PenWidthfactor:=Round( Viewport.PrintScaleFactor )
                        else PenwidthFactor:=1;
   if Viewport.Printing then Steps:=1250
@@ -870,7 +901,7 @@ begin
                             Vector(-Tmp,FMax3D.Z+space),Str,True );
   end;
   Viewport.SetPenWidth( 2*PenwidthFactor);      // draw grid in front body view
-  Space:=CalculateSpace( textspace,FMin3D.Y,FMax3D.Y );        // корус по носу
+  Space:=CalculateSpace( textspace,FMin3D.Y,FMax3D.Y );       // корпус по носу
   if ShowMonochrome.Checked then Viewport.FontColor:=clBlack
                             else Viewport.FontColor:=clTeal;   // draw baseline
   DrawLineAtt(FFrontOrigin,
@@ -880,9 +911,9 @@ begin
     Vector(-FMax3D.Y-Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
     Vector(FMax3D.Y+Space,FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft),
     ' '+UserString(185){'DWL'},false,true );                                                       //+ConvertDimension(FMin3D.Z+FFreeship.ProjectSettings.ProjectDraft,Freeship.ProjectSettings.ProjectUnits), False);
-Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);
-DrawLineAtt( FFrontOrigin,Vector(0.0,FMin3D.Z-space),
-                          Vector(0.0,FMax3D.Z+space),UserString(183){'ДП'},True);
+//Space:=CalculateSpace(textspace, FMin3D.Z, FMax3D.Z);
+//DrawLineAtt( FFrontOrigin,Vector(0.0,FMin3D.Z-space),
+//                          Vector(0.0,FMax3D.Z+space),UserString(183){'ДП'},True);
   Space:=CalculateSpace( textspace,FMin3D.Y,FMax3D.Y );
   Viewport.FontColor:=clGray;
   Viewport.SetPenWidth( PenwidthFactor );                // Font.Height;
@@ -895,21 +926,22 @@ DrawLineAtt( FFrontOrigin,Vector(0.0,FMin3D.Z-space),
   Space:=CalculateSpace( textspace,FMin3D.Z,FMax3D.Z );
   for I:=1 to FFreeship.NumberofButtocks do begin // бактокы на корпусе по носу
     Tmp:=-FFreeship.Buttock[I-1].Plane.D;
-    Str:=ConvertDimension( Tmp,Freeship.ProjectSettings.ProjectUnits);
-    DrawLineAtt( FFrontOrigin,Vector(Tmp,FMin3D.Z-space),
-                              Vector(Tmp,FMax3D.Z+space),Str,True);
-    DrawLineAtt( FFrontOrigin,Vector(-Tmp,FMin3D.Z-space),
-                              Vector(-Tmp,FMax3D.Z+space),Str,True);
+    if Tmp<>0.0 then begin
+      Str:=ConvertDimension( Tmp,Freeship.ProjectSettings.ProjectUnits);
+      DrawLineAtt( FFrontOrigin,Vector(Tmp,FMin3D.Z-space),
+                                Vector(Tmp,FMax3D.Z+space),Str,True);
+      DrawLineAtt( FFrontOrigin,Vector(-Tmp,FMin3D.Z-space),
+                                Vector(-Tmp,FMax3D.Z+space),Str,True);
+    end;
   end;
-
-  Viewport.SetPenWidth( 2*PenwidthFactor);            // draw grid in plan view
+  Viewport.SetPenWidth( 2*PenwidthFactor );           // draw grid in plan view
   Space:=CalculateSpace( 0.2*textspace,FMin3D.X,FMax3D.X );
   if ShowMonochrome.Checked then Viewport.FontColor:=clBlack
                             else Viewport.FontColor:=clTeal;
   DrawLineAtt( FPlanOrigin,Vector( FMin3D.X-Space ),
-               Vector( FMax3D.X+Space ),' '+UserString(183){'Center'},False,true );
+           Vector( FMax3D.X+Space ),' '+UserString(183){'Center'},False,true );
   Viewport.FontColor:=clBlack;
-  Viewport.SetPenWidth(PenwidthFactor);
+  Viewport.SetPenWidth( PenwidthFactor );
   for I:=1 to FFreeship.NumberofButtocks do begin
     Tmp:=-FFreeship.Buttock[I-1].Plane.D;
     Str:=ConvertDimension(Tmp, Freeship.ProjectSettings.ProjectUnits );
@@ -1005,7 +1037,6 @@ DrawLineAtt( FFrontOrigin,Vector(0.0,FMin3D.Z-space),
 //  HydObject.AddHeader( Descr );
 //  HydObject.Destroy;
 //  Descr.Destroy;  ...  Pt:=FInitialPosition;
-
   Viewport.FontColor:=clGray;
   Tmp:=0.0;
   if Freeship.NumberofDiagonals>0 then Tmp:=FDiagonalWidth else
@@ -1029,7 +1060,7 @@ DrawLineAtt( FFrontOrigin,Vector(0.0,FMin3D.Z-space),
   Viewport.FontColor:=clNavy;
   Pt:=Viewport.Project(Vector(FAftOrigin.X-FModelBeam/2,FPlanOrigin.Y+FModelBeam/2));
 //Pt.y+=ViewPort.FontHeight; // div 2;
-  Viewport.TextOut( Pt.X,Pt.Y,'Basic dimensions of a ship''s hull' );
+  Viewport.TextOut( Pt.X,Pt.Y,UserString(1672) );         // Главные размерения по корпусу корабля = 'Basic dimensions of a ship's hull
   Pt.y-=(3*ViewPort.FontHeight) div 2;                    // длина максимальная
   Viewport.TextOut( Pt.X,Pt.Y,Userstring(45)+' : '+
          ConvertDimension( FModelLength,Freeship.ProjectSettings.ProjectUnits)  //+' '+Freeship.ProjectSettings.ProjectUnits );
@@ -1321,21 +1352,18 @@ var
     end;
   end;{AddSpline}
 
-  procedure AddIntersection(Intersection: TFreeIntersection;
-    Views: TLinesplanViews; Layername: AnsiString; Color: TColor);
+  procedure AddIntersection( Intersection: TFreeIntersection;
+    Views: TLinesplanViews; Layername: AnsiString; Color: TColor );
   var I: integer;
   begin
     if not Intersection.Built then Intersection.Rebuild;
     for I:=1 to Intersection.Count do
       AddSpline(Intersection.Items[I-1], Views, Layername, Color);
   end;
-  {AddIntersection}
 begin
-  Str:=IncludeTrailingPathDelimiter(FFreeShip.Preferences.ExportDirectory);
-  Str:=Str+ChangeFileExt(ExtractFilename(FFreeship.FileName), '')+'_Linesplan';
   SaveDialog:=TSaveDialog.Create(Owner);
   SaveDialog.InitialDir:=Freeship.Preferences.ExportDirectory;
-  SaveDialog.FileName:=ChangeFileExt(Str, '');
+  SaveDialog.FileName:=ChangeFileExt( ExtractFilename( FFreeship.FileName ),'' )+'_Linesplan';
   SaveDialog.Filter:=createDialogFilter(rsAutocadDxfFile,['dxf']);
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
@@ -1511,16 +1539,15 @@ begin
         Strings.Add('62'+EOL+IntToStr(FindDXFColorIndex(
           Freeship.Preferences.DiagonalColor)));
         Strings.Add('66'+EOL+'1');    // vertices follow
-
         Spline.Fragments:=100;
         SplineValues:=Spline.GetValues;
         for k:=0 to length(SplineValues)-1 do begin
           //P1:=Spline.Value(K / 100, Pn1, Pn2);
           P1:=SplineValues[k];
           Tmp:=abs(Plane.A * P1.x+Plane.B * P1.y+Plane.C * P1.z+Plane.D);
-          if K = 0 then begin Min:=Tmp; Max:=Tmp; end else begin
-            if Tmp < min then Min:=Tmp;
-            if Tmp > max then Max:=Tmp;
+          if K=0 then begin Min:=Tmp; Max:=Tmp; end else begin
+            if Tmp<min then Min:=Tmp;
+            if Tmp>max then Max:=Tmp;
           end;
           P2.X:=FPlanOrigin.X+P1.X;
           P2.Y:=FPlanOrigin.Y-abs(Tmp);
@@ -1534,14 +1561,14 @@ begin
         // draw as grid in bodyplan views
         // calculate height of intersection of diagonal with centerplane
         Tmp:=-Diagonal.Plane.d / Diagonal.Plane.c;
-        P1:=Vector(0.0, Min * Sin(DegToRad(45)), Tmp-Min * Sin(DegToRad(45)));
-        P2:=Vector(0.0, Max * Sin(DegToRad(45)), Tmp-Max * Sin(DegToRad(45)));
-        AddLine(P1, P2, [lvAftBody], 'diagonalgrid', freeship.Preferences.GridColor);
-        AddLine(P1, P2, [lvFrontBody], 'diagonalgrid', freeship.Preferences.GridColor);
+        P1:=Vector(0.0,Min*Sin(DegToRad(45)),Tmp-Min*Sin(DegToRad(45)));
+        P2:=Vector(0.0,Max*Sin(DegToRad(45)),Tmp-Max*Sin(DegToRad(45)));
+        AddLine(P1,P2,[lvAftBody],'diagonalgrid',freeship.Preferences.GridColor);
+        AddLine(P1,P2,[lvFrontBody],'diagonalgrid',freeship.Preferences.GridColor);
         P1.Y:=-P1.Y;
         P2.Y:=-P2.Y;
-        AddLine(P1, P2, [lvAftBody], 'diagonalgrid', freeship.Preferences.GridColor);
-        AddLine(P1, P2, [lvFrontBody], 'diagonalgrid', freeship.Preferences.GridColor);
+        AddLine(P1,P2,[lvAftBody],'diagonalgrid',freeship.Preferences.GridColor);
+        AddLine(P1,P2,[lvFrontBody],'diagonalgrid',freeship.Preferences.GridColor);
       end;
     end;                                                   // Add knuckle lines
     for I:=1 to EdgePointLists.Count do begin

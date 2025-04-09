@@ -87,7 +87,7 @@ var
   P3D: T3DVector;
 begin
   if Viewport.ViewportMode = vmWireframe then
-  if ( Name>'' ) then begin
+  if ( Names>'' ) then begin
     P3D:=CalculateCenterPoint;
     if (Viewport.ViewType = fvBodyplan) then
     if P3D.X <= Surface.SplitSectionLocation then P3D.Y:=-P3D.Y;
@@ -96,10 +96,10 @@ begin
     ViewPort.PenColor:=Viewport.FontColor;
     ViewPort.Ellipse(P.X-2, P.Y-2, P.X+2, P.Y+2);
     ViewPort.Ellipse(P.X-4, P.Y-4, P.X+4, P.Y+4);
-    ViewPort.TextOut(P.X+2, P.Y+2, Name);
+    ViewPort.TextOut(P.X+2, P.Y+2, Names);
   end;
 end;
-
+(*
 procedure TFreeSubdivisionControlPointGroup.LoadBinary(Source: TFreeFileBuffer);
   var I,N,CPN: integer; SS:TStrings; Sel: boolean;
 begin
@@ -127,7 +127,7 @@ begin
     FControlPoints.Add( Surface.FControlPoints[CPN] );
   end;
 end;
-
+*
 procedure TFreeSubdivisionControlPointGroup.SaveBinary(Destination: TFreeFileBuffer);
 var I,N,CPN: integer;  SS:TStrings;
 begin
@@ -154,5 +154,5 @@ begin
   end;
   Strings.Add(Str);
 end;
-
+*)
 

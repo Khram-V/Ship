@@ -379,30 +379,19 @@ end;{TFreeSubdivisionPoint.Averaging}
 function TFreeSubdivisionPoint.LastAveraging:T3DVector;
 var
   I, J, Nt, Nq, NoP: integer;
-  a: TFloatType;
-  Weight, TotalWeight: TFloatType;
-  Center: T3DVector;
+  a, Weight, TotalWeight: TFloatType; Center: T3DVector;
   Face: TFreeSubdivisionFace;
   Edge: TFreeSubdivisionEdge;
   P: TFreeSubdivisionPoint;
 begin
   Result:=FCoordinate;
-  if (NumberOfEdges = 0) or (FVertexType = svCorner) then
-    Result:=FCoordinate
-  else
-  begin
-    if FVertexType = svCrease then
-    begin
-      Center:=ZERO;
-      for I:=0 to FEdges.Count-1 do
-      begin
-        Edge:=FEdges[I];
-        if (Edge.FFaces.Count = 1) or (Edge.FCrease) then
-        begin
-          if Edge.FStartPoint = Self then
-            P:=Edge.FEndPoint
-          else
-            P:=Edge.FStartpoint;
+  if (NumberOfEdges=0) or (FVertexType=svCorner) then Result:=FCoordinate
+  else begin
+    if FVertexType = svCrease then begin Center:=ZERO;
+      for I:=0 to FEdges.Count-1 do begin Edge:=FEdges[I];
+        if (Edge.FFaces.Count = 1) or (Edge.FCrease) then begin
+          if Edge.FStartPoint = Self then P:=Edge.FEndPoint
+                                     else P:=Edge.FStartpoint;
           Center.X:=Center.X+P.FCoordinate.X;
           Center.Y:=Center.Y+P.FCoordinate.Y;
           Center.Z:=Center.Z+P.FCoordinate.Z;
@@ -411,11 +400,10 @@ begin
       Center.X:=(4.0 * Result.X+Center.X) / 6.0;
       Center.Y:=(4.0 * Result.Y+Center.Y) / 6.0;
       Center.Z:=(4.0 * Result.Z+Center.Z) / 6.0;
-
       a:=0;
-      Result.X:=Center.X+a*(power(Center.X-Result.X, 1)/power(Self.SubdivisionLevel+1, 1));
-      Result.Y:=Center.Y+a*(power(Center.Y-Result.Y, 1)/power(Self.SubdivisionLevel+1, 1));
-      Result.Z:=Center.Z+a*(power(Center.Z-Result.Z, 1)/power(Self.SubdivisionLevel+1, 1));
+      Result.X:=Center.X+a*(power(Center.X-Result.X,1)/power(Self.SubdivisionLevel+1,1));
+      Result.Y:=Center.Y+a*(power(Center.Y-Result.Y,1)/power(Self.SubdivisionLevel+1,1));
+      Result.Z:=Center.Z+a*(power(Center.Z-Result.Z,1)/power(Self.SubdivisionLevel+1,1));
     end
   end;
 end;
@@ -466,11 +454,9 @@ begin
   Result:=TFreeSubdivisionPoint.Create(Surface);
   Result.FVertexType:=FVertexType;
   Result.FCoordinate:=Point;
-  for I:=1 to FEdges.Count do
-  begin
+  for I:=1 to FEdges.Count do begin
     Edge:=FEdges[I-1];
-    if (Edge.FCurve <> nil) then
-    begin
+    if (Edge.FCurve <> nil) then begin
       Edge.FCurve.ReplaceVertexPoint(Self, Result);
     end;
   end;
@@ -478,28 +464,23 @@ end;
 
 function TFreeSubdivisionPoint.CheckIntegrity: boolean;
 var  I, J: integer;
-begin
-  result:=true;                                                                 // exit;
-  if FFaces = nil then begin result:=false;                                   // logger.Error(Format('TFreeSubdivisionPoint.CheckIntegrity(%d): FFaces = nil',[self.FID]));
-  end;
-  if FEdges = nil then begin result:=false;                                   // logger.Error(Format('TFreeSubdivisionPoint.CheckIntegrity(%d): FEdges = nil',[self.FID]));
-  end;
+begin result:=true;
+  if FFaces=nil then result:=false;
+  if FEdges=nil then result:=false;
 { // Free points are ok
-  if (FFaces <> nil) and (FFaces.Count < 1) then begin result:=false;         // logger.Error(Format('TFreeSubdivisionPoint.CheckIntegrity(%d): FFaces empty',[self.FID]));
+  if (FFaces <> nil) and (FFaces.Count < 1) then begin result:=false;
   end;
 }
-  if (FFaces <> nil) then
-  for i:=0 to FFaces.Count-1 do
-  if FFaces[i].FPoints.IndexOf(Self) = -1 then begin result:=false;           //   logger.Error(Format('TFreeSubdivisionPoint.CheckIntegrity(%d): Self not in FFaces[%d]',[self.FID,i]));
-  end;
+  if (FFaces<>nil) then
+    for i:=0 to FFaces.Count-1 do
+      if FFaces[i].FPoints.IndexOf(Self) = -1 then result:=false;
 { // Free points are ok
-  if (FEdges <> nil) and (FEdges.Count < 1) then begin  result:=false; // logger.Error(Format('TFreeSubdivisionPoint.CheckIntegrity(%d): FEdges empty',[self.FID]));
+  if (FEdges <> nil) and (FEdges.Count < 1) then begin  result:=false;
   end;
 }
-  if (FEdges <> nil) then
-  for i:=0 to FEdges.Count-1 do
-    if (FEdges[i].StartPoint<>Self) and (FEdges[i].EndPoint<>Self) then
-      begin result:=false; end;
+  if (FEdges<>nil) then
+    for i:=0 to FEdges.Count-1 do
+       if (FEdges[i].StartPoint<>Self) and (FEdges[i].EndPoint<>Self) then result:=false;
 end;
 
 procedure TFreeSubdivisionPoint.Clear;

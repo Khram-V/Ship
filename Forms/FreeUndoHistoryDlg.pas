@@ -90,7 +90,6 @@ begin
    inc( Max,2 );
    for I:=0 to Freeship.UndoCount-1 do begin
       Undo:=Freeship.UndoObject[I];
-      Str:=Freeship.UndoObject[I].UndoText;
       Str:=Str+'  ('+Undo.Time+')';
       UndoBox.Items.AddObject( Str,Undo );
    end;

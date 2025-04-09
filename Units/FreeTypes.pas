@@ -3,7 +3,9 @@ unit FreeTypes;
 
 Interface
 Uses Classes,SysUtils,Graphics,Math;
-Const PixelCountMax=32768; // used for faster pixel acces when shading to viewport
+Const Radian=57.295779513082320876798154814105;              // 180/π = °\rad
+      PixelCountMax=32768; // used for faster pixel acces when shading to viewport
+//    DirectorySeparator='\';
       Foot = 0.3048;
 
 Type
@@ -96,7 +98,7 @@ function Abs( const P: T2DCoordinate ): extended; overload;
 function Sqr( const V: T3DVector ): extended; overload;
 function Abs( const V: T3DVector ): extended; overload;
 Function AxisStep( D: double ): double;            // для разметки осевых линий
-Procedure ArraySort( var inputArray: TFloatArray; arrayLength: Integer );
+procedure ArraySort( var FloatArray: TFloatArray; var N:integer );
 Procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
 ( XX: TFloatType;            // аргумент поиска
   N: integer;                // наверное, длина массива
@@ -104,6 +106,7 @@ Procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКС
   var YY: TFloatType         // результат
 );                           // и без проверок интервалов аргумента !!!
 function FindWaterViscosity( Temper:TFloatType; Units:TFreeUnitType ):TFloatType;
+function TimeString: String;
 
 Implementation
 function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
@@ -167,8 +170,7 @@ begin D:=log10( D );
       if D>=3 then D:=1 else
       if D>=1.5 then D:=0.5 else D:=0.2;
       Result:=power( 10.0,iPart )*D;
-end;{ Real iPart = floor( D=log10( D ) ); D=exp( (D-iPart)*M_LN10 );
-      return pow( 10.0,iPart )*( D>6 ?2 : D>3 ?1 : D>1.5 ?0.5:0.2 ); }
+end;
 
 procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
 ( XX: TFloatType;             // аргумент поиска
@@ -255,18 +257,41 @@ begin J:=1; K:=1; L:=Length( S );       // вычистка лишних про�
     SetLength( S,J-1 );
     Result:=S;
 end;
+Function TimeString: String;
+   begin Result:=FormatDateTime( 'YYYY-MM-DD_hh:nn',Now ); end;
 
-procedure ArraySort( var inputArray: TFloatArray; arrayLength: Integer );
+{$if 0}
+procedure ArraySort( var FloatArray: TFloatArray; var N: Integer );
   var I,J: Integer;  tempValue: TFloatType;           { пузырьковая сортировка }
 begin
-  for i := 1 to arrayLength do
-  for j := 0 to arrayLength-i-1 do
-  if inputArray[j]>inputArray[j+1] then begin               { обмен элементов }
-     tempValue:=inputArray[j]; inputArray[j]:=inputArray[j+1];
-                               inputArray[j+1]:=tempValue;
+  for i:=1 to N-1 do                                               // пузырьком
+  for j:=N-1 downto i do
+  if FloatArray[j-1]>FloatArray[j] then begin               { обмен элементов }
+     tempValue:=FloatArray[j]; FloatArray[j]:=FloatArray[j-1];
+                FloatArray[j-1]:=tempValue;
   end;
 end;
-
+{$else}
+procedure ArraySort( var FloatArray:TFloatArray; var N:integer ); var I:integer;
+  procedure QuickSort(L,R:integer); var I,J:integer; Val: TFloatType;
+    procedure Swap(I, J: integer); var Tmp: TFloatType;
+    begin Tmp:=FloatArray[I]; FloatArray[I]:=FloatArray[J]; FloatArray[J]:=Tmp; end;
+  begin I:=L; J:=R; Val:=FloatArray[(L+R) div 2];
+    repeat while FloatArray[I]<Val do Inc(I);
+           while Val<FloatArray[J] do Dec(J);
+           if I<=J then begin Swap(I,J); Inc(I); Dec(J); end;
+    until I>J;
+    if L<J then QuickSort( L,J );
+    if I<R then QuickSort( I,R );
+  end; {QuickSort}
+begin                                              // begin procedure ArraySort
+  if N<2 then exit; QuickSort( 0,N-1 ); I:=2;
+  while I<=N do                                      // remove duplicate values
+  if abs(FloatArray[I-2]-FloatArray[I-1])<1e-4 then begin
+     Move(FloatArray[I-1],FloatArray[I-2],(N-I+1)*SizeOf(TFloatType)); Dec(N);
+  end else Inc(I);
+end; {SortFloatArray}
+{$endif}
 //      function to find the corresponding water viscosity based on the density
 
 function FindWaterViscosity(Temper:TFloatType; Units:TFreeUnitType):TFloatType;

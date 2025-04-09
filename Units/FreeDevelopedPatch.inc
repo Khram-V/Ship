@@ -116,14 +116,10 @@ begin
         FMin2D:=F2DCoordinates[I-1].Coordinate;
         FMax2D:=FMin2D;
       end else begin
-        if F2DCoordinates[I-1].Coordinate.X < FMin2D.X then
-           FMin2D.X:=F2DCoordinates[I-1].Coordinate.X;
-        if F2DCoordinates[I-1].Coordinate.Y < FMin2D.Y then
-           FMin2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
-        if F2DCoordinates[I-1].Coordinate.X > FMax2D.X then
-           FMax2D.X:=F2DCoordinates[I-1].Coordinate.X;
-        if F2DCoordinates[I-1].Coordinate.Y > FMax2D.Y then
-           FMax2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
+        if F2DCoordinates[I-1].Coordinate.X < FMin2D.X then FMin2D.X:=F2DCoordinates[I-1].Coordinate.X;
+        if F2DCoordinates[I-1].Coordinate.Y < FMin2D.Y then FMin2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
+        if F2DCoordinates[I-1].Coordinate.X > FMax2D.X then FMax2D.X:=F2DCoordinates[I-1].Coordinate.X;
+        if F2DCoordinates[I-1].Coordinate.Y > FMax2D.Y then FMax2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
       end;
     end;
   end;
@@ -550,9 +546,7 @@ begin
 end;
 
 procedure TFreeDevelopedPatch.Extents(var Min, Max: T3DVector);
-var
-  I: integer;
-  P: T3DVector;
+var I: integer; P: T3DVector;
 begin
   if FPoints.Count = 0 then begin
     Min.X:=-1.0;
@@ -580,25 +574,18 @@ type
     Knuckle: boolean;
   end;
 var
-  I, J, K: integer;
-  Index1: integer;
-  Index2: integer;
+  I,J,K,Index1,Index2,ArrayLength,NoPoints: integer;
   Edge: TFreeSubdivisionEdge;
-  P1, P2: TFreeSubdivisionPoint;
-  Side1: TFloatType;
-  Side2: TFloatType;
-  Parameter: TFloatType;
-  Output: T3DVector;
-  Spline: TFreeSpline;
-  Copy: TFreeSpline;
+  P1,P2:TFreeSubdivisionPoint;
   Face: TFreeSubdivisionface;
+  Side1,Side2,Parameter: TFloatType;
+  Output: T3DVector;
+  Spline,Copy: TFreeSpline;
   IntArray: array of IntersectionData;
-  ArrayLength: integer;
-  NoPoints: integer;
   Dest: TFasterListTFreeSpline;
 begin
   ArrayLength:=10;
-  Setlength(IntArray, ArrayLength);
+  Setlength( IntArray,ArrayLength );
   Dest:=TFasterListTFreeSpline.Create;
   for J:=1 to FDoneList.Count do begin
     Face:=FDoneList[J-1];
@@ -610,11 +597,9 @@ begin
       P2:=Face.FPoints[K-1];
       Side2:=Plane.A * P2.Coordinate.x+Plane.B * P2.Coordinate.y +
         Plane.C * P2.Coordinate.z+Plane.D;
-      if ((Side1 < -1e-5) and (Side2 > 1e-5))
-      or ((Side1 > 1e-5) and (Side2 < -1e-5)) then begin
-        // regular intersection of edge
-        // add the edge to the list
-        Parameter:=-side1 / (side2-side1);
+      if ((Side1<-1e-5) and (Side2>1e-5))
+      or ((Side1>1e-5) and (Side2<-1e-5)) then begin    // regular intersection
+        Parameter:=-side1 / (side2-side1); // of edge  add the edge to the list
         Index1:=FPoints.IndexOf(P1);
         Index2:=FPoints.IndexOf(P2);
         Output.X:=F2DCoordinates[Index1].Coordinate.X+Parameter *
@@ -623,7 +608,7 @@ begin
           (F2DCoordinates[Index2].Coordinate.Y-F2DCoordinates[Index1].Coordinate.Y);
         Output.Z:=0.0;
         Inc(NoPoints);
-        if NoPoints > ArrayLength then begin
+        if NoPoints>ArrayLength then begin
           Inc(ArrayLength, 10);
           Setlength(IntArray, ArrayLength);
         end;
@@ -661,10 +646,9 @@ begin
       end;
     end;
   end;
-
-  if Dest.Count > 1 then begin
+  if Dest.Count>1 then begin
     Dest.Capacity:=Dest.Count;
-    JoinSplineSegments(0.01, False, Dest);
+    JoinSplineSegments( 0.01,False,Dest );
     for I:=Dest.Count downto 1 do begin // Remove tiny fragments of very small length
       Spline:=Dest[I-1];
       if Spline.NumberOfPoints > 1 then begin
@@ -695,13 +679,10 @@ begin
     end;
   end;
   FreeAndNil(Dest);
-
 end;{TFreeDevelopedPatch.IntersectPlane}
 
 function TFreeDevelopedPatch.ConvertTo3D(P: T2DCoordinate): T3DVector;
-var
-  Mid: T2DCoordinate;
-  P2: T2DCoordinate;
+var Mid,P2: T2DCoordinate;
 begin
   Mid:=MidPoint;                    // translate to origin
   P2.X:=P.X-Mid.X;
@@ -715,15 +696,85 @@ end;
 
 procedure TFreeDevelopedPatch.SaveToTextFile(Strings: TStringList);
 var
-  I, J: integer;
-  Index: integer;
+  I,J,Index: integer;
   P: TFreeSubdivisionPoint;
-  P3D: T3DVector;
-  Source, Dest: TFasterListTFreeSubdivisionEdge;
-  Edge:TFreeSubdivisionEdge;
-  Min, Max: T3DVector;
+  Source: TFasterListTFreeSubdivisionEdge;
+  Dest: TFasterListTFreeSubdivisionFace;
+  Edge: TFreeSubdivisionEdge;
+  Face: TFreeSubdivisionFace;
+  P3D,Min,Max: T3DVector;
   First: boolean;
 
+  procedure getEdgeMinMax(P:TFreeSubdivisionPoint; var Min, Max: T3DVector);
+  begin
+    Index := FPoints.IndexOf(P);             // Sorted
+    P3D := Point[Index];
+    if First then begin
+      Min := P3D;
+      Max := min;
+      First := False;
+    end else MinMax(P3D, Min, Max);
+    if FMirror then begin
+      P3D:=MirrorPoint[Index];
+      MinMax( P3D,Min,Max );
+    end;
+  end;
+  procedure printEdgePoint(P:TFreeSubdivisionPoint; FMirror:boolean);
+  begin
+      Index := FPoints.IndexOf(P);              // Sorted
+      if not FMirror then P3D:=Point[Index]
+                     else P3D:=MirrorPoint[Index];
+      P3D:=P3D-Min;
+      Strings.Add(FloatToStrF(P3D.X,ffFixed,7,3)+#32+FloatToStrF(P3D.Y,ffFixed,7,3));
+  end;
+begin                                             // Extract edges as polylines
+  Source := TFasterListTFreeSubdivisionEdge.Create;
+  Source.AddList(FBoundaryEdges);
+  Dest := TFasterListTFreeSubdivisionFace.Create;
+  Owner.Surface.IsolateEdges(Source, Dest);
+  FreeAndNil(Source);
+  First:=True;           // Calculate min.,max extents of boundary
+  Strings.Add('');      // all measurements are referred to the min. coordinate
+  Strings.Add('Boundary coordinates for: ' + Name);
+  for I := 0 to Dest.Count-1 do begin Face := Dest[I];
+    for J:=0 to Face.Points.Count-1 do begin
+      P := Face.Points[J];
+      getEdgeMinMax(P, Min, Max);
+    end;
+  end;
+  for I := 0 to Dest.Count-1 do begin      // print boundary coordinates
+    if I > 0 then Strings.Add('');
+    Face := Dest[I];
+    for J:=0 to Face.Points.Count-1 do begin
+      P := Face.Points[J];
+      printEdgePoint(P, false);
+    end;
+  end;
+  if FMirror then begin                   // print mirror boundary coordinates
+    Strings.Add('');
+    Strings.Add('mirror');
+    for I := 0 to Dest.Count-1 do begin
+      if I > 0 then Strings.Add('');
+      Face := Dest[I];
+      for J:=0 to Face.Points.Count-1 do begin
+        P := Face.Points[J];
+        printEdgePoint(P, FMirror);
+      end;
+    end;
+  end;
+  FreeAndNil(Dest);
+end;{TFreeDevelopedPatch.SaveToTextFile}
+
+(*
+procedure TFreeDevelopedPatch.SaveToTextFile(Strings: TStringList);
+var
+  I,J,Index: integer;
+  P: TFreeSubdivisionPoint;
+  Edge:TFreeSubdivisionEdge;
+  Source: TFasterListTFreeSubdivisionEdge;
+  Dest: TFasterListTFreeSubdivisionFace; //Edge;
+  P3D, Min,Max: T3DVector;
+  First: boolean;
   procedure getEdgeMinMax(P:TFreeSubdivisionPoint; var Min, Max: T3DVector);
   begin
     Index:=FPoints.IndexOf(P);
@@ -745,8 +796,9 @@ var
 begin                                             // Extract edges as polylines
   Source:=TFasterListTFreeSubdivisionEdge.Create;
   Source.AddList(FBoundaryEdges);
-  Dest:=TFasterListTFreeSubdivisionEdge.Create;
-  ///Owner.Surface.IsolateEdges(Source, Dest);
+//  Dest:=TFasterListTFreeSubdivisionEdge.Create;
+  Dest:=TFasterListTFreeSubdivisionFace.Create;
+  Owner.Surface.IsolateEdges( Source,Dest );
   FreeAndNil(Source);
 
   // Calculate min.,max extents of coundary
@@ -756,17 +808,13 @@ begin                                             // Extract edges as polylines
   Strings.Add('Boundary coordinates for: '+Name);
   for I:=1 to Dest.Count do begin
     Edge:=Dest[I-1];
-    getEdgeMinMax(Edge.StartPoint, Min, Max);
-    getEdgeMinMax(Edge.EndPoint, Min, Max);
+    getEdgeMinMax( Edge.StartPoint,Min,Max );
+    getEdgeMinMax( Edge.EndPoint,Min,Max );
   end;
-
-  for I:=1 to Dest.Count do begin
-    Edge:=Dest[I-1];
-    if I > 1 then Strings.Add('');
-
+  for I:=1 to Dest.Count do begin Edge:=Dest[I-1];
+    if I>1 then Strings.Add('');
     printEdgePoint(Edge.StartPoint, FMirror);
     printEdgePoint(Edge.EndPoint, FMirror);
-
     if FMirror then begin
       Strings.Add('');
       printEdgePoint(Edge.StartPoint, FMirror);
@@ -774,6 +822,101 @@ begin                                             // Extract edges as polylines
     end;
     FreeAndNil(Source);
   end;
+  FreeAndNil(Dest);
+end;
+*)
+procedure TFreeDevelopedPatch.SaveToDXF( Strings: TStringList );
+var
+  I, J: integer;
+  Col: integer;
+  Index: integer;
+  P: TFreeSubdivisionPoint;
+  P3D: T3DVector;
+  Layer: AnsiString;
+  Source: TFasterListTFreeSubdivisionEdge;
+  Dest: TFasterListTFreeSubdivisionFace;
+  Edge:TFreeSubdivisionEdge;
+  Face:TFreeSubdivisionFace;
+
+  procedure ExportSpline(Spline: TFreeSpline; Layername: AnsiString);
+  var
+    I, Col: integer;
+    P2D: T2DCoordinate;
+    P3D: T3DVector;
+  begin
+    Col:=FindDXFColorIndex(Spline.Color);
+    Strings.Add('0'+EOL+'POLYLINE');
+    Strings.Add('8'+EOL+LayerName);             // layername
+    Strings.Add('62'+EOL+IntToStr(Col));        // color by layer
+    Strings.Add('66'+EOL+'1');                  // vertices follow
+    for I:=0 to Spline.Fragments do begin
+      P3D:=Spline.Value(I / Spline.Fragments);
+      P2D.X:=P3D.X;
+      P2D.Y:=P3D.Y;
+      if (FMirrorOnScreen) and not (FMirror) then P2D.Y:=-P2D.Y;
+      P3D:=ConvertTo3D(P2D);
+      Strings.Add('0'+EOL+'VERTEX');
+      Strings.Add('8'+EOL+Layername);
+      Strings.Add('10'+EOL+FloatToDec(P3D.X, 4));
+      Strings.Add('20'+EOL+FloatToDec(P3D.Y, 4));
+    end;
+    Strings.Add('0'+EOL+'SEQEND');
+  end;{ExportSpline}
+begin
+  // Extract edges as polylines
+  Source:=TFasterListTFreeSubdivisionEdge.Create;
+  Source.AddList(FBoundaryEdges);
+  Dest:=TFasterListTFreeSubdivisionFace.Create; // use face as list of points
+  Owner.Surface.IsolateEdges(Source, Dest);
+  FreeAndNil(Source);
+  Col:=FindDXFColorIndex(Owner.Color);
+  Layer:=Owner.Name;
+  for I:=1 to Dest.Count do begin
+    Face:=Dest[I-1];
+    // Save data as 2D polyline
+    Strings.Add('0'+EOL+'POLYLINE');
+    Strings.Add('8'+EOL+Layer);               // layername
+    Strings.Add('62'+EOL+IntToStr(Col));      // color by layer
+    Strings.Add('66'+EOL+'1');                // vertices follow
+    for J:=0 to Face.Points.Count-1 do begin
+      P:=Face.Points[J];
+      Index:=FPoints.IndexOf(P);
+      P3D:=Point[Index];
+      Strings.Add('0'+EOL+'VERTEX');
+      Strings.Add('8'+EOL+Layer);
+      Strings.Add('10'+EOL+FloatToDec(P3D.X, 4));
+      Strings.Add('20'+EOL+FloatToDec(P3D.Y, 4));
+    end;
+    Strings.Add('0'+EOL+'SEQEND');
+    if FMirror then begin
+      Strings.Add('0'+EOL+'POLYLINE');
+      Strings.Add('8'+EOL+Layer);            // layername
+      Strings.Add('62'+EOL+IntToStr(Col));   // color by layer
+      Strings.Add('66'+EOL+'1');             // vertices follow
+      begin
+        P:=Face.Points[J];
+        Index:=FPoints.IndexOf(P);
+        P3D:=MirrorPoint[Index];
+        Strings.Add('0'+EOL+'VERTEX');
+        Strings.Add('8'+EOL+Layer);
+        Strings.Add('10'+EOL+FloatToDec(P3D.X, 4));
+        Strings.Add('20'+EOL+FloatToDec(P3D.Y, 4));
+      end;
+      Strings.Add('0'+EOL+'SEQEND');
+    end;
+  end;
+  if ShowStations then
+    for I:=1 to FStations.Count do
+      ExportSpline(FStations[I-1], 'stations');
+  if ShowButtocks then
+    for I:=1 to FButtocks.Count do
+      ExportSpline(FButtocks[I-1], 'buttocks');
+  if ShowWaterlines then
+    for I:=1 to FWaterlines.Count do
+      ExportSpline(FWaterlines[I-1], 'waterlines');
+  if ShowDiagonals then
+    for I:=1 to FDiagonals.Count do
+      ExportSpline(FDiagonals[I-1], 'diagonals');
   FreeAndNil(Dest);
 end;
 

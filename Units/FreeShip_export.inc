@@ -129,8 +129,7 @@ begin
       Strings.Add( Title+S );//+' ['+InttoStr(Count)+'] = '+floattostr(P0.y)+' < '+floattostr(PN.y) );
     end;
     Strings.Add( EOL+' 0' );                         // форштевень в завершение
-    StemStern( true );
-                        // и в заключение еще и все контрольные точки и контуры
+    StemStern( true );  // и в заключение еще и все контрольные точки и контуры
                         //
     if FreeShip.NumberOfControlCurves>0 then begin
       Strings.Add( EOL+'ContorlCurves['+IntToStr(FreeShip.NumberOfControlCurves)+']' );
@@ -599,8 +598,8 @@ begin
     FreeShip.Preferences.ExportDirectory:=Dialog.ExportDirectory;
     if Length(FreeShip.Preferences.ExportDirectory) > 0 then
       if FreeShip.Preferences.ExportDirectory[Length(
-        FreeShip.Preferences.ExportDirectory)] <> DirectorySeparator then
-        FreeShip.Preferences.ExportDirectory:=FreeShip.Preferences.ExportDirectory+DirectorySeparator;
+        FreeShip.Preferences.ExportDirectory)] <> '\' then
+        FreeShip.Preferences.ExportDirectory:=FreeShip.Preferences.ExportDirectory+'\';
 
     ScaleFactor:=1.0;
     SegLength:=Dialog.SegmentLength;
@@ -954,7 +953,7 @@ var
 begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.txt');
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'.txt');
   SaveDialog.Filter:=createDialogFilter('Offsets as 3D points',['txt']);
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
@@ -1407,8 +1406,8 @@ var
       P:=Points[I-1]; // check how many of the childfaces are connected (interior point must have 3)
       N:=0;
       for J:=1 to P.NumberOfFaces do
-        if Faces.IndexOf(P.Face[J-1]) <> -1 then Inc(N);
-      if N = 3 then begin InteriorPoint:=P; break; end;
+        if Faces.IndexOf(P.Face[J-1])<>-1 then Inc(N);
+      if N=3 then begin InteriorPoint:=P; break; end;
     end;
     if Interiorpoint<>nil then begin
       Cols:=3;

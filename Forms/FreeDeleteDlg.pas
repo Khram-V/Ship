@@ -120,7 +120,7 @@ begin
     sgObjects.Cells[1,r]:='Point';
     sgObjects.Cells[2,r]:=format('[%d]',[CP.Id]);
     sgObjects.Objects[2,r]:=CP;
-    sgObjects.Cells[3,r]:=CP.Name;
+//    sgObjects.Cells[3,r]:=CP.Name;
     inc(r);
   end;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlPointGroups-1 do begin
@@ -130,7 +130,7 @@ begin
     sgObjects.Cells[1,r]:='Group';
     sgObjects.Cells[2,r]:=format('[%d]',[CPG.Id]);
     sgObjects.Objects[2,r]:=CPG;
-    sgObjects.Cells[3,r]:=CPG.Name;
+//    sgObjects.Cells[3,r]:=CPG.Name;
     inc(r);
   end;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlEdges-1 do begin
@@ -139,7 +139,7 @@ begin
     sgObjects.Cells[1,r]:='Edge';
     sgObjects.Cells[2,r]:=format('[%d]',[CE.Id]);
     sgObjects.Objects[2,r]:=CE;
-    sgObjects.Cells[3,r]:=CE.Name;
+//    sgObjects.Cells[3,r]:=CE.Name;
     inc(r);
   end;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlFaces-1 do begin
@@ -148,7 +148,7 @@ begin
     sgObjects.Cells[1,r]:='Face';
     sgObjects.Cells[2,r]:=format('[%d]',[CF.Id]);
     sgObjects.Objects[2,r]:=CF;
-    sgObjects.Cells[3,r]:=CF.Name;
+//    sgObjects.Cells[3,r]:=CF.Name;
     inc(r);
   end;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlCurves-1 do begin
@@ -157,7 +157,7 @@ begin
     sgObjects.Cells[1,r]:='Curve';
     sgObjects.Cells[2,r]:=format('[%d]',[CC.Id]);
     sgObjects.Objects[2,r]:=CC;
-    sgObjects.Cells[3,r]:=CC.Name;
+//    sgObjects.Cells[3,r]:=CC.Name;
     inc(r);
   end;
   for i:=0 to FreeShip.NumberOfSelectedMarkers-1 do begin
@@ -166,7 +166,7 @@ begin
     sgObjects.Cells[1,r]:='Marker';
     sgObjects.Cells[2,r]:=format('[%d]',[M.Id]);
     sgObjects.Objects[2,r]:=M;
-    sgObjects.Cells[3,r]:=M.Name;
+//    sgObjects.Cells[3,r]:=M.Name;
     inc(r);
   end;
   for i:=0 to FreeShip.NumberOfSelectedFlowlines-1 do begin
@@ -175,7 +175,7 @@ begin
     sgObjects.Cells[1,r]:='Flowline';
     sgObjects.Cells[2,r]:=format('[%d]',[FL.Id]);
     sgObjects.Objects[2,r]:=FL;
-    sgObjects.Cells[3,r]:=FL.Name;
+//    sgObjects.Cells[3,r]:=FL.Name;
     inc(r);
   end;
   sgObjects.EndUpdate;

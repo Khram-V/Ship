@@ -49,7 +49,7 @@ procedure TFasterList.Clear;                             // leave it as created
 
 procedure TFasterList.FSetCapacity( NewCapacity: integer );
     begin if FCapacity<=NewCapacity then        // +1 предусматривается всегда
-       begin FCapacity:=NewCapacity+16;
+       begin FCapacity:=NewCapacity+64;
             if FUseUserData then Setlength( FData,FCapacity );
                                  Setlength( FList,FCapacity );
        end;

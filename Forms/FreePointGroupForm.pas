@@ -1,7 +1,8 @@
 unit FreePointGroupForm;
 {$mode objfpc}{$H+}
 interface uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, Buttons,
+  Forms,    Controls,
+  StdCtrls, Buttons,
   CheckLst, Menus,
   FreeShipUnit, FreeGeometry;
 type
@@ -27,13 +28,12 @@ type
 
 implementation
 {$R *.lfm}
-procedure TFreePointGroupForm.LoadGroups;
-var i:integer;
+procedure TFreePointGroupForm.LoadGroups; var I:integer;
 begin
   for i:=0 to FFreeShip.Surface.NumberOfControlPointGroups-1 do begin
-    CheckListBoxGroups.AddItem(
-    FFreeShip.Surface.ControlPointGroup[i].Name,
-    FFreeShip.Surface.ControlPointGroup[i]);
+    CheckListBoxGroups.AddItem
+    ( FFreeShip.Surface.ControlPointGroup[i].Names,
+      FFreeShip.Surface.ControlPointGroup[i] );
   end;
   CheckListBoxGroups.Sorted:=true;
 end;
@@ -42,8 +42,8 @@ procedure TFreePointGroupForm.SpeedButtonAddClick(Sender: TObject);
 var G:TFreeSubdivisionControlPointGroup;
 begin
   G:=TFreeSubdivisionControlPointGroup.create(FFreeShip.Surface);
-  G.Name:=(EditNewGroupName.Text);
-  CheckListBoxGroups.AddItem(G.Name, G);
+  G.Names:=(EditNewGroupName.Text);
+  CheckListBoxGroups.AddItem( G.Names,G );
   CheckListBoxGroups.Sorted:=true;
 end;
 
@@ -58,13 +58,13 @@ begin
       G:=CheckListBoxGroups.Items.Objects[i] as TFreeSubdivisionControlPointGroup;
       for j:=0 to FFreeShip.NumberOfSelectedControlPoints-1 do
         G.AddControlPoint(FFreeShip.SelectedControlPoint[j]);
-      if FFreeShip.Surface.ControlPointGroups.IndexOf(G) < 0 then
+      if FFreeShip.Surface.ControlPointGroups.IndexOf(G)<0 then
          FFreeShip.Surface.ControlPointGroups.Add(G);
     end;
     for i:=FFreeShip.Surface.ControlPointGroups.Count-1 downto 0 do begin
       found:=false;
       for j:=0 to CheckListBoxGroups.Items.Count-1 do
-          if CheckListBoxGroups.Items.Objects[j] = FFreeShip.Surface.ControlPointGroups[i]
+          if CheckListBoxGroups.Items.Objects[j]=FFreeShip.Surface.ControlPointGroups[i]
           then found:=true;
       if not found then FFreeShip.Surface.ControlPointGroups[i].Delete;
     end;

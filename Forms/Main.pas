@@ -15,7 +15,8 @@ interface uses Interfaces,
      FreeShipUnit,FreeVersionUnit,
      FreeAboutDlg,FreehullFormWindow_panel,
      FreeLayerVisibilityDlg,FreeLanguageSupport,
-     FreeSelectedDlg,FreeSplitSectionDlg,MDIPanel,FreeLinesPlanFrame;
+//   FreeSelectedDlg,
+     FreeSplitSectionDlg,MDIPanel,FreeLinesPlanFrame;
 type
   TMainForm = class( TForm )                                       // TMainForm
      FreeShip: TFreeShip;
@@ -222,7 +223,7 @@ type
     procedure ExitProgramExecute       (Sender: TObject);
     procedure PointExtrudeExecute      (Sender: TObject);
     procedure PointsCoincideExecute    (Sender: TObject);
-    procedure SelectionDialogExecute   (Sender: TObject);
+//  procedure SelectionDialogExecute   (Sender: TObject);
     procedure SplitSectionDialogExecute(Sender: TObject);
     procedure ShowFreeObjectsExecute   (Sender: TObject);
     procedure LayerVisibilityDialogExecute(Sender: TObject);
@@ -472,8 +473,6 @@ begin
     if FileExt='.FEF' then begin
        FreeShip.Edit.File_ImportFEF( FFilename );
        FOpenHullWindows;
-//       SetCaption;
-//       UpdateMenu;
     end else
     if (FileExt='.FBM') or (FileExt='.FTM') then Load_and_Scale( FFileName );
   end;
@@ -508,25 +507,21 @@ end;
 
 procedure TMainForm.AddFlowLineExecute(Sender: TObject);
     begin FreeShip.EditMode:=emAddFlowLine; UpdateMenu; end;
-
 procedure TMainForm.AddGridPanelExecute(Sender: TObject);
     begin Freeship.Edit.Geometry_AddGridPanel; UpdateMenu; end;
-
 procedure TMainForm.DesignHydrostaticsExecute(Sender: TObject);
-var Calculation : TFreeHydrostaticCalc;
-begin
-   Calculation:=Freeship.Edit.Hydrostatics_Calculate
-     (  Freeship.ProjectSettings.ProjectDraft,0.0,0.0  );
-   if Calculation<>nil then begin FreeAndNil( Calculation ); end;
+  var Calculation : TFreeHydrostaticCalc;
+begin Calculation:=Freeship.Edit.Hydrostatics_Calculate
+      (  Freeship.ProjectSettings.ProjectDraft,0.0,0.0  );
+      if Calculation<>nil then begin FreeAndNil( Calculation ); end;
 end;
 
 procedure TMainForm.ActionCheckUpdatesExecute( Sender: TObject );
-var Calculation : TFreeHydrostaticCalc;
-begin
-   Calculation:=Freeship.Edit.Hydrostatics_Calculate
-       ( Freeship.ProjectSettings.ProjectDraft,0.0,0.0 );
-   if Calculation<>nil then begin FreeAndNil( Calculation ); end;
-// DesignHydrostaticsExecute( Sender ); //TObject )
+  var Calculation : TFreeHydrostaticCalc;
+begin Calculation:=Freeship.Edit.Hydrostatics_Calculate
+      ( Freeship.ProjectSettings.ProjectDraft,0.0,0.0 );
+      if Calculation<>nil then FreeAndNil( Calculation );
+   // DesignHydrostaticsExecute( Sender ); //TObject )
 end;
 
 procedure TMainForm.OnSelectItem( Sender:TObject );
@@ -552,9 +547,9 @@ begin
          Face2:=FreeShip.SelectedControlFace[I-1];
          if Face1.Layer<>Face2.Layer then begin Diff:=True; Break; end;
       end;
-      if not Diff then FreeShipChangeActiveLayer( self,Face1.Layer )
-                  else FreeShipChangeActiveLayer( self,nil );
-   end else FreeShipChangeActiveLayer( self,FreeShip.ActiveLayer );
+      if not Diff then FreeShip.ActiveLayer:=Face1.Layer //FreeShipChangeActiveLayer( self,Face1.Layer )
+                  else FreeShip.ActiveLayer:=nil;        //FreeShipChangeActiveLayer( self,nil );
+   end else FreeShip.ActiveLayer:=FreeShip.ActiveLayer;  //FreeShipChangeActiveLayer( self,FreeShip.ActiveLayer );
    UpdateMenu;
 end;
 
@@ -582,9 +577,9 @@ var thw: TFreeHullWindow;
 begin
    if assigned(PanelManager) then while PanelManager.MList.Count>0 do begin
      thw:=TFreeHullWindow(PanelManager.MDIPanels[0]);
-            ///if assigned(thw) and assigned(thw.FreeHullForm)
-            ///  and assigned(thw.FreeHullForm.ActionListHull)
-            ///  then self.RemoveComponent(thw.FreeHullForm.ActionListHull);
+               // if assigned(thw) and assigned(thw.FreeHullForm)
+               //   and assigned(thw.FreeHullForm.ActionListHull)
+               //   then self.RemoveComponent(thw.FreeHullForm.ActionListHull);
       if assigned( thw ) then thw.Close;
       PanelManager.Remove(thw);
    end;
@@ -594,7 +589,7 @@ procedure TMainForm.FOpenHullWindows;
   var I : Integer;                 //const WN:array[0..3] of Integer=(3,1,0,2);
 begin
    if MDIChildCount=0 then
-      for I:=0 to 3 do NewWindowSet( self,TFreeViewType( I ) ); // Tile;
+      for I:=0 to 3 do NewWindowSet( self,TFreeViewType( I ) );        // Tile;
 // for I:=0 to 3 do
 //   if GetMDIChildren( I )=nil then NewWindowSet( self,TFreeViewType( I ) );
    Tile;
@@ -603,41 +598,45 @@ end;
 
 procedure TMainForm.SetCaption;
 begin if FreeShip.FileChanged
- then Caption:='«Free!Ship» :  '+ExtractFileName( FreeShip.Filename )+'  ('+UserString(280)+')'
- else Caption:='«Free!Ship» :  '+ExtractFileName( FreeShip.Filename )+'  ['+UserString(281)+']';
+ then Caption:='«Free!Ship» :  '+ExtractFileName(FreeShip.Filename)+'  ('+UserString(280)+')'
+ else Caption:='«Free!Ship» :  '+ExtractFileName(FreeShip.Filename)+'  ['+UserString(281)+']';
 end;
 (*
 procedure TMainForm.SetAllActionsEnabled( val: boolean );
 var i: integer; A: TAction;
-begin
-  for i:=0 to ActionList1.ActionCount-1 do begin
-    A:=TAction( ActionList1.Actions[i] );
-    A.Enabled:=val;
-  end;
-end;
+begin for i:=0 to ActionList1.ActionCount-1 do begin
+          A:=TAction( ActionList1.Actions[i] );
+          A.Enabled:=val;
+end;  end;
 *)
 procedure TMainForm.UpdateMenu;
 var I,NLayers : Integer;
-        // In this procedure all actions are set to enabled/disabled according
-        // to the current state and selected items
-  const DS=DirectorySeparator;
-begin
+                   // In this procedure all actions are set to enabled/disabled
+begin              //    according to the current state and selected items
    NLayers:=0;
-   For I:=1 to Freeship.NumberOfLayers do
-     if Freeship.Layer[I-1].Count>0 then inc(NLayers);             // File menu
+   For I:=0 to Freeship.NumberOfLayers-1 do
+     if Freeship.Layer[I].Count>0 then inc( NLayers );             // File menu
 
-   {  I:=Layerbox.Items.IndexOfObject( Freeship.ActiveLayer ); if I<0 then I:=0;
-   LayerBox.TabOrder:=I;
-   ColorButton1.ButtonColor:=(Layerbox.Items.Objects[I] as TFreeSubdivisionLayer).Color;
-   Freeship.ActiveLayer.Color:=ColorButton1.ButtonColor; ///***???
-}
-// if Freeship.NumberOfSelectedControlFaces=0 then
-   ColorButton1.ButtonColor:=Freeship.ActiveLayer.Color {else ColorButton1.ButtonColor:=clBtnface};
+// FreeShipChangeActiveLayer( Self,Freeship.ActiveLayer );
+   I:=Layerbox.Items.IndexOfObject( Freeship.ActiveLayer );
+   LayerBox.ItemIndex:=I;    //LayerBox.TabOrder:=I; || Freeship.NumberOfLayers
+   if I>=0 then begin
+      Freeship.ActiveLayer:=(Layerbox.Items.Objects[I] as TFreeSubdivisionLayer);
+      ColorButton1.ButtonColor:=Freeship.ActiveLayer.Color
+   end else begin
+      Freeship.ActiveLayer:=nil;
+      ColorButton1.ButtonColor:=clBtnface;
+   end;
+
+// if Freeship.NumberOfSelectedControlFaces=0
+//    then ColorButton1.ButtonColor:=Freeship.ActiveLayer.Color
+//    else ColorButton1.ButtonColor:=clBtnface;
+// Freeship.ActiveLayer.Color:=ColorButton1.ButtonColor; ///***???
 
    FileSaveas.Enabled:=(FreeShip.Surface.NumberOfControlPoints>0)
-                      or (Freeship.FileChanged) or (Freeship.FilenameSet);
-   FileSave.Enabled:= FileSaveas.Enabled and Freeship.FileChanged
-                      and not Freeship.FileIsReadOnly;
+                    or (Freeship.FileChanged) or (Freeship.FilenameSet);
+   FileSave.Enabled:=FileSaveas.Enabled and Freeship.FileChanged
+                     and not Freeship.FileIsReadOnly;
 
    ImportMichletWaves1.Enabled:=(MDIChildCount>0) and (Freeship.Surface.NumberOfControlFaces>1);
    ExportFEF.Enabled:=Freeship.Surface.NumberOfControlPoints>0;
@@ -810,8 +809,8 @@ begin
   dlg.Cursor:=crHourGlass;
   Screen.Cursor:=crHourGlass;
   Application.ProcessMessages;
-  for I:=0 to FreeShip.Edit.RecentFileCount-1 do begin
-    vFileName:=Freeship.Edit.RecentFile[I];
+  for I:=0 to FreeShip.Edit.RecentFiles.Count-1 do begin
+    vFileName:=Freeship.Edit.RecentFiles[I];
     if not FileExists( vFileName ) then continue;
     sTime:=FormatDateTime( 'YYYY-MM-DD hh:mm:ss',
                            FileDateToDateTime( FileAgeUTF8( vFileName ) ) );
@@ -864,7 +863,7 @@ procedure TMainForm.PointsCoincideExecute(Sender: TObject);
     begin   // get multiple selected points to location of a first selected one
       Freeship.Edit.Point_CoinsideToPoint; UpdateMenu;
     end;
-
+(*
 procedure TMainForm.SelectionDialogExecute(Sender: TObject);
 begin
   if FormSelected = nil then FormSelected:=TFormSelected.Create(Self);
@@ -878,7 +877,15 @@ begin
   FormSelected.onSelectionUpdate(Self);
   FormSelected.Show;
 end;
-
+|    object SelectionDialog: TAction
+|      Category= 'Selection'
+|      Caption = 'Selection Dialog'
+|      OnExecute= SelectionDialogExecute
+|    end
+Выбор:object miSelectionDialog: TMenuItem
+|      Action = SelectionDialog
+|    end
+*)
 procedure TMainForm.SplitSectionDialogExecute(Sender: TObject);
 begin
   if FSplitSectionDialog = nil then
@@ -927,6 +934,7 @@ begin UpdateMenu; end;
 procedure TMainForm.FormShow( Sender: TObject );
 var FileExt: AnsiString; L,T,W,H: Integer;
 begin                                                   // Initialize some data
+// FreeShip.ActiveLayer:=nil;
    FreeShip.OnChangeActiveLayer:=FreeShipChangeActiveLayer;
    Freeship.OnChangeLayerData:=FreeShipChangeLayerData;
 // FreeShip.OnSelectItem:=OnSelectItem;
@@ -969,7 +977,7 @@ begin                                                      // open a new window
     HullformWindow:=TFreeHullWindow.Create( Self );
     HullformWindow.CaptionButtons:=[cbSystemMenu,cbMaximize,cbMinimize,cbRestore];
     HullformWindow.Name:='HullformWindow'+IntToStr( I );
-    HullformWindow.Viewport.Name :='Viewport'+IntToStr( I );
+    HullformWindow.Viewport.Name:='Viewport'+IntToStr( I );
     HullformWindow.FreeShip:=FreeShip;
     PanelManager.Add( HullformWindow );
     HullformWindow.Parent:=MainClientPanel;
@@ -1072,8 +1080,8 @@ var Menu    : TMenuItem;
     N       : Integer;
     Answer  : word;
 begin
-  if FreeShip.Edit.RecentFileCount=0 then exit;
-  Filename:=Freeship.Edit.RecentFile[0];
+  if FreeShip.Edit.RecentFiles.Count=0 then exit;
+  Filename:=Freeship.Edit.RecentFiles[0];
   FFilename:=Filename;
   Load_and_Scale( FileName );
 end;
@@ -1095,18 +1103,15 @@ end;
 }
 procedure TMainForm.FreeShipChangeLayerData( Sender: TObject );
 var I : Integer;
-begin // Fill the layerbox with the current layers
+begin                              // Fill the layerbox with the current layers
    LayerBox.Items.BeginUpdate;
    LayerBox.Items.Clear;
-// try
-      for I:=0 to Freeship.NumberOfLayers-1 do
-      begin Layerbox.Items.AddObject(FreeShip.Layer[I].Name,FreeShip.Layer[I]);
-      end;
-// finally
-      LayerBox.Items.EndUpdate;
-      I:=LayerBox.Items.IndexOfObject(FreeShip.ActiveLayer);
-      Layerbox.ItemIndex:=I;
-// end;
+   for I:=0 to Freeship.NumberOfLayers-1 do
+     begin Layerbox.Items.AddObject(FreeShip.Layer[I].Name,FreeShip.Layer[I]);
+     end;
+   LayerBox.Items.EndUpdate;
+   I:=LayerBox.Items.IndexOfObject(FreeShip.ActiveLayer);
+   Layerbox.ItemIndex:=I;
    if FreeLayerVisibilityDialog<>nil then FreeLayerVisibilityDialog.FillLayers;
 end;
 
@@ -1116,45 +1121,27 @@ begin
      FreeShip.Preferences.Save;
      FDestroying:=true;
      CloseHullWindows;
-      FreeShip.OnChangeActiveLayer:=nil;
-      Freeship.OnChangeLayerData:=nil;
-//    FreeShip.OnSelectItem:=nil;
-      FreeShip.Surface.RemoveOnSelectItemListener( OnSelectItem );
+     FreeShip.OnChangeActiveLayer:=nil;
+     Freeship.OnChangeLayerData:=nil;
+//   FreeShip.OnSelectItem:=nil;
+     FreeShip.Surface.RemoveOnSelectItemListener( OnSelectItem );
   end;
 end;
 
 procedure TMainForm.FreeShipChangeActiveLayer
-( Sender: TObject; Layer: TFreeSubdivisionLayer );
-  var Index: Integer;
+( Sender: TObject; Layer: TFreeSubdivisionLayer ); var Index: Integer;
 begin       // do not switch to the active layer when controlfaces are selected
    if ( FreeShip.NumberOfSelectedControlFaces<>0 )
    and (FreeShip.ActiveLayer=Layer) then {пропуск} else begin
-     if Layer=nil then begin    // Index:=-1;
-        Layerbox.ItemIndex:=-1; // Index;                                       //PanelActiveLayerColor.Color:=clBtnface;
-//      ColorButton1.ButtonColor:=clBtnface;
+     if Layer=nil then begin                       // Index:=-1;
+        Layerbox.ItemIndex:=-1;                    // Index;
+        ColorButton1.ButtonColor:=clBtnface;       // PanelActiveLayerColor.Color:=clBtnface;
      end else begin
         Index:=Layerbox.Items.IndexOfObject( Layer );
-        Layerbox.ItemIndex:=Index;                                              //PanelActiveLayerColor.Color:=Layer.Color;
-//      ColorButton1.ButtonColor:=Layer.Color;
+        Layerbox.ItemIndex:=Index;
+        ColorButton1.ButtonColor:=Layer.Color;     // PanelActiveLayerColor.Color:=Layer.Color;
      end;
    end;
-end;
-
-procedure TMainForm.LayerBoxChange( Sender: TObject );
-  var Layer: TFreeSubdivisionLayer; I,Index: Integer;
-begin
-   Index:=Layerbox.ItemIndex; if index=-1 then Index:=0;
-   Layer:=Layerbox.Items.Objects[index] as TFreeSubdivisionLayer;
-   if Freeship.NumberOfSelectedControlFaces=0 then begin // change active layer
-      if Layer<>FreeShip.ActiveLayer then FreeShip.ActiveLayer:=Layer;
-//    ColorButton1.ButtonColor:=Layer.Color;
-   end else begin          // Assign all selected controlfaces to the new layer
-      for I:=FreeShip.NumberOfSelectedControlFaces-1 downto 0
-          do FreeShip.SelectedControlFace[I].Layer:=Layer;
-      FreeShip.FileChanged:=True;
-      FreeShip.Redraw;
-   end;
-   UpdateMenu;
 end;
 
 procedure TMainForm.ActiveLayerColorExecute( Sender: TObject );
@@ -1162,22 +1149,62 @@ begin                         // change the color of the currently active layer
    ColorDialog.Color:=FreeShip.ActiveLayer.Color;
    if ColorDialog.Execute then begin
       FreeShip.ActiveLayer.Color:=ColorDialog.Color;
+      FreeShipChangeActiveLayer( self,Freeship.ActiveLayer );
       FreeShip.FileChanged:=True;
       FreeShip.Redraw;
-      FreeShipChangeActiveLayer( self,Freeship.ActiveLayer );
       UpdateMenu;
    end;
 end;
-procedure TMainForm.ColorButton_Click( Sender:TObject ); //Var I:Integer;
+
+procedure TMainForm.LayerBoxChange( Sender: TObject );
+  var Layer: TFreeSubdivisionLayer; Index: Integer;
 begin
-// I:=Layerbox.Items.IndexOfObject( Freeship.ActiveLayer ); if I<0 then I:=0;
-   FreeShip.ActiveLayer.Color:=ColorButton1.ButtonColor;
-// (Layerbox.Items.Objects[I] as TFreeSubdivisionLayer).Color:=FreeShip.ActiveLayer.Color;
-// writeln( 'Color='+hexstr( ColorButton1.ButtonColor,8 )+'  Layer='+inttostr( I ) );
+   Index:=Layerbox.ItemIndex;
+   if index=-1 then Index:=0;
+   Layer:=Layerbox.Items.Objects[index] as TFreeSubdivisionLayer;
+   if Freeship.NumberOfSelectedControlFaces<>0 then begin
+      for Index:=FreeShip.NumberOfSelectedControlFaces-1 downto 0
+              do FreeShip.SelectedControlFace[Index].Layer:=Layer;
+   end;
+   if Layer<>FreeShip.ActiveLayer then FreeShip.ActiveLayer:=Layer;
+   ColorButton1.ButtonColor:=Layer.Color;
    FreeShip.FileChanged:=True;
    FreeShip.Redraw;
-   FreeShipChangeActiveLayer( self,Freeship.ActiveLayer );
    UpdateMenu;
+end;
+(*
+   if Freeship.NumberOfSelectedControlFaces=0 then begin // change active layer
+      if Layer<>FreeShip.ActiveLayer then FreeShip.ActiveLayer:=Layer;
+      ColorButton1.ButtonColor:=Layer.Color;
+   end else begin          // Assign all selected controlfaces to the new layer
+      {  Layer:=FreeShip.Surface.AddNewLayer;
+         Layer.Color:=ColorButton1.ButtonColor;             !!! не вышло...
+         Layer.Name:='add '+InttoStr( FreeShip.Surface.NumberOfLayers );
+         FreeShipChangeLayerData( Self ); }
+     for Index:=FreeShip.NumberOfSelectedControlFaces-1 downto 0
+             do FreeShip.SelectedControlFace[Index].Layer:=Layer;
+     FreeShip.FileChanged:=True;
+     FreeShip.Redraw;
+   end;
+*)
+procedure TMainForm.ColorButton_Click( Sender:TObject );
+  var I: Integer; Layer: TFreeSubdivisionLayer;
+begin I:=Layerbox.ItemIndex;
+   if I>=0 then begin
+     Layer:=(Layerbox.Items.Objects[I] as TFreeSubdivisionLayer);
+     if Layer=FreeShip.ActiveLayer then begin
+//     if Layer.Color<>ColorButton1.ButtonColor then begin
+          Layer.Color:=ColorButton1.ButtonColor;
+//        FreeShip.ActiveLayer:=Layer;
+          FreeShipChangeActiveLayer( self,Layer );
+          FreeShip.FileChanged:=True;
+          FreeShip.Redraw;
+          UpdateMenu;
+//      end;
+     end;
+//writeln( 'Color='+hexstr( Freeship.ActiveLayer.Color,6 )+':'+hexstr( Layer.Color,6 )+' Name=' +
+//(Layerbox.Items.Objects[I] as TFreeSubdivisionLayer).Name+' Layer='+inttostr(I)+'  Order='+inttostr(LayerBox.TabOrder) );
+   end;
 end;
 (*
 object ColorButton1: TColorButton
@@ -1190,7 +1217,8 @@ object ColorButton1: TColorButton
   BorderWidth = 2
   ButtonColorSize = 32
   ButtonColor = clLime
-  OnClick = ColorButton _ Click  -> OnColorChanged
+/  OnClick = ColorButton _ Click  -> OnColorChanged
+\  OnColorChanged = ColorButton_Click
   ParentFont = False
 end
 *)
@@ -1274,33 +1302,29 @@ procedure TMainForm.Help1Click(Sender: TObject);   // begin correction Victor T
 var FileToFind,FManDirectory,FLang,man : AnsiString;
 begin
   FLang:=Freeship.Preferences.Language;
-  FManDirectory:=Freeship.Preferences.ManualsDirectory; //+ConfigDirectory
+  FManDirectory:=Freeship.Preferences.ManualsDirectory;      //~ConfigDirectory
   man:=FLang+'.pdf';
-  FileToFind:=FileSearch(FManDirectory+DirectorySeparator+man,FManDirectory);
+  FileToFind:=FileSearch( FManDirectory+man,FManDirectory );
   if (FileToFind='') and (FLang<>'English') then begin
-    MessageDlg('Manual file "'+man+'" not found in "'+FManDirectory+'" directory'+EOL
-              +'English manual will be opened.',mtInformation,[mbOk],0);
-    man:='English.pdf'
+    ShowMessage('Manual "'+man+'" not found in "'+FManDirectory
+      +'" directory'+EOL+'English manual will be opened.'); man:='English.pdf'
   end;
-  FileToFind:=FileSearch(FManDirectory+DirectorySeparator+man,FManDirectory);
+  FileToFind:=FileSearch( FManDirectory+man,FManDirectory );
   if FileToFind='' then begin
-     MessageDlg('Manual file "'+man+'" not found in "'+FManDirectory+'" directory',mtInformation,[mbOk],0);
+     ShowMessage('Manual "'+man+'" not found in "'+FManDirectory+'" directory');
      exit;
   end;
   OpenDocument( FileToFind );
 end;
 
 procedure TMainForm.EdgeSplitExecute(Sender: TObject);
-begin FreeShip.Edit.Edge_Split; UpdateMenu; end;
-
+    begin FreeShip.Edit.Edge_Split; UpdateMenu; end;
 procedure TMainForm.ExportFEFExecute(Sender: TObject);
-begin FreeShip.Edit.File_ExportFEF; UpdateMenu; end;
-
+    begin FreeShip.Edit.File_ExportFEF; UpdateMenu; end;
 procedure TMainForm.EditProjectSettingsExecute(Sender: TObject);
-begin FreeShip.ProjectSettings.Edit; UpdateMenu; end;
-
+    begin FreeShip.ProjectSettings.Edit; UpdateMenu; end;
 procedure TMainForm.CheckModelExecute(Sender: TObject);
-begin FreeShip.Edit.Model_Check(True); UpdateMenu; end;
+    begin FreeShip.Edit.Model_Check(True); UpdateMenu; end;
 
 procedure TMainForm.ShowNormalsExecute(Sender: TObject);
 begin
@@ -1325,28 +1349,21 @@ begin
 end;
 
 procedure TMainForm.RemoveNegativeExecute(Sender: TObject);
-begin Freeship.Edit.Face_DeleteNegative; UpdateMenu; end;
-
+    begin Freeship.Edit.Face_DeleteNegative; UpdateMenu; end;
 procedure TMainForm.RotateModelExecute(Sender: TObject);
-begin FreeShip.Edit.Face_Rotate; UpdateMenu; end;
-
+    begin FreeShip.Edit.Face_Rotate; UpdateMenu; end;
 procedure TMainForm.RotateModelMExecute(Sender: TObject);
-begin FreeShip.Edit.Face_RotateM; UpdateMenu; end;
-
+    begin FreeShip.Edit.Face_RotateM; UpdateMenu; end;
 procedure TMainForm.ScaleModelExecute(Sender: TObject);
-begin FreeShip.Edit.Face_Scale; UpdateMenu; end;
-
+    begin FreeShip.Edit.Face_Scale; UpdateMenu; end;
 procedure TMainForm.MoveModelExecute(Sender: TObject);
-begin FreeShip.Edit.Face_Move; UpdateMenu; end;
-
+    begin FreeShip.Edit.Face_Move; UpdateMenu; end;
 procedure TMainForm.ShowGridExecute(Sender: TObject);
-begin
-   Freeship.Visibility.ShowGrid:=not Freeship.Visibility.ShowGrid;
-   UpdateMenu;
-end;
-
+    begin Freeship.Visibility.ShowGrid:=not Freeship.Visibility.ShowGrid;
+          UpdateMenu;
+    end;
 procedure TMainForm.UndoExecute(Sender: TObject);
-begin FreeShip.Edit.Undo; UpdateMenu; SetCaption; end;
+    begin FreeShip.Edit.Undo; UpdateMenu; SetCaption; end;
 
    // Update undo memory usage
 procedure TMainForm.FreeShipUpdateUndoData(Sender: TObject);
@@ -1427,7 +1444,9 @@ procedure TMainForm.ShowLinesplanExecute( Sender: TObject );
 var I          : Integer;
 //  AlreadyOpen: Boolean;
     Form       : TFreeLinesplanForm;
+//--  SPrecision : TFreePrecisionType;
 begin
+//-- SPrecision:=FreeShip.Precision;
 // AlreadyOpen:=False;
 // for I:=0 to FreeShip.NumberOfViewports-1 do         == не срабатывает по MDI
 //   for I:=0 to MDIChildCount do
@@ -1443,8 +1462,11 @@ begin
    begin
       Form:=TFreeLinesplanForm.Create( self );
       Form.LinesplanFrame.FreeShip:=FreeShip;
+//--    if FreeShip.Precision>fpMedium then
+//--       Form.LinesplanFrame.FreeShip.Precision:=fpMedium;
       Form.LinesplanFrame.Viewport.ZoomExtents;
    end;
+//-- FreeShip.Precision:=SPrecision;
 end;
 
 procedure TMainForm.ShowDiagonalsExecute(Sender: TObject);
@@ -1458,9 +1480,9 @@ var I    : Integer;
     Item : TMenuItem;
 begin                                                  // delete old menu items
    RecentFiles.Clear;                                  // add the new data
-   for I:=1 to FreeShip.Edit.RecentFileCount do begin
+   for I:=1 to FreeShip.Edit.RecentFiles.Count do begin
       Item:=TMenuItem.Create(self);
-      Item.Caption:=Freeship.Edit.RecentFile[I-1];
+      Item.Caption:=Freeship.Edit.RecentFiles[I-1];
       Item.OnClick:=FLoadRecentFile;
       RecentFiles.Add( Item );
    end;

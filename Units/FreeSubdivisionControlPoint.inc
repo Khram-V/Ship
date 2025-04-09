@@ -422,10 +422,8 @@ begin
     end;}
     //end;
   end;
-  if (Name > '') then begin
-    Viewport.FontColor:=Color;
-    ViewPort.TextOut( P.X+2,P.Y+2,Name );
-  end;
+//if (Names > '') then begin Viewport.FontColor:=Color;
+//                          ViewPort.TextOut( P.X+2,P.Y+2,Names ); end;
 end;
 
 // Adjust To Linear Constraint during editing/moving

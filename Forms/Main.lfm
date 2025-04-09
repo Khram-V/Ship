@@ -420,12 +420,12 @@ object MainForm: TMainForm
         Tag = 3
         Left = 147
         Height = 24
-        Hint = 'Изменить цвет активного слоя.'
+        Hint = 'Изменить цвет слоя.'
         Top = 0
         Width = 24
         BorderWidth = 3
         ButtonColorSize = 32
-        ButtonColor = clLime
+        ButtonColor = clBtnface
         OnColorChanged = ColorButton_Click
         ParentFont = False
       end
@@ -433,7 +433,7 @@ object MainForm: TMainForm
         Tag = 5
         Left = 171
         Height = 23
-        Hint = 'Назначить выбранные грани на новый слой или изменить текущий слой.'
+        Hint = 'Изменить идин, или собрать всё в ином слое.'
         Top = 0
         Width = 128
         ItemHeight = 15
@@ -647,21 +647,21 @@ object MainForm: TMainForm
     object ExportDXF2DPolylines: TAction
       Category = 'Export'
       Caption = 'Чертёж.DXF...'
-      Hint = 'Сохранение в виде чертежа AutoCad.dxf (2D).'
+      Hint = 'Сохранение чертежа в AutoCad.dxf (2D).'
       ImageIndex = 27
       OnExecute = ExportDXF2DPolylinesExecute
     end
     object ExportDXF3DPolylines: TAction
       Category = 'Export'
       Caption = 'Контуры.DXF...'
-      Hint = 'Сохранение в контурах формата AutoCad.dxf (3D).'
+      Hint = 'Сохранение контуров в AutoCad.dxf (3D).'
       ImageIndex = 27
       OnExecute = ExportDXF3DPolylinesExecute
     end
     object ExportDXFFaces: TAction
       Category = 'Export'
       Caption = 'Модель.DXF с обшивкой'
-      Hint = 'Сохранение полной модели в формате AutoCad.dxf.'
+      Hint = 'Сохранение полной модели в AutoCad.dxf.'
       ImageIndex = 27
       OnExecute = ExportDXFFacesExecute
     end
@@ -672,15 +672,15 @@ object MainForm: TMainForm
     end
     object ShowControlNet: TAction
       Category = 'Visibility'
-      Caption = 'Control net'
-      Hint = 'Show control net.'
+      Caption = 'Контрольная сетка'
+      Hint = 'Показ контрольной сетки.'
       ImageIndex = 2
       OnExecute = ShowControlNetExecute
     end
     object ShowInteriorEdges: TAction
       Category = 'Visibility'
-      Caption = 'Interior edges'
-      Hint = 'Show interior edges.'
+      Caption = 'Внутренние ребра'
+      Hint = 'Показ внутренних промежуточных рёбер.'
       ImageIndex = 3
       OnExecute = ShowInteriorEdgesExecute
     end
@@ -704,8 +704,8 @@ object MainForm: TMainForm
     end
     object BothSides: TAction
       Category = 'Visibility'
-      Caption = 'Show both sides'
-      Hint = 'Show both sides of the model'
+      Caption = 'Вид обоих бортов'
+      Hint = 'Происовка обоих бортов '
       ImageIndex = 4
       OnExecute = BothSidesExecute
     end
@@ -718,22 +718,22 @@ object MainForm: TMainForm
     end
     object DecreaseCurvatureScale: TAction
       Category = 'Visibility'
-      Caption = 'Decr. curvature scale'
-      Hint = 'Decrease the scale of the curvature plots'
+      Caption = 'Уменьшение масштаба кривизны'
+      Hint = 'Сближение точек контурных прорисовок.'
       OnExecute = DecreaseCurvatureScaleExecute
       ShortCut = 120
     end
     object LayerAutoGroup: TAction
       Category = 'Layer'
-      Caption = 'Auto group'
-      Hint = 'Automatic grouping of connected controlfaces into a new layer.'
+      Caption = 'Автоматическая группировка'
+      Hint = 'Автоматическая сборка сопряженных граней в новом слое'
       ImageIndex = 6
       OnExecute = LayerAutoGroupExecute
     end
     object NewLayer: TAction
       Category = 'Layer'
-      Caption = 'New'
-      Hint = 'Add a new empty layer to the model.'
+      Caption = 'Новый слой'
+      Hint = 'Создание нового слоя.'
       ImageIndex = 7
       OnExecute = NewLayerExecute
     end
@@ -1335,11 +1335,6 @@ object MainForm: TMainForm
       Caption = 'Split Section middle location'
       Hint = 'Set Split Section location to middle of length'
       ImageIndex = 64
-    end
-    object SelectionDialog: TAction
-      Category = 'Selection'
-      Caption = 'Selection Dialog'
-      OnExecute = SelectionDialogExecute
     end
   end
   object MenuImages: TImageList
@@ -2176,9 +2171,6 @@ object MainForm: TMainForm
       end
       object SelectAllControlPoints1: TMenuItem
         Action = SelectAllControlPoints
-      end
-      object miSelectionDialog: TMenuItem
-        Action = SelectionDialog
       end
       object SelectionSeparator1: TMenuItem
         Caption = '-'

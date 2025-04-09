@@ -46,7 +46,8 @@ begin
 end;
 
 function UserString( Index:Integer ):AnsiString;    // == Languages\Russian.ini
-const U: array of record L:Word; C:AnsiString; end =( {$I Russian.inc} ); // ’
+//const U: array of record L:Word; C:AnsiString; end =(
+{$I Russian.inc} // ); // ’
   var Val: AnsiString; I: Integer;
 begin Result:='';
    if CurrentLanguage=nil then begin  // при отсутствии текстовых строк в файле

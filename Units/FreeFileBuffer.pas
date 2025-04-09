@@ -46,9 +46,9 @@ TFreeFileBuffer = class
 //  procedure Add(WordValue:word);             overload; virtual;
     procedure Add(Version: TFreeFileVersion);  overload; virtual;
     procedure Add(Coordinate: T3DVector);      overload; virtual;
-//    procedure Add(NameData: TNameData);        overload; virtual;
-//    procedure Add(AnchorData: TAnchorData);    overload; virtual;
-//    procedure Add(LCData:TLinearConstraintData); overload; virtual;
+//  procedure Add(NameData: TNameData);        overload; virtual;
+//  procedure Add(AnchorData: TAnchorData);    overload; virtual;
+//  procedure Add(LCData:TLinearConstraintData); overload; virtual;
     procedure Add(Plane: T3DPlane);            overload; virtual;
     procedure Add(Data: TFreeDelftSeriesResistanceData); overload; virtual;
     procedure Add(Data: TFreeKAPERResistanceData); overload; virtual;
@@ -145,10 +145,10 @@ implementation
 //    begin Capacity:=Count+Size; end; // + FileBufferBlockSize; end;
 
 function TFreeFileBuffer.FGetCapacity: integer; begin Result:=FCapacity; end;
-procedure TFreeFileBuffer.FSetCapacity( Val: Integer ); //Var I: Integer;
-begin FCapacity:=Val+32; Setlength( FData,Fcapacity ); //for I:=FCapacity+1 to Val do FData[I-1]:=255;
-end;
-
+procedure TFreeFileBuffer.FSetCapacity( Val: Integer ); Var I: Integer;
+begin if FCapacity<=Val then begin
+      FCapacity:=Val+512; Setlength( FData,Fcapacity ); //for I:=FCapacity+1 to Val do FData[I-1]:=255;
+  end; end;
 
 constructor TFreeFileBuffer.Create;
       begin inherited Create; Clear; end;
@@ -200,29 +200,22 @@ end;
 procedure TFreeFileBuffer.Reset; begin FPosition:=0; end;
 
 function TFreeFileBuffer.SaveToFile( Filename: AnsiString ):boolean;
-var
-  DataWritten: integer;
-  DataLeft: integer;
-  Tmp: integer;
-  Size: integer;
+var DataWritten,DataLeft,Size,Tmp: integer;
 begin
   result:=false;
   FFileName:=Filename;
-//try
-    AssignFile( FFile, Filename );
-    Rewrite( FFile, 1 );
-    DataWritten:=0;
-    DataLeft:=Count;
-    while DataWritten < Count do begin
-      if DataLeft < FileBufferBlockSize then Size:=DataLeft
-                                        else Size:=FileBufferBlockSize;
-      BlockWrite( FFile,FData[DataWritten],Size,Tmp );
-      Dec( DataLeft, Tmp );
-      Inc( DataWritten,Tmp );
-    end;
-//finally
-    Closefile( FFile );
-//end;
+  AssignFile( FFile, Filename );
+  Rewrite( FFile,1 );
+  DataWritten:=0;
+  DataLeft:=Count;
+  while DataWritten<Count do begin
+    if DataLeft<FileBufferBlockSize then Size:=DataLeft
+                                    else Size:=FileBufferBlockSize;
+    BlockWrite( FFile,FData[DataWritten],Size,Tmp );
+    Dec( DataLeft, Tmp );
+    Inc( DataWritten,Tmp );
+  end;
+  Closefile( FFile );
   FFileName:='';
   result:=true;
 end;
@@ -527,8 +520,7 @@ begin
 end;
 
 procedure TFreeFileBuffer.LoadT3DVector(var Output: T3DVector);
-var
-  Size: integer;
+var Size: integer;
 begin
   Size:=SizeOf(Output);
   Output:=ZERO;                    //if FPosition+Size >= FCount then exit;
@@ -537,8 +529,7 @@ begin
 end;
 
 procedure TFreeFileBuffer.LoadT3DPlane(var Output: T3DPlane);
-var
-  Size: integer;
+var Size: integer;
 begin
   Size:=SizeOf( Output );            //if FPosition+Size >= FCount then exit;
   Move(FData[FPosition], Output, Size);

@@ -11,45 +11,30 @@ interface uses
   Menus,FreeShipUnit;
 type                                                 { TFreePreferencesDialog }
   TFreePreferencesDialog = class(TForm)
-    BitBtnResetDirs: TSpeedButton;
-    BitBtnResetColors: TSpeedButton;
-    ComboBox1: TComboBox;
-    ComboBoxEncoding: TComboBox;
-    EditExportDir: TEdit;
-    EditImportDir: TEdit;
-    EditLanguagesDir: TEdit;
-    EditManualsDir: TEdit;
-    EditOpenDir: TEdit;
-    EditSaveDir: TEdit;
-    FreeNumInput1: TSpinEdit;
-//  EditExecDir: TEdit;
-//  EditGlobalImportDir: TEdit;
-//  EditGlobalOpenDir: TEdit;
-//  EditTempDir: TEdit;
-    lbSubmergedSurfaceOpacity: TLabel;
+    EditExportDir,EditImportDir,EditLanguagesDir,
+    EditManualsDir,EditOpenDir,EditSaveDir:                         TEdit;
+//  EditExecDir,EditGlobalImportDir,EditGlobalOpenDir,EditTempDir:  TEdit;
+    lbSubmergedSurfaceOpacity,
     Label1,Label2,Label3,Label4,Label5,Label6,Label7,Label8,Label9,Label10,
     Label11,Label12,Label13,Label14,Label15,Label16,Label17,Label18,Label19,
     Label20,Label21,Label22,Label23,Label24,Label25,Label26,Label27,Label28,
     Label29,Label32,Label33,Label34,Label35,LabelEncoding,LabelLanguagesDir:
                                                                      TLabel;
-    PageControl1: TPageControl;
     Panel,Panel1,Panel2,Panel3,Panel4,Panel5,Panel6,Panel7,Panel8,Panel9,
     Panel10,Panel11,Panel12,Panel13,Panel14,Panel15,Panel16,Panel17,Panel18,
     Panel19,Panel20,Panel21,Panel22,Panel23,Panel24,Panel25,Panel26,Panel27,
     Panel30,Panel31,Panel32,Panel33,Panel36,Panel38,Panel39,Panel40,Panel41,
     Panel42,Panel43,Panel44,Panel45,Panel46,Panel50,Panel51,Panel52,Panel53,
     Panel54,Panel55,Panel56,Panel57,ButtonPanel:                     TPanel;
-    ColorDialog: TColorDialog;
-    SelectDirectoryDialog1: TSelectDirectoryDialog;
+    BitBtnResetDirs,BitBtnResetColors,
     BitBtn1,BitBtn2,SpeedButton9,SpeedButton14,SpeedButton15,
     SpeedButton16,SpeedButton17,SpeedButtonLanguagesDir:       TSpeedButton;
-    SpinEdit1: TSpinEdit;
-    seSubmergedSurfaceOpacity: TSpinEdit;
-    seFontSize: TSpinEdit;
-    TabSheet1: TTabSheet;
-//  TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
-    TabSheet3: TTabSheet;
+    SpinEdit1,seSubmergedSurfaceOpacity,seFontSize,FreeNumInput1: TSpinEdit;
+    TabSheet1,TabSheet2,TabSheet3:                                TTabSheet;
+    ComboBox1,ComboBoxEncoding:                                   TComboBox;
+    SelectDirectoryDialog1:                          TSelectDirectoryDialog;
+    PageControl1:                                              TPageControl;
+    ColorDialog:                                               TColorDialog;
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ResetColorsButtonClick(Sender: TObject);
@@ -134,14 +119,14 @@ begin                                                                           
   if FFreeship.Preferences.MaxUndoMemory<1
      then FreeNumInput1.Value:=1
      else FreeNumInput1.Value:=FFreeship.Preferences.MaxUndoMemory;
-
-  EditLanguagesDir.Text:=FFreeship.Preferences.LanguagesDirectory;
-  EditManualsDir.Text:=FFreeship.Preferences.ManualsDirectory;
-  EditOpenDir.Text:=FFreeship.Preferences.OpenDirectory;
-  EditSaveDir.Text:=FFreeship.Preferences.SaveDirectory;
-  EditImportDir.Text:=FFreeship.Preferences.ImportDirectory;
-  EditExportDir.Text:=FFreeship.Preferences.ExportDirectory;
-
+  with FFreeship.Preferences do begin
+    EditLanguagesDir.Text:=OnlyName( LanguagesDirectory );
+    EditManualsDir.Text:=  OnlyName( ManualsDirectory );
+    EditOpenDir.Text:=     OnlyName( OpenDirectory );
+    EditSaveDir.Text:=     OnlyName( SaveDirectory );
+    EditImportDir.Text:=   OnlyName( ImportDirectory );
+    EditExportDir.Text:=   OnlyName( ExportDirectory );
+  end;
   ComboBoxEncodingFillItems;
   for I:=0 to ComboBoxEncoding.Items.Count-1 do
     if string( ComboBoxEncoding.Items.Objects[i] ) =
@@ -237,60 +222,44 @@ procedure TFreePreferencesDialog.SpinEdit1Change(Sender: TObject);
 begin FConfigChanged:=True; end;
 
 procedure TFreePreferencesDialog.seSubmergedSurfaceOpacityChange(Sender: TObject);
-begin FConfigChanged:=True; end;
-
+    begin FConfigChanged:=True; end;
 procedure TFreePreferencesDialog.ResetDirsButtonClick(Sender: TObject);
-begin
-  if MessageDlg( rs_Save, mtWarning, [mbYes, mbNo], 0) = mrYes
-  then begin FFreeship.Preferences.ResetDirectories;
-  end;
+begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0 ) = mrYes
+         then begin FFreeship.Preferences.ResetDirectories; end;
 end;
-
 procedure TFreePreferencesDialog.SpeedButtonLanguagesDirClick(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditLanguagesDir.Text;
-  if SelectDirectoryDialog1.Execute then
-    EditLanguagesDir.Text:=SelectDirectoryDialog1.FileName;
+begin SelectDirectoryDialog1.FileName:=EditLanguagesDir.Text;
+   if SelectDirectoryDialog1.Execute then
+      EditLanguagesDir.Text:=SelectDirectoryDialog1.FileName;
 end;
-
 procedure TFreePreferencesDialog.SpeedButton9Click(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditManualsDir.Text;
-  if SelectDirectoryDialog1.Execute then
-    EditManualsDir.Text:=SelectDirectoryDialog1.FileName;
+begin SelectDirectoryDialog1.FileName:=EditManualsDir.Text;
+   if SelectDirectoryDialog1.Execute then
+      EditManualsDir.Text:=SelectDirectoryDialog1.FileName;
 end;
-
 procedure TFreePreferencesDialog.SpeedButton14Click(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditOpenDir.Text;
-  if SelectDirectoryDialog1.Execute then
-    EditOpenDir.Text:=SelectDirectoryDialog1.FileName;
+begin SelectDirectoryDialog1.FileName:=EditOpenDir.Text;
+   if SelectDirectoryDialog1.Execute then
+      EditOpenDir.Text:=SelectDirectoryDialog1.FileName;
 end;
-
 procedure TFreePreferencesDialog.SpeedButton15Click(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditSaveDir.Text;
-  if SelectDirectoryDialog1.Execute then
-    EditSaveDir.Text:=SelectDirectoryDialog1.FileName;
+begin SelectDirectoryDialog1.FileName:=EditSaveDir.Text;
+   if SelectDirectoryDialog1.Execute then
+      EditSaveDir.Text:=SelectDirectoryDialog1.FileName;
 end;
-
 procedure TFreePreferencesDialog.SpeedButton16Click(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditImportDir.Text;
-  if SelectDirectoryDialog1.Execute then
-    EditImportDir.Text:=SelectDirectoryDialog1.FileName;
+begin SelectDirectoryDialog1.FileName:=EditImportDir.Text;
+   if SelectDirectoryDialog1.Execute then
+      EditImportDir.Text:=SelectDirectoryDialog1.FileName;
 end;
-
 procedure TFreePreferencesDialog.SpeedButton17Click(Sender: TObject);
-begin
-  SelectDirectoryDialog1.FileName:=EditExportDir.Text;
-  if SelectDirectoryDialog1.Execute then
-     EditExportDir.Text:=SelectDirectoryDialog1.FileName;
+begin SelectDirectoryDialog1.FileName:=EditExportDir.Text;
+   if SelectDirectoryDialog1.Execute then
+      EditExportDir.Text:=SelectDirectoryDialog1.FileName;
 end;
-
-procedure TFreePreferencesDialog.ComboBoxEncodingFillItems;
-begin
-  with ComboBoxEncoding.Items do begin
+procedure TFreePreferencesDialog.ComboBoxEncodingFillItems; // для *.fbm фалов
+begin                                                       // и совместимость
+  with ComboBoxEncoding.Items do begin                      // к старым версиям
 (*  AddObject('ISO_8859_1-Central Europe', TObject(string('iso88591')));
     AddObject('ISO_8859_15-Western European languages',TObject(string('iso885915')));
     AddObject('ISO_8859_2-Eastern Europe', TObject(string('iso88592')));

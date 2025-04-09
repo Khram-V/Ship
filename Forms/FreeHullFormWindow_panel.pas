@@ -454,8 +454,7 @@ end;
 procedure TFreeHullWindow.ViewportMouseUp(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var P:TPoint;
 begin
-   if Button=mbRight then
-   begin
+   if Button=mbRight then begin
       // Tracing:=false;
       // Only show pop-up menu if user has not panned the viewport (with right mouse-button)
       if FPanned then begin FPanned:=False; end else begin
@@ -501,18 +500,15 @@ procedure TFreeHullWindow.ShowDevelopablityExecute(Sender: TObject);
     begin Viewport.ViewportMode:=vmShadeDevelopable; end;
 
 procedure TFreeHullWindow.SaveAsBitmapExecute( Sender: TObject );
-var Str,vpt: AnsiString;
-begin
-{  Case Viewport.ViewType of
-     fvBodyplan   : vpt:='_Bodyplan';
-     fvProfile    : vpt:='_Profile';
-     fvPlan       : vpt:='_Plan';       +FCaptionText+
-     fvPerspective: vpt:='_Perspective'; else vpt:='';
-   end; }
-  Str:=Freeship.Preferences.ExportDirectory
+begin{  Case Viewport.ViewType of
+             fvBodyplan   : vpt:='_Bodyplan';
+             fvProfile    : vpt:='_Profile';
+             fvPlan       : vpt:='_Plan';
+             fvPerspective: vpt:='_Perspective'; else vpt:='';
+        end; }
+  Viewport.SaveAsBitmap( Freeship.Preferences.ExportDirectory
      + ChangeFileExt( ExtractFilename
-     ( ChangeFileExt( Freeship.Filename,'' ) )+'_'+FCaptionText,'.png' );
-  Viewport.SaveAsBitmap( Str,true );
+     ( ChangeFileExt( Freeship.Filename,'' ) )+'_'+FCaptionText,'.png' ),true );
 end;
 
 procedure TFreeHullWindow.ViewportKeyDown

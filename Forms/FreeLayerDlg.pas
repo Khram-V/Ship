@@ -9,57 +9,23 @@ interface uses
     FreeTypes,FreeShipUnit,FreeGeometry;
 
 type
-  TFreeLayerDialog  = class(TForm)
-    cbControlNetVisible: TCheckBox;
-    CheckBox1,CheckBox2,CheckBox3,CheckBox4,CheckBox5,CheckBox6: TCheckBox;
-    Edit1: TEdit;
-    Edit2,Edit3: TFloatSpinEdit;
-    GroupBox1: TGroupBox;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6_: TLabel;
-    Label6_0: TLabel;
-    Label6_1: TLabel;
-    Label6_1_: TLabel;
-    Label6_2: TLabel;
-    Label6_3: TLabel;
-    Label6_4: TLabel;
-    Label7: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
-    Panel1: TPanel;
-    Panel2: TPanel;
-    Panel3: TPanel;
-    Panel4: TPanel;
-    Panel5: TPanel;
-    Panel6: TPanel;
-    Panel7: TPanel;
-    Panel8: TPanel;
-    Panel9: TPanel;
+  TFreeLayerDialog  = class( TForm )
     ToolBar1: TToolBar;
-    ToolButton20: TToolButton;
-    MenuImages: TImageList;
-    ColorDialog: TColorDialog;
-    ToolButton1: TToolButton;
-    AlphaBar: TTrackBar;
-    WeightBox: TFloatSpinEdit;
-    XgBox: TFloatSpinEdit;
-    YgBox: TFloatSpinEdit;
-    ZgBox: TFloatSpinEdit;
-    _Label10: TLabel;
-    _Label11: TLabel;
-    _Label12: TLabel;
-    _Label4: TLabel;
-    _Label6: TLabel;
-    _ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
     LayerBox: TCheckListBox;
-    MoveUp: TToolButton;
-    MoveDown: TToolButton;
-    _ToolButton4: TToolButton;
+    ColorDialog: TColorDialog;
+    Label1: TLabel;     Edit1: TEdit;       // выбор слоя
+    Label2: TLabel;     Panel3: TPanel;     // выбор цвета
+    cbControlNetVisible,
+    CheckBox1,CheckBox2,CheckBox3,CheckBox4,CheckBox5,CheckBox6:     TCheckBox;
+    Edit2,Edit3,WeightBox,XgBox,YgBox,ZgBox:                    TFloatSpinEdit;
+    GroupBox1: TGroupBox;
+    Label3,Label4,Label5,Label7,Label8,Label9,_Label10,_Label11,_Label12,_Label4,
+    _Label6,Label6_,Label6_0,Label6_1,Label6_1_,Label6_2,Label6_3,Label6_4:TLabel;
+    Panel1,Panel2,Panel4,Panel5,Panel6,Panel7,Panel8,Panel9: TPanel;
+    MenuImages: TImageList;
+    AlphaBar: TTrackBar;
+    ToolButton1,_ToolButton2,ToolButton3,_ToolButton4,ToolButton20,
+                     MoveUp,MoveDown:                              TToolButton;
     procedure cbControlNetVisibleClick(Sender: TObject);
     procedure LayerBoxClick(Sender: TObject);
     procedure LayerBoxClickCheck(Sender: TObject);
@@ -67,7 +33,7 @@ type
     procedure Edit1Change(Sender: TObject);
     procedure LayerBoxItemClick(Sender: TObject; Index: integer);
     procedure LayerBoxSelectionChange(Sender: TObject; User: boolean);
-//    procedure MenuImagesChange(Sender: TObject);
+//  procedure MenuImagesChange(Sender: TObject);
     procedure Panel3Click(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
     procedure ToolButton20Click(Sender: TObject);
@@ -212,7 +178,7 @@ begin
    UpdateMenu;
 end;
 
-procedure TFreeLayerDialog.SelectLayer(Index: integer);
+procedure TFreeLayerDialog.SelectLayer( Index: integer );
 var Layer   : TFreeSubdivisionLayer;
     Prop    : TLayerProperties;
 begin
@@ -275,17 +241,11 @@ begin
   FProgrammaticalChange:=false;
 end;
 
-
 procedure TFreeLayerDialog.LayerBoxItemClick(Sender: TObject; Index: integer);
-begin
-  index:=Layerbox.ItemIndex;
-  if index = -1 then exit;
-  SelectLayer(Index);
-end;
-
+    begin index:=Layerbox.ItemIndex; if index=-1 then exit; SelectLayer(Index);
+    end;
 procedure TFreeLayerDialog.LayerBoxSelectionChange(Sender: TObject; User:boolean);
-begin SelectLayer(LayerBox.ItemIndex);
-end;
+    begin SelectLayer( LayerBox.ItemIndex ); end;
 
 procedure TFreeLayerDialog.LayerBoxDblClick(Sender: TObject);
 var Layer : TFreeSubdivisionLayer;

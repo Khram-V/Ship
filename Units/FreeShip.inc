@@ -62,8 +62,7 @@ var
   // PreviewImg : TJPegImage;
   // CF0:TFreeSubdivisionControlFace;
 const WN: array[0..3] of Integer=( 3,1,0,2 );
-begin
-  // Remember the filename because it will be erased by the clear method
+begin    // Remember the filename because it will be erased by the clear method
   Str:=FFilename;
   Clear;
   FFilename:=Str;
@@ -201,13 +200,12 @@ begin
 end;
 
 function TFreeShip.FGetOnChangeActiveLayer: TChangeActiveLayerEvent;
-begin Result:=Surface.OnChangeActiveLayer; end;
-
+   begin Result:=Surface.OnChangeActiveLayer; end;
 function TFreeShip.FGetOnChangeLayerData: TNotifyEvent;
-begin Result:=Surface.OnChangeLayerData; end;
+   begin Result:=Surface.OnChangeLayerData; end;
 {
 function TFreeShip.FGetOnSelectItem: TNotifyEvent;
-begin Result:=Surface.OnSelectItem; end;
+   begin Result:=Surface.OnSelectItem; end;
 }
 function TFreeShip.FGetSelectedControlCurve(Index: integer): TFreeSubdivisionControlCurve;
    begin Result:=Surface.SelectedControlCurve[index]; end;
@@ -225,6 +223,7 @@ function TFreeShip.FGetSelectedFlowline(index: integer): TFreeFlowline;
    begin Result:=FSelectedFlowlines[index]; end;
 function TFreeShip.FGetSelectedMarker(index: integer): TFreeMarker;
    begin Result:=FSelectedMarkers[index]; end;
+(*
 function TFreeShip.IsObjectSelected(aObject:TFreeNamedObject): boolean;
 begin
   if (aObject is TFreeSubdivisionControlPoint)
@@ -235,6 +234,7 @@ begin
   if (aObject is TFreeMarker) then Result:=(aObject as TFreeMarker).Selected;
   if (aObject is TFreeFlowLine) then Result:=(aObject as TFreeFlowLine).Selected;
 end;
+*
 procedure TFreeShip.SetObjectSelected(aObject:TFreeNamedObject; aSelected: boolean);
 begin
   if (aObject is TFreeSubdivisionControlPoint)
@@ -246,6 +246,7 @@ begin
   if (aObject is TFreeMarker) then (aObject as TFreeMarker).Selected:=true;
   if (aObject is TFreeFlowLine) then (aObject as TFreeFlowLine).Selected:=true;
 end;
+*)
 function TFreeShip.FGetStation(Index: integer): TFreeIntersection;
 begin if Index<0 then Index:=0 else
       if Index>=Fstations.Count then Index:=Fstations.Count-1;
@@ -339,7 +340,7 @@ begin
       end;
     end;
 end;
-
+(*
 function TFreeShip.FindByName( aName:AnsiString ):TFreeNamedObject;
 var i:integer;
 begin result:=nil;
@@ -355,14 +356,14 @@ begin result:=nil;
     if Surface.ControlFace[i].Name = aName then begin
        result:=Surface.ControlFace[i]; break; end;
 end;
-
+*
 function TFreeShip.GetAllNamedPoints:TStringList; var i:integer;
 begin result:=TStringList.Create;
   for i:=0 to Surface.NumberOfControlPoints-1 do
     if Surface.ControlPoint[i].Name<>'' then
       result.AddObject( Surface.ControlPoint[i].Name,Surface.ControlPoint[i] );
 end;
-
+*)
 function TFreeShip.GetActiveControlCurve: TFreeSubdivisionControlCurve;
    begin Result:=Surface.ActiveControlCurve; end;
 function TFreeShip.GetActiveControlEdge: TFreeSubdivisionControlEdge;
@@ -920,6 +921,7 @@ var
         P2:=Max;
         for I:=1 to self.NumberofButtocks do begin
           Position:=-Buttock[I-1].Plane.d;
+          if Position=0.0 then continue;
           Str:=ConvertDimension(Position, ProjectSettings.ProjectUnits);
           P1.Y:=Position;
           P2.Y:=P1.Y;
@@ -956,34 +958,30 @@ var
           end;
         end;
       end;
-      if DrawWaterlines then
-      begin
+      if DrawWaterlines then begin
         P1:=Min;
         P2:=Max;
-        for I:=1 to self.NumberofWaterlines do
-        begin
+        for I:=1 to self.NumberofWaterlines do begin
           Position:=-Waterline[I-1].Plane.d;
           Str:=ConvertDimension(Position, ProjectSettings.ProjectUnits);
           P1.Z:=Position;
           P2.Z:=P1.Z;
-          Pt1:=Viewport.Project(P1);
-          Pt2:=Viewport.Project(P2);
-          Viewport.MoveTo(Pt1.X, Pt1.Y);
-          Viewport.LineTo(Pt2.X, Pt2.Y);
-          Width:=Viewport.TextWidth(Str);
-          Viewport.TextOut(Pt1.X, Pt1.Y-Height, Str);
-          Viewport.TextOut(Pt2.X-Width, Pt2.Y-Height, str);
+          Pt1:=Viewport.Project( P1 );
+          Pt2:=Viewport.Project( P2 );
+          Viewport.MoveTo( Pt1.X,Pt1.Y );
+          Viewport.LineTo( Pt2.X,Pt2.Y );
+          Width:=Viewport.TextWidth( Str );
+          Viewport.TextOut( Pt1.X,Pt1.Y-Height,Str );
+          Viewport.TextOut( Pt2.X-Width,Pt2.Y-Height,str );
         end;
-      end;
-
-      // draw centerline
+      end;                                                   // draw centerline
       if Viewport.ViewType <> fvProfile then begin
         Viewport.FontColor:=clBlue;
         Viewport.PenColor:=clBlue;
         Viewport.PenWidth:=2;
         P1:=Min;
         P2:=Max;
-        Str:=Userstring(183);
+        Str:=Userstring(183);                          // Centerline 245=Center
         P1.Y:=0.0;
         P2.Y:=P1.Y;
         Pt1:=Viewport.Project(P1);
@@ -1001,8 +999,7 @@ var
         Viewport.PenWidth:=1;
         Viewport.FontColor:=Preferences.GridFontColor;
       end;
-      if Viewport.Viewtype <> fvPlan then begin
-        // Draw baseline
+      if Viewport.Viewtype <> fvPlan then begin                // Draw baseline
         Viewport.FontColor:=clBlue;
         Viewport.PenColor:=clBlue;
         Viewport.PenWidth:=2;
@@ -1538,7 +1535,7 @@ begin result:=fv210;            // s картинкой -никак не мен�
 *)
 end;
 
-procedure TFreeShip.SaveProject(Destination: TFreeFileBuffer);
+procedure TFreeShip.SaveProject( Destination: TFreeFileBuffer );
 var
   PrevCursor: TCursor;
   I,N: integer;
@@ -1743,7 +1740,7 @@ begin
   if vSurface = nil then exit;
   SaveDialog:=TSaveDialog.Create(Owner);
   SaveDialog.InitialDir:=Preferences.ExportDirectory;
-  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FileName), '.part');
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FileName),'.part');
   SaveDialog.Filter:=createDialogFilter(rsFREEShipGeometryPart,['part']);
   Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
@@ -1782,7 +1779,6 @@ begin
     PartFile:=TFreeFileBuffer.Create;
     PartFile.Version:=CurrentVersion;
     PartFile.Encoding:=Preferences.FbmEncoding;
-
     PrevCursor:=Screen.Cursor;
     Screen.Cursor:=crHourGlass;
 //  try
@@ -2052,8 +2048,7 @@ begin                                  ///***??? mouse-select = выбор эл�
       ItemSelected:=True;           // Draw the selected point to all viewports
 //    for J:=0 to NumberOfViewports-1 do
       for J:=0 to Viewports.Count-1 do
-        if self.Viewport[J].ViewportMode=vmWireframe then
-           Point.Draw( self.Viewport[J] );
+        if self.Viewport[J].ViewportMode=vmWireframe then Point.Draw( self.Viewport[J] );
       break;
     end;
   end;
@@ -2130,8 +2125,7 @@ begin                                  ///***??? mouse-select = выбор эл�
           ItemSelected:=True;        // Draw the selected edge to all viewports
 //        for J:=0 to NumberOfViewports-1 do
           for J:=0 to Viewports.Count-1 do
-            if self.Viewport[J].ViewportMode=vmWireframe then
-               Curve.Draw(self.Viewport[J]);
+            if self.Viewport[J].ViewportMode=vmWireframe then Curve.Draw(self.Viewport[J]);
           break;
         end;
       end; Inc(I);
@@ -2228,6 +2222,7 @@ begin                                  ///***??? mouse-select = выбор эл�
     end else
     if Entity is TFreeSubdivisionControlFace then begin
        ActiveControlFace:=Entity as TFreeSubdivisionControlFace;
+//     ActiveLayer:=ActiveControlFace.Layer;
     end else
     if Entity is TFreeSubdivisionControlCurve then begin
 //    for J:=0 to NumberOfViewports-1 do

@@ -416,15 +416,15 @@ type
   TFreeEdit = class
   private
     FFreeShip: TFreeShip;
-    FRecentFiles: TStringList;
-
+//  FRecentFiles: TStringList;
     PreviewFrm: TForm;
     PreviewImg: TImage;
     FProgressBar: TProgressBar;
-    function FGetRecentFile(Index: integer): AnsiString;
-    function FGetRecentFileCount: integer;
+//  function FGetRecentFile(Index: integer): AnsiString;
+//  function FGetRecentFileCount: integer;
 //  procedure SaveDialogTypeChange(Sender: TObject);
   public
+    RecentFiles: TStringList;
     constructor Create(FreeShip: TFreeShip);
     procedure File_Load; overload; virtual; // Load a FREE!ship file by showing an opendialog
     procedure File_Load( FileName: AnsiString ); reintroduce; overload; // Loads the given filename quietly
@@ -544,9 +544,9 @@ type
     procedure OnFaceRebuilt (Sender: TObject; current:integer; total:integer);
     property FreeShip: TFreeShip read FFreeShip write FFreeShip;
     property ProgressBar:TProgressBar read FProgressBar write FProgressBar;
-    property RecentFiles: TStringList read FRecentFiles write FRecentFiles;
-    property RecentFile[index: integer]: AnsiString read FGetRecentFile; // retrieve a filename from the recently used file list
-    property RecentFileCount: integer read FGetRecentFileCount;    // The number of files in the recently used file list
+//  property RecentFiles: TStringList read FRecentFiles write FRecentFiles;
+//  property RecentFile[index: integer]: AnsiString read FGetRecentFile; // retrieve a filename from the recently used file list
+//  property RecentFileCount: integer read FGetRecentFileCount;    // The number of files in the recently used file list
   end;
 
   {--------------------------------------------------------------}
@@ -557,16 +557,11 @@ type
   TApplicationScope=(asMachine,asUser);
   TFreePreferences = class(TPersistent)
   private
-    FFontSize: integer;
     FOwner: TFreeShip;
     FMainForm: TForm;
-    FPointSize: integer;
     FViewportColor: TColor;
     // Half width of controlpoints in pixels when drawn on screen
     // Colors
-
-    FFbmEncoding: AnsiString; //encoding that is used to convert national strings from/to FBM files
-    FMaxUndoMemory, // Max. amount of allowable undo memory in megabytes
 
     FIntersectionLineWidth,
     FControlEdgeLineWidth,
@@ -599,7 +594,8 @@ type
     DiagonalColor,
     UnderWaterColor:TColor; // Default color used for shading underwaterpart of vessel
     UnderWaterColorAlpha: byte;
-
+    FbmEncoding, //encoding that is used to convert national strings from/to FBM files
+    Language:           AnsiString;
     ConfigDirectory,    // Default directory where users FreeShip.ini file is stored
     ManualsDirectory,   // Manuals directory
     OpenDirectory,      // Default directory to open existing files
@@ -609,15 +605,13 @@ type
     LanguagesDirectory, // Default directory where Language files stored.
     LastDirectory,      // directory of last Open/Save
     LanguageFile: UnicodeString;
-
+    MaxUndoMemory,     // Max. amount of allowable undo memory in megabytes
+    FontSize,PointSize: integer;
 //  FInitDirectory,    // Default directory where freeship.exe started
 //  FUserDataDirectory,// Default directory where users FreeShip r/w data (projects etc) stored
 //  FUserAppDataDirectory, // Default directory where users FreeShip programs and r/o resource files stored
-    FLanguage: AnsiString;
-
 //  function FullName( const N: AnsiString ): AnsiString; // --
-    function OnlyName( const S: AnsiString ): AnsiString; // имя внутри/вне директории
-
+    function OnlyName( const S: AnsiString; DS:boolean=true ): AnsiString; // имя внутри/вне директории
     procedure Clear;
     constructor Create(Owner: TFreeShip);
     procedure Edit;
@@ -629,16 +623,8 @@ type
     procedure Save;
     property  Owner: TFreeShip read FOwner write FOwner;
     property  MainForm: TForm read FMainForm write FMainForm;
-  published
-// General options
-    property PointSize: integer read FPointSize write FPointSize;
-    property FontSize: integer read FFontSize write FFontSize;
-    property Language      : AnsiString read FLanguage write FLanguage;
-//  property LanguageFile  : AnsiString read FLanguageFile write FLanguageFile;
-    property MaxUndoMemory : integer read FMaxUndoMemory write FMaxUndoMemory;
-//  Color settings
+  published                                                  // General options
     property ViewportColor: TColor read FViewportColor write FSetViewportColor;
-    property FbmEncoding: AnsiString read FFbmEncoding write FFbmEncoding;
   end;
   {------------------------------------------------------------}
   {                                       TFreeProjectSettings }
@@ -792,7 +778,7 @@ type
     function GetActiveControlEdge: TFreeSubdivisionControlEdge;
     function GetActiveControlFace: TFreeSubdivisionControlFace;
     function GetActiveControlPoint: TFreeSubdivisionControlPoint;
-    function IsObjectSelected(aObject: TFreeNamedObject): boolean;
+//  function IsObjectSelected(aObject: TFreeNamedObject): boolean;
     procedure SetActiveControlCurve(AValue: TFreeSubdivisionControlCurve);
     procedure SetActiveControlEdge(AValue: TFreeSubdivisionControlEdge);
     procedure SetActiveControlFace(AValue: TFreeSubdivisionControlFace);
@@ -852,7 +838,7 @@ type
     procedure FSetOnChangeLayerData(Val: TNotifyEvent);
     procedure FSetPrecision( Val:TFreePrecisionType );
     function FGetPreview: TJPEGImage;
-    procedure SetObjectSelected( aObject:TFreeNamedObject; aSelected:boolean );
+//  procedure SetObjectSelected( aObject:TFreeNamedObject; aSelected:boolean );
 //  function FGetOnSelectItem: TNotifyEvent;
 //  procedure FSetOnSelectItem( Val:TNotifyEvent );
 //  procedure SetOnChangeActiveControlPoint( AValue: TNotifyEvent );
@@ -886,8 +872,8 @@ type
     function GetFocusedViewport: TFreeViewport;
     function AdjustMarkers: boolean;
     function FindLowestHydrostaticsPoint: TFloatType;
-    function FindByName(aName:AnsiString):TFreeNamedObject;
-    function GetAllNamedPoints:TStringList;
+//  function FindByName(aName:AnsiString):TFreeNamedObject;
+//  function GetAllNamedPoints:TStringList;
     procedure ImportChines(Np: integer; Chines: TFasterListTFreeSpline); // imports a number of longitudinally lines and creates developable surfaces between each two subsequent chines
     procedure LoadProject(Source: TFreeFileBuffer);
 //  procedure CreateOutputHeader( CalcHeader: AnsiString; Strings: TStrings ); ///*** Creates a header with all relevant project data

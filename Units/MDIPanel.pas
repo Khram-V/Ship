@@ -846,7 +846,7 @@ end;
 procedure TCustomMDIPanel.BorderMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: integer);
 begin
-  if (WindowPositionState = wpsResizing) then WindowPositionState:=wpsNone;
+  if (WindowPositionState=wpsResizing) then WindowPositionState:=wpsNone;
 end;
 
 procedure TCustomMDIPanel.CaptionPanelMouseDown(Sender: TObject; Button: TMouseButton;

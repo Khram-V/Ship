@@ -16,10 +16,10 @@ end;
 
 procedure TFreePreferences.Clear;
 begin
-  ResetColors;         FPointSize:=2;
+  ResetColors;         PointSize:=2;
   ResetDirectories;    LastDirectory:='';
-  Language:='English'; LanguageFile:=''; FFbmEncoding:='cp1251';
-  FMaxUndoMemory:=128;                                   // Max 20Mb undomemory
+  Language:='English'; LanguageFile:=''; FbmEncoding:='cp1251';
+  MaxUndoMemory:=128;                                   // Max 20Mb undomemory
 end;
 constructor TFreePreferences.Create(Owner: TFreeShip);
   begin inherited Create; FOwner:=Owner; Clear; end;
@@ -28,7 +28,7 @@ procedure TFreePreferences.Edit;
 var Dialog: TFreePreferencesDialog;
     Dir, Lang: AnsiString;
     I: integer;
-const DS = DirectorySeparator;
+//const DS = DirectorySeparator;
   procedure Browse( Dir: AnsiString );
   var SearchRec: TSearchRec;
     procedure Add( FileName:AnsiString );
@@ -42,7 +42,7 @@ const DS = DirectorySeparator;
       if not found then Dialog.Combobox1.Items.Add( Tmp );
     end; {Add}
   begin
-    if Dir[Length(Dir)]<>DirectorySeparator then Dir:=Dir+DirectorySeparator;
+    if Dir[Length(Dir)]<>'\' then Dir:=Dir+'\';
     if FindFirstUTF8(Dir+'*.ini',faAnyfile,SearchRec) = 0 then begin
       if Uppercase(ExtractFileExt(SearchRec.Name))='.INI' then Add(Searchrec.Name);
       while FindNextUTF8(SearchRec) = 0 do
@@ -59,7 +59,7 @@ begin
   Dialog.ComboBox1.Items.Add( 'English' ); Browse( Dir );
   Dialog.ComboBox1.ItemIndex:=0;
   for I:=1 to Dialog.ComboBox1.Items.Count do
-    if Uppercase(Dialog.ComboBox1.Items[I-1])=Uppercase(FLanguage) then begin
+    if Uppercase(Dialog.ComboBox1.Items[I-1])=Uppercase(Language) then begin
        Dialog.ComboBox1.ItemIndex:=I-1; break;
     end;
   if Dialog.Execute(Owner) then begin
@@ -93,17 +93,17 @@ begin
     FontSize:=Dialog.seFontSize.Value;
     Lang:=Dialog.Combobox1.Text;
 
-    LanguagesDirectory:=Dialog.EditLanguagesDir.Text;
-    ManualsDirectory  :=Dialog.EditManualsDir.Text;
-    OpenDirectory     :=Dialog.EditOpenDir.Text;
-    SaveDirectory     :=Dialog.EditSaveDir.Text;
-    ImportDirectory   :=Dialog.EditImportDir.Text;
-    ExportDirectory   :=Dialog.EditExportDir.Text;
-    if Uppercase( Lang )<>Uppercase( FLanguage ) then begin // Converted from FileExists
-      LanguageFile:=LanguagesDirectory+DS+Lang+'.ini';    //+ConfigDirectory
+    LanguagesDirectory:=OnlyName( Dialog.EditLanguagesDir.Text );
+    ManualsDirectory  :=OnlyName( Dialog.EditManualsDir.Text );
+    OpenDirectory     :=OnlyName( Dialog.EditOpenDir.Text );
+    SaveDirectory     :=OnlyName( Dialog.EditSaveDir.Text );
+    ImportDirectory   :=OnlyName( Dialog.EditImportDir.Text );
+    ExportDirectory   :=OnlyName( Dialog.EditExportDir.Text );
+    if Uppercase( Lang )<>Uppercase( Language ) then begin // Converted from FileExists
+      LanguageFile:=LanguagesDirectory+Lang+'.ini';    //+ConfigDirectory
       if FileExistsUTF8( LanguageFile )then begin
         LoadLanguage( Lang,LanguageFile );
-        FLanguage:=Lang;
+        Language:=Lang;
         for I:=1 to Application.ComponentCount do
         if Application.Components[I-1] is TCustomForm
            then ShowTranslatedValues( Application.Components[I-1] );
@@ -114,8 +114,8 @@ begin
            else ShowTranslatedValues( MDIChildren[I-1] );
       end; // else FLanguage:=Lang;
     end;
-    FFbmEncoding:=string( Dialog.ComboBoxEncoding.Items.Objects[Dialog.ComboBoxEncoding.ItemIndex] );
-    FMaxUndoMemory:=Dialog.FreeNumInput1.Value;
+    FbmEncoding:=string( Dialog.ComboBoxEncoding.Items.Objects[Dialog.ComboBoxEncoding.ItemIndex] );
+    MaxUndoMemory:=Dialog.FreeNumInput1.Value;
 
     if assigned(Owner.OnFileChanged) then Owner.OnFileChanged(Owner);
     if assigned(Owner.OnUpdateUndoData) then Owner.OnUpdateUndoData(Owner);
@@ -163,8 +163,8 @@ begin
   LanguagesDirectory:=params.ReadString(D,'LanguagesDirectory',LanguagesDirectory);
   ManualsDirectory  :=params.ReadString(D,'ManualsDirectory',ManualsDirectory);
 
-  FPointSize           :=params.ReadInteger(G,'PointSize', FPointSize);
-  FFontSize            :=params.ReadInteger(G,'FontSize', FFontSize);
+  PointSize           :=params.ReadInteger(G,'PointSize',PointSize);
+  FontSize            :=params.ReadInteger(G,'FontSize', FontSize);
   StationColor        :=params.ReadColor  (G,'StationColor', StationColor);
   ButtockColor        :=params.ReadColor  (G,'ButtockColor', ButtockColor);
   WaterlineColor      :=params.ReadColor  (G,'WaterlineColor',WaterlineColor);
@@ -199,10 +199,10 @@ begin
 
   RecentFileNames:=TStringList.Create;
   params.ReadSectionValues( 'RecentFiles',RecentFileNames );
-  Owner.Edit.FRecentFiles.Clear;
-  Owner.Edit.FRecentFiles.Capacity:=RecentFileNames.Count;
+  Owner.Edit.RecentFiles.Clear;
+  Owner.Edit.RecentFiles.Capacity:=RecentFileNames.Count;
   for I:=0 to RecentFileNames.Count-1 do
-    Owner.Edit.FRecentFiles.Add( RecentFileNames.ValueFromIndex[I] );
+    Owner.Edit.RecentFiles.Add( RecentFileNames.ValueFromIndex[I] );
   FreeAndNil( RecentFileNames );
   if assigned( Owner.OnUpdateRecentFileList ) then Owner.OnUpdateRecentFileList( self );
   T:=params.ReadInteger( 'Window','Top',0 );
@@ -210,7 +210,6 @@ begin
   H:=params.ReadInteger( 'Window','Height',Screen.WorkAreaHeight);
   W:=params.ReadInteger( 'Window','Width', Screen.WorkAreaWidth);
   S:=params.ReadInteger( 'Window','State', integer( wsNormal ) );
-
   if MainForm<>nil then begin
     if L > Screen.Width then L:=0;
     if T > Screen.Height then T:=0;
@@ -223,25 +222,24 @@ begin
       wsMaximized: MainForm.WindowState:=wsMaximized;
     end;
   end;
-  FLanguage:=params.ReadString( 'General','Language',FLanguage );
-  LanguageFile:=LanguagesDirectory+DirectorySeparator+Flanguage+'.ini'; //+ConfigDirectory
+  Language:=params.ReadString( 'General','Language',Language );
+  LanguageFile:=LanguagesDirectory+Language+'.ini';          //~ConfigDirectory
   if not FileExistsUTF8( LanguageFile ) then begin
-    Writeln( '?no file: '+LanguageFile );
-    FLanguage:='English';
-    LanguageFile:=ConfigDirectory+LanguagesDirectory+'\English.ini';
+    Writeln( '?no file: '+LanguageFile ); Language:='English';
+    LanguageFile:=ConfigDirectory+LanguagesDirectory+'English.ini';
   end;
-  FFbmEncoding :=params.ReadString( 'General','FbmEncoding',FbmEncoding );
-  FMaxUndoMemory:= params.ReadInteger('General','MaxUndoMemory',FMaxUndoMemory);
+  FbmEncoding :=params.ReadString( 'General','FbmEncoding',FbmEncoding );
+  MaxUndoMemory:= params.ReadInteger('General','MaxUndoMemory',MaxUndoMemory);
   params.Free;
 end;
 
 procedure TFreePreferences.SetDefaults;
 begin
-  FPointSize  :=2;
-  FFontSize   :=8;
-  FLanguage   :='English';
-  FFbmEncoding:='cp1251';
-  FMaxUndoMemory:=128;
+  PointSize:=2;
+  FontSize :=8;
+  Language :='English';
+  FbmEncoding:='cp1251';
+  MaxUndoMemory:=128;
   ResetDirectories;
   ResetColors;
 end;
@@ -249,23 +247,25 @@ end;
 procedure TFreePreferences.ResetDirectories;
 begin
 //ConfigDirectory:=ExtractFileDir( ParamStr( 0 ) );
-  ConfigDirectory:=ExtractFileDir( Application.ExeName );
+  ConfigDirectory:=ExtractFilePath( Application.ExeName );
   SetCurrentDir( ConfigDirectory );
-  LanguagesDirectory:='Languages';
-  ManualsDirectory  :='Manuals';
-  OpenDirectory     :='Ships';
-  SaveDirectory     :='Save';
-  ImportDirectory   :='Save\Import';
-  ExportDirectory   :='Save\Export';
-  ConfigDirectory:=ConfigDirectory+DirectorySeparator;
+  LanguagesDirectory:='Languages\';
+  ManualsDirectory  :='Manuals\';
+  OpenDirectory     :='Ships\';
+  SaveDirectory     :='Save\';
+  ImportDirectory   :='Save\Import\';
+  ExportDirectory   :='Save\Export\';
+//ConfigDirectory:=ConfigDirectory+'\';
 end;
 
 procedure TFreePreferences.Load; begin setDefaults; LoadFromIni; end;
 
-function TFreePreferences.OnlyName( const S: AnsiString ): AnsiString;
+function TFreePreferences.OnlyName( const S: AnsiString; DS:boolean=true ): AnsiString;
   var L:Integer;
-begin L:=Length( ConfigDirectory ); Result:=S;
-  if S.StartsWith( ConfigDirectory ) then Result:=S.SubString( L,Length(S)-L );
+begin Result:=S;                   Result.Replace( '/','\' );
+     L:=Length( ConfigDirectory ); Result:=trim( Result );
+  if Result.StartsWith( ConfigDirectory ) then Result:=Result.SubString( L,Length(Result)-L );
+  if DS then if Result[Length(Result)]<>'\' then Result:=Result+'\';
 end;
 
 procedure TFreePreferences.ResetColors; // Расцветка по умолчанию
@@ -308,9 +308,9 @@ begin
 //  if not FileExistsUTF8( Filename ) then exit;
 //  then ForceDirectoriesUTF8( ExtractFilePath( Filename ) ); // ~~ и то зря
   params:=TColorIniFile.Create( iniFilename,False );
-  params.WriteString ( 'General','Language',FLanguage );
+  params.WriteString ( 'General','Language',Language );
   params.WriteString ( 'General','FbmEncoding',FbmEncoding );
-  params.WriteInteger( 'General','MaxUndoMemory',FMaxUndoMemory );
+  params.WriteInteger( 'General','MaxUndoMemory',MaxUndoMemory );
   params.WriteString( D,'LanguagesDirectory',OnlyName( LanguagesDirectory));
   params.WriteString( D,'ManualsDirectory',  OnlyName( ManualsDirectory));
   params.WriteString( D,'OpenDirectory',     OnlyName( OpenDirectory   ));
@@ -325,8 +325,8 @@ begin
     params.WriteInteger( 'Window','Width',MainForm.Width);
     params.WriteInteger( 'Window','State',integer(MainForm.WindowState));
   end;
-  params.WriteInteger( G,'PointSize',            FPointSize);
-  params.WriteInteger( G,'FontSize',             FFontSize);
+  params.WriteInteger( G,'PointSize',            PointSize);
+  params.WriteInteger( G,'FontSize',             FontSize);
   params.WriteColor  ( G,'ViewportColor',        FViewportColor);
   params.WriteColor  ( G,'GridColor',            GridColor);
   params.WriteColor  ( G,'GridFontColor',        GridFontColor);
@@ -358,9 +358,8 @@ begin
   params.WriteInteger( G,'HydrostaticLineWidth', FHydrostaticLineWidth);
   params.WriteInteger( G,'AuxEdgeLineWidth',     FAuxEdgeLineWidth);
   params.EraseSection( 'RecentFiles');
-  for I:=0 to Owner.Edit.FRecentFiles.Count-1 do
-    params.WriteString('RecentFiles','File'+IntToStr(I+1),
-                        OnlyName( Owner.Edit.FRecentFiles[I] ) );
+  for I:=0 to Owner.Edit.RecentFiles.Count-1 do
+    params.WriteString('RecentFiles','File'+IntToStr(I+1),Owner.Edit.RecentFiles[I] );
   if assigned( Owner.OnUpdateRecentFileList ) then Owner.OnUpdateRecentFileList( self );
 end;
 

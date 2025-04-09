@@ -52,11 +52,10 @@ end;
 
 // deletes an undo object from the list
 procedure TFreeUndoObject.Delete;
-var
-  Index: integer;
+var Index: integer;
 begin
   Index:=FOwner.FUndoObjects.IndexOf(self);
-  if Index <> -1 then Owner.FUndoObjects.Delete(Index);
+  if Index<>-1 then Owner.FUndoObjects.Delete(Index);
   if Assigned(Owner.OnUpdateUndoData) then Owner.OnUpdateUndoData(Owner);
   Destroy;
 end;

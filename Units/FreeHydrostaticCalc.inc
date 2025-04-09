@@ -355,11 +355,11 @@ begin
           Makelength(UserString(36), 8)+' | ' +
           ' COG X  |  COG Y  |  COG Z  |');
         Strings.Add('| '+MakeLength('', 23)+' |  ' +
-          Makelength(AreaStr(Owner.ProjectSettings.ProjectUnits), 6) +
-          ' |    '+Makelength(LenMMStr(Owner.ProjectSettings.ProjectUnits), 6) +
-          ' |   '+Makelength(WeightStr(Owner.ProjectSettings.ProjectUnits), 6) +
-          ' |   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits), 5) +
-          ' |   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits), 5) +
+          Makelength(AreaStr(Owner.ProjectSettings.ProjectUnits),6) +
+          ' |    '+Makelength(LenMMStr(Owner.ProjectSettings.ProjectUnits),6)+
+          ' |   '+Makelength(WeightStr(Owner.ProjectSettings.ProjectUnits),6)+
+          ' |   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),5)+
+          ' |   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),5)+
           ' |   '+MakeLength(
           LengthStr(Owner.ProjectSettings.ProjectUnits), 5)+' |');
         Strings.Add( Line_1 );
@@ -469,9 +469,9 @@ begin
         h0:=FData.KMtransverse-Total.SurfaceCenterOfGravity.Z;
         hl:=FData.KMlongitudinal-Total.SurfaceCenterOfGravity.Z;
         HeelAngle:=(Total.SurfaceCenterOfGravity.Y-FData.CenterOfBuoyancy.Y) /
-          h0 * 57.29;
+          h0 * Radian;
         vTrimAngle:=-(Total.SurfaceCenterOfGravity.X-FData.CenterOfBuoyancy.X) /
-          hl * 57.29;
+          hl * Radian;
         if FData.CenterOfBuoyancy.Y < 0.01 then begin
           Strings.Add(S4+MakeLength(UserString(1030), 50) +
             ' : '+Makelength(h0+FData.ModelMin.Z, -1, 8)+' ' +
@@ -506,7 +506,7 @@ begin
 
       if abs(FData.CenterOfBuoyancy.Y) > 0.01 then begin
         lform:=FData.CenterOfBuoyancy.Y-Total.SurfaceCenterOfGravity.Y;
-        // vTrimAngle:=-(Total.SurfaceCenterOfGravity.X-FData.CenterOfBuoyancy.X)/hl*57.29;
+        // vTrimAngle:=-(Total.SurfaceCenterOfGravity.X-FData.CenterOfBuoyancy.X)/hl*Radian;
         Strings.Add(S4);
         Strings.Add(S4+MakeLength(UserString(1453), 50) +
           ' : '+MakeLength(FData.CenterOfBuoyancy.Y, -1, 8)+' ' +
@@ -529,7 +529,7 @@ begin
           Strings.Add(S4+MakeLength(UserString(1582), 50) +
             ' : '+MakeLength(
             (FData.CenterOfBuoyancy.X-Total.SurfaceCenterOfGravity.X) *
-            57.29 / hl, -1, 8)+' °' );
+            Radian / hl, -1, 8)+' °' );
       end;
       Strings.Add(S4);
 

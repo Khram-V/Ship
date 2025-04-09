@@ -3,41 +3,38 @@
 {   TFreeEdit <== FreeShipUnit                                }
 {   Container class for all editing commandsns for the hull   }
 {-------------------------------------------------------------}
-
+(*
 function TFreeEdit.FGetRecentFile( Index: integer ): AnsiString;
-begin
-  if (index<0) or (index>=FRecentFiles.Count) then exit;
-  Result:=FRecentFiles[index];
-end;
-
+   begin if (index<0) or (index>=RecentFiles.Count) then exit;
+         Result:=RecentFiles[index];
+   end;
 function TFreeEdit.FGetRecentFileCount: integer;
-begin Result:=FRecentFiles.Count;
-end;
-
+   begin Result:=RecentFiles.Count; end;
+*)
 // Takes a filename and adds it to the list with recent files
-procedure TFreeEdit.AddToRecentFiles( Filename:AnsiString );
+
+procedure TFreeEdit.AddToRecentFiles( Filename: AnsiString );
 var
   I,Index: integer;
   AlreadyPresent: boolean;
   Tmp,Ext: AnsiString;
 begin
   AlreadyPresent:=False;
-  FreeShip.Preferences.LastDirectory:=ExtractFilePath( FileName );
-  Ext:=Uppercase(ExtractFileExt(Filename));
+  FFreeShip.Preferences.LastDirectory:=ExtractFilePath( FileName );
+  Ext:=Uppercase( ExtractFileExt( Filename ) );
   Index:=-1;
-  Tmp:=Trim(Filename);
-  for I:=0 to FRecentFiles.Count-1 do
-  if Uppercase(Trim(FRecentFiles[I]))=Uppercase(Tmp) then begin Index:=I;
-    break;
-  end;                                 // Already in list. move to the front;
+  Tmp:=FreeShip.Preferences.OnlyName( Trim( Filename ),false );
+  for I:=0 to RecentFiles.Count-1 do
+  if Uppercase(Trim(RecentFiles[I]))=Uppercase(Tmp) then
+     begin Index:=I; break; end;         // Already in list. move to the front;
   if Index>=0 then begin
-    FRecentFiles.Delete( Index );
-    FRecentFiles.Insert( 0,Tmp );
+    RecentFiles.Delete( Index );
+    RecentFiles.Insert( 0,Tmp );
   end else
-    if FRecentFiles.Count=0 then FRecentFiles.Add(Tmp) else
-       FRecentFiles.Insert(0,Tmp);// file not yet in the list, add at the front
+    if RecentFiles.Count=0 then RecentFiles.Add(Tmp) else
+       RecentFiles.Insert(0,Tmp);// file not yet in the list, add at the front
                                  // delete items until no more than 36 are left
-  while FRecentFiles.Count>36 do FRecentFiles.Delete(FRecentFiles.Count-1); ///***!!!
+  while RecentFiles.Count>36 do RecentFiles.Delete(RecentFiles.Count-1); ///***!!!
   if assigned( FreeShip.OnUpdateRecentFileList ) then FreeShip.OnUpdateRecentFileList( self );
 end;
 
@@ -130,7 +127,7 @@ constructor TFreeEdit.Create(FreeShip: TFreeShip);
 begin
   inherited Create;
   FFreeShip:=FreeShip;
-  FRecentFiles:=TStringList.Create;
+  RecentFiles:=TStringList.Create;
 end;{TFreeEdit.Create}
 
 function TFreeEdit.CreateRedoObject: TFreeUndoObject;
@@ -208,29 +205,26 @@ var
 begin
   Edges:=TFasterListTFreeSubdivisionEdge.Create;
   Edges.Capacity:=FreeShip.NumberOfSelectedControlEdges;
-  for I:=0 to FreeShip.NumberOfSelectedControlEdges-1 do
-  begin
+  for I:=0 to FreeShip.NumberOfSelectedControlEdges-1 do begin
     Edge:=FreeShip.SelectedControlEdge[I];
-    if Edge.Curve = nil then
-      Edges.Add(Edge);
+    if Edge.Curve = nil then Edges.Add(Edge);
   end;
-  if Edges.Count > 0 then
-  begin
-    Self.CreateUndoObject(Userstring(72), True);
+  if Edges.Count > 0 then begin
+    Self.CreateUndoObject( Userstring(72),True );
     SortedPointLists:=TFasterListTFreeSubdivisionFace.Create;
     FreeShip.Surface.IsolateEdges(Edges, SortedPointLists);
     for I:=1 to SortedPointLists.Count do begin
       Points:=SortedPointLists[I-1].Points;
-      if Points.Count > 1 then begin
-        Curve:=TFreeSubdivisionControlCurve.Create(FreeShip.Surface);
-        FreeShip.Surface.AddControlCurve(Curve);
+      if Points.Count>1 then begin
+        Curve:=TFreeSubdivisionControlCurve.Create( FreeShip.Surface );
+        FreeShip.Surface.AddControlCurve( Curve );
         for J:=1 to Points.Count do begin
           Point:=Points[J-1] as TFreeSubdivisionControlPoint;
           Curve.AddPoint(Point);
-          if J > 1 then begin
-            Edge:=Curve.Surface.EdgeExists(
-              Curve.ControlPoint[J-2], Curve.ControlPoint[J-1]) as
-              TFreeSubdivisionControlEdge;
+          if J>1 then begin
+            Edge:=Curve.Surface.EdgeExists
+            ( Curve.ControlPoint[J-2],Curve.ControlPoint[J-1] ) as
+                                      TFreeSubdivisionControlEdge;
             if Edge <> nil then Edge.Curve:=Curve;
           end;
         end;
@@ -255,7 +249,7 @@ begin
 end;
 
 destructor TFreeEdit.Destroy;
-begin FreeAndNil(FRecentFiles); inherited Destroy; end;
+begin FreeAndNil(RecentFiles); inherited Destroy; end;
 
 // Remove an edge by replacing the two connected faces by one controlface
 procedure TFreeEdit.Edge_Collapse;
@@ -1791,13 +1785,13 @@ begin
   if Quiet then vUndo:=nil
            else vUndo:=CreateUndoObject(Userstring(140), False);
   for I:=FreeShip.NumberOfLayers downto 1 do
-    if (FreeShip.Layer[I-1].Count=0) and (FreeShip.NumberOfLayers>1) then begin
-      FreeShip.Layer[I-1].Delete;
-      Inc(N);
+  if (FreeShip.Layer[I-1].Count=0) and (FreeShip.NumberOfLayers>1) then begin
+      FreeShip.Layer[I-1].Delete; Inc(N);
       FreeShip.FileChanged:=True;
-    end;
-  if FreeShip.ActiveLayer=nil then FreeShip.ActiveLayer:=FreeShip.Layer[FreeShip.NumberOfLayers-1]
-                              else FreeShip.ActiveLayer:=FreeShip.ActiveLayer;
+  end;
+  if FreeShip.ActiveLayer=nil
+     then FreeShip.ActiveLayer:=FreeShip.Layer[FreeShip.NumberOfLayers-1]
+     else FreeShip.ActiveLayer:=FreeShip.ActiveLayer;
   if (N>0) and (not Quiet) then begin
     vUndo.Accept;
     ShowMessage(IntToStr(N)+#32+Userstring(141)+'.');
@@ -2135,17 +2129,17 @@ end;
 
 // Start a new model (with a predefined surface)
 // returns true if a new model has indeed been created
-
+                                     // Ship_A: array [0..6,0..4] of T3DVector
 function TFreeEdit.Model_New: boolean;  {$I HistoryExamples.inc }
 var
-  Answer: word; I,J,Cols,Rows: integer;
+  Answer: word; I,J,K,Cols,Rows: integer;
   L,B,D,dd: TFloatType; P: T3DVector;
   Default: array[0..6,0..4] of T3DVector; // Default ship has 7 columns of 5 points(or rows)
   Spline1,Spline2: TFreeSpline;
   TrvSplines: TFasterListTFreeSpline;
   TrvPoints: TFasterListTFreeSubdivisionControlPoint;
   Pts: array of array of TFreeSubdivisionControlPoint;
-  StemPoint: TFreeSubdivisionControlPoint;
+  StemPoint,S1,S2: TFreeSubdivisionControlPoint;
   FreeNewModelDialog: TFreeNewModelDialog;
 begin
   Result:=False;
@@ -2171,11 +2165,12 @@ begin
       FProjectName:='Корпус всепогодного корабля среднего водоизмещения (галеон)';
       FProjectDesigner:='Подсекция штормовой мореходности, Научно-инженерное общество корабелов им.А.Н.Крылова';
       FProjectComment:='Вариант эволюционного совершенствования корабельных обводов из эпохи Великих Испанских географических открытий';
-      FProjectFileCreatedBy:='Free!Ship (c)'+FormatDateTime('YYYY-MM-DD_hh:nn',Now );
+      FProjectFileCreatedBy:='Free!Ship (c)'+TimeString; // FormatDateTime('YYYY-MM-DD_hh:nn',Now );
       ProjectUnderWaterColorAlpha:=128;
     end;
     TrvSplines:=TFasterListTFreeSpline.Create;
     StemPoint:=nil;        // First create tmp. splines in transverse direction
+    S1:=nil; S2:=nil;
     for I:=0 to 6 do begin
       Spline1:=TFreeSpline.Create( FreeShip.Surface );
       for J:=0 to 4 do begin P:=Default[I,J];
@@ -2186,17 +2181,25 @@ begin
       TrvSplines.Add( Spline1 );
     end;                   // now create tmp. splines in longitudinal direction
     Setlength( Pts,Rows+1 );
-    for I:=0 to rows do begin
+//  if Rows<4 then Rows:=4;
+    K:=Rows div 3; if K<2 then K:=2;
+    for I:=0 to Rows do begin
       Setlength( Pts[I],Cols+1 );
       Spline2:=TFreeSpline.Create( FreeShip.Surface );
       for j:=0 to TrvSplines.Count-1 do begin
         Spline1:=TrvSplines[J];
-        P:=Spline1.Value(I / Rows);
+        P:=Spline1.Value(I/Rows);
         Spline2.Add( P );
-      end; // now calculate all points on the longitudinal spline and send it to the surface
-      for J:=0 to Cols do begin P:=Spline2.Value(J/Cols);
-        Pts[I,J]:=TFreeSubdivisionControlPoint.Create(FreeShip.Surface);
-        FreeShip.Surface.AddControlPoint(Pts[I, J]);
+      end;      // now calculate all points on the longitudinal spline and send it to the surface
+      for J:=0 to Cols do begin
+        P:=Spline2.Value(J/Cols);
+        Pts[I,J]:=TFreeSubdivisionControlPoint.Create( FreeShip.Surface );
+        if (J=0) then
+        if (I>0) and (I<=K) then begin P.y:=0;
+           if I=1 then S1:=Pts[1,0] else
+           if I=K then S2:=Pts[K,0];
+        end;
+        FreeShip.Surface.AddControlPoint( Pts[I,J] );
         Pts[I,J].Coordinate:=P;
         if (I=0) and (J=Cols) then StemPoint:=Pts[I,J];
       end;
@@ -2207,19 +2210,25 @@ begin
       FreeAndNil( Spline1 );
     end;
     TrvPoints:=TFasterListTFreeSubdivisionControlPoint.Create; // finally create the controlfaces over the newly calculated points
+
     for I:=1 to Rows do
-    for J:=1 to cols do begin
+    for J:=1 to Cols do begin
         TrvPoints.Clear;
-        TrvPoints.Add(Pts[I,J-1]);
-        TrvPoints.Add(Pts[I,J]);
-        TrvPoints.Add(Pts[I-1,J]);
-        TrvPoints.Add(Pts[I-1,J-1]);
-        FreeShip.Surface.AddControlFace(TrvPoints, True);
-    end;                         // recheck edges crease after all faces added.
-    for i:=0 to FreeShip.Surface.ControlEdges.Count-1 do FreeShip.Surface.ControlEdge[i].Crease:=false;
+        TrvPoints.Add( Pts[I,J-1] );
+        TrvPoints.Add( Pts[I,J]   );
+        TrvPoints.Add( Pts[I-1,J] );
+        TrvPoints.Add( Pts[I-1,J-1] );
+        FreeShip.Surface.AddControlFace( TrvPoints,True );
+    end;
+                                 // recheck edges crease after all faces added.
+    for I:=0 to FreeShip.Surface.ControlEdges.Count-1 do FreeShip.Surface.ControlEdge[i].Crease:=false;
+
     FreeShip.Precision:=fpMedium;
+
     FreeShip.Surface.Initialize( 1,1,1 );
     // Collapse stempoint to mage the grid irregular in order to demonstrate subdivision-surface capabilities
+    S1.VertexType:=svCorner;
+    S2.VertexType:=svCorner;
     if StemPoint<>nil then
       if StemPoint.VertexType=svCorner then StemPoint.VertexType:=svCrease;
     FreeShip.Built:=False;
@@ -2704,12 +2713,12 @@ begin
 end;
 
 // Deselect all selected items at once
-procedure TFreeEdit.Selection_Clear;
-begin
+procedure TFreeEdit.Selection_Clear; //var Layer: TFreeSubdivisionLayer;
+begin                                // Layer:=Ship.ActiveLayer;
   FreeShip.Surface.Clearselection;
   FreeShip.ActiveControlPoint:=nil;
   FreeShip.FSelectedFlowlines.Clear;
-  FreeShip.FSelectedMarkers.Clear;
+  FreeShip.FSelectedMarkers.Clear;   // Ship.ActiveLayer:=Layer;
   Freeship.ReDraw;
 end;
 
@@ -2799,8 +2808,7 @@ begin
 end;
 
 
-procedure TFreeEdit.Selection_SelectLeakPoints;
-var I: integer;
+procedure TFreeEdit.Selection_SelectLeakPoints; var I: integer;
 begin
   for I:=0 to FreeShip.Surface.NumberOfControlPoints-1 do
     FreeShip.Surface.ControlPoint[I].Selected:=FreeShip.Surface.ControlPoint[I].IsLeak;
@@ -2808,9 +2816,7 @@ begin
 end;
 
 procedure TFreeEdit.Undo;
-var
-  UndoObject: TFreeUndoObject;
-  Preview: boolean;
+var UndoObject: TFreeUndoObject; Preview: boolean;
 begin
   if FreeShip.FUndoObjects.Count > 0 then begin
     Preview:=FreeShip.ProjectSettings.SavePreview;
@@ -2838,10 +2844,10 @@ begin
   Dialog:=TFreeUndoHistoryDialog.Create(FreeShip);
   ShowTranslatedValues(Dialog);
   vRedo:=nil;
-  if (FreeShip.FUndoPosition = FreeShip.UndoCount) and (FreeShip.UndoCount > 0) then
+  if (FreeShip.FUndoPosition=FreeShip.UndoCount) and (FreeShip.UndoCount>0) then
   if not FreeShip.UndoObject[FreeShip.UndoCount-1].FIsTempRedoObject then begin
-    vRedo:=CreateRedoObject;
-    Dec(FreeShip.FUndoPosition);
+     vRedo:=CreateRedoObject;
+     Dec(FreeShip.FUndoPosition);
   end;
   if Dialog.Execute(FreeShip) then begin
     if Dialog.UndoBox.ItemIndex <> -1 then begin
@@ -2853,27 +2859,22 @@ begin
         vUndo.Restore;
       end;
     end;
-  end
-  else if vRedo <> nil then vRedo.Delete; FreeAndNil(Dialog);
+  end else
+  if vRedo <> nil then vRedo.Delete; FreeAndNil(Dialog);
 end;
 
 procedure TFreeEdit.Redo;
-var
-  UndoObject: TFreeUndoObject;
-  Preview: boolean;
+var UndoObject: TFreeUndoObject; Preview: boolean;
 begin
-  if FreeShip.FUndoObjects.Count > 0 then begin
-    Preview:=FreeShip.ProjectSettings.SavePreview;
-//  try
-      if FreeShip.FPreviousUndoPosition > FreeShip.FUndoPosition then
-        Inc(FreeShip.FUndoPosition);
-      FreeShip.FPreviousUndoPosition:=FreeShip.FUndoPosition;
-      Inc(FreeShip.FUndoPosition);
-      UndoObject:=FreeShip.FUndoObjects[FreeShip.FUndoPosition-1];
-      UndoObject.Restore;
-//  finally
-      FreeShip.ProjectSettings.SavePreview:=Preview;
-//  end;
+  if FreeShip.FUndoObjects.Count>0 then begin
+     Preview:=FreeShip.ProjectSettings.SavePreview;
+     if FreeShip.FPreviousUndoPosition>FreeShip.FUndoPosition
+        then Inc(FreeShip.FUndoPosition);
+     FreeShip.FPreviousUndoPosition:=FreeShip.FUndoPosition;
+     Inc(FreeShip.FUndoPosition);
+     UndoObject:=FreeShip.FUndoObjects[FreeShip.FUndoPosition-1];
+     UndoObject.Restore;
+     FreeShip.ProjectSettings.SavePreview:=Preview;
   end;
 end;
 

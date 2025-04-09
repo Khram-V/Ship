@@ -2,28 +2,28 @@ object FreeDeleteDialog: TFreeDeleteDialog
   Left = 773
   Height = 322
   Top = 185
-  Width = 320
+  Width = 247
   Caption = 'Objects to be deleted'
   ClientHeight = 322
-  ClientWidth = 320
+  ClientWidth = 247
   OnResize = FormResize
-  LCLVersion = '2.0.8.0'
+  LCLVersion = '3.8.0.0'
   object pTools: TPanel
     Left = 0
-    Height = 44
+    Height = 33
     Top = 0
-    Width = 320
+    Width = 247
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 44
-    ClientWidth = 320
+    ClientHeight = 33
+    ClientWidth = 247
     TabOrder = 0
     object bbDelete: TBitBtn
-      Left = 247
-      Height = 36
+      Left = 184
+      Height = 25
       Top = 4
-      Width = 69
+      Width = 59
       Align = alRight
       AutoSize = True
       BorderSpacing.Around = 4
@@ -33,9 +33,9 @@ object FreeDeleteDialog: TFreeDeleteDialog
     end
     object bbCancel: TBitBtn
       Left = 4
-      Height = 36
+      Height = 25
       Top = 4
-      Width = 69
+      Width = 62
       Align = alLeft
       AutoSize = True
       BorderSpacing.Around = 4
@@ -46,14 +46,15 @@ object FreeDeleteDialog: TFreeDeleteDialog
   end
   object sgObjects: TStringGrid
     Left = 0
-    Height = 240
-    Top = 82
-    Width = 320
+    Height = 260
+    Top = 62
+    Width = 247
     Align = alClient
-    ColCount = 4
+    ColCount = 3
     ColumnClickSorts = True
     Columns = <    
       item
+        Alignment = taCenter
         ButtonStyle = cbsCheckboxColumn
         Title.Caption = 'Delete'
         Width = 32
@@ -61,15 +62,11 @@ object FreeDeleteDialog: TFreeDeleteDialog
       item
         ReadOnly = True
         Title.Caption = 'Type'
-        Width = 100
+        Width = 108
       end    
       item
         Title.Caption = 'Id'
-      end    
-      item
-        ReadOnly = True
-        Title.Caption = 'Name'
-        Width = 100
+        Width = 102
       end>
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goRangeSelect, goEditing, goSmoothScroll, goCellHints]
@@ -79,33 +76,38 @@ object FreeDeleteDialog: TFreeDeleteDialog
     TabOrder = 1
     OnCheckboxToggled = sgObjectsCheckboxToggled
     OnGetCellHint = sgObjectsGetCellHint
+    ColWidths = (
+      32
+      108
+      102
+    )
   end
   object Panel1: TPanel
     Left = 0
-    Height = 38
-    Top = 44
-    Width = 320
+    Height = 29
+    Top = 33
+    Width = 247
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 38
-    ClientWidth = 320
+    ClientHeight = 29
+    ClientWidth = 247
     TabOrder = 2
     object CheckBox1: TCheckBox
       Left = 6
-      Height = 26
+      Height = 17
       Top = 6
-      Width = 21
+      Width = 18
       Align = alLeft
       BorderSpacing.Around = 6
-      OnClick = CheckBox1Click
       TabOrder = 0
+      OnClick = CheckBox1Click
     end
     object Label1: TLabel
-      Left = 37
-      Height = 26
+      Left = 34
+      Height = 17
       Top = 6
-      Width = 22
+      Width = 14
       Align = alLeft
       BorderSpacing.Left = 4
       BorderSpacing.Around = 6
@@ -113,10 +115,10 @@ object FreeDeleteDialog: TFreeDeleteDialog
       ParentColor = False
     end
     object lbTotalNumber: TLabel
-      Left = 183
-      Height = 38
+      Left = 161
+      Height = 29
       Top = 0
-      Width = 131
+      Width = 80
       Align = alRight
       BorderSpacing.Right = 6
       Caption = 'lbTotalNumber'

@@ -926,6 +926,7 @@ function TFreeSubdivisionSurface.FGetSelectedControlPointGroup(
   Index: integer): TFreeSubdivisionControlPointGroup;
 begin Result:=FSelectedControlPointGroups[index];
 end;
+(*
 function TFreeSubdivisionSurface.IsObjectSelected(aObject:TFreeNamedObject): boolean;
 begin
   if (aObject is TFreeSubdivisionControlPoint) then  Result:=(aObject as TFreeSubdivisionControlPoint).Selected;
@@ -934,6 +935,7 @@ begin
   if (aObject is TFreeSubdivisionControlEdge) then Result:=(aObject as TFreeSubdivisionControlEdge).Selected;
   if (aObject is TFreeSubdivisionControlCurve) then Result:=(aObject as TFreeSubdivisionControlCurve).Selected;
 end;
+*
 procedure TFreeSubdivisionSurface.SetObjectSelected(aObject:TFreeNamedObject; aSelected: boolean);
 begin
   if (aObject is TFreeSubdivisionControlPoint) then
@@ -947,6 +949,7 @@ begin
   if (aObject is TFreeSubdivisionControlCurve) then
     (aObject as TFreeSubdivisionControlCurve).Selected:=true;
 end;
+*)
 function TFreeSubdivisionSurface.FRequestNewLayerID: integer;
 begin Inc( FLastusedLayerID ); Result:=FLastusedLayerID;
 end;
@@ -1100,7 +1103,7 @@ end;
 procedure TFreeSubdivisionSurface.SetActiveLayer(Val: TFreeSubdivisionLayer);
 begin
   FActiveLayer:=Val;
-  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self, FActiveLayer);
+  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,FActiveLayer);
 end;
 
 procedure TFreeSubdivisionSurface.SetBuilt(Val: boolean);
@@ -2468,17 +2471,15 @@ end;
 procedure TFreeSubdivisionSurface.ExtractAllEdgeLoops(
   const DestinationPointLists: TFasterListTFasterListTFreeSubdivisionPoint);
 var
-  SourceList: TFasterListTFreeSubdivisionEdge;
-  Loop: TFasterListTFreeSubdivisionEdge;
+  I,Index: integer;
+  SourceList,Loop: TFasterListTFreeSubdivisionEdge;
   Points: TFasterListTFreeSubdivisionPoint;
-  I, Index: integer;
-  Edge: TFreeSubdivisionEdge;
-  NextEdge: TFreeSubdivisionEdge;
+  Edge,NextEdge: TFreeSubdivisionEdge;
 begin
   SourceList:=TFasterListTFreeSubdivisionEdge.Create;
   for I:=1 to Self.FEdges.Count do begin
     Edge:=FEdges[I-1];
-    if Edge.Crease then begin SourceList.Add(Edge); end;
+    if Edge.Crease then begin SourceList.Add( Edge ); end;
   end;
 //SourceList.Sort;
   while SourceList.Count > 0 do begin
@@ -2510,7 +2511,7 @@ begin
       end;
     until NextEdge = nil;
     SortEdges(Loop, Points);
-    if Points <> nil then DestinationPointLists.Add(Points); // MM: it returns Lists of Points.
+    if Points<>nil then DestinationPointLists.Add(Points); // MM: it returns Lists of Points.
     //Destination.AddList(Loop);                             // MM: changed to Edges. No returned back
     FreeAndNil(Loop);
   end;
@@ -2841,16 +2842,15 @@ begin
     end;
   end else begin      // No layers in the file, so keep the current default one
   end;
-  if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+  if assigned( FOnChangeLayerData ) then FOnChangeLayerData(self);
   Source.LoadInteger( N );                        // Read index of active layer
   ActiveLayer:=self.Layer[N];
-  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
+  if assigned(FOnChangeActiveLayer ) then FOnChangeActiveLayer( self,self.Layer[N] );
   Source.LoadInteger( N );                                // Read controlpoints
   FControlPoints.Capacity:=N;
   for I:=1 to N do begin
     Point:=TFreeSubdivisionControlPoint.Create(self);
-    Point.LoadBinary(Source);
-    //Point.Name:=IntToStr(I-1); //for debug. assign point numbers (as they are in file) as names
+    Point.LoadBinary(Source);                                                   //Point.Name:=IntToStr(I-1); //for debug. assign point numbers (as they are in file) as names
     FControlPoints.Add(Point);
   end;                                                     // Read controlEdges
   Source.LoadInteger(N);
@@ -2879,9 +2879,9 @@ begin
   end;
   Built:=False;
   FInitialized:=True;
-  if not self.CheckIntegrity then ShowMessage('Loaded Model integrity corruption');
-  if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self, self.Layer[0]);
+  if not self.CheckIntegrity then ShowMessage( 'Loaded Model integrity corruption' );
+//if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+//if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self, self.Layer[0]);
   FIsLoading:=false;
 end;
 
@@ -2910,7 +2910,7 @@ begin
   Inc(LineNr);
   Str:=Strings[LineNr]; N:=getInteger( Str );
   ActiveLayer:=self.Layer[N];
-  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self, self.Layer[0]);
+  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self, self.Layer[N]);
   Inc(LineNr);
   Str:=Strings[LineNr]; N:=getInteger( Str );
   for I:=1 to N do begin                                  // Read controlpoints
@@ -2935,8 +2935,8 @@ begin
   end;
   Built:=False;
   FInitialized:=True;
-  if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-  if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self, self.Layer[0]);
+//if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+//if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self, self.Layer[0]);
   FIsLoading:=false;
 end;
                      // Check if a controlpoint still exists and is not deleted
@@ -3172,7 +3172,7 @@ begin // we will rebuild whole mesh anyway. lets cleare it before changes in con
   Built:=False;
 end;
 
-procedure TFreeSubdivisionSurface.Selection_Add(item: TFreeNamedObject);
+procedure TFreeSubdivisionSurface.Selection_Add( item: TFreeNamedObject );
 begin
   if item = nil then exit;
   if item is TFreeSubdivisionControlPoint then FSelectedControlPoints.Add(item as TFreeSubdivisionControlPoint);
@@ -3220,11 +3220,11 @@ begin
   if Edges.Count > 0 then begin
     Points:=TFasterListTFreeSubdivisionPoint.Create;
     Points.Capacity:=Edges.Count+1;
-    SortEdges(Edges);
+    SortEdges( Edges );
     for I:=1 to Edges.Count do begin Edge:=Edges[I-1];
-      if I = 1 then Points.Add( Edge.StartPoint );
+      if I=1 then Points.Add( Edge.StartPoint );
       //if Edge.EndPoint<>Points[0] then Points.Add(Edge.EndPoint);
-      Points.Add(Edge.EndPoint);
+      Points.Add( Edge.EndPoint );
     end;
   end else Points:=nil;
 end;

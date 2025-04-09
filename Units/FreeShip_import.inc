@@ -330,8 +330,7 @@ begin
           Marker.Add(Spline.Point[J-1]);
           Marker.Knuckle[J-1]:=Spline.Knuckle[J-1];
         end;
-      end;
-           // extend all stations upwards and downwards to the min/max z-values
+      end; // extend all stations upwards and downwards to the min/max z-values
       for I:=1 to Frames.Count do begin Spline:=Frames[I-1]; // extend downwards to Z=0
         if Spline.Point[0].Z > MinZ then begin
           P:=Spline.Point[0];
@@ -346,9 +345,8 @@ begin
           Spline.Knuckle[Spline.NumberOfPoints-2]:=True;
         end;
       end;
-
       NoPoints:=10; // resample all stations to a user defined number of points
-      NoPoints:=StrToInt(InputBox('', Userstring(135)+':', IntToStr(NoPoints)));
+      NoPoints:=StrToInt(InputBox('',Userstring(135)+':',IntToStr(NoPoints)));
       if NoPoints<5 then NoPoints:=5;
       Setlength(ControlPoints, Frames.Count);
       for I:=1 to Frames.Count do begin
@@ -1356,7 +1354,7 @@ begin
   I:=Integer( GetBoolean( Str ) ); // FreeShip.ProjectSettings.FMainparticularsHasBeenset:=GetBoolean(Str);
   I:=GetInteger( Str );
   FreeShip.FPrecision:=TFreePrecisionType(I);
-  FreeShip.Surface.ImportFEFFile(Strings, LineNr);
+  FreeShip.Surface.ImportFEFFile( Strings,LineNr );
   FreeAndNil(Strings);
   FreeShip.FileName:=FileName;
   FreeShip.ModelIsLoaded:=True;
@@ -1365,14 +1363,10 @@ begin
   if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
 end;
 
-
 procedure TFreeEdit.File_ImportFEF;
 var
   OpenDialog: TOpenDialog;
   Answer: word;
-//  Strings: TStringList;
-//  Str: AnsiString;
-  LineNr, I: integer;
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
@@ -1382,37 +1376,9 @@ begin
     Answer:=Freeship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
     FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-    CreateUndoObject(Userstring(109),True);
+    CreateUndoObject( Userstring(109),True );
     FreeShip.Clear;
     File_ImportFEF( OpenDialog.Filename );
-(*
-    Strings:=TStringList.Create;
-    Strings.LoadFromFile( OpenDialog.Filename );
-    LineNr:=-1;                 // Read general information and mainparticulars
-    Inc(LineNr); FreeShip.ProjectSettings.FProjectName:=Strings[LineNr];
-    Inc(LineNr); FreeShip.ProjectSettings.FProjectDesigner:=Strings[LineNr];
-    Inc(LineNr); FreeShip.ProjectSettings.FProjectFileCreatedBy:=Strings[LineNr];
-    Inc(LineNr); FreeShip.ProjectSettings.FProjectComment:=Strings[LineNr];
-    Inc(LineNr); Str:=Strings[LineNr];
-    FreeShip.ProjectSettings.ProjectLength:=GetFloat(Str);
-    FreeShip.ProjectSettings.ProjectBeam:=GetFloat(Str);
-    FreeShip.ProjectSettings.ProjectDraft:=GetFloat(Str);
-    FreeShip.ProjectSettings.ProjectWaterDensity:=GetFloat(Str);
-                 // FreeShip.ProjectSettings.ProjectWaterTemper:=GetFloat(Str);
-    FreeShip.ProjectSettings.ProjectAppendageCoefficient:=GetFloat(Str);
-    I:=GetInteger( Str );
-    FreeShip.ProjectSettings.FProjectUnits:=TFreeUnitType(I);
-    I:=Integer( GetBoolean( Str ) ); // FreeShip.ProjectSettings.FMainparticularsHasBeenset:=GetBoolean(Str);
-    I:=GetInteger( Str );
-    FreeShip.FPrecision:=TFreePrecisionType(I);
-    FreeShip.Surface.ImportFEFFile(Strings, LineNr);
-    FreeAndNil(Strings);
-    FreeShip.FileName:=Opendialog.FileName;
-    FreeShip.ModelIsLoaded:=True;
-    FreeShip.Built:=False;
-    FreeShip.RebuildModel;
-    if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
-*)
   end;
   FreeAndNil(OpenDialog);
 end;
@@ -1563,8 +1529,7 @@ begin
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
   OpenDialog.Filter:=createDialogFilter(rsFREEShipGeometryPart, ['part']);
   Opendialog.Options:=[ofHideReadOnly];
-  if OpenDialog.Execute then
-  begin
+  if OpenDialog.Execute then begin
     PartFile:=TFreeFileBuffer.Create;
     //FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
     Changed:=False;

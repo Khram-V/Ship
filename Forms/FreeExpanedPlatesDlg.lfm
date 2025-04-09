@@ -569,7 +569,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
     object SaveBitmap: TAction
       Category = 'Export'
       Caption = 'Save bitmap'
-      Hint = 'Save the current layout as a bitmap.'
+      Hint = 'Save the current layout as a PNG.'
       ImageIndex = 10
       OnExecute = SaveBitmapExecute
     end

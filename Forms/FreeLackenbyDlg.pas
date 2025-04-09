@@ -525,7 +525,7 @@ begin
       UpdateData(nil);
       UpdateDifferences;
       Modified:=False;
-      MessageDlg('Transormation failed!', mtWarning, [mbOK], 0);
+      ShowMessage( 'Transormation failed!' );
     end;
     FreeAndNil(Points);
     FreeAndNil(LockedPoints);

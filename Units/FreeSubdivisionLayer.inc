@@ -649,7 +649,7 @@ begin
 
     //debug
     for i:=0 to NewPoints.Count-1 do begin
-      NewPoints[i].Name:='np'+IntToStr(i);
+//    NewPoints[i].Name:='np'+IntToStr(i);
       NewPoints[i].Selected:=true;
     end;
 

@@ -23,19 +23,12 @@ type
     ToolBar1: TToolBar;
     ToolButton20: TToolButton;
     ActionList1: TActionList;
-    RotateCCW90: TAction;
-    MenuImages: TImageList;
-    RotateCCW5: TAction;
-    ToolButton1: TToolButton;
-    RotateCW5: TAction;
-    ToolButton2: TToolButton;
-    RotateCW90: TAction;
-    ToolButton3: TToolButton;
-    ZoomExtents: TAction;
-    _ToolButton4: TToolButton;
-    ToolButton5: TToolButton;
-    SaveBitmap: TAction;
-    _ToolButton6: TToolButton;
+    RotateCCW90: TAction;    MenuImages: TImageList;
+    RotateCCW5: TAction;     ToolButton1: TToolButton;
+    RotateCW5: TAction;      ToolButton2: TToolButton;
+    RotateCW90: TAction;     ToolButton3: TToolButton;
+    ZoomExtents: TAction;   _ToolButton4,ToolButton5: TToolButton;
+    SaveBitmap: TAction;    _ToolButton6: TToolButton;
     ToolButton7: TToolButton;
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
@@ -232,7 +225,6 @@ begin
     end;
   end;
 end;
-
 function TFreeExpanedplatesDialog.Execute(FreeShip: TFreeShip; Plates: TFasterListTFreeDevelopedPatch): boolean;
 var I:Integer;
   Patch: TFreeDevelopedPatch;
@@ -284,16 +276,13 @@ begin
     if I = 1 then begin Min := MinT; Max := MaxT; end
              else begin MinMax(MinT,Min,Max); MinMax(MaxT,Min,Max); end;
   end;
-
   if Max.X - Min.X > Max.Y - Min.Y then Tmp := Max.X - Min.X
                                    else Tmp := Max.Y - Min.Y;
   FXGridSpacing := GetGridSpacing(Tmp) / 2;
   FYGridSpacing := FXGridSpacing;
   FloatSpinEdit2.Value := FXGridSpacing;
   FloatSpinEdit3.Value := FYGridSpacing;
-
   //SpinEditFontSizeChange(nil); //refresh font sizes
-
   Viewport.ZoomExtents;
   if Plates.Count = 0 then ActivePatch := nil
                       else ListBox.ItemIndex := 0;
@@ -301,7 +290,7 @@ begin
   //ShowTranslatedValues(Self);
   ShowModal;
   Result := ModalResult = mrOk;
-end;{TFreeExpanedplatesDialog.Execute}
+end;
 
 procedure TFreeExpanedplatesDialog.ViewportRedraw(Sender: TObject);
 var I, N: integer;
@@ -392,7 +381,7 @@ begin
       end;
     end;
   end;
-end;{TFreeExpanedplatesDialog.ViewportRedraw}
+end;
 
 procedure TFreeExpanedplatesDialog.ViewportMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 var P: TPoint;
@@ -529,38 +518,31 @@ end;
 
 procedure TFreeExpanedplatesDialog.ZoomExtentsExecute(Sender: TObject);
     begin Viewport.ZoomExtents; end;
-
 procedure TFreeExpanedplatesDialog.SaveBitmapExecute(Sender: TObject);
-var Str: string;
-begin
-  Str := FFreeShip.Preferences.ExportDirectory;
-  if Str[Length(Str)] <> '\' then Str := Str + '\';
-  Str := Str + ChangeFileExt(ExtractFilename(FFreeship.FileName), '') +'_developments.png';
-  Viewport.SaveAsBitmap(Str);
-end;
-
+    begin Viewport.SaveAsBitmap( FFreeShip.Preferences.ExportDirectory
+     +ChangeFileExt(ExtractFilename(FFreeship.FileName),'')+'_developments.png');
+    end;
 procedure TFreeExpanedplatesDialog.ZoomInExecute(Sender: TObject);
     begin Viewport.ZoomIn; end;
 procedure TFreeExpanedplatesDialog.ZoomOutExecute(Sender: TObject);
     begin Viewport.ZoomOut; end;
-
 procedure TFreeExpanedplatesDialog.RotateCCW1Execute(Sender: TObject);
 begin
-  if ActivePatch <> nil then begin
-    ActivePatch.Rotation := ActivePatch.Rotation + 1;
-    FloatSpinEdit1.Value := ActivePatch.Rotation;
-    if Viewport.Zoom = 1.0 then Viewport.ZoomExtents
-                           else Viewport.Refresh;
+  if ActivePatch<>nil then begin
+    ActivePatch.Rotation:=ActivePatch.Rotation+1;
+    FloatSpinEdit1.Value:=ActivePatch.Rotation;
+    if Viewport.Zoom=1.0 then Viewport.ZoomExtents
+                         else Viewport.Refresh;
   end;
 end;
 
 procedure TFreeExpanedplatesDialog.RotateCW1Execute(Sender: TObject);
 begin
-  if ActivePatch <> nil then begin
-    ActivePatch.Rotation := ActivePatch.Rotation - 1;
-    FloatSpinEdit1.Value := ActivePatch.Rotation;
-    if Viewport.Zoom = 1.0 then Viewport.ZoomExtents
-                           else Viewport.Refresh;
+  if ActivePatch<>nil then begin
+    ActivePatch.Rotation:=ActivePatch.Rotation-1;
+    FloatSpinEdit1.Value:=ActivePatch.Rotation;
+    if Viewport.Zoom=1.0 then Viewport.ZoomExtents
+                         else Viewport.Refresh;
   end;
 end;
 
@@ -569,27 +551,24 @@ var I: integer;
   Strings: TStringList;
   Patch: TFreeDevelopedPatch;
   SaveDialog: TSaveDialog;
-  Str: AnsiString;
 begin
-  SaveDialog := TSaveDialog.Create(Owner);
-  SaveDialog.InitialDir := FFreeship.Preferences.ExportDirectory;
-  Str := ChangeFileExt(ExtractFilename(FFreeship.FileName), '');
-  Str := Str + '_developments.dxf';
-  SaveDialog.FileName := Str;
-  SaveDialog.Filter := createDialogFilter(rsAutocadDxfFile,['dxf']);
-  Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
+  SaveDialog:=TSaveDialog.Create(Owner);
+  SaveDialog.InitialDir:=FFreeship.Preferences.ExportDirectory;
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FFreeship.FileName),'')+'_developments.dxf';
+  SaveDialog.Filter:=createDialogFilter(rsAutocadDxfFile,['dxf']);
+  Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if SaveDialog.Execute then begin
     FFreeShip.Preferences.ExportDirectory := ExtractFilePath(SaveDialog.FileName);
     Strings := TStringList.Create;
-    Strings.Add('0' + EOL + 'SECTION');
-    Strings.Add('2' + EOL + 'ENTITIES');
+    Strings.Add( '0'+EOL+'SECTION' );
+    Strings.Add( '2'+EOL+'ENTITIES' );
     for I := 1 to FPlates.Count do begin
       Patch := FPlates[I-1];
       if Patch.Visible then Patch.SaveToDXF(Strings);
     end;
-    Strings.Add('0' + EOL + 'ENDSEC');
-    Strings.Add('0' + EOL + 'EOF');
-    Strings.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.dxf'));
+    Strings.Add( '0'+EOL+'ENDSEC' );
+    Strings.Add( '0'+EOL+'EOF' );
+    Strings.SaveToFile(ChangeFileExt( SaveDialog.FileName,'.dxf') );
     FreeAndNil(Strings);
   end;
   FreeAndNil(SaveDialog);
@@ -722,25 +701,22 @@ var I: integer;
   Strings: TStringList;
   Patch: TFreeDevelopedPatch;
   SaveDialog: TSaveDialog;
-  Str: AnsiString;
 begin
   SaveDialog := TSaveDialog.Create(Owner);
   SaveDialog.InitialDir := FFreeship.Preferences.ExportDirectory;
-  Str := ChangeFileExt(ExtractFilename(FFreeship.FileName), '');
-  Str := Str + '_developments.txt';
-  SaveDialog.FileName := Str;
-  SaveDialog.Filter := createDialogFilter(rsTextFile,['txt']);
-  Savedialog.Options := [ofOverwritePrompt, ofHideReadOnly];
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FFreeship.FileName),'')+'_developments.txt';
+  SaveDialog.Filter:=createDialogFilter(rsTextFile,['txt']);
+  Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if SaveDialog.Execute then begin
     FFreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
-    Strings := TStringList.Create;
-    for I := 1 to FPlates.Count do begin Patch := FPlates[I - 1];
+    Strings:=TStringList.Create;
+    for I:=1 to FPlates.Count do begin Patch:=FPlates[I-1];
       if Patch.Visible then Patch.SaveToTextFile(Strings);
     end;
-    Strings.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.txt'));
-    FreeAndNil(Strings);
+    Strings.SaveToFile( ChangeFileExt( SaveDialog.FileName,'.txt' ) );
+    FreeAndNil( Strings );
   end;
-  FreeAndNil(SaveDialog);
+  FreeAndNil( SaveDialog );
 end;
 
 procedure TFreeExpanedplatesDialog.InitViewPort;
