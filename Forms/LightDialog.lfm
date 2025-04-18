@@ -1,178 +1,174 @@
 object LightDialog: TLightDialog
-  Left = 544
-  Height = 357
-  Top = 365
-  Width = 469
+  Left = 393
+  Height = 273
+  Top = 351
+  Width = 312
   AutoSize = True
   BorderIcons = []
   BorderStyle = bsSingle
-  Caption = 'Light'
+  Caption = 'Освещённость'
   ChildSizing.Layout = cclTopToBottomThenLeftToRight
   ChildSizing.ControlsPerLine = 1
-  ClientHeight = 357
-  ClientWidth = 469
+  ClientHeight = 273
+  ClientWidth = 312
   FormStyle = fsStayOnTop
   OnShow = FormShow
   Position = poDesktopCenter
-  LCLVersion = '2.0.6.0'
+  LCLVersion = '3.8.0.0'
   object GroupBoxPosition: TGroupBox
     Left = 10
-    Height = 303
+    Height = 197
     Top = 10
-    Width = 449
+    Width = 292
     Align = alTop
     AutoSize = True
     BorderSpacing.Around = 10
-    Caption = 'Position'
     ChildSizing.LeftRightSpacing = 10
-    ChildSizing.TopBottomSpacing = 10
+    ChildSizing.TopBottomSpacing = 4
     ChildSizing.HorizontalSpacing = 10
     ChildSizing.VerticalSpacing = 8
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 2
-    ClientHeight = 279
-    ClientWidth = 445
+    ClientHeight = 177
+    ClientWidth = 288
     TabOrder = 0
     object LabelX: TLabel
       Left = 10
-      Height = 43
-      Top = 10
-      Width = 83
+      Height = 25
+      Top = 4
+      Width = 168
       Alignment = taCenter
-      Caption = 'X'
+      Caption = 'ось X [0..360°]'
       Layout = tlCenter
       ParentColor = False
     end
     object TrackBarX: TTrackBar
-      Left = 103
-      Height = 43
-      Top = 10
-      Width = 300
-      Max = 180
-      Min = -180
+      Left = 188
+      Height = 25
+      Top = 4
+      Width = 200
+      Max = 360
       OnChange = TrackBarXChange
       PageSize = 10
       Position = 50
       ScalePos = trRight
-      Constraints.MinWidth = 300
+      Constraints.MinWidth = 200
       TabOrder = 0
     end
     object LabelY: TLabel
       Left = 10
-      Height = 43
-      Top = 61
-      Width = 83
+      Height = 25
+      Top = 37
+      Width = 168
       Alignment = taCenter
-      Caption = 'Y'
+      Caption = 'ось Y [0..360]°'
       Layout = tlCenter
       ParentColor = False
     end
     object TrackBarY: TTrackBar
-      Left = 103
-      Height = 43
-      Top = 61
-      Width = 300
-      Max = 180
-      Min = -180
+      Left = 188
+      Height = 25
+      Top = 37
+      Width = 200
+      Max = 360
       OnChange = TrackBarYChange
       PageSize = 10
       Position = 20
       ScalePos = trRight
-      Constraints.MinWidth = 300
+      Constraints.MinWidth = 200
       TabOrder = 1
     end
     object LabelZ: TLabel
       Left = 10
-      Height = 43
-      Top = 112
-      Width = 83
+      Height = 25
+      Top = 70
+      Width = 168
       Alignment = taCenter
-      Caption = 'Z'
+      Caption = 'ось Z [0..360°]'
       Layout = tlCenter
       ParentColor = False
     end
     object TrackBarZ: TTrackBar
-      Left = 103
-      Height = 43
-      Top = 112
-      Width = 300
-      Max = 180
-      Min = -180
+      Left = 188
+      Height = 25
+      Top = 70
+      Width = 200
+      Max = 360
       OnChange = TrackBarZChange
       PageSize = 10
       Position = 50
       ScalePos = trRight
-      Constraints.MinWidth = 300
+      Constraints.MinWidth = 200
       TabOrder = 2
     end
     object LabelAmbience: TLabel
       Left = 10
-      Height = 43
-      Top = 175
-      Width = 83
+      Height = 25
+      Top = 115
+      Width = 168
       Alignment = taCenter
-      Caption = 'Ambience'
+      Caption = 'Рассеяный цвет (Ambience)'
       Layout = tlCenter
       ParentColor = False
     end
     object TrackBarAmbience: TTrackBar
-      Left = 103
-      Height = 43
-      Top = 175
-      Width = 300
+      Left = 188
+      Height = 25
+      Top = 115
+      Width = 200
       Max = 255
       OnChange = TrackBarAmbienceChange
       PageSize = 10
       Position = 75
       ScalePos = trRight
       BorderSpacing.Top = 20
-      Constraints.MinWidth = 300
+      Constraints.MinWidth = 200
       TabOrder = 3
     end
     object LabelLuminance: TLabel
       Left = 10
-      Height = 43
-      Top = 226
-      Width = 83
-      Caption = 'Luminance'
+      Height = 25
+      Top = 148
+      Width = 168
+      Caption = 'Яркость свечения (Luminance)'
       Layout = tlCenter
       ParentColor = False
     end
     object TrackBarIntensity: TTrackBar
-      Left = 103
-      Height = 43
-      Top = 226
-      Width = 300
+      Left = 188
+      Height = 25
+      Top = 148
+      Width = 200
       Max = 255
       OnChange = TrackBarIntensityChange
       PageSize = 10
       Position = 140
       ScalePos = trRight
-      Constraints.MinWidth = 300
+      Constraints.MinWidth = 200
       TabOrder = 4
     end
   end
   object GroupBoxPosition1: TGroupBox
     Left = 10
     Height = 4
-    Top = 323
-    Width = 459
+    Top = 217
+    Width = 302
     Align = alTop
     AutoSize = True
     BorderSpacing.Left = 10
     BorderSpacing.Top = 10
     ChildSizing.LeftRightSpacing = 10
-    ChildSizing.TopBottomSpacing = 10
+    ChildSizing.TopBottomSpacing = 4
     ChildSizing.HorizontalSpacing = 10
-    ChildSizing.VerticalSpacing = 8
+    ChildSizing.VerticalSpacing = 3
     ChildSizing.ControlsPerLine = 3
     TabOrder = 1
   end
   object ButtonPanel: TButtonPanel
     Left = 6
-    Height = 40
-    Top = 317
-    Width = 457
+    Height = 34
+    Top = 233
+    Width = 300
     BorderSpacing.Top = 30
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True

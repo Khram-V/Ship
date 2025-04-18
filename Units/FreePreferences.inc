@@ -13,13 +13,12 @@ begin FViewportColor:=Val;
   for I:=0 to Owner.NumberOfViewports-1 do
               Owner.Viewport[I].Color:=FViewportColor;
 end;
-
 procedure TFreePreferences.Clear;
 begin
-  ResetColors;         PointSize:=2;
-  ResetDirectories;    LastDirectory:='';
-  Language:='English'; LanguageFile:=''; FbmEncoding:='cp1251';
-  MaxUndoMemory:=128;                                   // Max 20Mb undomemory
+  ResetColors;           PointSize:=2;
+  ResetDirectories;      LastDirectory:='';
+  Language:='English';   LanguageFile:='';
+  FbmEncoding:='cp1251'; MaxUndoMemory:=128;             // Max 20Mb undomemory
 end;
 constructor TFreePreferences.Create(Owner: TFreeShip);
   begin inherited Create; FOwner:=Owner; Clear; end;
@@ -144,8 +143,7 @@ procedure TColorIniFile.WriteColor(const Section,Ident:AnsiString; Value:TColor)
 begin WriteString( Section,Ident,'$'+HexStr(Value,6) ); // ColorToString( Value ) );
 end;
 procedure TFreePreferences.LoadFromIni;
-var I, T, L, W, H, S: Integer;
-    params: TColorIniFile; RecentFileNames: TStringList;
+var I,T,L,W,H,S: Integer; params: TColorIniFile; RecentFileNames: TStringList;
 begin
   if not FileExistsUTF8( iniFileName ) then begin
     if Mainform <> nil then begin

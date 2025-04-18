@@ -31,7 +31,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 80
-      Caption = 'OK'
+      Caption = 'Есть!'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100

@@ -62,3 +62,6 @@ except                 // Floating point operation - сбои и ошибки и
 end
 end.
 
+{ Function Experience( Kod: Integer ): Integer; cdecl; external;
+  WriteLn( 'Experience in C=3+3='+inttostr( Experience( 3 ) ) );
+}

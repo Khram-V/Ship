@@ -2437,8 +2437,8 @@ begin
 
 end;
 
-function TFreeSubdivisionSurface.EdgeExists(P1, P2: TFreeSubdivisionPoint):
-TFreeSubdivisionEdge;
+function TFreeSubdivisionSurface.EdgeExists
+( P1,P2: TFreeSubdivisionPoint): TFreeSubdivisionEdge;
 var
   I: integer;
   Edge: TFreeSubdivisionEdge=nil;
@@ -2448,7 +2448,6 @@ begin                    // If the edge exists then it must exist
   Result:=nil;           // in both the points, therefore only the point
                          // with the smallest number of edges has to be checked
   if P1.FEdges.Count <= P2.FEdges.Count then P:=P1 else P:=P2;
-
   P:=P1;                                                        // thorow check
   for I:=0 to P.FEdges.Count-1 do begin
       Edge:=P.FEdges[I];
@@ -2461,8 +2460,8 @@ begin                    // If the edge exists then it must exist
   for I:=0 to P.FEdges.Count-1 do begin
       Edge2:=P.FEdges[I];
       if assigned(Edge2) then
-        if ((Edge2.FStartpoint = P1) and (Edge2.FEndpoint = P2)) or
-           ((Edge2.FStartpoint = P2) and (Edge2.FEndpoint = P1)) then
+        if ((Edge2.FStartpoint = P1) and (Edge2.FEndpoint = P2))
+        or ((Edge2.FStartpoint = P2) and (Edge2.FEndpoint = P1)) then
         begin Result:=Edge2; break; end;
     end;
   if (Result<>nil) and (Edge <> Edge2) then Edge:=Edge2;

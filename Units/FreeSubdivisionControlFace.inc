@@ -908,14 +908,13 @@ begin                                                 // Read controlpoint data
   for I:=1 to NumberOfPoints do begin
     P2:=FPoints[I-1] as TFreeSubdivisionControlPoint;
     Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-    if Edge <> nil then begin
-      Edge.FFaces.Add(Self);
-      //FControlDescendantEdges.Add(Edge); // MM: 20190421 added. No FControlDescendantEdges is for descendant edges
+    if Edge <> nil then begin Edge.FFaces.Add(Self);
+      //FControlDescendantEdges.Add( Edge ); // MM: 20190421 added. No FControlDescendantEdges is for descendant edges
     end else begin
-      Edge:=Surface.AddControlEdge(P1, P2);
+      Edge:=Surface.AddControlEdge( P1,P2 );
       Edge.FFaces.Add(Self);
       Edge.Crease:=True;
-      MessageDlg('Could not find edge!', mtError, [mbOK], 0);
+//    Writeln( 'Could not find edge! iP='+inttostr( I ) ); //,mtError,[mbOK],0);
     end;
     P1:=P2;
   end;

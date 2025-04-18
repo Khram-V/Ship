@@ -18,10 +18,10 @@ type
 
   TVRMLobject = class // пустышка
   private FOwner: TVRMLList;
-  public constructor Create(Owner: TVRMLList); virtual;
+  public constructor Create(Owner: TVRMLList); virtual; overload;
          destructor Destroy; override;
          procedure Clear; virtual;
-         procedure Load( var LineNr: integer; Strings: TStringList ); virtual;
+         procedure Load( var LineNr: integer; Strings: TStringList ); virtual; overload;
   end;
 
   TFasterListTVRMLObject = specialize TFasterList<TVRMLObject>;

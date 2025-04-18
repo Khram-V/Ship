@@ -1786,14 +1786,12 @@ begin
       Partfile.Add(Ord(21));
       //ord(CurrentVersion));                   // File version
       I:=Ord(ProjectSettings.ProjectUnits);
-      Partfile.Add(I);
-      // Write units type used (imperial or metric);
+      Partfile.Add(I);           // Write units type used (imperial or metric);
       Partfile.Add(Layers.Count);               // Number of layers in the file
       for I:=1 to Layers.Count do begin         // Save layer info
         vLayer:=Layers[I-1];
         vLayer.SaveBinary(Partfile);
-      end;
-      // Save controlpoints
+      end;                                                // Save controlpoints
       Partfile.Add(Points.Count);
       for I:=1 to Points.Count do begin
         P2:=Points[I-1];

@@ -23,15 +23,14 @@ const // Cursors
    crSMALLCROSS_32 = 15;          crSMALLCROSS_48 = 16;
 }
 // Currently using 32x32 cursors
-   crRotate = 1; // Rotation cursor
-   crPan = crSize; // Pan cursor
-   crSetOrigin = 3; // Cursor used when setting the origin of a background image
+   crRotate   = 1; // Rotation cursor
+   crPan      = crSize; // Pan cursor
+   crSetOrigin= 3; // Cursor used when setting the origin of a background image
    crSetScale = 4; // Cursor used when setting the scale of a background image
-   crTranspCol = 5;
+   crTranspCol= 5;
    crSetPoint = 6;
-   crSetLine = 7;
-   crSetSpline = 8;
-
+   crSetLine  = 7;
+   crSetSpline= 8;
 // Cursor used when setting the transparent color of a background image
 
 const                                                          //Foot = 0.3048;
@@ -224,7 +223,7 @@ type
     destructor Destroy; override;
     procedure Invalidate;
     procedure Draw;
-    function ImageCoordinate(X, Y: integer): TPoint;
+    function ImageCoordinate( X,Y: integer ): TPoint;
     function TargetRect: TRect;
     procedure Open( InitialDir: AnsiString );
     procedure Save;
@@ -261,7 +260,7 @@ type
     FDistance: TFloatType;       // The distance from the model to the camera, determined by the field of view
     FElevation: TFloatType;
     FFieldOfView: TFloatType;    // The field of view in degrees, default=50 degr. which corresponds with the human eye
-    FDoubleBuffer: boolean;      // Double buffering prevents flickering when redrawing the viewport
+//  FDoubleBuffer: boolean;      // Double buffering prevents flickering when redrawing the viewport
     FPrinting: boolean;          // Switch to determine if the viewport is drawing to the screen, or to the printer (or bitmap)
     FPrintResolution: integer;   // horizontal reolution of the printer
     FDestinationWidth: integer;  // Destinationwidth of the canvas when not drawing to the screen
@@ -343,21 +342,20 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: integer); override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: integer;  MousePos: TPoint): boolean; override;
   public
-    DrawingCanvas: TCanvas;    // read FDrawingCanvas write FDrawingCanvas;
-    CameraLocation,            // read FCameraLocation write FCameraLocation;
-    SceneMidPoint: T3DVector;  // read FMidPoint write FMidPoint;
-
-    OnMouseDown: TMouseEvent;         // read FOnMouseDown write FOnMouseDown;
-    OnMouseUp: TMouseEvent;           // read FOnMouseUp write FOnMouseUp;
-    OnMouseMove: TMouseMoveEvent;     // read FOnMouseMove write FOnMouseMove;
-    OnChangeBackground: TNotifyEvent; //  read FOnChangeBackgroundImage write FOnChangeBackgroundImage;
-    OnChangeViewType: TNotifyEvent;   // read FOnChangeViewType write FOnChangeViewType;
-    OnMouseEnter: TNotifyEvent;       // read FOnMouseEnter write FOnMouseEnter;
-    OnMouseLeave: TNotifyEvent;       // read FOnMouseLeave write FOnMouseLeave;
-    OnRedraw: TNotifyEvent;           // read FOnRedraw write FOnRedraw;
-    OnRequestBackgroundImage: TNotifyEvent;   // read FOnRequestBackgroundImage write FOnRequestBackgroundImage;
-    OnRequestExtents: TOnRequestExtentsEvent; // read FOnRequestExtents write FOnRequestExtents;
-
+    DrawingCanvas: TCanvas;      // read FDrawingCanvas write FDrawingCanvas;
+    CameraLocation,              // read FCameraLocation write FCameraLocation;
+    SceneMidPoint: T3DVector;    // read FMidPoint write FMidPoint;
+    DoubleBuffer: boolean; // Double buffering prevents flickering when redrawing the viewport
+    OnMouseDown: TMouseEvent;        // read FOnMouseDown write FOnMouseDown;
+    OnMouseUp: TMouseEvent;          // read FOnMouseUp write FOnMouseUp;
+    OnMouseMove: TMouseMoveEvent;    // read FOnMouseMove write FOnMouseMove;
+    OnChangeBackground:TNotifyEvent; // read FOnChangeBackgroundImage write FOnChangeBackgroundImage;
+    OnChangeViewType: TNotifyEvent;  // read FOnChangeViewType write FOnChangeViewType;
+    OnMouseEnter: TNotifyEvent;      // read FOnMouseEnter write FOnMouseEnter;
+    OnMouseLeave: TNotifyEvent;      // read FOnMouseLeave write FOnMouseLeave;
+    OnRedraw: TNotifyEvent;          // read FOnRedraw write FOnRedraw;
+    OnRequestBackgroundImage: TNotifyEvent;  // read FOnRequestBackgroundImage write FOnRequestBackgroundImage;
+    OnRequestExtents:TOnRequestExtentsEvent; // read FOnRequestExtents write FOnRequestExtents;
     constructor Create( AOwner:TComponent ); override;
     destructor Destroy; override;
     procedure DetachEventHandlers;
@@ -440,7 +438,7 @@ type
     property Color;
     property DestinationWidth: integer read FDestinationWidth write FDestinationWidth;
     property DestinationHeight: integer read FDestinationHeight write FDestinationHeight;
-    property DoubleBuffer: boolean read FDoubleBuffer write FDoubleBuffer;
+//  property DoubleBuffer: boolean read FDoubleBuffer write FDoubleBuffer;
     property Elevation: TFloatType read FElevation write FSetElevation;
     property Margin: TFloatType read FMargin write FSetMargin;
     property PopupMenu;
@@ -1666,7 +1664,6 @@ uses
 {$I FreeEntity.inc}
 {$I FreeSpline.inc}
 {$I FreeSubExternal.inc}
-{$I FreeNamedObject.inc}
 {$I FreeNURBSurface.inc}
 {$I FreeSubdivisionControlCurve.inc}
 {$I FreeSubdivisionLayer.inc}
@@ -1679,8 +1676,6 @@ uses
 {$I FreeSubdivisionControlFace.inc}
 {$I FreeSubdivisionSurface.inc}
 
-constructor TFreeDestroyList.Create; begin inherited Create; end;
-
 constructor TFreeSubdivisionBase.Create(Owner: TFreeSubdivisionSurface);
 begin
   inherited Create(Owner);       //  TFreeSubdivisionBase is the base class
@@ -1689,24 +1684,24 @@ begin
   IsUnreferenceEnabled:=true;
 end;
 
-procedure TFreeDestroyList.DestroyAll;
-var O: TObject; I: integer;
-begin
-   for I:=0 to Count-1 do if Assigned( Items[I] ) then Items[I].Free;
-   { while Count > 0 do begin
-       I:=Count-1;
-       O:=TObject(Items[I]);
-       if Assigned(O) then  begin  FreeAndNil(O);  Delete(I);  end;
-     end; }
+constructor TFreeNamedObject.Create( Owner: TFreeSubdivisionSurface );
+begin Surface:=Owner; FId:=-1;                     /// три виртуальные пустышки
+  if Owner<>nil then begin inc(Owner.FIdSequence); FId:=Owner.FIdSequence; end;
+end;
+function TFreeNamedObject.FGetSelected: boolean; begin result:=false; end;
+procedure TFreeNamedObject.FSetSelected(AValue: boolean); begin end;
+
+constructor TFreeDestroyList.Create; begin inherited Create; end;
+procedure TFreeDestroyList.DestroyAll; var I: integer; // O: TObject;
+begin for I:=0 to Count-1 do if Assigned( Items[I] ) then Items[I].Free;
+      { while Count > 0 do begin I:=Count-1; O:=TObject(Items[I]);
+          if Assigned(O) then  begin  FreeAndNil(O);  Delete(I);  end; end; }
    Clear;
 end;
 
-procedure Register;
-begin RegisterComponents( 'FreeShip', [TFreeViewport] );
-end;
+procedure Register; begin RegisterComponents('FreeShip',[TFreeViewport]); end;
 
-initialization
-  DelayedDestroyList:=TFreeDestroyList.Create;
+initialization DelayedDestroyList:=TFreeDestroyList.Create;
 
 end.
 

@@ -6,7 +6,7 @@ interface uses
   Interfaces, Graphics, Controls, Forms,
   Dialogs,    Classes,  ExtCtrls, ExtDlgs, ComCtrls,
   FreeTypes,  FreeVersionUnit,  FasterList,
-  FreeFileBuffer,  FreeGeometry,  FreeMatrices,
+  FreeFileBuffer,  FreeGeometry, FreeMatrices,
   FreeLanguageSupport,  FreeControlPointFrm,  FreeStringUtils;
 
 // FREE!ship uses British imperial format, eg 1 long ton=2240 lbs
@@ -18,8 +18,8 @@ const
 //FontheightFactor = 140;   // used for calculating fontheight
 
 resourcestring
-  rsPointLinearConstraintChanged = 'ControlPoint Linear Constraint Changed';
-  rsPointAnchorConstraintChanged = 'ControlPoint Anchor Constraint Changed';
+//rsPointLinearConstraintChanged = 'ControlPoint Linear Constraint Changed';
+//rsPointAnchorConstraintChanged = 'ControlPoint Anchor Constraint Changed';
   rsAutocadDxfFile = 'Autocad dxf file';
   rsSTLFile = 'STL file';
   rsFREEShipGeometryPart = 'FREE!ship geometry part';

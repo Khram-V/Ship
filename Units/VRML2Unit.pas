@@ -42,10 +42,10 @@ private
   FScene: TVRML2Scene;
   FParent: TVRML2object;
 public
-  constructor Create(Scene: TVRML2Scene; Parent: TVRML2object); virtual;
+  constructor Create(Scene: TVRML2Scene; Parent: TVRML2object); virtual; overload;
   procedure Clear; override;
   destructor Destroy; override;
-  procedure Load; virtual;
+  procedure Load; virtual; overload;
 end;
 
 TVRML2Group = class(TVRML2object)
@@ -185,7 +185,7 @@ end;
     property Capacity: integer read FGetCapacity write FSetCapacity;
     property Face[index: integer]: TIntArray read FGetFace;
   public
-    constructor Create(Scene: TVRML2Scene; Parent:TVRML2Object);
+    constructor Create(Scene: TVRML2Scene; Parent:TVRML2Object); override;
     destructor Destroy; override;
     procedure Clear; override;
     procedure Load; override;

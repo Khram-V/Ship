@@ -126,7 +126,7 @@ private                                                { Private declarations }
 // protected
 // procedure ProcessResource; virtual;
 public                                                  { Public declarations }
-  LightDialog:TLightDialog;
+  LightDialog: TLightDialog;
   constructor Create( AOwner: TComponent ); override;
   destructor Destroy; override;
   procedure SetCaption;
@@ -161,7 +161,10 @@ begin Len:=Length( hex ) div 2;
 end;
 
 constructor TFreeHullWindow.Create(AOwner: TComponent);
-begin inherited Create(AOwner); if assigned(OnCreate) then OnCreate(Self); end;
+begin inherited Create(AOwner);
+   if assigned(OnCreate) then OnCreate(Self);
+   ShowTranslatedValues( Self );
+end;
 
 destructor TFreeHullWindow.Destroy;
 begin if assigned(ViewPort) then FreeAndNil(ViewPort); inherited; end;
@@ -257,14 +260,15 @@ begin ViewportKeyUp( Sender,Key,Shift ); end;
 
 procedure TFreeHullWindow.FrameClick(Sender: TObject); begin end;
 
-procedure TFreeHullWindow.SetLightExecute(Sender: TObject);
+procedure TFreeHullWindow.SetLightExecute( Sender: TObject );
 begin
-  if not assigned(LightDialog) then begin
-    LightDialog:=TLightDialog.Create(self);
+  if not assigned( LightDialog ) then begin
+    LightDialog:=TLightDialog.Create( self );
     LightDialog.ViewPort:=self.Viewport;
     LightDialog.Show;
   end else begin
-    if not LightDialog.IsVisible then LightDialog.Show;
+    if not LightDialog.IsVisible then
+    LightDialog.Show;
     LightDialog.BringToFront;
     LightDialog.SetFocus;
   end;

@@ -527,7 +527,7 @@ begin
   end;
   FCrease:=getInteger( Str )=1;                                      // FCrease
   if Str<>'' then begin         // Flag to indicate that this edge was selected
-    Sel:=getBoolean( Str );    //  when the model was saved (for undo-purposes)
+    Sel:=getBoolean( Str );     // when the model was saved (for undo-purposes)
     Selected:=Sel;
   end;
 end;

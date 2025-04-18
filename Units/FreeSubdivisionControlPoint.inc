@@ -565,9 +565,9 @@ begin                                                       // FCoordinate
   FCoordinate.X:=GetFloat( Str );
   FCoordinate.Y:=GetFloat( Str );
   FCoordinate.Z:=GetFloat( Str );                           // FVertexType
-  if Str <> '' then begin
-    I:=GetInteger( Str); FVertextype:=TFreeVertexType( I );
-    if Str <> '' then begin Sel:=GetBoolean( Str);
+  if Str<>'' then begin
+    I:=GetInteger( Str ); FVertextype:=TFreeVertexType( I );
+    if Str<>'' then begin Sel:=GetBoolean( Str );
       if sel then Selected:=True;
     end;
   end else FVertextype:=TFreeVertexType(0);

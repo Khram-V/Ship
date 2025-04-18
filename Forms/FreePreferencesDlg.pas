@@ -158,36 +158,25 @@ begin
 end;
 
 procedure TFreePreferencesDialog.ResetColorsButtonClick(Sender: TObject);
-begin
-  if MessageDlg( rs_Save, mtWarning, [mbYes, mbNo], 0) = mrYes
-  then begin FFreeship.Preferences.ResetColors; Updatedata; end;
-end;
-
-procedure TFreePreferencesDialog.FormResize(Sender: TObject);
-var sz:TRect; begin sz:=getPreferredSize; end;
-
-procedure TFreePreferencesDialog.FormShow(Sender: TObject);
-var sz:TRect; begin sz:=getPreferredSize; end;
-
+    begin if MessageDlg( rs_Save, mtWarning, [mbYes, mbNo], 0) = mrYes
+          then begin FFreeship.Preferences.ResetColors; Updatedata; end;
+    end;
+procedure TFreePreferencesDialog.FormResize(Sender: TObject); var sz:TRect;
+    begin sz:=getPreferredSize; end;
+procedure TFreePreferencesDialog.FormShow(Sender: TObject); var sz:TRect;
+    begin sz:=getPreferredSize; end;
 procedure TFreePreferencesDialog.OkButtonClick(Sender: TObject);
-begin ModalResult:=mrOk; end;
-
+    begin ModalResult:=mrOk; end;
 procedure TFreePreferencesDialog.CancelButtonClick(Sender: TObject);
-begin ModalResult:=mrCancel; end;
-
+    begin ModalResult:=mrCancel; end;
 procedure TFreePreferencesDialog.EditDirChange(Sender: TObject);
-begin FConfigChanged:=True; end;
-
+    begin FConfigChanged:=True; end;
 procedure TFreePreferencesDialog.PageControl1Change(Sender: TObject);
-begin FormActivate(Sender); end;
-
-procedure TFreePreferencesDialog.FormActivate(Sender: TObject);
-var sz:TRect; begin sz:=getPreferredSize; end;
-
+    begin FormActivate(Sender); end;
+procedure TFreePreferencesDialog.FormActivate(Sender: TObject); var sz:TRect;
+    begin sz:=getPreferredSize; end;
 function TFreePreferencesDialog.getPreferredSize:TRect;
-var
-  TxH, HdrHeight, BrdWidth, TbT, PgT, PnT, PGIB: integer;
-  ScreenPoint: TPoint;
+var TxH, HdrHeight, BrdWidth, TbT, PgT, PnT, PGIB: integer; ScreenPoint: TPoint;
 begin
   Invalidate;
   Application.ProcessMessages;
@@ -218,20 +207,22 @@ begin
   result:=Rect(0,0, Width, BitBtnResetDirs.Top+BitBtnResetDirs.Height+16);
 end;
 
+
 procedure TFreePreferencesDialog.SpinEdit1Change(Sender: TObject);
 begin FConfigChanged:=True; end;
-
 procedure TFreePreferencesDialog.seSubmergedSurfaceOpacityChange(Sender: TObject);
-    begin FConfigChanged:=True; end;
+    begin FConfigChanged:=True;
+      FFreeship.Preferences.UnderWaterColorAlpha:=(seSubmergedSurfaceOpacity.Value * 255) div 100;
+    end;
 procedure TFreePreferencesDialog.ResetDirsButtonClick(Sender: TObject);
-begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0 ) = mrYes
-         then begin FFreeship.Preferences.ResetDirectories; end;
-end;
+    begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0 ) = mrYes
+          then begin FFreeship.Preferences.ResetDirectories; end;
+    end;
 procedure TFreePreferencesDialog.SpeedButtonLanguagesDirClick(Sender: TObject);
-begin SelectDirectoryDialog1.FileName:=EditLanguagesDir.Text;
-   if SelectDirectoryDialog1.Execute then
-      EditLanguagesDir.Text:=SelectDirectoryDialog1.FileName;
-end;
+    begin SelectDirectoryDialog1.FileName:=EditLanguagesDir.Text;
+       if SelectDirectoryDialog1.Execute then
+          EditLanguagesDir.Text:=SelectDirectoryDialog1.FileName;
+    end;
 procedure TFreePreferencesDialog.SpeedButton9Click(Sender: TObject);
 begin SelectDirectoryDialog1.FileName:=EditManualsDir.Text;
    if SelectDirectoryDialog1.Execute then
@@ -260,11 +251,12 @@ end;
 procedure TFreePreferencesDialog.ComboBoxEncodingFillItems; // для *.fbm фалов
 begin                                                       // и совместимость
   with ComboBoxEncoding.Items do begin                      // к старым версиям
-(*  AddObject('ISO_8859_1-Central Europe', TObject(string('iso88591')));
+    AddObject('UTF-8 (Unicode Transformation Format, 8-bit) — стандарт кодирования Unicode(65001)',TObject(string('utf8')));
+(*  AddObject('ISO_8859_1-Central Europe',TObject(string('iso88591')));
     AddObject('ISO_8859_15-Western European languages',TObject(string('iso885915')));
     AddObject('ISO_8859_2-Eastern Europe', TObject(string('iso88592')));
     AddObject('CP1250- Central Europe', TObject(string('cp1250')));
-*)  AddObject('CP1251- ANSI Cyrillic(Windows)', TObject(string('cp1251')));
+*)  AddObject('CP1251- ANSI Cyrillic(Windows)',TObject(string('cp1251')));
     AddObject('CP1252- ANSI Latin; Western European(Windows)', TObject(string('cp1252')));
     AddObject( 'CP950- ANSI/OEM Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
 (*  AddObject('CP1253- Greek', TObject(string('cp1253')));
@@ -276,8 +268,8 @@ begin                                                       // и совмест
     AddObject( 'CP437- DOS Central Europe', TObject(string('cp437')));
     AddObject( 'CP850- DOS Western Europe', TObject(string('cp850')));
     AddObject( 'CP852- DOS Central Europe', TObject(string('cp852')));
-    AddObject( 'CP866- DOS and Windows console Cyrillic', TObject(string('cp866')));
-    AddObject( 'CP874- Thai', TObject(string('cp874')));
+*)  AddObject( 'CP866- DOS and Windows console Cyrillic', TObject(string('cp866')));
+(*  AddObject( 'CP874- Thai', TObject(string('cp874')));
     AddObject(  'KOI8- Russian Cyrillic', TObject(string('koi8')));
 *)end;
 end;

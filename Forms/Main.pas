@@ -20,16 +20,16 @@ interface uses Interfaces,
 type
   TMainForm = class( TForm )                                       // TMainForm
      FreeShip: TFreeShip;
-     MainMenu1: TMainMenu;
+     MainMenu1: TMainMenu; HintBar: TStatusBar;
      MainClientPanel,PanelMain,StatusBar,StatusPanel5: TPanel;
      ToolBarCurves,     ToolBarFaces,
      ToolBarFile,       ToolBarEdit,
      ToolBarEdges,      ToolBarPoints,
      ToolBarVisibility, ToolBarLayers : TToolBar;
-     ActionList1 : TActionList;
-//   FActionListHull : TActionList;
-     AboutAction,                   NewModel,
-     SplitSection50pct,             LayerVisibilityDialog,
+     ActionList1      : TActionList;
+//   FActionListHull  : TActionList;
+     AboutAction, NewModel,
+     LayerVisibilityDialog,
      SplitSectionDialog,            ShowFreeObjects,
      PointExtrude,                  PointsCoincide,
      AddGridPanel,                  ActionCheckUpdates,
@@ -52,9 +52,8 @@ type
      IntersectionDialog,            EdgeExtrude,
      EdgeSplit,                     ExportFEF,
      EditProjectSettings,           CheckModel,
-     ShowNormals,                   CrossCurves,
-     ImportVRML,ImportSTL,ImportOBJ,ImportFEF,
-     ResistanceDelft,               ResistanceKaper: TAction;
+     ShowNormals,ImportVRML,ImportSTL,ImportOBJ,ImportFEF,
+     ResistanceDelft,ResistanceKaper:                       TAction;
 
      AuroraHullVsl,                 MichletCFD1,
      miSelectionDialog,             miShowLayerVisibilityDialog,
@@ -155,16 +154,13 @@ type
     NewCurve         : TAction;    AddCurve1     : TMenuItem;
     ExportCoordinates: TAction;    Coordinates1  : TMenuItem;
     ImportCarene     : TAction;    Carenefile1   : TMenuItem;
-    N2 : TMenuItem;
-    ImportBodyplan: TAction;
+    ImportBodyplan   : TAction;    Bodyplan1     : TMenuItem;
+    N2,N3,N4,N5 : TMenuItem;
     MoveModel: TAction;
     Deselectall2: TMenuItem;
     Intersections1: TMenuItem;
-    N3: TMenuItem;
     RecentFiles: TMenuItem;
-    N4: TMenuItem;
     Showcurvature: TAction;
-    N5: TMenuItem;
     Curvature1: TMenuItem;
     Curve1: TMenuItem;
     Import2: TMenuItem;
@@ -1365,30 +1361,24 @@ procedure TMainForm.ShowGridExecute(Sender: TObject);
 procedure TMainForm.UndoExecute(Sender: TObject);
     begin FreeShip.Edit.Undo; UpdateMenu; SetCaption; end;
 
-   // Update undo memory usage
-procedure TMainForm.FreeShipUpdateUndoData(Sender: TObject);
-var Memory : Integer;
+procedure TMainForm.FreeShipUpdateUndoData(Sender:TObject); var Memory :Integer;
 begin
-   Memory:=Trunc(Freeship.UndoMemory/1024);
-   if Memory<1024 then LabelUndoMemory.Caption:=UserString(283)+' : '+IntToStr(Memory)+' Kb.'
-                  else LabelUndoMemory.Caption:=UserString(283)+' : '+FloatToDec(Memory/1024,3)+' Mb.';
+  Memory:=Trunc( Freeship.UndoMemory/1024 );
+  if Memory<1024 then LabelUndoMemory.Caption:=UserString(283)+' : '+IntToStr(Memory)+' Kb.'
+                 else LabelUndoMemory.Caption:=UserString(283)+' : '+FloatToDec(Memory/1024,3)+' Mb.';
    Undo.Enabled:=FreeShip.UndoCount>0;
    SetCaption;
    UpdateMenu;
 end;
 
 procedure TMainForm.HydrostaticsDialogExecute(Sender: TObject);
-begin Freeship.Edit.Hydrostatics_Dialog; UpdateMenu; end;
-
+    begin Freeship.Edit.Hydrostatics_Dialog; UpdateMenu; end;
 procedure TMainForm.ExportObjExecute(Sender: TObject);
-begin FreeShip.Edit.File_ExportObj; UpdateMenu; end;
-
+    begin FreeShip.Edit.File_ExportObj; UpdateMenu; end;
 procedure TMainForm.InvertFaceExecute(Sender: TObject);
-begin Freeship.Edit.Face_Flip; UpdateMenu; end;
-
+    begin Freeship.Edit.Face_Flip; UpdateMenu; end;
 procedure TMainForm.PreferencesExecute(Sender: TObject);
-begin FreeShip.Preferences.Edit; UpdateMenu; { LoadToolIcons;}  end;
-
+    begin FreeShip.Preferences.Edit; UpdateMenu; { LoadToolIcons;}  end;
 procedure TMainForm.ImportBodyplanExecute(Sender: TObject);
 begin
    FreeShip.Edit.ImportFrames;
@@ -1398,36 +1388,31 @@ begin
 end;
 
 procedure TMainForm.ExportAuroraHullVslExecute(Sender: TObject);
-begin Freeship.Edit.File_Export_Aurora_Experiments; UpdateMenu; end;
-
+    begin Freeship.Edit.File_Export_Aurora_Experiments; UpdateMenu; end;
 procedure TMainForm.ExportDXF3DPolylinesExecute(Sender: TObject);
-begin Freeship.Edit.File_ExportDXF_3DPolylines; UpdateMenu; end;
-
+    begin Freeship.Edit.File_ExportDXF_3DPolylines; UpdateMenu; end;
 procedure TMainForm.ExportDXFFacesExecute(Sender: TObject);
-begin Freeship.Edit.File_ExportDXF_Faces; UpdateMenu; end;
-
+    begin Freeship.Edit.File_ExportDXF_Faces; UpdateMenu; end;
 procedure TMainForm.ImportFEFExecute(Sender: TObject);
     begin FreeShip.Edit.File_ImportFEF;
           FOpenHullWindows;
           SetCaption;
           UpdateMenu;
     end;
-
 procedure TMainForm.ImportHullFileExecute(Sender: TObject);
-begin Freeship.Edit.File_ImportHull;
-      FOpenHullWindows;
-      UpdateMenu;
-end;
-
+    begin Freeship.Edit.File_ImportHull;
+          FOpenHullWindows;
+          UpdateMenu;
+    end;
 procedure TMainForm.ExportOffsetsExecute(Sender: TObject);
-begin Freeship.Edit.File_ExportOffsets; UpdateMenu; end;
-
-procedure TMainForm.AddPointExecute(Sender: TObject);
-begin Freeship.EditMode:=emAddPoint;
-    //Freeship.Edit.Point_New;
-   UpdateMenu;
-end;
-
+    begin Freeship.Edit.File_ExportOffsets; UpdateMenu; end;
+procedure TMainForm.ExportArchimedesExecute(Sender: TObject);
+    begin FreeShip.Edit.File_ExportArchimedes; UpdateMenu; end;
+    procedure TMainForm.AddPointExecute(Sender: TObject);
+    begin Freeship.EditMode:=emAddPoint;
+        //Freeship.Edit.Point_New;
+          UpdateMenu;
+    end;
 procedure TMainForm.DevelopLayersExecute(Sender: TObject);
 begin
    Screen.Cursor:=crCross; //Hourglass;
@@ -1436,9 +1421,6 @@ begin
    Screen.Cursor:=crDefault;
    UpdateMenu;
 end;
-
-procedure TMainForm.ExportArchimedesExecute(Sender: TObject);
-begin FreeShip.Edit.File_ExportArchimedes; UpdateMenu; end;
 
 procedure TMainForm.ShowLinesplanExecute( Sender: TObject );
 var I          : Integer;

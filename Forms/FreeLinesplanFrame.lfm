@@ -14,7 +14,6 @@ object FreeLinesplanFrame: TFreeLinesplanFrame
     Top = 0
     Width = 761
     AutoSize = True
-    Caption = 'ToolBar1'
     Color = clForm
     Images = MenuImages
     Indent = 5
@@ -44,7 +43,6 @@ object FreeLinesplanFrame: TFreeLinesplanFrame
       Left = 119
       Height = 22
       Top = 2
-      Caption = 'ToolButton6'
       ImageIndex = 1
       Style = tbsSeparator
     end
@@ -77,7 +75,6 @@ object FreeLinesplanFrame: TFreeLinesplanFrame
       Height = 22
       Top = 2
       AutoSize = True
-      Caption = 'ToolButton14'
       ImageIndex = 12
       Style = tbsSeparator
     end
@@ -103,7 +100,6 @@ object FreeLinesplanFrame: TFreeLinesplanFrame
       Left = 296
       Height = 22
       Top = 2
-      Caption = 'ToolButton15'
       ImageIndex = 12
       Style = tbsSeparator
     end

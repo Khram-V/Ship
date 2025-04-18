@@ -4,7 +4,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
   Top = 51
   Width = 638
   AutoSize = True
-  Caption = '|Preferences.|'
+  Caption = 'Настройки Free!Ship.'
   ClientHeight = 660
   ClientWidth = 638
   Constraints.MinHeight = 400
@@ -35,7 +35,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
       AutoSize = True
       BorderSpacing.Around = 3
       Constraints.MinWidth = 80
-      Caption = 'Cancel'
+      Caption = 'Отмена'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -85,7 +85,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
       AutoSize = True
       BorderSpacing.Around = 3
       Constraints.MinWidth = 80
-      Caption = 'OK'
+      Caption = 'Есть!'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -153,7 +153,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
       TabOrder = 0
       OnChange = PageControl1Change
       object TabSheet1: TTabSheet
-        Caption = 'General'
+        Caption = 'Общие установки'
         ClientHeight = 586
         ClientWidth = 610
         ParentFont = False
@@ -196,7 +196,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Top = 0
               Width = 133
               Alignment = taRightJustify
-              Caption = 'Language'
+              Caption = 'Язык'
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
@@ -223,7 +223,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 ParentFont = False
                 Sorted = True
                 TabOrder = 0
-                Text = 'ComboBox1'
                 OnChange = EditDirChange
               end
             end
@@ -233,7 +232,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Top = 27
               Width = 133
               Alignment = taRightJustify
-              Caption = 'Max. undo memory (Mb)'
+              Caption = 'Объем памяти для отмены (Мб)'
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
@@ -268,10 +267,12 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Top = 54
               Width = 133
               Alignment = taRightJustify
-              Caption = 'Encoding for FBM'
+              Caption = 'Кодировка в старых FBM моделях'
+              Hint = 'При выборе UTF-8 перекодировки не выполняются.'
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
+              ShowHint = True
             end
             object Panel52: TPanel
               Left = 153
@@ -287,7 +288,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object ComboBoxEncoding: TComboBox
                 Left = 0
                 Height = 23
-                Hint = 'Encoding for FBM files'#10'Used to convert Windows encoded strings to UTF8'
+                Hint = 'Кодировка двоичных FBM записей приводится к UTF-8.'
                 Top = 0
                 Width = 240
                 Align = alLeft
@@ -295,16 +296,17 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 ItemHeight = 15
                 ItemWidth = 200
                 ParentFont = False
-                Sorted = True
+                Sorted = False
                 TabOrder = 0
                 OnChange = EditDirChange
+                ShowHint = True
               end
             end
           end
         end
       end
       object TabSheet2: TTabSheet
-        Caption = 'Directories'
+        Caption = 'Пути к материалам'
         ChildSizing.ControlsPerLine = 1
         ClientHeight = 586
         ClientWidth = 610
@@ -317,7 +319,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
           Align = alClient
           AutoSize = True
           BevelOuter = bvNone
-          Caption = 'Panel51'
           ChildSizing.LeftRightSpacing = 10
           ChildSizing.TopBottomSpacing = 10
           ChildSizing.ControlsPerLine = 1
@@ -357,7 +358,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Align = alClient
                 ParentFont = False
                 TabOrder = 0
-                Text = 'EditLanguagesDir'
                 OnChange = EditDirChange
               end
               object SpeedButtonLanguagesDir: TSpeedButton
@@ -411,7 +411,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Align = alTop
               AutoSize = True
               BevelOuter = bvNone
-              Caption = 'Panel29'
               ClientHeight = 23
               ClientWidth = 590
               ParentFont = False
@@ -424,7 +423,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Align = alClient
                 ParentFont = False
                 TabOrder = 0
-                Text = 'EditManualsDir'
                 OnChange = EditDirChange
               end
               object SpeedButton9: TSpeedButton
@@ -478,7 +476,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Align = alTop
               AutoSize = True
               BevelOuter = bvNone
-              Caption = 'Panel29'
               ClientHeight = 23
               ClientWidth = 590
               ParentFont = False
@@ -491,7 +488,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Align = alClient
                 ParentFont = False
                 TabOrder = 0
-                Text = 'EditOpenDir'
                 OnChange = EditDirChange
               end
               object SpeedButton14: TSpeedButton
@@ -557,7 +553,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Align = alClient
                 ParentFont = False
                 TabOrder = 0
-                Text = 'EditExportDir'
                 OnChange = EditDirChange
               end
               object SpeedButton17: TSpeedButton
@@ -623,7 +618,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Align = alClient
                 ParentFont = False
                 TabOrder = 0
-                Text = 'EditImportDir'
                 OnChange = EditDirChange
               end
               object SpeedButton16: TSpeedButton
@@ -677,7 +671,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Align = alTop
               AutoSize = True
               BevelOuter = bvNone
-              Caption = 'Panel29'
               ClientHeight = 23
               ClientWidth = 590
               ParentFont = False
@@ -690,7 +683,6 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Align = alClient
                 ParentFont = False
                 TabOrder = 0
-                Text = 'EditSaveDir'
                 OnChange = EditDirChange
               end
               object SpeedButton15: TSpeedButton
@@ -745,7 +737,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
               AutoSize = True
               BorderSpacing.Around = 3
               Constraints.MinWidth = 80
-              Caption = 'Reset'
+              Caption = 'Сброс к исходному'
               Flat = True
               Glyph.Data = {
                 36090000424D3609000000000000360000002800000018000000180000000100
@@ -830,7 +822,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
         end
       end
       object TabSheet3: TTabSheet
-        Caption = 'Graphics'
+        Caption = 'Графика и расцветка'
         ClientHeight = 586
         ClientWidth = 610
         ParentFont = False
@@ -868,7 +860,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Height = 23
               Top = 4
               Width = 90
-              Caption = 'Controlpoint size'
+              Caption = 'Размер опорной точки '
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
@@ -890,7 +882,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Height = 23
               Top = 4
               Width = 46
-              Caption = 'Font size'
+              Caption = 'Высота букв в надписях '
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
@@ -943,7 +935,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 4
                 Width = 160
-                Caption = 'Viewport background'
+                Caption = 'Цвет чистого листа'
                 ParentColor = False
                 ParentFont = False
               end
@@ -964,7 +956,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 24
                 Width = 160
-                Caption = 'Viewport grid'
+                Caption = 'Чертёжная сетка'
                 ParentColor = False
                 ParentFont = False
               end
@@ -985,7 +977,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 44
                 Width = 160
-                Caption = 'Grid font'
+                Caption = 'Подписи на сетке'
                 ParentColor = False
                 ParentFont = False
               end
@@ -1006,7 +998,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 70
                 Width = 160
-                Caption = 'New surfaces'
+                Caption = 'Новые поверхности'
                 ParentColor = False
                 ParentFont = False
               end
@@ -1028,7 +1020,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 90
                 Width = 160
-                Caption = 'Surface normals'
+                Caption = 'Векторы ориентации нормалей'
                 ParentColor = False
                 ParentFont = False
               end
@@ -1049,7 +1041,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 110
                 Width = 160
-                Caption = 'Submerged surfaces'
+                Caption = 'Окраска смоченной обшивка'
                 ParentColor = False
                 ParentFont = False
               end
@@ -1070,7 +1062,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 23
                 Top = 130
                 Width = 160
-                Caption = 'Submerged surface opacity, %'
+                Caption = 'Наложение подводного окраса, % '
                 Layout = tlCenter
                 ParentColor = False
                 ParentFont = False
@@ -1080,7 +1072,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object seSubmergedSurfaceOpacity: TSpinEdit
                 Left = 176
                 Height = 23
-                Hint = '0 - clear, 255 - opaque'
+                Hint = '0 - чисто смыто,  255 = полный окрас'
                 Top = 130
                 Width = 60
                 Constraints.MinWidth = 60
@@ -1095,7 +1087,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 159
                 Width = 160
-                Caption = 'Control curves'
+                Caption = 'Контрольные контуры'
                 ParentColor = False
                 ParentFont = False
               end
@@ -1117,7 +1109,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 179
                 Width = 160
-                Caption = 'Regular control edges'
+                Caption = 'Регулярные (внутрение) рёбра'
                 ParentColor = False
                 ParentFont = False
               end
@@ -1138,7 +1130,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 199
                 Width = 160
-                Caption = 'Crease edges (control)'
+                Caption = 'Контрольные рёбра со сломом'
                 ParentColor = False
                 ParentFont = False
               end
@@ -1159,7 +1151,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Height = 18
                 Top = 219
                 Width = 160
-                Caption = 'Crease edges (interior)'
+                Caption = 'Рёбра со сломом внутренние'
                 ParentColor = False
                 ParentFont = False
               end
@@ -1173,6 +1165,27 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinWidth = 60
                 ParentFont = False
                 TabOrder = 10
+                OnClick = ColorPanelClick
+              end
+              object Label7: TLabel
+                Left = 10
+                Height = 18
+                Top = 239
+                Width = 121
+                Caption = 'Регулярные (внутренние) опорные точки'
+                ParentColor = False
+                ParentFont = False
+              end
+              object Panel9: TPanel
+                Left = 137
+                Height = 18
+                Top = 239
+                Width = 60
+                BevelOuter = bvLowered
+                Constraints.MinHeight = 18
+                Constraints.MinWidth = 60
+                ParentFont = False
+                TabOrder = 0
                 OnClick = ColorPanelClick
               end
             end
@@ -1194,40 +1207,19 @@ object FreePreferencesDialog: TFreePreferencesDialog
               ClientWidth = 207
               ParentFont = False
               TabOrder = 1
-              object Label7: TLabel
-                Left = 10
-                Height = 18
-                Top = 4
-                Width = 121
-                Caption = 'Regular control points'
-                ParentColor = False
-                ParentFont = False
-              end
-              object Panel9: TPanel
-                Left = 137
-                Height = 18
-                Top = 4
-                Width = 60
-                BevelOuter = bvLowered
-                Constraints.MinHeight = 18
-                Constraints.MinWidth = 60
-                ParentFont = False
-                TabOrder = 0
-                OnClick = ColorPanelClick
-              end
               object Label8: TLabel
                 Left = 10
                 Height = 18
-                Top = 24
+                Top = 4
                 Width = 121
-                Caption = 'Crease points'
+                Caption = 'Точки на рёбрах со сломом'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel10: TPanel
                 Left = 137
                 Height = 18
-                Top = 24
+                Top = 4
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1239,16 +1231,16 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label9: TLabel
                 Left = 10
                 Height = 18
-                Top = 44
+                Top = 24
                 Width = 121
-                Caption = 'Corner points'
+                Caption = 'Угловые опорные точки'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel11: TPanel
                 Left = 137
                 Height = 18
-                Top = 44
+                Top = 24
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1260,16 +1252,16 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label10: TLabel
                 Left = 10
                 Height = 18
-                Top = 64
+                Top = 44
                 Width = 121
-                Caption = 'Dart points'
+                Caption = 'Точки у стрелок'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel12: TPanel
                 Left = 137
                 Height = 18
-                Top = 64
+                Top = 44
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1281,16 +1273,16 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label20: TLabel
                 Left = 10
                 Height = 18
-                Top = 84
+                Top = 64
                 Width = 121
-                Caption = 'Leak points'
+                Caption = 'Свободные точки'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel21: TPanel
                 Left = 137
                 Height = 18
-                Top = 84
+                Top = 64
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1302,16 +1294,16 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label11: TLabel
                 Left = 10
                 Height = 18
-                Top = 110
+                Top = 84
                 Width = 121
-                Caption = 'Selected items'
+                Caption = 'Выбранные элементы'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel13: TPanel
                 Left = 137
                 Height = 18
-                Top = 110
+                Top = 84
                 Width = 60
                 BorderSpacing.Top = 8
                 BevelOuter = bvLowered
@@ -1324,16 +1316,16 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label22: TLabel
                 Left = 10
                 Height = 18
-                Top = 130
+                Top = 104
                 Width = 121
-                Caption = 'Curvature plots'
+                Caption = 'Окраска кривизны'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel23: TPanel
                 Left = 137
                 Height = 18
-                Top = 130
+                Top = 104
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1345,16 +1337,16 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label21: TLabel
                 Left = 10
                 Height = 18
-                Top = 150
+                Top = 124
                 Width = 121
-                Caption = 'Markers'
+                Caption = 'Маркеры'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel22: TPanel
                 Left = 137
                 Height = 18
-                Top = 150
+                Top = 124
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1366,16 +1358,16 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label14: TLabel
                 Left = 10
                 Height = 18
-                Top = 170
+                Top = 144
                 Width = 121
-                Caption = 'Stations'
+                Caption = 'Шпангоуты'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel16: TPanel
                 Left = 137
                 Height = 18
-                Top = 170
+                Top = 144
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1387,16 +1379,16 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label15: TLabel
                 Left = 10
                 Height = 18
-                Top = 190
+                Top = 164
                 Width = 121
-                Caption = 'Buttocks'
+                Caption = 'Батоксы'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel17: TPanel
                 Left = 137
                 Height = 18
-                Top = 190
+                Top = 164
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1408,17 +1400,17 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label16: TLabel
                 Left = 10
                 Height = 18
-                Top = 210
+                Top = 184
                 Width = 121
                 AutoSize = False
-                Caption = 'Waterlines'
+                Caption = 'Ватерлинии'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel18: TPanel
                 Left = 137
                 Height = 18
-                Top = 210
+                Top = 184
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1430,17 +1422,17 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label19: TLabel
                 Left = 10
                 Height = 18
-                Top = 230
+                Top = 204
                 Width = 121
                 AutoSize = False
-                Caption = 'Diagonals'
+                Caption = 'Рыбины'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel20: TPanel
                 Left = 137
                 Height = 18
-                Top = 230
+                Top = 204
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1452,17 +1444,17 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label24: TLabel
                 Left = 10
                 Height = 18
-                Top = 250
+                Top = 224
                 Width = 121
                 AutoSize = False
-                Caption = 'Hydrostatics font color'
+                Caption = 'Разметка по гидростатике'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel25: TPanel
                 Left = 137
                 Height = 18
-                Top = 250
+                Top = 224
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1474,17 +1466,17 @@ object FreePreferencesDialog: TFreePreferencesDialog
               object Label25: TLabel
                 Left = 10
                 Height = 18
-                Top = 270
+                Top = 244
                 Width = 121
                 AutoSize = False
-                Caption = 'Zebra stripes color'
+                Caption = 'Расцветка полосатости'
                 ParentColor = False
                 ParentFont = False
               end
               object Panel26: TPanel
                 Left = 137
                 Height = 18
-                Top = 270
+                Top = 244
                 Width = 60
                 BevelOuter = bvLowered
                 Constraints.MinHeight = 18
@@ -1516,7 +1508,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
               AutoSize = True
               BorderSpacing.Around = 3
               Constraints.MinWidth = 80
-              Caption = 'Reset'
+              Caption = 'Сброс к исходной графике'
               Flat = True
               Glyph.Data = {
                 36090000424D3609000000000000360000002800000018000000180000000100

@@ -470,7 +470,7 @@ begin Str:='1.0';
   if not InputQuery( 'New range of intersections ','Distance: ',Str) then exit;
   Step:=abs(GetFloat(Str));
   if abs( Step )<1e-3 then exit;
-  FFreeShip.Extents(Min, Max);
+  FFreeShip.Extents( Min,Max );
   if ShowStations.Checked then   begin Start:=Min.X; Stop:=Max.X; end else
   if ShowButtocks.Checked then   begin Start:=0.0;   Stop:=Max.Y; end else
   if ShowWaterlines.Checked then begin Start:=Min.Z; Stop:=Max.Z; end else

@@ -17,7 +17,7 @@ begin
   FBackgroundMode:=val;
   case FBackGroundMode of
     emSetOrigin: Cursor:=crSetOrigin;
-    emSetScale: Cursor:=crSetScale;
+    emSetScale : Cursor:=crSetScale;
     emSetTransparentColor: Cursor:=crTranspCol;
     else Cursor:=crCross;
   end;
@@ -83,16 +83,15 @@ begin
 end;
 
 procedure TFreeViewport.FSetLight(val: TFreeLight);
-begin
-  if  ( FLight.Position.X = Val.Position.X )
-  and ( FLight.Position.Y = Val.Position.Y )
-  and ( FLight.Position.Z = Val.Position.Z )
-  and ( FLight.Ambient = Val.Ambient )
-  and ( FLight.Intensity = Val.Intensity ) then exit;
-  FLight:=Val;
-  FLightIntensity:=FLight.Intensity/255.0;
-  FAmbientIntencity:=FLight.Ambient/255.0;
-  Refresh;
+begin if  ( FLight.Position.X = Val.Position.X )
+      and ( FLight.Position.Y = Val.Position.Y )
+      and ( FLight.Position.Z = Val.Position.Z )
+      and ( FLight.Ambient = Val.Ambient )
+      and ( FLight.Intensity = Val.Intensity ) then exit;
+      FLight:=Val;
+      FLightIntensity:=FLight.Intensity/255.0;
+      FAmbientIntencity:=FLight.Ambient/255.0;
+      Refresh;
 end;
 
 procedure TFreeViewport.FSetPan(Val: TPoint);
@@ -235,7 +234,7 @@ begin
   FCameraType:=ftStandard; // Standard 50mm. lens, field of view= 35/50 =35 degrees.
   FFieldOfView:=RadToDeg( ArcTan( 35/50 ) );
   FViewType:=fvPerspective;
-  FDoubleBuffer:=True;
+  DoubleBuffer:=True;
   FBackgroundImage:=TFreeBackgroundImage.Create( Self );
   // Inherited create(AOwner);
   FDrawingBuffer:=TBitmap.Create;
@@ -891,7 +890,7 @@ begin
         FDestinationWidth:=ClientWidth;
         FDestinationHeight:=ClientHeight;
       end;
-      if (FDoubleBuffer) or (ViewportMode <> vmWireframe) then begin
+      if (DoubleBuffer) or (ViewportMode <> vmWireframe) then begin
         if FDrawingBuffer.Width <> FDestinationWidth then
            FDrawingBuffer.Width:=FDestinationWidth;
         if FDrawingBuffer.Height <> FDestinationHeight then
@@ -923,7 +922,7 @@ begin
       if Assigned(OnRedraw) //and (ViewportMode=vmWireframe)
          then OnRedraw(Self);
       if ViewportMode <> vmWireframe then AlphaBuffer.Draw;
-      if (FDoubleBuffer) or (ViewportMode <> vmWireframe) then begin
+      if (DoubleBuffer) or (ViewportMode <> vmWireframe) then begin
         // Copy buffer to screen
         //Bitblt(OldCanvas.Handle,0,0,FDestinationWidth,FDestinationHeight,FDrawingBuffer.Canvas.Handle,0,0,SRCCOPY);
         OldCanvas.Draw( 0,0,FDrawingBuffer );
@@ -1048,10 +1047,10 @@ end;
 
 procedure TFreeViewport.MouseDown( Button: TMouseButton; Shift: TShiftState; X,Y: integer );
 var Str,Tmp: AnsiString;
-    I,Ind: Integer;
+    //I,Ind: Integer;
     XVal,YVal: TFloatType;
     Pt,Diff: TPoint;
-    OK: boolean;
+    //OK: boolean;
 begin
   FMouseShift:=Shift;
   inherited;
@@ -1063,7 +1062,7 @@ begin
   if (BackgroundMode=emSetOrigin) and (ssLeft in Shift)
   then FBackgroundOrigin:=BackgroundImage.Origin else
   if (BackgroundMode=emSetScale) and (ssLeft in Shift) then begin
-    Pt:=Project(ZERO);
+    Pt:=Project( ZERO );
     if (Scale*Zoom*BackgroundImage.Scale)<>0 then begin
       Diff.X:=round((Pt.X-X)/(Scale*Zoom*BackgroundImage.Scale));
       Diff.Y:=round((Pt.Y-Y)/(Scale*Zoom*BackgroundImage.Scale));
@@ -1071,9 +1070,19 @@ begin
       Diff.X:=Pt.X-X;
       Diff.Y:=Pt.Y-Y;
     end;        //TODO-change InputQuery to a dialog with TFloatSpinEdit fields
-    Str:=FloatToDec(-BackgroundImage.Scale*Diff.X,4 )+', '
-       + FloatToDec( BackgroundImage.Scale*Diff.Y,4 );
-    if InputQuery( 'Scale ','New coordinate: ', str ) then begin
+    Str:=FloatToDec( -BackgroundImage.Scale*Diff.X,4 )+'  '
+       + FloatToDec(  BackgroundImage.Scale*Diff.Y,4 );
+    if InputQuery( 'Масштабирование по отстоянию от начального отсчёта',
+                   'Переназначение координат: ',str ) then begin
+      XVal:=getFloat( Str );
+      YVal:=GetFloat( Str );
+      if abs(Diff.X) > abs(Diff.Y)
+        then BackgroundImage.Scale:=XVal / -Diff.X
+        else BackgroundImage.Scale:=YVal / Diff.Y;
+      Refresh;
+      BackgroundMode:=emNormal;
+      if assigned( OnChangeBackground ) then OnChangeBackground( Owner );
+{
       Ind:=Pos(',', Str);
       if Ind <> 0 then begin OK:=True;
         Tmp:=trim( Copy( Str,1,Ind-1 ) );
@@ -1093,6 +1102,7 @@ begin
           if assigned( OnChangeBackground ) then OnChangeBackground( Owner );
         end;  // else MessageDlg('Invalid coordinate!', mtError, [mbOK], 0);
       end;    // else MessageDlg('Invalid coordinate!', mtError, [mbOK], 0);
+}
     end;
   end else
   if (BackgroundMode=emSetFrame) and (ssLeft in Shift) then begin

@@ -500,7 +500,7 @@ begin
     Point.LoadFromStream(LineNr, Strings);
   end;
   Inc(LineNr); Str:=Strings[LineNr];                       // Read controlEdges
-  N:=GetInteger( Str);
+  N:=GetInteger( Str);                                     //  Edge:=nil;
   for I:=1 to N do begin
     Edge:=TFreeSubdivisionControlEdge.Create(self);
     Edge.FControlEdge:=True;
@@ -521,8 +521,13 @@ begin
     P1:=Face.Point[Face.FPoints.Count-1];
     for J:=1 to Face.FPoints.Count do begin
       P2:=Face.Point[J-1];
-      Edge:=EdgeExists(P1,P2) as TFreeSubdivisionControlEdge;
-      if Edge<>nil then Edge.AddFace(Face);                                     // else MessageDlg( 'Could not find edge!',mtError,[mbOK],0);
+      Edge:=EdgeExists( P1,P2 ) as TFreeSubdivisionControlEdge;
+      if Edge<>nil then Edge.AddFace(Face)                                   // else MessageDlg( 'Could not find edge!',mtError,[mbOK],0);
+      else begin
+        Edge:=AddControlEdge( P1,P2 );
+        Edge.FFaces.Add(Face);
+        Edge.Crease:=True;
+      end;
       P1:=P2;
     end;
     Index:=GetInteger( Str);                                 // Read Layerindex

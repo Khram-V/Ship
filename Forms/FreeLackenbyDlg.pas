@@ -768,8 +768,7 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.Input1AfterSetValue(Sender: TObject);
-var
-  NewDispl: TFloatType;
+var NewDispl: TFloatType;
 begin
   if DisplacementNew.Value > 0 then begin
     // New displacement set, update otherboxes
@@ -799,8 +798,7 @@ begin //// NewDispl:=BlockCoeffNew.Value*((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.
 end;
 
 procedure TFreeLackenbyDialog.Input3AfterSetValue(Sender: TObject);
-var
-  NewDispl: TFloatType;
+var NewDispl: TFloatType;
 begin
   NewDispl:=PrismCoeffNew.Value * FMainArea * (FMax.X-FMin.X);
   DisplacementNew.Value:=VolumeToDisplacement(
@@ -815,15 +813,14 @@ end;
 procedure TFreeLackenbyDialog.ViewportRequestExtents(Sender: TObject;
   var Min, Max: T3DVector);
 var
-  I, J, K: integer;
-  Spline: TFreeSpline;
+  I,J,K: integer;
+  Spline:TFreeSpline;
   First: boolean;
   Layer: TFreeSubdivisionLayer;
   Face: TFreeSubdivisionControlface;
   Edge: TFreeSubdivisionEdge;
 begin
   First:=True;
-
   for I:=1 to FFreeship.NumberOfLayers do begin
     Layer:=FFreeship.Layer[I-1];
     if Layer.ShowInLinesplan then
@@ -849,9 +846,7 @@ begin
     if -Min.Y > Max.Y then Max.Y:=-Min.Y
                       else Min.Y:=-Max.Y;
   end;
-
-  for I:=1 to FOriginalStations.Count do
-  begin
+  for I:=1 to FOriginalStations.Count do begin
     Spline:=FOriginalStations[I-1];
     if Spline.NumberOfPoints > 0 then begin
       if First then begin
@@ -868,10 +863,8 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.ViewportRedraw(Sender: TObject);
-var
-  I, J, K: integer;
+var I,J,K:Integer; Pt: TPoint;
   Spline: TFreeSpline;
-  Pt: TPoint;
   Layer: TFreeSubdivisionLayer;
   Face: TFreeSubdivisionControlface;
 begin
@@ -881,16 +874,14 @@ begin
     for I:=1 to FFreeship.NumberOfLayers do begin
       Layer:=FFreeship.Layer[I-1];
       if Layer.ShowInLinesplan then
-        for J:=1 to Layer.Count do
-        begin
+        for J:=1 to Layer.Count do begin
           Face:=Layer.Items[J-1];
           for K:=1 to Face.ControlDescendantEdgeCount do
             if Face.ControlDescendantEdge[K-1].Crease then
               Face.ControlDescendantEdge[K-1].Draw(False, Viewport);
         end;
     end;
-    for I:=1 to FNewStations.Count do
-    begin
+    for I:=1 to FNewStations.Count do begin
       Spline:=FNewStations[I-1];
       Spline.Color:=clRed;
       Spline.PenStyle:=psDot;
@@ -898,8 +889,7 @@ begin
       Spline.Fragments:=400;
       Spline.Draw(Viewport);
     end;
-    for I:=1 to FOriginalStations.Count do
-    begin
+    for I:=1 to FOriginalStations.Count do begin
       Spline:=FOriginalStations[I-1];
       Spline.PenStyle:=psSolid;
       Spline.Color:=clBlack;
@@ -918,37 +908,28 @@ end;
 
 procedure TFreeLackenbyDialog.TopViewRequestExtents(Sender: TObject;
   var Min, Max: T3DVector);
-var
-  I, J, K: integer;
+var I,J,K: integer;
   Spline: TFreeSpline;
   First: boolean;
   Layer: TFreeSubdivisionLayer;
   Face: TFreeSubdivisionControlface;
   Edge: TFreeSubdivisionEdge;
-
 begin
   First:=True;
-  for I:=1 to FFreeship.NumberOfLayers do
-  begin
+  for I:=1 to FFreeship.NumberOfLayers do begin
     Layer:=FFreeship.Layer[I-1];
     if Layer.ShowInLinesplan then
-      for J:=1 to Layer.Count do
-      begin
+      for J:=1 to Layer.Count do begin
         Face:=Layer.Items[J-1];
-        for K:=1 to Face.ControlDescendantEdgeCount do
-        begin
+        for K:=1 to Face.ControlDescendantEdgeCount do begin
           Edge:=Face.ControlDescendantEdge[K-1];
-          if Edge.Crease then
-          begin
-            if First then
-            begin
+          if Edge.Crease then begin
+            if First then begin
               Min:=Edge.StartPoint.Coordinate;
               Max:=Min;
               First:=False;
               MinMax(Edge.EndPoint.Coordinate, Min, Max);
-            end
-            else
-            begin
+            end else begin
               MinMax(Edge.StartPoint.Coordinate, Min, Max);
               MinMax(Edge.EndPoint.Coordinate, Min, Max);
             end;
@@ -956,33 +937,25 @@ begin
         end;
       end;
   end;
-
-  if FOriginalSectionalAreaCurve.NumberOfPoints > 0 then
-  begin
-    if First then
-    begin
+  if FOriginalSectionalAreaCurve.NumberOfPoints > 0 then begin
+    if First then begin
       Min:=FOriginalSectionalAreaCurve.Min;
       Max:=FOriginalSectionalAreaCurve.Max;
-    end
-    else
-      FOriginalSectionalAreaCurve.Extents(Min, Max);
+    end else
+       FOriginalSectionalAreaCurve.Extents(Min, Max);
     if FNewSectionalAreaCurve.NumberOfPoints > 0 then
-      FNewSectionalAreaCurve.Extents(Min, Max);
-    for I:=1 to FOriginalWaterline.Count do
-    begin
+       FNewSectionalAreaCurve.Extents(Min, Max);
+    for I:=1 to FOriginalWaterline.Count do begin
       Spline:=ForiginalWaterline[I-1];
       Spline.Extents(Min, Max);
     end;
-    for I:=1 to FNewWaterline.Count do
-    begin
+    for I:=1 to FNewWaterline.Count do begin
       Spline:=FNewWaterline[I-1];
       Spline.Extents(Min, Max);
     end;
-  end
-  else
-  begin
-    Min:=Vector(-1, -1, -1);
-    Max:=Vector(1, 1, 1);
+  end else begin
+    Min:=Vector(-1,-1,-1);
+    Max:=Vector( 1, 1, 1);
   end;
 end;
 
@@ -1000,14 +973,11 @@ begin
       TopView.FontSize:=7;
       TopView.FontColor:=clBlack;
       TopView.BrushStyle:=bsClear;
-
       Topview.PenColor:=clDkGray;
-      for I:=1 to FFreeship.NumberOfLayers do
-      begin
+      for I:=1 to FFreeship.NumberOfLayers do begin
         Layer:=FFreeship.Layer[I-1];
         if Layer.ShowInLinesplan then
-          for J:=1 to Layer.Count do
-          begin
+          for J:=1 to Layer.Count do begin
             Face:=Layer.Items[J-1];
             for K:=1 to Face.ControlDescendantEdgeCount do
               if Face.ControlDescendantEdge[K-1].Crease then
@@ -1028,9 +998,7 @@ begin
       FNewSectionalAreaCurve.Rebuild;
       if FNewSectionalAreaCurve.NumberOfPoints>0 then
          FNewSectionalAreaCurve.Draw(TopView);
-
-      for I:=1 to FNewWaterline.Count do
-      begin
+      for I:=1 to FNewWaterline.Count do begin
         Spline:=FNewWaterline[I-1];
         Spline.Color:=clRed;
         Spline.PenStyle:=psDot;
@@ -1042,20 +1010,17 @@ begin
       FOriginalSectionalAreaCurve.ShowCurvature:=False;
       FOriginalSectionalAreaCurve.Fragments:=400;
       FOriginalSectionalAreaCurve.Draw(TopView);
-      if FOriginalSectionalAreaCurve.NumberOfPoints > 0 then
-      begin
+      if FOriginalSectionalAreaCurve.NumberOfPoints > 0 then begin
         Pt:=TopView.Project(FOriginalSectionalAreaCurve.Value(0.5));
         TopView.TextOut(Pt.X, Pt.Y, 'SAC');
       end;
-      for I:=1 to FOriginalWaterline.Count do
-      begin
+      for I:=1 to FOriginalWaterline.Count do begin
         Spline:=ForiginalWaterline[I-1];
         Spline.Color:=clBlack;
         Spline.ShowCurvature:=False;
         Spline.Fragments:=400;
         Spline.Draw(TopView);
-        if Spline.NumberOfPoints > 0 then
-        begin
+        if Spline.NumberOfPoints > 0 then begin
           Pt:=TopView.Project(Spline.Value(0.5));
           TopView.TextOut(Pt.X, Pt.Y, 'DWL');
         end;

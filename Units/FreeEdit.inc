@@ -1335,9 +1335,7 @@ begin result:=false;
 end;{TFreeEdit.File_SaveAs}
 
 procedure TFreeEdit.Flowline_Add(Source: T2DCoordinate; View: TFreeviewType);
-var
-  Flowline: TFreeFlowline;
-  vUndo: TFreeUndoObject;
+var Flowline: TFreeFlowline; vUndo: TFreeUndoObject;
 begin
   vUndo:=CreateUndoObject( 'Add flowline',False );
   Flowline:=TFreeFlowline.Create( FreeShip );
@@ -2569,7 +2567,7 @@ begin
     // Number of lovked points must be smaller then NumberOfSelectedControlPoints-2
     if NLocked < FreeShip.NumberOfSelectedControlPoints-1 then begin
       P1:=FreeShip.SelectedControlPoint[0];
-      vUndo:=CreateUndoObject(rsPointAnchorConstraintChanged, False);
+      vUndo:=CreateUndoObject( 'CPAncConsChange',False ); // 'ControlPoint Anchor Constraint Changed'
       NChanged:=0;
       for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do begin
         Point:=FreeShip.SelectedControlPoint[I];
@@ -2610,7 +2608,7 @@ begin
     // Number of locked or hard anchored points must be smaller then NumberOfSelectedControlPoints-2
     if NLocked < FreeShip.NumberOfSelectedControlPoints-1 then begin
       P1:=FreeShip.SelectedControlPoint[0];
-      vUndo:=CreateUndoObject(rsPointAnchorConstraintChanged, False);
+      vUndo:=CreateUndoObject( 'CPAncConsChange',False );  // 'ControlPoint Anchor Constraint Changed'
       NChanged:=0;
       for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do begin
         Point:=FreeShip.SelectedControlPoint[I];
@@ -2694,7 +2692,7 @@ begin
     if NLocked < FreeShip.NumberOfSelectedControlPoints-2 then begin
       P1:=FreeShip.SelectedControlPoint[0];
       P2:=FreeShip.SelectedControlPoint[FreeShip.NumberOfSelectedControlPoints-1];
-      vUndo:=CreateUndoObject(rsPointLinearConstraintChanged, False);
+      vUndo:=CreateUndoObject( 'CPconschange',False );     // 'ControlPoint Linear Constraint Changed'
       NChanged:=0;
       for I:=2 to FreeShip.NumberOfSelectedControlPoints-1 do begin
         Point:=FreeShip.SelectedControlPoint[I-1];

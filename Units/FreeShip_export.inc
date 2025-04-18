@@ -727,7 +727,7 @@ begin
         '**                                                           **'+#10+
         '**     Appendage Hydrostatics Generator                      **'+#10+
         '**     Version 1.0.1                                         **'+#10+
-        '**     Copyright : John A. MacSween-2000                   **'+#10+
+        '**     Copyright : John A. MacSween-2000                     **'+#10+
         '**     Please visit the website for updates and new versions **'+#10+
         '**                                                           **'+#10+
         '**                 www.naval-architecture.co.uk              **'+#10+
@@ -763,18 +763,15 @@ begin
           Write(FFile, 'NUMBER_OF_COORDINATES'+#10);
           Write(FFile, IntToStr(2 * Np-1)+#10);
           Write(FFile, '***START_OF_ORDINATES***'+#10);
-
           // First send the starboard side
-          for J:=Np downto 1 do begin
-            //P:=Frame.Value((J-1)/(Np-1));
+          for J:=Np downto 1 do begin           //P:=Frame.Value((J-1)/(Np-1));
             P:=Frame.Point[J-1];
             P.Y:=-P.Y;
             Write(FFile, FloatToDec(P.Y, 4)+#10);
             Write(FFile, FloatToDec(P.Z, 4)+#10);
           end;
           // then port side
-          for J:=2 to Np do begin
-            //P:=Frame.Value((J-1)/(Np-1));
+          for J:=2 to Np do begin               //P:=Frame.Value((J-1)/(Np-1));
             P:=Frame.Point[J-1];
             Write(FFile, FloatToDec(P.Y, 4)+#10);
             Write(FFile, FloatToDec(P.Z, 4)+#10);
@@ -784,31 +781,22 @@ begin
         end;
         Write(FFile, '***END_OF_FILE***'+#10);
         closefile(FFile);
-      end
-      else
-      begin
-        // Multi body ArchimedesMB
-        Strings:=TStringList.Create;
-        // Add file version info
-        Strings.Add(' <?xml version="1.0" encoding="UTF-8" ?>');
-        // Start hull
-        Strings.Add('<HULL>');
-        // Hull name
+      end else begin                                 // Multi body ArchimedesMB
+        Strings:=TStringList.Create;                   // Add file version info
+        Strings.Add(' <?xml version="1.0" encoding="UTF-8" ?>');  // Start hull
+        Strings.Add('<HULL>');                                    // Hull name
         Strings.Add('<HULL_NAME>');
-        if FreeShip.ProjectSettings.ProjectName <> '' then
-          Str:=FreeShip.ProjectSettings.ProjectName
-        else
-          Str:=ChangeFileExt(ExtractFilename(FreeShip.Filename), '');
+        if FreeShip.ProjectSettings.ProjectName <> ''
+           then Str:=FreeShip.ProjectSettings.ProjectName
+           else Str:=ChangeFileExt(ExtractFilename(FreeShip.Filename), '');
         Strings.Add(Str);
-        Strings.Add('</HULL_NAME>');
-        // Water density
+        Strings.Add('</HULL_NAME>');                           // Water density
         Strings.Add('<DENSITY>'+#32+FloatToDec(
           FreeShip.ProjectSettings.ProjectWaterDensity, 3)+#32+'</DENSITY>');
         // Aft perpendicular
-        Strings.Add('<AP> 0.0 </AP>');
-        // Forward perpendicular
-        Strings.Add('<FP>'+#32+FloatToDec(FreeShip.ProjectSettings.ProjectLength, 4) +
-          #32+'</FP>');
+        Strings.Add('<AP> 0.0 </AP>');                 // Forward perpendicular
+        Strings.Add('<FP>'+#32+FloatToDec(FreeShip.ProjectSettings.ProjectLength,4)
+                          +#32+'</FP>' );
         // Draught marks
         Strings.Add('<FWD_DRAUGHT_MARK>'+#32+FloatToDec(
           FreeShip.ProjectSettings.ProjectDraft, 4)+#32+'</FWD_DRAUGHT_MARK>');
@@ -821,17 +809,13 @@ begin
         Strings.Add('<APPENDAGE>');
         Strings.Add('<APPENDAGE_NAME>');
         Strings.Add('Main Hull');
-        Strings.Add('</APPENDAGE_NAME>');
-        // Some constants
+        Strings.Add('</APPENDAGE_NAME>');                     // Some constants
         Strings.Add('<ACTIVE> 1 </ACTIVE>');
         Strings.Add('<FREE_FLOODING> 0 </FREE_FLOODING>');
-        Strings.Add('<APPENDAGE_COLOUR> 0 </APPENDAGE_COLOUR>');
-
-        // Now send the frames
-        Strings.Add('<SECTION_COUNT>'+#32+IntToStr(Frames.Count) +
-          #32+'</SECTION_COUNT>');
-        for I:=1 to Frames.Count do
-        begin
+        Strings.Add('<APPENDAGE_COLOUR> 0 </APPENDAGE_COLOUR>'); // Now send the frames
+        Strings.Add('<SECTION_COUNT>'+#32+IntToStr(Frames.Count)
+                                     +#32+'</SECTION_COUNT>');
+        for I:=1 to Frames.Count do begin
           Frame:=Frames[I-1];
           Np:=2 * Frame.NumberOfPoints+1;
           Strings.Add('<SECTION>');
@@ -841,8 +825,7 @@ begin
           Strings.Add('<YCOORD>'+#32+FloatToStrF(0.5 * (Frame.Min.X+Frame.Max.X), ffFixed, 7, 4)+#32+'</YCOORD>');
           Strings.Add('<OFFSET_COUNT>'+#32+IntToStr(2 * Np-1) +
             #32+'</OFFSET_COUNT>');
-          Strings.Add('<OFFSETS>');
-          // First send the starboard side
+          Strings.Add('<OFFSETS>');            // First send the starboard side
           for J:=Np downto 1 do begin
             P:=Frame.Value((J-1) / (Np-1));
             P.Y:=-P.Y;
@@ -857,8 +840,8 @@ begin
           Strings.Add('</SECTION>');
           FreeAndNil(Frame);
         end;
-        Strings.Add('</APPENDAGE>');  // end of appendage
-        Strings.Add('</HULL>');       // end of hull
+        Strings.Add('</APPENDAGE>');                        // end of appendage
+        Strings.Add('</HULL>');                             // end of hull
         Strings.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.hll'));
         FreeAndNil(Strings);
       end;
@@ -870,9 +853,10 @@ begin
     FreeAndNil(SaveDialog);
   end;
   FreeAndNil(Frames);
-end;{TFreeEdit.File_ExportArchimedes}
+end;
 
 // export the coordinates of all controlpoints to a textfile
+
 procedure TFreeEdit.File_ExportCoordinates;
 var
   I: integer;

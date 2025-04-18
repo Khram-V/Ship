@@ -6,7 +6,7 @@ interface uses
   Dialogs,   ExtCtrls,
   StdCtrls,  Buttons,
   ComCtrls,  Spin,
-  FreeTypes,FreeGeometry,FreeLanguageSupport;
+  FreeTypes,FreeGeometry,FreeShipUnit,FreeLanguageSupport;
 type                                             { TFREEProjectSettingsDialog }
   TFREEProjectSettingsDialog = class( TForm )
     ColorDialog:                              TColorDialog;
@@ -21,9 +21,10 @@ type                                             { TFREEProjectSettingsDialog }
     Label16: TLabel;  Edit10: TEdit;   // 'File created by'
     Label27: TLabel;  Panel14: TPanel; // 'Underwater color'
     Edit17: TEdit;
-    lbWaterDensity,Label2,Label10,Label11,Label12,Label13,Label14,Label17,
+    Label9{Длина},Label10{Ширина},Label11{Осадка},
+    lbWaterDensity,Label2,Label12,Label13,Label14,Label17,
     Label18,Label19,Label20,Label21,Label22,Label23,Label24,Label25,
-    Label26,Label3, Label4,Label6,Label9,Label8,Label5:   TLabel;
+    Label26,Label3, Label4,Label6,Label8,Label5:          TLabel;
     Panel,Panel1,Panel2,Panel3,Panel4,Panel5,Panel6,
     Panel7,Panel8,Panel9,Panel10,Panel11,Panel12,Panel13: TPanel;
     Edit2,Edit3,Edit4,Edit5,Edit6,Edit8,
@@ -100,7 +101,6 @@ function TFREEProjectSettingsDialog.FGetDraft: double;
    begin Result:=Edit4.Value; end;
 function TFREEProjectSettingsDialog.FGetLength: double;
    begin Result:=Edit2.Value; end;
-
 procedure TFREEProjectSettingsDialog.FSetBeam(Val: double);
     begin Edit3.Value:=Val; end;
 procedure TFREEProjectSettingsDialog.FSetCoefficient(Val: double);
@@ -137,13 +137,14 @@ procedure TFREEProjectSettingsDialog.FSetXWindAreaMax(Val: double);
     begin Edit27.Value:=Val; end;
 
 procedure TFREEProjectSettingsDialog.FSetUnitCaptions;
-var Str: AnsiString;
+var Str: AnsiString; Min,Max: T3DVector;
 begin
   if UnitBox.ItemIndex = 1 then Str:=LengthStr( fuImperial )
                            else Str:=Lengthstr( fuMetric );
-  Label9.Caption:=Str;
-  Label10.Caption:=Str;
-  Label11.Caption:=Str;
+  Ship.Extents( Min,Max );
+  Label9.Caption :=Str+'   ↔  { '+FloattoDec(ConversionFactor*(Max.X-Min.X),2  )+' }';
+  Label10.Caption:=Str+'   ↔  { '+FloattoDec(ConversionFactor*(Max.Y-Min.Y)*2,2)+' }';
+  Label11.Caption:=Str+'   ↔  { '+FloattoDec(ConversionFactor*(Max.Z-Min.Z),2  )+' }';
   Label14.Caption:=Str;
   Label21.Caption:=Str;
   Label23.Caption:=Str;
@@ -201,7 +202,6 @@ begin
    if not checkbox12.Checked then XWindAreaMax:=XWindAreaMax*ConversionFactor;
    FSetUnitCaptions;
 end;
-
 procedure TFREEProjectSettingsDialog.SplitSectionLocationEditingDone(Sender: TObject);
     begin MainFrame:=MainFrame; end;
 procedure TFREEProjectSettingsDialog.Edit26EditingDone(Sender: TObject);
@@ -212,16 +212,12 @@ procedure TFREEProjectSettingsDialog.Edit27EditingDone(Sender: TObject);
 procedure TFREEProjectSettingsDialog.CheckBox2Click(Sender: TObject);
 begin
   if Checkbox2.Checked then begin
-    //      Label13.Enabled:=False;
-    //      Label14.Enabled:=False;
-    Edit8.Color:=clBtnFace;
-    Edit8.Font.Color:=clDkGray;
+    Edit8.Color:=clBtnFace;            //      Label13.Enabled:=False;
+    Edit8.Font.Color:=clDkGray;        //      Label14.Enabled:=False;
     Edit8.Enabled:=False;
   end else begin
-    //      Label13.Enabled:=True;
-    //      Label14.Enabled:=True;
-    Edit8.Color:=clWindow;
-    Edit8.Font.Color:=clBlack;
+    Edit8.Color:=clWindow;             //      Label13.Enabled:=True;
+    Edit8.Font.Color:=clBlack;         //      Label14.Enabled:=True;
     Edit8.Enabled:=True;
   end;
 end;
@@ -229,16 +225,12 @@ end;
 procedure TFREEProjectSettingsDialog.CheckBox11Click(Sender: TObject);
 begin
   if Checkbox11.Checked then begin
-    //      Label20.Enabled:=False;
-    //      Label21.Enabled:=False;
-    Edit26.Color:=clBtnFace;
-    Edit26.Font.Color:=clDkGray;
+    Edit26.Color:=clBtnFace;           //      Label20.Enabled:=False;
+    Edit26.Font.Color:=clDkGray;       //      Label21.Enabled:=False;
     Edit26.Enabled:=False;
   end else begin
-    //      Label20.Enabled:=True;
-    //      Label21.Enabled:=True;
-    Edit26.Color:=clWindow;
-    Edit26.Font.Color:=clBlack;
+    Edit26.Color:=clWindow;            //      Label20.Enabled:=True;
+    Edit26.Font.Color:=clBlack;        //      Label21.Enabled:=True;
     Edit26.Enabled:=True;
   end;
 end;
@@ -246,20 +238,15 @@ end;
 procedure TFREEProjectSettingsDialog.CheckBox12Click(Sender: TObject);
 begin
   if Checkbox12.Checked then begin
-    //      Label22.Enabled:=False;
-    //      Label23.Enabled:=False;
-    Edit27.Color:=clBtnFace;
-    Edit27.Font.Color:=clDkGray;
+    Edit27.Color:=clBtnFace;           //      Label22.Enabled:=False;
+    Edit27.Font.Color:=clDkGray;       //      Label23.Enabled:=False;
     Edit27.Enabled:=False;
   end else begin
-    //      Label22.Enabled:=True;
-    //      Label23.Enabled:=True;
-    Edit27.Color:=clWindow;
-    Edit27.Font.Color:=clBlack;
+    Edit27.Color:=clWindow;            //      Label22.Enabled:=True;
+    Edit27.Font.Color:=clBlack;        //      Label23.Enabled:=True;
     Edit27.Enabled:=True;
   end;
 end;
-
 procedure TFREEProjectSettingsDialog.BitBtn1Click(Sender: TObject);
     begin Modalresult:=mrOk; end;
 procedure TFREEProjectSettingsDialog.BitBtn2Click(Sender: TObject);

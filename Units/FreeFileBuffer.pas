@@ -31,12 +31,11 @@ TFreeFileBuffer = class
     FData: array of byte;
     FFileName: AnsiString;
     FFile: file;
-//  FEncoding: AnsiString;
 //  procedure FGrow( size:integer );
     procedure FSetCapacity(val: integer); virtual;
     function FGetCapacity: integer; virtual;
   public
-    Encoding: AnsiString;
+    Encoding: String;
     procedure Add(IntegerValue: integer);      overload; virtual;
     procedure Add(Text: AnsiString);           overload; virtual;
     procedure Add(BooleanValue: boolean);      overload; virtual;
@@ -83,7 +82,6 @@ TFreeFileBuffer = class
     property Count: integer read FCount;
     property Version: TFreeFileVersion read FVersion write FVersion;
     property Position: integer read GetPosition;
-//  property Encoding: AnsiString read FEncoding write FEncoding;
   end;
   {-----------------------------------------------------------}
   {                                           TFreeTextBuffer }
@@ -427,7 +425,7 @@ begin
 end;
 
 procedure TFreeFileBuffer.LoadString( var Output: AnsiString );
-var I,Size: integer; Ch: char; S: AnsiString;
+var I,Size: integer; Ch: char; // S: AnsiString;
 begin Output:='';
   if FPosition=0 then
   if (Integer(FData[0])<>9) and (Integer(FData[0])<>18) then exit;// 0-контроль
@@ -436,7 +434,8 @@ begin Output:='';
      Ch:=char( FData[FPosition] ); Inc( FPosition );
      Output:=Output+Ch;
   end;
-  S:=Output; Output:=ConvertEncoding( S,Encoding,'utf8' );
+  if Encoding<>'utf8' then Output:=ConvertEncoding( Output,Encoding,'utf8' );
+//   begin S:=Output; Output:=ConvertEncoding( S,Encoding,'utf8' ); end;
 end;
 
 procedure TFreeFileBuffer.LoadInteger( var Output: integer );
@@ -539,7 +538,7 @@ end;
 procedure TFreeFileBuffer.Add( Text: AnsiString );
 var Size: integer;
 begin                                 // convert text from UTF8 to Windows ANSI
-  Text:=ConvertEncoding( Text,'utf8',Encoding );
+  if Encoding<>'utf8' then Text:=ConvertEncoding( Text,'utf8',Encoding );
   Size:=Length( Text );
   Add( Size );
   if Size = 0 then exit;
@@ -722,7 +721,7 @@ begin
    S:=FLines[FPosition];
    S:=ReplaceStr(S, '\n', EOL);
    S:=ReplaceStr(S, '\\', '\');
-   Output:=S;                //Output:=ConvertEncoding(S,FEncoding,'utf8');
+   Output:=S;                //!!! Output:=ConvertEncoding(S,FEncoding,'utf8');
    Inc( FPosition );
 end;
 procedure TFreeTextBuffer.LoadTFreeFileVersion( var Output: TFreeFileVersion );

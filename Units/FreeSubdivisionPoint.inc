@@ -51,16 +51,12 @@ var
     Result:=ArcCos(L);
   end;{Angle_VV_3D}
 
-begin
-  Result:=0.0;
-  for I:=1 to FEdges.Count do
-    if Edge[I-1].NumberOfFaces < 2 then
-      exit;
-  //   if VertexType in [svRegular,svDart] then
+begin Result:=0.0;
+  for I:=1 to FEdges.Count do if Edge[I-1].NumberOfFaces<2 then exit;
+//if VertexType in [svRegular,svDart] then
   begin
     Sigma:=0;
-    for I:=1 to NumberOfFaces do
-    begin
+    for I:=1 to NumberOfFaces do begin
       Face:=FFaces[I-1];
       Index:=Face.FPoints.IndexOf(self);
       PrevIndex:=(index+(Face.FPoints.Count-1)) mod Face.FPoints.Count;
@@ -71,22 +67,15 @@ begin
       Sigma:=Sigma+Tmp;
     end;
     Result:=(360-RadToDeg(sigma));
-  end;// else Result:=0.0;
-end;{TFreeSubdivisionPoint.FGetCurvature}
+  end;
+end;
 
 function TFreeSubdivisionPoint.FGetFace(Index: integer): TFreeSubdivisionFace;
-begin
-  Result:=FFaces[Index];
-end;{TFreeSubdivisionPoint.FGetFace}
-
+   begin Result:=FFaces[Index]; end;
 function TFreeSubdivisionPoint.FGetIndex: integer;
-begin
-  Result:=Surface.FPoints.IndexOf(Self);
-end;{TFreeSubdivisionPoint.FGetIndex}
-
+   begin Result:=Surface.FPoints.IndexOf(Self); end;
 function TFreeSubdivisionPoint.FGetIsBoundaryVertex: boolean;
-var
-  I: integer;
+var I: integer;
 begin
   Result:=False;
   if abs(Coordinate.Y) > 1e-4 then
@@ -98,31 +87,25 @@ function TFreeSubdivisionPoint.FGetNormal: T3DVector;
 var
   I, J, Index: integer;
   Face: TFreeSubdivisionFace;
-  P1, P3: T3DVector;
-  C, N: T3DVector;
+  P1, P3, C, N: T3DVector;
 begin
   Result.X:=0;
   Result.Y:=0;
   Result.Z:=0;
-  for I:=1 to FFaces.Count do
-  begin
+  for I:=1 to FFaces.Count do begin
     Face:=FFaces[I-1];
-    if Face.NumberOfpoints > 4 then
-    begin
+    if Face.NumberOfpoints > 4 then begin
       // Face possibly concave at this point
       // use the normal of ALL points from this face
       C:=Face.FaceCenter;
       N:=ZERO;
-      for J:=2 to Face.NumberOfpoints do
-      begin
+      for J:=2 to Face.NumberOfpoints do begin
         N:=AddPoint(N, UnifiedNormal(C, Face.Point[J-2].Coordinate,
           Face.Point[J-1].Coordinate));
       end;
       N:=Normalize(N);
       Result:=AddPoint(Result, N);
-    end
-    else
-    begin
+    end else begin
       Index:=Face.FPoints.IndexOf(Self);
       J:=(Index+Face.FPoints.Count-1) mod (Face.FPoints.Count);
       P1:=Face.Point[J].Coordinate;
@@ -132,31 +115,19 @@ begin
     end;
   end;
   Result:=Normalize(Result);
-end;{TFreeSubdivisionPoint.FGetNormal}
+end;
 
-function TFreeSubdivisionPoint.FGetNumberOfCurves: integer;
-var
-  I: integer;
-begin
-  Result:=0;
-  for I:=1 to NumberOfEdges do
-    if Edge[I-1].FCurve <> nil then
-      Inc(Result);
-end;{TFreeSubdivisionPoint.FGetNumberOfCurves}
+function TFreeSubdivisionPoint.FGetNumberOfCurves: integer; var I: integer;
+begin Result:=0;
+  for I:=1 to NumberOfEdges do if Edge[I-1].FCurve <> nil then Inc(Result);
+end;
 
 function TFreeSubdivisionPoint.FGetNumberOfEdges: integer;
-begin
-  Result:=FEdges.Count;
-end;{TFreeSubdivisionPoint.FGetNumberOfEdges}
-
+   begin Result:=FEdges.Count; end;
 function TFreeSubdivisionPoint.FGetNumberOfFaces: integer;
-begin
-  Result:=FFaces.Count;
-end;{TFreeSubdivisionPoint.FGetNumberOfFaces}
-
+   begin Result:=FFaces.Count; end;
 function TFreeSubdivisionPoint.FGetRegularPoint: boolean;
-var
-  I, N: integer;
+var I, N: integer;
 begin
   Result:=False;
   // this procedure was only tested to TRACE regular quad edges
@@ -255,26 +226,23 @@ begin
 end;
 
 procedure TFreeSubdivisionPoint.FSetCoordinate(Val: T3DVector);
-begin FCoordinate:=Val; end;
-
+    begin FCoordinate:=Val; end;
 procedure TFreeSubdivisionPoint.AddEdge(Edge: TFreeSubdivisionEdge);
-begin if FEdges.IndexOf(Edge) = -1 then begin FEdges.Add(Edge); end; end;
-
+    begin if FEdges.IndexOf(Edge) = -1 then begin FEdges.Add(Edge); end; end;
 procedure TFreeSubdivisionPoint.AddFace(Face: TFreeSubdivisionFace);
-begin if FFaces.IndexOf(Face) = -1 then begin FFaces.Add(Face); end;
-end;
+    begin if FFaces.IndexOf(Face) = -1 then begin FFaces.Add(Face); end; end;
 
 function TFreeSubdivisionPoint.Averaging: T3DVector;
 const  Pi = 3.1415926535897932385; // instead of system.py() func
 const  AA : array[1..8] of TFloatType =
-   (  5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 1)),
-      5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 2)),
-      5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 3)),
-      5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 4)),
-      5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 5)),
-      5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 6)),
-      5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 7)),
-      5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / 8))
+    ( 5/3-8/3*sqr(3/8+1/4*cos(2*Pi/1)),
+      5/3-8/3*sqr(3/8+1/4*cos(2*Pi/2)),
+      5/3-8/3*sqr(3/8+1/4*cos(2*Pi/3)),
+      5/3-8/3*sqr(3/8+1/4*cos(2*Pi/4)),
+      5/3-8/3*sqr(3/8+1/4*cos(2*Pi/5)),
+      5/3-8/3*sqr(3/8+1/4*cos(2*Pi/6)),
+      5/3-8/3*sqr(3/8+1/4*cos(2*Pi/7)),
+      5/3-8/3*sqr(3/8+1/4*cos(2*Pi/8))
     );
 var
   I, J, Nt, Nq, NoP: integer;
@@ -331,25 +299,22 @@ begin
           end;
           Weight:=Pi / 2;
         end;
-//      else WriteLn('Invalid number of points in TFreeSubdivisionPoint.Averaging');
         Result.X:=Result.X+Weight * Center.X;
         Result.Y:=Result.Y+Weight * Center.Y;
         Result.Z:=Result.Z+Weight * Center.Z;
         TotalWeight:=TotalWeight+Weight;
       end; // for I:=1 to FFaces.Count
-
       if TotalWeight <> 0 then begin
         Result.X:=Result.X / TotalWeight;
         Result.Y:=Result.Y / TotalWeight;
         Result.Z:=Result.Z / TotalWeight;
       end;
       Nq:=FFaces.Count-Nt;
-
       if Nt = FFaces.Count then begin // apply averaging in case of vertex surrounded by triangles
         if FFaces.Count <= 8 then a:=AA[FFaces.Count]
                              else a:=5/3-8/3 * sqr(3/8+1/4 * cos(2 * Pi / FFaces.Count));
-      end
-      else if Nq = FFaces.Count then begin // apply averaging in case of vertex surrounded by quads
+      end else
+      if Nq = FFaces.Count then begin // apply averaging in case of vertex surrounded by quads
         a:=4 / FFaces.Count;
       end else begin // apply averaging in case of vertex on boundary of quads and triangles
         if (Nq = 0) and (Nt = 3) then begin a:=1.5; end

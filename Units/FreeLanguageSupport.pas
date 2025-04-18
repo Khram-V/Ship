@@ -6,26 +6,19 @@
 // Modified to suit FREEship and adapted to new components
 
 unit FreeLanguageSupport;
-//{$MODE Delphi}{$H+}
 {$mode objfpc}{$H+}
 interface uses
-     LCLType,
-     LazFileUtils,
-     SysUtils,
-     Classes,
-     stdCtrls,
-     typInfo,
-     extCtrls,
-     iniFiles,
-     FreeStringUtils;
+     LCLType,  LazFileUtils,
+     SysUtils, Classes,
+     stdCtrls, typInfo,
+     extCtrls, iniFiles, FreeStringUtils;
 
 type TLanguageIniFile = class( TMemIniFile )               { TLanguageIniFile }
-public
-  Name: AnsiString;
+public Name: AnsiString;
   constructor Create( const AName:AnsiString; const AFileName:AnsiString );
 end;
-
-var CurrentLanguage:TLanguageIniFile=nil; // Global variable for current language
+var
+ CurrentLanguage: TLanguageIniFile=nil; // Global variable for current language
 
 //user procs
 function LoadLanguage(aName:AnsiString; aFileName:AnsiString):TLanguageIniFile;overload;
@@ -34,27 +27,31 @@ function UserString( Index:Integer ): AnsiString;
 
 implementation
 
+//var I:integer=0;
+
 function LoadLanguage( aName:AnsiString; aFileName:AnsiString ):TLanguageIniFile;
-var Filename: AnsiString;
-begin
-   if aName='' then exit;                // leave with default English language
-   if FileExistsUTF8( aFilename ) then begin
-      if CurrentLanguage<>nil then CurrentLanguage.Free;
-      CurrentLanguage:=TLanguageIniFile.create( aName,aFilename );
-   end;
-   Result:=CurrentLanguage;
+begin if aName<>'' then                  // leave with default English language
+      if FileExistsUTF8( aFilename ) then begin
+        if CurrentLanguage<>nil then CurrentLanguage.Free;
+        CurrentLanguage:=TLanguageIniFile.create( aName,aFilename );
+        if CurrentLanguage<>nil then begin
+          aName:=CurrentLanguage.readString( 'Translation','Author','' );
+          if aName='' then begin CurrentLanguage.Free; CurrentLanguage:=nil; end;
+        end;
+      end;
+      if CurrentLanguage<>nil then writeln( aName ); Result:=CurrentLanguage;
 end;
 
-function UserString( Index:Integer ):AnsiString;    // == Languages\Russian.ini
-//const U: array of record L:Word; C:AnsiString; end =(
-{$I Russian.inc} // ); // ’
+function UserString( Index:Integer ): AnsiString;   // == Languages\Russian.ini
+{$I Russian.inc}        // const U: array of record L:Word; C:AnsiString; end =
   var Val: AnsiString; I: Integer;
 begin Result:='';
    if CurrentLanguage=nil then begin  // при отсутствии текстовых строк в файле
-     for I:=1 to Length( U )*2-1 do     // [216+...]
+     for I:=1 to Length( U )*2-1 do   // [216++..]
      if U[I].L=Index then begin Result:=U[I].C; break; end;
    end else begin Val:=IntToStr( Index );
-     Result:=CurrentLanguage.readString('User',Copy('User0000',1,8-len(Val))+Val,'');
+     Result:=CurrentLanguage.readString
+           ( 'User',Copy( 'User0000',1,8-len( Val ) )+Val,'' );
    end;
 end;
 
@@ -72,15 +69,13 @@ var I,J,Index : Integer;
     Str,Tmp   : TTranslateString;
 
 // Assign the value value to prop property of comp component
-    procedure setProp( comp:TComponent; {const } prop, value:AnsiString );
-    var ppi:PPropInfo;
-    begin if value<>'' then begin ppi:=getPropInfo( comp.classInfo,prop );
-             if ppi<>nil then setStrProp( comp,ppi,value );
-          end;
-    end;
+   procedure setProp( comp: TComponent; {const } prop,value: AnsiString );
+     var ppi:PPropInfo;
+     begin if value<>'' then begin ppi:=getPropInfo( comp.classInfo,prop );
+              if ppi<>nil then setStrProp( comp,ppi,value ); end; end;
 begin
    if (CurrentLanguage=nil) or (Component=nil) then exit;
-// if (CurrentLanguage.Name='English') then exit;
+// if (CurrentLanguage.Name='Russian') then exit;
    with CurrentLanguage do begin
       Str:=readString( Component.Classname,Component.Classname+'.Caption','' );
       if Str<>'' then setProp( Component,'Caption',Str );
