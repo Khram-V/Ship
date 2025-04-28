@@ -426,22 +426,22 @@ end;
 // is of no interest to most users since it is mainly
 // supported by other programs from the same developer.
 //
-procedure TFreeSubdivisionSurface.ExportFeFFile(Strings: TStringList);
+procedure TFreeSubdivisionSurface.ExportFeFFile( Strings: TStringList );
 var I: integer;
 begin                                                 // Add layer information
   Strings.Add(IntToStr(NumberOfLayers));
   for I:=0 to NumberOfLayers-1 do begin
     Strings.Add(Layer[I].Name);
-    Strings.Add(IntToStr(Layer[I].LayerID)+#32 +
-       IntToStr(Layer[I].Color)+#32 +
-      BoolToStr(Layer[I].SurfaceVisible)+#32 +
-      BoolToStr(Layer[I].Developable)+#32 +
-      BoolToStr(Layer[I].Symmetric)+#32 +
-      BoolToStr(Layer[I].FUseForIntersections)+#32 +
-      BoolToStr(Layer[I].FUseInHydrostatics)+#32 +
-      BoolToStr(Layer[I].FShowInLinesplan)+#32 +
-      FloatToStrF(Layer[I].MaterialDensity, ffFixed, 10, 8)+#32 +
-      FloatToStrF(Layer[I].Thickness, ffFixed, 10, 8));
+    Strings.Add(IntToStr(Layer[I].LayerID)+#32+
+       IntToStr(Layer[I].Color)+#32+
+      BoolToStr(Layer[I].SurfaceVisible)+#32+
+      BoolToStr(Layer[I].Developable)+#32+
+      BoolToStr(Layer[I].Symmetric)+#32+
+      BoolToStr(Layer[I].FUseForIntersections)+#32+
+      BoolToStr(Layer[I].FUseInHydrostatics)+#32+
+      BoolToStr(Layer[I].FShowInLinesplan)+#32+
+      FloatToStrF(Layer[I].MaterialDensity,ffFixed,10,8)+#32+
+      FloatToStrF(Layer[I].Thickness,ffFixed,10,8));
   end;     // first sort controlpoints for faster acces of function (Indexof())
 //FControlPoints.Sort;
   Strings.Add(IntToStr(NumberOfControlPoints));
@@ -484,7 +484,7 @@ begin
     Layer.FSurfaceVisible:=GetBoolean( Str );
     Layer.FDevelopable:=GetBoolean( Str );
     Layer.FSymmetric:=GetBoolean( Str );
-    Layer.FSymmetric:=True;
+//  Layer.FSymmetric:=True;
     Layer.FUseForIntersections:=GetBoolean( Str );
     Layer.FUseInHydrostatics:=GetBoolean( Str );
     Layer.FShowInLinesplan:=GetBoolean( Str );

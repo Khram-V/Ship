@@ -314,9 +314,9 @@ begin
    FPointEditorChanging:=true;
    if ActiveControlPoint<>nil then
    if EntryMethod <> emTyping then begin
-      Ship.Edit.CreateUndoObject( 'moveY',True );
+//    Ship.Edit.CreateUndoObject( 'moveY',True );
       P:=ActiveControlPoint.Coordinate;
-    //P.Y:=P.Y+Ship.Visibility.CursorIncrement;
+//    P.Y:=P.Y+Ship.Visibility.CursorIncrement;
       P.Y:=EditY.Value;
       ActiveControlPoint.SetCoordinate( nil,P,nil );
       Ship.Built:=False;
@@ -337,15 +337,15 @@ begin
    FPointEditorChanging:=true;
    if ActiveControlPoint<>nil then
    if EntryMethod <> emTyping then begin
-      Ship.Edit.CreateUndoObject( 'moveZ',True);
+//    Ship.Edit.CreateUndoObject( 'moveZ',True);
       P:=ActiveControlPoint.Coordinate;
-   // P.Z:=P.Z+Ship.Visibility.CursorIncrement;
+//    P.Z:=P.Z+Ship.Visibility.CursorIncrement;
       P.Z:=EditZ.Value;
       ActiveControlPoint.SetCoordinate( nil,P,nil );
       Ship.Built:=False;
       Ship.FileChanged:=True;
       Ship.Redraw;
-   // ActiveControlPoint:=ActiveControlPoint;
+//    ActiveControlPoint:=ActiveControlPoint;
    end; FPointEditorChanging:=false;
 end;
 
@@ -353,36 +353,35 @@ procedure TFreeControlPointForm.OrdinateEditorEditingDone(Sender: TObject);
 var P    : T3DVector;
     Val  : TFloatType;
     I    : Integer;
-    saved: Boolean;
+//  saved: Boolean;
     OrdEdit : TFloatSpinEdit;
 begin
-   saved:=false;
+// saved:=false;
    if Self.FActiveControlPointChanging then exit;
    if not Self.Active then exit;
    //if not Self.Focused then exit;
 
    if ActiveControlPoint<>nil then begin
-      OrdEdit:=Sender as TFloatSpinEdit;
-      // do something only if the value has really been changed:
+      OrdEdit:=Sender as TFloatSpinEdit; // do something only if the value has really been changed:
       Val:=OrdEdit.Value;
       P:=ActiveControlPoint.Coordinate;
       if (OrdEdit = EditX) and (abs(P.X-Val) < 1e-5) then exit;
       if (OrdEdit = EditY) and (abs(P.Y-Val) < 1e-5) then exit;
       if (OrdEdit = EditZ) and (abs(P.Z-Val) < 1e-5) then exit;
-      if (Ship.NumberOfSelectedControlPoints>0) then begin // SAP change all selected points
+      if (Ship.NumberOfSelectedControlPoints>0) then begin               // SAP change all selected points
          for I:=0 to Ship.NumberOfSelectedControlPoints-1 do begin
             P:=Ship.SelectedControlPoint[I].Coordinate;
-            //if abs(P.X-Val)>1e-5 then
-            begin
-               if not saved then begin
-                  Ship.Edit.CreateUndoObject('X Coordinate',True);
-                  saved:=true;
-               end;
+//          if abs(P.X-Val)>1e-5 then
+//          begin
+//             if not saved then begin
+//                Ship.Edit.CreateUndoObject('X Coordinate',True);
+//                saved:=true;
+//             end;
                if (OrdEdit = EditX) then P.X:=Val;
                if (OrdEdit = EditY) then P.Y:=Val;
                if (OrdEdit = EditZ) then P.Z:=Val;
                Ship.SelectedControlPoint[I].SetCoordinate(nil,P,nil);
-            end;
+//          end;
          end;
          { // this is for old FreeTextEdit component
          //  finally update the text field:
@@ -395,13 +394,13 @@ begin
          else Val:= 0;
          OrdEdit.Text:=FloatToDec(Val,4); // update the field in case of input errors
 ///*** }
-         if saved then begin
+//       if saved then begin
 //          Ship.Surface.Selection_Add( ActiveControlPoint );
             Ship.Built:=False;
             Ship.FileChanged:=True;
             Ship.Redraw;
             ActiveControlPoint:=ActiveControlPoint;
-         end;
+//       end;
       end;
    end;
 end;
@@ -467,13 +466,13 @@ end;
 procedure TFreeControlPointForm.FSetActiveControlPointCorner(isCorner: boolean);
 var I,N     : Integer;
     OldType : TFreeVertexType;
-    Undo    : TFreeUndoObject;
+//  Undo    : TFreeUndoObject;
 begin
   if (ActiveControlPoint<>nil)
   and (isCorner <> (ActiveControlPoint.VertexType=svCorner)) then begin
                     // Count the number of crease edges connected to this point
     OldType:=ActiveControlPoint.VertexType;
-    Undo:=Ship.Edit.CreateUndoObject( 'Corner ',false );
+//  Undo:=Ship.Edit.CreateUndoObject( 'Corner ',false );
     if (ActiveControlPoint.Vertextype=svCorner) and (not isCorner) then begin
       N:=0;                        // Count the number of incident crease edges
       for I:=1 to ActiveControlPoint.NumberOfEdges do
@@ -487,12 +486,12 @@ begin
     end;
     if (ActiveControlPoint.Vertextype<>svCorner) and (isCorner)
     then ActiveControlPoint.VertexType:=svCorner;
-    if ActiveControlPoint.VertexType<>OldType then begin Undo.Accept;
+    if ActiveControlPoint.VertexType<>OldType then begin   // Undo.Accept;
        Ship.Built:=False;
        Ship.FileChanged:=True;
        Ship.Redraw;
        ActiveControlPoint:=ActiveControlPoint;
-    end else Undo.Delete;
+    end;                                                   // else Undo.Delete;
   end;
 end;
 
@@ -518,7 +517,7 @@ procedure TFreeControlPointForm.FormShow(Sender: TObject);
 procedure TFreeControlPointForm.SpeedButtonRemoveAnchorPointClick( Sender: TObject );
 begin
    if ActiveControlPoint<>nil then begin
-       Ship.Edit.CreateUndoObject( 'UnAncDel',True );
+//     Ship.Edit.CreateUndoObject( 'UnAncDel',True );
        ActiveControlPoint.AnchorPoint:=nil;
        EditAnchorPoint.Text:='';
        Ship.FileChanged:=True;
@@ -530,7 +529,7 @@ end;
 procedure TFreeControlPointForm.SpeedButtonRemoveLinearConstraintClick( Sender: TObject );
 begin
   if ActiveControlPoint<>nil then begin
-      Ship.Edit.CreateUndoObject( 'UnLineDel',True );
+//    Ship.Edit.CreateUndoObject( 'UnLineDel',True );
       ActiveControlPoint.SetLinearConstraint(nil,nil);
       EditLinearConstraintA.Text:='';
       EditLinearConstraintB.Text:='';

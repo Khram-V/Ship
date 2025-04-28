@@ -276,8 +276,7 @@ end;
 
 procedure TFreesubdivisionControlEdge.Delete;
 var
-  I: integer;
-  Index: integer;
+  I,Index: Integer;
   Face: TFreeSubdivisionFace;
   CFace: TFreeSubdivisionControlFace;
   Point: TFreeSubdivisionControlPoint;

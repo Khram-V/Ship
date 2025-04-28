@@ -41,7 +41,7 @@ Type
   TFreeIntersectionType=(fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal); // Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
   TFreeModelView       =(mvPort,mvBoth);                                     // Show half the hull or the entire hull
   TFreeEditMode        =(emSelectItems,emAddPoint,emAddFlowLine);            // The program responds differnt to mouse actions depending on the editmode of the component
-  TFreeHydrostaticsMode=(fhSingleCalculation,fhMultipleCalculations);        // Used when creating hydrostatic reports
+//TFreeHydrostaticsMode=(fhSingleCalculation,fhMultipleCalculations);        // Used when creating hydrostatic reports
   TFreeHydrostaticsCalculation= (hcAll,hcVolume,hcMidship,hcWaterline,hcSAC,hcLateralArea,hcBulbSection);
   TFreeHydrostaticsCalculate  = set of TFreeHydrostaticsCalculation;         // Set with all calculations to be performed
   TFreeHydrostaticsCalculateGravity = set of TFreeHydrostaticsCalculation;

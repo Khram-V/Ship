@@ -58,9 +58,9 @@ type
     SAC: array of T2DCoordinate;         // Sectional areas
     Weight_: TFloatType;                 // Weight and coordinates of CoG
     CenterOfGravity_: T3DVector;
-    BulbSectionarea: TFloatType;         // BulbSection properties
-    BulbSectionCOG: T3DVector;
-    BulbSectionCoeff: TFloatType;
+//  BulbSectionarea: TFloatType;         // BulbSection properties
+//  BulbSectionCOG: T3DVector;
+//  BulbSectionCoeff: TFloatType;
     SDP:TFloatType; // LateralArea above DWL and coordinates Z of CoG above DWL
     SDPCOG: T3DVector;
     Zsdp: TFloatType;
@@ -183,7 +183,7 @@ type
     FCalculations: TFreeHydrostaticsCalculate;
     FMidshipSection: TFreeIntersection;
     FMidshipLocation: TFloatType;
-    FBulbSection: TFreeIntersection;
+//  FBulbSection: TFreeIntersection;
     function FGetTrimAngle: TFloatType;
     function FGetWlPlane: T3DPlane;
     procedure FSetCalculated(val: boolean);
@@ -193,11 +193,13 @@ type
   public
     constructor Create(Owner: TFreeShip); virtual;
     destructor Destroy; override;
-    procedure AddData(Strings: TStringList; Mode: TFreeHydrostaticsMode; Separator: char);
+    procedure AddData(Strings: TStringList );                                   // Mode: TFreeHydrostaticsMode; Separator: char);
 //  Add calculated data to a stringlist to either show in a report or save to disc
-    procedure AddHeader(Strings: TStringList);
-    procedure AddFooter(Strings: TStringList; Mode: TFreeHydrostaticsMode);
+    procedure AddHeader(Strings: TStringList );
+    procedure AddFooter(Strings: TStringList );                                 // Mode: TFreeHydrostaticsMode);
+    procedure ShowData;                                                         // (Mode: TFreeHydrostaticsMode);
 //  function Balance(Displacement: TFloatType; FreeToTrim: boolean; var Output: TFreeCrosscurvesData): boolean;
+
     procedure Calculate;
 //  The actual calculation of the hydrostatics finds place in this procedure
     procedure CalculateGravity;
@@ -205,7 +207,6 @@ type
 //  procedure CalculateVolume(WaterlinePlane: T3DPlane);
     procedure Clear;
     procedure Face_MoveZAuto;
-    procedure ShowData(Mode: TFreeHydrostaticsMode);
     property Calculated: boolean read FCalculated write FSetCalculated;
     property Calculations: TFreeHydrostaticsCalculate read FCalculations write FCalculations;
     property Data: TFreeHydrostaticsData read FData;

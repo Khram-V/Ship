@@ -2,25 +2,25 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
   Left = 780
   Height = 600
   Top = 215
-  Width = 900
+  Width = 857
   Caption = 'Hydrostatics'
   ClientHeight = 600
-  ClientWidth = 900
+  ClientWidth = 857
   Font.Color = clBlack
   Font.Name = 'Arial'
   OnResize = FormResize
   Position = poMainFormCenter
-  LCLVersion = '2.0.0.4'
+  LCLVersion = '3.8.0.0'
   object Panel1: TPanel
     Left = 0
     Height = 24
     Top = 0
-    Width = 900
+    Width = 857
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 24
-    ClientWidth = 900
+    ClientWidth = 857
     Font.Color = clBlack
     ParentFont = False
     TabOrder = 0
@@ -124,7 +124,7 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       OnClick = ButtonSaveClick
     end
     object ButtonClose: TSpeedButton
-      Left = 818
+      Left = 775
       Height = 20
       Top = 2
       Width = 80
@@ -177,19 +177,19 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
     Left = 0
     Height = 576
     Top = 24
-    Width = 900
+    Width = 857
     Align = alClient
     BevelOuter = bvLowered
     BorderWidth = 8
     ClientHeight = 576
-    ClientWidth = 900
+    ClientWidth = 857
     TabOrder = 1
     object Splitter1: TSplitter
       Cursor = crVSplit
       Left = 9
       Height = 3
       Top = 181
-      Width = 882
+      Width = 839
       Align = alTop
       ResizeAnchor = akTop
     end
@@ -197,7 +197,7 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       Left = 9
       Height = 383
       Top = 184
-      Width = 882
+      Width = 839
       Align = alClient
       ColCount = 17
       DefaultColWidth = 49
@@ -219,7 +219,7 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       Left = 9
       Height = 172
       Top = 9
-      Width = 882
+      Width = 839
       Align = alTop
       Font.Color = clBlack
       Font.Height = -12
@@ -231,14 +231,14 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
   end
   object PrintDialog: TPrintDialog
     Options = [poPageNums, poDisablePrintToFile]
-    left = 20
-    top = 40
+    Left = 20
+    Top = 40
   end
   object SaveDialog: TSaveDialog
     Filter = 'Text files (*.txt)|*.txt'
     FilterIndex = 2
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    left = 52
-    top = 40
+    Left = 52
+    Top = 40
   end
 end

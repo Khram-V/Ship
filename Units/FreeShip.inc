@@ -1909,7 +1909,7 @@ begin
   if (Key in [Left..Down])
     and (vViewport.ViewType <> fvPerspective)
     and (ActiveControlPoint <> nil) then begin
-    Edit.CreateUndoObject(Userstring(190), True);
+//  Edit.CreateUndoObject(Userstring(190), True);   // 'перемещение точки'
     Point:=ActiveControlPoint;
     FileChanged:=True;
     Built:=False;
@@ -2303,7 +2303,7 @@ begin
                                  // the controlpoint is not moved by accident
 //          if Sqrt(Sqr(X-FPrevCursorPosition.X)+Sqr(Y-FPrevCursorPosition.Y))<Threshold then exit;
             if ActiveControlPoint.Locked then begin MessageDlg(Userstring(191)+'!',mtWarning,[mbOK],0 ); exit; end;
-            Edit.CreateUndoObject( Userstring(190),True );
+//          Edit.CreateUndoObject( Userstring(190),True );    // 'перемещение точки'
           end;
           Point:=ActiveControlPoint;
           FileChanged:=True;

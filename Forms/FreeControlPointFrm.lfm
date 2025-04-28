@@ -1,7 +1,7 @@
 object FreeControlPointForm: TFreeControlPointForm
-  Left = 1247
+  Left = 1361
   Height = 257
-  Top = 210
+  Top = 194
   Width = 288
   AlphaBlend = True
   AlphaBlendValue = 210
@@ -249,7 +249,7 @@ object FreeControlPointForm: TFreeControlPointForm
       Left = 10
       Height = 19
       Top = 2
-      Width = 274
+      Width = 292
       Caption = 'Угол слома'
       ParentFont = False
       TabOrder = 0
@@ -261,7 +261,7 @@ object FreeControlPointForm: TFreeControlPointForm
       Left = 10
       Height = 35
       Top = 23
-      Width = 274
+      Width = 292
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.TopBottomSpacing = 6
@@ -269,21 +269,21 @@ object FreeControlPointForm: TFreeControlPointForm
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 4
       ClientHeight = 35
-      ClientWidth = 274
+      ClientWidth = 292
       ParentFont = False
       TabOrder = 1
       object Label4: TLabel
         Left = 0
         Height = 23
         Top = 6
-        Width = 45
+        Width = 63
         Caption = 'Расстояние'
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
       end
       object EditDistance: TFloatSpinEdit
-        Left = 51
+        Left = 69
         Height = 23
         Top = 6
         Width = 100
@@ -295,7 +295,7 @@ object FreeControlPointForm: TFreeControlPointForm
         TabOrder = 0
       end
       object Label5: TLabel
-        Left = 157
+        Left = 175
         Height = 23
         Top = 6
         Width = 31
@@ -305,7 +305,7 @@ object FreeControlPointForm: TFreeControlPointForm
         ParentFont = False
       end
       object EditAngles: TFloatSpinEdit
-        Left = 194
+        Left = 212
         Height = 23
         Top = 6
         Width = 80
@@ -425,23 +425,23 @@ object FreeControlPointForm: TFreeControlPointForm
         Left = 10
         Height = 23
         Top = 6
-        Width = 131
+        Width = 116
         ParentFont = False
         ReadOnly = True
         TabOrder = 0
       end
       object Panel8: TPanel
-        Left = 147
+        Left = 132
         Height = 23
         Top = 6
-        Width = 127
+        Width = 142
         BevelOuter = bvNone
         ClientHeight = 23
-        ClientWidth = 127
+        ClientWidth = 142
         ParentFont = False
         TabOrder = 1
         object SpeedButtonRemoveAnchorPoint: TSpeedButton
-          Left = 52
+          Left = 83
           Height = 23
           Hint = 'Удалить репер'
           Top = 0
@@ -457,7 +457,7 @@ object FreeControlPointForm: TFreeControlPointForm
           Left = 0
           Height = 23
           Top = 0
-          Width = 44
+          Width = 75
           Align = alLeft
           BorderSpacing.Right = 4
           Caption = 'Закрепить'

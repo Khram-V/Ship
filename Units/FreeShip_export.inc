@@ -14,7 +14,7 @@ var
   Procedure Str2( A,B: single );
     begin Str:=Str+format( ' %1.5g %1.5g',[F2S(A),F2S(B)] );
     end;
-  Procedure StemStern( Dir:boolean );                 // Dir=true-форштевень
+  Procedure StemStern( Dir:boolean );                 // Dir=true - форштевень
     var I,J,K,M,N: Integer; z1:single;
   begin Str:='';
     for I:=0 to FreeShip.NumberofButtocks-1 do        // поиск нулевого батокса
@@ -47,7 +47,7 @@ var
         for J:=0 to Count-1 do begin
           if abs( Items[J].Point[0].Y )<1e-4 then begin
             N:=Items[J].NumberOfPoints;
-            Str:=' '+InttoStr( N );
+            Str:=' '+InttoStr( N )+' ('+FloatToStr(Items[J].Point[0].Y)+') ';
             for K:=0 to N-1 do with Items[J].Point[K] do Str2( Z,X );
             Strings.Add( Str );
           end;
@@ -68,11 +68,11 @@ var
 var I,J,K,N: integer;
     Title,S: AnsiString; P0,PN: T3DVector; Dis: boolean=true;
     Dialog: TSaveDialog;
-//    T3: T3DVector=(X:0;Y:0;Z:0);
+//  T3: T3DVector=(X:0;Y:0;Z:0);
     EdgePointLists: TFasterListTFasterListTFreeSubdivisionPoint;
     Points: TFasterListTFreeSubdivisionPoint;
     Point: TFreeSubdivisionPoint;
-
+//? Frame: TFreeCoordinateGrid;
 begin
   Title:=ExtractFilename( FreeShip.FileName );
   Dialog:=TSaveDialog.Create( FreeShip );
@@ -300,7 +300,8 @@ procedure TFreeSpline.SaveToDXF
 ( Strings: TStringList;
   Layername: AnsiString;
   SendMirror: boolean );
-var I,J,Ind,NParams: integer; P: T3DVector; Params: TFloatArray;
+var
+  I,J,Ind,NParams: Integer; P: T3DVector; Params: TFloatArray;
 begin
   Ind:=FindDXFColorIndex( Color );
   NParams:=0;
@@ -1103,9 +1104,9 @@ begin
       FloatToDec(FreeShip.ProjectSettings.ProjectDraft,4)+#32 +
       FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity,5)+#32 +
       FloatToDec(FreeShip.ProjectSettings.ProjectAppendageCoefficient,5) +
-      #32+IntToStr(Ord(FreeShip.ProjectSettings.ProjectUnits))+#32 +
-      'true'+ //BoolToStr(FreeShip.ProjectSettings.MainparticularsHasBeenset) +
-      #32+IntToStr(Ord(FreeShip.Precision)));
+      #32+IntToStr(Ord(FreeShip.ProjectSettings.ProjectUnits)) {+#32 +}
+      +' 1 '+ //BoolToStr(FreeShip.ProjectSettings.MainparticularsHasBeenset) +
+      {#32+} IntToStr(Ord(FreeShip.Precision)));
     FreeShip.Surface.ExportFeFFile(Strings);
     Strings.SaveToFile(ChangeFileExt(Savedialog.FileName, '.fef'));
     FreeAndNil(Strings);
@@ -1747,16 +1748,11 @@ end;
 // Creates a file to be read by the CFD program Michlet
 procedure TFreeEdit.File_Export_Michlet;
 var
-  Dialog: TFreeMichletOutputDialog;
+  Dialog: TFreeMichletOutputDialog; Emp: boolean;
   SaveDialog: TSaveDialog;
-  UndoObject: TFreeUndoObject;
-begin
-// temporarily switch to metric units for michlet export
-  if FreeShip.ProjectSettings.ProjectUnits = fuImperial then begin
-    UndoObject:=CreateUndoObject(Userstring(101), False);
-    FreeShip.ProjectSettings.ProjectUnits:=fuMetric;
-  end else UndoObject:=nil;
-//try
+begin                  // temporarily switch to metric units for michlet export
+  Emp:=FreeShip.ProjectSettings.ProjectUnits=fuImperial;
+  if Emp then FreeShip.ProjectSettings.ProjectUnits:=fuMetric;
     if not FreeShip.ProjectSettings.DisableModelCheck then Model_Check(False);
     Dialog:=TFreeMichletOutputDialog.Create(FreeShip);
     ShowTranslatedValues(Dialog);                                       // Hull
@@ -1769,7 +1765,7 @@ begin
     Dialog.NumberOfSpeeds:=50;                                   // Environment
     Dialog.G:=9.80665;
     Dialog.WaterDensity:=FreeShip.ProjectSettings.ProjectWaterDensity;
-    //      Dialog.WaterTemper:=FreeShip.ProjectSettings.ProjectWaterTemper;
+//  Dialog.WaterTemper:=FreeShip.ProjectSettings.ProjectWaterTemper;
     Dialog.WaterDepth:=10000;                                          // Waves
     Dialog.R0:=1.5 * Dialog.Length;
     Dialog.R1:=5.0 * Dialog.Length;
@@ -1794,8 +1790,6 @@ begin
       FreeAndNil(SaveDialog);
     end;
     FreeAndNil(Dialog);
-//finally
-    if UndoObject <> nil then UndoObject.Restore;
-//end;
+    if Emp then FreeShip.ProjectSettings.ProjectUnits:=fuImperial;
 end;
 

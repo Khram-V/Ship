@@ -17,7 +17,7 @@ begin
     PrevCursor:=Screen.Cursor;
     Screen.Cursor:=crHourglass;
 //    try
-      CreateUndoObject( 'OBJ file',True );
+//    CreateUndoObject( 'OBJ file',True );
       FreeShip.Clear;
 
       Strings:=TStringList.Create;
@@ -52,7 +52,7 @@ begin
   OpenDialog.Filter:=createDialogFilter( rsSTLFile,['stl'] );
   if OpenDialog.Execute then begin
     if not CheckIfChangedAndAskToSave() then begin FreeAndNil(OpenDialog); exit; end;
-    CreateUndoObject( rsSTLfile, True);
+//  CreateUndoObject( rsSTLfile, True);
     FreeShip.Clear;
     FileName:=ChangeFileExt( OpenDialog.FileName, '.stl' );
     AssignFile( FFile,FileName ); Reset( FFile );
@@ -216,7 +216,7 @@ begin
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
     PrevCursor:=Screen.Cursor;
     Screen.Cursor:=crHourglass;
-      CreateUndoObject(Userstring(125), True);
+//    CreateUndoObject(Userstring(125), True);
 //    FreeShip.Clear;
 //    FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
       FreeShip.Surface.LoadVRMLFile( Opendialog.FileName );
@@ -301,7 +301,7 @@ begin
     if Frames.Count > 1 then
     begin
       FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-      CreateUndoObject(Userstring(133), True);
+//    CreateUndoObject(Userstring(133), True);
       FreeShip.Clear;
       FreeShip.Filename:=Opendialog.FileName;
       MinZ:=0.0;
@@ -745,7 +745,7 @@ begin
     begin
       PrevCursor:=Screen.Cursor;
       FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-      CreateUndoObject(Userstring(136), True);
+//    CreateUndoObject(Userstring(136), True);
       FreeShip.Clear;
       FreeShip.ProjectSettings.ProjectUnits:=UnitType;
       FreeShip.Filename:=Opendialog.FileName;
@@ -1177,7 +1177,7 @@ begin
       end;
     end;
 *)
-    CreateUndoObject(Userstring(105), True);
+//  CreateUndoObject(Userstring(105), True);
     FreeShip.Clear;
     assignFile(FFile, ChangeFileExt(Opendialog.FileName, '.xyz'));
 {$I-}
@@ -1269,7 +1269,7 @@ begin
       end;
     end;
 *)
-    CreateUndoObject(Userstring(107), True);
+//  CreateUndoObject(Userstring(107), True);
     FreeShip.Clear;
     assignFile(FFile, ChangeFileExt(Opendialog.FileName, '.txt'));
 {$I-}
@@ -1376,7 +1376,7 @@ begin
     Answer:=Freeship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
     FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-    CreateUndoObject( Userstring(109),True );
+//  CreateUndoObject( Userstring(109),True );
     FreeShip.Clear;
     File_ImportFEF( OpenDialog.Filename );
   end;
@@ -1395,7 +1395,7 @@ begin
   if OpenDialog.Execute then begin
     Answer:=Freeship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
-    CreateUndoObject(UserString(110), True);
+//  CreateUndoObject(UserString(110), True);
     File_ImportHull(OpenDialog.FileName, False);
     FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
   end;
@@ -1531,10 +1531,10 @@ begin
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     PartFile:=TFreeFileBuffer.Create;
-    //FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
+//  FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
     Changed:=False;
     vUndo:=CreateUndoObject( Userstring(112),False );
-    //Partfile.LoadFromFile(ChangeFileExt(OpenDialog.FileName, '.part'));
+//  Partfile.LoadFromFile(ChangeFileExt(OpenDialog.FileName, '.part'));
     Partfile.LoadFromFile(OpenDialog.FileName);
     Partfile.LoadString( Str );
     if Str='FREE!ship partfile' then begin
@@ -1637,7 +1637,7 @@ begin
 //      end;
         if Changed then begin
           if Assigned(FreeShip.Surface.OnChangeLayerData) then
-            FreeShip.Surface.OnChangeLayerData(FreeShip.Surface);
+             FreeShip.Surface.OnChangeLayerData(FreeShip.Surface);
           vUndo.Accept;
           FreeShip.Built:=False;
           FreeShip.Draw;
@@ -1646,7 +1646,7 @@ begin
             FreeShip.OnUpdateGeometryInfo(FreeShip);
         end;
       end;// else ShowMessage(UserString(113));
-    end   else ShowMessage(Userstring(114)+'~{'+Str+'}');
+    end else ShowMessage(Userstring(114)+'~{'+Str+'}');
     if not Changed then vUndo.Delete;
     FreeAndNil(Partfile);
   end;
@@ -1806,7 +1806,7 @@ begin
       end;
 
       if NSections > 0 then begin
-        CreateUndoObject(UserString(118), True);
+//      CreateUndoObject(UserString(118), True);
         FreeShip.Clear;
         FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
         I:=1;
@@ -2111,7 +2111,7 @@ begin
           Answer:=MessageDlg(Userstring(145), mtConfirmation,
             [mbYes, mbNo, mbCancel], 0);
           if Answer <> mrCancel then begin
-            CreateUndoObject(Userstring(146), True);
+//          CreateUndoObject(Userstring(146), True);
             if Answer = mrYes then begin
               for I:=1 to FreeShip.NumberofMarkers do FreeShip.Marker[I-1].Destroy;
               FreeShip.FMarkers.Clear;
@@ -2124,12 +2124,12 @@ begin
             end;
           end;
         end else begin
-          CreateUndoObject(Userstring(146), True);
+//        CreateUndoObject(Userstring(146), True);
           Import(Markers);
         end;
-      end else MessageDlg(Userstring(147), mtInformation, [mbOK], 0);
+      end else ShowMessage(Userstring(147));
       FreeAndNil(Markers);
-    end else MessageDlg(Userstring(106), mtError, [mbOK], 0);
+    end else ShowMessage(Userstring(106));
   end;
   FreeAndNil(OpenDialog);
 end;{TFreeEdit.Marker_Import}

@@ -3,7 +3,7 @@ unit TileDialog;
 interface
 uses
   Classes,Forms,Controls,Graphics,ExtCtrls,
-  Buttons,StdCtrls,ActnList,Menus;
+  Buttons,StdCtrls,ActnList,Menus,FreeLanguageSupport;
 type
   TTile = class(TPanel)
   private
@@ -75,8 +75,7 @@ uses LazFileUtils;
    BorderSpacing.Around:=8;
    BevelOuter:=bvNone;
    // Name:='Tile';
-   Caption:='Tile';
-
+   // Caption:='Tile';
    FImage:= TImage.Create(Self);
    with FImage do begin
        Parent:=Self;
@@ -106,6 +105,7 @@ constructor TTileDialog.Create( AOwner: TComponent );
    FTileHeight:=300;
    Width:=Screen.Width * 3 div 4;
    Height:=Screen.Height * 3 div 4;
+   ShowTranslatedValues( Self );
  end;
 
 procedure TTileDialog.ActionOpenAnotherExecute(Sender: TObject);

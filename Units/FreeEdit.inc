@@ -165,7 +165,7 @@ var
   Version: TFreeFileVersion;
   Preview: boolean;
   I: integer;
-begin
+begin                                               // Result:=nil; exit;
   UndoObject:=TFreeUndoObject.Create(FreeShip);
   Result:=UndoObject;
   //if UndoText<>'' then UndoText[1]:=Lowercase(UndoText[1]);
@@ -1486,17 +1486,15 @@ begin
       SetLength(Grid[i], Rows);
       for j:=0 to Rows-1 do begin
         case Plane of
-         0: begin // Horizontal
+         0: begin                                                 // Horizontal
             x:=StartPoint.X+i * SizeA / Cols;
-            y:=StartPoint.Y+j * SizeB / Rows;
-            z:=0;
+            y:=StartPoint.Y+j * SizeB / Rows; z:=0;
             end;
-         1: begin // Lateral
-            x:=StartPoint.X+i * SizeA / Cols;
-            y:=0;
+         1: begin                                                    // Lateral
+            x:=StartPoint.X+i * SizeA / Cols; y:=0;
             z:=StartPoint.Z+j * SizeB / Rows;
             end;
-         2: begin // Transverse
+         2: begin                                                 // Transverse
             x:=0;
             y:=StartPoint.Y+i * SizeA / Cols;
             z:=StartPoint.Z+j * SizeB / Rows;
@@ -1512,7 +1510,7 @@ begin
   FreeAndNil(Dialog);
 end;
 
-// Creates and calculates a hydrostatics calculation
+                           // Creates and calculates a hydrostatics calculation
 function TFreeEdit.Hydrostatics_Calculate
 ( Draft,AngleOfHeel,Trim: TFloatType): TFreeHydrostaticCalc;
 begin
@@ -1522,7 +1520,7 @@ begin
   Result.HeelingAngle:=AngleOfHeel;
   Result.Draft:=Draft;
   Result.Calculate;
-  Result.ShowData( fhSingleCalculation );
+  Result.ShowData;                                   //( fhSingleCalculation );
 end;
 (*
 // Opens the dialog to calculate crosscurves
@@ -1560,15 +1558,25 @@ end;
 *)
 // Opens the hydrostatics dialog and calculates hydrostatic data for a range of inputdata
 procedure TFreeEdit.Hydrostatics_Dialog;
-var HydrostaticsForm: TFreeHydrostaticsForm;
+var HydrostaticsForm: TFreeHydrostaticsForm; dp: double;
 begin
   HydrostaticsForm:=TFreeHydrostaticsForm.Create(FreeShip);
-  ShowTranslatedValues(HydrostaticsForm);
-  Hydrostaticsform.StartDraft:=FreeShip.ProjectSettings.Hydrostatics_Startdraft;
-  Hydrostaticsform.EndDraft:=FreeShip.ProjectSettings.Hydrostatics_Enddraft;
-  Hydrostaticsform.DraftStep:=FreeShip.ProjectSettings.Hydrostatics_DraftStep;
-  Hydrostaticsform.Trim:=FreeShip.ProjectSettings.Hydrostatics_Trim;
-  if TFreeHydrostaticsForm(HydrostaticsForm).Execute(FreeShip) then begin
+  ShowTranslatedValues( HydrostaticsForm );
+  with Hydrostaticsform do begin
+    StartDraft:=FreeShip.ProjectSettings.Hydrostatics_Startdraft;
+    EndDraft:=FreeShip.ProjectSettings.Hydrostatics_Enddraft;
+    DraftStep:=FreeShip.ProjectSettings.Hydrostatics_DraftStep;
+    Trim:=FreeShip.ProjectSettings.Hydrostatics_Trim;
+    if StartDraft<EndDraft then begin StartDraft:=0; EndDraft:=0; end;
+    if (StartDraft=0)
+    and ((EndDraft=1.0) or (EndDraft=0.0)) then begin
+      EndDraft:=FreeShip.ProjectSettings.ProjectDraft;
+      DraftStep:=AxisStep( EndDraft );
+      StartDraft:=DraftStep;
+      EndDraft:=Round( EndDraft/DraftStep+1 )*DraftStep;
+    end;
+  end;
+  if TFreeHydrostaticsForm( HydrostaticsForm ).Execute(FreeShip) then begin
     FreeShip.ProjectSettings.Hydrostatics_Startdraft:=HydrostaticsForm.StartDraft;
     FreeShip.ProjectSettings.Hydrostatics_Enddraft:=HydrostaticsForm.EndDraft;
     FreeShip.ProjectSettings.Hydrostatics_DraftStep:=HydrostaticsForm.DraftStep;
@@ -1991,39 +1999,31 @@ begin
     AllFaces.Add(FreeShip.Surface.ControlFace[I-1]);
 //  AllFaces.Sort; // Sort list for faster object search
 
-  Leaks:=TFasterListTFreeSubdivisionControlPoint.Create;
-  // assemble leaks
+  Leaks:=TFasterListTFreeSubdivisionControlPoint.Create;      // assemble leaks
   Z_min:=0;
   for I:=1 to FreeShip.Surface.NumberOfControlPoints do begin
     CtrlPoint:=FreeShip.Surface.ControlPoint[I-1];
     if CtrlPoint.Coordinate.Z < Z_min then
-      Z_min:=CtrlPoint.Coordinate.Z;
-    // Определяем наинизшую точку
+      Z_min:=CtrlPoint.Coordinate.Z;              // Определяем наинизшую точку
     if CtrlPoint.IsLeak then Leaks.Add(CtrlPoint);
-  end;
-  // sort leaks in ascending z-coordinate
+  end;                                  // sort leaks in ascending z-coordinate
   for I:=1 to Leaks.Count-1 do
-    for J:=I+1 to Leaks.Count do begin
-      Point:=Leaks[I-1];
-      Pt:=Leaks[J-1];
-      Swap:=False;
-      if Pt.Coordinate.Z < Point.Coordinate.Z then Swap:=True;
-      if (abs(Pt.Coordinate.Z-Point.Coordinate.Z) < 1e-6) and
-        (Pt.Coordinate.X < Point.Coordinate.X) then Swap:=True;
-      if (abs(Pt.Coordinate.Z-Point.Coordinate.Z) < 1e-6) and
-        (abs(Pt.Coordinate.X-Point.Coordinate.X) < 1e-6) and
-        (Pt.Coordinate.Y < Point.Coordinate.Y) then Swap:=True;
-      if Swap then Leaks.Exchange(I-1,J-1);
-    end;
-
+  for J:=I+1 to Leaks.Count do begin Point:=Leaks[I-1]; Pt:=Leaks[J-1];
+    Swap:=False;
+    if Pt.Coordinate.Z < Point.Coordinate.Z then Swap:=True;
+    if (abs(Pt.Coordinate.Z-Point.Coordinate.Z) < 1e-6) and
+      (Pt.Coordinate.X < Point.Coordinate.X) then Swap:=True;
+    if (abs(Pt.Coordinate.Z-Point.Coordinate.Z) < 1e-6) and
+      (abs(Pt.Coordinate.X-Point.Coordinate.X) < 1e-6) and
+      (Pt.Coordinate.Y < Point.Coordinate.Y) then Swap:=True;
+    if Swap then Leaks.Exchange(I-1,J-1);
+  end;
   for I:=1 to FreeShip.Surface.NumberOfControlEdges do
     if FreeShip.Surface.ControlEdge[I-1].NumberOfFaces > 2 then Inc(NonManifold);
 
-  if AllFaces.Count > 0 then
-  begin
+  if AllFaces.Count > 0 then begin
     NewGroup:=TFasterListTFreeSubdivisionFace.Create;
-    while AllFaces.Count > 0 do
-    begin
+    while AllFaces.Count > 0 do begin
       Face:=AllFaces[AllFaces.Count-1];
       AllFaces.Delete(AllFaces.Count-1);
       NewGroup.Clear;
@@ -2087,7 +2087,6 @@ begin
        if Point.Coordinate.Z-Z_min < FreeShip.ProjectSettings.ProjectDraft then MessageDlg(Userstring(899), mtWarning, [mbOK], 0);
 }   // end Victor T
     end;
-
     if (Changed) or (Inconsistent>0) or (NonManifold>0) or (DblEdges>0) then begin
       vUndo.Accept;
       FreeShip.Built:=False;
@@ -2103,21 +2102,18 @@ begin
         if assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
       end;
     end else begin
-      vUndo.Delete;
-      if (ShowResult) and (Leaks.Count = 0) then ShowMessage(Userstring(156));
+      vUndo.Delete; if (ShowResult) and (Leaks.Count=0) then ShowMessage( 'Check is ok.' ); //Userstring(156));
     end;
     FreeAndNil(Leaks);
   end;
   FreeAndNil(AllFaces);
-
   IsIntegrityOk:=true;
   for i:=0 to FreeShip.Surface.NumberOfLayers-1 do begin
     B:=FreeShip.Layer[i].CheckIntegrity;
     IsIntegrityOk:=IsIntegrityOk and B;
   end;
-
-  if not IsIntegrityOk then ShowMessage('Layers integrity is not Ok. Enable logs and check logs output. Further processing is not safe.');
-{
+  if not IsIntegrityOk then ShowMessage( 'Layers integrity error.' );
+{ ( 'Layers integrity is not Ok. Enable logs and check logs output. Further processing is not safe.' );
   for i:=0 to FreeShip.Surface.NumberOfControlFaces-1 do
     IsIntegrityOk:=IsIntegrityOk and FreeShip.Surface.ControlFace[i].CheckIntegrity;
   if not IsIntegrityOk then

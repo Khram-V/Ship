@@ -8,6 +8,7 @@ object TileDialog: TTileDialog
   Font.Quality = fqAntialiased
   Position = poMainFormCenter
   LCLVersion = '3.8.0.0'
+  ShowHint = True
   object TopPanel: TPanel
     Left = 0
     Height = 600
@@ -16,7 +17,7 @@ object TileDialog: TTileDialog
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    Caption = 'Recent projects'
+    Caption = 'Ранее избранные модели'
     ClientHeight = 600
     ClientWidth = 800
     Font.Style = [fsBold]
@@ -50,7 +51,7 @@ object TileDialog: TTileDialog
         Action = ActionOpenAnother
         Align = alLeft
         AutoSize = True
-        Caption = 'Open Another'
+        Caption = 'Выбор в директории'
         Glyph.Data = {
           36040000424D3604000000000000360000002800000010000000100000000100
           2000000000000004000064000000640000000000000000000000000000000000
@@ -115,7 +116,7 @@ object TileDialog: TTileDialog
         Width = 55
         Align = alLeft
         AutoSize = True
-        Caption = 'Close'
+        Caption = 'Закрыть'
         ModalResult = 11
         ParentFont = False
         TabOrder = 0
@@ -157,15 +158,12 @@ object TileDialog: TTileDialog
     Left = 176
     Top = 8
     object ActionOpenAnother: TAction
-      Caption = 'ActionOpenAnother'
       OnExecute = ActionOpenAnotherExecute
     end
     object ActionRemove: TAction
-      Caption = 'ActionRemove'
       OnExecute = ActionRemoveExecute
     end
     object ActionOpen: TAction
-      Caption = 'ActionOpen'
       OnExecute = ActionOpenExecute
     end
   end
@@ -175,12 +173,12 @@ object TileDialog: TTileDialog
     Top = 112
     object MenuItemOpen: TMenuItem
       Action = ActionOpen
-      Caption = 'Open'
+      Caption = 'Открыть'
     end
     object MenuItemRemove: TMenuItem
       Action = ActionRemove
-      Caption = 'Remove'
-      Hint = 'Remove project from this "Recent projects" list'
+      Caption = 'Убрать'
+      Hint = 'Удалить ссылку из списка недавно избранных.'
     end
   end
 end

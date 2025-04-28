@@ -47,7 +47,7 @@ function UserString( Index:Integer ): AnsiString;   // == Languages\Russian.ini
   var Val: AnsiString; I: Integer;
 begin Result:='';
    if CurrentLanguage=nil then begin  // при отсутствии текстовых строк в файле
-     for I:=1 to Length( U )*2-1 do   // [216++..]
+     for I:=0 to Length( U )*2-1 do   // [216++..]
      if U[I].L=Index then begin Result:=U[I].C; break; end;
    end else begin Val:=IntToStr( Index );
      Result:=CurrentLanguage.readString

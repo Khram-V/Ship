@@ -140,8 +140,8 @@ begin
       Setlength(MaxWidth,Grid.ColCount);
       for I:=1 to Grid.ColCount do begin MaxWidth[I-1]:=0;
          for J:=1 to Grid.RowCount do begin
-            L:=Length(Grid.Cells[I-1,J-1]);
-            if L>MaxWidth[I-1] then MaxWidth[I-1]:=L;
+             L:=Length(Grid.Cells[I-1,J-1]);
+             if L>MaxWidth[I-1] then MaxWidth[I-1]:=L;
          end;
       end;
       Writeln( PrintText );

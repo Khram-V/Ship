@@ -894,11 +894,9 @@ begin                                                 // Read controlpoint data
     end;
   end;                                                      // Read layer-index
   Source.LoadInteger(Index);
-  if (Index >= 0) and (Index < Surface.FLayers.Count) then begin
-    FLayer:=Surface.Layer[Index];
-  end else begin
-    FLayer:=Surface.Layer[0];    // Reference to an invalid layer. Assign to owners default layer
-  end;
+  if (Index>=0) and (Index<Surface.FLayers.Count) then FLayer:=Surface.Layer[Index]
+  else FLayer:=Surface.Layer[0]; // Reference to an invalid layer. Assign to owners default layer
+
   if FLayer <> nil then FLayer.AddControlFace( self );
   //else WriteLn('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadBinary!');
 

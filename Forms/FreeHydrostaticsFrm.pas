@@ -29,34 +29,37 @@ type
     function FGetTrim: single;       procedure FSetTrim(Val: single);
   public                                                { Public declarations }
     function Execute( FreeShip: TFreeShip ): boolean;
-    property DraftStep: single read FGetDraftStep write FSetDraftStep;
-    property EndDraft: single read FGetEndDraft write FSetEndDraft;
     property StartDraft: single read FGetStartDraft write FSetStartDraft;
+    property EndDraft: single read FGetEndDraft write FSetEndDraft;
+    property DraftStep: single read FGetDraftStep write FSetDraftStep;
     property Trim: single read FGetTrim write FSetTrim;
   end;
 
-var
-  FreeHydrostaticsForm: TFreeHydrostaticsForm;
+var FreeHydrostaticsForm: TFreeHydrostaticsForm;
 
 implementation
-  {$R *.lfm}
+{$R *.lfm}
 
 function TFreeHydrostaticsForm.FGetStartDraft: single;
    begin Result:=FloatSpinEdit1.Value; end;
 procedure TFreeHydrostaticsForm.FSetStartDraft(Val: single);
     begin FloatSpinEdit1.Value:=Val; end;
-function TFreeHydrostaticsForm.FGetTrim: single;
-   begin Result:=FloatSpinEdit4.Value; end;
-procedure TFreeHydrostaticsForm.FSetTrim(Val: single);
-    begin FloatSpinEdit4.Value:=Val; end;
+
 function TFreeHydrostaticsForm.FGetEndDraft: single;
    begin Result:=FloatSpinEdit2.Value; end;
 procedure TFreeHydrostaticsForm.FSetEndDraft(Val: single);
     begin FloatSpinEdit2.Value:=Val; end;
+
 function TFreeHydrostaticsForm.FGetDraftStep: single;
    begin Result:=FloatSpinEdit3.Value; end;
 procedure TFreeHydrostaticsForm.FSetDraftStep(Val: single);
     begin FloatSpinEdit3.Value:=Val; end;
+
+function TFreeHydrostaticsForm.FGetTrim: single;
+   begin Result:=FloatSpinEdit4.Value; end;
+procedure TFreeHydrostaticsForm.FSetTrim(Val: single);
+    begin FloatSpinEdit4.Value:=Val; end;
+
 function TFreeHydrostaticsForm.Execute(FreeShip: TFreeShip): boolean;
 var Str: AnsiString;
 begin FFreeShip:=Freeship;
@@ -146,7 +149,7 @@ begin
         else if I in [4,5,15] then ResultsDlg.Grid.ColWidths[I]:=55;
       Zmin:=0;
       I:=2;
-      while (Value<=EndDraft+DraftStep) or (abs(Value-EndDraft)<1e-3) do begin
+      while Value<=EndDraft do begin //+DraftStep) or (abs(Value-EndDraft)<1e-3) do begin
         HydObject.Clear;
         HydObject.HeelingAngle:=0.0;
         HydObject.Trim:=Trim;
@@ -187,9 +190,28 @@ begin
 //      if (feMakingWater in HydObject.Errors) then break; // stop if the vessel is making water
       end;
       HydObject.AddHeader( Strings ); Strings.add(''); Strings.add('');
-      HydObject.AddFooter( Strings,fhMultipleCalculations );
+//    if Mode = fhMultipleCalculations then begin
+        Strings.Add('Lwl   : '+Userstring(17));
+        Strings.Add('Bwl   : '+Userstring(18));
+        Strings.Add('Volume: '+Userstring(3));
+        Strings.Add('Displacement: '+Userstring(4));
+        Strings.Add('LCB   : '+Userstring(11)+', '+UserString(55));
+        Strings.Add('VCB   : '+Userstring(12)+', '+UserString(56));
+        Strings.Add('Cb    : '+Userstring(7));
+        Strings.Add('Am    : '+Userstring(14));
+        Strings.Add('Cm    : '+Userstring(15));
+        Strings.Add('Aw    : '+Userstring(19));
+        Strings.Add('Cw    : '+Userstring(20));
+        Strings.Add('LCF   : '+Userstring(21));
+        Strings.Add('Cp    : '+Userstring(8));
+        Strings.Add('S     : '+Userstring(10));
+        Strings.Add('KMt   : '+Userstring(26));
+        Strings.Add('KMl   : '+Userstring(27));
+//    end;
+      Strings.Add( '' );
+      HydObject.AddFooter( Strings );            // fhMultipleCalculations );
       ResultsDlg.Header.Lines.AddStrings( Strings );
-      HydObject.Destroy;                       //ResultsDlg.Grid.RowCount:=I;
+      HydObject.Destroy;                         //ResultsDlg.Grid.RowCount:=I;
 //  finally
       Strings.Destroy;
       Screen.Cursor:=PrevCursor;

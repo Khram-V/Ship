@@ -120,7 +120,7 @@
         <PackageName Value="Printer4Lazarus"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="91">
+    <Units Count="90">
       <Unit0>
         <Filename Value="Forms/FreeShip.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -593,10 +593,6 @@
         <Filename Value="Units/HistoryExamples.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit89>
-      <Unit90>
-        <Filename Value="Forms/Experience.c"/>
-        <IsPartOfProject Value="True"/>
-      </Unit90>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

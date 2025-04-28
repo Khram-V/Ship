@@ -51,8 +51,7 @@ begin
 end;
 
 // deletes an undo object from the list
-procedure TFreeUndoObject.Delete;
-var Index: integer;
+procedure TFreeUndoObject.Delete; var Index: integer;
 begin
   Index:=FOwner.FUndoObjects.IndexOf(self);
   if Index<>-1 then Owner.FUndoObjects.Delete(Index);
@@ -61,21 +60,14 @@ begin
 end;
 
 destructor TFreeUndoObject.Destroy;
-begin
-  FreeAndNil(FUndoData);
-  inherited Destroy;
-end;
+     begin FreeAndNil(FUndoData); inherited Destroy; end;
 
 procedure TFreeUndoObject.Restore;
-begin
-//try
-    Owner.LoadProject( FUndoData );
-    Owner.FFileChanged:=FFileChanged;
-    Owner.FFilename  :=FFilename;
-    Owner.FEditMode  :=FEditMode;
-    Owner.FilenameSet:=FFilenameSet;
-//finally
-    Owner.Redraw;
-//end;
+begin Owner.LoadProject( FUndoData );
+      Owner.FFileChanged:=FFileChanged;
+      Owner.FFilename  :=FFilename;
+      Owner.FEditMode  :=FEditMode;
+      Owner.FilenameSet:=FFilenameSet;
+      Owner.Redraw;
 end;
 

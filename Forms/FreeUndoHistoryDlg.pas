@@ -74,7 +74,6 @@ begin
     OnRequestExtents:=ViewportRequestExtents;
   end;
 end;
-
 function TFreeUndoHistoryDialog.Execute( Freeship:TFreeShip ):Boolean;
 var I,Max: Integer; Undo: TFreeUndoObject; Str: AnsiString;
 begin

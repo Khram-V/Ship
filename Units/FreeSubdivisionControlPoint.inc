@@ -352,18 +352,18 @@ begin
       if P3D.X <= Surface.SplitSectionLocation then P3D.Y:=-P3D.Y;
     P:=Viewport.Project(P3D);
     Pz:=Viewport.ProjectToZBuffer(1.002 * ZBufferScaleFactor, P3D);
-    // Check if the point lies within the viewport's drawingcanvas boundaries
+      // Check if the point lies within the viewport's drawingcanvas boundaries
     if  (Pz.X>=0) and (Pz.Y>=0)
     and (Pz.X<Viewport.ClientWidth)
-    and (Pz.Y < Viewport.ClientHeight) then begin // Compare to Z buffer to check visibility;
-      if Pz.Z >= Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X] then begin // yes, the point is visible
-        Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X]:=Pz.Z;
+    and (Pz.Y < Viewport.ClientHeight) then begin               // Compare to Z buffer to check visibility;
+      if Pz.Z+0.5>=Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X] then begin // yes, the point is visible
+        Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X]:=Pz.Z;             // + Surface.ControlPointSize
         if Viewport.PenWidth<>1 then Viewport.PenWidth:=1;
         Viewport.PenColor:=Color;
         Viewport.BrushStyle:=bsClear;
         Viewport.PenStyle:=psSolid;
         for I:=1 to Surface.ControlPointSize do
-          Viewport.Rectangle(Pz.X-I, Pz.Y-I, Pz.X+I, Pz.Y+I);
+          Viewport.Rectangle( Pz.X-I,Pz.Y-I,Pz.X+I,Pz.Y+I );
       end;
     end;
   end else begin                        // with Viewport.DrawingCanvas do begin

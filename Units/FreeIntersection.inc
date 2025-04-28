@@ -72,14 +72,14 @@ procedure TFreeIntersection.Add(Item: TFreeSpline);
 begin FItems.Add(Item); end;
 
 
-procedure TFreeIntersection.CalculateArea(Plane: T3DPlane; var Area: TFloatType;
-  var COG: T3DVector; var MomentOfInertia: T2DCoordinate);
+procedure TFreeIntersection.CalculateArea
+( Plane: T3DPlane; var Area: TFloatType;
+                   var COG: T3DVector;
+                   var MomentOfInertia: T2DCoordinate );
 var
-  I: integer;
+  I,Isymm: Integer;
   TmpArea: TFloatType;
-  TmpCOG: T3DVector;
-  MomI: T3DVector;
-  isymm: integer;
+  TmpCOG,MomI: T3DVector;
 
   procedure CalculateSplineArea(Spline: TFreeSpline; var SplineArea: TFloatType;
   var SplineCOG, MomInertia: T3DVector);
@@ -87,39 +87,20 @@ var
     ClosedSpline: boolean;
     IntersectionData: TFreeIntersectionData;
     Parameters: TFloatArray;
-    I, J: integer;
-    NoPoints: integer;
-    T1, T2, T, Side: TFloatType;
-    DeltaA: TFloatType;
+    I,J,NoPoints: integer;
+    T1,T2,T,Side,DeltaA: TFloatType;
     P: T3DVector;
-    P1, P2, C: T2DCoordinate;
-    MomI: T2DCoordinate;
+    P1,P2,C,MomI: T2DCoordinate;
 
-    function ProjectTo2D(P: T3DVector): T2DCoordinate;
+    function ProjectTo2D( P: T3DVector ): T2DCoordinate;
     begin
       case IntersectionType of
-        fiStation:
-        begin
-          Result.X:=P.Y;
-          Result.Y:=P.Z;
-        end;
-        fiButtock:
-        begin
-          Result.X:=P.X;
-          Result.Y:=P.Z;
-        end;
-        fiWaterline:
-        begin
-          Result.X:=P.X;
-          Result.Y:=P.Y;
-        end;
-        else
-        begin
-          Result.X:=0.0;
-          Result.Y:=0.0;
-        end;
+        fiStation:   begin Result.X:=P.Y; Result.Y:=P.Z; end;
+        fiButtock:   begin Result.X:=P.X; Result.Y:=P.Z; end;
+        fiWaterline: begin Result.X:=P.X; Result.Y:=P.Y; end;
+                else begin Result.X:=0.0; Result.Y:=0.0; end;
       end;
-    end;{ProjectTo2D}
+    end; {ProjectTo2D}
 
   begin
     P1.X:=0;
@@ -134,9 +115,7 @@ var
 
     if IntersectionType = fiWaterline then begin
       ClosedSpline:=Abs(Spline.Point[0]-Spline.Point[Spline.NumberOfPoints-1])<1e-4;
-      if not ClosedSpline then
-      begin
-        // make it closed
+      if not ClosedSpline then begin                          // make it closed
         Spline.Add(Spline.Point[0]);
         Spline.Knuckle[Spline.NumberOfPoints-2]:=True;
       end;
@@ -149,7 +128,7 @@ var
     Parameters[1]:=1.0;
     if IntersectionType <> fiWaterline then
     if Spline.IntersectPlane(Plane, IntersectionData) then begin
-      Setlength(Parameters, NoPoints+Intersectiondata.NumberOfIntersections);
+      Setlength( Parameters,NoPoints+Intersectiondata.NumberOfIntersections );
       for I:=1 to Intersectiondata.NumberOfIntersections do begin
         Parameters[NoPoints]:=Intersectiondata.Parameters[I-1];
         Inc(NoPoints);
@@ -162,8 +141,7 @@ var
       for I:=2 to NoPoints do begin
         T2:=Parameters[I-1];
         T:=0.5 * (T1+T2);
-        P:=Spline.Value(T);
-        // check on which side of the plane this point is
+        P:=Spline.Value(T);   // check on which side of the plane this point is
         Side:=Plane.a * P.x+Plane.b * P.y+Plane.c * P.z+Plane.d;
         if (Side < 0) or (IntersectionType = fiWaterline) then
           for J:=0 to 500 do begin
@@ -182,8 +160,7 @@ var
                 (P1.Y+P2.Y)+P1.X * P1.X * (3 * P1.Y+P2.Y)) * (P2.X-P1.X);
             end;
             P1:=P2;
-          end// The point lies at the back of the plane, include this area
-        ;
+          end;    // The point lies at the back of the plane, include this area
         T1:=T2;
       end;
       if SplineArea <> 0.0 then begin
@@ -222,7 +199,6 @@ var
 
         end;
       end;
-
     end;
   end;{CalculateSplineArea}
 
@@ -232,36 +208,28 @@ begin
   MomentOfInertia.X:=0;
   MomentOfInertia.Y:=0;
   isymm:=1;
-  if not Built then
-    Rebuild;
-  if Count > 0 then
-  begin
-    CreateStarboardPart; // This also ensures correct winding order
-    if Count >= 2 then
-      isymm:=2;
-    for I:=1 to Count do
-    begin
+  if not Built then Rebuild;
+  if Count > 0 then begin
+    CreateStarboardPart;             // This also ensures correct winding order
+    if Count >= 2 then isymm:=2;
+    for I:=1 to Count do begin
       CalculateSplineArea(Items[I-1], TmpArea, TmpCOG, MomI);
       Area:=Area+TmpArea;
       COG.X:=COG.X+TmpArea * TmpCOG.X;
       COG.Y:=COG.Y+TmpArea * TmpCOG.Y;
       COG.Z:=COG.Z+TmpArea * TmpCOG.Z;
     end;
-    if Area <> 0.0 then
-    begin
+    if Area <> 0.0 then begin
       COG.X:=COG.X / Area;
       COG.Y:=COG.Y / Area;
       COG.Z:=COG.Z / Area;
-      if IntersectionType = fiWaterline then
-      begin
+      if IntersectionType = fiWaterline then begin
         MomentOfInertia.X:=(MomI.X-COG.Y * COG.Y * Area) * isymm;
         MomentOfInertia.Y:=abs(MomI.Y-COG.X * COG.X * Area);
       end;
     end;
   end;
-  if (Count = 0) or (Area = 0) then
-  begin
-    COG:=ZERO;
+  if (Count = 0) or (Area = 0) then begin COG:=ZERO;
     case IntersectionType of
       fiStation: COG.X:=-FPlane.d;
       fiButtock: COG.Y:=-FPlane.d;

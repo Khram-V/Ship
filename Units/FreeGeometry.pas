@@ -1234,29 +1234,29 @@ type
   private
     FActiveControlCurve: TFreeSubdivisionControlCurve;
     FActiveControlFace: TFreeSubdivisionControlFace;
-    FChanged: boolean;                                        // Model is changed
+    FChanged: boolean;                                       // Model is changed
     FIsLoading: boolean;
 //  FOnChangeActiveControlPoint: TNotifyEvent;
-    FRebuildRequested: boolean;                               // Flag tells that async rebuild is requested
-    FControlPoints: TFasterListTFreeSubdivisionControlPoint;  // List with controlpoints, which can be changed by the user
+    FRebuildRequested: boolean;                              // Flag tells that async rebuild is requested
+    FControlPoints: TFasterListTFreeSubdivisionControlPoint; // List with controlpoints, which can be changed by the user
     FControlPointGroups: TFasterListTFreeSubdivisionControlPointGroup;
-    FControlEdges: TFasterListTFreeSubdivisionControlEdge;    // List with controledges, which can be changed by the user
-    FControlFaces: TFasterListTFreeSubdivisionControlFace;    // List with controlfaces, which can be changed by the user
-    FControlCurves: TFasterListTFreeSubdivisionControlCurve;  // list with mastercurves
+    FControlEdges: TFasterListTFreeSubdivisionControlEdge;   // List with controledges, which can be changed by the user
+    FControlFaces: TFasterListTFreeSubdivisionControlFace;   // ... faces, which can be changed by the user
+    FControlCurves: TFasterListTFreeSubdivisionControlCurve; // list with mastercurves
     FFreeShip: TObject;
-    FPoints: TFasterListTFreeSubdivisionPoint;                // List with points obtained by subdividing the surface
-    FEdges: TFasterListTFreeSubdivisionEdge;                  // this list edges obtained by subdividing the controledges
-    FFreeStandingPoints: TFasterListTFreeSubdivisionPoint;    // List with points obtained by subdividing the surface
-    FFreeStandingEdges: TFasterListTFreeSubdivisionEdge;      // this list edges obtained by subdividing the controledges
+    FPoints: TFasterListTFreeSubdivisionPoint;               // List with points obtained by subdividing the surface
+    FEdges: TFasterListTFreeSubdivisionEdge;                 // this list edges obtained by subdividing the controledges
+    FFreeStandingPoints: TFasterListTFreeSubdivisionPoint;   // List with points obtained by subdividing the surface
+    FFreeStandingEdges: TFasterListTFreeSubdivisionEdge;     // this list edges obtained by subdividing the controledges
     FIdSequence:integer;
-    FLayers: TFasterListTFreeSubdivisionLayer;                // All layers are stored in this list
+    FLayers: TFasterListTFreeSubdivisionLayer;               // All layers are stored in this list
     FActiveControlPoint : TFreeSubdivisionControlPoint;
     FActiveControlEdge : TFreeSubdivisionControlEdge;
-    FSelectedControlPoints: TFasterListTFreeSubdivisionControlPoint;  // Controlpoints which are selected by the user are put in this list
+    FSelectedControlPoints: TFasterListTFreeSubdivisionControlPoint; // Controlpoints which are selected by the user are put in this list
     FSelectedControlPointGroups: TFasterListTFreeSubdivisionControlPointGroup;
-    FSelectedControlEdges: TFasterListTFreeSubdivisionControlEdge;    // List with currently selected controledges
-    FSelectedControlCurves: TFasterListTFreeSubdivisionControlCurve;  // List with currently selected controlcurves
-    FSelectedControlFaces: TFasterListTFreeSubdivisionControlFace;    // List with currently selected controlfaces
+    FSelectedControlEdges: TFasterListTFreeSubdivisionControlEdge;   // List with currently selected controledges
+    FSelectedControlCurves: TFasterListTFreeSubdivisionControlCurve; // ... curves
+    FSelectedControlFaces: TFasterListTFreeSubdivisionControlFace;   // ... faces
     FActiveLayer: TFreeSubdivisionLayer;    // Currently active layer, may not be nil!
     FShowControlNet: boolean; // Flag to switch controlpoints and control-edges visibility
     FInitialized: boolean;    // Flag to check if the surface has been initialised.
@@ -1279,7 +1279,7 @@ type
     FOnChangeItemListeners: TMethodList<TNotifyEvent>;
 
     FWaterlinePlane: T3DPlane; // This plane is used to clip the hull, and shade the underwatership in a different color
-    FShadeUnderWater,           // Switch to turn under water shading on or off
+    FShadeUnderWater,          // Switch to turn under water shading on or off
     FShowNormals: boolean;     // show normals of selected controlfaces
     FControlPointSize: integer;
 
