@@ -469,8 +469,6 @@ type
 //  procedure File_Execute_AddMass;  //(Component:TComponent); // Output in Added masses program
     procedure File_ExportPart;            // Save part of the geometry to a file
     procedure File_ExportIGES;            // Save NURBS patches to an IGES file
-    procedure File_Export_Michlet;        // Creates a file to be read by the CFD program Michlet
-    procedure File_Import_MichletWaves;
     procedure File_ImportObj;             // Import the model as a Wavefront Technologies.Obj file
     procedure File_ExportObj;             // Saves the model as a wavefront .Obj file
     procedure File_ExportOffsets;         // Exports all intersections to a textfile as 3D points
@@ -1014,7 +1012,6 @@ implementation uses
   FreeLinesplanForm,
   FreeLinesplanFrame,
   FreeInsertPlaneDlg,
-  FreeMichletOutputDlg,
   FreeSelectLayersDlg,
   FreeMirrorPlaneDlg,
   Free2DDXFExportDlg,

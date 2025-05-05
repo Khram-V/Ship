@@ -1,42 +1,22 @@
 unit FreeBackgroundBlendingDlg;
 {$MODE Delphi}{$H+}
 interface uses
-    {$IFDEF Windows}
-  Windows,
-    {$ELSE}
-  LazFileUtils,
-    {$ENDIF}
-  SysUtils,
-  Controls,
-  Forms,
-  Dialogs,
-  StdCtrls,
-  Buttons,
-  ExtCtrls,
-  FreeGeometry,FreeLanguageSupport,
-  ComCtrls;
-
+  SysUtils,  Controls,
+  Forms,     StdCtrls,
+  Buttons,   ExtCtrls, ComCtrls, FreeGeometry, FreeLanguageSupport;
 type
-
-  { TFreeBackgroundBlendDialog }
-
   TFreeBackgroundBlendDialog = class(TForm)
-    Label1: TLabel;
-    Panel2: TPanel;
-    Panel1: TPanel;
-    BitBtn1: TSpeedButton;
-    BitBtn2: TSpeedButton;
-    Panel3: TPanel;
-    Panel4: TPanel;
+    Label1, _Label2: TLabel;
+    Panel2,Panel1,Panel3,Panel4: TPanel;
+    BitBtn1,BitBtn2: TSpeedButton;
     TrackBar1: TTrackBar;
-    _Label2: TLabel;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
   private   { Private declarations }
     FViewport: TFreeViewport;
   public    { Public declarations }
-    function Execute(Viewport: TFreeViewport): boolean;
+    function Execute( Viewport: TFreeViewport ): boolean;
   end;
 
 var

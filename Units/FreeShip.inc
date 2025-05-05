@@ -340,30 +340,7 @@ begin
       end;
     end;
 end;
-(*
-function TFreeShip.FindByName( aName:AnsiString ):TFreeNamedObject;
-var i:integer;
-begin result:=nil;
-  for i:=0 to Surface.NumberOfControlPoints-1 do
-    if Surface.ControlPoint[i].Name = aName then begin
-       result:=Surface.ControlPoint[i]; break; end;
-  if result=nil then
-  for i:=0 to Surface.NumberOfControlEdges-1 do
-    if Surface.ControlEdge[i].Name = aName then begin
-       result:=Surface.ControlEdge[i]; break; end;
-  if result=nil then
-  for i:=0 to Surface.NumberOfControlFaces-1 do
-    if Surface.ControlFace[i].Name = aName then begin
-       result:=Surface.ControlFace[i]; break; end;
-end;
-*
-function TFreeShip.GetAllNamedPoints:TStringList; var i:integer;
-begin result:=TStringList.Create;
-  for i:=0 to Surface.NumberOfControlPoints-1 do
-    if Surface.ControlPoint[i].Name<>'' then
-      result.AddObject( Surface.ControlPoint[i].Name,Surface.ControlPoint[i] );
-end;
-*)
+
 function TFreeShip.GetActiveControlCurve: TFreeSubdivisionControlCurve;
    begin Result:=Surface.ActiveControlCurve; end;
 function TFreeShip.GetActiveControlEdge: TFreeSubdivisionControlEdge;
@@ -579,43 +556,7 @@ begin
   //  TFreeSubdivisionLayer.LayerIndex=0;
   //  FSurface.Layerbox.ItemIndex=3;
 end; {TFreeShip.Create}
-(* ///***
-procedure TFreeShip.CreateOutputHeader( CalcHeader: Ansistring; Strings: TStrings );
-const Separator = #32;
-const S = '          ';
-begin
-  Strings.Add('');
-  Strings.Add(CalcHeader);
-  Strings.Add('');
-  Strings.Add(Makelength( S+Userstring(39),31)+' : ' + Separator+ProjectSettings.ProjectName);
-  Strings.Add(Makelength( S+Userstring(40),31)+' : ' + Separator+ProjectSettings.ProjectDesigner);
-  if ProjectSettings.ProjectFileCreatedBy<>'' then
-    Strings.Add(Makelength( S+Userstring(41),31)+' : ' + Separator+ProjectSettings.ProjectFileCreatedBy);
-  if ProjectSettings.ProjectComment<>'' then
-    Strings.Add(Makelength( S+Userstring(42),31)+' : ' + Separator+ProjectSettings.ProjectComment);
-  Strings.Add(Makelength( S+Userstring(43),31)+' : ' + Separator+ChangeFileExt(ExtractFilename(FileName), '.fbm'));
-  Strings.Add('');
-//if ProjectSettings.MainparticularsHasBeenset then
-  begin
-    Strings.Add(MakeLength(S+Userstring(44),31)+' : ' +
-      MakeLength(ProjectSettings.ProjectLength, -1, 10)+#32+LengthStr(ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(46),31)+' : ' +
-      MakeLength(ProjectSettings.ProjectBeam, -1, 10)+#32+LengthStr(ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(48),31)+' : ' +
-      MakeLength(ProjectSettings.Projectdraft, -1, 10)+#32+LengthStr(ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(49),31)+' : ' +
-      MakeLength(ProjectSettings.ProjectSplitSectionLocation,-1,10)+#32+LengthStr(ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(50),31)+' : ' +
-      MakeLength(ProjectSettings.ProjectWaterDensity, 3, 10)+#32+DensityStr(ProjectSettings.ProjectUnits));
-    Strings.Add(MakeLength(S+Userstring(51),31)+' : ' +
-      MakeLength(ProjectSettings.ProjectAppendageCoefficient, 4, 10));
-    Strings.Add('');
-  end;
-  Strings.Add(Makelength(S+Userstring(181), 19)+' : '+DateToStr(Date));
-  Strings.Add(Makelength(S+Userstring(182), 19)+' : '+TimeToStr(Time));
-  Strings.Add('');
-end;
-*)
+
 procedure TFreeShip.Clear; var I: integer; Pt: TPoint;
 begin                                                    // Initialize all data
   FPrecision:=fpLow;
@@ -1346,89 +1287,6 @@ begin
   end;
 end;
 
-// fv421
-(*
-procedure TFreeShip.LoadControlPointNames(Source:TFreeFileBuffer);
-var I,N:integer; NameData:TNameData;
-begin
-  Source.LoadInteger(N);                                                        //Logger.Debug('ControlPoint Names:'+IntToStr(N)+' pos:'+IntToStr(Source.Position));
-  for I:=1 to N do begin
-    Source.LoadTNameData(NameData);
-    Surface.ControlPoint[NameData.N].Name:=NameData.Name;
-  end;
-end;
-procedure TFreeShip.LoadControlEdgeNames(Source:TFreeFileBuffer);
-var I,N:integer; NameData:TNameData;
-begin
-  Source.LoadInteger(N);                                                        //Logger.Debug('ControlEdge Names:'+IntToStr(N)+' pos:'+IntToStr(Source.Position));
-  for I:=1 to N do begin
-    Source.LoadTNameData(NameData);
-    Surface.ControlEdge[NameData.N].Name:=NameData.Name;
-  end;
-end;
-procedure TFreeShip.LoadControlFaceNames(Source:TFreeFileBuffer);
-var I,N:integer; NameData:TNameData;
-begin
-  Source.LoadInteger(N);                                                        //Logger.Debug('ControlFace Names:'+IntToStr(N)+' pos:'+IntToStr(Source.Position));
-  for I:=1 to N do begin
-    Source.LoadTNameData(NameData);
-    Surface.ControlFace[NameData.N].Name:=NameData.Name;
-  end;
-end;
-procedure TFreeShip.LoadControlCurveNames(Source:TFreeFileBuffer);
-var I,N:integer; NameData:TNameData;
-begin
-  Source.LoadInteger(N);                                                        //Logger.Debug('ControlCurve Names:'+IntToStr(N)+' pos:'+IntToStr(Source.Position));
-  for I:=1 to N do begin
-    Source.LoadTNameData(NameData);
-    Surface.ControlCurve[NameData.N].Name:=NameData.Name;
-  end;
-end;
-procedure TFreeShip.LoadControlPointLinearConstraints(Source:TFreeFileBuffer);
-var I,N:integer; LCData:TLinearConstraintData;
-begin
-  Source.LoadInteger(N);                                                        //Logger.Debug('ControlPoint Linear Constraints:'+IntToStr(N)+' pos:'+IntToStr(Source.Position));
-  for I:=1 to N do begin
-    Source.LoadTLinearConstraintData(LCData);
-    if (LCData.LinearConstraintPointA > -1)
-      and (LCData.LinearConstraintPointB > -1) then
-      Surface.ControlPoint[LCData.N].SetLinearConstraint(
-         Surface.ControlPoint[LCData.LinearConstraintPointA],
-         Surface.ControlPoint[LCData.LinearConstraintPointB]);
-  end;
-end;
-*)
-//fv430
-(*
-procedure TFreeShip.LoadControlPointGroups(Source:TFreeFileBuffer);
-var I,N:integer; G:TFreeSubdivisionControlPointGroup;
-begin
-  Source.LoadInteger(N);                                                        //Logger.Debug('ControlPointGroups:'+IntToStr(N)+' pos:'+IntToStr(Source.Position));
-  for I:=1 to N do begin
-    G:=TFreeSubdivisionControlPointGroup.Create(Surface);
-    G.LoadBinary(Source);
-    Surface.ControlPointGroups.Add(G);
-  end;
-end;
-*)
-// fv462
-(*
-procedure TFreeShip.LoadControlPointAnchors(Source:TFreeFileBuffer);
-var I,N:integer; AnchorData:TAnchorData;
-  Point,AnchorPoint:TFreeSubdivisionControlPoint;
-begin
-  Source.LoadInteger( N );                                                      //Logger.Debug('Anchors:'+IntToStr(N)+' pos:'+IntToStr(Source.Position));
-  for I:=1 to N do begin
-    Source.LoadTAnchorData( AnchorData );
-    if (AnchorData.AnchorPoint > -1) then begin
-       Point:=Surface.ControlPoint[AnchorData.N];
-       AnchorPoint:=Surface.ControlPoint[AnchorData.AnchorPoint];
-       Point.SetAnchorPoint(AnchorPoint);
-       Point.IsAnchorHard:=AnchorData.IsAnchorHard;
-    end;
-  end;
-end;
-*)
 // loads the preview image from a file
 
 procedure TFreeShip.LoadPreview(Filename: AnsiString; Image: TJPegImage);
@@ -1494,7 +1352,6 @@ begin result:=fv210;            // s картинкой -никак не мен�
 //if NumberOfMarkers > 0   then result:=fv191;
 //if (FResistanceDelftData.EndSpeed>0)
 //or (FResistanceKaperData.Draft>0) then result:=fv210;
-
 //ProjectSettings.FSavePreview:=true;  // fv210
 
   if (NumberOfbackgroundImages>0)
@@ -1580,139 +1437,6 @@ begin
   Screen.Cursor:=PrevCursor;
 //end;
 end;
-
-// fv421
-(*
-procedure TFreeShip.SaveControlPointNames(Destination:TFreeFileBuffer);
-var I,N:integer; NameData:TNameData;
-begin
-  N:=0;
-  for i:=0 to Surface.NumberOfControlPoints-1 do
-      if Surface.ControlPoint[i].Name<>'' then inc(N);
-  Destination.Add(N);
-
-  for i:=0 to Surface.NumberOfControlPoints-1 do
-    if Surface.ControlPoint[i].Name<>'' then begin
-      NameData.N:=i;
-      NameData.Name:=Surface.ControlPoint[i].Name;
-      Destination.Add(NameData);
-    end;
-end;
-procedure TFreeShip.SaveControlEdgeNames(Destination:TFreeFileBuffer);
-var I,N:integer; NameData:TNameData;
-begin
-  N:=0;
-  for i:=0 to Surface.NumberOfControlEdges-1 do
-      if Surface.ControlEdge[i].Name<>'' then inc(N);
-  Destination.Add(N);
-
-  for i:=0 to Surface.NumberOfControlEdges-1 do
-    if Surface.ControlEdge[i].Name<>'' then
-    begin
-      NameData.N:=i;
-      NameData.Name:=Surface.ControlEdge[i].Name;
-      Destination.Add(NameData);
-    end;
-end;
-procedure TFreeShip.SaveControlFaceNames(Destination:TFreeFileBuffer);
-var I,N:integer; NameData:TNameData;
-begin
-  N:=0;
-  for i:=0 to Surface.NumberOfControlFaces-1 do
-      if Surface.ControlFace[i].Name<>'' then inc(N);
-  Destination.Add(N);
-
-  for i:=0 to Surface.NumberOfControlFaces-1 do
-    if Surface.ControlFace[i].Name<>'' then
-    begin
-      NameData.N:=i;
-      NameData.Name:=Surface.ControlFace[i].Name;
-      Destination.Add(NameData);
-    end;
-end;
-procedure TFreeShip.SaveControlCurveNames(Destination:TFreeFileBuffer);
-var I,N:integer; NameData:TNameData;
-begin
-  N:=0;
-  for i:=0 to Surface.NumberOfControlCurves-1 do
-      if Surface.ControlCurve[i].Name<>'' then inc(N);
-  Destination.Add(N);
-
-  for i:=0 to Surface.NumberOfControlCurves-1 do
-    if Surface.ControlCurve[i].Name<>'' then
-    begin
-      NameData.N:=i;
-      NameData.Name:=Surface.ControlCurve[i].Name;
-      Destination.Add(NameData);
-    end;
-end;
-procedure TFreeShip.SaveControlPointLinearConstraints(Destination:TFreeFileBuffer);
-var i,j,N:integer; LCData:TLinearConstraintData;
-begin
-  N:=0;
-  for i:=0 to Surface.NumberOfControlPoints-1 do
-      if (Surface.ControlPoint[i].LinearConstraintPointA <> nil)
-       or(Surface.ControlPoint[i].LinearConstraintPointB <> nil) then inc(N);
-  Destination.Add(N);
-
-  for i:=0 to Surface.NumberOfControlPoints-1 do
-    if (Surface.ControlPoint[i].LinearConstraintPointA <> nil)
-       or(Surface.ControlPoint[i].LinearConstraintPointB <> nil) then begin
-      LCData.N:=i;
-      LCData.LinearConstraintPointA:=-1;
-      LCData.LinearConstraintPointB:=-1;
-      if Surface.ControlPoint[i].LinearConstraintPointA <> nil then begin
-          for j:=0 to Surface.NumberOfControlPoints-1 do
-          if Surface.ControlPoint[j] = Surface.ControlPoint[i].LinearConstraintPointA
-          then LCData.LinearConstraintPointA:=j;
-        end;
-      if Surface.ControlPoint[i].LinearConstraintPointB <> nil then begin
-          for j:=0 to Surface.NumberOfControlPoints-1 do
-          if Surface.ControlPoint[j] = Surface.ControlPoint[i].LinearConstraintPointB
-          then LCData.LinearConstraintPointB:=j;
-        end;
-      Destination.Add(LCData);
-    end;
-end;
-*)
-// fv430
-(*
-procedure TFreeShip.SaveControlPointGroups(Destination:TFreeFileBuffer);
-  var I,N:integer;
-  begin
-    N:=0;
-    for i:=0 to Surface.NumberOfControlPointGroups-1 do
-        if Surface.ControlPointGroup[i].Name<>'' then inc(N);
-    Destination.Add(N);
-
-    for i:=0 to Surface.NumberOfControlPointGroups-1 do
-      begin
-        Surface.ControlPointGroup[i].SaveBinary( Destination );
-      end;
-  end;
-*)
-// 462
-(*
-procedure TFreeShip.SaveControlPointAnchors(Destination:TFreeFileBuffer);
-var I,N:integer; AnchorData:TAnchorData;
-  Point, AnchorPoint:TFreeSubdivisionControlPoint;
-begin
-  N:=0;
-  for i:=0 to Surface.NumberOfControlPoints-1 do
-      if Surface.ControlPoint[i].AnchorPoint <> nil then inc(N);
-  Destination.Add(N);
-
-  for i:=0 to Surface.NumberOfControlPoints-1 do
-    if Surface.ControlPoint[i].AnchorPoint <> nil then
-    begin
-      AnchorData.N:=i;
-      Point:=Surface.ControlPoint[i];
-      AnchorData.AnchorPoint:=Surface.ControlPoints.IndexOf(Point.AnchorPoint);
-      AnchorData.IsAnchorHard:=Point.IsAnchorHard;
-      Destination.Add(AnchorData);
-    end;
-end;
-*)
 
 procedure TFreeShip.SavePart(Faces: TFasterListTFreeSubdivisionControlFace);
 var
@@ -1909,7 +1633,7 @@ begin
   if (Key in [Left..Down])
     and (vViewport.ViewType <> fvPerspective)
     and (ActiveControlPoint <> nil) then begin
-//  Edit.CreateUndoObject(Userstring(190), True);   // 'перемещение точки'
+//  Edit.CreateUndoObject('ShiftPts',True);   // 'перемещение точки'
     Point:=ActiveControlPoint;
     FileChanged:=True;
     Built:=False;
@@ -2303,7 +2027,7 @@ begin
                                  // the controlpoint is not moved by accident
 //          if Sqrt(Sqr(X-FPrevCursorPosition.X)+Sqr(Y-FPrevCursorPosition.Y))<Threshold then exit;
             if ActiveControlPoint.Locked then begin MessageDlg(Userstring(191)+'!',mtWarning,[mbOK],0 ); exit; end;
-//          Edit.CreateUndoObject( Userstring(190),True );    // 'перемещение точки'
+//          Edit.CreateUndoObject( 'MouMove',True );    // 'перемещение точки'
           end;
           Point:=ActiveControlPoint;
           FileChanged:=True;

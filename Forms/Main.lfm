@@ -768,7 +768,7 @@ object MainForm: TMainForm
     object EdgeCollapse: TAction
       Category = 'Edge'
       Caption = 'Связывание'
-      Hint = 'Удаляется ребро со связываением его смежных граней.'
+      Hint = 'Удаляется ребро со связываением смежных граней.'
       ImageIndex = 9
       OnExecute = EdgeCollapseExecute
     end
@@ -855,7 +855,7 @@ object MainForm: TMainForm
     object NewFace: TAction
       Category = 'Face'
       Caption = 'Новая грань'
-      Hint = 'Создание новой грани по выбранным опорным точкам.'
+      Hint = 'Создание поверхности копированием выбранных граничных рёбер.'
       ImageIndex = 18
       OnExecute = NewFaceExecute
     end
@@ -868,14 +868,14 @@ object MainForm: TMainForm
     end
     object EdgeExtrude: TAction
       Category = 'Edge'
-      Caption = 'Вынос грани...'
+      Caption = 'Вынос копии ребра'
       Hint = 'Создание новой грани путём выноса выбранных граничных рёбер.'
       ImageIndex = 19
       OnExecute = EdgeExtrudeExecute
     end
     object EdgeSplit: TAction
       Category = 'Edge'
-      Caption = 'Выделить...'
+      Caption = 'Разделение поплам'
       Hint = 'Установка точки с разделением ребра на две части.'
       ImageIndex = 20
       OnExecute = EdgeSplitExecute
@@ -1153,25 +1153,12 @@ object MainForm: TMainForm
       ImageIndex = 65
       OnExecute = ExportAuroraHullVslExecute
     end
-    object ExportMichlet: TAction
-      Category = 'Export'
-      Caption = 'Michlet...'
-      Hint = 'Данные для расчётов корабельного волнообразования по Мичелу (MichLet).'
-      ImageIndex = 47
-      OnExecute = ExportMichletExecute
-    end
     object PointAlign: TAction
       Category = 'Point'
       Caption = 'Выравнивание вдоль линии'
       Hint = 'Установка всех выбранных точек на прямую линию, проходящую от первой до последней точки.'
       ImageIndex = 48
       OnExecute = PointAlignExecute
-    end
-    object ImportMichletWaves: TAction
-      Category = 'Import'
-      Caption = 'Michlet waves...'
-      ImageIndex = 47
-      OnExecute = ImportMichletWavesExecute
     end
     object ShowHydrostatics: TAction
       Category = 'Visibility'
@@ -1951,9 +1938,6 @@ object MainForm: TMainForm
         object N6: TMenuItem
           Caption = '-'
         end
-        object ImportMichletWaves1: TMenuItem
-          Action = ImportMichletWaves
-        end
       end
       object Export1: TMenuItem
         Caption = 'Экспорт'
@@ -1992,9 +1976,6 @@ object MainForm: TMainForm
         end
         object AuroraHullVsl: TMenuItem
           Action = ExportAurora
-        end
-        object MichletCFD1: TMenuItem
-          Action = ExportMichlet
         end
         object ArchimedesMB1: TMenuItem
           Action = ExportArchimedes

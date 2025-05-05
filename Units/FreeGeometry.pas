@@ -1220,7 +1220,6 @@ type
     // Property to see if this controlface has been selected by the user
     property Visible: boolean read FGetVisible;
   end;
-
   {-------------------------------------------------------------------}
   {                                           TFreeSubdivisionSurface }
   { This is the subdivision surface used for modelling the hull.      }
@@ -1433,10 +1432,8 @@ type
            (  Points: TFasterListTFreeSubdivisionControlPoint;
               Direction: T3DVector
            ): TFasterListTFreeSubdivisionControlPoint;
-    procedure ExtrudeEdges(Edges: TFasterListTFreeSubdivisionEdge; Direction: T3DVector);
-      reintroduce; overload;
-    procedure CalculateIntersections(Plane: T3DPlane;
-      Faces: TFasterListTFreeSubdivisionFace; Destination: TFasterListTFreeSpline);
+    procedure ExtrudeEdges(Edges: TFasterListTFreeSubdivisionEdge; Direction: T3DVector); reintroduce; overload;
+    procedure CalculateIntersections(Plane: T3DPlane; Faces: TFasterListTFreeSubdivisionFace; Destination: TFasterListTFreeSpline);
 
     constructor Create(Owner: TFreeSubdivisionSurface); override;
     destructor Destroy; override;
@@ -1447,21 +1444,16 @@ type
     procedure ExtractPointsFromFaces(  SelectedFaces : TFasterListTFreeSubdivisionFace;
               Points: TFasterListTFreeSubdivisionPoint; var LockedPoints: integer);
     // extracts all points that are used by the faces in the selectedfaces list
-    procedure ExtractPointsFromSelection(SelectedPoints: TFasterListTFreeSubdivisionControlPoint;
-          var LockedPoints: integer);
+    procedure ExtractPointsFromSelection(SelectedPoints: TFasterListTFreeSubdivisionControlPoint; var LockedPoints: integer);
     function FindLayer(AName:AnsiString): TFreeSubdivisionLayer;
     procedure ImportFEFFile(Strings: TStringList; var LineNr: integer);
-    procedure ImportCoordGrid(Points: TFreeCoordinateGrid; Cols, Rows: integer;
-       Layer: TFreesubdivisionLayer);
-    procedure ImportControlPointGrid(Grid: TFreeSubdivisionControlPointGrid; Cols, Rows: integer;
-       Layer: TFreesubdivisionLayer);
+    procedure ImportCoordGrid(Points: TFreeCoordinateGrid; Cols, Rows: integer; Layer: TFreesubdivisionLayer);
+    procedure ImportControlPointGrid(Grid: TFreeSubdivisionControlPointGrid; Cols, Rows: integer; Layer: TFreesubdivisionLayer);
     procedure Initialize(PointStartIndex, EdgeStartIndex, FaceStartIndex: integer);
-    function IntersectPlane(Plane: T3DPlane; HydrostaticsLayersOnly: boolean;
-       List: TFasterListTFreeSpline): boolean;
+    function IntersectPlane(Plane: T3DPlane; HydrostaticsLayersOnly: boolean; List: TFasterListTFreeSpline): boolean;
     procedure InsertPlane(Plane: T3DPlane; AddCurves: boolean);
     // inserts points on edges (visible edges only) that intersect the input plane
-    procedure IsolateEdges(const Source:TFasterListTFreeSubdivisionEdge;
-              const Destination: TFasterListTFreeSubdivisionFace); //overload; virtual;
+    procedure IsolateEdges(const Source:TFasterListTFreeSubdivisionEdge; const Destination: TFasterListTFreeSubdivisionFace); //overload; virtual;
     procedure LoadBinary(Source: TFreeFileBuffer);
     procedure LoadFromStream(var LineNr: integer; Strings: TStringList);
     procedure LoadVRMLFile(Filename: AnsiString);

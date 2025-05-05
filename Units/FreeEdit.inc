@@ -3,14 +3,6 @@
 {   TFreeEdit <== FreeShipUnit                                }
 {   Container class for all editing commandsns for the hull   }
 {-------------------------------------------------------------}
-(*
-function TFreeEdit.FGetRecentFile( Index: integer ): AnsiString;
-   begin if (index<0) or (index>=RecentFiles.Count) then exit;
-         Result:=RecentFiles[index];
-   end;
-function TFreeEdit.FGetRecentFileCount: integer;
-   begin Result:=RecentFiles.Count; end;
-*)
 // Takes a filename and adds it to the list with recent files
 
 procedure TFreeEdit.AddToRecentFiles( Filename: AnsiString );
@@ -190,7 +182,7 @@ begin                                               // Result:=nil; exit;
     FreeShip.ProjectSettings.SavePreview:=Preview;
     if Assigned(FreeShip.OnUpdateUndoData) then FreeShip.OnUpdateUndoData(FreeShip);
 //end;
-end;{TFreeEdit.CreateUndoObject}
+end;
 
 // Add (a) new controlcurve(s)
 procedure TFreeEdit.Curve_Add;
@@ -210,7 +202,7 @@ begin
     if Edge.Curve = nil then Edges.Add(Edge);
   end;
   if Edges.Count > 0 then begin
-    Self.CreateUndoObject( Userstring(72),True );
+    Self.CreateUndoObject( 'Curve',True );
     SortedPointLists:=TFasterListTFreeSubdivisionFace.Create;
     FreeShip.Surface.IsolateEdges(Edges, SortedPointLists);
     for I:=1 to SortedPointLists.Count do begin
@@ -258,7 +250,7 @@ var
   Edge: TFreeSubdivisionControlEdge;
   vUndo: TFreeUndoObject;
 begin
-  N:=0; vUndo:=CreateUndoObject( Userstring(73), False );
+  N:=0; vUndo:=CreateUndoObject( 'Collaps',False );
   FreeShip.Surface.ClearMesh;
   for I:=FreeShip.NumberOfSelectedControlEdges downto 1 do begin
     Edge:=FreeShip.SelectedControlEdge[I-1];
@@ -280,7 +272,7 @@ var
   N: integer;
 begin
   N:=FreeShip.Surface.NumberOfControlEdges;
-  vUndo:=CreateUndoObject(Userstring(74), False);
+  vUndo:=CreateUndoObject('NewEdge',False);
   FreeShip.Surface.Edge_Connect;
   if FreeShip.Surface.NumberOfControlEdges > N then
   begin
@@ -298,7 +290,7 @@ procedure TFreeEdit.Edge_Crease;
 var
   I: integer;
 begin
-  CreateUndoObject(Userstring(75), True);
+  CreateUndoObject('AngEdge',True);
   for I:=FreeShip.NumberOfSelectedControlEdges downto 1 do
     FreeShip.SelectedControlEdge[I-1].Crease :=
       not FreeShip.SelectedControlEdge[I-1].Crease;
@@ -325,7 +317,7 @@ begin
   Dialog.ZValue:=0.0;
   Str:=LengthStr(FreeShip.ProjectSettings.ProjectUnits);
   if Dialog.Execute(Str) then begin
-    vUndo:=CreateUndoObject(Userstring(76), False);
+    vUndo:=CreateUndoObject('PointOff',False);
     Vector.X:=Dialog.XValue;
     Vector.Y:=Dialog.YValue;
     Vector.Z:=Dialog.ZValue;                     // Assemble Points in a list
@@ -374,7 +366,7 @@ begin
   Dialog.ZValue:=0.0;
   Str:=LengthStr(FreeShip.ProjectSettings.ProjectUnits);
   if Dialog.Execute(Str) then begin
-    vUndo:=CreateUndoObject(Userstring(76), False);
+    vUndo:=CreateUndoObject( 'EdgeOff',False );
     Vector.X:=Dialog.XValue;
     Vector.Y:=Dialog.YValue;
     Vector.Z:=Dialog.ZValue;                      // Assemble edges in a list
@@ -416,15 +408,12 @@ var
 begin
   N:=0;
   Last:=nil;
-  vUndo:=CreateUndoObject(Userstring(78), False);
-
+  vUndo:=CreateUndoObject('EdgeSplit',False);
   FreeShip.Surface.ClearMesh;
-
   for I:=FreeShip.NumberOfSelectedControlEdges downto 1 do begin
     Edge:=FreeShip.Surface.SelectedControlEdge[I-1];
     Edge.Selected:=False;
-    Point:=Edge.InsertControlPoint(
-      MidPoint(Edge.StartPoint.Coordinate, Edge.EndPoint.Coordinate));
+    Point:=Edge.InsertControlPoint(MidPoint(Edge.StartPoint.Coordinate,Edge.EndPoint.Coordinate));
     if Point <> nil then begin
       Point.Selected:=True;
       Last:=Point;
@@ -486,7 +475,7 @@ begin
   RemovedP:=0;
   PrevCursor:=Screen.Cursor;
   Screen.Cursor:=crHourglass;
-  vUndo:=CreateUndoObject( Userstring(79),False );                     /// 1e-7
+  vUndo:=CreateUndoObject( 'DelRight',False );                     /// 1e-7
 //  for I:=FreeShip.Surface.NumberOfControlPoints-1 downto 0 do begin
 //    Point:=FreeShip.Surface.ControlPoint[I];
 //    if Point.NumberOfFaces=0 then begin Point.Delete; Inc( RemovedP ); end;
@@ -543,7 +532,7 @@ end;
 procedure TFreeEdit.Face_Flip;
 var I: integer;
 begin
-  CreateUndoObject(Userstring(83), True);
+  CreateUndoObject('RotNorm',True);
   for I:=1 to FreeShip.NumberOfSelectedControlFaces do
       FreeShip.SelectedControlFace[I-1].FlipNormal;
   FreeShip.Built:=False;
@@ -587,7 +576,7 @@ begin
     ShowTranslatedValues(Dialog);
     if Dialog.Execute then begin
       Mirrorplane:=Dialog.Plane;
-      CreateUndoObject(Userstring(84), True);
+      CreateUndoObject('MirPlane',True);
       PrevCursor:=Screen.Cursor;
       Screen.Cursor:=crHourglass;
 //    try                                               // assemble all points
@@ -714,13 +703,13 @@ begin
     if Proceed then begin
       Dialog:=TFreeRotateDialog.Create( FreeShip );
       ShowTranslatedValues(Dialog);
-      Dialog.Caption:='Rotate selected items.';
+      Dialog.Caption:=UserString(88);               //'Rotate selected items.';
       ShowTranslatedValues(Dialog);
       Dialog.XValue:=0.0;
       Dialog.YValue:=0.0;
       Dialog.ZValue:=0.0;
       if Dialog.Execute( '[°]',true ) then begin
-        CreateUndoObject( 'rotate', True);
+        CreateUndoObject( 'RotFace', True);
         PrevCursor:=Screen.Cursor;
         Screen.Cursor:=crHourGlass;
 //      try
@@ -783,13 +772,13 @@ begin
   FreeShip.Surface.ExtractPointsFromSelection(Points,NLocked);
   if Points.Count>0 then begin
     Dialog:=TFreeRotateDialog.Create( FreeShip );
-    Dialog.Caption:='Heeling and/or trimming all model items.';
-    ShowTranslatedValues( Dialog );
+    Dialog.Caption:=UserString(1673); //'Крен(x), дифферент(y) и рыскание(z).';
+    ShowTranslatedValues( Dialog ); // Heeling and/or trimming all model items.'
     Dialog.XValue:=0.0;
     Dialog.YValue:=0.0;
     Dialog.ZValue:=0.0;
     if Dialog.Execute( '[°]',true ) then begin
-      CreateUndoObject( 'rotate',True );
+      CreateUndoObject( 'RotMFace',True );
       PrevCursor:=Screen.Cursor;
       Screen.Cursor:=crHourGlass;
       CosX:=Cos(DegToRad(Dialog.XValue));
@@ -857,13 +846,14 @@ begin
     else Proceed:=True;
     if Proceed then begin
       Dialog:=TFreeRotateDialog.Create(FreeShip);
-      Dialog.Caption:='Scale selected items.';
+      Dialog.Caption:=UserString(90);                //'Scale selected items.';
       ShowTranslatedValues(Dialog);
       Dialog.XValue:=1.0;
       Dialog.YValue:=1.0;
       Dialog.ZValue:=1.0;
-      if Dialog.Execute( 'scale') then begin
-        CreateUndoObject(Userstring(91), True);
+      if Dialog.Execute( UserString(91) )           // 'scale' )
+      then begin
+        CreateUndoObject( Userstring(91), True);
         PrevCursor:=Screen.Cursor;
         Screen.Cursor:=crHourGlass;
         Scale.X:=Dialog.XValue;
@@ -939,14 +929,14 @@ begin
     else Proceed:=True;
     if Proceed then begin
       Dialog:=TFreeRotateDialog.Create( FreeShip );
-      Dialog.Caption:='Move the entire model.';
+      Dialog.Caption:=UserString(92); // 'Move the entire model.';
       ShowTranslatedValues( Dialog );
       Dialog.XValue:=0.0;
       Dialog.YValue:=0.0;
       Dialog.ZValue:=0.0;
       if Dialog.Execute( LengthStr( FreeShip.ProjectSettings.ProjectUnits)) then begin
 //    if Dialog.Execute( '[m]' ) then begin
-        CreateUndoObject(Userstring(93), True);
+        CreateUndoObject('Shift',True);
         Translate.X:=Dialog.XValue;
         Translate.Y:=Dialog.YValue;
         Translate.Z:=Dialog.ZValue;
@@ -1022,7 +1012,7 @@ begin
   if FreeShip.NumberOfSelectedControlPoints > 2 then
   begin
     Tmp:=TFasterListTFreeSubdivisionControlPoint.Create;
-    vUndo:=CreateUndoObject(Userstring(94), False);
+    vUndo:=CreateUndoObject('NewFace',False);
     FreeShip.Surface.ClearMesh;
     // Remember the number of faces, edges and points
     // Assemble all points in a temp. list
@@ -1163,7 +1153,7 @@ begin
   if Ext='.ftm' then Source:=TFreeTextBuffer.Create else begin
                WriteLN( 'Unsupported model: '+Ext); halt;
   end;
-//FreeShip.Surface.Clearselection;         // Make sure no items are selected
+//FreeShip.Surface.Clearselection;          // Make sure no items are selected
   FreeShip.Edit.Selection_Clear;
   FreeShip.FSelectedFlowlines.Clear;
   FreeShip.FSelectedMarkers.Clear;
@@ -1184,17 +1174,11 @@ begin
     for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;
     Draw;
   end;
-//  TMainForm( MainForm ).SetCaption;
-//  TMainForm( MainForm ).UpdateMenu;
-  // Freeship.RebuildModel;
-  // Freeship.ZoomFitAllViewports;
-  // SetCaption;
-  // UpdateMenu;
   Freeship.Edit.ProgressBar:=nil;
   if FreeShip.LinesplanFrame<>nil then
     TFreeLinesplanframe( FreeShip.LinesplanFrame ).FreeShip:=FreeShip;
-  // with TFreeLinesplanframe( FreeShip.LinesplanFrame ) do begin
-  //      Viewport.ZoomExtents; UpdateMenu; end;
+//with TFreeLinesplanframe( FreeShip.LinesplanFrame ) do begin
+//     Viewport.ZoomExtents; UpdateMenu; end;
   FreeAndNil( Source );
   if FreeShip.ModelIsLoaded then AddToRecentFiles( FileName );
   Undo_Clear;
@@ -1210,18 +1194,7 @@ var
   Answer: word;
   fAttr: longint;  fh:THandle;
   MinFileVersion: TFreeFileVersion;
-begin
-  result:=false;
-{  if FileExistsUTF8(FreeShip.Filename) then begin
-    fh:=FileOpenUTF8(FreeShip.Filename, fmOpenWrite);
-    if fh = 0 then FreeShip.ModelIsReadOnly:=true;
-    FileClose(fh);
-  end else begin
-    fh:=FileCreateUTF8(FreeShip.Filename);
-    if fh = 0 then FreeShip.ModelIsReadOnly:=true;
-    FileClose(fh);
-  end;
-}
+begin Result:=false;
   if not FreeShip.FilenameSet or FreeShip.FileIsReadOnly
      then begin FreeShip.FilenameSet:=false; result:=File_SaveAs; exit; end;
   if not FreeShip.FilenameSet then exit;
@@ -1238,7 +1211,7 @@ begin
   end else FreeShip.FileVersion:=MinFileVersion;
   FreeShip.FilenameSet:=True;               // Check if the file already exists
   if FileExistsUTF8(FreeShip.Filename) then begin
-    Backup:=ChangeFileExt(FreeShip.Filename, '.Bak'); // First check for a backup, and delete when present
+    Backup:=ChangeFileExt(FreeShip.Filename,'.Bak'); // First check for a backup, and delete when present
     if FileExistsUTF8(Backup) then
     if not DeleteFileUTF8(Backup) then begin
        ShowMessage( 'Unable to delete backup file '+Backup );
@@ -1258,43 +1231,13 @@ begin
                 else Destination:=TFreeTextBuffer.Create;
   Destination.Encoding:=FreeShip.Preferences.FbmEncoding;
   FreeShip.SaveProject( Destination );
-//try
-    result:=Destination.SaveToFile( FreeShip.Filename );
-    FreeShip.FileChanged:=false;
-    FreeAndNil( Destination );
-    FreeShip.Preferences.LastDirectory:=ExtractFilePath( FreeShip.FileName );
-    AddToRecentFiles( FreeShip.FileName );
-//except on E:Exception do begin
-//  FreeAndNil( Destination ); result:=false;
-//  MessageDlg('Unable to save file '+FreeShip.Filename+'\n'
-// +'Exception class: '+E.ClassName+'\n'+'Message: '+E.Message+'\n',mtError,[mbOK],0 );
-//  end;
-//end;
+  result:=Destination.SaveToFile( FreeShip.Filename );
+  FreeShip.FileChanged:=false;
+  FreeAndNil( Destination );
+  FreeShip.Preferences.LastDirectory:=ExtractFilePath( FreeShip.FileName );
+  AddToRecentFiles( FreeShip.FileName );
 end;
-(*
-procedure TFreeEdit.SaveDialogTypeChange(Sender: TObject);
-var
-  FName, Ext: AnsiString; SD: TSaveDialog;
-begin
-  SD:=TSaveDialog(Sender);
-  with SD do begin
-    if DirectoryExists(FileName) then exit; // FileName is Empty
-    case FilterIndex of
-      1: Ext:='.ftm';
-      2: Ext:='.fbm';
-    end;
-    FName:=ChangeFileExt(ExtractFileName(FileName), Ext);
-    FileName:=FName;
-    {$IFDEF LCLGTK2}
-    Widget:={%H-}PGtkWidget(Handle);
-    gtk_file_chooser_set_current_name(PGtkFileChooser(Widget), PChar(FName));
-    {$ENDIF}
-    {$IFDEF LCLWIN32}
-    SendMessage(GetParent(Handle),CDM_SETCONTROLTEXT,1152,LParam(PChar(FName)));
-    {$ENDIF}
-  end;
-end;
-*)
+
 function TFreeEdit.File_SaveCheck: word;
 begin result:=mrOk;
   if not FreeShip.ModelIsLoaded then FreeShip.FileChanged:=false else
@@ -1337,7 +1280,7 @@ end;{TFreeEdit.File_SaveAs}
 procedure TFreeEdit.Flowline_Add(Source: T2DCoordinate; View: TFreeviewType);
 var Flowline: TFreeFlowline; vUndo: TFreeUndoObject;
 begin
-  vUndo:=CreateUndoObject( 'Add flowline',False );
+  vUndo:=CreateUndoObject( 'AddFlow',False );
   Flowline:=TFreeFlowline.Create( FreeShip );
   FreeShip.FFlowLines.Add( Flowline );
   Flowline.FProjectionPoint:=Source;
@@ -1379,7 +1322,7 @@ begin
   Dialog.NoOfPoints.Value:=Dialog.NoOfPoints.MinValue+2;
 
   if Dialog.Execute(LengthStr(FreeShip.ProjectSettings.ProjectUnits)) then begin
-    CreateUndoObject( Userstring(131),True );
+    CreateUndoObject( 'Cylinder',True );
     Layer:=FreeShip.Surface.ActiveLayer;
     StartPoint:=Dialog.StartPoint;
     EndPoint:=Dialog.EndPoint;
@@ -1462,7 +1405,7 @@ end;
 
 procedure TFreeEdit.Geometry_AddGridPanel;
 var
-  StartPoint,Point, P1,P2: T3DVector;
+  StartPoint,Point {,P1,P2}: T3DVector;
   I,J, Cols,Rows, Plane, Ne: integer;
   CPoints:TFasterListTFreeSubdivisionControlPoint;
   SizeA,SizeB, x,y,z, dX,dY,dZ: TFloatType;
@@ -1473,38 +1416,35 @@ begin
   Dialog:=TFreeGridDialog.Create( FreeShip );
   Dialog.StartPoint:=Vector( 0 );
   if Dialog.Execute(LengthStr(FreeShip.ProjectSettings.ProjectUnits)) then begin
-    CreateUndoObject(Userstring(131), True);
+    CreateUndoObject( 'Plane',True );
     Layer:=FreeShip.Surface.ActiveLayer;
-    StartPoint:=Dialog.StartPoint;
-    SizeA:=Dialog.SizeA.Value;
-    SizeB:=Dialog.SizeB.Value;
-    Cols:=Dialog.ColumnPoints.Value;
-    Rows:=Dialog.RowPoints.Value;
     Plane:=Dialog.Plane.ItemIndex;
-    Setlength( Grid,Cols );
-    for i:=0 to Cols-1 do begin
-      SetLength(Grid[i], Rows);
-      for j:=0 to Rows-1 do begin
+    Cols:=Dialog.ColumnPoints.Value-1;
+    Rows:=Dialog.RowPoints.Value-1;
+    SizeA:=Dialog.SizeA.Value/Cols;
+    SizeB:=Dialog.SizeB.Value/Rows;
+    StartPoint:=Dialog.StartPoint;
+    Point:=StartPoint;        Setlength( Grid,Cols+1 );
+    for i:=0 to Cols do begin SetLength( Grid[i],Rows+1 );
+      for j:=0 to Rows do begin
         case Plane of
-         0: begin                                                 // Horizontal
-            x:=StartPoint.X+i * SizeA / Cols;
-            y:=StartPoint.Y+j * SizeB / Rows; z:=0;
+         0: begin                                             // Horizontal X-Y
+            Point.x:=StartPoint.X + i*SizeA;
+            Point.y:=StartPoint.Y + j*SizeB;
             end;
-         1: begin                                                    // Lateral
-            x:=StartPoint.X+i * SizeA / Cols; y:=0;
-            z:=StartPoint.Z+j * SizeB / Rows;
+         1: begin                                                // Lateral X-Z
+            Point.x:=StartPoint.X + i*SizeA;
+            Point.z:=StartPoint.Z + j*SizeB;
             end;
-         2: begin                                                 // Transverse
-            x:=0;
-            y:=StartPoint.Y+i * SizeA / Cols;
-            z:=StartPoint.Z+j * SizeB / Rows;
+         2: begin                                             // Transverse Y-Z
+            Point.y:=StartPoint.Y + i*SizeA;
+            Point.z:=StartPoint.Z + j*SizeB;
             end;
         end;
-        Point:=Vector(x,y,z);
-        Grid[I][J]:=FreeShip.Surface.AddControlPoint(Point);
+        Grid[I][J]:=FreeShip.Surface.AddControlPoint( Point );
       end;
     end;
-    FreeShip.Surface.ImportControlPointGrid(Grid, Cols, Rows, Layer);
+    FreeShip.Surface.ImportControlPointGrid( Grid,Cols+1,Rows+1,Layer );
     Freeship.RebuildModel;
   end;
   FreeAndNil(Dialog);
@@ -1558,7 +1498,7 @@ end;
 *)
 // Opens the hydrostatics dialog and calculates hydrostatic data for a range of inputdata
 procedure TFreeEdit.Hydrostatics_Dialog;
-var HydrostaticsForm: TFreeHydrostaticsForm; dp: double;
+var HydrostaticsForm: TFreeHydrostaticsForm; DP: double; MIN,MAX: T3DVector;
 begin
   HydrostaticsForm:=TFreeHydrostaticsForm.Create(FreeShip);
   ShowTranslatedValues( HydrostaticsForm );
@@ -1570,10 +1510,11 @@ begin
     if StartDraft<EndDraft then begin StartDraft:=0; EndDraft:=0; end;
     if (StartDraft=0)
     and ((EndDraft=1.0) or (EndDraft=0.0)) then begin
-      EndDraft:=FreeShip.ProjectSettings.ProjectDraft;
-      DraftStep:=AxisStep( EndDraft );
-      StartDraft:=DraftStep;
-      EndDraft:=Round( EndDraft/DraftStep+1 )*DraftStep;
+      Ship.Extents( Min,Max );
+                            // EndDraft:=FreeShip.ProjectSettings.ProjectDraft;
+      DraftStep:=AxisStep( (Max.Z-Min.Z)/3 );                    // EndDraft );
+      StartDraft:=Round( Min.Z/DraftStep+0.5 )*DraftStep;
+      EndDraft:=Round( Max.Z/DraftStep-1 )*DraftStep;
     end;
   end;
   if TFreeHydrostaticsForm( HydrostaticsForm ).Execute(FreeShip) then begin
@@ -1673,11 +1614,9 @@ begin
         end;
       end// use all visible faces
     ;
-    if ToDoList.Count > 0 then
-    begin
-      CreateUndoObject(Userstring(139), True);
-      while ToDoList.Count > 0 do
-      begin
+    if ToDoList.Count>0 then begin
+      CreateUndoObject('LGroup',True);
+      while ToDoList.Count>0 do begin
         Face:=TFreeSubdivisionControlFace(ToDoList[ToDoList.Count-1]);
         ToDoList.Delete(ToDoList.Count-1);
         Current:=TList.Create;
@@ -1789,7 +1728,7 @@ var
 begin
   N:=0;
   if Quiet then vUndo:=nil
-           else vUndo:=CreateUndoObject(Userstring(140), False);
+           else vUndo:=CreateUndoObject('LayDel',False);
   for I:=FreeShip.NumberOfLayers downto 1 do
   if (FreeShip.Layer[I-1].Count=0) and (FreeShip.NumberOfLayers>1) then begin
       FreeShip.Layer[I-1].Delete; Inc(N);
@@ -1818,7 +1757,7 @@ end;
 
 function TFreeEdit.Layer_New: TFreeSubdivisionLayer;
 begin
-  CreateUndoObject(Userstring(142), True);
+  CreateUndoObject('NewLay',True);
   Result:=FreeShip.Surface.AddNewLayer;
   Result.Color:=FreeShip.Preferences.LayerColor;
   FreeShip.FileChanged:=True;
@@ -1838,7 +1777,7 @@ var
 begin
   if MessageDlg(Userstring(143), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
   begin
-    CreateUndoObject(Userstring(144), True);
+    CreateUndoObject('DelMark',True);
     for I:=1 to FreeShip.NumberofMarkers do FreeShip.Marker[I-1].Destroy;
     FreeShip.FMarkers.Clear;
     FreeShip.FileChanged:=True;
@@ -1920,7 +1859,7 @@ var
 
   var IsIntegrityOk, B:boolean;
 begin
-  vUndo:=self.CreateUndoObject(Userstring(148), False);
+  vUndo:=self.CreateUndoObject('SurfAnaliz',False);
   Changed:=False;
   InvertedFaces:=0;
   Inconsistent:=0;
@@ -2142,7 +2081,7 @@ begin
   FreeNewModelDialog:=TFreeNewModelDialog.Create( FreeShip );
   if FreeNewModelDialog.Execute then begin
     FreeShip.ModelIsLoaded:=False;
-    CreateUndoObject( Userstring(157), True );
+    CreateUndoObject( 'NewModel',True );
     Cols:=FreeNewModelDialog.NCols-1;
     Rows:=FreeNewModelDialog.NRows-1;
     L:=FreeNewModelDialog.Length;
@@ -2262,7 +2201,7 @@ var
 begin
   Dialog:=TFreeLackenbyDialog.Create( FreeShip );
   ShowTranslatedValues( Dialog );
-  vUndo:=CreateUndoObject( Userstring(159),False );
+  vUndo:=CreateUndoObject( 'LackTrans',False );
   UndoIndex:=FreeShip.UndoCount;
   if Dialog.Execute( FreeShip,Modified ) then begin
     for I:=FreeShip.UndoCount downto UndoIndex+1 do
@@ -2358,7 +2297,7 @@ begin
     if (not Point.Locked) and (Point.NumberOfEdges = 2) then Inc(N);
   end;
   if N>0 then FreeShip.Surface.ClearMesh;
-  vUndo:=CreateUndoObject( Userstring(160),False );
+  vUndo:=CreateUndoObject( 'PointCol',False );
   for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do begin
     Point:=FreeShip.SelectedControlPoint[I-1];
     if (not Point.Locked) and (Point.NumberOfEdges = 2) then begin
@@ -2383,7 +2322,7 @@ var
   vUndo: TFreeUndoObject;
 begin
   N:=0;
-  vUndo:=CreateUndoObject(Userstring(161), False);
+  vUndo:=CreateUndoObject('DelFree',False);
   for I:=FreeShip.Surface.NumberOfControlPoints downto 1 do begin
     Point:=FreeShip.Surface.ControlPoint[I-1];
     if Point.NumberOfFaces = 0 then begin Point.Delete; Inc(N); end;
@@ -2412,7 +2351,7 @@ begin
   Dialog.Max:=Max;
   Dialog.Min:=Min;
   if Dialog.Execute then begin
-    vUndo:=CreateUndoObject(UserString(163), False);
+    vUndo:=CreateUndoObject('IncCross',False);
     N:=FreeShip.Surface.NumberOfControlPoints;
     FreeShip.Surface.InsertPlane(Dialog.Plane, Dialog.CreateControlCurve);
     if N < FreeShip.Surface.NumberOfControlPoints then begin
@@ -2444,7 +2383,7 @@ begin
     if Dialog.Execute(Layers) then
     if assigned(Dialog.Layer1) and assigned(Dialog.Layer2) then
     begin
-      vUndo:=CreateUndoObject(Userstring(164), False);
+      vUndo:=CreateUndoObject('LayCross',False);
       if Dialog.Layer1.CalculateIntersectionPoints(Dialog.Layer2) then begin
          vUndo.Accept;
          FreeShip.FileChanged:=True;
@@ -2470,7 +2409,7 @@ var
 begin
   if FreeShip.NumberOfSelectedLockedPoints < FreeShip.NumberOfSelectedControlPoints then
   begin
-    self.CreateUndoObject(UserString(167), True);
+    self.CreateUndoObject('LockPoint', True);
     for I:=1 to FreeShip.NumberOfSelectedControlPoints do
       FreeShip.SelectedControlPoint[I-1].Locked:=True;
     FreeShip.ActiveControlPoint:=FreeShip.ActiveControlPoint;
@@ -2484,7 +2423,7 @@ procedure TFreeEdit.Point_Unlock;
 var I: integer;
 begin
   if FreeShip.NumberOfSelectedLockedPoints > 0 then begin
-    self.CreateUndoObject(Userstring(168), True);
+    self.CreateUndoObject('UnLockPoint',True);
     for I:=1 to FreeShip.NumberOfSelectedControlPoints do
       FreeShip.SelectedControlPoint[I-1].Locked:=False;
     FreeShip.ActiveControlPoint:=FreeShip.ActiveControlPoint;
@@ -2498,7 +2437,7 @@ procedure TFreeEdit.Point_UnlockAll;
 var I,N: integer;
 begin
   if FreeShip.NumberOfLockedPoints > 0 then begin
-    CreateUndoObject(Userstring(169), True);
+    CreateUndoObject('UnLockAll',True);
     N:=FreeShip.NumberOfLockedPoints;
     for I:=1 to FreeShip.Surface.NumberOfControlPoints do
       FreeShip.Surface.ControlPoint[I-1].Locked:=False;
@@ -2646,7 +2585,7 @@ begin
     if NLocked < FreeShip.NumberOfSelectedControlPoints-2 then begin
       P1:=FreeShip.SelectedControlPoint[0];
       P2:=FreeShip.SelectedControlPoint[FreeShip.NumberOfSelectedControlPoints-1];
-      vUndo:=CreateUndoObject(userstring(171), False);
+      vUndo:=CreateUndoObject('StraPoint',False);
       NChanged:=0;
       for I:=2 to FreeShip.NumberOfSelectedControlPoints-1 do begin
         Point:=FreeShip.SelectedControlPoint[I-1];
@@ -2688,7 +2627,7 @@ begin
     if NLocked < FreeShip.NumberOfSelectedControlPoints-2 then begin
       P1:=FreeShip.SelectedControlPoint[0];
       P2:=FreeShip.SelectedControlPoint[FreeShip.NumberOfSelectedControlPoints-1];
-      vUndo:=CreateUndoObject( 'CPconschange',False );     // 'ControlPoint Linear Constraint Changed'
+      vUndo:=CreateUndoObject( 'ConstCh',False );     // 'ControlPoint Linear Constraint Changed'
       NChanged:=0;
       for I:=2 to FreeShip.NumberOfSelectedControlPoints-1 do begin
         Point:=FreeShip.SelectedControlPoint[I-1];
@@ -2732,6 +2671,7 @@ begin
   MR:=mrCancel;
   if N > 0 then begin
       DelDlg:=TFreeDeleteDialog.Create(nil);
+      ShowTranslatedValues(DelDlg);
       DelDlg.FreeShip:=FreeShip;
       DelDlg.Reload;
       DelDlg.ShowModal;
@@ -2748,7 +2688,7 @@ begin
     +FreeShip.NumberOfselectedFlowlines;
            // if MessageDlg(Userstring(173)+#32+IntToStr(N)+#32+Userstring(174)+'?',mtWarning,[mbYes,mbNo],0)=mrYes then
    if (MR = mrAbort) and (N > 0) then begin
-      CreateUndoObject( Userstring(175),True );
+      CreateUndoObject( 'DelSel',True );
       for I:=FreeShip.NumberOfselectedFlowlines downto 1
           do FreeShip.SelectedFlowline[I-1].Delete;
       for I:=FreeShip.NumberOfselectedMarkers downto 1
@@ -2763,27 +2703,20 @@ begin
 end;
 
 // Select all visible items
-procedure TFreeEdit.Selection_SelectAll;
-  var I,J: integer;
+procedure TFreeEdit.Selection_SelectAll; var I,J: integer;
 begin
   for I:=1 to FreeShip.NumberOfLayers do if FreeShip.Layer[I-1].SurfaceVisible then
     for J:=1 to FreeShip.Layer[I-1].Count do FreeShip.Layer[I-1].Items[J-1].Selected:=True;
-
   for I:=1 to FreeShip.Surface.NumberOfControlEdges do if FreeShip.Surface.ControlEdge[I-1].Visible
     then FreeShip.Surface.ControlEdge[I-1].Selected:=True;
-
   for I:=1 to FreeShip.Surface.NumberOfControlPoints do if FreeShip.Surface.ControlPoint[I-1].Visible
     then FreeShip.Surface.ControlPoint[I-1].Selected:=True;
-
   for I:=1 to FreeShip.Surface.NumberOfControlCurves do if FreeShip.Surface.ControlCurve[I-1].Visible
     then FreeShip.Surface.ControlCurve[I-1].Selected:=True;
-
   for I:=1 to FreeShip.NumberofMarkers do if FreeShip.Marker[I-1].Visible
     then FreeShip.Marker[I-1].Selected:=True;
-
   for I:=1 to FreeShip.NumberofFlowlines do if FreeShip.Flowline[I-1].Visible
     then FreeShip.Flowline[I-1].Selected:=True;
-
   Freeship.ReDraw;
 end;
 
@@ -2917,8 +2850,7 @@ begin
       Intersection.FPlane.c:=1 / Sqrt(2);
       Intersection.FPlane.d:=-Intersection.FPlane.c * Distance; end;
   end;
-  Intersection.Rebuild;
-  // Only add if an intersection has been found
+  Intersection.Rebuild;           // Only add if an intersection has been found
   if Intersection.Count > 0 then begin
     Intersection_AddToList(Intersection);
     Intersection.DrawAll;

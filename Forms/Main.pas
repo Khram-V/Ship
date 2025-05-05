@@ -14,8 +14,7 @@ interface uses Interfaces,
      FreeTypes,FreeGeometry,
      FreeShipUnit,FreeVersionUnit,
      FreeAboutDlg,FreehullFormWindow_panel,
-     FreeLayerVisibilityDlg,FreeLanguageSupport,
-//   FreeSelectedDlg,
+     FreeLayerVisibilityDlg,FreeLanguageSupport, // FreeSelectedDlg,
      FreeSplitSectionDlg,MDIPanel,FreeLinesPlanFrame;
 type
   TMainForm = class( TForm )                                       // TMainForm
@@ -55,7 +54,7 @@ type
      ShowNormals,ImportVRML,ImportSTL,ImportOBJ,ImportFEF,
      ResistanceDelft,ResistanceKaper:                       TAction;
 
-     AuroraHullVsl,                 MichletCFD1,
+     AuroraHullVsl,
      miSelectionDialog,             miShowLayerVisibilityDialog,
      miSetSplitSection,             miShowFreeObjects,
      miPointExtrude,                MenuItem2,
@@ -117,7 +116,7 @@ type
     StatusPanel2  : TPanel;
     ColorDialog   : TColorDialog;
     ExportAurora,
-    ExportMichlet : TAction;
+
     FileSave      : TAction;     Save2          : TMenuItem;
     Preferences   : TAction;     Preferences1   : TMenuItem;
     RemoveNegative: TAction;     RemoveNegative1: TMenuItem;
@@ -169,11 +168,12 @@ type
 //    ResistanceDelft: TAction;
 //    Delftyachtseries1: TMenuItem;
 //    ResistanceKaper: TAction;
-//    MichletCFD1: TMenuItem;
+
     StatusPanel3: TPanel;
     PointAlign: TAction;            Projectline1: TMenuItem;
     N6: TMenuItem;
-    ImportMichletWaves: TAction;    ImportMichletWaves1: TMenuItem;
+
+
     ShowHydrostatics: TAction;      Hydrostaticdata1: TMenuItem;
     MirrorFace: TAction;            MirrorFace1: TMenuItem;
     ransform1: TMenuItem;
@@ -313,14 +313,12 @@ type
     procedure PointsUnlockExecute      (Sender: TObject);
     procedure PointsUnlockAllExecute   (Sender: TObject);
     procedure ImportMarkersExecute     (Sender: TObject);
-    procedure ExportMichletExecute     (Sender: TObject);
  // procedure ResistanceKaperExecute   (Sender: TObject);
  // procedure ResistanceDelftExecute   (Sender: TObject);
     procedure FreeShipChangeCursorIncrement(Sender: TObject);
     procedure StatusPanel3Click        (Sender: TObject);
     procedure PointAlignExecute        (Sender: TObject);
     procedure PointAlighnPermanentlyExecute(Sender: TObject);
-    procedure ImportMichletWavesExecute(Sender: TObject);
     procedure ShowHydrostaticsExecute  (Sender: TObject);
     procedure MirrorFaceExecute        (Sender: TObject);
     procedure ExportDXF2DPolylinesExecute(Sender: TObject);
@@ -633,8 +631,6 @@ begin              //    according to the current state and selected items
                     or (Freeship.FileChanged) or (Freeship.FilenameSet);
    FileSave.Enabled:=FileSaveas.Enabled and Freeship.FileChanged
                      and not Freeship.FileIsReadOnly;
-
-   ImportMichletWaves1.Enabled:=(MDIChildCount>0) and (Freeship.Surface.NumberOfControlFaces>1);
    ExportFEF.Enabled:=Freeship.Surface.NumberOfControlPoints>0;
    ExportObj.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
    ExportSTL.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
@@ -654,7 +650,6 @@ begin              //    according to the current state and selected items
    ExportGHS.Enabled:=FreeShip.NumberofStations>0;
 // ExportPAM.Enabled:=FreeShip.NumberofStations>0;
 // Detect existance of external modules
-   ExportMichlet.Enabled:=(Freeship.Surface.NumberOfControlFaces>0);
    RecentFiles.Enabled:=RecentFiles.Count>0;
    ExportCoordinates.Enabled:=Freeship.Surface.NumberOfControlPoints>0;
    ExportPart.Enabled:=(Freeship.Surface.NumberOfControlFaces>0);
@@ -1219,27 +1214,14 @@ object ColorButton1: TColorButton
 end
 *)
 procedure TMainForm.DeleteEmptyLayersExecute( Sender: TObject );
-begin Freeship.Edit.Layer_DeleteEmpty(False); UpdateMenu; end;
-
+    begin Freeship.Edit.Layer_DeleteEmpty(False); UpdateMenu; end;
 procedure TMainForm.LayerDialogExecute( Sender: TObject );
-begin FreeShip.Edit.Layer_Dialog; UpdateMenu; end;
-
+    begin FreeShip.Edit.Layer_Dialog; UpdateMenu; end;
 procedure TMainForm.NewModelExecute(Sender: TObject);
-begin
-   if FreeShip.Edit.Model_New then FOpenHullWindows;
-   FreeShip.FileIsReadOnly:=false;
-//   FreeShip.FileChanged:=true;
-//   FreeShip.ModelIsLoaded:=true;
-// Freeship.RebuildModel;
-// Freeship.ZoomFitAllViewports;
-// FreeShip.Surface.Rebuild;
-// Freeship.RebuildModel;
-// FreeShip.Draw;
-// FreeShip.ReDraw;
-// SetCaption;
-   UpdateMenu;
-end;
-
+    begin if FreeShip.Edit.Model_New then FOpenHullWindows;
+          FreeShip.FileIsReadOnly:=false;
+          UpdateMenu;
+    end;
 procedure TMainForm.FormCreate( Sender: TObject );
 begin
 {$ifndef Windows}
@@ -1260,7 +1242,6 @@ begin
    Ship:=Freeship;                       // копия для воссоздания новых моделей
 // ModelInitallyLoaded:=false;
 end;
-
 procedure TMainForm.ShowStationsExecute( Sender: TObject );
 begin FreeShip.Visibility.ShowStations:=not FreeShip.Visibility.ShowStations;
       UpdateMenu;
@@ -1273,7 +1254,6 @@ procedure TMainForm.ShowWaterlinesExecute(Sender: TObject);
 begin FreeShip.Visibility.ShowWaterlines:=not FreeShip.Visibility.ShowWaterlines;
       UpdateMenu;
 end;
-
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin if (Freeship.FileChanged) and (FreeShip.ModelIsLoaded) then
       CanClose:=mrYes=MessageDlg( UserString(103)+EOL+UserString(282),
@@ -1551,8 +1531,7 @@ procedure TMainForm.PointsUnlockAllExecute(Sender: TObject);
     begin Freeship.Edit.Point_UnlockAll; UpdateMenu; end;
 procedure TMainForm.ImportMarkersExecute(Sender: TObject);
     begin Freeship.Edit.Marker_Import; UpdateMenu; end;
-procedure TMainForm.ExportMichletExecute(Sender: TObject);
-    begin Freeship.Edit.File_Export_Michlet; UpdateMenu; end;
+
 procedure TMainForm.FreeShipChangeCursorIncrement(Sender: TObject);
 begin
   if (csdestroying in componentstate) then exit;
@@ -1575,8 +1554,6 @@ procedure TMainForm.PointAnchorExecute(Sender: TObject);
     begin Freeship.Edit.Point_AnchorToPoint; UpdateMenu; end;
 procedure TMainForm.SelectAllControlPointsExecute(Sender: TObject);
     begin Freeship.Edit.Selection_SelectAllControlPoints; UpdateMenu; end;
-procedure TMainForm.ImportMichletWavesExecute(Sender: TObject);
-    begin Freeship.Edit.File_Import_MichletWaves; UpdateMenu; end;
 procedure TMainForm.ShowHydrostaticsExecute(Sender: TObject);
 begin
    Freeship.Visibility.ShowHydrostaticData:=not Freeship.Visibility.ShowHydrostaticData;
@@ -1620,13 +1597,10 @@ procedure TMainForm.ClearUndoExecute(Sender: TObject);
 procedure TMainForm.ShowUndoHistoryExecute(Sender: TObject);
     begin Freeship.Edit.Undo_ShowHistory; UpdateMenu; end;
 procedure TMainForm.ImportPolyCadExecute(Sender: TObject);
-    begin Freeship.Edit.File_ImportPolycad;
-          FOpenHullWindows;
-          UpdateMenu;
+    begin Freeship.Edit.File_ImportPolycad; FOpenHullWindows; UpdateMenu;
     end;
 procedure TMainForm.RemoveUnusedPointsExecute(Sender: TObject);
     begin Freeship.Edit.Point_RemoveUnused; Updatemenu; end;
-
 procedure TMainForm.ExportGHSExecute(Sender: TObject);
     begin FreeShip.Edit.File_ExportGHS; UpdateMenu; end;
 procedure TMainForm.ShowFlowlinesExecute(Sender: TObject);
@@ -1640,7 +1614,7 @@ procedure TMainForm.SelectAllExecute(Sender: TObject);
 procedure TMainForm.ExportSTLExecute(Sender: TObject);
     begin FreeShip.Edit.File_ExportSTL; UpdateMenu; end;
 //procedure TMainForm.CrossCurvesExecute(Sender: TObject);
-//begin Freeship.Edit.Hydrostatics_Crosscurves; UpdateMenu; end;
+//  begin Freeship.Edit.Hydrostatics_Crosscurves; UpdateMenu; end;
 procedure TMainForm.SelectLeakPointsExecute(Sender: TObject);
     begin Freeship.Edit.Selection_SelectLeakPoints; UpdateMenu; end;
 

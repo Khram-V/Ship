@@ -379,7 +379,7 @@ begin
     Exit;
   end;
   Iteration:=1;
-  Undo:=FFreeship.Edit.CreateUndoObject( 'Lackenby tranformation ',False );
+  Undo:=FFreeship.Edit.CreateUndoObject( 'Lackenby',False );
   Modified:=False;
   DisplError:=1.0;
   LCBError:=1;

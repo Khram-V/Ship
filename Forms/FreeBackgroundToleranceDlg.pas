@@ -3,16 +3,11 @@ unit FreeBackgroundToleranceDlg;
 interface uses
   SysUtils, Forms, Controls, Dialogs, ExtCtrls, Buttons, Spin, StdCtrls,
   FreeGeometry,FreeShipUnit,FreeLanguageSupport;
-type                                         { TFreeBackgroundToleranceDialog }
-
-  TFreeBackgroundToleranceDialog = class(TForm)
-    BitBtn1: TSpeedButton;
-    BitBtn2: TSpeedButton;
+type
+  TFreeBackgroundToleranceDialog=class( TForm )
     Label1: TLabel;
-    Panel1: TPanel;
-    Panel2: TPanel;
-    Panel3: TPanel;
-    Panel4: TPanel;
+    BitBtn1,BitBtn2: TSpeedButton;
+    Panel1,Panel2,Panel3,Panel4: TPanel;
     SpinEdit1: TSpinEdit;
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
@@ -23,21 +18,16 @@ type                                         { TFreeBackgroundToleranceDialog }
     function Execute(Viewport: TFreeViewport): boolean;
   end;
 
-var
-  FreeBackgroundToleranceDialog: TFreeBackgroundToleranceDialog;
+var FreeBackgroundToleranceDialog: TFreeBackgroundToleranceDialog;
 
 implementation
-
 {$R *.lfm}
 
-{ TFreeBackgroundToleranceDialog }
-
 function TFreeBackgroundToleranceDialog.Execute(Viewport: TFreeViewport): boolean;
-begin
-  FViewport:=Viewport;
-  SpinEdit1.Value:=FViewport.BackgroundImage.Tolerance;
-  ShowTranslatedValues(Self); Showmodal;
-  Result:=ModalResult = mrOk;
+begin FViewport:=Viewport;
+      SpinEdit1.Value:=FViewport.BackgroundImage.Tolerance;
+      ShowTranslatedValues(Self); Showmodal;
+      Result:=ModalResult = mrOk;
 end;
 
 procedure TFreeBackgroundToleranceDialog.SpinEdit1Change(Sender: TObject);

@@ -301,7 +301,9 @@ procedure TFreeSpline.SaveToDXF
   Layername: AnsiString;
   SendMirror: boolean );
 var
-  I,J,Ind,NParams: Integer; P: T3DVector; Params: TFloatArray;
+  I,J,Ind,NParams: Integer;
+  P: T3DVector;
+  Params: TFloatArray;
 begin
   Ind:=FindDXFColorIndex( Color );
   NParams:=0;
@@ -324,10 +326,10 @@ begin
     Strings.Add('10'+EOL+FloatToDec(P.X, 4));
     Strings.Add('20'+EOL+FloatToDec(P.Y, 4));
     Strings.Add('30'+EOL+FloatToDec(P.Z, 4));
-    Strings.Add('70'+EOL+'32');            // 3D polyline mesh vertex
+    Strings.Add('70'+EOL+'32');          // 3D polyline mesh vertex
   end;
   Strings.Add('0'+EOL+'SEQEND');
-  if SendMirror then begin              // send starboard side of the ship also
+  if SendMirror then begin               // send starboard side of the ship also
     Strings.Add('0'+EOL+'POLYLINE');
     Strings.Add('8'+EOL+LayerName);      // layername
     Strings.Add('62'+EOL+IntToStr(Ind)); // color by layer
@@ -1744,52 +1746,3 @@ begin
   end;
   FreeAndNil(Dialog);
 end;
-
-// Creates a file to be read by the CFD program Michlet
-procedure TFreeEdit.File_Export_Michlet;
-var
-  Dialog: TFreeMichletOutputDialog; Emp: boolean;
-  SaveDialog: TSaveDialog;
-begin                  // temporarily switch to metric units for michlet export
-  Emp:=FreeShip.ProjectSettings.ProjectUnits=fuImperial;
-  if Emp then FreeShip.ProjectSettings.ProjectUnits:=fuMetric;
-    if not FreeShip.ProjectSettings.DisableModelCheck then Model_Check(False);
-    Dialog:=TFreeMichletOutputDialog.Create(FreeShip);
-    ShowTranslatedValues(Dialog);                                       // Hull
-    Dialog.NumberOfStations:=31;
-    Dialog.NumberOfWaterlines:=21;
-    Dialog.Draft:=FreeShip.ProjectSettings.ProjectDraft;
-    Dialog.Length:=FreeShip.ProjectSettings.ProjectLength;        // Resistance
-    Dialog.StartSpeed:=1;
-    Dialog.EndSpeed:=5;
-    Dialog.NumberOfSpeeds:=50;                                   // Environment
-    Dialog.G:=9.80665;
-    Dialog.WaterDensity:=FreeShip.ProjectSettings.ProjectWaterDensity;
-//  Dialog.WaterTemper:=FreeShip.ProjectSettings.ProjectWaterTemper;
-    Dialog.WaterDepth:=10000;                                          // Waves
-    Dialog.R0:=1.5 * Dialog.Length;
-    Dialog.R1:=5.0 * Dialog.Length;
-    Dialog.Beta:=22.5;
-    Dialog.Nr:=100;
-    Dialog.NBeta:=100;
-    Dialog.X0:=1.5 * Dialog.Length;
-    Dialog.X1:=5.0 * Dialog.Length;
-    Dialog.Y0:=-5.0 * Dialog.Length * tan(DegToRad(30));
-    Dialog.Y1:=-Dialog.Y0;
-    Dialog.Nx:=100;
-    Dialog.Ny:=100;
-    if Dialog.Execute(FreeShip) then begin
-      SaveDialog:=TSaveDialog.Create(FreeShip);
-      SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-      SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.mlt');
-      SaveDialog.Filter:=createDialogFilter('Michlet input file',['mlt']);
-      Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
-      if SaveDialog.Execute then begin WestPoint;
-        Dialog.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.mlt'));
-      end;
-      FreeAndNil(SaveDialog);
-    end;
-    FreeAndNil(Dialog);
-    if Emp then FreeShip.ProjectSettings.ProjectUnits:=fuImperial;
-end;
-

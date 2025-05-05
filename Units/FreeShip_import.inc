@@ -216,7 +216,7 @@ begin
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
     PrevCursor:=Screen.Cursor;
     Screen.Cursor:=crHourglass;
-//    CreateUndoObject(Userstring(125), True);
+//    CreateUndoObject('ImpVRML',True);
 //    FreeShip.Clear;
 //    FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
       FreeShip.Surface.LoadVRMLFile( Opendialog.FileName );
@@ -294,14 +294,12 @@ begin
                             else FreeAndNil( Spline );
           end;
           CloseFile(FFile);
-        end
-        else MessageDlg(Userstring(132), mtError, [mbOK], 0);
+        end else ShowMessage(Userstring(132));
       end;
     end;
-    if Frames.Count > 1 then
-    begin
+    if Frames.Count>1 then begin
       FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-//    CreateUndoObject(Userstring(133), True);
+//    CreateUndoObject('NoFile',True);
       FreeShip.Clear;
       FreeShip.Filename:=Opendialog.FileName;
       MinZ:=0.0;
@@ -738,7 +736,7 @@ begin
 //            MessageDlg(Userstring(132)+#32+IntToStr(Nr), mtError, [mbOK], 0);
 //          end;
           CloseFile(FFile);
-        end else MessageDlg(Userstring(132),mtError,[mbOK],0);
+        end else ShowMessage(Userstring(132));
       end;
     end;
     if Curves.Count > 1 then
@@ -895,253 +893,6 @@ begin
   end;
   FreeAndNil(OpenDialog);
 end;
-
-procedure TFreeEdit.File_Import_MichletWaves;
-var
-  FFile: TextFile;
-  Grid: array of array of T3DVector;
-  CtrlGrid: array of array of TFreeSubdivisionControlPoint;
-  I,J,K, Nx,Ny, DecrY: integer; AllZero: boolean;
-  MultFact,Angle: TFloatType;
-  Str,Tmp,Speed: AnsiString;
-  P, Min, Max: T3DVector;
-  XArray: array of TFloatType;
-  Pts: TFasterListTFreeSubdivisionControlPoint;
-  Layer: TFreeSubdivisionLayer;
-  OpenDialog: TOpenDialog;
-  PrevCursor: TCursor;
-begin
-  OpenDialog:=TOpenDialog.Create(FreeShip);
-  OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory; //+ConfigDirectory
-  OpenDialog.Filter:=createDialogFilter('Michlet wave elevations file',['mlt']);
-  Opendialog.Options:=[ofHideReadOnly];
-  if OpenDialog.Execute then begin
-    assignfile( FFile,Opendialog.Filename );
-    Reset(FFile);
-    Readln(FFile, Str);
-    Nx:=0;
-    Ny:=0;
-    Speed:='';
-    if Str = 'RECTANGULAR PATCH' then begin
-      readln(FFile);
-      readln(FFile, Speed);
-      readln(FFile);
-      //Read X0, X1, Nx
-      Readln(FFile, Str);                      // X0
-      Str:=Trim(Str);
-      J:=Pos(',', Str);
-      Tmp:=Copy(Str, 1, J-1);
-      Delete(Str, 1, J);                       // X1
-      Str:=Trim(Str);
-      J:=Pos(',', Str);
-      Tmp:=Copy(Str, 1, J-1);
-      Delete(Str, 1, J);                       // Nx
-      Nx:=StrToInt(Str);
-      //Read Y0, Y1, Ny
-      Readln(FFile, Str);
-      Readln(FFile, Str);                      // Y0
-      Str:=Trim(Str);
-      J:=Pos(',', Str);
-      Tmp:=Copy(Str, 1, J-1);
-      Delete(Str, 1, J);                       // Y1
-      Str:=Trim(Str);
-      J:=Pos(',', Str);
-      Tmp:=Copy(Str, 1, J-1);
-      Delete(Str, 1, J);                       // Ny
-      Ny:=StrToInt(Str);
-
-      for I:=1 to 5 do readln( Ffile );
-
-      Ny:=Ny div 2;                            // use only port half
-      Setlength(XArray, Nx);                   // Read X distances
-      Readln(FFile, Str);
-      J:=Pos(',', Str);
-      if J <> 0 then Delete(Str, 1, J);
-      for I:=1 to Nx do begin
-        Str:=Trim(Str);
-        J:=Pos(',', Str);
-        if J <> 0 then begin
-          Tmp:=Copy(Str, 1, J-1);
-          XArray[I-1]:=GetFloat(Tmp);
-          Delete(Str, 1, J);
-        end
-        else if I = Nx then XArray[I-1]:=GetFloat(Str);
-      end;
-
-      Setlength(Grid, Ny);                  // Now read all the wave elevations
-      for J:=1 to Ny do begin
-        Readln(FFile, Str);
-        Setlength(Grid[J-1], Nx);
-        for I:=0 to Nx do begin
-          Str:=Trim( Str );
-          K:=Pos(',', Str);
-          if K <> 0 then begin
-            Tmp:=Copy(Str, 1, K-1);
-            Delete(Str, 1, K);
-            if I = 0 then begin
-              if J = Ny then P.Y:=0
-                        else P.Y:=GetFloat(Tmp);
-            end else begin
-              P.X:=XArray[I-1];
-              P.Z:=GetFloat(Tmp);
-              Grid[J-1][I-1]:=P;
-            end;
-          end else
-          if I = Nx then begin
-            P.X:=XArray[I-1];
-            P.Z:=GetFloat(Tmp);
-            Grid[J-1][I-1]:=P;
-          end;
-        end;
-      end;
-    end else
-    if Str = 'SECTORIAL PATCH' then begin
-      readln(FFile);
-      readln(FFile, Speed);
-      readln(FFile);
-                                                    //Read Nx
-      Readln(FFile, Str);                           // X0
-      Str:=Trim(Str);
-      J:=Pos(',', Str);
-      Tmp:=Copy(Str, 1, J-1);
-      Delete(Str, 1, J);                            // X1
-      Str:=Trim(Str);
-      J:=Pos(',', Str);
-      Tmp:=Copy(Str, 1, J-1);
-      Delete(Str, 1, J);                            // Nx
-      Nx:=StrToInt(Str);
-                                                    //Read Y0, Y1, Ny
-      Readln(FFile, Str);
-      Readln(FFile, Str);                           // Y0
-      Str:=Trim(Str);
-      J:=Pos(',', Str);
-      Tmp:=Copy(Str, 1, J-1);
-      Delete(Str, 1, J);                            // Y1
-      Str:=Trim(Str);
-      J:=Pos(',', Str);
-      Tmp:=Copy(Str, 1, J-1);
-      Delete(Str, 1, J);                            // Ny
-      Ny:=StrToInt(Str);
-
-      for I:=1 to 13 do readln(Ffile);
-      Ny:=(Ny-1);                                   // use only port half
-      Setlength(XArray, Nx);                        // Read Radia
-      Readln(FFile, Str);
-      J:=Pos(',', Str);
-      if J <> 0 then Delete(Str, 1, J);
-      for I:=1 to Nx do begin
-        Str:=Trim(Str);
-        J:=Pos(',', Str);
-        if J <> 0 then begin
-          Tmp:=Copy(Str, 1, J-1);
-          XArray[I-1]:=GetFloat(Tmp);
-          Delete(Str, 1, J);
-        end
-        else if I = Nx then XArray[I-1]:=GetFloat(Str);
-      end;
-
-      Setlength(Grid, Ny);                  // Now read all the wave elevations
-      angle:=0;
-      for J:=1 to Ny do begin
-        Readln(FFile, Str);
-        Setlength(Grid[J-1], Nx);
-        for I:=0 to Nx do begin
-          Str:=Trim(Str);
-          K:=Pos(',', Str);
-          if K <> 0 then begin
-            Tmp:=Copy(Str, 1, K-1);
-            Delete(Str, 1, K);
-            if I = 0 then begin
-              if J = Ny then Angle:=0
-              else Angle:=-GetFloat(Tmp);
-            end else begin
-              P.X:=XArray[I-1] * Cos(DegToRad(Angle));
-              P.Y:=XArray[I-1] * Sin(DegToRad(Angle));
-              P.Z:=GetFloat(Tmp);
-              Grid[J-1][I-1]:=P;
-            end;
-          end else
-          if I = Nx then begin
-            P.X:=XArray[I-1] * Cos(DegToRad(Angle));
-            P.Y:=XArray[I-1] * Sin(DegToRad(Angle)); //P.X:=XArray[I-1];
-            P.Z:=GetFloat(Tmp);
-            Grid[J-1][I-1]:=P;
-          end;
-        end;
-      end;
-    end;
-    if (Nx > 0) and (Ny > 0) then begin
-      PrevCursor:=Screen.Cursor;
-      Screen.Cursor:=crHourglass;
-      FreeShip.Extents(Min, Max);
-      // Search grid for strips wit zero wave-elevation height and leave these out
-      MultFact:=1.0;
-
-      Setlength(CtrlGrid, Ny);
-      DecrY:=0;
-      for I:=1 to Ny do begin
-        AllZero:=True;
-        for J:=1 to Nx do begin
-          Grid[I-1][J-1].Z:=Grid[I-1][J-1].Z * MultFact;
-          if abs(Grid[I-1][J-1].Z) > 1e-3 then begin
-            AllZero:=False;
-            break;
-          end;
-        end;
-        if AllZero then Inc(DecrY);
-      end;
-      if DecrY > 0 then Dec(DecrY);
-
-      // Add controlpoints
-      Setlength(CtrlGrid, Ny);
-      for I:=1+DecrY to Ny do begin
-        Setlength(CtrlGrid[I-1], Nx);
-        for J:=1 to Nx do begin
-          if FreeShip.ProjectSettings.ProjectUnits = fuImperial then begin // scale to feet
-            Grid[I-1][J-1].X:=Grid[I-1][J-1].X / Foot;
-            Grid[I-1][J-1].Y:=Grid[I-1][J-1].Y / Foot;
-            Grid[I-1][J-1].Z:=Grid[I-1][J-1].Z / Foot;
-          end;
-          Grid[I-1][J-1].X := 0.5 * FreeShip.ProjectSettings.ProjectLength-Grid[I-1][J-1].X;
-          Grid[I-1][J-1].Z := Min.Z+FreeShip.ProjectSettings.ProjectDraft+Grid[I-1][J-1].Z;
-          CtrlGrid[I-1][J-1]:=TFreeSubdivisionControlPoint.Create(FreeShip.Surface);
-          FreeShip.Surface.AddControlPoint(CtrlGrid[I-1][J-1]);
-          CtrlGrid[I-1][J-1].Coordinate:=Grid[I-1][J-1];
-        end;
-      end;
-
-      Pts:=TFasterListTFreeSubdivisionControlPoint.Create;
-      Layer:=FreeShip.Surface.AddNewLayer;
-      if Speed <> '' then Layer.Name:='Michlet waves, speed='+speed+' m/s'
-                     else Layer.Name:='Michlet wave elevations, speed='+speed+' m/s';
-      Layer.Color:=clAqua;
-      Layer.UseInHydrostatics:=False;
-      Layer.ShowInLinesplan:=False;
-      Layer.UseForIntersections:=False; // Add faces to controlpoints
-      for I:=DecrY+2 to Ny do begin
-        Setlength(CtrlGrid[I-1], Nx);
-        for J:=2 to Nx do begin Pts.Clear;
-          Pts.Add(CtrlGrid[I-1][J-1]);
-          Pts.Add(CtrlGrid[I-1][J-2]);
-          Pts.Add(CtrlGrid[I-2][J-2]);
-          Pts.Add(CtrlGrid[I-2][J-1]);
-          FreeShip.Surface.AddControlFace(Pts, True, Layer);
-        end;
-      end;                              // set cornerpoints
-      for I:=1+DecrY to Ny do
-      for J:=1 to Nx do
-       if CtrlGrid[I-1][J-1].NumberOfFaces = 1 then
-          CtrlGrid[I-1][J-1].VertexType:=svCorner;
-      FreeAndNil(Pts);
-      FreeShip.Draw;
-      Screen.Cursor:=PrevCursor;
-    end else MessageDlg( Userstring(102),mtError,[mbOK],0 );
-    CloseFile( FFile );
-    FreeShip.FileChanged:=True;
-    if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
-  end;
-  FreeAndNil(OpenDialog);
-end; {TFreeEdit.File_Import_MichletWaves}
 //
 // imports a Carene XYZ file and creates a multichine boat with developable surfaces
 //
@@ -1164,19 +915,6 @@ begin
 
   Answer:=Freeship.Edit.File_SaveCheck;
   if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
- (*                                                                     ////+++
-    if FreeShip.FileChanged then begin
-      Answer:=MessageDlg(Userstring(103)+EOL+Userstring(104), mtConfirmation, [mbYes, mbNo, mbCancel], 0);
-      if Answer = mrCancel then begin FreeAndNil( OpenDialog ); exit; end;
-      if Answer = mrYes then begin
-!!!     File_SaveAs;
-        if FreeShip.FileChanged then begin // Apparently saving was not successfull, abort
-          FreeAndNil( OpenDialog );
-          exit;
-        end;
-      end;
-    end;
-*)
 //  CreateUndoObject(Userstring(105), True);
     FreeShip.Clear;
     assignFile(FFile, ChangeFileExt(Opendialog.FileName, '.xyz'));
@@ -1257,19 +995,7 @@ begin
   begin
     Answer:=Freeship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
-(*                                                                      ////+++
-    if FreeShip.FileChanged then  begin
-      Answer:=MessageDlg(Userstring(103)+EOL+Userstring(104),mtConfirmation,[mbYes, mbNo, mbCancel],0);
-      if Answer = mrCancel then begin FreeAndNil(OpenDialog); exit; end;
-      if Answer = mrYes then begin
-!!!     File_SaveAs;            // Apparently saving was not successfull, abort
-        if FreeShip.FileChanged then begin
-           FreeAndNil( OpenDialog ); exit;
-        end;
-      end;
-    end;
-*)
-//  CreateUndoObject(Userstring(107), True);
+//  CreateUndoObject('ImpChines',True);
     FreeShip.Clear;
     assignFile(FFile, ChangeFileExt(Opendialog.FileName, '.txt'));
 {$I-}
@@ -1281,8 +1007,7 @@ begin
       Chines:=TFasterListTFreeSpline.Create;
 //    try
 //      try
-          // first read unit information; 0=metric, 1=imperial
-          readln(FFile, I);
+          readln( FFile,I ); // first read unit information; 0=metric, 1=imperial
           if I in [0, 1]
             then FreeShip.ProjectSettings.ProjectUnits:=TFreeUnitType(I)
             else MessageDlg(Userstring(108), mtError, [mbOK], 0);
@@ -1533,7 +1258,7 @@ begin
     PartFile:=TFreeFileBuffer.Create;
 //  FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
     Changed:=False;
-    vUndo:=CreateUndoObject( Userstring(112),False );
+    vUndo:=CreateUndoObject( 'ImpPart',False );
 //  Partfile.LoadFromFile(ChangeFileExt(OpenDialog.FileName, '.part'));
     Partfile.LoadFromFile(OpenDialog.FileName);
     Partfile.LoadString( Str );
@@ -2101,7 +1826,7 @@ begin
           if Marker.NumberOfPoints > 1 then Markers.Add(Marker)
                                        else FreeAndNil(Marker);
 //      except
-//        MessageDlg(Userstring(132)+#32+IntToStr(LineNr), mtError, [mbOK], 0);
+//        MessageDlg( Userstring(132)+#32+IntToStr(LineNr),mtError,[mbOK],0 );
 //      end;
 //    finally
         CloseFile(FFile);
@@ -2132,7 +1857,4 @@ begin
     end else ShowMessage(Userstring(106));
   end;
   FreeAndNil(OpenDialog);
-end;{TFreeEdit.Marker_Import}
-
-
-
+end; {TFreeEdit.Marker_Import}

@@ -1,17 +1,12 @@
 unit FreeAboutDlg;
 {$mode delphi}{$H+}
-       {###############################################################}
-       {                                                               }
-       {    You should write to the Free Software Foundation, Inc.,    }
-       {    59 Temple Place, Suite 330, Boston, MA 02111-1307 USA      }
-       {                                                               }
-       {###############################################################}
-interface
-uses
-  Forms, ExtCtrls,
-  StdCtrls, Grids,
-  FreeVersionUnit;
-type                                                          { TFreeAboutDlg }
+       {———————————————————————————————————————————————————————————}
+       { Открытое(свободное) обеспечение корабельной гидромеханики }
+       { You should write to the Free Software Foundation, Inc.,   }
+       { 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA     }
+       {———————————————————————————————————————————————————————————}
+interface uses Forms, ExtCtrls, StdCtrls, Grids, FreeVersionUnit;
+type
   TFreeAboutDlg = class( TForm )
     Button1:TButton;
     Label3,LabelTitle: TLabel;
@@ -33,8 +28,7 @@ begin with StringGridVersionInfo do begin RowCount:=RowCount+1;
                                  Cells[ 1,RowCount-1 ]:=sValue; end;
 end;
 
-procedure TFreeAboutDlg.FormCreate(Sender: TObject);
-begin
+procedure TFreeAboutDlg.FormCreate( Sender: TObject ); begin
   AddInfo('FREE!ship version',FREESHIP_VERSION );
   AddInfo('Compiler version ',FPCVERSION ); //{$I %FPCVERSION%});
   AddInfo('Target CPU ',      TARGET_CPU );

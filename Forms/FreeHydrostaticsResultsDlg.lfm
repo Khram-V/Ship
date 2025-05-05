@@ -3,7 +3,7 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
   Height = 600
   Top = 215
   Width = 857
-  Caption = 'Hydrostatics'
+  Caption = 'Таблица кривых элементов теоретического чертежа'
   ClientHeight = 600
   ClientWidth = 857
   Font.Color = clBlack
@@ -28,12 +28,12 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       Left = 2
       Height = 20
       Top = 2
-      Width = 80
+      Width = 90
       Align = alLeft
       AutoSize = True
       BorderSpacing.Around = 2
-      Constraints.MinWidth = 80
-      Caption = 'Print'
+      Constraints.MinWidth = 90
+      Caption = '&Распечатать'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -74,15 +74,15 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       OnClick = ButtonPrintClick
     end
     object ButtonSave: TSpeedButton
-      Left = 84
+      Left = 100
       Height = 20
       Top = 2
-      Width = 80
+      Width = 116
       Align = alLeft
       AutoSize = True
       BorderSpacing.Around = 2
-      Constraints.MinWidth = 80
-      Caption = 'Save'
+      Constraints.MinWidth = 116
+      Caption = '&Сохранить'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -132,7 +132,7 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 80
-      Caption = 'Close'
+      Caption = '&Закрыть'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100

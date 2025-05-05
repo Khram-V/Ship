@@ -7,34 +7,26 @@ interface uses
   FreeGeometry;
 type
   TFreeDeleteDialog = class(TForm)
-    bbDelete: TBitBtn;
-    bbCancel: TBitBtn;
+    bbDelete,bbCancel: TBitBtn;
     CheckBox1: TCheckBox;
-    Label1: TLabel;
-    lbTotalNumber: TLabel;
-    Panel1: TPanel;
-    pTools: TPanel;
+    Label1,lbTotalNumber: TLabel;
+    Panel1,pTools: TPanel;
     sgObjects: TStringGrid;
     procedure CheckBox1Click( Sender:TObject );
     procedure FormResize( Sender:TObject );
     procedure sgObjectsCheckboxToggled( sender:TObject; aCol,aRow:Integer; aState:TCheckboxState );
     procedure sgObjectsGetCellHint( Sender:TObject; ACol,ARow:Integer; var HintText: AnsiString );
   private
-    FFreeShip: TFreeShip;
     procedure UpdateMenu;
   public
+    FreeShip: TFreeShip;
     procedure Reload;
-    property FreeShip:TFreeShip read FFreeShip write FFreeShip;
   end;
 
-var
-  FreeDeleteDialog: TFreeDeleteDialog;
+var FreeDeleteDialog: TFreeDeleteDialog;                  { TFreeDeleteDialog }
 
 implementation
-
 {$R *.lfm}
-
-{ TFreeDeleteDialog }
 
 procedure TFreeDeleteDialog.CheckBox1Click(Sender: TObject);
 var i:integer; C: char; S: TCheckboxState;
@@ -56,7 +48,7 @@ end;
 procedure TFreeDeleteDialog.sgObjectsCheckboxToggled(sender: TObject; aCol, aRow: Integer;
   aState: TCheckboxState);
 var index : integer; chk : boolean;
-    Layer   : TFreeSubdivisionLayer;
+    Layer : TFreeSubdivisionLayer;
     O: TFreeNamedObject;
 begin
   index:=aRow-1;
@@ -67,29 +59,26 @@ begin
   if O=nil then exit;
   if (aCol=0)and(O.Selected <> chk) then begin
     O.Selected:=chk;
-    FFreeShip.FileChanged:=true;
+    FreeShip.FileChanged:=true;
 //  if FOnChange <> nil then FOnChange(Self);
-    FFreeShip.Redraw;
+    FreeShip.Redraw;
   end;
   UpdateMenu;
 end;
 
-procedure TFreeDeleteDialog.sgObjectsGetCellHint(Sender: TObject; ACol, ARow: Integer;
-  var HintText: AnsiString);
-begin
-  if ARow = 0 then HintText:=sgObjects.Columns[aCol].Title.Caption
-              else HintText:='';
+procedure TFreeDeleteDialog.sgObjectsGetCellHint
+( Sender: TObject; ACol, ARow: Integer; var HintText: AnsiString );
+begin if ARow=0 then HintText:=sgObjects.Columns[aCol].Title.Caption
+                else HintText:='';
 end;
 
 procedure TFreeDeleteDialog.UpdateMenu;
-var i,N:integer; C: AnsiString; S: TCheckboxState;
-begin
-  N:=0;
-  for i:=1 to sgObjects.RowCount-1 do begin
-    C:=sgObjects.Cells[0,i];
-    if C='0' then inc(N);
+var I,N:integer; C: String; S: TCheckboxState;
+begin N:=0;
+  for I:=1 to sgObjects.RowCount-1 do begin
+      C:=sgObjects.Cells[0,I]; if C='1' then inc(N);
   end;
-  lbTotalNumber.Caption:=format('Total: %d',[N]);
+  lbTotalNumber.Caption:=format( 'Указано к удалению: %d ',[N] );
   bbDelete.Enabled:=N>0;
 end;
 
@@ -112,10 +101,10 @@ begin
   sgObjects.Clear;
   sgObjects.BeginUpdate;
   sgObjects.RowCount:=N+1;
-  lbTotalNumber.Caption:=format('Total: %d',[N]);
+  lbTotalNumber.Caption:=format( 'Всего избрано: %d ',[N] );
   r:=1;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlPoints-1 do begin
-    CP:=FFreeShip.Surface.SelectedControlPoint[i];
+    CP:=FreeShip.Surface.SelectedControlPoint[i];
     sgObjects.Cells[0,r]:='1';
     sgObjects.Cells[1,r]:='Point';
     sgObjects.Cells[2,r]:=format('[%d]',[CP.Id]);
@@ -124,7 +113,7 @@ begin
     inc(r);
   end;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlPointGroups-1 do begin
-    CPG:=FFreeShip.Surface.SelectedControlPointGroup[i];
+    CPG:=FreeShip.Surface.SelectedControlPointGroup[i];
     r:=i+1;
     sgObjects.Cells[0,r]:='1';
     sgObjects.Cells[1,r]:='Group';
@@ -134,7 +123,7 @@ begin
     inc(r);
   end;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlEdges-1 do begin
-    CE:=FFreeShip.Surface.SelectedControlEdge[i];
+    CE:=FreeShip.Surface.SelectedControlEdge[i];
     sgObjects.Cells[0,r]:='1';
     sgObjects.Cells[1,r]:='Edge';
     sgObjects.Cells[2,r]:=format('[%d]',[CE.Id]);
@@ -143,7 +132,7 @@ begin
     inc(r);
   end;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlFaces-1 do begin
-    CF:=FFreeShip.Surface.SelectedControlFace[i];
+    CF:=FreeShip.Surface.SelectedControlFace[i];
     sgObjects.Cells[0,r]:='1';
     sgObjects.Cells[1,r]:='Face';
     sgObjects.Cells[2,r]:=format('[%d]',[CF.Id]);
@@ -152,7 +141,7 @@ begin
     inc(r);
   end;
   for i:=0 to FreeShip.Surface.NumberOfSelectedControlCurves-1 do begin
-    CC:=FFreeShip.Surface.SelectedControlCurve[i];
+    CC:=FreeShip.Surface.SelectedControlCurve[i];
     sgObjects.Cells[0,r]:='1';
     sgObjects.Cells[1,r]:='Curve';
     sgObjects.Cells[2,r]:=format('[%d]',[CC.Id]);
@@ -161,7 +150,7 @@ begin
     inc(r);
   end;
   for i:=0 to FreeShip.NumberOfSelectedMarkers-1 do begin
-    M:=FFreeShip.SelectedMarker[i];
+    M:=FreeShip.SelectedMarker[i];
     sgObjects.Cells[0,r]:='1';
     sgObjects.Cells[1,r]:='Marker';
     sgObjects.Cells[2,r]:=format('[%d]',[M.Id]);
@@ -170,7 +159,7 @@ begin
     inc(r);
   end;
   for i:=0 to FreeShip.NumberOfSelectedFlowlines-1 do begin
-    FL:=FFreeShip.SelectedFlowline[i];
+    FL:=FreeShip.SelectedFlowline[i];
     sgObjects.Cells[0,r]:='1';
     sgObjects.Cells[1,r]:='Flowline';
     sgObjects.Cells[2,r]:=format('[%d]',[FL.Id]);

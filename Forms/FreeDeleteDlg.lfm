@@ -2,45 +2,51 @@ object FreeDeleteDialog: TFreeDeleteDialog
   Left = 773
   Height = 322
   Top = 185
-  Width = 247
-  Caption = 'Objects to be deleted'
+  Width = 258
+  Caption = 'Удаление избранных элементов'
   ClientHeight = 322
-  ClientWidth = 247
+  ClientWidth = 258
   OnResize = FormResize
   LCLVersion = '3.8.0.0'
   object pTools: TPanel
     Left = 0
     Height = 33
     Top = 0
-    Width = 247
+    Width = 258
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 33
-    ClientWidth = 247
+    ClientWidth = 258
     TabOrder = 0
     object bbDelete: TBitBtn
-      Left = 184
+      Left = 176
       Height = 25
+      Hint = 'Подтверждение удаления избранных элементов. Осторожно!'
       Top = 4
-      Width = 59
+      Width = 78
       Align = alRight
       AutoSize = True
       BorderSpacing.Around = 4
-      Caption = 'Delete'
+      Caption = '&Удаление'
       ModalResult = 3
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
     end
     object bbCancel: TBitBtn
       Left = 4
       Height = 25
+      Hint = 'Отмена операции удаления выбранных элементов'
       Top = 4
-      Width = 62
+      Width = 61
       Align = alLeft
       AutoSize = True
       BorderSpacing.Around = 4
-      Caption = 'Cancel'
+      Caption = '&Сброс'
       ModalResult = 2
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 1
     end
   end
@@ -48,7 +54,7 @@ object FreeDeleteDialog: TFreeDeleteDialog
     Left = 0
     Height = 260
     Top = 62
-    Width = 247
+    Width = 258
     Align = alClient
     ColCount = 3
     ColumnClickSorts = True
@@ -56,18 +62,18 @@ object FreeDeleteDialog: TFreeDeleteDialog
       item
         Alignment = taCenter
         ButtonStyle = cbsCheckboxColumn
-        Title.Caption = 'Delete'
-        Width = 32
+        Title.Caption = 'Выбор'
+        Width = 44
       end    
       item
         ReadOnly = True
-        Title.Caption = 'Type'
+        Title.Caption = 'Тип элемента'
         Width = 108
       end    
       item
-        Title.Caption = 'Id'
+        Title.Caption = 'Метка'
         Width = 102
-      end>
+      end >
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goRangeSelect, goEditing, goSmoothScroll, goCellHints]
     ParentShowHint = False
@@ -77,7 +83,7 @@ object FreeDeleteDialog: TFreeDeleteDialog
     OnCheckboxToggled = sgObjectsCheckboxToggled
     OnGetCellHint = sgObjectsGetCellHint
     ColWidths = (
-      32
+      44
       108
       102
     )
@@ -86,12 +92,12 @@ object FreeDeleteDialog: TFreeDeleteDialog
     Left = 0
     Height = 29
     Top = 33
-    Width = 247
+    Width = 258
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 29
-    ClientWidth = 247
+    ClientWidth = 258
     TabOrder = 2
     object CheckBox1: TCheckBox
       Left = 6
@@ -111,17 +117,16 @@ object FreeDeleteDialog: TFreeDeleteDialog
       Align = alLeft
       BorderSpacing.Left = 4
       BorderSpacing.Around = 6
-      Caption = 'All'
+      Caption = 'Всё'
       ParentColor = False
     end
     object lbTotalNumber: TLabel
-      Left = 161
+      Left = 172
       Height = 29
       Top = 0
       Width = 80
       Align = alRight
       BorderSpacing.Right = 6
-      Caption = 'lbTotalNumber'
       Layout = tlCenter
       ParentColor = False
     end

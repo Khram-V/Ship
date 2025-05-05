@@ -573,7 +573,7 @@ var I:Integer;
 begin
    for I:=1 to Freeship.NumberofBackgroundImages do
    if Freeship.BackgroundImage[I-1].AssignedView=Viewport.ViewType then begin
-      Freeship.Edit.CreateUndoObject( 'Background image settings',true);
+      Freeship.Edit.CreateUndoObject( 'BackImSet',true);
       Freeship.BackgroundImage[I-1].UpdateData(Viewport);  Break;
    end;
 end;
@@ -585,7 +585,8 @@ procedure TFreeHullWindow.BackgroundToleranceExecute(Sender: TObject);
 var Str:AnsiString; Value,I:Integer;
 begin
    Str:=IntToStr(Viewport.BackgroundImage.Tolerance);
-   if InputQuery('Transparency tolerance','Set tolerance (0-255)',Str) then begin
+   if InputQuery( 'Transparency tolerance','Set tolerance (0-255)',Str )
+   then begin
       val( Str,Value,I );
       if I=0 then begin
          if Value<0   then value:=0 else

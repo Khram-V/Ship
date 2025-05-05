@@ -124,7 +124,7 @@ object FreeAboutDlg: TFreeAboutDlg
       BorderSpacing.Around = 4
       BorderSpacing.CellAlignHorizontal = ccaCenter
       BorderSpacing.CellAlignVertical = ccaCenter
-      Caption = 'Close'
+      Caption = '&Выход'
       Constraints.MaxHeight = 80
       Constraints.MaxWidth = 240
       Constraints.MinHeight = 40

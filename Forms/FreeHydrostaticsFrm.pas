@@ -125,19 +125,19 @@ begin
       ResultsDlg.Grid.Cells[7,0]:='VCB';
       ResultsDlg.Grid.Cells[7,1]:=LengthStr(Units);
       ResultsDlg.Grid.Cells[8,0]:='Cb';
-      ResultsDlg.Grid.Cells[8,1]:='[-]';
+      ResultsDlg.Grid.Cells[8,1]:='—';
       ResultsDlg.Grid.Cells[9,0]:='Am';
       ResultsDlg.Grid.Cells[9,1]:=AreaStr(Units);
       ResultsDlg.Grid.Cells[10,0]:='Cm';
-      ResultsDlg.Grid.Cells[10,1]:='[-]';
+      ResultsDlg.Grid.Cells[10,1]:='—';
       ResultsDlg.Grid.Cells[11,0]:='Aw';
       ResultsDlg.Grid.Cells[11,1]:=AreaStr(Units);
       ResultsDlg.Grid.Cells[12,0]:='Cw';
-      ResultsDlg.Grid.Cells[12,1]:='[-]';
+      ResultsDlg.Grid.Cells[12,1]:='—';
       ResultsDlg.Grid.Cells[13,0]:='LCF';
       ResultsDlg.Grid.Cells[13,1]:=LengthStr(Units);
       ResultsDlg.Grid.Cells[14,0]:='Cp';
-      ResultsDlg.Grid.Cells[14,1]:='[-]';
+      ResultsDlg.Grid.Cells[14,1]:='—';
       ResultsDlg.Grid.Cells[15,0]:='S';
       ResultsDlg.Grid.Cells[15,1]:=AreaStr(Units);
       ResultsDlg.Grid.Cells[16,0]:='KMt';
@@ -147,26 +147,34 @@ begin
       for I:=0 to 16 do if I in [0,1,2,3,6,7,8,10,12,14]
         then ResultsDlg.Grid.ColWidths[I]:=47
         else if I in [4,5,15] then ResultsDlg.Grid.ColWidths[I]:=55;
-      Zmin:=0;
+      HydObject.Clear;
+      HydObject.HeelingAngle:=0.0;
+      HydObject.Trim:=Trim;
+      HydObject.Draft:=0;
+      HydObject.Calculate;         // ..., если основная линия проходит по килю
+      Zmin:=HydObject.Data.ModelMin.Z;                          // =добавка(++)
       I:=2;
       while Value<=EndDraft do begin //+DraftStep) or (abs(Value-EndDraft)<1e-3) do begin
         HydObject.Clear;
         HydObject.HeelingAngle:=0.0;
-        HydObject.Trim:=Trim;
-        if Value <= EndDraft then HydObject.Draft:=Value-Zmin
-                             else HydObject.Draft:=EndDraft-Zmin;
-        HydObject.Calculate; // Пересчет коэфФициентов полноты, если базовая линия проходит через линию киля
-        if abs(HydObject.Data.ModelMin.Z) > 0.001 then begin
-          Zmin:=HydObject.Data.ModelMin.Z;
-          Cb:=HydObject.Data.BlockCoefficient * HydObject.Draft / (HydObject.Draft+HydObject.Data.ModelMin.Z);
-          Cm:=HydObject.Data.MidshipCoeff * HydObject.Draft / (HydObject.Draft+HydObject.Data.ModelMin.Z);
-        end else begin
+        HydObject.Trim:=Trim;                              // Zmin:=HydObject.Data.ModelMin.Z+StartDraft;
+        if Value<=EndDraft then HydObject.Draft:=Value-Zmin
+                           else HydObject.Draft:=EndDraft-Zmin;
+        HydObject.Calculate;                  // Пересчет коэфФициентов полноты
+//      if true or (abs( HydObject.Data.ModelMin.Z )>0.001) then begin
+//        Zmin:=HydObject.Data.ModelMin.Z;
+//          Cb:=HydObject.Data.BlockCoefficient * (HydObject.Draft+Zmin) / (HydObject.Draft-HydObject.Data.ModelMin.Z);
+//          Cm:=HydObject.Data.MidshipCoeff     * (HydObject.Draft+Zmin) / (HydObject.Draft-HydObject.Data.ModelMin.Z);
+//      end else begin
           Cb:=HydObject.Data.BlockCoefficient;
           Cm:=HydObject.Data.MidshipCoeff;
-        end;
-        if Cm>0 then begin Cp:=Cb/Cm;
+          Cp:=HydObject.Data.PrismCoefficient;
+//        Cv:=HydObject.Data.VertPrismCoefficient;
+//      end;
+//      if Cm<1e-3 then Cm:=1.0;
+        begin //Cp:=Cb/Cm;
           ResultsDlg.Grid.RowCount:=I+1;
-          ResultsDlg.Grid.Cells[0,I]:=FloatToStrF(HydObject.Draft+Zmin,          ffFixed,7,3);
+          ResultsDlg.Grid.Cells[0,I]:=FloatToStrF(HydObject.Draft+Zmin,        ffFixed,7,3);
           ResultsDlg.Grid.Cells[1,I]:=FloatToStrF(HydObject.Trim,                ffFixed,7,3);
           ResultsDlg.Grid.Cells[2,I]:=FloatToStrF(HydObject.Data.LengthWaterline,ffFixed,7,3);
           ResultsDlg.Grid.Cells[3,I]:=FloatToStrF(HydObject.Data.BeamWaterline,  ffFixed,7,3);
@@ -190,7 +198,6 @@ begin
 //      if (feMakingWater in HydObject.Errors) then break; // stop if the vessel is making water
       end;
       HydObject.AddHeader( Strings ); Strings.add(''); Strings.add('');
-//    if Mode = fhMultipleCalculations then begin
         Strings.Add('Lwl   : '+Userstring(17));
         Strings.Add('Bwl   : '+Userstring(18));
         Strings.Add('Volume: '+Userstring(3));
@@ -207,7 +214,6 @@ begin
         Strings.Add('S     : '+Userstring(10));
         Strings.Add('KMt   : '+Userstring(26));
         Strings.Add('KMl   : '+Userstring(27));
-//    end;
       Strings.Add( '' );
       HydObject.AddFooter( Strings );            // fhMultipleCalculations );
       ResultsDlg.Header.Lines.AddStrings( Strings );

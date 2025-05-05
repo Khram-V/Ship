@@ -1,36 +1,36 @@
 object FreeRotateDialog: TFreeRotateDialog
   Left = 631
-  Height = 163
+  Height = 149
   Top = 243
-  Width = 278
+  Width = 260
   BorderStyle = bsDialog
   Caption = '<Rotation>'
-  ClientHeight = 163
-  ClientWidth = 278
+  ClientHeight = 149
+  ClientWidth = 260
   Position = poMainFormCenter
-  LCLVersion = '3.4.0.0'
+  LCLVersion = '3.8.0.0'
   object Panel1: TPanel
     Left = 0
     Height = 24
     Top = 0
-    Width = 278
+    Width = 260
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 24
-    ClientWidth = 278
+    ClientWidth = 260
     TabOrder = 0
     object OKButton: TSpeedButton
-      Left = 114
+      Left = 96
       Height = 20
-      Hint = 'Close dialog.'
+      Hint = 'Исполнить перерасчёт.'
       Top = 2
       Width = 80
       Align = alRight
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 80
-      Caption = '&Ok'
+      Caption = '&Есть!'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -73,16 +73,16 @@ object FreeRotateDialog: TFreeRotateDialog
       ParentShowHint = False
     end
     object CancelButton: TSpeedButton
-      Left = 196
+      Left = 178
       Height = 20
-      Hint = 'Cancel operation.'
+      Hint = 'Отмена преобразований.'
       Top = 2
       Width = 80
       Align = alRight
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 80
-      Caption = '&Cancel'
+      Caption = '&Отмена'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -127,23 +127,22 @@ object FreeRotateDialog: TFreeRotateDialog
   end
   object Panel3: TPanel
     Left = 0
-    Height = 139
+    Height = 125
     Top = 24
-    Width = 278
+    Width = 260
     Align = alClient
     BevelOuter = bvNone
-    Caption = 'Panel3'
     ChildSizing.EnlargeHorizontal = crsHomogenousSpaceResize
     ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
-    ClientHeight = 139
-    ClientWidth = 278
+    ClientHeight = 125
+    ClientWidth = 260
     TabOrder = 1
     object Panel2: TPanel
-      Left = 28
+      Left = 26
       Height = 93
-      Top = 23
-      Width = 223
+      Top = 16
+      Width = 208
       AutoSize = True
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 10
@@ -153,14 +152,14 @@ object FreeRotateDialog: TFreeRotateDialog
       ChildSizing.Layout = cclTopToBottomThenLeftToRight
       ChildSizing.ControlsPerLine = 3
       ClientHeight = 93
-      ClientWidth = 223
+      ClientWidth = 208
       TabOrder = 0
       object Label1: TLabel
         Left = 10
         Height = 23
         Top = 10
-        Width = 90
-        Caption = 'Longitudinal axis'
+        Width = 75
+        Caption = 'Ось абсцисс'
         Layout = tlCenter
         ParentColor = False
       end
@@ -168,8 +167,8 @@ object FreeRotateDialog: TFreeRotateDialog
         Left = 10
         Height = 23
         Top = 35
-        Width = 90
-        Caption = 'Transverse axis'
+        Width = 75
+        Caption = 'Ось ординат'
         Layout = tlCenter
         ParentColor = False
       end
@@ -177,13 +176,13 @@ object FreeRotateDialog: TFreeRotateDialog
         Left = 10
         Height = 23
         Top = 60
-        Width = 90
-        Caption = 'Vertical axis'
+        Width = 75
+        Caption = 'Ось аппликат'
         Layout = tlCenter
         ParentColor = False
       end
       object FloatSpinEdit1: TFloatSpinEdit
-        Left = 106
+        Left = 91
         Height = 23
         Top = 10
         Width = 100
@@ -192,7 +191,7 @@ object FreeRotateDialog: TFreeRotateDialog
         TabOrder = 0
       end
       object FloatSpinEdit2: TFloatSpinEdit
-        Left = 106
+        Left = 91
         Height = 23
         Top = 35
         Width = 100
@@ -201,7 +200,7 @@ object FreeRotateDialog: TFreeRotateDialog
         TabOrder = 1
       end
       object FloatSpinEdit3: TFloatSpinEdit
-        Left = 106
+        Left = 91
         Height = 23
         Top = 60
         Width = 100
@@ -210,7 +209,7 @@ object FreeRotateDialog: TFreeRotateDialog
         TabOrder = 2
       end
       object Label3: TLabel
-        Left = 212
+        Left = 197
         Height = 23
         Top = 10
         Width = 1
@@ -218,7 +217,7 @@ object FreeRotateDialog: TFreeRotateDialog
         ParentColor = False
       end
       object Label6: TLabel
-        Left = 212
+        Left = 197
         Height = 23
         Top = 35
         Width = 1
@@ -226,7 +225,7 @@ object FreeRotateDialog: TFreeRotateDialog
         ParentColor = False
       end
       object Label9: TLabel
-        Left = 212
+        Left = 197
         Height = 23
         Top = 60
         Width = 1

@@ -548,11 +548,10 @@ procedure TFreeSubdivisionSurface.ImportControlPointGrid
 ( Grid: TFreeSubdivisionControlPointGrid; 
   Cols, Rows: integer;
   Layer: TFreesubdivisionLayer );
-var
-  P11,P12,P22,P21:TFreeSubdivisionControlPoint;
-  GridPoints, FacePoints: TFasterListTFreeSubdivisionControlPoint;
-  Edge: TFreeSubdivisionEdge;
-  I, J: integer;
+var I,J: integer;
+    P11,P12,P22,P21:TFreeSubdivisionControlPoint;
+    GridPoints, FacePoints: TFasterListTFreeSubdivisionControlPoint;
+    Edge: TFreeSubdivisionEdge;
 begin
   FIsLoading:=true;
   GridPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
@@ -568,14 +567,14 @@ begin
       if FacePoints.IndexOf(P22)=-1 then FacePoints.Add(P22);
       if FacePoints.IndexOf(P21)=-1 then FacePoints.Add(P21);
       if FacePoints.Count>=3 then
-      if Layer<>nil then AddControlFace( FacePoints,True,Layer )
-                    else AddControlFace( FacePoints,True );
+        if Layer<>nil then AddControlFace( FacePoints,True,Layer )
+                      else AddControlFace( FacePoints,True );
       GridPoints.AddList(FacePoints);
   end;
-{ // set crease edges
+{// set crease edges
   for I:=2 to Cols do begin
     Edge:=EdgeExists(Grid[0][I-2], Grid[0][I-1]);
-    if Edge <> nil then Edge.Crease:=True;
+    if Edge<>nil then Edge.Crease:=True;
     Edge:=EdgeExists(Grid[Rows-1][I-2], Grid[Rows-1][I-1]);
     if Edge <> nil then Edge.Crease:=True;
   end;
@@ -587,10 +586,9 @@ begin
   end;
 }
   for i:=0 to GridPoints.Count-1 do
-  for j:=0 to GridPoints[i].Edges.Count-1 do
-    GridPoints[i].Edge[j].Crease:=false;
-                                                            // set cornerpoints
-  for I:=1 to Rows do
+  for j:=0 to GridPoints[i].Edges.Count-1 do GridPoints[i].Edge[j].Crease:=false;
+
+  for I:=1 to Rows do                                      // set cornerpoints
   for J:=1 to Cols do
     if Grid[I-1][J-1].NumberOfFaces<2 then Grid[I-1][J-1].VertexType:=svCorner;
   FreeAndNil( FacePoints );
@@ -603,12 +601,7 @@ procedure TFreeSubdivisionSurface.ImportCoordGrid
 ( Points: TFreeCoordinateGrid;
   Cols, Rows: integer;
   Layer: TFreesubdivisionLayer);
-var
-  Grid: TFreeSubdivisionControlPointGrid;
-  P11,P12,P22,P21:TFreeSubdivisionControlPoint;
-  FacePoints: TFasterListTFreeSubdivisionControlPoint;
-  Edge: TFreeSubdivisionEdge;
-  I, J: integer;
+var I,J: integer; Grid: TFreeSubdivisionControlPointGrid;
 begin
   FIsLoading:=true;
   Setlength( Grid,Rows );

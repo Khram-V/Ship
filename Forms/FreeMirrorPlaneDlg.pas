@@ -1,38 +1,20 @@
 unit FreeMirrorPlaneDlg;
 {$MODE Delphi}{$H+}
 interface uses
- {$IFDEF Windows}
-  Windows,
- {$ELSE}
-  LCLIntf, LCLType,
- {$ENDIF}
-     SysUtils,
-     Variants,
-     Graphics,
-     Controls,
-     Forms,
-     Dialogs,
-     Buttons,
-     ExtCtrls,
-     StdCtrls,
-     FreeTypes,
-     Spin;
+     SysUtils,     Controls,
+     Forms,        Buttons,
+     ExtCtrls,     StdCtrls,
+     FreeTypes,    Spin;
 
 type
  TFreeMirrorPlaneDialog  = class(TForm)
-     BitBtn1: TSpeedButton;
-     BitBtn2: TSpeedButton;
      CheckBox1: TCheckBox;
-     Edit1: TFloatSpinEdit;
      GroupBox1: TGroupBox;
      Label1: TLabel;
-     Panel1: TPanel;
-     Panel2: TPanel;
-     Panel4: TPanel;
-     RadioButton1: TRadioButton;
-     RadioButton2: TRadioButton;
-     RadioButton3: TRadioButton;
-     Panel3: TPanel;
+     Panel1,Panel2,Panel3,Panel4: TPanel;
+     BitBtn1,BitBtn2: TSpeedButton;
+     RadioButton1,RadioButton2,RadioButton3: TRadioButton;
+     Edit1: TFloatSpinEdit;
      procedure BitBtn1Click(Sender: TObject);
      procedure BitBtn2Click(Sender: TObject);
    private   { Private declarations }
@@ -45,12 +27,7 @@ type
 var FreeMirrorPlaneDialog: TFreeMirrorPlaneDialog;
 
 implementation
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-{$ELSE}
   {$R *.lfm}
-{$ENDIF}
 
 function TFreeMirrorPlaneDialog.FGetPlane:T3DPlane;
 begin
