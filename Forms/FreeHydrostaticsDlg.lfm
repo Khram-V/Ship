@@ -4,26 +4,26 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
   Top = 197
   Width = 775
   BorderStyle = bsDialog
-  Caption = 'Hydrostatics results'
+  BorderIcons = []
+  Caption = 'Проектные характеристики корпуса.'
   ClientHeight = 573
   ClientWidth = 775
-  OnShow = FormShow
   Position = poOwnerFormCenter
-  LCLVersion = '3.8.0.0'
+  OnShow = FormShow
   object Panel1: TPanel
     Left = 0
-    Height = 545
-    Top = 28
+    Height = 539
+    Top = 34
     Width = 775
     Align = alClient
     BevelOuter = bvLowered
     BorderWidth = 10
-    ClientHeight = 545
+    ClientHeight = 539
     ClientWidth = 775
     TabOrder = 0
     object Edit: TMemo
       Left = 11
-      Height = 523
+      Height = 517
       Top = 11
       Width = 753
       Align = alClient
@@ -38,25 +38,25 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
   end
   object Panel22: TPanel
     Left = 0
-    Height = 28
+    Height = 34
     Top = 0
     Width = 775
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 28
+    ClientHeight = 34
     ClientWidth = 775
     TabOrder = 1
     object ButtonPrint: TSpeedButton
       Left = 84
-      Height = 24
+      Height = 30
       Top = 2
       Width = 80
       Align = alLeft
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 80
-      Caption = 'Print'
+      Caption = 'Рас&печатать'
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000000000000000
@@ -98,14 +98,14 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
     end
     object ButtonSave: TSpeedButton
       Left = 2
-      Height = 24
+      Height = 30
       Top = 2
       Width = 80
       Align = alLeft
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 80
-      Caption = 'Save'
+      Caption = '&Сохранить текст'
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         20000000000000040000640000006400000000000000000000007F5212FF7F52
@@ -147,14 +147,14 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
     end
     object ButtonClose: TSpeedButton
       Left = 693
-      Height = 24
+      Height = 30
       Top = 2
       Width = 80
       Align = alRight
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 80
-      Caption = 'Close'
+      Caption = '&Закрыть'
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
         2000000000000004000064000000640000000000000000000000000000000000

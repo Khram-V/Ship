@@ -1,10 +1,10 @@
 unit FreeAboutDlg;
 {$mode delphi}{$H+}
-       {———————————————————————————————————————————————————————————}
-       { Открытое(свободное) обеспечение корабельной гидромеханики }
-       { You should write to the Free Software Foundation, Inc.,   }
-       { 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA     }
-       {———————————————————————————————————————————————————————————}
+     {———————————————————————————————————————————————————————————}
+     { Открытое(свободное) обеспечение корабельной гидромеханики }
+     { You should write to the Free Software Foundation, Inc.,   }
+     { 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA     }
+     {———————————————————————————————————————————————————————————}
 interface uses Forms, ExtCtrls, StdCtrls, Grids, FreeVersionUnit;
 type
   TFreeAboutDlg = class( TForm )
@@ -35,9 +35,9 @@ procedure TFreeAboutDlg.FormCreate( Sender: TObject ); begin
   AddInfo('Target OS  ',      TARGET_OS );
   AddInfo('Build date ',ReleasedDate+' '+COMPILE_TIME );
   AddInfo('© 2005, Martijn van Engeland, DelftShip','Marine software developer, Netherlands' );
-  AddInfo('© 2007-2012 Виктор Фёдорович Тимошенко','Николаевский кораблестроительный институт' );
+  AddInfo('© 2007÷12 Виктор Фёдорович Тимошенко','Николаевский кораблестроительный институт' );
   AddInfo('© 2015 Mark Malakanov','FreePascal Lazarus, Woodbridge, Canada' );
-  AddInfo('© 2024… НТО Крылова, о.Сахалин','‏יְרוּשָׁלַיִם' );
+  AddInfo('© 2024… НТО Крылова, о.Сахалин','Штормовая мореходность,          ‏יְרוּשָׁלַיִם' );
        //  Timoshenko Victor F., vftim@rambler.ru
        //  Mark Malakanov, markmal@github.com
 end;

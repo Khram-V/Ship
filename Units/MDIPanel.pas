@@ -738,42 +738,18 @@ begin
   FWindowResizingSide:=wrszsZ;
   Cursor:=crDefault;
   if X <= FCornerSize then begin
-    if Y <= FCornerSize then begin
-      FWindowResizingSide:=wrszsNW;
-      Cursor:=crSizeNW;
-    end
-    else if Y >= Height-FCornerSize then begin
-      FWindowResizingSide:=wrszsSW;
-      Cursor:=crSizeSW;
-    end else begin
-      FWindowResizingSide:=wrszsW;
-      Cursor:=crSizeWE;
-    end;
-  end
-  else if X >= Width-FCornerSize then begin
-    if Y <= FCornerSize then begin
-      FWindowResizingSide:=wrszsNE;
-      Cursor:=crSizeNE;
-    end
-    else if Y >= Height-FCornerSize then begin
-      FWindowResizingSide:=wrszsSE;
-      Cursor:=crSizeSE;
-    end else begin
-      FWindowResizingSide:=wrszsE;
-      Cursor:=crSizeWE;
-    end;
+    if Y<=FCornerSize then begin FWindowResizingSide:=wrszsNW; Cursor:=crSizeNW; end else
+    if Y>=Height-FCornerSize then begin FWindowResizingSide:=wrszsSW; Cursor:=crSizeSW; end
+                             else begin FWindowResizingSide:=wrszsW; Cursor:=crSizeWE; end;
+  end else
+  if X >= Width-FCornerSize then begin
+    if Y<=FCornerSize then begin FWindowResizingSide:=wrszsNE; Cursor:=crSizeNE; end else
+    if Y>=Height-FCornerSize then begin FWindowResizingSide:=wrszsSE; Cursor:=crSizeSE; end
+                             else begin FWindowResizingSide:=wrszsE; Cursor:=crSizeWE; end;
   end else begin  // X in mid
-    if Y <= FCornerSize then begin
-      FWindowResizingSide:=wrszsN;
-      Cursor:=crSizeNS;
-    end
-    else if Y >= Height-FCornerSize then begin
-      FWindowResizingSide:=wrszsS;
-      Cursor:=crSizeNS;
-    end else begin
-      FWindowResizingSide:=wrszsZ;
-      Cursor:=crSizeNS;
-    end;
+    if Y<=FCornerSize then begin FWindowResizingSide:=wrszsN; Cursor:=crSizeNS; end else
+    if Y>=Height-FCornerSize then begin FWindowResizingSide:=wrszsS; Cursor:=crSizeNS; end
+                             else begin FWindowResizingSide:=wrszsZ; Cursor:=crSizeNS; end;
   end;
 end;
 
@@ -783,7 +759,7 @@ var TL: TPoint;
 begin
   if (Button = mbLeft) and (Shift = [ssLeft]) then begin
     WindowPositionState:=wpsResizing;
-    TL:=Parent.ClientToScreen(BoundsRect.TopLeft);                              //writeln('d:',Mouse.CursorPos.X, ':', Mouse.CursorPos.Y);
+    TL:=Parent.ClientToScreen(BoundsRect.TopLeft);
     WindowCaptionMouseX:=Mouse.CursorPos.X-TL.X;
     WindowCaptionMouseY:=Mouse.CursorPos.Y-TL.Y;
     setActive(True);
@@ -795,7 +771,7 @@ procedure TCustomMDIPanel.BorderMouseMove
 var TL,SL: TPoint; L,T,W,H: integer;
 begin
   if not (WindowPositionState = wpsResizing) then SetBorderCursor( X,Y );
-  if (Shift=[ssLeft]) and (WindowPositionState=wpsResizing) then begin          // writeln('m:',Mouse.CursorPos.X,':',Mouse.CursorPos.Y,' sender:',TControl(Sender).Name);
+  if (Shift=[ssLeft]) and (WindowPositionState=wpsResizing) then begin
     L:=Left;
     T:=Top;
     W:=Width;
@@ -838,7 +814,7 @@ begin
         W:=W-(TL.X-L);
         L:=TL.X;
       end;
-    end;                                                                        // writeln('setBounds(', L, ',', T, ',', W, ',', H, ')');
+    end;
     setBounds( L,T,W,H );
   end;
 end;
@@ -856,7 +832,7 @@ begin
   if (Button = mbLeft) and (Shift = [ssLeft]) then begin
     WindowPositionState:=wpsMoving;
   //TL:=ClientToScreen(TPanel(TPanel(Sender).Parent).BoundsRect.TopLeft);
-    TL:=Parent.ClientToScreen( BoundsRect.TopLeft );                            //writeln('d:',Mouse.CursorPos.X, ':', Mouse.CursorPos.Y);
+    TL:=Parent.ClientToScreen( BoundsRect.TopLeft );
     WindowCaptionMouseX:=Mouse.CursorPos.X-TL.X;
     WindowCaptionMouseY:=Mouse.CursorPos.Y-TL.Y;
     setActive(True);
@@ -866,12 +842,12 @@ procedure TCustomMDIPanel.CaptionPanelMouseMove
   ( Sender: TObject; Shift: TShiftState; X,Y: integer);
 var TL,SL: TPoint;
 begin
-  if (Shift=[ssLeft]) and (WindowPositionState=wpsMoving) then begin            //writeln('m:',Mouse.CursorPos.X, ':', Mouse.CursorPos.Y);
+  if (Shift=[ssLeft]) and (WindowPositionState=wpsMoving) then begin
     FCaptionLabel.Cursor:=crSizeAll;
     SL:=Point(Mouse.CursorPos.X-WindowCaptionMouseX,Mouse.CursorPos.Y-WindowCaptionMouseY);
     TL:=Parent.ScreenToClient(SL);
     Left:=TL.X;
-    Top:=TL.Y;                                                                  //writeln('w:',TL.X, ':', TL.Y);
+    Top:=TL.Y;
   end;
 end;
 procedure TCustomMDIPanel.CaptionPanelMouseUp(Sender: TObject; Button: TMouseButton;
@@ -1183,25 +1159,19 @@ end;
 
 function WinPanelManager.GetMDIPanel(Index: Integer): TCustomMDIPanel;
    begin Result:=TCustomMDIPanel(MList[Index]); end;
-
 function WinPanelManager.GetPanelCount: integer;
    begin result:=MList.Count; end;
-
 constructor WinPanelManager.Create;
       begin inherited Create; MList:=TFPList.Create; end;
-
 destructor WinPanelManager.Destroy;
      begin FreeAndNil( MList ); end; // inherited; end;
-
 function WinPanelManager.IndexOf( APanel: TCustomMDIPanel ): integer;
    begin result:=MList.IndexOf( APanel ); end;
-
 procedure WinPanelManager.Add( APanel: TCustomMDIPanel );
 begin if APanel=nil then exit;
       MList.Add( APanel );
       APanel.MDIPanelManager:=self;
 end;
-
 procedure WinPanelManager.Insert( APanel: TCustomMDIPanel );
 begin Insert( APanel,MList.Count );
       APanel.MDIPanelManager:=self;

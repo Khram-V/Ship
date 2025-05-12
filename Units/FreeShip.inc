@@ -568,7 +568,7 @@ begin                                                    // Initialize all data
   FFilename:=Userstring(179);
   FVisibility.Clear;
   FEditMode:=emSelectItems;      // Set editmode to select items
-                                 // FFontSize:=8; // use Preferences
+  IsRebuildAsyncDisabled:=True;  // FFontSize:=8; // use Preferences
   ActiveControlPoint:=nil;       // delete Markers
   for I:=1 to NumberOfMarkers do Marker[I-1].Destroy;
           FMarkers.Clear;
@@ -1119,48 +1119,45 @@ begin
 //  if FDesignHydrostatics.Errors = [] then              ///***??? Hydro
     begin                                                // Center of bouyancy
       if Visibility.FShowHydrostDisplacement then
-        DrawPoint( FDesignHydrostatics.FData.CenterOfBuoyancy, 'Displ=' +
-          FloatToStrF( FDesignHydrostatics.Data.Displacement,ffFixed,7,2),True );
-      if abs(FDesignHydrostatics.Data.WaterplaneCOG.Y) < 0.01 then
-      begin                                    // Transverse metacentric height
+        DrawPoint( FDesignHydrostatics.FData.CenterOfBuoyancy, 'C:' +          // Displ
+          FloatToStrF( FDesignHydrostatics.Data.Displacement,ffFixed,4,2),True );
+      if abs(FDesignHydrostatics.Data.WaterplaneCOG.Y)<0.01 then begin // Transverse metacentric height
         if Visibility.FShowHydrostMetacentricHeight then
           DrawPoint( Vector(FDesignHydrostatics.FData.CenterOfBuoyancy.X,
-                     0.0, FDesignHydrostatics.FData.KMtransverse), 'KM=' +
+                        0.0,FDesignHydrostatics.FData.KMtransverse),'m:' +      // KM
             FloatToStrF(FDesignHydrostatics.Data.KMtransverse +
-            FDesignHydrostatics.Data.ModelMin.Z, ffFixed, 7, 2), True);
-        // Longitudinal center of floatation
-        if Visibility.FShowHydrostLCF then
-          DrawPoint(FDesignHydrostatics.FData.WaterplaneCOG, 'LCF=' +
-            FloatToStrF(FDesignHydrostatics.Data.WaterplaneCOG.X,
-            ffFixed, 7, 2), False);
+            FDesignHydrostatics.Data.ModelMin.Z, ffFixed,4,2),True);
+        if Visibility.FShowHydrostLCF then // Longitudinal center of floatation
+          DrawPoint(FDesignHydrostatics.FData.WaterplaneCOG, 'S:' +             //LCF
+            FloatToStrF(FDesignHydrostatics.Data.WaterplaneCOG.X,ffFixed,4,2),False);
       end;
       // Weight center
       if Visibility.FShowHydrostDisplacement and
         (FDesignHydrostatics.Data.Weight_ > 0) then
-        DrawPoint(FDesignHydrostatics.FData.CenterOfGravity_, 'Weight=' +
-          FloatToStrF(FDesignHydrostatics.Data.Weight_, ffFixed, 7, 2), True);
+        DrawPoint(FDesignHydrostatics.FData.CenterOfGravity_,'G:'+              // Weight=
+          FloatToStrF(FDesignHydrostatics.Data.Weight_,ffFixed,4,2), True);
       // Lateral center
       if Visibility.FShowHydrostLateralArea then
-        DrawPoint(FDesignHydrostatics.FData.LateralCOG, Userstring(29) +
-          '='+FloatToStrF(FDesignHydrostatics.Data.LateralArea, ffFixed, 7, 2), True);
+        DrawPoint(FDesignHydrostatics.FData.LateralCOG,Userstring(29)+          // подводная ДП
+          ':'+FloatToStrF(FDesignHydrostatics.Data.LateralArea,ffFixed,4,2),True);
       if Visibility.FShowHydrostLateralArea then
-        DrawPoint(FDesignHydrostatics.FData.sdpCOG, Userstring(1436) +
-          '='+FloatToStrF(FDesignHydrostatics.Data.SDP, ffFixed, 7, 2), True);
+        DrawPoint(FDesignHydrostatics.FData.sdpCOG,Userstring(1436)+
+          ':'+FloatToStrF(FDesignHydrostatics.Data.SDP,ffFixed,4,2),True);  // парусность центр
       if (Viewport.ViewType = fvProfile) and
         (Visibility.FShowHydrostSectionalAreas) then begin // draw sectionalarea curve
         Curve:=TFreespline.Create(Surface);
         for I:=1 to length(FDesignHydrostatics.FData.SAC) do begin
           P.X:=FDesignHydrostatics.FData.SAC[I-1].X;
           P.Y:=0;
-          if (FDesignHydrostatics.FData.BeamWaterline
-            * FDesignHydrostatics.Draft) <> 0 then
-            P.Z:=2 * (FDesignHydrostatics.FData.ModelMax.Z -
-            FDesignHydrostatics.FData.ModelMin.Z) * FDesignHydrostatics.FData.SAC[I-1].Y
-            / (FDesignHydrostatics.FData.BeamWaterline * FDesignHydrostatics.Draft)
-          else
-          P.Z:=FDesignHydrostatics.FData.SAC[I-1].Y;
+          if (FDesignHydrostatics.FData.BeamWaterline*FDesignHydrostatics.Draft)<>0
+              then P.Z:=2*(FDesignHydrostatics.FData.ModelMax.Z
+                         - FDesignHydrostatics.FData.ModelMin.Z)
+                         * FDesignHydrostatics.FData.SAC[I-1].Y
+                        / (FDesignHydrostatics.FData.BeamWaterline
+                          * FDesignHydrostatics.Draft)
+              else P.Z:=FDesignHydrostatics.FData.SAC[I-1].Y;
           P.Z:=P.Z+FDesignHydrostatics.FData.ModelMin.Z;
-          Curve.Add(P);
+          Curve.Add( P );
         end;
         Curve.Color:=Preferences.HydrostaticsFontColor;
         Curve.PenWidth:=Preferences.FHydrostaticLineWidth;
@@ -1319,41 +1316,32 @@ begin
 end;
 
 procedure TFreeShip.RebuildAsync( Data: PtrInt );
-begin
-  if not IsRebuildAsyncDisabled then Surface.Rebuild;
-  Draw;
-end;
+    begin if not IsRebuildAsyncDisabled then Surface.Rebuild; Draw; end;
 
-procedure TFreeShip.RebuildModel;
-var PrevCursor: TCursor;
-begin                  //MessageDlg( 'ReBuild?',mtInformation,[mbYes,mbNo],0 );
-                  //Writeln( 'ReBuildModel? '+InttoStr( Ord( Precision )+1 ) );
+procedure TFreeShip.RebuildModel; var PrevCursor: TCursor;
+begin
   PrevCursor:=Screen.Cursor;
-  if Screen.Cursor <> crHourglass then Screen.Cursor:=crHourglass;
-//try
-    Surface.DesiredSubdivisionLevel:=Ord( Precision )+1;
-    Surface.Rebuild;
-    InvalidateIntersections;
-    Draw;
-//finally
-    if Screen.Cursor<>PrevCursor then Screen.Cursor:=PrevCursor;
-//end;
+  if Screen.Cursor<>crHourglass then Screen.Cursor:=crHourglass;
+  Surface.DesiredSubdivisionLevel:=Ord( Precision )+1;
+  Surface.Rebuild;
+  InvalidateIntersections;
+  Draw;
+  if Screen.Cursor<>PrevCursor then Screen.Cursor:=PrevCursor;
 end;
 
 procedure TFreeShip.RebuildModelIfRequired;
-begin if not Built then RebuildModel; end;
-
-// Detect Minimal File Version depneding on features used
-
+    begin if not Built then RebuildModel; end;
+//
+///*** Detect Minimal File Version depneding on features used
+//
 function TFreeShip.DetectMinFileVersion:TFreeFileVersion;
 var I: integer;
-begin result:=fv210;            // s картинкой -никак не меньше
-//if NumberOfDiagonals > 0 then result:=fv180;
-//if NumberOfMarkers > 0   then result:=fv191;
-//if (FResistanceDelftData.EndSpeed>0)
+begin result:=fv160;                           // с картинкой - никак не меньше
+  if NumberOfDiagonals > 0 then result:=fv180;
+  if NumberOfMarkers > 0   then result:=fv191; // не очень надо, но пусть будет
+//if (FResistanceDelftData.EndSpeed>0)  -- завсегда пропускаются
 //or (FResistanceKaperData.Draft>0) then result:=fv210;
-//ProjectSettings.FSavePreview:=true;  // fv210
-
+  if ProjectSettings.FSavePreview then Result:=fv210;
   if (NumberOfbackgroundImages>0)
   or (NumberOfFlowlines>0) then result:=fv250;
 
@@ -2104,7 +2092,7 @@ end;
 procedure TFreeShip.MouseUp(Viewport: TFreeViewport; Shift: TShiftState; X, Y: integer);
 begin
   if FCurrentlyMoving and FPointHasBeenMoved then begin
-     Edit.CreateUndoObject( rsPointMove,True );
+//   Edit.CreateUndoObject( rsPointMove,True );
      Built:=False;
      FileChanged:=True;
      Redraw;

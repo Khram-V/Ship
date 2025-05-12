@@ -10,14 +10,14 @@ object MainForm: TMainForm
   Constraints.MinHeight = 200
   Constraints.MinWidth = 300
   Menu = MainMenu1
+  Position = poDefault
+  ShowHint = True
+  LCLVersion = '3.8.0.0'
   OnActivate = FormActivate
   OnClose = MainFormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
-  Position = poDefault
-  ShowHint = True
-  LCLVersion = '3.8.0.0'
   object StatusBar: TPanel
     Left = 0
     Height = 27
@@ -34,8 +34,9 @@ object MainForm: TMainForm
     ParentBackground = False
     ParentColor = False
     ParentFont = False
-    TabOrder = 0
+    ParentShowHint = False
     ShowHint = True
+    TabOrder = 0
     object StatusPanel2: TPanel
       Left = 1
       Height = 25
@@ -175,9 +176,9 @@ object MainForm: TMainForm
     ParentBackground = False
     ParentColor = False
     ParentFont = False
-    TabOrder = 1
-    ParentShowHint = True
+    ParentShowHint = False
     ShowHint = True
+    TabOrder = 1
     object ToolBarEdit: TToolBar
       Left = 0
       Height = 24
@@ -328,10 +329,10 @@ object MainForm: TMainForm
         Constraints.MinWidth = 40
         MaxValue = 20
         MinValue = 3
-        OnChange = SpinEditFontSizeChange
         ParentFont = False
         TabOrder = 0
         Value = 8
+        OnChange = SpinEditFontSizeChange
       end
       object cbPrecision: TComboBox
         Tag = 16
@@ -428,7 +429,7 @@ object MainForm: TMainForm
         Width = 24
         BorderWidth = 3
         ButtonColorSize = 32
-        ButtonColor = clBtnface
+        ButtonColor = clBtnFace
         OnColorChanged = ColorButton_Click
         ParentFont = False
       end
@@ -599,16 +600,15 @@ object MainForm: TMainForm
         AutoSize = True
       end
       object HintBar: TStatusBar
-           Left = 30
-           Height = 24
-           Top = 0
-           Width = 800
-           AutoHint = True
-           SimplePanel = True
-           ParentShowHint = True
-           SimpleText = ' ...'
-           ShowHint = True
-           TabOrder = 6
+        Left = 30
+        Height = 24
+        Top = 0
+        Width = 800
+        AutoHint = True
+        Panels = <>
+        ParentShowHint = False
+        SimpleText = ' ...'
+        ShowHint = True
       end
     end
   end
@@ -740,8 +740,8 @@ object MainForm: TMainForm
       Category = 'Visibility'
       Caption = 'Уменьшение масштаба кривизны'
       Hint = 'Сближение точек контурных прорисовок.'
-      OnExecute = DecreaseCurvatureScaleExecute
       ShortCut = 120
+      OnExecute = DecreaseCurvatureScaleExecute
     end
     object LayerAutoGroup: TAction
       Category = 'Layer'
@@ -762,8 +762,8 @@ object MainForm: TMainForm
       Caption = 'Удалить выбранное'
       Hint = 'Удаление всех отмеченных объектов.'
       ImageIndex = 8
-      OnExecute = DeleteExecute
       ShortCut = 16472
+      OnExecute = DeleteExecute
     end
     object EdgeCollapse: TAction
       Category = 'Edge'
@@ -777,8 +777,8 @@ object MainForm: TMainForm
       Caption = 'Рассечение'
       Hint = 'Разрезка грани по новому ребру между двумя точками.'
       ImageIndex = 10
-      OnExecute = NewEdgeExecute
       ShortCut = 69
+      OnExecute = NewEdgeExecute
     end
     object EdgeCrease: TAction
       Category = 'Edge'
@@ -820,16 +820,16 @@ object MainForm: TMainForm
       Caption = 'Свойства графических слоёв'
       Hint = 'Интерактивное управление свойствами слоя.'
       ImageIndex = 24
-      OnExecute = LayerDialogExecute
       ShortCut = 16460
+      OnExecute = LayerDialogExecute
     end
     object NewModel: TAction
       Category = 'File'
       Caption = 'Новая модель...'
       Hint = 'Создать корпус по аналитической модели.'
       ImageIndex = 13
-      OnExecute = NewModelExecute
       ShortCut = 16462
+      OnExecute = NewModelExecute
     end
     object ShowStations: TAction
       Category = 'Visibility'
@@ -878,8 +878,8 @@ object MainForm: TMainForm
       Caption = 'Разделение поплам'
       Hint = 'Установка точки с разделением ребра на две части.'
       ImageIndex = 20
-      OnExecute = EdgeSplitExecute
       ShortCut = 83
+      OnExecute = EdgeSplitExecute
     end
     object EditProjectSettings: TAction
       Category = 'Project'
@@ -974,8 +974,8 @@ object MainForm: TMainForm
       Caption = 'Отмена'
       Hint = 'Отмена последних действий.'
       ImageIndex = 56
-      OnExecute = UndoExecute
       ShortCut = 16474
+      OnExecute = UndoExecute
     end
     object HydrostaticsDialog: TAction
       Category = 'Calculate'
@@ -1025,8 +1025,8 @@ object MainForm: TMainForm
       Category = 'Point'
       Caption = 'Добавить точку'
       Hint = 'Добавляется одна опрная точка.'
-      OnExecute = AddPointExecute
       ShortCut = 80
+      OnExecute = AddPointExecute
     end
     object DevelopLayers: TAction
       Category = 'Tools'
@@ -1086,16 +1086,16 @@ object MainForm: TMainForm
       Category = 'Visibility'
       Caption = 'Масштаб кривизны'
       Hint = 'Увеличить масштаб видимости кривизны поверхностей'
-      OnExecute = IncreaseCurvatureScaleExecute
       ShortCut = 121
+      OnExecute = IncreaseCurvatureScaleExecute
     end
     object FileSave: TAction
       Category = 'File'
       Caption = 'Сохранить'
       Hint = 'Сохранить модель как есть.'
       ImageIndex = 5
-      OnExecute = FileSaveExecute
       ShortCut = 16467
+      OnExecute = FileSaveExecute
     end
     object ShowControlCurves: TAction
       Category = 'Visibility'
@@ -1113,8 +1113,8 @@ object MainForm: TMainForm
     end
     object InsertPlane: TAction
       Category = 'Point'
-      Caption = 'Вставки на поверхности...'
-      Hint = 'Добавление опорных точек на пространственной поверхности.'
+      Caption = 'Точки в базовой плоскости'
+      Hint = 'Вставка точек на рёбрах в пересечение базовой плоскости.'
       ImageIndex = 42
       OnExecute = InsertPlaneExecute
     end
@@ -1210,8 +1210,8 @@ object MainForm: TMainForm
       Caption = 'Возврат'
       Hint = 'Возврат отменённых действий.'
       ImageIndex = 57
-      OnExecute = RedoExecute
       ShortCut = 16466
+      OnExecute = RedoExecute
     end
     object ClearUndo: TAction
       Category = 'Edit'
@@ -1228,7 +1228,6 @@ object MainForm: TMainForm
     object ImportPolyCad: TAction
       Category = 'Import'
       Caption = 'PolyCad'
-      Hint = ''
       ImageIndex = 53
       OnExecute = ImportPolyCadExecute
     end
@@ -1263,8 +1262,8 @@ object MainForm: TMainForm
       Caption = 'Выбрать всё сразу'
       Hint = 'Выбор для корректировки сразу всех графических объектов.'
       ImageIndex = 58
-      OnExecute = SelectAllExecute
       ShortCut = 16449
+      OnExecute = SelectAllExecute
     end
     object ExportSTL: TAction
       Category = 'Export'
@@ -1908,7 +1907,7 @@ object MainForm: TMainForm
         object Carlssonhulfile1: TMenuItem
           Action = ImportHullFile
         end
-        object Bodyplan1 : TMenuItem
+        object Bodyplan1: TMenuItem
           Action = ImportBodyplan
         end
         object ImportOff1: TMenuItem

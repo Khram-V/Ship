@@ -99,9 +99,6 @@
           </Other>
         </CompilerOptions>
       </Item2>
-      <SharedMatrixOptions Count="1">
-        <Item1 ID="988489124168" Type="IDEMacro" MacroName="LazVer" Value="3.2.0"/>
-      </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
@@ -628,7 +625,6 @@
         <ShowWarn Value="False"/>
         <ShowNotes Value="False"/>
         <ShowHints Value="False"/>
-        <ShowExecInfo Value="True"/>
       </Verbosity>
       <WriteFPCLogo Value="False"/>
       <ConfigFile>

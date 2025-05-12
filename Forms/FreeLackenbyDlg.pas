@@ -342,7 +342,6 @@ var
 
 begin
   Succeeded:=False;
-
   Points:=TFasterListTFreeSubdivisionControlPoint.Create;
   LockedPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
   for I:=1 to Layerbox.Count do begin

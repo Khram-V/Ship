@@ -102,47 +102,46 @@ begin
     ResultsDlg:=TFreeHydrostaticsResultsDialog.Create(self);
     ShowTranslatedValues(ResultsDlg);
 //  try                                     // Quietly test for inconsistencies
-      if not FFreeShip.ProjectSettings.DisableModelCheck
-        then FFreeShip.Edit.Model_Check(False);
+    if not FFreeShip.ProjectSettings.DisableModelCheck then FFreeShip.Edit.Model_Check(False);
       HydObject:=TFreeHydrostaticCalc.Create(FFreeShip);
       ResultsDlg.Grid.RowCount:=Round((EndDraft-StartDraft)/DraftStep)+3;
       Units:=FFreeship.ProjectSettings.ProjectUnits;
       ResultsDlg.Grid.Colcount:=18;
-      ResultsDlg.Grid.Cells[0,0]:='Draft';
+      ResultsDlg.Grid.Cells[0,0]:='T';             // 'Draft';
       ResultsDlg.Grid.Cells[0,1]:=LengthStr(Units);
-      ResultsDlg.Grid.Cells[1,0]:='Trim';
+      ResultsDlg.Grid.Cells[1,0]:='δd';            //'Trim';
       ResultsDlg.Grid.Cells[1,1]:=LengthStr(Units);
       ResultsDlg.Grid.Cells[2,0]:='Lwl';
       ResultsDlg.Grid.Cells[2,1]:=LengthStr(Units);
       ResultsDlg.Grid.Cells[3,0]:='Bwl';
       ResultsDlg.Grid.Cells[3,1]:=LengthStr(Units);
-      ResultsDlg.Grid.Cells[4,0]:='Volume';
+      ResultsDlg.Grid.Cells[4,0]:='V';             // 'Volume';
       ResultsDlg.Grid.Cells[4,1]:=VolStr(Units);
-      ResultsDlg.Grid.Cells[5,0]:='Displ.';
+      ResultsDlg.Grid.Cells[5,0]:='Δ';             // 'Displacements.';
       ResultsDlg.Grid.Cells[5,1]:=WeightStr(Units);
-      ResultsDlg.Grid.Cells[6,0]:='LCB';
+      ResultsDlg.Grid.Cells[6,0]:='Xc';            // 'LCB';
       ResultsDlg.Grid.Cells[6,1]:=LengthStr(Units);
-      ResultsDlg.Grid.Cells[7,0]:='VCB';
+      ResultsDlg.Grid.Cells[7,0]:='Zc';            // 'VCB';
       ResultsDlg.Grid.Cells[7,1]:=LengthStr(Units);
-      ResultsDlg.Grid.Cells[8,0]:='Cb';
+      ResultsDlg.Grid.Cells[8,0]:='δ';             // 'Cb';
       ResultsDlg.Grid.Cells[8,1]:='—';
-      ResultsDlg.Grid.Cells[9,0]:='Am';
+      ResultsDlg.Grid.Cells[9,0]:='Sм';            // 'Am';
       ResultsDlg.Grid.Cells[9,1]:=AreaStr(Units);
-      ResultsDlg.Grid.Cells[10,0]:='Cm';
+      ResultsDlg.Grid.Cells[10,0]:='β';            // 'Cm';
       ResultsDlg.Grid.Cells[10,1]:='—';
-      ResultsDlg.Grid.Cells[11,0]:='Aw';
+      ResultsDlg.Grid.Cells[11,0]:='S';            // 'Aw';
       ResultsDlg.Grid.Cells[11,1]:=AreaStr(Units);
-      ResultsDlg.Grid.Cells[12,0]:='Cw';
+      ResultsDlg.Grid.Cells[12,0]:='α';            // 'Cw';
       ResultsDlg.Grid.Cells[12,1]:='—';
-      ResultsDlg.Grid.Cells[13,0]:='LCF';
+      ResultsDlg.Grid.Cells[13,0]:='Xf';           // 'LCF';
       ResultsDlg.Grid.Cells[13,1]:=LengthStr(Units);
-      ResultsDlg.Grid.Cells[14,0]:='Cp';
+      ResultsDlg.Grid.Cells[14,0]:='φ';            // 'Cp';
       ResultsDlg.Grid.Cells[14,1]:='—';
-      ResultsDlg.Grid.Cells[15,0]:='S';
+      ResultsDlg.Grid.Cells[15,0]:='W';            // 'S';
       ResultsDlg.Grid.Cells[15,1]:=AreaStr(Units);
-      ResultsDlg.Grid.Cells[16,0]:='KMt';
+      ResultsDlg.Grid.Cells[16,0]:='Zm';           // 'KMt';
       ResultsDlg.Grid.Cells[16,1]:=LengthStr(Units);
-      ResultsDlg.Grid.Cells[17,0]:='KMl';
+      ResultsDlg.Grid.Cells[17,0]:='ZM';           // 'KMl';
       ResultsDlg.Grid.Cells[17,1]:=LengthStr(Units);
       for I:=0 to 16 do if I in [0,1,2,3,6,7,8,10,12,14]
         then ResultsDlg.Grid.ColWidths[I]:=47
@@ -150,11 +149,12 @@ begin
       HydObject.Clear;
       HydObject.HeelingAngle:=0.0;
       HydObject.Trim:=Trim;
-      HydObject.Draft:=0;
-      HydObject.Calculate;         // ..., если основная линия проходит по килю
-      Zmin:=HydObject.Data.ModelMin.Z;                          // =добавка(++)
+      HydObject.Draft:=0;                 //-Ship.ProjectSettings.ProjectDraft; //0;
+      HydObject.Calculate;                // ..., если основная линия проходит по килю
+      Zmin:=HydObject.Data.ModelMin.Z;    //+Ship.ProjectSettings.ProjectDraft; // =добавка(++)
+//    Zmin:=-Ship.ProjectSettings.ProjectDraft; // =добавка(++)
       I:=2;
-      while Value<=EndDraft do begin //+DraftStep) or (abs(Value-EndDraft)<1e-3) do begin
+      while Value<=EndDraft do begin      //+DraftStep) or (abs(Value-EndDraft)<1e-3) do begin
         HydObject.Clear;
         HydObject.HeelingAngle:=0.0;
         HydObject.Trim:=Trim;                              // Zmin:=HydObject.Data.ModelMin.Z+StartDraft;
@@ -174,18 +174,18 @@ begin
 //      if Cm<1e-3 then Cm:=1.0;
         begin //Cp:=Cb/Cm;
           ResultsDlg.Grid.RowCount:=I+1;
-          ResultsDlg.Grid.Cells[0,I]:=FloatToStrF(HydObject.Draft+Zmin,        ffFixed,7,3);
-          ResultsDlg.Grid.Cells[1,I]:=FloatToStrF(HydObject.Trim,                ffFixed,7,3);
-          ResultsDlg.Grid.Cells[2,I]:=FloatToStrF(HydObject.Data.LengthWaterline,ffFixed,7,3);
-          ResultsDlg.Grid.Cells[3,I]:=FloatToStrF(HydObject.Data.BeamWaterline,  ffFixed,7,3);
+          ResultsDlg.Grid.Cells[0,I]:=FloatToStrF(HydObject.Draft+Zmin,          ffFixed,7,2);
+          ResultsDlg.Grid.Cells[1,I]:=FloatToStrF(HydObject.Trim,                ffFixed,5,2);
+          ResultsDlg.Grid.Cells[2,I]:=FloatToStrF(HydObject.Data.LengthWaterline,ffFixed,7,2);
+          ResultsDlg.Grid.Cells[3,I]:=FloatToStrF(HydObject.Data.BeamWaterline,  ffFixed,7,2);
           ResultsDlg.Grid.Cells[4,I]:=FloatToStrF(HydObject.Data.Volume,         ffFixed,8,NumberOfDecimals(HydObject.Data.Volume));
           ResultsDlg.Grid.Cells[5,I]:=FloatToStrF(HydObject.Data.Displacement,   ffFixed,8,NumberOfDecimals(HydObject.Data.Displacement));
-          ResultsDlg.Grid.Cells[6,I]:=FloatToStrF(HydObject.Data.CenterOfBuoyancy.X,ffFixed,7,3);
-          ResultsDlg.Grid.Cells[7,I]:=FloatToStrF(HydObject.Data.CenterOfBuoyancy.Z+Zmin,ffFixed,7,3);
+          ResultsDlg.Grid.Cells[6,I]:=FloatToStrF(HydObject.Data.CenterOfBuoyancy.X,ffFixed,7,2);
+          ResultsDlg.Grid.Cells[7,I]:=FloatToStrF(HydObject.Data.CenterOfBuoyancy.Z+Zmin,ffFixed,7,2);
           ResultsDlg.Grid.Cells[8,I]:=FloatToStrF(Cb,                            ffFixed,7,4);
           ResultsDlg.Grid.Cells[9,I]:=FloatToStrF(HydObject.Data.MidshipArea,    ffFixed,7,3);
           ResultsDlg.Grid.Cells[10,I]:=FloatToStrF(Cm,                           ffFixed,7,4);
-          ResultsDlg.Grid.Cells[11,I]:=FloatToStrF(HydObject.Data.Waterplanearea, ffFixed,7,NumberOfDecimals(HydObject.Data.Waterplanearea));
+          ResultsDlg.Grid.Cells[11,I]:=FloatToStrF(HydObject.Data.Waterplanearea,ffFixed,7,NumberOfDecimals(HydObject.Data.Waterplanearea));
           ResultsDlg.Grid.Cells[12,I]:=FloatToStrF(HydObject.Data.WaterplaneCoeff,ffFixed,7,4);
           ResultsDlg.Grid.Cells[13,I]:=FloatToStrF(HydObject.Data.WaterplaneCOG.X,ffFixed,7,3);
           ResultsDlg.Grid.Cells[14,I]:=FloatToStrF(Cp,                           ffFixed,7,4);
@@ -198,22 +198,24 @@ begin
 //      if (feMakingWater in HydObject.Errors) then break; // stop if the vessel is making water
       end;
       HydObject.AddHeader( Strings ); Strings.add(''); Strings.add('');
-        Strings.Add('Lwl   : '+Userstring(17));
-        Strings.Add('Bwl   : '+Userstring(18));
-        Strings.Add('Volume: '+Userstring(3));
-        Strings.Add('Displacement: '+Userstring(4));
-        Strings.Add('LCB   : '+Userstring(11)+', '+UserString(55));
-        Strings.Add('VCB   : '+Userstring(12)+', '+UserString(56));
-        Strings.Add('Cb    : '+Userstring(7));
-        Strings.Add('Am    : '+Userstring(14));
-        Strings.Add('Cm    : '+Userstring(15));
-        Strings.Add('Aw    : '+Userstring(19));
-        Strings.Add('Cw    : '+Userstring(20));
-        Strings.Add('LCF   : '+Userstring(21));
-        Strings.Add('Cp    : '+Userstring(8));
-        Strings.Add('S     : '+Userstring(10));
-        Strings.Add('KMt   : '+Userstring(26));
-        Strings.Add('KMl   : '+Userstring(27));
+        Strings.Add('T   : '+Userstring(48));                         // Draft
+        Strings.Add('δd  : '+Userstring(1674));                       // Trim
+        Strings.Add('Lwl : '+Userstring(17));
+        Strings.Add('Bwl : '+Userstring(18));
+        Strings.Add('V   : '+Userstring(3));                          // Volume
+        Strings.Add('Δ   : '+Userstring(4));                    // Displacement
+        Strings.Add('Xc  : '+Userstring(11)+' '+UserString(55));      // LCB
+        Strings.Add('Zc  : '+Userstring(12)+' '+UserString(56));      // VCB
+        Strings.Add('δ   : '+Userstring(7));                          // Cb
+        Strings.Add('Sм  : '+Userstring(14));                         // Am
+        Strings.Add('β   : '+Userstring(15));                         // Cm
+        Strings.Add('S   : '+Userstring(19));                         // Aw
+        Strings.Add('α   : '+Userstring(20));                         // Cw
+        Strings.Add('Xf  : '+Userstring(21));                         // LCF
+        Strings.Add('φ   : '+Userstring(8));                          // Cp
+        Strings.Add('W   : '+Userstring(10));                         // S
+        Strings.Add('Zm  : '+Userstring(26));                         // KMt
+        Strings.Add('ZM  : '+Userstring(27));                         // KMl
       Strings.Add( '' );
       HydObject.AddFooter( Strings );            // fhMultipleCalculations );
       ResultsDlg.Header.Lines.AddStrings( Strings );

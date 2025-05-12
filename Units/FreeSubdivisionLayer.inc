@@ -977,8 +977,7 @@ begin
 end;
 
 procedure TFreeSubdivisionLayer.SaveToStream(Strings: TStringList);
-var
-  Str: AnsiString;
+var Str: AnsiString;
 begin
   Strings.Add(FDescription);
   Str:=IntToStr(FLayerID)+#32+IntToStr(FColor)+#32 +
@@ -999,17 +998,17 @@ var
   ToDoList: TFasterListTFreeSubdivisionControlFace;
   DoneList: TFasterList<TFasterListTFreeSubdivisionControlFace>;
   Current: TFasterListTFreeSubdivisionControlFace;
-  I: integer;
+  I: Integer;
   Face, Face1: TFreeSubdivisionControlFace;
   Patch, Copy: TFreeDevelopedPatch;
   Str: AnsiString;
 
-  procedure FindAttachedFaces(List: TFasterListTFreeSubdivisionControlFace;
-    Face: TFreeSubdivisionControlFace);
+  procedure FindAttachedFaces
+  ( List: TFasterListTFreeSubdivisionControlFace;
+    Face: TFreeSubdivisionControlFace );
   var
-    I, J: integer;
-    Index: integer;
-    P1, P2: TFreeSubdivisionPoint;
+    I,J,Index: Integer;
+    P1,P2: TFreeSubdivisionPoint;
     Edge: TFreeSubdivisionEdge;
   begin
     P1:=Face.Point[Face.NumberOfPoints-1];
@@ -1018,59 +1017,53 @@ var
       Edge:=Face.Surface.EdgeExists(P1, P2);
       if Edge <> nil then begin
         for J:=1 to Edge.NumberOfFaces do
-          if Edge.Face[J-1] <> Face then begin
-            Face1:=Edge.Face[J-1] as TFreeSubdivisionControlFace;
-            Index:=ToDoList.IndexOf(Face1);
-            if Index <> -1 then begin
-              List.Add(Face1);
-              ToDoList.Delete(Index);
-              FindAttachedFaces(List, Face1);
-            end;
-          end;
-      end;
-      P1:=P2;
-    end;
-  end;
-
-begin
-
-  ToDoList:=TFasterListTFreeSubdivisionControlFace.Create;
-  DoneList:=TFasterList<TFasterListTFreeSubdivisionControlFace>.Create;
-//  try
-    ToDoList.Capacity:=FPatches.Count;
-    ToDoList.AddList( FPatches );
-    if ToDoList.Count > 0 then begin
-      while ToDoList.Count > 0 do begin
-        Face:=ToDoList[ToDoList.Count-1];
-        ToDoList.Delete(ToDoList.Count-1);
-        Current:=TFasterListTFreeSubdivisionControlFace.Create;
-        Current.Add(Face);
-        FindAttachedFaces(Current, Face);
-        DoneList.Add(Current);
-      end;                                 // Unroll each separate surface area
-      for I:=1 to DoneList.Count do begin
-        Current:=DoneList[I-1];
-        if Current.Count > 0 then begin
-          Patch:=TFreeDevelopedPatch.Create(self);
-          Patch.Unroll(Current);
-          if DoneList.Count=1 then Str:=Name
-                              else Str:=Name+' part '+IntToStr(I);
-          Patch.Name:=Str;
-          Destination.Add(Patch);
-          if (not Patch.FMirror) and (self.Symmetric) then begin // Create the starboard half
-            Patch.Name:=Str+' (SB)';
-            Copy:=TFreeDevelopedPatch.Create(self);
-            Copy.Assign(Patch, True);
-            Copy.Name:=Str+' (P)';
-            Destination.Add(Copy);
+        if Edge.Face[J-1] <> Face then begin
+          Face1:=Edge.Face[J-1] as TFreeSubdivisionControlFace;
+          Index:=ToDoList.IndexOf(Face1);
+          if Index <> -1 then begin
+            List.Add(Face1);
+            ToDoList.Delete(Index);
+            FindAttachedFaces(List, Face1);
           end;
         end;
-        FreeAndNil(Current);
-      end;
+      end; P1:=P2;
     end;
-//  finally
-    FreeAndNil(ToDoList);
-    FreeAndNil(DoneList);
-//  end;
+  end;
+begin
+  ToDoList:=TFasterListTFreeSubdivisionControlFace.Create;
+  DoneList:=TFasterList<TFasterListTFreeSubdivisionControlFace>.Create;
+  ToDoList.Capacity:=FPatches.Count;
+  ToDoList.AddList( FPatches );
+  if ToDoList.Count>0 then begin
+    while ToDoList.Count>0 do begin
+      Face:=ToDoList[ToDoList.Count-1];
+      ToDoList.Delete( ToDoList.Count-1 );
+      Current:=TFasterListTFreeSubdivisionControlFace.Create;
+      Current.Add( Face );
+      FindAttachedFaces( Current,Face );
+      DoneList.Add( Current );
+    end;                                 // Unroll each separate surface area
+    for I:=1 to DoneList.Count do begin
+      Current:=DoneList[I-1];
+      if Current.Count > 0 then begin
+        Patch:=TFreeDevelopedPatch.Create(self);
+        Patch.Unroll(Current);
+        if DoneList.Count=1 then Str:=Name
+                            else Str:=Name+'['+IntToStr(I)+']';  // ' part '
+        Patch.Name:=Str;
+        Destination.Add(Patch);
+        if (not Patch.FMirror) and (self.Symmetric) then begin // Create the starboard half
+          Patch.Name:='пб '+Str;                               // (SB)
+          Copy:=TFreeDevelopedPatch.Create(self);
+          Copy.Assign(Patch, True);
+          Copy.Name:='лб '+Str;                                // (P)
+          Destination.Add( Copy );
+        end;
+      end;
+      FreeAndNil(Current);
+    end;
+  end;
+  FreeAndNil(ToDoList);
+  FreeAndNil(DoneList);
 end;
 

@@ -46,7 +46,7 @@ begin // result:='° ';
 }
 function LenMMStr(Units: TFreeUnitType): AnsiString;
 begin if Units=fuImperial then Result:='in '
-                          else Result:='mm ';
+                          else Result:='мм ';
 end;
 // Converts a volume to displacement
 function VolumeToDisplacement

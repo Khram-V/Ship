@@ -101,19 +101,17 @@ begin                                                                           
   Panel20.Color:=FFreeship.Preferences.DiagonalColor;                           //   19    20   318 'Diagonals'
   Panel25.Color:=FFreeship.Preferences.HydrostaticsFontColor;                   //   24    25   346 'Hydrostatics font color'
   Panel26.Color:=FFreeship.Preferences.ZebraStripeColor;                        //   25    26   374 'Zebra stripes color'
-  { object ColorDialog: TColorDialog
-      Color = clBlack
-      CustomColors.Strings = (
-        'ColorA=000000'      'ColorB=000080'      'ColorC=008000'
-        'ColorD=008080'      'ColorE=800000'      'ColorF=800080'
-        'ColorG=808000'      'ColorH=808080'      'ColorI=C0C0C0'
-        'ColorJ=0000FF'      'ColorK=00FF00'      'ColorL=00FFFF'
-        'ColorM=FF0000'      'ColorN=FF00FF'      'ColorO=FFFF00'
-        'ColorP=FFFFFF'      'ColorQ=C0DCC0'      'ColorR=C08000' <-F0CAA6'
-        'ColorS=F0FBFF'      'ColorT=A4A0A0'
-      ) Left = 240
-    end
-  }
+{ object ColorDialog: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000' 'ColorB=000080' 'ColorC=008000' 'ColorD=008080'
+      'ColorE=800000' 'ColorF=800080' 'ColorG=808000' 'ColorH=808080'
+      'ColorI=C0C0C0' 'ColorJ=0000FF' 'ColorK=00FF00' 'ColorL=00FFFF'
+      'ColorM=FF0000' 'ColorN=FF00FF' 'ColorO=FFFF00' 'ColorP=FFFFFF'
+      'ColorQ=C0DCC0' 'ColorR=C08000' 'ColorS=F0FBFF' 'ColorT=A4A0A0' <-F0CAA6'
+    ) Left = 240
+  end
+}
   SpinEdit1.Value:=FFreeship.Preferences.PointSize;
   seFontSize.Value:=FFreeship.Preferences.FontSize;
   if FFreeship.Preferences.MaxUndoMemory<1
@@ -209,7 +207,7 @@ end;
 
 
 procedure TFreePreferencesDialog.SpinEdit1Change(Sender: TObject);
-begin FConfigChanged:=True; end;
+    begin FConfigChanged:=True; end;
 procedure TFreePreferencesDialog.seSubmergedSurfaceOpacityChange(Sender: TObject);
     begin FConfigChanged:=True;
       FFreeship.Preferences.UnderWaterColorAlpha:=(seSubmergedSurfaceOpacity.Value * 255) div 100;
@@ -249,28 +247,28 @@ begin SelectDirectoryDialog1.FileName:=EditExportDir.Text;
       EditExportDir.Text:=SelectDirectoryDialog1.FileName;
 end;
 procedure TFreePreferencesDialog.ComboBoxEncodingFillItems; // для *.fbm фалов
-begin                                                       // и совместимость
-  with ComboBoxEncoding.Items do begin                      // к старым версиям
+begin                                                      // или совместимость
+  with ComboBoxEncoding.Items do begin                    // к старым версиям
     AddObject('UTF-8 (Unicode Transformation Format, 8-bit) — стандарт кодирования Unicode(65001)',TObject(string('utf8')));
+    AddObject('CP1251 ANSI Cyrillic(Windows)',TObject(string('cp1251')));
+    AddObject('CP1252 ANSI Latin; Western European(Windows)',TObject(string('cp1252')));
+    AddObject('CP1255 Hebrew', TObject(string('cp1255')));
+    AddObject('CP1258 Vietnam',TObject(string('cp1258')));
+    AddObject('CP866 DOS and Windows console Cyrillic',TObject(string('cp866')));
+    AddObject('CP950 ANSI/OEM Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
 (*  AddObject('ISO_8859_1-Central Europe',TObject(string('iso88591')));
     AddObject('ISO_8859_15-Western European languages',TObject(string('iso885915')));
     AddObject('ISO_8859_2-Eastern Europe', TObject(string('iso88592')));
     AddObject('CP1250- Central Europe', TObject(string('cp1250')));
-*)  AddObject('CP1251- ANSI Cyrillic(Windows)',TObject(string('cp1251')));
-    AddObject('CP1252- ANSI Latin; Western European(Windows)', TObject(string('cp1252')));
-    AddObject( 'CP950- ANSI/OEM Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
-(*  AddObject('CP1253- Greek', TObject(string('cp1253')));
-    AddObject('CP1254- Turkish', TObject(string('cp1254')));
-    AddObject('CP1255- Hebrew', TObject(string('cp1255')));
+    AddObject('CP1253- Greek',  TObject(string('cp1253')));
+    AddObject('CP1254- Turkish',TObject(string('cp1254')));
     AddObject('CP1256- Arabic', TObject(string('cp1256')));
     AddObject('CP1257- Baltic', TObject(string('cp1257')));
-    AddObject('CP1258- Vietnam', TObject(string('cp1258')));
-    AddObject( 'CP437- DOS Central Europe', TObject(string('cp437')));
-    AddObject( 'CP850- DOS Western Europe', TObject(string('cp850')));
-    AddObject( 'CP852- DOS Central Europe', TObject(string('cp852')));
-*)  AddObject( 'CP866- DOS and Windows console Cyrillic', TObject(string('cp866')));
-(*  AddObject( 'CP874- Thai', TObject(string('cp874')));
-    AddObject(  'KOI8- Russian Cyrillic', TObject(string('koi8')));
+    AddObject( 'CP437- DOS Central Europe',TObject(string('cp437')));
+    AddObject( 'CP850- DOS Western Europe',TObject(string('cp850')));
+    AddObject( 'CP852- DOS Central Europe',TObject(string('cp852')));
+    AddObject( 'CP874- Thai',TObject(string('cp874')));
+    AddObject(  'KOI8- Russian Cyrillic',TObject(string('koi8')));
 *)end;
 end;
 

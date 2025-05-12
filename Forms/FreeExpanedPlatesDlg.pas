@@ -12,74 +12,42 @@ interface uses
   FreeTypes, FreeShipUnit,
   FreeGeometry, FreeStringUtils, FreeLanguageSupport;
 type
-  TFreeExpanedplatesDialog = class(TForm)
-    CheckBoxMirror: TCheckBox;
-    CloseDialog: TAction;
-    FloatSpinEdit1,FloatSpinEdit2,FloatSpinEdit3: TFloatSpinEdit;
-    Label1,Label3,Label5,Label7,Label8,Label10,Label11,Label15,Label17: TLabel;
-    _Label2,_Label4,_Label6,_Label9,_Label12,_Label13,_Label14,_Label16,_Label18: TLabel;
-    Panel1,Panel2,Panel3,Panel4: TPanel;
-    SpinEditFontSize: TSpinEdit;
+  TFreeExpanedplatesDialog = class( TForm )
     ToolBar1: TToolBar;
-    ToolButton20: TToolButton;
-    ActionList1: TActionList;
-    RotateCCW90: TAction;    MenuImages: TImageList;
-    RotateCCW5: TAction;     ToolButton1: TToolButton;
-    RotateCW5: TAction;      ToolButton2: TToolButton;
-    RotateCW90: TAction;     ToolButton3: TToolButton;
-    ZoomExtents: TAction;   _ToolButton4,ToolButton5: TToolButton;
-    SaveBitmap: TAction;    _ToolButton6: TToolButton;
-    ToolButton7: TToolButton;
-    ToolButton8: TToolButton;
-    ToolButton9: TToolButton;
-    ZoomIn, ZoomOut: TAction;
-    RotateCCW1,RotateCW1: TAction;
-    ToolButton10: TToolButton;
-    ToolButton11: TToolButton;
-    ToolButton12: TToolButton;
+    MenuImages: TImageList;
     ListBox: TCheckListBox;
-    ExportDXF: TAction;
-    ToolButton13: TToolButton;
     Viewport: TFreeViewport;
-    _ToolButton14: TToolButton;
-    ShowStations: TAction;
-    ToolButton15: TToolButton;
-    ShowButtocks: TAction;
-    ToolButton16: TToolButton;
-    ShowWaterlines: TAction;
-    ToolButton17: TToolButton;
-    ShowInteriorEdges: TAction;
-    ToolButton18: TToolButton;
-    ShowFillColor: TAction;
-    ToolButton19: TToolButton;
-    _ToolButton21: TToolButton;
-    ToolButton22: TToolButton;
-    ShowErrorEdges: TAction;
-    ToolButton23: TToolButton;
-    ShowDiagonals: TAction;
-    ToolButton24: TToolButton;
-    Print: TAction;
+    ActionList1: TActionList;
+    CheckBoxMirror: TCheckBox;
+    SpinEditFontSize: TSpinEdit;
+    FloatSpinEdit1,FloatSpinEdit2,FloatSpinEdit3: TFloatSpinEdit;
+    Label1,Label3,_Label4,Label5,Label7,Label8,Label10,Label11,Label15,Label17,
+    _Label2,_Label6,_Label9,_Label12,_Label13,_Label14,_Label16,_Label18:TLabel;
+    Panel1,Panel2,Panel3,Panel4,PaneLayer:                              TPanel;
+    ZoomIn,ZoomOut,RotateCCW1,RotateCW1,RotateCCW90,RotateCCW5,RotateCW5,
+    RotateCW90,ZoomExtents,SaveBitmap,ExportDXF,ShowStations,ShowButtocks,
+    ShowWaterlines,ShowFillColor,ShowInteriorEdges,ShowErrorEdges,
+    ShowDiagonals,ShowDimensions,ShowPartName,ShowSubmergedArea,Print,
+    ExportTextFile,CloseDialog:                                        TAction;
+    ToolButton1,ToolButton2,ToolButton3,ToolButton5,ToolButton7,ToolButton4,
+    _ToolButton4,ToolButton6,_ToolButton6,ToolButton8,ToolButton9,ToolButton10,
+    ToolButton11,ToolButton12,ToolButton13,_ToolButton14,ToolButton15,
+    ToolButton16,ToolButton17,ToolButton18,ToolButton19,ToolButton20,
+    _ToolButton21,ToolButton22,ToolButton23,ToolButton24,ToolButton25,
+    ToolButton26,ToolButton27:                                     TToolButton;
     PrintDialog: TPrintDialog;
-    ToolButton25: TToolButton;
-    ShowDimensions: TAction;
-    ToolButton26: TToolButton;
-    ShowPartName: TAction;
-    ToolButton27: TToolButton;
-    ShowSubmergedArea: TAction;
-    ToolButton4: TToolButton;
-    ExportTextFile: TAction;
-    ToolButton6: TToolButton;
     procedure CloseDialogExecute(Sender: TObject);
     procedure FloatSpinEdit1Change(Sender: TObject);
     procedure FloatSpinEdit2Change(Sender: TObject);
     procedure FloatSpinEdit3Change(Sender: TObject);
+    procedure ListBoxClick(Sender: TObject);
     procedure ListBoxClickCheck(Sender: TObject);
     procedure SpinEditFontSizeChange(Sender: TObject);
     procedure ViewportRequestExtents(Sender: TObject; var Min, Max: T3DVector);
     procedure ViewportRedraw(Sender: TObject);
-    procedure ViewportMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
-    procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
-    procedure ViewportMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+    procedure ViewportMouseMove(Sender: TObject; Shift: TShiftState; X,Y: integer);
+    procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: integer);
+    procedure ViewportMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: integer);
     procedure RotateCCW90Execute(Sender: TObject);
     procedure RotateCCW5Execute(Sender: TObject);
     procedure RotateCW5Execute(Sender: TObject);
@@ -143,23 +111,23 @@ begin
   Result := Tmp;
 end;
 function TFreeExpanedplatesDialog.FGetActivePatch: TFreeDevelopedPatch;
-begin Result := nil;
+begin Result:=nil;
   if ListBox.ItemIndex<>-1 then
-    Result := Listbox.Items.Objects[ListBox.ItemIndex] as TFreeDevelopedPatch;
+     Result:=Listbox.Items.Objects[ListBox.ItemIndex] as TFreeDevelopedPatch;
 end;
-procedure TFreeExpanedplatesDialog.FSetActivePatch(Val: TFreeDevelopedPatch);
+procedure TFreeExpanedplatesDialog.FSetActivePatch( Val: TFreeDevelopedPatch );
 var Current: TFreeDevelopedPatch; Index: integer;
 begin
-  Current := ActivePatch;
-  if Val <> Current then begin
-    if Val = nil then Index := -1
-                 else Index := ListBox.Items.IndexOfObject(Val);
-    ListBox.ItemIndex := index;
+  Current:=ActivePatch;
+  if Val<>Current then begin
+    if Val=nil then Index:=-1
+               else Index:=ListBox.Items.IndexOfObject(Val);
+    ListBox.ItemIndex:=index;
   end;
-  Val := ActivePatch;
-  if Val <> nil then begin
-    Index := FPlates.IndexOf(Val);
-    if Index <> -1 then begin       // Put it at the end of the list to ensure
+  Val:=ActivePatch;
+  if Val<>nil then begin
+    Index:=FPlates.IndexOf(Val);
+    if Index<>-1 then begin         // Put it at the end of the list to ensure
       FPlates.Delete(Index);        // that it is always drawn on top
       FPlates.Add(Val);
     end;
@@ -201,41 +169,34 @@ var I,Index: integer; Patch: TFreeDevelopedPatch;
 begin
   ListBox.Items.BeginUpdate;
   ListBox.Clear;
-  for I := 1 to FPlates.Count do begin Patch:=FPlates[I-1];
-    Index := ListBox.Items.AddObject(Patch.Name, Patch);
-    ListBox.Checked[index] := Patch.Visible;
+  for I:=1 to FPlates.Count do begin Patch:=FPlates[I-1];
+    Index:=ListBox.Items.AddObject(Patch.Name, Patch);
+    ListBox.Checked[index]:=Patch.Visible;
   end;
   Listbox.Items.EndUpdate;
 end;
 
 procedure TFreeExpanedplatesDialog.ViewportRequestExtents(Sender: TObject; var Min, Max: T3DVector);
-var FMin, FMax: T3DVector; I, N: integer; Patch: TFreeDevelopedPatch;
+var FMin,FMax: T3DVector; I,N: integer; Patch: TFreeDevelopedPatch;
 begin
-  if FPlates <> nil then begin N := 1;
-    for I := 1 to FPlates.Count do begin Patch := FPlates[I - 1];
+  if FPlates<>nil then begin N:=1;
+    for I:=1 to FPlates.Count do begin Patch := FPlates[I-1];
       if Patch.Visible then begin Patch.Extents(FMin,FMax);
-        if N = 1 then begin                  // this is the first visible patch
-          Min := FMin;
-          Max := FMax;
-        end;
-        MinMax(FMin, Min, Max);
-        MinMax(FMax, Min, Max);
-        Inc(N);
+        if N=1 then begin Min:=FMin; Max:=FMax; end;
+        MinMax( FMin,Min,Max );             // this is the first visible patch
+        MinMax( FMax,Min,Max ); Inc( N );
       end;
     end;
   end;
 end;
 function TFreeExpanedplatesDialog.Execute(FreeShip: TFreeShip; Plates: TFasterListTFreeDevelopedPatch): boolean;
-var I:Integer;
-  Patch: TFreeDevelopedPatch;
-  Min, Max, MinT, MaxT: T3DVector;
-  P2D: T2DCoordinate;
-  Clearance,Tmp: TFloatType;
+var I:Integer; Clearance,Tmp: TFloatType;
+  Patch: TFreeDevelopedPatch; Min,Max,MinT,MaxT: T3DVector; P2D: T2DCoordinate;
 begin
   InitViewPort;
   FFreeship := FreeShip;
   FPlates := Plates;
-  SpinEditFontSizeChange(SpinEditFontSize);
+  SpinEditFontSizeChange( SpinEditFontSize );
   ToolBar1.ButtonHeight:= MenuImages.Height + 4;
   ToolBar1.ButtonWidth := MenuImages.Width  + 4;
   FUpdateListBox;
@@ -248,11 +209,11 @@ begin
   ShowFillColor.Checked := True;
   ShowErrorEdges.Checked := False;
   ShowSubmergedArea.Enabled := ShowFillColor.Checked;
-  Print.Enabled := Printer <> nil;
-  _Label13.Caption := LengthStr(FFreeship.ProjectSettings.ProjectUnits);
-  _Label14.Caption := _Label13.Caption;
+  Print.Enabled:=Printer <> nil;
+  _Label13.Caption:='['+LengthStr(FFreeship.ProjectSettings.ProjectUnits)+']';
+  _Label14.Caption:=_Label13.Caption;
   for I:=1 to FPlates.Count do begin // Calculate the initial position fo each surface
-    Patch := Plates[I-1];
+    Patch:=Plates[I-1];
     Patch.Extents(Min,Max);
     Clearance := 0.025 * Abs(Min-Max);
     if I = 1 then begin
@@ -282,12 +243,12 @@ begin
   FYGridSpacing := FXGridSpacing;
   FloatSpinEdit2.Value := FXGridSpacing;
   FloatSpinEdit3.Value := FYGridSpacing;
-  //SpinEditFontSizeChange(nil); //refresh font sizes
+  SpinEditFontSizeChange(nil); //refresh font sizes
   Viewport.ZoomExtents;
   if Plates.Count = 0 then ActivePatch := nil
                       else ListBox.ItemIndex := 0;
   ActivePatch := ActivePatch;
-  //ShowTranslatedValues(Self);
+  ShowTranslatedValues(Self);
   ShowModal;
   Result := ModalResult = mrOk;
 end;
@@ -308,10 +269,9 @@ begin
     Viewport.FontSize:=FFontSize;
     if ShowDimensions.Checked then begin Suppress := False;  // Draw grid lines
       Space := 0.025 * Abs(Viewport.Min3D-Viewport.Max3D);
-      if FXGridSpacing <> 0 then                    // Calculate and draw XGrid
-        N := round((2*Space+Viewport.Max3D.X-Viewport.Min3D.X)/FXGridSpacing)
-      else N := 10000;
-      if N < 500 then begin
+      if FXGridSpacing=0 then N:=10000              // Calculate and draw XGrid
+       else N:=round((2*Space+Viewport.Max3D.X-Viewport.Min3D.X)/FXGridSpacing);
+      if N<500 then begin
         Viewport.PenColor := RGB(225, 225, 225);
         Viewport.Penwidth := 1;
         Viewport.PenStyle := psSolid;
@@ -326,11 +286,10 @@ begin
             Pt2 := Viewport.Project(P);
             Viewport.LineTo(Pt2.X, Pt2.Y);
             Str := ConvertDimension(X, FFreeship.ProjectSettings.ProjectUnits);
-            Viewport.TextOut(Pt1.X - Viewport.TextWidth(Str) div 2, Pt1.Y, Str);
-            Viewport.TextOut(Pt2.X - Viewport.TextWidth(Str) div
-              2, Pt2.Y - Viewport.TextHeight(Str), Str);
+            Viewport.TextOut(Pt1.X-Viewport.TextWidth(Str) div 2, Pt1.Y, Str);
+            Viewport.TextOut(Pt2.X-Viewport.TextWidth(Str) div 2, Pt2.Y-Viewport.TextHeight(Str),Str);
           end;
-          X := X + FXGridSpacing;
+          X:=X+FXGridSpacing;
         end;
       end else Suppress := True;                    // Calculate and draw YGrid
       if FYGridSpacing <> 0 then
@@ -351,9 +310,8 @@ begin
             Pt2 := Viewport.Project(P);
             Viewport.LineTo(Pt2.X, Pt2.Y);
             Str := ConvertDimension(Y, FFreeship.ProjectSettings.ProjectUnits);
-            Viewport.TextOut(Pt1.X, Pt1.Y - Viewport.TextHeight(Str) div 2, Str);
-            Viewport.TextOut(Pt2.X - Viewport.TextWidth(Str) div
-              2, Pt2.Y - Viewport.TextHeight(Str) div 2, Str);
+            Viewport.TextOut(Pt1.X,Pt1.Y-Viewport.TextHeight(Str) div 2,Str);
+            Viewport.TextOut(Pt2.X-Viewport.TextWidth(Str) div 2,Pt2.Y-Viewport.TextHeight(Str) div 2,Str);
           end;
           Y := Y + FYGridSpacing;
         end;
@@ -363,27 +321,28 @@ begin
     for I := 1 to FPlates.Count do begin
       Patch := FPlates[I - 1];
       if Patch.Visible then begin
-        Patch.ShowDimensions := (ShowDimensions.Checked) and (not Suppress);
-        Patch.ShowBoundingBox := Patch = ActivePatch;
-        Patch.ShowStations := ShowStations.Checked;
-        Patch.ShowButtocks := ShowButtocks.Checked;
-        Patch.ShowWaterlines := ShowWaterlines.Checked;
-        Patch.ShowDiagonals := ShowDiagonals.Checked;
-        Patch.ShowInteriorEdges := ShowInteriorEdges.Checked;
-        Patch.ShowSolid := ShowFillColor.Checked;
-        Patch.ShowErrorEdges := ShowErrorEdges.Checked;
+        Patch.ShowDimensions   := (ShowDimensions.Checked) and (not Suppress);
+        Patch.ShowBoundingBox  := Patch = ActivePatch;
+        Patch.ShowStations     := ShowStations.Checked;
+        Patch.ShowButtocks     := ShowButtocks.Checked;
+        Patch.ShowWaterlines   := ShowWaterlines.Checked;
+        Patch.ShowDiagonals    := ShowDiagonals.Checked;
+        Patch.ShowInteriorEdges:= ShowInteriorEdges.Checked;
+        Patch.ShowSolid        := ShowFillColor.Checked;
+        Patch.ShowErrorEdges   := ShowErrorEdges.Checked;
         Patch.XGrid := FXGridSpacing;
         Patch.YGrid := FYGridSpacing;
         Patch.Units := FFreeship.ProjectSettings.ProjectUnits;
         Patch.ShowPartName := ShowPartName.Checked;
         Patch.ShadeSubmerged := ShowSubmergedArea.Checked;
-        Patch.Draw(Viewport);
+        Patch.Draw( Viewport );
       end;
     end;
   end;
 end;
 
-procedure TFreeExpanedplatesDialog.ViewportMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
+procedure TFreeExpanedplatesDialog.ViewportMouseMove
+        ( Sender: TObject; Shift: TShiftState; X,Y: integer );
 var P: TPoint;
   P1,P2,Diff: T2DCoordinate;
   Patch: TFreeDevelopedPatch;
@@ -430,11 +389,11 @@ begin
   FInitialPosition.Y := Y;
   FAllowPanOrZoom := True;
   if Button = mbLeft then
-    for I := FPlates.Count downto 1 do begin Active := FPlates[I-1];
+    for I := FPlates.Count downto 1 do begin Active:=FPlates[I-1];
       if Active.Visible then begin
         Dist := Active.DistanceToCursor( X,Y,Viewport );
         if Dist <= Active.Owner.Surface.ControlPointSize then begin
-          if ActivePatch <> Active then ActivePatch := Active;
+          if ActivePatch<>Active then ActivePatch:=Active;
           FAllowPanOrZoom := False;
           break;
         end;
@@ -442,18 +401,19 @@ begin
     end;
 end;
 
-procedure TFreeExpanedplatesDialog.ListBoxClickCheck(Sender: TObject);
+procedure TFreeExpanedplatesDialog.ListBoxClick( Sender: TObject );
+    begin ActivePatch:=ActivePatch; Viewport.Refresh; end;
+procedure TFreeExpanedplatesDialog.ListBoxClickCheck( Sender: TObject );
 var Patch: TFreeDevelopedPatch;
 begin
-  if Listbox.ItemIndex <> -1 then begin
-    Patch := Listbox.Items.Objects[Listbox.ItemIndex] as TFreeDevelopedPatch;
-    if Patch.Visible <> Listbox.Checked[Listbox.ItemIndex] then begin
-      Patch.Visible := Listbox.Checked[Listbox.ItemIndex];
-      if Viewport.Zoom = 1.0 then Viewport.ZoomExtents
-                             else Viewport.Refresh;
+  if Listbox.ItemIndex<>-1 then begin
+    Patch:=Listbox.Items.Objects[Listbox.ItemIndex] as TFreeDevelopedPatch;
+    if Patch.Visible<>Listbox.Checked[Listbox.ItemIndex] then begin
+      Patch.Visible:=Listbox.Checked[Listbox.ItemIndex];
+      if Viewport.Zoom=1.0 then Viewport.ZoomExtents
+                           else Viewport.Refresh;
     end;
-  end;
-  ActivePatch := ActivePatch;
+  end; ActivePatch:=ActivePatch;
 end;
 
 procedure TFreeExpanedplatesDialog.SpinEditFontSizeChange(Sender: TObject);

@@ -45,25 +45,24 @@ end;
 
 // Add calculated data to a stringlist to either show in a report or save to disc
 procedure TFreeHydrostaticCalc.AddData( Strings: TStringList );                 // Mode: TFreeHydrostaticsMode; Separator: char );
-const S4='    '; Separator=' ';
+const S4='    '; Ls=37;
 var
   Str: AnsiString;
   ID, I, N, II, JJ, J: integer;
   Calculation,HydObject: TFreehydrostaticCalc;
   Properties,Total: TLayerProperties;
   Position: TFloatType;
-  dDispl, dT, HeelAngle, vTrimAngle, h0, hl,
-  D1, D2, Swl, dD, X1, X2, Y1, Y2, Z1, Z2, Xd, Yd, Zd,
-  k_test, h_min, m_ballast, L_max,
-  Zc, a, lform, Teta, dT_, Tr, Ix, Iy: Single;
+  HeelAngle,vTrimAngle,h0,hl,D1,D2,Swl,dD,X1,X2,Y1,Y2,Z1,Z2,Xd,Yd,Zd,
+  k_test,h_min,m_ballast,L_max,Zc,a,Teta,dT,dT_,Tr,Ix,Iy: Single;
   Xs,Ws: array [1..100] of single;
   T,Displ:array [1..10] of single;
   Twl: array [1..101] of single;
   Xaft: array [1..101] of single;
   Xfor: array [1..101] of single;
   ffile,ffile1,ffile2: textfile;
-  const Line_1=
-'+-------------------------+---------+-----------+----------+---------+---------+---------+';
+const Line_1='┌─────────────────────────┬─────────┬───────────┬──────────┬─────────┬─────────┬─────────┐';
+const Line_2='├─────────────────────────┼─────────┼───────────┼──────────┼─────────┼─────────┼─────────┤';
+const Line_3='└─────────────────────────┴─────────┴───────────┴──────────┴─────────┴─────────┴─────────┘';
 label
   ExitDo, new;
 begin
@@ -71,411 +70,304 @@ begin
   h_min:=0;
 //Separator:=#32;
   Calculate;                                                          ///***???
-//if Mode=fhSingleCalculation then begin
-    AddHeader(Strings);
-    Strings.Add(UserString(2)+':');
-    Strings.Add(S4+Makelength(Userstring(3),43)+' :  ' +
-      MakeLength(FData.Volume,-1,12)+Separator +
-      VolStr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(S4+Makelength(Userstring(4),43)+' :  ' +
-      MakeLength(FData.Displacement,-1,12)+Separator +
-      WeightStr(Owner.ProjectSettings.ProjectUnits));
-    if Owner.ProjectSettings.ProjectCoefficients = fcActualData then begin
-      Strings.Add(S4+MakeLength(Userstring(5),43)+' :  ' +
-        MakeLength(FData.SubMax.X-FData.SubMin.X,3,12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(6),43)+' :  ' +
-        MakeLength(FData.SubMax.Y-FData.SubMin.Y,3,12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-    end;
+  AddHeader(Strings);
+  Strings.Add(UserString(2)+':');
+  Strings.Add(S4+Makelength(Userstring(3),Ls)+
+  ' :  '+ MakeLength(FData.Volume,-1,12)+' '+VolStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+Makelength(Userstring(4),Ls)+
+  ' :  '+MakeLength(FData.Displacement,-1,12)+' '+WeightStr(Owner.ProjectSettings.ProjectUnits));
+  if Owner.ProjectSettings.ProjectCoefficients=fcActualData then begin
+    Strings.Add(S4+MakeLength(Userstring(5),Ls)+
+    ' :  '+MakeLength(FData.SubMax.X-FData.SubMin.X,3,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(6),Ls)+
+    ' :  '+MakeLength(FData.SubMax.Y-FData.SubMin.Y,3,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  end;
 // Пересчет коэфФициентов полноты, если базовая линия проходит через линию киля
-    if abs(FData.ModelMin.Z) > 0.001 then
-    begin
-      FData.BlockCoefficient := FData.BlockCoefficient * FData.AbsoluteDraft /
-                                       (FData.AbsoluteDraft+FData.ModelMin.Z);
-      FData.MidshipCoeff := FData.MidshipCoeff * FData.AbsoluteDraft /
-                                       (FData.AbsoluteDraft+FData.ModelMin.Z);
-      if FData.MidshipCoeff > 0 then begin
-        FData.PrismCoefficient:=FData.BlockCoefficient/FData.MidshipCoeff;
-        FData.VertPrismCoefficient:=FData.BlockCoefficient/FData.WaterplaneCoeff;
-      end else begin
-        Strings.Add(S4+MakeLength(Userstring(15), 43) +
-          ' :  '+MakeLength(FData.MidshipCoeff, 4, 12));
-        Strings.Add(S4+'ATTENTION!!! Cm<=0');
-      end;
-    end;
-    Strings.Add(S4+MakeLength(Userstring(7), 43)+' :  ' +
-      MakeLength(FData.BlockCoefficient, 4, 12));
-    if FData.MidshipCoeff > 0.01 then
-      Strings.Add(S4+MakeLength(Userstring(8), 43)+' :  ' +
-        MakeLength(FData.PrismCoefficient, 4, 12));
-    if FData.WaterplaneCoeff > 0.01 then
-      Strings.Add(S4+MakeLength(Userstring(9), 43)+' :  ' +
-        MakeLength(FData.VertPrismCoefficient, 4, 12));
-    Strings.Add(S4+MakeLength(Userstring(10), 43)+' :  ' +
-      MakeLength(FData.WettedSurface, -1, 12)+Separator +
-      Areastr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(S4+MakeLength(Userstring(11), 43)+' :  ' +
-      MakeLength(FData.CenterOfBuoyancy.X, -1, 12) +
-      Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(S4+MakeLength(Userstring(11), 43)+' :  ' +
-      MakeLength(FData.LCBPerc, 3, 12)+' %');
-    Strings.Add(S4+MakeLength(Userstring(880), 43)+' :  ' +
-      MakeLength(FData.CenterOfBuoyancy.Y, -1, 12) +
-      Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(S4+MakeLength(Userstring(12), 43)+' :  ' +
-      MakeLength(FData.CenterOfBuoyancy.Z+FData.ModelMin.Z, -1, 12) +
-      Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-    if FData.MidshipCoeff > 0.01 then begin Strings.Add(Userstring(13)+':'); // мидельшпангоут
-      Strings.Add(S4+MakeLength(Userstring(49),43)+' :  ' +
-        MakeLength(FMidshipLocation,4,12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(14), 43)+' :  ' +               // Площадь мидельшпангоута
-        MakeLength(FData.MidshipArea, -1, 12)+Separator +
-        Areastr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(15), 43)+' :  ' +
-        MakeLength(FData.MidshipCoeff, 4, 12));
-      // if FData.MidshipCoeff=0 then Strings.Add('ATTENTION!!! There are many leak points or invalid Main dimensions in Project settings!');
-    end;
-    Strings.Add(Userstring(16)+':');               // харакетристики ватерлинии
-    Strings.Add(S4+MakeLength(Userstring(17), 43)+' :  ' +
-      MakeLength(FData.LengthWaterline, -1, 12)+Separator +
-      LengthStr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(S4+MakeLength(Userstring(18), 43)+' :  ' +
-      MakeLength(FData.BeamWaterline, -1, 12)+Separator +
-      LengthStr(Owner.ProjectSettings.ProjectUnits));
-    if FData.WaterplaneMomInertia.X > 0.0001 then begin
-      Strings.Add(S4+MakeLength(Userstring(19), 43)+
-      ' :  '+MakeLength(FData.WaterplaneArea, -1, 12) +
-        Separator+Areastr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(20), 43)+
-      ' :  ' +MakeLength(FData.WaterplaneCoeff, 4, 12));
-      Strings.Add(S4+MakeLength(Userstring(21), 43)+
-      ' :  '+MakeLength(FData.WaterplaneCOG.X, -1, 12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(881), 43) +
-      ' :  '+MakeLength(FData.WaterplaneCOG.Y, -1, 12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-    end else begin                //  Расчет Площади КВЛ альтернативным методом
-      if (FData.WaterplaneCoeff>1) or (FData.WaterplaneCoeff<0.1) then begin
-        HydObject:=TFreeHydrostaticCalc.Create(Owner);
-        HydObject.Draft:=Owner.ProjectSettings.ProjectDraft-0.001;
-        HydObject.Calculate;
-        D1:=HydObject.Data.Volume;
-        X1:=HydObject.Data.CenterOfBuoyancy.X;
-        Y1:=HydObject.Data.CenterOfBuoyancy.Y;
-        Z1:=HydObject.Data.CenterOfBuoyancy.Z;
-        HydObject.Draft:=Owner.ProjectSettings.ProjectDraft+0.001;
-        HydObject.Calculate;
-        D2:=HydObject.Data.Volume;
-        X2:=HydObject.Data.CenterOfBuoyancy.X;
-        Y2:=HydObject.Data.CenterOfBuoyancy.Y;
-        Z2:=HydObject.Data.CenterOfBuoyancy.Z;
-        Swl:=(D2-D1) * 500;
-        FData.WaterplaneArea:=Swl;
-        FData.WaterplaneCoeff:=Swl / FData.LengthWaterline / FData.BeamWaterline;
-        Strings.Add(S4+MakeLength(UserString(19),43) +
-          ' :  '+Makelength(Swl,-1,12)+' '+Areastr(Owner.ProjectSettings.ProjectUnits));
-        Strings.Add(S4+MakeLength(Userstring(20), 43) +
-          ' :  '+Makelength(FData.WaterplaneCoeff, -1, 12));
-        FreeAndNil(HydObject);
-        Xd:=(X2 * D2-X1 * D1) / (D2-D1);
-        Strings.Add(S4+MakeLength(Userstring(21), 43) +
-          ' :  '+Makelength(Xd,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Yd:=(Y2 * D2-Y1 * D1) / (D2-D1);
-        Strings.Add(S4+MakeLength(Userstring(881),43)+
-          ' :  '+Makelength(Yd, -1, 12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Zd:=(Z2 * D2-Z1 * D1) / (D2-D1);
-     // Strings.Add(S4+MakeLength('VCF',43)+' :  '+Makelength(Zd,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        FData.WaterplaneCOG.X:=Xd;
-        FData.WaterplaneCOG.Y:=Yd;
-        FData.WaterplaneCOG.Z:=Zd+FData.ModelMin.Z;
-      end;
-    end;
-    Strings.Add(S4+MakeLength(Userstring(22), 43)+' :  ' +
-      MakeLength(FData.WaterplaneEntranceAngle, -1, 12) +
-      ' °' ); //DegrStr(Owner.ProjectSettings.ProjectUnits));
-    if FData.WaterplaneMomInertia.X < 0.01 then
-      if FData.BeamWaterline>2*Owner.ProjectSettings.ProjectBeam then begin // Strings.Add('As for catamaran :');
-        FData.WaterplaneMomInertia.X:=FData.WaterplaneArea
-          * sqr( (FData.BeamWaterline-Owner.ProjectSettings.ProjectBeam)/2.0);
-        FData.WaterplaneMomInertia.Y:=sqr(FData.WaterplaneArea)
-          / Owner.ProjectSettings.ProjectBeam * FData.LengthWaterline / 16;
-        FData.KMtransverse :=
-          FData.WaterplaneMomInertia.X / FData.Volume+FData.CenterOfBuoyancy.Z;
-        FData.KMlongitudinal :=
-          FData.WaterplaneMomInertia.Y / FData.Volume+FData.CenterOfBuoyancy.Z;
-      end else begin
-        //           Strings.Add('Theoretical formula for monohull ships:');
-        a:=FData.WaterplaneCoeff;
-        FData.WaterplaneMomInertia.X :=((0.0613486*a+0.0298348)*a-0.0076467)
-                    * power(FData.BeamWaterline, 3) * FData.LengthWaterline;
-        FData.WaterplaneMomInertia.Y :=((0.0811652*a+0.0021749)*a-0.0060582)
-                    * power(FData.LengthWaterline, 3) * FData.BeamWaterline;
-        // FData.WaterplaneMomInertia.X:=sqr(FData.WaterplaneCoeff)*FData.LengthWaterline*power(Owner.ProjectSettings.ProjectBeam,3)/18;
-        // FData.WaterplaneMomInertia.Y:=sqr(FData.WaterplaneCoeff)*Owner.ProjectSettings.ProjectBeam*power(FData.LengthWaterline,3)/16;
-        FData.KMtransverse:=FData.WaterplaneMomInertia.X/FData.Volume+FData.CenterOfBuoyancy.Z;
-        FData.KMlongitudinal:=FData.WaterplaneMomInertia.Y/FData.Volume+FData.CenterOfBuoyancy.Z;
-      end;
-    Strings.Add(S4+MakeLength(Userstring(23), 43)+' :  ' +
-      MakeLength(FData.WaterplaneMomInertia.X, -1, 12) +
-      Separator+InertiaStr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(S4+MakeLength(Userstring(24), 43)+' :  ' +
-      MakeLength(abs(FData.WaterplaneMomInertia.Y), -1, 12) +
-      Separator+InertiaStr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(Userstring(25)+':');
-    Strings.Add(S4+MakeLength(Userstring(26), 43)+' :  ' +
-      MakeLength(FData.KMtransverse+FData.ModelMin.Z, -1, 12) +
-      Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(S4+MakeLength(Userstring(882), 43)+' :  ' +
-      MakeLength(FData.KMtransverse-FData.CenterOfBuoyancy.Z, -1, 12) +
-      Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(S4+MakeLength(Userstring(27), 43)+' :  ' +
-      MakeLength(FData.KMlongitudinal+FData.ModelMin.Z, -1, 12) +
-      Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-    Strings.Add(S4+MakeLength(Userstring(883), 43)+' :  ' +
-      MakeLength(FData.KMlongitudinal-FData.CenterOfBuoyancy.Z, -1, 12) +
-      Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
+// if abs(FData.ModelMin.Z) > 0.001 then begin
+  FData.BlockCoefficient:=FData.BlockCoefficient;// * FData.AbsoluteDraft / (FData.AbsoluteDraft+FData.ModelMin.Z);
+  FData.MidshipCoeff := FData.MidshipCoeff;      // * FData.AbsoluteDraft / (FData.AbsoluteDraft+FData.ModelMin.Z);
+  if FData.MidshipCoeff > 0 then begin
+    FData.PrismCoefficient:=FData.BlockCoefficient/FData.MidshipCoeff;
+    FData.VertPrismCoefficient:=FData.BlockCoefficient/FData.WaterplaneCoeff;
+  end else begin
+    Strings.Add(S4+MakeLength(Userstring(15),Ls) +
+    ' :  '+MakeLength(FData.MidshipCoeff,4,12)); //Strings.Add(S4+'ATTENTION!!! Cm<=0');
+  end; // end;
+  Strings.Add(S4+MakeLength(Userstring(7),Ls)+
+  ' :  ' +MakeLength(FData.BlockCoefficient,4,12));
+  if FData.MidshipCoeff > 0.01 then
+    Strings.Add(S4+MakeLength(Userstring(8),Ls)+' :  '+MakeLength(FData.PrismCoefficient,4,12));
+  if FData.WaterplaneCoeff > 0.01 then
+    Strings.Add(S4+MakeLength(Userstring(9),Ls)+' :  '+MakeLength(FData.VertPrismCoefficient,4,12));
+  Strings.Add(S4+MakeLength(Userstring(10), Ls)+' :  '+MakeLength(FData.WettedSurface,-1,12)+' '+Areastr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+MakeLength(Userstring(11), Ls)+' :  '+MakeLength(FData.CenterOfBuoyancy.X,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits)
+                                               +'  = '+MakeLength(FData.LCBPerc,3,6)+' %');
+  Strings.Add(S4+MakeLength(Userstring(880),Ls)+' :  '+MakeLength(FData.CenterOfBuoyancy.Y,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+MakeLength(Userstring(12), Ls)+' :  '+MakeLength(FData.CenterOfBuoyancy.Z+FData.ModelMin.Z,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  if FData.MidshipCoeff>0.01 then begin Strings.Add(Userstring(13)+':'); // мидельшпангоут
+    Strings.Add(S4+MakeLength(Userstring(49),Ls)+
+    ' :  '+MakeLength(FMidshipLocation,4,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(14),Ls)+    // Площадь мидельшпангоута
+    ' :  '+MakeLength(FData.MidshipArea,-1,12)+' '+Areastr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(15),Ls)+
+    ' :  '+MakeLength(FData.MidshipCoeff,4,12));
+  end;
+  Strings.Add(Userstring(16)+':');               // харакетристики ватерлинии
+  Strings.Add(S4+MakeLength(Userstring(17),Ls)+
+  ' :  '+MakeLength(FData.LengthWaterline,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+MakeLength(Userstring(18),Ls)+
+  ' :  '+MakeLength(FData.BeamWaterline, -1, 12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  if FData.WaterplaneMomInertia.X > 0.0001 then begin
+    Strings.Add(S4+MakeLength(Userstring(19),Ls)+
+    ' :  '+MakeLength(FData.WaterplaneArea,-1,12)+' '+Areastr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(20),Ls)+
+    ' :  '+MakeLength(FData.WaterplaneCoeff,4,12));
+    Strings.Add(S4+MakeLength(Userstring(21),Ls)+
+    ' :  '+MakeLength(FData.WaterplaneCOG.X,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(881),Ls) +
+    ' :  '+MakeLength(FData.WaterplaneCOG.Y,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  end else                        //  Расчет Площади КВЛ альтернативным методом
+  if (FData.WaterplaneCoeff>1) or (FData.WaterplaneCoeff<0.1) then begin
+    HydObject:=TFreeHydrostaticCalc.Create(Owner);
+    HydObject.Draft:=Owner.ProjectSettings.ProjectDraft-0.001;
+    HydObject.Calculate;
+    D1:=HydObject.Data.Volume;
+    X1:=HydObject.Data.CenterOfBuoyancy.X;
+    Y1:=HydObject.Data.CenterOfBuoyancy.Y;
+    Z1:=HydObject.Data.CenterOfBuoyancy.Z;
+    HydObject.Draft:=Owner.ProjectSettings.ProjectDraft+0.001;
+    HydObject.Calculate;
+    D2:=HydObject.Data.Volume;
+    X2:=HydObject.Data.CenterOfBuoyancy.X;
+    Y2:=HydObject.Data.CenterOfBuoyancy.Y;
+    Z2:=HydObject.Data.CenterOfBuoyancy.Z;
+    Swl:=(D2-D1) * 500;
+    FData.WaterplaneArea:=Swl;
+    FData.WaterplaneCoeff:=Swl / FData.LengthWaterline / FData.BeamWaterline;
+    Strings.Add(S4+MakeLength(UserString(19),Ls) +
+    ' :  '+Makelength(Swl,-1,12)+' '+Areastr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(20),Ls) +
+    ' :  '+Makelength(FData.WaterplaneCoeff, -1, 12));
+    FreeAndNil(HydObject);
+    Xd:=(X2 * D2-X1 * D1) / (D2-D1);
+    Strings.Add(S4+MakeLength(Userstring(21),Ls) +
+    ' :  '+Makelength(Xd,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Yd:=(Y2 * D2-Y1 * D1) / (D2-D1);
+    Strings.Add(S4+MakeLength(Userstring(881),Ls)+
+    ' :  '+Makelength(Yd, -1, 12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Zd:=(Z2*D2-Z1*D1)/(D2-D1);
+    // Strings.Add(S4+MakeLength('VCF',43)+' :  '+Makelength(Zd,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    FData.WaterplaneCOG.X:=Xd;
+    FData.WaterplaneCOG.Y:=Yd;
+    FData.WaterplaneCOG.Z:=Zd+FData.ModelMin.Z;
+  end;
 
-    if FData.LateralArea > 0 then begin
-      Strings.Add(Userstring(28)+':');
-      Strings.Add(S4+MakeLength(Userstring(29), 43)+' :  ' +
-        MakeLength(FData.LateralArea, -1, 12)+Separator +
-        Areastr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(30), 43)+' :  ' +
-        MakeLength(FData.LateralCOG.X, -1, 12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(31), 43)+' :  ' +
-        MakeLength(FData.LateralCOG.Z+FData.ModelMin.Z, -1, 12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+MakeLength(Userstring(22),Ls)+
+  ' :  '+MakeLength(FData.WaterplaneEntranceAngle,-1,12)+' °' ); //DegrStr(Owner.ProjectSettings.ProjectUnits));
+  if FData.WaterplaneMomInertia.X < 0.01 then
+  if FData.BeamWaterline>2*Owner.ProjectSettings.ProjectBeam then begin // Strings.Add('As for catamaran :');
+    FData.WaterplaneMomInertia.X:=FData.WaterplaneArea*sqr((FData.BeamWaterline-Owner.ProjectSettings.ProjectBeam)/2.0);
+    FData.WaterplaneMomInertia.Y:=sqr(FData.WaterplaneArea)/Owner.ProjectSettings.ProjectBeam * FData.LengthWaterline / 16;
+    FData.KMtransverse:=FData.WaterplaneMomInertia.X/FData.Volume+FData.CenterOfBuoyancy.Z;
+    FData.KMlongitudinal:=FData.WaterplaneMomInertia.Y/FData.Volume+FData.CenterOfBuoyancy.Z;
+  end else begin
+    //           Strings.Add('Theoretical formula for monohull ships:');
+    a:=FData.WaterplaneCoeff;
+    FData.WaterplaneMomInertia.X :=((0.0613486*a+0.0298348)*a-0.0076467)
+                * power(FData.BeamWaterline, 3) * FData.LengthWaterline;
+    FData.WaterplaneMomInertia.Y :=((0.0811652*a+0.0021749)*a-0.0060582)
+                * power(FData.LengthWaterline, 3) * FData.BeamWaterline;
+    // FData.WaterplaneMomInertia.X:=sqr(FData.WaterplaneCoeff)*FData.LengthWaterline*power(Owner.ProjectSettings.ProjectBeam,3)/18;
+    // FData.WaterplaneMomInertia.Y:=sqr(FData.WaterplaneCoeff)*Owner.ProjectSettings.ProjectBeam*power(FData.LengthWaterline,3)/16;
+    FData.KMtransverse:=FData.WaterplaneMomInertia.X/FData.Volume+FData.CenterOfBuoyancy.Z;
+    FData.KMlongitudinal:=FData.WaterplaneMomInertia.Y/FData.Volume+FData.CenterOfBuoyancy.Z;
+  end;
+  Strings.Add(S4+MakeLength(Userstring(23),Ls)+
+  ' :  '+MakeLength(FData.WaterplaneMomInertia.X,-1,12)+' '+InertiaStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+MakeLength(Userstring(24),Ls)+
+  ' :  '+MakeLength(abs(FData.WaterplaneMomInertia.Y),-1,12)+' '+InertiaStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(Userstring(25)+':');
+  Strings.Add(S4+MakeLength(Userstring(26),Ls)+
+  ' :  '+MakeLength(FData.KMtransverse+FData.ModelMin.Z,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+MakeLength(Userstring(882),Ls)+
+  ' :  '+MakeLength(FData.KMtransverse-FData.CenterOfBuoyancy.Z,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+MakeLength(Userstring(27),Ls)+
+  ' :  '+MakeLength(FData.KMlongitudinal+FData.ModelMin.Z,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+MakeLength(Userstring(883),Ls)+
+  ' :  '+MakeLength(FData.KMlongitudinal-FData.CenterOfBuoyancy.Z,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  if FData.LateralArea > 0 then begin
+    Strings.Add(Userstring(28)+':');
+    Strings.Add(S4+MakeLength(Userstring(29),Ls)+
+    ' :  '+MakeLength(FData.LateralArea, -1, 12)+' '+Areastr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(30),Ls)+
+    ' :  '+MakeLength(FData.LateralCOG.X,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(31),Ls)+
+    ' :  '+MakeLength(FData.LateralCOG.Z+FData.ModelMin.Z,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  end;
+  if FData.SDP > 0 then begin
+    Strings.Add(Userstring(1137)+':');
+    Strings.Add(S4+MakeLength(Userstring(1134),Ls) +
+    ' :  '+MakeLength(FData.SDP,-1,12)+' '+Areastr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(1434),Ls) +
+    ' :  '+MakeLength(FData.sdpCOG.Z+FData.ModelMin.Z,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(1435),Ls) +
+    ' :  '+MakeLength(FData.sdpCOG.X,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(1135),Ls) +
+    ' :  '+MakeLength(FData.Zsdp,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(Userstring(1136),Ls) +
+    ' :  '+MakeLength(FData.Xsdp+FData.ModelMin.Z,-1,12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    if FData.Z_Min_board < 10000 then begin
+      L_max:=FData.ModelMax.X-FData.ModelMin.X;
+      h_min:=FData.Z_min_board-Owner.ProjectSettings.Projectdraft-FData.ModelMin.Z;
+      Strings.Add(S4+MakeLength(Userstring(1443),Ls) +
+      ' :  '+MakeLength(h_min, -1, 12)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+      Strings.Add(S4+MakeLength(Userstring(1443),Ls) +
+      ' :  '+MakeLength(h_min / L_max * 100, -1, 12)+' %Lmax');
+      Strings.Add(Userstring(1442)+':');
+      k_test:=(FData.BeamWaterline+h_min * 2) / FData.LengthWaterline +
+      Owner.ProjectSettings.Projectdraft * m_ballast / 2;
+      Strings.Add(S4+MakeLength(Userstring(1444),Ls)+
+      ' :  '+MakeLength(k_test, -1, 12)+' if >= 0,8 then OK');
     end;
-    if FData.SDP > 0 then begin
-      Strings.Add(Userstring(1137)+':');
-      Strings.Add(S4+MakeLength(Userstring(1134), 43) +
-        ' :  '+MakeLength(FData.SDP, -1, 12)+Separator +
-        Areastr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(1434), 43) +
-        ' :  '+MakeLength(FData.sdpCOG.Z+FData.ModelMin.Z, -1, 12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(1435), 43) +
-        ' :  '+MakeLength(FData.sdpCOG.X, -1, 12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(1135), 43) +
-        ' :  '+MakeLength(FData.Zsdp, -1, 12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-      Strings.Add(S4+MakeLength(Userstring(1136), 43) +
-        ' :  '+MakeLength(FData.Xsdp+FData.ModelMin.Z, -1, 12) +
-        Separator+LengthStr(Owner.ProjectSettings.ProjectUnits));
-      if FData.Z_Min_board < 10000 then begin
-        L_max:=FData.ModelMax.X-FData.ModelMin.X;
-        h_min:=FData.Z_min_board-Owner.ProjectSettings.Projectdraft -
-          FData.ModelMin.Z;
-        //         MessageDlg('hmin='+Makelength(h_min,-1,8),mtError,[mbOk],0);
-        Strings.Add(S4+MakeLength(Userstring(1443), 43) +
-          ' :  '+MakeLength(h_min, -1, 12)+Separator +
-          LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Strings.Add(S4+MakeLength(Userstring(1443), 43) +
-          ' :  '+MakeLength(h_min / L_max * 100, -1, 12)+' %Lmax');
-        Strings.Add(Userstring(1442)+':');
-        k_test:=(FData.BeamWaterline+h_min * 2) / FData.LengthWaterline +
-          Owner.ProjectSettings.Projectdraft * m_ballast / 2;
-        Strings.Add(S4+MakeLength(Userstring(1444), 43) +
-          ' :  '+MakeLength(k_test, -1, 12)+' if >= 0,8 then OK');
+  end;
+  Strings.Add('');
+  N:=0;
+  for I:=1 to Owner.NumberOfLayers do if Owner.Layer[I-1].Count>0 then Inc(N);
+  if N>0 then
+  if Owner.NumberofWaterlines>0 then begin
+    for i:=1 to 2 do Strings.Add('');
+    Fillchar(Total, SizeOf(Total), 0);
+    Strings.Add(Userstring(32)+':');
+    Strings.Add( Line_1 );
+    Strings.Add('│          '+Makelength(UserString(33),14) +
+               ' │ '+Makelength(UserString(34),7)+
+               ' │ '+Makelength(UserString(35),9)+
+               ' │ '+Makelength(UserString(36),8)+
+               ' │  CoG X  │  CoG Y  │  CoG Z  │' );
+    Strings.Add('│ '+MakeLength('', 23)+
+               ' │  '+Makelength(AreaStr(Owner.ProjectSettings.ProjectUnits),6) +
+               ' │    '+Makelength(LenMMStr(Owner.ProjectSettings.ProjectUnits),6)+
+               ' │   '+Makelength(WeightStr(Owner.ProjectSettings.ProjectUnits),6)+
+               ' │   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),5)+
+               ' │   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),5)+
+               ' │   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),5)+' │');
+    Strings.Add( Line_2 );
+    for I:=1 to Owner.NumberOfLayers do
+    if Owner.Layer[I-1].Count > 0 then begin
+      Str:=Owner.Layer[I-1].Name;
+(*    if Owner.ProjectSettings.EnableBonjeanSAC then begin
+      if FileExistsUTF8('Weights.txt') { *Converted from FileExists* } then
+      begin  Assignfile(FFile1, 'Weights.txt'); Append(FFile1); end
+        else begin Assignfile(FFile1, 'Weights.txt'); Rewrite(FFile1); end;
+        writeln(ffile1, '! '+str);
+        closefile(ffile1);
       end;
-    end;
-    Strings.Add('');
-    Strings.Add('');
-    N:=0;
-    for I:=1 to Owner.NumberOfLayers do if Owner.Layer[I-1].Count>0 then Inc(N);
-    if N>0 then begin
-      if (Owner.NumberofWaterlines > 0)
-      and (Owner.NumberofWaterlines < 100)
-      and (Owner.NumberofStations < 100) then begin
-        for i:=1 to 2 do Strings.Add('');
-        Fillchar(Total, SizeOf(Total), 0);
-        Strings.Add(Userstring(32)+':');
-        Strings.Add( Line_1 );
-        Strings.Add('|          '+Makelength(UserString(33), 14) +
-          ' | '+Makelength(UserString(34), 7)+' | ' +
-          Makelength(UserString(35), 9)+' | ' +
-          Makelength(UserString(36), 8)+' | ' +
-          ' CoG X  |  CoG Y  |  CoG Z  |');
-        Strings.Add('| '+MakeLength('', 23)+' |  ' +
-          Makelength(AreaStr(Owner.ProjectSettings.ProjectUnits),6) +
-          ' |    '+Makelength(LenMMStr(Owner.ProjectSettings.ProjectUnits),6)+
-          ' |   '+Makelength(WeightStr(Owner.ProjectSettings.ProjectUnits),6)+
-          ' |   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),5)+
-          ' |   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),5)+
-          ' |   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),5)+' |');
-        Strings.Add( Line_1 );
-        for I:=1 to Owner.NumberOfLayers do
-          if Owner.Layer[I-1].Count > 0 then begin
-            Str:=Owner.Layer[I-1].Name;
-(*          if Owner.ProjectSettings.EnableBonjeanSAC then begin
-              if FileExistsUTF8('Weights.txt') { *Converted from FileExists* } then
-              begin  Assignfile(FFile1, 'Weights.txt'); Append(FFile1); end
-              else begin Assignfile(FFile1, 'Weights.txt'); Rewrite(FFile1); end;
-              writeln(ffile1, '! '+str);
-              closefile(ffile1);
-            end;
 *)
-            Properties:=Owner.Layer[I-1].SurfaceProperties;
-            Properties.SurfaceCenterOfGravity.Z :=
-              Properties.SurfaceCenterOfGravity.Z-FData.ModelMin.Z;
-            if Owner.ProjectSettings.ProjectUnits = fuImperial
-              then Properties.Weight:=Properties.Weight / (12 * 2240)
-              else Properties.Weight:=Properties.Weight / 1000;
-//            while Length(Str) < 23 do
-//              Str:=Str+' ';
-//            if Length(Str) > 23 then
-//              Str:=Copy(Str, 1, 23);
-//          Strings.Add('| '+Str+' | '+Makelength(Properties.SurfaceArea, -1, 7) +
-            Strings.Add(
-               '| '+MakeLength( Str,23 ) +
-              ' | '+Makelength(Properties.SurfaceArea, -1, 7) +
-              ' | '+MakeLength(Owner.Layer[I-1].Thickness, 3, 9) +
-              ' | '+Makelength(Properties.Weight, 3, 8)+
-              ' | '+MakeLength(Properties.SurfaceCenterOfGravity.X, 3, 7)+
-              ' | '+MakeLength(Properties.SurfaceCenterOfGravity.Y,3, 7)+
-              ' | '+MakeLength(Properties.SurfaceCenterOfGravity.Z+FData.ModelMin.Z,3,7)+
-              ' |');
-            Total.SurfaceArea:=Total.SurfaceArea+Properties.SurfaceArea;
-            Total.Weight:=Total.Weight+Properties.Weight;
-            Total.SurfaceCenterOfGravity.X :=
-              Total.SurfaceCenterOfGravity.X+Properties.Weight *
-              Properties.SurfaceCenterOfGravity.X;
-            Total.SurfaceCenterOfGravity.Y :=
-              Total.SurfaceCenterOfGravity.Y+Properties.Weight *
-              Properties.SurfaceCenterOfGravity.Y;
-            Total.SurfaceCenterOfGravity.Z :=
-              Total.SurfaceCenterOfGravity.Z+Properties.Weight *
-              Properties.SurfaceCenterOfGravity.Z;
-          end;
-        Strings.Add( Line_1 );
-        if Total.Weight <> 0 then begin
-          Total.SurfaceCenterOfGravity.X := Total.SurfaceCenterOfGravity.X / Total.Weight;
-          Total.SurfaceCenterOfGravity.Y := Total.SurfaceCenterOfGravity.Y / Total.Weight;
-          Total.SurfaceCenterOfGravity.Z := Total.SurfaceCenterOfGravity.Z / Total.Weight+FData.ModelMin.Z;
-        end;
-        if N > 1 then begin // if more then 1 layer is added, then show the properties of all layers together
-          Strings.Add('  '+MakeLength(UserString(37),24)+
-                     '   '+Makelength(Total.SurfaceArea,-1,6)+
-            MakeLength('',15)+
-            Makelength(Total.Weight, 3, 8)+'   ' +
-            MakeLength(Total.SurfaceCenterOfGravity.X, 3, 7)+'   ' +
-            MakeLength(Total.SurfaceCenterOfGravity.Y, 3, 7)+'   ' +
-            MakeLength(Total.SurfaceCenterOfGravity.Z, 3, 7));
-        end;
-      end;
+      Properties:=Owner.Layer[I-1].SurfaceProperties;
+      Properties.SurfaceCenterOfGravity.Z :=
+      Properties.SurfaceCenterOfGravity.Z-FData.ModelMin.Z;
+      if Owner.ProjectSettings.ProjectUnits = fuImperial
+         then Properties.Weight:=Properties.Weight / (12 * 2240)
+         else Properties.Weight:=Properties.Weight / 1000;
+      Strings.Add(
+               '│ '+MakeLength( Str,23 ) +
+              ' │ '+Makelength(Properties.SurfaceArea, -1, 7) +
+              ' │ '+MakeLength(Owner.Layer[I-1].Thickness, 3, 9) +
+              ' │ '+Makelength(Properties.Weight, 3, 8)+
+              ' │ '+MakeLength(Properties.SurfaceCenterOfGravity.X, 3, 7)+
+              ' │ '+MakeLength(Properties.SurfaceCenterOfGravity.Y,3, 7)+
+              ' │ '+MakeLength(Properties.SurfaceCenterOfGravity.Z+FData.ModelMin.Z,3,7)+
+              ' │');
+      Total.SurfaceArea:=Total.SurfaceArea+Properties.SurfaceArea;
+      Total.Weight:=Total.Weight+Properties.Weight;
+      Total.SurfaceCenterOfGravity.X:=Total.SurfaceCenterOfGravity.X+Properties.Weight*Properties.SurfaceCenterOfGravity.X;
+      Total.SurfaceCenterOfGravity.Y:=Total.SurfaceCenterOfGravity.Y+Properties.Weight*Properties.SurfaceCenterOfGravity.Y;
+      Total.SurfaceCenterOfGravity.Z:=Total.SurfaceCenterOfGravity.Z+Properties.Weight*Properties.SurfaceCenterOfGravity.Z;
+    end;
+    Strings.Add( Line_3 );
+    if Total.Weight <> 0 then begin
+      Total.SurfaceCenterOfGravity.X := Total.SurfaceCenterOfGravity.X / Total.Weight;
+      Total.SurfaceCenterOfGravity.Y := Total.SurfaceCenterOfGravity.Y / Total.Weight;
+      Total.SurfaceCenterOfGravity.Z := Total.SurfaceCenterOfGravity.Z / Total.Weight+FData.ModelMin.Z;
+    end;
+    if N > 1 then begin // if more then 1 layer is added, then show the properties of all layers together
+      Strings.Add('  '+MakeLength(UserString(37),24)+'   '+Makelength(Total.SurfaceArea,-1,6)+
+      MakeLength('',15)+Makelength(Total.Weight, 3, 8)+'   ' +
+      MakeLength(Total.SurfaceCenterOfGravity.X, 3, 7)+'   ' +
+      MakeLength(Total.SurfaceCenterOfGravity.Y, 3, 7)+'   ' +
+      MakeLength(Total.SurfaceCenterOfGravity.Z, 3, 7));
+    end;
+  end;
 //    Расчет средней осадки и углов крена и дифферента
-//      if (FData.Displacement<0.01) or (FData.WaterplaneArea<0.01) then begin
-//        ShowMessage('Project Draft or Weight are very large/small!!!');
-//        exit;
-//      end;
-      dDispl:=Total.Weight / FData.Displacement-1.;
-      dT:=0;
-      if Total.Weight > 0.01 then begin
-        dT:=(Total.Weight-FData.Displacement) / FData.WaterplaneArea /
-          Owner.ProjectSettings.ProjectWaterDensity;
-        if abs(dT) > 0.001 then begin
-          Strings.Add('  ');
-          Strings.Add(S4+MakeLength(UserString(1021), 50) +
-            ' : '+Makelength(dT, -1, 8)+' ' +
-            LengthStr(Owner.ProjectSettings.ProjectUnits));
-          Strings.Add(S4+MakeLength(UserString(1022), 50) +
-            ' : '+Makelength(Draft+dT+FData.ModelMin.Z, -1, 8) +
-            ' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-          if abs(FData.ModelMin.Z) > 0.01 then
-            Strings.Add(S4+MakeLength(UserString(258), 50) +
-              ' : '+Makelength(Draft+dT, -1, 8)+' ' +
-              LengthStr(Owner.ProjectSettings.ProjectUnits));
-          Strings.Add('  ');
-          if Owner.ProjectSettings.EnableModelAutoMove
-             then Strings.Add(S4+UserString(1451))
-             else Strings.Add(S4+UserString(1452));
-        end;
-      end;
-      if abs(dDispl) < 0.1 then begin
-        Strings.Add('  ');
-        Strings.Add('  ');
-        Strings.Add(UserString(1020));
-        Strings.Add(S4+MakeLength(UserString(1021), 50) +
-          ' : '+Makelength(dT, -1, 8)+' ' +
-          LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Strings.Add(S4+MakeLength(UserString(1022), 50) +
-          ' : '+Makelength(Draft+dT+FData.ModelMin.Z, -1, 8) +
-          ' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        if abs(FData.ModelMin.Z) > 0.01 then
-          Strings.Add(S4+MakeLength(UserString(258), 50) +
-            ' : '+Makelength(Draft+dT, -1, 8)+' ' +
-            LengthStr(Owner.ProjectSettings.ProjectUnits));
+// if (FData.Displacement<0.01) or (FData.WaterplaneArea<0.01) then begin
+//     ShowMessage('Project Draft or Weight are very large/small!!!');
+//     exit;
+// end;
+// dDispl:=Total.Weight / FData.Displacement-1.;
+  dT:=0;
+  if Total.Weight > 0.01 then begin
+    dT:=(Total.Weight-FData.Displacement)/FData.WaterplaneArea/Owner.ProjectSettings.ProjectWaterDensity;
+    if abs(dT) > 0.001 then begin
+      Strings.Add('  ');
+      Strings.Add(S4+MakeLength(UserString(1021),44) +
+      ' : '+Makelength(dT,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+      Strings.Add(S4+MakeLength(UserString(1022),44) +
+      ' : '+Makelength(Draft+dT+FData.ModelMin.Z,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+      if abs(FData.ModelMin.Z) > 0.01 then
+      Strings.Add(S4+MakeLength(UserString(258),44) +
+      ' : '+Makelength(Draft+dT,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+      Strings.Add('  ');
+      if Owner.ProjectSettings.EnableModelAutoMove
+         then Strings.Add(S4+UserString(1451))
+         else Strings.Add(S4+UserString(1452));
+    end;
+  end;
+  Strings.Add('  ');
+  Strings.Add(UserString(1020));
+  Strings.Add(S4+MakeLength(UserString(1021),44) +
+  ' : '+Makelength(dT,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(S4+MakeLength(UserString(1022),44) +
+  ' : '+Makelength(Draft+dT+FData.ModelMin.Z,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  if abs(FData.ModelMin.Z)>0.01 then
+  Strings.Add(S4+MakeLength(UserString(258),44)+
+  ' : '+Makelength(Draft+dT,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  h0:=FData.KMtransverse-Total.SurfaceCenterOfGravity.Z;
+  hl:=FData.KMlongitudinal-Total.SurfaceCenterOfGravity.Z;
+  HeelAngle:=(Total.SurfaceCenterOfGravity.Y-FData.CenterOfBuoyancy.Y)/h0*Radian;
+  vTrimAngle:=-(Total.SurfaceCenterOfGravity.X-FData.CenterOfBuoyancy.X)/hl*Radian;
+  if FData.CenterOfBuoyancy.Y<0.01 then begin
+    Strings.Add(S4+MakeLength(UserString(1030),44)+
+    ' : '+Makelength(h0+FData.ModelMin.Z,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(UserString(1031),44)+
+    ' : '+Makelength(hl+FData.ModelMin.Z,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Owner.ProjectSettings.FTrim:=Draft;
+  end else begin
+    Strings.Add(S4+MakeLength(UserString(1449),44)+
+    ' : '+Makelength(h0,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(UserString(1450),44)+
+    ' : '+Makelength(hl,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  end;
+  Strings.Add(S4+MakeLength(UserString(1023),44)+' : '+Makelength(HeelAngle,-1,8)+' °');
+  Strings.Add(S4+MakeLength(UserString(1024),44)+' : '+Makelength(vTrimAngle,-1,8)+' °');
 
-        h0:=FData.KMtransverse-Total.SurfaceCenterOfGravity.Z;
-        hl:=FData.KMlongitudinal-Total.SurfaceCenterOfGravity.Z;
-        HeelAngle:=(Total.SurfaceCenterOfGravity.Y-FData.CenterOfBuoyancy.Y) /
-          h0 * Radian;
-        vTrimAngle:=-(Total.SurfaceCenterOfGravity.X-FData.CenterOfBuoyancy.X) /
-          hl * Radian;
-        if FData.CenterOfBuoyancy.Y < 0.01 then begin
-          Strings.Add(S4+MakeLength(UserString(1030), 50) +
-            ' : '+Makelength(h0+FData.ModelMin.Z, -1, 8)+' ' +
-            LengthStr(Owner.ProjectSettings.ProjectUnits));
+//   Расчет параметров остойчивости в накрененном положении
 
-          Strings.Add(S4+MakeLength(UserString(1031), 50) +
-            ' : '+Makelength(hl+FData.ModelMin.Z, -1, 8)+' ' +
-            LengthStr(Owner.ProjectSettings.ProjectUnits));
-
-          Strings.Add(S4+MakeLength(UserString(1023), 50) +
-            ' : '+Makelength(HeelAngle, -1, 8)+' °' );
-          Strings.Add(S4+MakeLength(UserString(1024), 50) +
-            ' : '+Makelength(vTrimAngle, -1, 8)+' °' );
-          Owner.ProjectSettings.FTrim:=Draft;
-        end else begin
-          Strings.Add(S4+MakeLength(UserString(1449), 50) +
-            ' : '+Makelength(h0, -1, 8)+' ' +
-            LengthStr(Owner.ProjectSettings.ProjectUnits));
-          Strings.Add(S4+MakeLength(UserString(1450), 50) +
-            ' : '+Makelength(hl, -1, 8)+' ' +
-            LengthStr(Owner.ProjectSettings.ProjectUnits));
-      //  Strings.Add(S4+MakeLength(UserString(1023),50)+' : '+Makelength(HeelAngle,-1,8)+' °');
-      //  Strings.Add(S4+MakeLength(UserString(1024),50)+' : '+Makelength(vTrimAngle,-1,8)+' °');
-        end;
-      end else begin
-        Strings.Add('  ');
-        Strings.Add(UserString(1029));
-        Strings.Add('  ');
-      end;
-
-      //   Расчет параметров остойчивости в накрененном положении
-
-      if abs(FData.CenterOfBuoyancy.Y) > 0.01 then begin
-        lform:=FData.CenterOfBuoyancy.Y-Total.SurfaceCenterOfGravity.Y;
-        // vTrimAngle:=-(Total.SurfaceCenterOfGravity.X-FData.CenterOfBuoyancy.X)/hl*Radian;
-        Strings.Add(S4);
-        Strings.Add(S4+MakeLength(UserString(1453), 50) +
-          ' : '+MakeLength(FData.CenterOfBuoyancy.Y, -1, 8)+' ' +
-          LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Strings.Add(S4+MakeLength(UserString(1454), 50) +
-          ' : '+MakeLength(lform, -1, 8)+' ' +
-          LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Strings.Add(S4+MakeLength(UserString(1455), 50) +
-          ' : '+MakeLength(FData.CenterOfBuoyancy.X, -1, 8)+' ' +
-          LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Strings.Add(S4+MakeLength(UserString(1456), 50) +
-          ' : '+MakeLength(FData.CenterOfBuoyancy.X -
-          Total.SurfaceCenterOfGravity.X, -1, 8)+' ' +
-          LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Strings.Add(S4+MakeLength(UserString(1581), 50) +
-          ' : '+MakeLength((FData.CenterOfBuoyancy.X -
-          Total.SurfaceCenterOfGravity.X) * 9.807 * FData.Displacement, -1, 8) +
-          ' '+UserString(1133));
-        if hl > 0 then
-          Strings.Add(S4+MakeLength(UserString(1582), 50) +
-            ' : '+MakeLength(
-            (FData.CenterOfBuoyancy.X-Total.SurfaceCenterOfGravity.X) *
-            Radian / hl, -1, 8)+' °' );
-      end;
-      Strings.Add(S4);
+  if abs(FData.CenterOfBuoyancy.Y) > 0.01 then begin
+    Strings.Add(S4);
+    Strings.Add(S4+MakeLength(UserString(1453),44) +
+    ' : '+MakeLength(FData.CenterOfBuoyancy.Y,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(UserString(1454),44) +
+    ' : '+MakeLength(FData.CenterOfBuoyancy.Y-Total.SurfaceCenterOfGravity.Y,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(UserString(1455),44) +
+    ' : '+MakeLength(FData.CenterOfBuoyancy.X,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(UserString(1456),44) +
+    ' : '+MakeLength(FData.CenterOfBuoyancy.X-Total.SurfaceCenterOfGravity.X,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength(UserString(1581),44) +
+    ' : '+MakeLength((FData.CenterOfBuoyancy.X-Total.SurfaceCenterOfGravity.X) * 9.807 * FData.Displacement,-1,8)+' '+UserString(1133));
+    if hl > 0 then
+    Strings.Add(S4+MakeLength(UserString(1582),44)+' : '+MakeLength((FData.CenterOfBuoyancy.X-Total.SurfaceCenterOfGravity.X)*Radian/hl,-1,8)+' °' );
+  end;
+  Strings.Add(S4);
 
       // Расчет координат штевней для СПШ и масштаба Бонжана
 
@@ -508,147 +400,126 @@ begin
 *)
       // Расчет грузового размера, если включено автоперемещение
 
-      if (Owner.ProjectSettings.EnableModelAutoMove) and (abs(dT)>0.0005) then begin
-        //    Strings.Add(S4+MakeLength('Старая осадка',50)+' : '+Makelength(Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        Owner.ProjectSettings.ProjectDraft:=Draft+dT;
-        HydObject:=TFreeHydrostaticCalc.Create(Owner);
-        T[1]:=FData.ModelMin.Z;
-        Displ[1]:=0;
-        T[10]:=FData.ModelMax.Z;
-        if (h_min <= 0) then h_min:=T[10]-Draft;
-        dT:=(Draft+h_min)/9;
-        new:
-          for id:=2 to 10 do begin
-            Displ[id]:=0;
-            HydObject.Draft:=(id-1) * dT-0.001;
-            T[id]:=HydObject.Draft;
-            if HydObject.Draft >= Owner.Surface.Max.Z then goto ExitDo;
-            // if (HydObject.Draft>=h_min+Draft) and (h_min>0) then goto ExitDo;
-            if HydObject.Draft >= h_min+Draft then goto ExitDo;
-            HydObject.Calculate;
-            HydObject.CalculateGravity;
-            Displ[id]:=HydObject.Data.Displacement;
-{             Strings.Add(S4+MakeLength('T,Xaft,Xfor=',10)+' : '+Makelength(T[id],-1,8)+Makelength(HydObject.Data.WlMin.x,-1,8)+Makelength(HydObject.Data.WlMax.x,-1,8));
-              Strings.Add(S4+MakeLength('D0',50)+' : '+Makelength(HydObject.Data.Weight_,-1,8));
-              Strings.Add(S4+MakeLength('Rho*g*V',50)+' : '+Makelength(HydObject.Data.Displacement,-1,8));
-              Strings.Add(S4+MakeLength('S',50)+' : '+Makelength(HydObject.Data.WaterplaneArea,-1,8));
-              Strings.Add(S4+MakeLength('Новая осадка',50)+' : '+Makelength(HydObject.Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-              Strings.Add(' ');
-}         end;
-        ExitDo:               // Рассчитываем новую осадку по грузовому размеру
-          id:=id-1;
-        // Strings.Add(S4+MakeLength('Id=',50)+' : '+Makelength(id,-1,8));
-        Interpolation( HydObject.Data.Weight_,id,Displ,T,Tr );
-//      SFINEX1( id,Displ,T,HydObject.Data.Weight_,Tr );
-        // Strings.Add(S4+MakeLength('T raschet=',50)+' : '+Makelength(Tr,-1,8));
-        Owner.ProjectSettings.ProjectDraft:=Tr;        // Уточняем новую осадку
-        // Strings.Add(S4+MakeLength('Максимальная осадка',50)+' : '+Makelength(h_min+Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        // Strings.Add(S4+MakeLength('Новая осадка',50)+' : '+Makelength(Tr,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-        HydObject.Draft:=Tr;
-        HydObject.Calculate;
-        HydObject.CalculateGravity;
-        // dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement)/HydObject.Data.WaterplaneArea/Owner.ProjectSettings.ProjectWaterDensity;
-        if HydObject.Data.WaterplaneArea > 0.1 then
-          dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement) /
-            HydObject.Data.WaterplaneArea / Owner.ProjectSettings.ProjectWaterDensity
-        else
-          dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement) /
-            Owner.ProjectSettings.ProjectLength / Owner.ProjectSettings.ProjectBeam /
-            Owner.ProjectSettings.ProjectWaterDensity;
-        Owner.ProjectSettings.ProjectDraft:=Tr+dT_;
-        if abs( Tr/(Tr+dT_)-1)>0.1 then begin dT:=Tr/9; goto new; end;
-        if Owner.ProjectSettings.ProjectDraft > 1.1 * Tr then
-          Owner.ProjectSettings.ProjectDraft:=Draft+dT+FData.ModelMin.Z;
-{
-          Strings.Add(S4+MakeLength('D1',50)+' : '+Makelength(HydObject.Data.Weight_,-1,8));
-          Strings.Add(S4+MakeLength('Rho*g*V',50)+' : '+Makelength(HydObject.Data.Displacement,-1,8));
-          Strings.Add(S4+MakeLength('S',50)+' : '+Makelength(HydObject.Data.WaterplaneArea,-1,8));
-          Strings.Add(S4+MakeLength('dT',50)+' : '+Makelength(dT_,-1,8));
-          Strings.Add(S4+MakeLength('Старая осадка',50)+' : '+Makelength(Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-          Strings.Add(S4+MakeLength('Новая осадка',50)+' : '+Makelength(Owner.ProjectSettings.ProjectDraft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-          Strings.Add(' ');
+  if (Owner.ProjectSettings.EnableModelAutoMove) and (abs(dT)>0.0005) then begin
+  //    Strings.Add(S4+MakeLength('Старая осадка',44)+' : '+Makelength(Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Owner.ProjectSettings.ProjectDraft:=Draft+dT;
+    HydObject:=TFreeHydrostaticCalc.Create(Owner);
+    T[1]:=FData.ModelMin.Z;
+    Displ[1]:=0;
+    T[10]:=FData.ModelMax.Z;
+    if (h_min <= 0) then h_min:=T[10]-Draft;
+    dT:=(Draft+h_min)/9;
+new:
+    for id:=2 to 10 do begin
+      Displ[id]:=0;
+      HydObject.Draft:=(id-1) * dT-0.001;
+      T[id]:=HydObject.Draft;
+      if HydObject.Draft >= Owner.Surface.Max.Z then goto ExitDo;
+      // if (HydObject.Draft>=h_min+Draft) and (h_min>0) then goto ExitDo;
+      if HydObject.Draft >= h_min+Draft then goto ExitDo;
+      HydObject.Calculate;
+      HydObject.CalculateGravity;
+      Displ[id]:=HydObject.Data.Displacement;
+{     Strings.Add(S4+MakeLength('T,Xaft,Xfor=',10)+' : '+Makelength(T[id],-1,8)+Makelength(HydObject.Data.WlMin.x,-1,8)+Makelength(HydObject.Data.WlMax.x,-1,8));
+      Strings.Add(S4+MakeLength('D0',44)+' : '+Makelength(HydObject.Data.Weight_,-1,8));
+      Strings.Add(S4+MakeLength('Rho*g*V',44)+' : '+Makelength(HydObject.Data.Displacement,-1,8));
+      Strings.Add(S4+MakeLength('S',44)+' : '+Makelength(HydObject.Data.WaterplaneArea,-1,8));
+      Strings.Add(S4+MakeLength('Новая осадка',44)+' : '+Makelength(HydObject.Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+      Strings.Add(' ');
+}   end;
+ExitDo:               // Рассчитываем новую осадку по грузовому размеру
+    id:=id-1;
+    // Strings.Add(S4+MakeLength('Id=',44)+' : '+Makelength(id,-1,8));
+    Interpolation( HydObject.Data.Weight_,id,Displ,T,Tr );
+    //SFINEX1( id,Displ,T,HydObject.Data.Weight_,Tr );
+    // Strings.Add(S4+MakeLength('T raschet=',44)+' : '+Makelength(Tr,-1,8));
+    Owner.ProjectSettings.ProjectDraft:=Tr;        // Уточняем новую осадку
+    // Strings.Add(S4+MakeLength('Максимальная осадка',44)+' : '+Makelength(h_min+Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    // Strings.Add(S4+MakeLength('Новая осадка',44)+' : '+Makelength(Tr,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    HydObject.Draft:=Tr;
+    HydObject.Calculate;
+    HydObject.CalculateGravity;
+    // dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement)/HydObject.Data.WaterplaneArea/Owner.ProjectSettings.ProjectWaterDensity;
+    if HydObject.Data.WaterplaneArea > 0.1
+    then dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement)/HydObject.Data.WaterplaneArea/Owner.ProjectSettings.ProjectWaterDensity
+    else dT_:=(HydObject.Data.Weight_-HydObject.Data.Displacement)/Owner.ProjectSettings.ProjectLength/Owner.ProjectSettings.ProjectBeam/Owner.ProjectSettings.ProjectWaterDensity;
+    Owner.ProjectSettings.ProjectDraft:=Tr+dT_;
+    if abs( Tr/(Tr+dT_)-1)>0.1 then begin dT:=Tr/9; goto new; end;
+    if Owner.ProjectSettings.ProjectDraft > 1.1 * Tr then
+       Owner.ProjectSettings.ProjectDraft:=Draft+dT+FData.ModelMin.Z;
+{   Strings.Add(S4+MakeLength('D1',44)+' : '+Makelength(HydObject.Data.Weight_,-1,8));
+    Strings.Add(S4+MakeLength('Rho*g*V',44)+' : '+Makelength(HydObject.Data.Displacement,-1,8));
+    Strings.Add(S4+MakeLength('S',44)+' : '+Makelength(HydObject.Data.WaterplaneArea,-1,8));
+    Strings.Add(S4+MakeLength('dT',44)+' : '+Makelength(dT_,-1,8));
+    Strings.Add(S4+MakeLength('Старая осадка',44)+' : '+Makelength(Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(S4+MakeLength('Новая осадка',44)+' : '+Makelength(Owner.ProjectSettings.ProjectDraft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+    Strings.Add(' ');
 }
-        FreeAndNil(HydObject);
-      end;
-      //  Strings.Add(S4+MakeLength('Максимум возможной осадки',50)+' : '+Makelength(Owner.Surface.Max.Z,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-      // Add sectional Area data
-      N:=Length(FData.SAC); // ************************************************
-      if N > 100 then
-        ShowMessage('N='+FloatToStrF(N,ffFixed,6,0)+' - '+UserString(1484) );
-      if (N > 0) and (N < 100) then begin begin
-          Strings.Add('');
-          Strings.Add(UserString(38)+':');
-          Strings.Add('');
-          Strings.Add(' +-----------+----------+');
-          Strings.Add(' | '+MakeLength(Userstring(57), 9)+' | ' +  MakeLength(Userstring(34),8)+' |');
-          Strings.Add(' |    '+MakeLength(
-            LengthStr(Owner.ProjectSettings.ProjectUnits), 6)+' |   ' +
-            MakeLength(AreaStr(Owner.ProjectSettings.ProjectUnits),
-            6)+' |');
-          Strings.Add(' +-----------+----------+'); JJ:=1;
-          Strings.Add(' | '+Makelength(FData.SubMin.X, 3, 9) +
-            ' | '+Makelength(Fdata.Sac[0].Y, 3, 8)+' | ');
-          Xs[JJ]:=FData.SubMin.X;
-          Ws[JJ]:=FData.Sac[0].Y;
-          JJ:=2;
-          II:=1;
-          if (FData.SubMin.X < 0) or (FData.SubMin.X > Fdata.Sac[0].X) then
-            II:=2;
-          for I:=II to N-1 do
-          begin
-            Position:=FData.Sac[I-1].X;
-            Strings.Add(' | '+Makelength(Position, 3, 9)+' | ' +
-              Makelength(Fdata.Sac[I-1].Y, 3, 8)+' | ');
-            Xs[JJ]:=Position;
-            Ws[JJ]:=FData.Sac[I-1].Y;
-            JJ:=JJ+1;
-          end;
-          Strings.Add(' | '+Makelength(FData.SubMax.X, 3, 9) +
-            ' | '+Makelength(0., 3, 8)+' | ');
-          Xs[JJ]:=FData.SubMax.X;
-          Ws[JJ]:=0.;
-          Strings.Add(' +-----------+----------+');
-        end;
-      end;
+    FreeAndNil(HydObject);
+  end;
+  //  Strings.Add(S4+MakeLength('Максимум возможной осадки',44)+' : '+Makelength(Owner.Surface.Max.Z,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  // Add sectional Area data
+  N:=Length(FData.SAC); // ************************************************
+  //if N > 100 then ShowMessage('N='+FloatToStrF(N,ffFixed,6,0)+' - '+UserString(1484) );
+  if N > 0 then begin
+    Strings.Add('');
+    Strings.Add(UserString(38)+':');
+    Strings.Add('');
+    Strings.Add(' ┌───────────┬──────────┐');
+    Strings.Add(' │ '+MakeLength(Userstring(57),9)+' │ '+ MakeLength(Userstring(34),8)+' │');
+    Strings.Add(' │    '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),6)+' │   '+MakeLength(AreaStr(Owner.ProjectSettings.ProjectUnits),6)+' │');
+    Strings.Add(' ├───────────┼──────────┤'); JJ:=1;
+    Strings.Add(' │ '+Makelength(FData.SubMin.X,3,9)+' │ '+Makelength(Fdata.Sac[0].Y,3,8)+' │ ');
+    Xs[JJ]:=FData.SubMin.X;
+    Ws[JJ]:=FData.Sac[0].Y;
+    JJ:=2;
+    II:=1;
+    if (FData.SubMin.X < 0) or (FData.SubMin.X > Fdata.Sac[0].X) then II:=2;
+    for I:=II to N-1 do begin
+      Position:=FData.Sac[I-1].X;
+      Strings.Add(' │ '+Makelength(Position,3,9)+' │ '+Makelength(Fdata.Sac[I-1].Y,3,8)+' │ ');
+      Xs[JJ]:=Position;
+      Ws[JJ]:=FData.Sac[I-1].Y;
+      JJ:=JJ+1;
     end;
-    if (FData.ModelMin.Z<>0.0) and Owner.ProjectSettings.EnableModelAutoMove
-          then Face_MoveZAuto;
-    AddFooter( Strings ); //,Mode );
-//end;
+    Strings.Add(' │ '+Makelength(FData.SubMax.X,3,9)+' │ '+Makelength(0.,3,8)+' │ ');
+    Xs[JJ]:=FData.SubMax.X;
+    Ws[JJ]:=0.;
+    Strings.Add(' └───────────┴──────────┘');
+  end;
+  if (FData.ModelMin.Z<>0.0)
+  and Owner.ProjectSettings.EnableModelAutoMove then Face_MoveZAuto;
+  AddFooter( Strings );
 end;
 
-procedure TFreeHydrostaticCalc.AddHeader( Strings: TStringList ); const ls=30;
+procedure TFreeHydrostaticCalc.AddHeader( Strings: TStringList ); const ls=28;
 begin                                                             // Проект
-  Strings.Add(MakeLength(Userstring(39),ls)+' : '+Owner.ProjectSettings.ProjectName);
-  Strings.Add(MakeLength(Userstring(40),ls)+' : '+Owner.ProjectSettings.ProjectDesigner);
-  if Owner.ProjectSettings.ProjectFileCreatedBy <> '' then
-     Strings.Add(MakeLength(Userstring(41),ls)+' : '+Owner.ProjectSettings.ProjectFileCreatedBy);
-  if Owner.ProjectSettings.ProjectComment <> '' then
-     Strings.Add(MakeLength(Userstring(42),ls)+' : '+Owner.ProjectSettings.ProjectComment );
-  Strings.Add(MakeLength(Userstring(43),ls)+' : '+ChangeFileExt( ExtractFilename(Owner.FileName),'.fbm'));
+  Strings.Add(MakeLength(Userstring(39),10)+': '+Owner.ProjectSettings.ProjectName);
+  Strings.Add(MakeLength(Userstring(40),10)+': '+Owner.ProjectSettings.ProjectDesigner);
+  if Owner.ProjectSettings.ProjectFileCreatedBy<>'' then
+     Strings.Add(MakeLength(Userstring(41),10)+': '+Owner.ProjectSettings.ProjectFileCreatedBy);
+  if Owner.ProjectSettings.ProjectComment<>''then
+     Strings.Add(MakeLength(Userstring(42),10)+': '+Owner.ProjectSettings.ProjectComment );
+  Strings.Add(MakeLength(Userstring(43),10)+': '+ExtractFilename(Owner.FileName));
   Strings.Add( '' );
-  Strings.Add(MakeLength(Userstring(44),ls)+' : '+MakeLength(
-    Owner.ProjectSettings.ProjectLength,-1,10)+#32+LengthStr(
-    Owner.ProjectSettings.ProjectUnits));
-  Strings.Add(MakeLength(Userstring(45),ls)+' : '+MakeLength(
-    FData.ModelMax.X-FData.ModelMin.X,-1,10)+#32+LengthStr(
-    Owner.ProjectSettings.ProjectUnits));
-  Strings.Add(MakeLength(Userstring(46),ls)+' : '+MakeLength(
-    Owner.ProjectSettings.ProjectBeam,-1,10)+#32+LengthStr(
-    Owner.ProjectSettings.ProjectUnits));
-  Strings.Add(MakeLength(Userstring(47),ls)+' : '+MakeLength
-    ( 2*FData.ModelMax.Y,-1,10)+#32+LengthStr(Owner.ProjectSettings.ProjectUnits) );
-  Strings.Add(MakeLength(Userstring(48),ls)+' : '+MakeLength(
-    Owner.ProjectSettings.Projectdraft+FData.ModelMin.Z,-1,10) +
-    #32+LengthStr(Owner.ProjectSettings.ProjectUnits));
-  Strings.Add(MakeLength(Userstring(49),ls)+' : '+MakeLength(
-    Owner.ProjectSettings.ProjectSplitSectionLocation,-1,10)+#32+ // FMidshipLocation,-1,10)+#32+
-    LengthStr(Owner.ProjectSettings.ProjectUnits));
-  Strings.Add(MakeLength(Userstring(50),ls)+' : '+MakeLength(
-    Owner.ProjectSettings.ProjectWaterDensity, 3, 10)+#32+DensityStr(
-    Owner.ProjectSettings.ProjectUnits));
-  Strings.Add(MakeLength(Userstring(51),ls)+' : '+MakeLength(
-    Owner.ProjectSettings.ProjectAppendageCoefficient, 4, 10));
+  Strings.Add(MakeLength(Userstring(44),ls)+
+  ' : '+MakeLength(Owner.ProjectSettings.ProjectLength,-1,10)+#32+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(MakeLength(Userstring(45),ls)+
+  ' : '+MakeLength(FData.ModelMax.X-FData.ModelMin.X,-1,10)+#32+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(MakeLength(Userstring(46),ls)+
+  ' : '+MakeLength(Owner.ProjectSettings.ProjectBeam,-1,10)+#32+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(MakeLength(Userstring(47),ls)+
+  ' : '+MakeLength( 2*FData.ModelMax.Y,-1,10)+#32+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(MakeLength(Userstring(48),ls)+
+  ' : '+MakeLength(Owner.ProjectSettings.Projectdraft+FData.ModelMin.Z,-1,10)+#32+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(MakeLength(Userstring(258),ls)+
+  ' : '+MakeLength(Owner.ProjectSettings.Projectdraft,-1,10)+#32+LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(MakeLength(Userstring(49),ls)+
+  ' : '+MakeLength(Owner.ProjectSettings.ProjectSplitSectionLocation,-1,10)+#32+{FMidshipLocation,-1,10)+#32+}LengthStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(MakeLength(Userstring(50),ls)+
+  ' : '+MakeLength(Owner.ProjectSettings.ProjectWaterDensity,3,10)+#32+DensityStr(Owner.ProjectSettings.ProjectUnits));
+  Strings.Add(MakeLength(Userstring(51),ls)+
+  ' : '+MakeLength(Owner.ProjectSettings.ProjectAppendageCoefficient,4,10));
 end;
 
 procedure TFreeHydrostaticCalc.Face_MoveZAuto;
@@ -661,16 +532,12 @@ var
   P, Translate: T3DVector;
   Marker: TFreeMarker;
 begin
-  for I:=1 to Owner.NumberOfLayers do
-    if Owner.Layer[I-1].SurfaceVisible then
-      for J:=1 to Owner.Layer[I-1].Count do
-        Owner.Layer[I-1].Items[J-1].Selected:=True;
-  for I:=1 to Owner.Surface.NumberOfControlPoints do
-    if Owner.Surface.ControlPoint[I-1].Visible then
-      Owner.Surface.ControlPoint[I-1].Selected:=True;
-  for I:=1 to Owner.NumberofMarkers do
-    if Owner.Marker[I-1].Visible then
-      Owner.Marker[I-1].Selected:=True;
+  for I:=1 to Owner.NumberOfLayers do if Owner.Layer[I-1].SurfaceVisible then
+    for J:=1 to Owner.Layer[I-1].Count do Owner.Layer[I-1].Items[J-1].Selected:=True;
+  for I:=1 to Owner.Surface.NumberOfControlPoints do if Owner.Surface.ControlPoint[I-1].Visible then
+              Owner.Surface.ControlPoint[I-1].Selected:=True;
+  for I:=1 to Owner.NumberofMarkers do if Owner.Marker[I-1].Visible then
+              Owner.Marker[I-1].Selected:=True;
   Owner.Redraw;
 
   Points:=TFasterListTFreeSubdivisionControlPoint.Create;
@@ -682,34 +549,31 @@ begin
   Translate.Z:=-FData.ModelMin.Z;
   PrevCursor:=Screen.Cursor;
   Screen.Cursor:=crHourGlass;
-//try
-    for I:=1 to Points.Count do begin
-      Point:=TFreeSubdivisionControlPoint(Points[I-1]);
-      if not Point.Locked then begin
-        P:=Point.Coordinate;
+  for I:=1 to Points.Count do begin
+    Point:=TFreeSubdivisionControlPoint(Points[I-1]);
+    if not Point.Locked then begin
+      P:=Point.Coordinate;
+      P.Z:=P.Z+Translate.Z;
+      Point.Coordinate:=P;
+    end;
+  end;
+  if Points.Count = Owner.Surface.NumberOfControlPoints then begin
+    for I:=1 to Owner.NumberofWaterlines do
+      Owner.Waterline[I-1].FPlane.d:=Owner.Waterline[I-1].FPlane.d-Translate.Z; // Update markers
+    for I:=1 to Owner.NumberofMarkers do begin
+      Marker:=Owner.Marker[I-1];
+      for J:=1 to Marker.NumberOfPoints do begin
+        P:=Marker.Point[J-1];
         P.Z:=P.Z+Translate.Z;
-        Point.Coordinate:=P;
+        Marker.Point[J-1]:=P;
       end;
     end;
-    if Points.Count = Owner.Surface.NumberOfControlPoints then begin
-      for I:=1 to Owner.NumberofWaterlines do
-        Owner.Waterline[I-1].FPlane.d:=Owner.Waterline[I-1].FPlane.d-Translate.Z; // Update markers
-      for I:=1 to Owner.NumberofMarkers do begin
-        Marker:=Owner.Marker[I-1];
-        for J:=1 to Marker.NumberOfPoints do begin
-          P:=Marker.Point[J-1];
-          P.Z:=P.Z+Translate.Z;
-          Marker.Point[J-1]:=P;
-        end;
-      end;
-    end;
-    Owner.Built:=False;
-    Owner.Redraw;
-//finally                                          // Refresh controlpoint data
-    if Points.IndexOf(Owner.ActiveControlPoint) <> -1 then
-      Owner.ActiveControlPoint:=Owner.ActiveControlPoint;
-    Screen.Cursor:=PrevCursor;
-//end;
+  end;
+  Owner.Built:=False;
+  Owner.Redraw;                                  // Refresh controlpoint data
+  if Points.IndexOf(Owner.ActiveControlPoint) <> -1 then
+    Owner.ActiveControlPoint:=Owner.ActiveControlPoint;
+  Screen.Cursor:=PrevCursor;
   for I:=1 to Owner.Surface.NumberOfControlPoints do
     if Owner.Surface.ControlPoint[I-1].Visible then
       Owner.Surface.ControlPoint[I-1].Selected:=False;
@@ -733,56 +597,36 @@ end;
 
 ///////////// Calculate Gravity Weight and CoG
 procedure TFreeHydrostaticCalc.CalculateGravity;
-
-var
-  I, N: integer;
-  Properties: TLayerProperties;
-  Total: TLayerProperties;
-
+var I,N: integer; Properties,Total: TLayerProperties;
 begin
   if not Owner.Built then exit;
-
   N:=0;
   Total.Weight:=0;
   Total.SurfaceCenterOfGravity.X:=0.0;
   Total.SurfaceCenterOfGravity.Y:=0.0;
   Total.SurfaceCenterOfGravity.Z:=0.0;
-  for I:=1 to Owner.NumberOfLayers do
-    if Owner.Layer[I-1].Count > 0 then
-      Inc(N);
+  for I:=1 to Owner.NumberOfLayers do if Owner.Layer[I-1].Count>0 then Inc(N);
   if N > 0 then
-    for I:=1 to Owner.NumberOfLayers do
-      if Owner.Layer[I-1].Count > 0 then begin
-        Properties:=Owner.Layer[I-1].SurfaceProperties;
-        Properties.SurfaceCenterOfGravity.Z :=
-          Properties.SurfaceCenterOfGravity.Z-FData.ModelMin.Z;
-        if Owner.ProjectSettings.ProjectUnits = fuImperial
-           then Properties.Weight:=Properties.Weight / (12 * 2240)
-           else Properties.Weight:=Properties.Weight / 1000;
-        Total.SurfaceArea:=Total.SurfaceArea+Properties.SurfaceArea;
-        Total.Weight:=Total.Weight+Properties.Weight;
-        Total.SurfaceCenterOfGravity.X :=
-          Total.SurfaceCenterOfGravity.X+Properties.Weight *
-          Properties.SurfaceCenterOfGravity.X;
-        Total.SurfaceCenterOfGravity.Y :=
-          Total.SurfaceCenterOfGravity.Y+Properties.Weight *
-          Properties.SurfaceCenterOfGravity.Y;
-        Total.SurfaceCenterOfGravity.Z :=
-          Total.SurfaceCenterOfGravity.Z+Properties.Weight *
-          Properties.SurfaceCenterOfGravity.Z;
-      end;
-  if N >= 1 then
-    if Total.Weight <> 0 then
-    begin
-      Total.SurfaceCenterOfGravity.X :=
-        Total.SurfaceCenterOfGravity.X / Total.Weight;
-      Total.SurfaceCenterOfGravity.Y :=
-        Total.SurfaceCenterOfGravity.Y / Total.Weight;
-      Total.SurfaceCenterOfGravity.Z :=
-        Total.SurfaceCenterOfGravity.Z / Total.Weight;
-    end// if more then 1 layer is added, then show the properties of all layers together
-  ;
-  //// Weight
+  for I:=1 to Owner.NumberOfLayers do
+  if Owner.Layer[I-1].Count>0 then begin
+    Properties:=Owner.Layer[I-1].SurfaceProperties;
+    Properties.SurfaceCenterOfGravity.Z:=Properties.SurfaceCenterOfGravity.Z-FData.ModelMin.Z;
+    if Owner.ProjectSettings.ProjectUnits=fuImperial
+        then Properties.Weight:=Properties.Weight / (12 * 2240)
+        else Properties.Weight:=Properties.Weight / 1000;
+    Total.SurfaceArea:=Total.SurfaceArea+Properties.SurfaceArea;
+    Total.Weight:=Total.Weight+Properties.Weight;
+    Total.SurfaceCenterOfGravity.X:=Total.SurfaceCenterOfGravity.X+Properties.Weight*Properties.SurfaceCenterOfGravity.X;
+    Total.SurfaceCenterOfGravity.Y:=Total.SurfaceCenterOfGravity.Y+Properties.Weight*Properties.SurfaceCenterOfGravity.Y;
+    Total.SurfaceCenterOfGravity.Z:=Total.SurfaceCenterOfGravity.Z+Properties.Weight*Properties.SurfaceCenterOfGravity.Z;
+  end;
+  if N>=1 then
+  if Total.Weight<>0 then begin
+    Total.SurfaceCenterOfGravity.X:=Total.SurfaceCenterOfGravity.X/Total.Weight;
+    Total.SurfaceCenterOfGravity.Y:=Total.SurfaceCenterOfGravity.Y/Total.Weight;
+    Total.SurfaceCenterOfGravity.Z:=Total.SurfaceCenterOfGravity.Z/Total.Weight;
+  end; // if more then 1 layer is added, then show the properties of all layers together
+  ////  Weight
   FData.Weight_:=Total.Weight;
   FData.CenterOfGravity_.X:=Total.SurfaceCenterOfGravity.X;
   FData.CenterOfGravity_.Y:=Total.SurfaceCenterOfGravity.Y;
@@ -973,9 +817,9 @@ begin
   FirstPoint:=True;
   Submerged:=False;
   PointCapacity:=5;
-  Setlength(Points, PointCapacity);
+  Setlength( Points,PointCapacity );
   FirstSubmPoint:=True;
-  FData.AbsoluteDraft:=1000;
+//FData.AbsoluteDraft:=Draft; //1000;
 
   //  Альтернативный метод N1 расчета объема с использованием СПВ и СПШ
   if Nmet = 1 then begin
@@ -987,7 +831,7 @@ begin
     FData.WaterplaneCOG.X:=0;
     FData.WaterplaneCOG.Y:=0;
     FData.WaterplaneCOG.Z:=0;
-    FData.AbsoluteDraft:=Draft;
+//  FData.AbsoluteDraft:=Draft;
     Waterplane:=TFreeIntersection.Create(Owner);
     Waterplane.FIntersectionType:=fiWaterline;
     Waterplane.FUseHydrostaticsSurfacesOnly:=True;
@@ -1053,12 +897,12 @@ begin
               CheckSubmergedBody(P, 0.0);
             end;
             if Side2 <= 1e-6 then begin
-              if Side2 < FData.AbsoluteDraft then FData.AbsoluteDraft:=Side2;
+//            if Side2<FData.AbsoluteDraft then FData.AbsoluteDraft:=Side2;
               // P2 lies also on or under the waterlineplane
               Inc(NoPoints);
-              if NoPoints > PointCapacity then begin
+              if NoPoints>PointCapacity then begin
                 Inc(PointCapacity);
-                Setlength(Points, PointCapacity);
+                Setlength( Points,PointCapacity );
               end;
               Points[NoPoints-1]:=P2;
               CheckSubmergedBody( P2,Side2 );
@@ -1100,7 +944,7 @@ begin
                 CheckSubmergedBody(P, 0.0);
               end;
               if Side2 <= 1e-6 then begin // P2 lies also under the waterlineplane
-                if Side2<FData.AbsoluteDraft then FData.AbsoluteDraft:=Side2;
+//              if Side2<FData.AbsoluteDraft then FData.AbsoluteDraft:=Side2;
                 Inc(NoPoints);
                 if NoPoints > PointCapacity then begin
                   Inc(PointCapacity);
@@ -1120,12 +964,11 @@ begin
       end;
   end;
   FData.Volume:=FData.Volume;
-  FData.AbsoluteDraft:=-FData.AbsoluteDraft;
-  if FirstPoint then
-    if not submerged then begin
-      FData.AbsoluteDraft:=0.0;
-    end;    // No intersection with the watersurface found, the ship is either
-            // not submerged or totally submerged
+//FData.AbsoluteDraft:=-FData.AbsoluteDraft;
+//if FirstPoint then
+//if not submerged then FData.AbsoluteDraft:=0.0;
+                       // No intersection with the watersurface found,
+                       // the ship is either not submerged or totally submerged
   SubmergedLength:=Fdata.SubMax.X-FData.SubMin.X;
   SubmergedWidth:=FData.SubMax.Y-FData.SubMin.Y;
   FData.Displacement:=VolumeToDisplacement(FData.Volume,
@@ -1152,25 +995,23 @@ begin
     FMidshipSection.FPlane.a:=1.0;
     FMidshipSection.FPlane.b:=0.0;
     FMidshipSection.FPlane.c:=0.0;
-//    FMidshipSection.FPlane.d:=-FMidshipLocation;
-    FMidshipSection.FPlane.d:=Owner.ProjectSettings.ProjectSplitSectionLocation;
-    FMidshipSection.CalculateArea(FData.WaterlinePlane, FData.MidshipArea,
-       FData.MidshipCOG, TmpP2D);
+//  FMidshipSection.FPlane.d:=-FMidshipLocation;
+    FMidshipSection.FPlane.d:=-Owner.ProjectSettings.ProjectSplitSectionLocation;
+    FMidshipSection.CalculateArea( FData.WaterlinePlane,FData.MidshipArea,FData.MidshipCOG,TmpP2D ); // writeln( 'Mid='+floattostr( FData.MidshipArea ) );
     FData.MidshipCOG.Z:=FData.MidshipCOG.Z-FData.ModelMin.Z;
     Smid_:=FData.MidshipArea;
     Zmid_:=FData.MidshipCOG.Z;
-    if Owner.ProjectSettings.ProjectCoefficients = fcActualData then begin
-      if SubmergedWidth * Draft <> 0.0 then
-        FData.MidshipCoeff:=FData.MidshipArea / (SubmergedWidth * Draft);
-      if FData.MidshipCoeff > 1.01 then begin
-        FData.MidshipCoeff:=FData.MidshipCoeff / 2.0;
-        FData.MidshipArea:=FData.MidshipArea / 2.0;
+    if Owner.ProjectSettings.ProjectCoefficients = fcActualData then
+    begin
+      if SubmergedWidth*Draft<>0.0 then FData.MidshipCoeff:=FData.MidshipArea/(SubmergedWidth*Draft);
+      if FData.MidshipCoeff>1.01 then begin
+        FData.MidshipCoeff:=FData.MidshipCoeff/2.0;
+        FData.MidshipArea:=FData.MidshipArea/2.0;
         isymm:=1;
       end;
-    end
-    else if Owner.ProjectSettings.ProjectBeam * Draft <> 0.0 then
-      FData.MidshipCoeff:=FData.MidshipArea /
-        (Owner.ProjectSettings.ProjectBeam * Draft);
+    end else
+    if Owner.ProjectSettings.ProjectBeam*Draft<>0.0 then
+      FData.MidshipCoeff:=FData.MidshipArea/(Owner.ProjectSettings.ProjectBeam*Draft);
   end;
 
   if (FData.Volume>0) // Calculate waterplane properties-Расчет площади ватерлинии
@@ -1231,8 +1072,8 @@ begin
     FData.KMlongitudinal:=FData.CenterOfBuoyancy.Z+abs(
       FData.WaterplaneMomInertia.Y) / FData.Volume;
   end;
-  if Draft <> 0 then begin
-    if Owner.ProjectSettings.ProjectCoefficients = fcActualData then begin
+  if Draft<>0 then with Owner.ProjectSettings do begin
+    if ProjectCoefficients = fcActualData then begin
       // Block coefficient based on length and beam measured on the waterline
       if SubmergedWidth * SubmergedLength * Draft <> 0.0 then
         FData.BlockCoefficient :=
@@ -1242,15 +1083,11 @@ begin
         FData.PrismCoefficient:=FData.Volume / (FData.MidshipArea * SubmergedLength);
     end else begin
       // Block coefficient based on length and beam from project settings
-      if Owner.ProjectSettings.ProjectLength * Owner.ProjectSettings.ProjectBeam *
-        Draft <> 0.0 then
-        FData.BlockCoefficient :=
-          FData.Volume / (Owner.ProjectSettings.ProjectLength *
-          Owner.ProjectSettings.ProjectBeam * Draft);
+      if ProjectLength*ProjectBeam*Draft <> 0.0 then
+        FData.BlockCoefficient:=FData.Volume/(ProjectLength*ProjectBeam*Draft);
       // Prismatic coefficient based on length from project settings
-      if FData.MidshipArea * Owner.ProjectSettings.ProjectLength <> 0.0 then
-        FData.PrismCoefficient :=
-          FData.Volume / (FData.MidshipArea * Owner.ProjectSettings.ProjectLength);
+      if FData.MidshipArea*ProjectLength <> 0.0 then
+        FData.PrismCoefficient := FData.Volume/(FData.MidshipArea*ProjectLength);
     end;
     if FData.WaterplaneCoeff <> 0 then
       FData.VertPrismCoefficient:=FData.BlockCoefficient / FData.WaterplaneCoeff;

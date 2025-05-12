@@ -204,8 +204,8 @@ begin
   inherited Destroy;
 end;
 
-function TFreeDevelopedPatch.DistanceToCursor(X, Y: integer;
-  Viewport: TFreeViewport): integer;
+function TFreeDevelopedPatch.DistanceToCursor
+       ( X,Y: integer; Viewport: TFreeViewport ): integer;
 var
   I,S,E,Dist: integer;
   Edge: TFreeSubdivisionEdge;
@@ -228,11 +228,11 @@ begin
         P2:=MirrorPoint[E];
         Dist:=Round(DistanceToLine( Viewport.Project(P1),
                                     Viewport.Project(P2), X,Y, Param) );
-        if dist < Result then Result:=Dist;
+        if dist<Result then Result:=Dist;
       end;
     end;
   end;
-end;{TFreeDevelopedPatch.DistanceToCursor}
+end;
 
 procedure TFreeDevelopedPatch.Draw(Viewport: TFreeViewport);
 var
@@ -345,7 +345,7 @@ begin
   Viewport.DrawingCanvas.Font.Name:=FDimFontName;
   Viewport.DrawingCanvas.Font.Size:=FDimFontSize;
   Viewport.DrawingCanvas.Font.Color:=FDimFontColor;
-  Viewport.BrushColor:=RGB(r, g, b);
+  Viewport.BrushColor:=RGB( r,g,b );
   Viewport.PenWidth:=PenwidthFactor;
   if FShowInteriorEdges then Viewport.PenColor:=EdgeColor else
   if ShowSolid then Viewport.PenColor:=Viewport.BrushColor else
@@ -365,7 +365,6 @@ begin
         Cap:=Face.NumberOfpoints;
         setlength(Pts, Cap);
       end;
-
       if FShadeSubmerged then begin
         for J:=3 to Face.NumberOfpoints do begin
           Index:=FPoints.IndexOf(Face.Point[0]);
@@ -515,27 +514,27 @@ begin
   if ShowWaterlines then for I:=1 to FWaterlines.Count do DrawSpline(FWaterlines[I-1]);
   if ShowDiagonals then for I:=1 to FDiagonals.Count do DrawSpline(FDiagonals[I-1]);
   if ShowPartName then begin
-    P1:=ConvertTo3D(MidPoint);
-    Pt:=Viewport.Project(P1);
-    Viewport.FontHeight:=FDimFontSize; //7
-    Viewport.FontColor:=clBlack;
-    Viewport.PenColor:=clBlack;
+    P1:=ConvertTo3D( MidPoint );
+    Pt:=Viewport.Project( P1 );
+    Viewport.FontHeight:=FDimFontSize*2; //7
+    Viewport.FontColor:=clBlue; // Black;
+    Viewport.PenColor:=clAqua;  // Black
     Viewport.PenWidth:=1;
     Viewport.PenStyle:=psSolid;
     Viewport.BrushColor:=clOlive; //clWhite;
     Viewport.BrushStyle:=bsSolid;
     I:=Owner.Surface.ControlPointSize;
-    Viewport.Rectangle(Pt.X-I, Pt.Y-I, Pt.X+I, Pt.Y+I);
+    Viewport.Rectangle( Pt.X-I,Pt.Y-I,Pt.X+I,Pt.Y+I );
     Viewport.BrushStyle:=bsClear;
-    Viewport.TextOut(Pt.X-Viewport.TextWidth(Name) div 2, Pt.Y, Name);
+    Viewport.TextOut( Pt.X-Viewport.TextWidth( Name ) div 2,Pt.Y,Name );
   end;
   if (ShowBoundingBox) and (not viewport.Printing) then begin
-    Viewport.PenColor:=clBlack;
+    Viewport.PenColor:=clTeal; // Black;
     Viewport.PenStyle:=psDot;
     Viewport.PenWidth:=1;
     Viewport.BrushStyle:=bsClear;
-    Extents(Min, Max);
-    Setlength(Pts, 4);
+    Extents( Min,Max );
+    Setlength( Pts,4 );
     P1:=Min;     Pts[0]:=Viewport.Project(P1);
     P1.X:=Max.X; Pts[1]:=Viewport.Project(P1);
     P1.Y:=Max.Y; Pts[2]:=Viewport.Project(P1);
@@ -591,33 +590,34 @@ begin
     Face:=FDoneList[J-1];
     NoPoints:=0;
     P1:=Face.Point[Face.NumberOfPoints-1];
-    Side1:=Plane.A * P1.Coordinate.x+Plane.B * P1.Coordinate.y+Plane.C *
-      P1.Coordinate.z+Plane.D;
+    Side1:=Plane.A*P1.Coordinate.x
+         + Plane.B*P1.Coordinate.y
+         + Plane.C*P1.Coordinate.z+Plane.D;
     for K:=1 to Face.FPoints.Count do begin
       P2:=Face.FPoints[K-1];
-      Side2:=Plane.A * P2.Coordinate.x+Plane.B * P2.Coordinate.y +
-        Plane.C * P2.Coordinate.z+Plane.D;
+      Side2:=Plane.A*P2.Coordinate.x
+           + Plane.B*P2.Coordinate.y
+           + Plane.C*P2.Coordinate.z+Plane.D;
       if ((Side1<-1e-5) and (Side2>1e-5))
       or ((Side1>1e-5) and (Side2<-1e-5)) then begin    // regular intersection
-        Parameter:=-side1 / (side2-side1); // of edge  add the edge to the list
+        Parameter:=-side1/(side2-side1);   // of edge  add the edge to the list
         Index1:=FPoints.IndexOf(P1);
         Index2:=FPoints.IndexOf(P2);
-        Output.X:=F2DCoordinates[Index1].Coordinate.X+Parameter *
-          (F2DCoordinates[Index2].Coordinate.X-F2DCoordinates[Index1].Coordinate.X);
-        Output.Y:=F2DCoordinates[Index1].Coordinate.Y+Parameter *
-          (F2DCoordinates[Index2].Coordinate.Y-F2DCoordinates[Index1].Coordinate.Y);
+        Output.X:=F2DCoordinates[Index1].Coordinate.X + Parameter
+         *(F2DCoordinates[Index2].Coordinate.X-F2DCoordinates[Index1].Coordinate.X);
+        Output.Y:=F2DCoordinates[Index1].Coordinate.Y + Parameter
+         *(F2DCoordinates[Index2].Coordinate.Y-F2DCoordinates[Index1].Coordinate.Y);
         Output.Z:=0.0;
-        Inc(NoPoints);
+        Inc( NoPoints );
         if NoPoints>ArrayLength then begin
-          Inc(ArrayLength, 10);
-          Setlength(IntArray, ArrayLength);
+          Inc( ArrayLength,10 ); Setlength( IntArray,ArrayLength );
         end;
         IntArray[NoPoints-1].Point:=Output;
         Edge:=Owner.FOwner.EdgeExists(P1, P2);
         if Edge <> nil then IntArray[NoPoints-1].Knuckle:=Edge.Crease
                        else IntArray[NoPoints-1].Knuckle:=False;
       end else begin           // Does the edge lie entirely within the plane??
-        if ((abs(side1) <= 1e-5) and (abs(Side2) <= 1e-5)) then begin  end else
+        if ((abs(side1) <= 1e-5) and (abs(Side2) <= 1e-5)) then begin end else
         if abs(Side2) < 1e-5 then begin Inc(NoPoints);
           if NoPoints > ArrayLength then  begin Inc(ArrayLength, 10);
             Setlength(IntArray, ArrayLength);
@@ -641,8 +641,7 @@ begin
         for K:=1 to NoPoints do begin
           Spline.Add(IntArray[K-1].Point);
           Spline.Knuckle[Spline.NumberOfPoints-1]:=IntArray[K-1].Knuckle;
-        end;
-        Dest.Add(Spline);
+        end; Dest.Add(Spline);
       end;
     end;
   end;
@@ -653,15 +652,11 @@ begin
       Spline:=Dest[I-1];
       if Spline.NumberOfPoints > 1 then begin
         Parameter:=Sqr( Spline.Min-Spline.Max );
-        if Parameter < 1e-3 then begin
-          FreeAndNil(Spline);
-          Dest.Delete(I-1);
-        end;
+        if Parameter<1e-3 then begin FreeAndNil(Spline); Dest.Delete(I-1); end;
       end;
     end;
   end;
-  for I:=1 to Dest.Count do begin
-    Spline:=Dest[I-1];
+  for I:=1 to Dest.Count do begin Spline:=Dest[I-1];
     if abs(Plane.a) > 0.9999 then FStations.Add(Spline) else
     if abs(Plane.b) > 0.9999 then FButtocks.Add(Spline) else
     if abs(Plane.c) > 0.9999 then FWaterlines.Add(Spline) else
@@ -694,7 +689,7 @@ begin
   Result.Z:=0.0;
 end;
 
-procedure TFreeDevelopedPatch.SaveToTextFile(Strings: TStringList);
+procedure TFreeDevelopedPatch.SaveToTextFile( Strings: TStringList );
 var
   I,J,Index: integer;
   P: TFreeSubdivisionPoint;
@@ -704,28 +699,21 @@ var
   Face: TFreeSubdivisionFace;
   P3D,Min,Max: T3DVector;
   First: boolean;
-
-  procedure getEdgeMinMax(P:TFreeSubdivisionPoint; var Min, Max: T3DVector);
+  procedure getEdgeMinMax(P:TFreeSubdivisionPoint; var Min,Max: T3DVector);
   begin
-    Index := FPoints.IndexOf(P);             // Sorted
+    Index := FPoints.IndexOf(P);                                      // Sorted
     P3D := Point[Index];
-    if First then begin
-      Min := P3D;
-      Max := min;
-      First := False;
-    end else MinMax(P3D, Min, Max);
-    if FMirror then begin
-      P3D:=MirrorPoint[Index];
-      MinMax( P3D,Min,Max );
-    end;
+    if First then begin Min:=P3D; Max:=min; First:=False; end
+             else MinMax( P3D,Min,Max );
+    if FMirror then begin P3D:=MirrorPoint[Index]; MinMax( P3D,Min,Max ); end;
   end;
   procedure printEdgePoint(P:TFreeSubdivisionPoint; FMirror:boolean);
   begin
-      Index := FPoints.IndexOf(P);              // Sorted
-      if not FMirror then P3D:=Point[Index]
-                     else P3D:=MirrorPoint[Index];
-      P3D:=P3D-Min;
-      Strings.Add(FloatToStrF(P3D.X,ffFixed,7,3)+#32+FloatToStrF(P3D.Y,ffFixed,7,3));
+    Index := FPoints.IndexOf(P);                                    // Sorted
+    if not FMirror then P3D:=Point[Index]
+                   else P3D:=MirrorPoint[Index];
+    P3D:=P3D-Min;
+    Strings.Add(FloatToStrF(P3D.X,ffFixed,7,3)+#32+FloatToStrF(P3D.Y,ffFixed,7,3));
   end;
 begin                                             // Extract edges as polylines
   Source := TFasterListTFreeSubdivisionEdge.Create;
@@ -735,18 +723,16 @@ begin                                             // Extract edges as polylines
   FreeAndNil(Source);
   First:=True;           // Calculate min.,max extents of boundary
   Strings.Add('');      // all measurements are referred to the min. coordinate
-  Strings.Add('Boundary coordinates for: ' + Name);
-  for I := 0 to Dest.Count-1 do begin Face := Dest[I];
-    for J:=0 to Face.Points.Count-1 do begin
-      P := Face.Points[J];
-      getEdgeMinMax(P, Min, Max);
+  Strings.Add( 'Boundary coordinates for: '+Name );
+  for I:=0 to Dest.Count-1 do begin Face:=Dest[I];
+    for J:=0 to Face.Points.Count-1 do begin P:=Face.Points[J];
+      getEdgeMinMax( P,Min,Max );
     end;
   end;
-  for I := 0 to Dest.Count-1 do begin      // print boundary coordinates
-    if I > 0 then Strings.Add('');
-    Face := Dest[I];
-    for J:=0 to Face.Points.Count-1 do begin
-      P := Face.Points[J];
+  for I:=0 to Dest.Count-1 do begin      // print boundary coordinates
+    if I>0 then Strings.Add('');
+    Face:=Dest[I];
+    for J:=0 to Face.Points.Count-1 do begin P:=Face.Points[J];
       printEdgePoint(P, false);
     end;
   end;
@@ -761,70 +747,9 @@ begin                                             // Extract edges as polylines
         printEdgePoint(P, FMirror);
       end;
     end;
-  end;
-  FreeAndNil(Dest);
-end;{TFreeDevelopedPatch.SaveToTextFile}
-
-(*
-procedure TFreeDevelopedPatch.SaveToTextFile(Strings: TStringList);
-var
-  I,J,Index: integer;
-  P: TFreeSubdivisionPoint;
-  Edge:TFreeSubdivisionEdge;
-  Source: TFasterListTFreeSubdivisionEdge;
-  Dest: TFasterListTFreeSubdivisionFace; //Edge;
-  P3D, Min,Max: T3DVector;
-  First: boolean;
-  procedure getEdgeMinMax(P:TFreeSubdivisionPoint; var Min, Max: T3DVector);
-  begin
-    Index:=FPoints.IndexOf(P);
-    P3D:=Point[Index];
-    if First then begin Min:=P3D; Max:=min; First:=False; end
-             else MinMax(P3D, Min, Max);
-    if FMirror then begin P3D:=MirrorPoint[Index]; MinMax(P3D, Min, Max); end;
-  end;
-  procedure printEdgePoint(P:TFreeSubdivisionPoint; FMirror:boolean);
-  begin
-    Index:=FPoints.IndexOf(P);
-    if not FMirror then P3D:=Point[Index]
-    else P3D:=MirrorPoint[Index];
-    P3D.X:=P3D.X-Min.X;
-    P3D.Y:=P3D.Y-Min.Y;
-    P3D.Z:=P3D.Z-Min.Z;
-    Strings.Add(FloatToStrF(P3D.X,ffFixed,7,3)+#32+FloatToStrF(P3D.Y,ffFixed,7,3));
-  end;
-begin                                             // Extract edges as polylines
-  Source:=TFasterListTFreeSubdivisionEdge.Create;
-  Source.AddList(FBoundaryEdges);
-//  Dest:=TFasterListTFreeSubdivisionEdge.Create;
-  Dest:=TFasterListTFreeSubdivisionFace.Create;
-  Owner.Surface.IsolateEdges( Source,Dest );
-  FreeAndNil(Source);
-
-  // Calculate min.,max extents of coundary
-  // all measurements are referred to the min. coordinate
-  First:=True;
-  Strings.Add('');
-  Strings.Add('Boundary coordinates for: '+Name);
-  for I:=1 to Dest.Count do begin
-    Edge:=Dest[I-1];
-    getEdgeMinMax( Edge.StartPoint,Min,Max );
-    getEdgeMinMax( Edge.EndPoint,Min,Max );
-  end;
-  for I:=1 to Dest.Count do begin Edge:=Dest[I-1];
-    if I>1 then Strings.Add('');
-    printEdgePoint(Edge.StartPoint, FMirror);
-    printEdgePoint(Edge.EndPoint, FMirror);
-    if FMirror then begin
-      Strings.Add('');
-      printEdgePoint(Edge.StartPoint, FMirror);
-      printEdgePoint(Edge.EndPoint, FMirror);
-    end;
-    FreeAndNil(Source);
-  end;
-  FreeAndNil(Dest);
+  end; FreeAndNil(Dest);
 end;
-*)
+
 procedure TFreeDevelopedPatch.SaveToDXF( Strings: TStringList );
 var
   I, J: integer;
@@ -1249,9 +1174,8 @@ begin                        // first assemble all points, edges and faces used
           Seedfaces.Add(P1.FFaces[J-1]);
         end;
       end;
-    end;
-  end;               // if NO seedfaces could be found (which should not occur)
-                     // then pick a random one (the one with the largest area)
+    end;             // if NO seedfaces could be found (which should not occur)
+  end;               // then pick a random one (the one with the largest area)
   if Seedfaces.Count = 0 then begin
     for I:=1 to FFaces.Count do begin
       Face:=FFaces[I-1];
@@ -1262,8 +1186,7 @@ begin                        // first assemble all points, edges and faces used
       end;
     end;
     if Seedface <> nil then begin Seedfaces.Add(SeedFace); end;
-  end;
-                                                              // sort seedfaces
+  end;                                                      // sort seedfaces
   for I:=1 to Seedfaces.Count-1 do begin
     SeedFace:=Seedfaces[I-1];
     SeedArea:=Seedface.Area;

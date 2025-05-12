@@ -47,23 +47,19 @@ end;
 
 procedure TFreeIntersectLayerDialog.UpdateBox2;
 var
-  I,Ind: integer;
-  Layer: TFreeSubdivisionLayer;
+  I,Ind: integer; Layer: TFreeSubdivisionLayer;
 begin
   Ind:=ComboBox2.ItemIndex;
   ComboBox2.Items.BeginUpdate;
   ComboBox2.Clear;
-//  try
     for I:=1 to ComboBox1.Items.Count do begin
       Layer:=ComboBox1.Items.Objects[I-1] as TFreeSubdivisionLayer;
-      if I-1 <> ComboBox1.ItemIndex then
-        ComboBox2.Items.AddObject(Layer.Name, Layer);
+      if I-1<>ComboBox1.ItemIndex then
+              ComboBox2.Items.AddObject( Layer.Name,Layer );
     end;
-//  finally
     ComboBox2.Items.EndUpdate;
-    if Ind <> -1 then ComboBox2.ItemIndex:=Ind
-                 else ComboBox2.ItemIndex:=0;
-//  end;
+    if Ind<>-1 then ComboBox2.ItemIndex:=Ind
+               else ComboBox2.ItemIndex:=0;
 end;
 
 function TFreeIntersectLayerDialog.Execute(

@@ -1,6 +1,6 @@
 unit FreeVersionUnit;
 {$MODE Delphi}{$H+} // Unit to keep track of fileversions, bux fixes and release dates
-interface uses SysUtils;
+interface           // uses SysUtils;
 const
  ReleasedDate:string={$I %DATE%};
  COMPILE_TIME:string={$I %TIME%};
@@ -24,15 +24,15 @@ const CurrentVersion=fv261;    //high( TFreeFileVersion );
                       // Current (latest) version of the FREE!ship project.
                       // All new created models are initialized to this version
 var
-//FREESHIP_MAJOR_VERSION : string ='5.0';   // Major version
-  FREESHIP_VERSION : string = '2.6.1.2';    // Current full version
+//FREESHIP_MAJOR_VERSION: string ='5.0';    // Major version
+  FREESHIP_VERSION : string = '2.6.1.3';    // Current full version
 
-function VersionString( Version:TFreeFileVersion): AnsiString;
-function VersionBinary( Version:String ):TFreeFileVersion;
+function VersionString( Version:TFreeFileVersion): String;
+function VersionBinary( Version: String ):TFreeFileVersion;
 
 implementation
 
-function VersionString(Version:TFreeFileVersion):AnsiString; begin
+function VersionString(Version:TFreeFileVersion):String; begin
   Case Version of
     fv100  : Result:='1.0';  fv110  : Result:='1.1';  fv120  : Result:='1.2';
     fv130  : Result:='1.3';  fv140  : Result:='1.4';  fv150  : Result:='1.5';
@@ -41,10 +41,10 @@ function VersionString(Version:TFreeFileVersion):AnsiString; begin
     fv195  : Result:='1.95'; fv198  : Result:='1.98'; fv200  : Result:='2.0';
     fv201  : Result:='2.01'; fv210  : Result:='2.1';  fv220  : Result:='2.2';
     fv230  : Result:='2.3';  fv240  : Result:='2.4';  fv250  : Result:='2.5'
-     else    Result:='2.6'; // = fv261
+     else    Result:='2.6'; // = fv261 -- для совместимости лучше не трогать...
   end
 end;
-function VersionBinary(Version:AnsiString):TFreeFileVersion; begin
+function VersionBinary( Version:String ):TFreeFileVersion; begin
   if Version='1.0'   then Result:=fv100 else
   if Version='1.1'   then Result:=fv110 else
   if Version='1.2'   then Result:=fv120 else

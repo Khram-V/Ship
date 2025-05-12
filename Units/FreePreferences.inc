@@ -17,7 +17,7 @@ procedure TFreePreferences.Clear;
 begin
   ResetColors;           PointSize:=2;
   ResetDirectories;      LastDirectory:='';
-  Language:='English';   LanguageFile:='';
+  Language:='Russian';   LanguageFile:='';
   FbmEncoding:='cp1251'; MaxUndoMemory:=64;              // Max 20Mb undomemory
 end;
 constructor TFreePreferences.Create(Owner: TFreeShip);
@@ -55,7 +55,7 @@ begin
   ShowTranslatedValues( Dialog );
   Dir:=LanguagesDirectory; // ConfigDirectory = установлена активная директория
   Dialog.ComboBox1.Items.Clear;
-  Dialog.ComboBox1.Items.Add( 'English' ); Browse( Dir );
+  Dialog.ComboBox1.Items.Add( 'Russian' ); Browse( Dir );
   Dialog.ComboBox1.ItemIndex:=0;
   for I:=1 to Dialog.ComboBox1.Items.Count do
     if Uppercase(Dialog.ComboBox1.Items[I-1])=Uppercase(Language) then begin
@@ -221,10 +221,10 @@ begin
     end;
   end;
   Language:=params.ReadString( 'General','Language',Language );
-  LanguageFile:=LanguagesDirectory+Language+'.ini';          //~ConfigDirectory
+  LanguageFile:=LanguagesDirectory+Language+'.ini';                           // ~ConfigDirectory
   if not FileExistsUTF8( LanguageFile ) then begin
-    Writeln( '?no file: '+LanguageFile ); Language:='English';
-    LanguageFile:=ConfigDirectory+LanguagesDirectory+'English.ini';
+    Writeln( UserString(1230)+': '+LanguageFile ); Language:='Russian';       // '?no file: '
+    LanguageFile:=ConfigDirectory+LanguagesDirectory+'Russian.ini';
   end;
   FbmEncoding :=params.ReadString( 'General','FbmEncoding',FbmEncoding );
   MaxUndoMemory:= params.ReadInteger('General','MaxUndoMemory',MaxUndoMemory);
@@ -235,7 +235,7 @@ procedure TFreePreferences.SetDefaults;
 begin
   PointSize:=2;
   FontSize :=8;
-  Language :='English';
+  Language :='Russian';
   FbmEncoding:='cp1251';
   MaxUndoMemory:=64;
   ResetDirectories;

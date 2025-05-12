@@ -31,9 +31,9 @@ type
     ModelMin,ModelMax, // Min/max coordinates under given heelingangle and trim
     WlMin,WlMax,       // Min/max coordinates of the waterline
     SubMin,SubMax,     // Min/max extents of the submerged body
-    CenterOfBuoyancy: T3DVector;    // Center of gravity of displaced volume
+    CenterOfBuoyancy: T3DVector; // Center of gravity of displaced volume
     WaterlinePlane: T3DPlane; // Depth of the lowest point of the hull beneath the waterplane
-    AbsoluteDraft,            // The following properties are always calculated
+//  AbsoluteDraft,            // The following properties are always calculated
     Volume,                   // Displaced volume of the hull
     Displacement,             // Displacement
     LCBPerc,
@@ -659,10 +659,10 @@ type
     FStabTrims: TFloatArray;
     FFreeTrim: boolean;
     FVCG: TFloatType;
-    procedure FSetFreeHydrostaticCoefficients(val: TFreeHydrostaticCoeff);
-    procedure FSetDisableModelCheck(Val: boolean);
-    procedure FSetEnableModelAutoMove(Val: boolean);
 //  procedure FSetEnableBonjeanSAC(Val: boolean);
+    procedure FSetDisableModelCheck(Val: boolean);
+    procedure FSetFreeHydrostaticCoefficients(val: TFreeHydrostaticCoeff);
+    procedure FSetEnableModelAutoMove(Val: boolean);
     function FGetProjectSplitSectionLocation: TFloatType;
     procedure FSetProjectAppendageCoefficient(Val: TFloatType);
     procedure FSetProjectBeam(Val: TFloatType);
@@ -690,12 +690,12 @@ type
     procedure Edit;        // User input of mainparticulars and project setting
     procedure LoadBinary(Source: TFreeFilebuffer; Image: TJPegImage); overload; virtual;
     procedure SaveBinary(Destination: TFreeFileBuffer);
-    property DisableModelCheck: boolean read FDisableModelCheck write FSetDisableModelCheck;
     property EnableModelAutoMove: boolean read FEnableModelAutoMove write FSetEnableModelAutoMove;
     property Hydrostatics_Startdraft: TFloatType read FStartDraft write FSetStartDraft;
     property Hydrostatics_EndDraft: TFloatType   read FEndDraft write FSetEndDraft;
     property Hydrostatics_DraftStep: TFloatType  read FDraftStep write FSetDraftStep;
     property Hydrostatics_Trim: TFloatType       read FTrim write FSetTrim;
+    property DisableModelCheck: boolean read FDisableModelCheck write FSetDisableModelCheck;
 //  property EnableBonjeanSAC: boolean read FEnableBonjeanSAC write FSetEnableBonjeanSAC;
 //  property MainparticularsHasBeenset: boolean read FMainparticularsHasBeenset;
 //  property FreeShip: TFreeShip read FFreeShip write FFreeShip;
@@ -751,7 +751,6 @@ type
 //    FFreeLinesplanFrme: TFrame; // This event is raised whenever items are added or deleted from the surface
 //    FFilenameSet: boolean; // Flag to determine if the filename already has been set
 //    FModelIsLoaded: boolean; // Flag to determine if the model is created new or loaded.
-//    FFileIsReadOnly: boolean; // The folowing private variables are for moving controlpoints with the mouse
 //    FStopAskingForFileVersion: boolean;
     FCurrentlyMoving: boolean;
     FPointHasBeenMoved: boolean;

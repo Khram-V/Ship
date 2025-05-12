@@ -10,12 +10,9 @@ interface uses
 type
   TFreeLayerVisibilityDialog = class(TForm)
     bbClose: TBitBtn;
-    cbFreeStanding: TCheckBox;
-    CheckBox1: TCheckBox;
-    CheckBox2: TCheckBox;
+    cbFreeStanding,CheckBox1,CheckBox2: TCheckBox;
     Label1: TLabel;
-    Panel1: TPanel;
-    pTools: TPanel;
+    Panel1,pTools: TPanel;
     sgLayers: TStringGrid;
     procedure bbCloseClick(Sender: TObject);
     procedure cbFreeStandingChange(Sender: TObject);
@@ -36,11 +33,9 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
-var
-  FreeLayerVisibilityDialog: TFreeLayerVisibilityDialog;
+var FreeLayerVisibilityDialog: TFreeLayerVisibilityDialog;
 
 implementation
-
 {$R *.lfm}
 
 { TFreeLayerVisibilityDialog }
@@ -50,11 +45,10 @@ begin ModalResult:=mrClose; Close; end;
 
 procedure TFreeLayerVisibilityDialog.cbFreeStandingChange(Sender: TObject);
 begin
-  if FFreeShip.Visibility.ShowFreeObjects <> cbFreeStanding.Checked then
-  begin
+  if FFreeShip.Visibility.ShowFreeObjects<>cbFreeStanding.Checked then begin
     FFreeShip.Visibility.ShowFreeObjects:=cbFreeStanding.Checked;
     FFreeShip.FileChanged:=true;
-    if FOnChange <> nil then FOnChange(Self);
+    if FOnChange<>nil then FOnChange(Self);
     FFreeShip.Redraw;
   end;
 end;
@@ -66,7 +60,7 @@ begin
   if CheckBox1.Checked then S:=cbChecked else S:=cbUnChecked;
   for i:=1 to sgLayers.RowCount-1 do begin
     sgLayers.Cells[0,i]:=C;
-    sgLayersCheckboxToggled(Sender, 0, i, S);
+    sgLayersCheckboxToggled( Sender,0,i,S );
     end;
 end;
 
@@ -75,17 +69,16 @@ var i:integer; C: char; S: TCheckboxState;
 begin
   if CheckBox2.Checked then C:='1' else C:='0';
   if CheckBox2.Checked then S:=cbChecked else S:=cbUnChecked;
-  for i:=1 to sgLayers.RowCount-1 do
-    begin
+  for i:=1 to sgLayers.RowCount-1 do begin
     sgLayers.Cells[1,i]:=C;
-    sgLayersCheckboxToggled(Sender, 1, i, S);
+    sgLayersCheckboxToggled( Sender,1,i,S );
     end;
 end;
 
 procedure TFreeLayerVisibilityDialog.FormResize(Sender: TObject);
 begin
   with sgLayers do
-    ColWidths[2]:=ClientWidth-ColWidths[0]-ColWidths[1]-2 * GridLineWidth;
+    ColWidths[2]:=ClientWidth-ColWidths[0]-ColWidths[1]-2*GridLineWidth;
 end;
 
 procedure TFreeLayerVisibilityDialog.FormShow(Sender: TObject);

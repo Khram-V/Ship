@@ -9,11 +9,11 @@ object FreePreferencesDialog: TFreePreferencesDialog
   ClientWidth = 638
   Constraints.MinHeight = 400
   Constraints.MinWidth = 580
+  Position = poMainFormCenter
+  LCLVersion = '4.0.0.4'
   OnActivate = FormActivate
   OnResize = FormResize
   OnShow = FormShow
-  Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
   object ButtonPanel: TPanel
     Left = 0
     Height = 26
@@ -73,8 +73,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
         000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
         C0FF2110C0FF2110C0FF00000000000000000000000000000000
       }
-      OnClick = CancelButtonClick
       ParentFont = False
+      OnClick = CancelButtonClick
     end
     object BitBtn1: TSpeedButton
       Left = 472
@@ -123,8 +123,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
         0000000000000000000000000000000000000000000000000000000000000000
         0000000000000EA628FF0EA628FF0EA628FF0000000000000000
       }
-      OnClick = OkButtonClick
       ParentFont = False
+      OnClick = OkButtonClick
     end
   end
   object Panel1: TPanel
@@ -256,22 +256,23 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Align = alLeft
                 Alignment = taRightJustify
                 MaxValue = 25
-                OnChange = EditDirChange
                 ParentFont = False
                 TabOrder = 0
+                OnChange = EditDirChange
               end
             end
             object LabelEncoding: TLabel
               Left = 10
               Height = 23
+              Hint = 'При выборе UTF-8 перекодировки не выполняются.'
               Top = 54
               Width = 133
               Alignment = taRightJustify
               Caption = 'Кодировка в старых FBM моделях'
-              Hint = 'При выборе UTF-8 перекодировки не выполняются.'
               Layout = tlCenter
               ParentColor = False
               ParentFont = False
+              ParentShowHint = False
               ShowHint = True
             end
             object Panel52: TPanel
@@ -296,10 +297,10 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 ItemHeight = 15
                 ItemWidth = 200
                 ParentFont = False
-                Sorted = False
+                ParentShowHint = False
+                ShowHint = True
                 TabOrder = 0
                 OnChange = EditDirChange
-                ShowHint = True
               end
             end
           end
@@ -376,8 +377,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
                   2222043434343402222203430000000222222000222222220002222222222222
                   2002222222220222020222222222200022222222222222222222
                 }
-                OnClick = SpeedButtonLanguagesDirClick
                 ParentFont = False
+                OnClick = SpeedButtonLanguagesDirClick
               end
             end
             object LabelLanguagesDir: TLabel
@@ -441,8 +442,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
                   2222043434343402222203430000000222222000222222220002222222222222
                   2002222222220222020222222222200022222222222222222222
                 }
-                OnClick = SpeedButton9Click
                 ParentFont = False
+                OnClick = SpeedButton9Click
               end
             end
             object Label29: TLabel
@@ -506,8 +507,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
                   2222043434343402222203430000000222222000222222220002222222222222
                   2002222222220222020222222222200022222222222222222222
                 }
-                OnClick = SpeedButton14Click
                 ParentFont = False
+                OnClick = SpeedButton14Click
               end
             end
             object Label32: TLabel
@@ -571,8 +572,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
                   2222043434343402222203430000000222222000222222220002222222222222
                   2002222222220222020222222222200022222222222222222222
                 }
-                OnClick = SpeedButton17Click
                 ParentFont = False
+                OnClick = SpeedButton17Click
               end
             end
             object Label35: TLabel
@@ -636,8 +637,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
                   2222043434343402222203430000000222222000222222220002222222222222
                   2002222222220222020222222222200022222222222222222222
                 }
-                OnClick = SpeedButton16Click
                 ParentFont = False
+                OnClick = SpeedButton16Click
               end
             end
             object Label34: TLabel
@@ -701,8 +702,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
                   2222043434343402222203430000000222222000222222220002222222222222
                   2002222222220222020222222222200022222222222222222222
                 }
-                OnClick = SpeedButton15Click
                 ParentFont = False
+                OnClick = SpeedButton15Click
               end
             end
             object Label33: TLabel
@@ -815,8 +816,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 0000000000000000000000000000000000000000000000000000000000000000
                 0000000000000000000000000000000000000000000000000000
               }
-              OnClick = ResetDirsButtonClick
               ParentFont = False
+              OnClick = ResetDirsButtonClick
             end
           end
         end
@@ -872,10 +873,10 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Width = 50
               MaxValue = 5
               MinValue = 1
-              OnChange = SpinEdit1Change
               ParentFont = False
               TabOrder = 0
               Value = 2
+              OnChange = SpinEdit1Change
             end
             object Label28: TLabel
               Left = 162
@@ -894,10 +895,10 @@ object FreePreferencesDialog: TFreePreferencesDialog
               Width = 50
               MaxValue = 20
               MinValue = 3
-              OnChange = SpinEdit1Change
               ParentFont = False
               TabOrder = 1
               Value = 3
+              OnChange = SpinEdit1Change
             end
           end
           object Panel50: TPanel
@@ -948,7 +949,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 0
+                TabOrder = 11
                 OnClick = ColorPanelClick
               end
               object Label12: TLabel
@@ -1076,11 +1077,11 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Top = 130
                 Width = 60
                 Constraints.MinWidth = 60
-                OnChange = seSubmergedSurfaceOpacityChange
                 ParentShowHint = False
                 ShowHint = True
                 TabOrder = 6
                 Value = 100
+                OnChange = seSubmergedSurfaceOpacityChange
               end
               object Label23: TLabel
                 Left = 10
@@ -1225,7 +1226,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 1
+                TabOrder = 0
                 OnClick = ColorPanelClick
               end
               object Label9: TLabel
@@ -1246,7 +1247,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 2
+                TabOrder = 1
                 OnClick = ColorPanelClick
               end
               object Label10: TLabel
@@ -1267,7 +1268,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 3
+                TabOrder = 2
                 OnClick = ColorPanelClick
               end
               object Label20: TLabel
@@ -1288,7 +1289,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 4
+                TabOrder = 3
                 OnClick = ColorPanelClick
               end
               object Label11: TLabel
@@ -1310,7 +1311,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 5
+                TabOrder = 4
                 OnClick = ColorPanelClick
               end
               object Label22: TLabel
@@ -1331,7 +1332,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 6
+                TabOrder = 5
                 OnClick = ColorPanelClick
               end
               object Label21: TLabel
@@ -1352,7 +1353,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 7
+                TabOrder = 6
                 OnClick = ColorPanelClick
               end
               object Label14: TLabel
@@ -1373,7 +1374,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 8
+                TabOrder = 7
                 OnClick = ColorPanelClick
               end
               object Label15: TLabel
@@ -1394,7 +1395,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 9
+                TabOrder = 8
                 OnClick = ColorPanelClick
               end
               object Label16: TLabel
@@ -1416,7 +1417,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 10
+                TabOrder = 9
                 OnClick = ColorPanelClick
               end
               object Label19: TLabel
@@ -1438,7 +1439,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 11
+                TabOrder = 10
                 OnClick = ColorPanelClick
               end
               object Label24: TLabel
@@ -1482,7 +1483,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 Constraints.MinHeight = 18
                 Constraints.MinWidth = 60
                 ParentFont = False
-                TabOrder = 13
+                TabOrder = 11
                 OnClick = ColorPanelClick
               end
             end
@@ -1586,8 +1587,8 @@ object FreePreferencesDialog: TFreePreferencesDialog
                 0000000000000000000000000000000000000000000000000000000000000000
                 0000000000000000000000000000000000000000000000000000
               }
-              OnClick = ResetColorsButtonClick
               ParentFont = False
+              OnClick = ResetColorsButtonClick
             end
           end
         end

@@ -16,17 +16,16 @@ begin
   end;
 end;
 
-procedure TFreeProjectSettings.FSetDisableModelCheck(Val: boolean);
-begin
-  if val <> FDisableModelCheck then begin
-    FDisableModelCheck:=Val; FreeShip.FileChanged:=True;
-  end;
-end;
-
 procedure TFreeProjectSettings.FSetEnableModelAutoMove(Val: boolean);
 begin
   if val <> FEnableModelAutoMove then begin
     FEnableModelAutoMove:=Val; FreeShip.FileChanged:=True;
+  end;
+end;
+procedure TFreeProjectSettings.FSetDisableModelCheck(Val: boolean);
+begin
+  if val <> FDisableModelCheck then begin
+    FDisableModelCheck:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 (*
@@ -171,17 +170,17 @@ begin
   FProjectWaterDensity:=1.025;     // 1025 kg/m3 for seawater
   FProjectWaterTemper:=15.;
   FProjectAppendageCoefficient:=1.0;
-  // Default 1.0, typical values for ships to cpmpensate for appendices and shellplate = 1.0005;
-//FMainparticularsHasBeenset:=False;
+// Default 1.0, typical values for ships to cpmpensate for appendices and shellplate = 1.0005;
+// FMainparticularsHasBeenset:=False;
   FProjectShadeUnderwaterShip:=True;
-  // Shades the underwaterpart of the hull in a different color
+// Shades the underwaterpart of the hull in a different color
   ProjectUnderWaterColor:=FreeShip.Preferences.UnderWaterColor;
   ProjectUnderWaterColorAlpha:=FreeShip.Preferences.UnderWaterColorAlpha;
   FProjectUnits:=TFreeUnitType(0); // Default is metric units
   FUseDefaultSplitSectionLocation:=True;
   FProjectSplitSectionLocation:=0.0;
-  FDisableModelCheck:=False;
   FEnableModelAutoMove:=False;
+  FDisableModelCheck:=True;
 //FEnableBonjeanSAC:=False;
   FSavePreview:=True;
   FFreeHydrostaticCoefficients:=fcActualData;
@@ -328,9 +327,9 @@ begin
   FProjectUnits:=TFreeUnitType(I);
   Source.LoadBoolean(FUseDefaultSplitSectionLocation);
   Source.LoadTFloatType(FProjectSplitSectionLocation);
-  Source.LoadBoolean(FDisableModelCheck);
-  Source.LoadString(FProjectComment);
-  Source.LoadString(FProjectFileCreatedBy);
+  if FreeShip.FileVersion >= fv165 then Source.LoadBoolean( FDisableModelCheck );
+  Source.LoadString( FProjectComment );
+  Source.LoadString( FProjectFileCreatedBy );
   FSavePreview:=false;
                             FProjectDesigner:=BlankOff(FProjectDesigner); //???
                                 FProjectName:=BlankOff(FProjectName);

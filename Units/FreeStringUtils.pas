@@ -7,7 +7,7 @@ resourcestring rsTextFile = 'Text file';
                rsBitmapFiles = 'Bitmap files';
                rsAngle = 'Angle';                     //UTF8 degree sign   °αβγ
                rsAngles = 'Angles';
-               rsPointMove = 'point move';
+//             rsPointMove = 'point move';
 
 function Len(s: AnsiString): PtrInt;
 function Pos(const SearchForText, SearchInText: AnsiString): PtrInt;             //inline;

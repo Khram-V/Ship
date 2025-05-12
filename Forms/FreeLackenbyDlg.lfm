@@ -4,7 +4,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
   Top = 100
   Width = 1024
   BorderStyle = bsSingle
-  Caption = 'Lackenby hullform transformation.'
+  Caption = 'Трансформация корпуса по Lackenby.'
   ClientHeight = 640
   ClientWidth = 1024
   Position = poOwnerFormCenter
@@ -70,7 +70,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 15
           Top = 10
           Width = 80
-          Caption = 'Current'
+          Caption = 'Текущее'
           Font.Height = -12
           Font.Style = [fsBold]
           Layout = tlCenter
@@ -82,7 +82,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 15
           Top = 10
           Width = 80
-          Caption = 'Desired'
+          Caption = 'Проектное'
           Font.Height = -12
           Font.Style = [fsBold]
           Layout = tlCenter
@@ -94,7 +94,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 15
           Top = 10
           Width = 80
-          Caption = 'Difference'
+          Caption = 'Различие'
           Font.Height = -12
           Font.Style = [fsBold]
           Layout = tlCenter
@@ -113,7 +113,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 23
           Top = 27
           Width = 140
-          Caption = 'Displacement'
+          Caption = 'Водоизмещение'
           Layout = tlCenter
           ParentColor = False
         end
@@ -158,7 +158,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 23
           Top = 27
           Width = 34
-          Caption = 'Label4'
           Layout = tlCenter
           ParentColor = False
         end
@@ -167,7 +166,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 23
           Top = 52
           Width = 140
-          Caption = 'Block coefficient'
+          Caption = 'Коэффициент общей полноты'
           Layout = tlCenter
           ParentColor = False
         end
@@ -216,7 +215,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 23
           Top = 77
           Width = 140
-          Caption = 'Prismatic coefficient'
+          Caption = 'Коэффициент продольной полноты'
           Layout = tlCenter
           ParentColor = False
         end
@@ -265,7 +264,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 23
           Top = 102
           Width = 140
-          Caption = 'Long. center of buoyancy'
+          Caption = 'Абсцисса центра величины'
           Layout = tlCenter
           ParentColor = False
         end
@@ -306,7 +305,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 23
           Top = 102
           Width = 34
-          Caption = 'Label9'
           Layout = tlCenter
           ParentColor = False
         end
@@ -315,7 +313,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 23
           Top = 127
           Width = 140
-          Caption = 'Maximum no. of iterations'
+          Caption = 'Максимальное число итераций'
           Layout = tlCenter
           ParentColor = False
         end
@@ -348,7 +346,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Top = 0
           Width = 159
           Alignment = taLeftJustify
-          Caption = 'Redraw after each iteration'
+          Caption = 'Прорисовка по каждой итерации'
           Checked = True
           State = cbChecked
           TabOrder = 0
@@ -374,7 +372,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 15
           Top = 10
           Width = 128
-          Caption = 'Prismatic coeff. aftship'
+          Caption = 'Продольная полнота по корме'
           Layout = tlCenter
           ParentColor = False
         end
@@ -383,7 +381,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 15
           Top = 10
           Width = 45
-          Caption = '_Label12'
           Layout = tlCenter
           ParentColor = False
         end
@@ -392,7 +389,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 15
           Top = 35
           Width = 128
-          Caption = 'Prismatic coeff. foreship'
+          Caption = 'Продольная полнота по носу'
           Layout = tlCenter
           ParentColor = False
         end
@@ -401,7 +398,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 15
           Top = 35
           Width = 45
-          Caption = 'Label12'
           Layout = tlCenter
           ParentColor = False
         end
@@ -410,7 +406,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 15
           Top = 60
           Width = 128
-          Caption = 'Maximum displacement'
+          Caption = 'Максимум водоизмещения'
           Layout = tlCenter
           ParentColor = False
         end
@@ -419,7 +415,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
           Height = 15
           Top = 60
           Width = 45
-          Caption = 'Label12'
           Layout = tlCenter
           ParentColor = False
         end
@@ -443,7 +438,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
     object Button1: TSpeedButton
       Left = 4
       Height = 20
-      Hint = 'Start the hullform transformation.'
+      Hint = 'Начать преобразование обводов корпуса.'
       Top = 2
       Width = 78
       Align = alLeft
@@ -453,7 +448,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       BorderSpacing.Right = 4
       BorderSpacing.Bottom = 2
       Constraints.MinWidth = 60
-      Caption = 'Transform'
+      Caption = '&Исполнить'
       Flat = True
       Glyph.Data = {
         F6000000424DF600000000000000760000002800000010000000100000000100
@@ -481,7 +476,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       BorderSpacing.Right = 4
       BorderSpacing.Bottom = 2
       Constraints.MinWidth = 80
-      Caption = 'OK'
+      Caption = '&Есть!'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -533,7 +528,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       BorderSpacing.Right = 4
       BorderSpacing.Bottom = 2
       Constraints.MinWidth = 80
-      Caption = 'Cancel'
+      Caption = '&Отмена'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -581,7 +576,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
     Width = 1000
     Align = alClient
     BevelOuter = bvNone
-    Caption = 'Panel4'
     ClientHeight = 305
     ClientWidth = 1000
     TabOrder = 2

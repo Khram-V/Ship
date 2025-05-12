@@ -342,7 +342,6 @@ type
     procedure SelectLeakPointsExecute  (Sender: TObject);
     procedure LoadMostRecentFile;
     procedure InitiallyLoadModel;
-//  procedure LoadNamedFile(FileName:AnsiString);
 //  procedure KeelRudderWizardExecute  (Sender: TObject);
    private                                             { Private declarations }
       FDestroying: boolean;
@@ -854,29 +853,7 @@ procedure TMainForm.PointsCoincideExecute(Sender: TObject);
     begin   // get multiple selected points to location of a first selected one
       Freeship.Edit.Point_CoinsideToPoint; UpdateMenu;
     end;
-(*
-procedure TMainForm.SelectionDialogExecute(Sender: TObject);
-begin
-  if FormSelected = nil then FormSelected:=TFormSelected.Create(Self);
-     FormSelected.FreeShip:=FreeShip;
-     FreeShip.Surface.AddOnSelectItemListener(FormSelected.onSelectionUpdate);
-     FreeShip.Surface.AddOnChangeItemListener(FormSelected.onSelectionUpdate);
-     FreeShip.Surface.AddOnChangeActiveControlPointListener(FormSelected.onSelectionUpdate);
-     FreeShip.Surface.AddOnChangeActiveControlEdgeListener(FormSelected.onSelectionUpdate);
-     FreeShip.Surface.AddOnChangeActiveControlFaceListener(FormSelected.onSelectionUpdate);
-     FreeShip.Surface.AddOnChangeActiveControlCurveListener(FormSelected.onSelectionUpdate);
-  FormSelected.onSelectionUpdate(Self);
-  FormSelected.Show;
-end;
-|    object SelectionDialog: TAction
-|      Category= 'Selection'
-|      Caption = 'Selection Dialog'
-|      OnExecute= SelectionDialogExecute
-|    end
-Выбор:object miSelectionDialog: TMenuItem
-|      Action = SelectionDialog
-|    end
-*)
+
 procedure TMainForm.SplitSectionDialogExecute(Sender: TObject);
 begin
   if FSplitSectionDialog = nil then
@@ -912,7 +889,7 @@ end;
 
 procedure TMainForm.LayerVisibilityDialogExecute(Sender: TObject);
 begin
-  if FreeLayerVisibilityDialog = nil then
+  if FreeLayerVisibilityDialog=nil then
      FreeLayerVisibilityDialog:=TFreeLayerVisibilityDialog.Create(Self);
   FreeLayerVisibilityDialog.FreeShip:=FreeShip;
   FreeLayerVisibilityDialog.OnChange:=FreeLayerVisibilityDialogChange;
@@ -1076,22 +1053,7 @@ begin
   FFilename:=Filename;
   Load_and_Scale( FileName );
 end;
-{
-procedure TMainForm.LoadNamedFile( FileName:AnsiString );
-var Menu    : TMenuItem;
-    N       : Integer;
-    Answer  : word;
-begin
-  if not Load_and_Scale( FileName ) then begin
-    FreeEmptyModelChooserDialog:=TFreeEmptyModelChooserDialog.Create(Self);
-    if FreeEmptyModelChooserDialog.Execute(FileName) then begin
-      if FreeEmptyModelChooserDialog.RbCreateNew.Checked then NewModelExecute(Self) else
-      if FreeEmptyModelChooserDialog.RbLoadFile.Checked then LoadFileExecute(Self)
-    end;
-    FreeEmptyModelChooserDialog.Free;
-  end;
-end;
-}
+
 procedure TMainForm.FreeShipChangeLayerData( Sender: TObject );
 var I : Integer;
 begin                              // Fill the layerbox with the current layers
@@ -1163,21 +1125,7 @@ begin
    FreeShip.Redraw;
    UpdateMenu;
 end;
-(*
-   if Freeship.NumberOfSelectedControlFaces=0 then begin // change active layer
-      if Layer<>FreeShip.ActiveLayer then FreeShip.ActiveLayer:=Layer;
-      ColorButton1.ButtonColor:=Layer.Color;
-   end else begin          // Assign all selected controlfaces to the new layer
-      {  Layer:=FreeShip.Surface.AddNewLayer;
-         Layer.Color:=ColorButton1.ButtonColor;             !!! не вышло...
-         Layer.Name:='add '+InttoStr( FreeShip.Surface.NumberOfLayers );
-         FreeShipChangeLayerData( Self ); }
-     for Index:=FreeShip.NumberOfSelectedControlFaces-1 downto 0
-             do FreeShip.SelectedControlFace[Index].Layer:=Layer;
-     FreeShip.FileChanged:=True;
-     FreeShip.Redraw;
-   end;
-*)
+
 procedure TMainForm.ColorButton_Click( Sender:TObject );
   var I: Integer; Layer: TFreeSubdivisionLayer;
 begin I:=Layerbox.ItemIndex;
@@ -1193,26 +1141,9 @@ begin I:=Layerbox.ItemIndex;
           UpdateMenu;
 //      end;
      end;
-//writeln( 'Color='+hexstr( Freeship.ActiveLayer.Color,6 )+':'+hexstr( Layer.Color,6 )+' Name=' +
-//(Layerbox.Items.Objects[I] as TFreeSubdivisionLayer).Name+' Layer='+inttostr(I)+'  Order='+inttostr(LayerBox.TabOrder) );
    end;
 end;
-(*
-object ColorButton1: TColorButton
-  Tag = 3
-  Left = 75
-  Height = 24
-  Hint = 'Change the color of the currently active layer.'
-  Top = 0
-  Width = 24
-  BorderWidth = 2
-  ButtonColorSize = 32
-  ButtonColor = clLime
-/  OnClick = ColorButton _ Click  -> OnColorChanged
-\  OnColorChanged = ColorButton_Click
-  ParentFont = False
-end
-*)
+
 procedure TMainForm.DeleteEmptyLayersExecute( Sender: TObject );
     begin Freeship.Edit.Layer_DeleteEmpty(False); UpdateMenu; end;
 procedure TMainForm.LayerDialogExecute( Sender: TObject );
@@ -1300,7 +1231,7 @@ procedure TMainForm.ExportFEFExecute(Sender: TObject);
 procedure TMainForm.EditProjectSettingsExecute(Sender: TObject);
     begin FreeShip.ProjectSettings.Edit; UpdateMenu; end;
 procedure TMainForm.CheckModelExecute(Sender: TObject);
-    begin FreeShip.Edit.Model_Check(True); UpdateMenu; end;
+    begin FreeShip.Edit.Model_Check( True ); UpdateMenu; end;
 
 procedure TMainForm.ShowNormalsExecute(Sender: TObject);
 begin
@@ -1450,73 +1381,49 @@ begin                                                  // delete old menu items
    end;
    UpdateMenu;
 end;
-
 procedure TMainForm.ImportCareneExecute(Sender: TObject);
     begin Freeship.Edit.File_ImportCarene; FOpenHullWindows; UpdateMenu; end;
-
 procedure TMainForm.ShowMarkersExecute(Sender: TObject);
-begin
-   FreeShip.Visibility.ShowMarkers:=not FreeShip.Visibility.ShowMarkers;
-   UpdateMenu;
-end;
-
+    begin FreeShip.Visibility.ShowMarkers:=not FreeShip.Visibility.ShowMarkers;
+          UpdateMenu;
+    end;
 procedure TMainForm.DeleteMarkersExecute(Sender: TObject);
     begin Freeship.Edit.Marker_Delete; UpdateMenu; end;
-
 procedure TMainForm.ImportSurfaceExecute(Sender: TObject);
-begin
-   FreeShip.Edit.File_ImportSurface;
-   FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
-end;
-
+    begin FreeShip.Edit.File_ImportSurface;
+          FOpenHullWindows; SetCaption; UpdateMenu;
+    end;
 procedure TMainForm.ShowcurvatureExecute(Sender: TObject);
-begin
-   FreeShip.Visibility.ShowCurvature:=not FreeShip.Visibility.ShowCurvature;
-   UpdateMenu;
-end;
-
+    begin
+      FreeShip.Visibility.ShowCurvature:=not FreeShip.Visibility.ShowCurvature;
+      UpdateMenu;
+    end;
 procedure TMainForm.IncreaseCurvatureScaleExecute(Sender: TObject);
-begin Freeship.Visibility.IncreaseCurvatureScale; end;
-
+    begin Freeship.Visibility.IncreaseCurvatureScale; end;
 procedure TMainForm.DecreaseCurvatureScaleExecute(Sender: TObject);
-begin Freeship.Visibility.DecreaseCurvatureScale; end;
-
+    begin Freeship.Visibility.DecreaseCurvatureScale; end;
 procedure TMainForm.FileSaveExecute(Sender: TObject);
-begin if Freeship.FilenameSet and not Freeship.FileIsReadOnly
-      then FreeShip.Edit.File_Save
-      else FreeShip.Edit.File_SaveAs; UpdateMenu;
-end;
-
+    begin if Freeship.FilenameSet and not Freeship.FileIsReadOnly
+             then FreeShip.Edit.File_Save
+             else FreeShip.Edit.File_SaveAs; UpdateMenu;
+    end;
 procedure TMainForm.ImportChinesExecute(Sender: TObject);
-begin
-   FreeShip.Edit.File_ImportChines;
-   FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
+    begin FreeShip.Edit.File_ImportChines;
+          FOpenHullWindows; SetCaption; UpdateMenu;
 end;
 procedure TMainForm.ImportOBJExecute(Sender: TObject);
-begin
-   FreeShip.Edit.File_ImportOBJ;
-   FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
+    begin FreeShip.Edit.File_ImportOBJ;
+          FOpenHullWindows; SetCaption; UpdateMenu;
 end;
 procedure TMainForm.ImportSTLExecute(Sender: TObject);
-begin
-   FreeShip.Edit.File_ImportSTL;
-   FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
-end;
-
+    begin FreeShip.Edit.File_ImportSTL;
+          FOpenHullWindows; SetCaption; UpdateMenu;
+    end;
 procedure TMainForm.ShowControlCurvesExecute(Sender: TObject);
-begin
-   FreeShip.Visibility.ShowControlCurves:=not FreeShip.Visibility.ShowControlCurves;
-   UpdateMenu;
-end;
-
+    begin
+      FreeShip.Visibility.ShowControlCurves:=not FreeShip.Visibility.ShowControlCurves;
+      UpdateMenu;
+    end;
 procedure TMainForm.NewCurveExecute(Sender: TObject);
     begin Freeship.Edit.Curve_Add; UpdateMenu; end;
 procedure TMainForm.ExportCoordinatesExecute(Sender: TObject);
@@ -1531,12 +1438,10 @@ procedure TMainForm.PointsUnlockAllExecute(Sender: TObject);
     begin Freeship.Edit.Point_UnlockAll; UpdateMenu; end;
 procedure TMainForm.ImportMarkersExecute(Sender: TObject);
     begin Freeship.Edit.Marker_Import; UpdateMenu; end;
-
 procedure TMainForm.FreeShipChangeCursorIncrement(Sender: TObject);
-begin
-  if (csdestroying in componentstate) then exit;
-  LabelDistance.Caption:=UserString(284)+' : '+FloatToDec(Freeship.Visibility.CursorIncrement,7);
-end;
+    begin if (csdestroying in componentstate) then exit;
+      LabelDistance.Caption:=UserString(284)+' : '+FloatToDec(Freeship.Visibility.CursorIncrement,7);
+    end;
 procedure TMainForm.StatusPanel3Click(Sender: TObject);
   var Str: Ansistring; I: integer; Value: TFloatType;
 begin
@@ -1581,15 +1486,6 @@ procedure TMainForm.ImportPartExecute(Sender: TObject);
     begin Freeship.Edit.File_ImportPart; UpdateMenu; end;
 procedure TMainForm.LayerIntersectionExecute(Sender: TObject);
     begin Freeship.Edit.Point_IntersectLayer; UpdateMenu; end;
-(*
-procedure TMainForm.KeelRudderWizardExecute(Sender: TObject);
-begin
-   if not Assigned(FreeKeelWizardDialog) then FreeKeelWizardDialog:=TFreeKeelWizardDialog.Create(Self);
-   ShowTranslatedValues(FreeKeelWizardDialog);
-   FreeKeelWizardDialog.Execute(freeship);
-   UpdateMenu;
-end;
-*)
 procedure TMainForm.RedoExecute(Sender: TObject);
     begin FreeShip.Edit.Redo; UpdateMenu; SetCaption; end;
 procedure TMainForm.ClearUndoExecute(Sender: TObject);

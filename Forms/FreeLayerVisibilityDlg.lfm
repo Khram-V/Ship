@@ -2,75 +2,75 @@ object FreeLayerVisibilityDialog: TFreeLayerVisibilityDialog
   Left = 531
   Height = 675
   Top = 185
-  Width = 231
-  Caption = 'Layer visibility'
+  Width = 400
+  BorderIcons = []
+  Caption = 'Установка видимости по слоям'
   ClientHeight = 675
-  ClientWidth = 231
+  ClientWidth = 400
   FormStyle = fsStayOnTop
+  ShowHint = True
   OnResize = FormResize
   OnShow = FormShow
-  ShowHint = True
-  LCLVersion = '2.0.8.0'
   object pTools: TPanel
     Left = 0
-    Height = 44
+    Height = 33
     Top = 0
-    Width = 231
+    Width = 400
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 44
-    ClientWidth = 231
+    ClientHeight = 33
+    ClientWidth = 400
     TabOrder = 0
     object bbClose: TBitBtn
-      Left = 169
-      Height = 36
+      Left = 183
+      Height = 25
       Top = 4
-      Width = 58
+      Width = 55
       Align = alRight
       AutoSize = True
       BorderSpacing.Around = 4
-      Caption = 'Close'
+      Caption = '&Закрыть'
       ModalResult = 11
-      OnClick = bbCloseClick
       TabOrder = 0
+      OnClick = bbCloseClick
     end
     object cbFreeStanding: TCheckBox
-      Left = 7
-      Height = 36
+      Left = 32
+      Height = 25
       Top = 4
-      Width = 145
+      Width = 89
       Align = alLeft
       BorderSpacing.Left = 3
       BorderSpacing.Around = 4
-      Caption = 'Free standing'
-      OnChange = cbFreeStandingChange
+      Caption = 'Свободные элементы'
       TabOrder = 1
+      OnChange = cbFreeStandingChange
     end
   end
   object sgLayers: TStringGrid
     Left = 0
-    Height = 593
-    Top = 82
-    Width = 231
+    Height = 613
+    Top = 62
+    Width = 400
     Align = alClient
     ColCount = 3
     ColumnClickSorts = True
     Columns = <    
       item
         ButtonStyle = cbsCheckboxColumn
-        Title.Caption = 'Surface'
-        Width = 32
+        Title.Caption = 'Поверхности'
+        Width = 80
       end    
       item
         ButtonStyle = cbsCheckboxColumn
-        Title.Caption = 'Control'
-        Width = 32
-      end    
+        Title.Caption = 'Рёбра'
+        Width = 40
+      end
       item
         ReadOnly = True
-        Title.Caption = 'Layer'
-        Width = 100
+        Title.Caption = 'Названия слоёв'
+        Width = 380
       end>
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goRangeSelect, goEditing, goSmoothScroll, goCellHints]
@@ -83,45 +83,42 @@ object FreeLayerVisibilityDialog: TFreeLayerVisibilityDialog
   end
   object Panel1: TPanel
     Left = 0
-    Height = 38
-    Top = 44
-    Width = 231
+    Height = 29
+    Top = 33
+    Width = 400
     Align = alTop
-    AutoSize = True
+    AutoSize = False
     BevelOuter = bvNone
-    ClientHeight = 38
-    ClientWidth = 231
+    ClientHeight = 29
+    ClientWidth = 400
     TabOrder = 2
     object CheckBox1: TCheckBox
-      Left = 6
-      Height = 26
+      Left = 32
+      Height = 17
       Top = 6
-      Width = 21
-      Align = alLeft
+      Width = 80
       BorderSpacing.Around = 6
-      OnClick = CheckBox1Click
       TabOrder = 0
+      OnClick = CheckBox1Click
     end
     object CheckBox2: TCheckBox
-      Left = 37
-      Height = 26
+      Left = 90
+      Height = 17
       Top = 6
-      Width = 21
-      Align = alLeft
+      Width = 40
       BorderSpacing.Left = 4
       BorderSpacing.Around = 6
-      OnClick = CheckBox2Click
       TabOrder = 1
+      OnClick = CheckBox2Click
     end
     object Label1: TLabel
-      Left = 68
-      Height = 26
+      Left = 130
+      Height = 17
       Top = 6
-      Width = 22
-      Align = alLeft
+      Width = 32
       BorderSpacing.Left = 4
       BorderSpacing.Around = 6
-      Caption = 'All'
+      Caption = '&Всё'
       ParentColor = False
     end
   end

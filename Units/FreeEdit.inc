@@ -1212,21 +1212,21 @@ begin Result:=false;
   FreeShip.FilenameSet:=True;               // Check if the file already exists
   if FileExistsUTF8(FreeShip.Filename) then begin
     Backup:=ChangeFileExt(FreeShip.Filename,'.Bak'); // First check for a backup, and delete when present
-    if FileExistsUTF8(Backup) then
-    if not DeleteFileUTF8(Backup) then begin
+    if FileExistsUTF8( Backup ) then
+    if not DeleteFileUTF8( Backup ) then begin
        ShowMessage( 'Unable to delete backup file '+Backup );
-       FreeShip.FileIsReadOnly:=true;
+//     FreeShip.FileIsReadOnly:=true;
        result:=false;
        exit;
     end;                               // Then create a backup of the old file
-    if not RenameFileUTF8(FreeShip.Filename, Backup) then begin
+    if not RenameFileUTF8( FreeShip.Filename,Backup ) then begin
       ShowMessage( 'Unable to create backup file '+Backup );
-      FreeShip.FileIsReadOnly:=true;
-      result:=false;
-      exit;
+//    FreeShip.FileIsReadOnly:=true;
+//    result:=false;
+//    exit;
     end;
   end;
-  Ext:=ExtractFileExt(FreeShip.Filename);
+  Ext:=ExtractFileExt( FreeShip.Filename );
   if Ext='.fbm' then Destination:=TFreeFileBuffer.Create
                 else Destination:=TFreeTextBuffer.Create;
   Destination.Encoding:=FreeShip.Preferences.FbmEncoding;
@@ -1667,6 +1667,7 @@ begin
 end;
 
 // Develope all developable layers
+
 procedure TFreeEdit.Layer_Develop;
 var
   Layer: TFreeSubdivisionLayer;
@@ -1679,16 +1680,13 @@ begin
   Prev:=Screen.Cursor;
   Screen.Cursor:=crHourGlass;
   Plates:=TFasterListTFreeDevelopedPatch.Create;
-//try
     // perform a quiet test to check normal directions
     if not FreeShip.ProjectSettings.DisableModelCheck then Model_Check(False);
     for I:=1 to FreeShip.NumberOfLayers do begin
       Layer:=FreeShip.Layer[I-1];
       if Layer.Developable then Layer.Unroll(Plates);
     end;
-
     Patch:=TFreeDevelopedPatch.Create(FreeShip.ActiveLayer);
-
     for I:=1 to Plates.Count do begin
       Patch:=Plates[I-1];                                                   // How Plate assigned to Patch?
       for J:=1 to FreeShip.NumberofStations do
@@ -1700,23 +1698,17 @@ begin
       for J:=1 to FreeShip.NumberofDiagonals do
         Patch.IntersectPlane(FreeShip.Diagonal[J-1].Plane, FreeShip.Diagonal[J-1].Color);
     end;
-//finally
     Screen.Cursor:=Prev;
-//end;
-
-  if Plates.Count > 0 then begin
+  if Plates.Count>0 then begin
 //  Screen.Cursor:=crCross; //Default;
-    Dlg:=TFreeExpanedplatesDialog.Create(FreeShip);
-    ShowTranslatedValues(Dlg);
+    Dlg:=TFreeExpanedplatesDialog.Create( FreeShip );
+    ShowTranslatedValues( Dlg );
     FreeShip.IsRebuildAsyncDisabled:=true;
-    Dlg.Execute(FreeShip, Plates);
-    FreeAndNil(Dlg);
-    FreeShip.IsRebuildAsyncDisabled:=false;
+    Dlg.Execute( FreeShip,Plates );
+    FreeAndNil( Dlg );
+    FreeShip.IsRebuildAsyncDisabled:=false;  ///*** здесь возможна проблема
   end;
-  for I:=1 to Plates.Count do begin
-    Patch:=plates[I-1];
-    FreeAndNil(Patch);
-  end;
+  for I:=1 to Plates.Count do begin Patch:=plates[I-1]; FreeAndNil(Patch); end;
   FreeAndNil(Plates);
 end;
 
@@ -1790,29 +1782,20 @@ end;
 
 // Checks the surface for inconsistent normal directions and leaks
 procedure TFreeEdit.Model_Check(ShowResult: boolean);
-const
-  EdgeError = 1e-4;
+const EdgeError=1e-4;
 var
-  I, J: integer;
-  Pt, Pt0: TFreeSubdivisionPoint;
-  Point: TFreeSubdivisionControlPoint;
+  I,J,InvertedFaces,Inconsistent,NonManifold,DblEdges: integer;
+  Pt,Pt0: TFreeSubdivisionPoint;
   Face: TFreeSubdivisionFace;
+  Point,CtrlPoint: TFreeSubdivisionControlPoint;
   Edge1, Edge2: TFreeSubdivisionControlEdge;
   CtrlFace: TFreeSubdivisionControlFace;
-  CtrlPoint: TFreeSubdivisionControlPoint;
-  AllFaces: TFasterListTFreeSubdivisionFace;
-  NewGroup: TFasterListTFreeSubdivisionFace;
+  AllFaces,NewGroup: TFasterListTFreeSubdivisionFace;
   DoubleEdges: TFasterListTFreeSubdivisionControlEdge;
-  Points: TFasterListTFreeSubdivisionControlPoint;
-  Changed: boolean;
-  InvertedFaces: integer;
-  Inconsistent: integer;
-  NonManifold: integer;
-  DblEdges: integer;
+  Points,Leaks: TFasterListTFreeSubdivisionControlPoint;
+  Changed,Swap: boolean;
   Str: AnsiString;
   vUndo: TFreeUndoObject;
-  Leaks: TFasterListTFreeSubdivisionControlPoint;
-  Swap: boolean;
   NewLayer: TFreeSubdivisionLayer;
   Normal, Tmp: T3DVector;
   Z_min: single;
@@ -1866,8 +1849,7 @@ begin
   NonManifold:=0;
   DblEdges:=0;
   // if ShowResult=false a quiet test is done, only the direction of facenormals is checked and fixed
-  if ShowResult then
-  begin
+  if ShowResult then begin
     // Find double edges
     DoubleEdges:=TFasterListTFreeSubdivisionControlEdge.Create;
     for I:=1 to FreeShip.Surface.NumberOfControlEdges do
@@ -2443,7 +2425,7 @@ begin
       FreeShip.Surface.ControlPoint[I-1].Locked:=False;
     FreeShip.ActiveControlPoint:=FreeShip.ActiveControlPoint;
     Freeship.ReDraw;
-    MessageDlg(IntToStr(N)+#32+Userstring(170)+'.', mtInformation, [mbOK], 0);
+    ShowMessage(IntToStr(N)+#32+Userstring(170)+'.');
     FreeShip.FileChanged:=True;
   end;
 end;

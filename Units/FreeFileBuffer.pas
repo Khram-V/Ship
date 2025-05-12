@@ -39,37 +39,36 @@ TFreeFileBuffer = class
     procedure Add(IntegerValue: integer);      overload; virtual;
     procedure Add(Text: AnsiString);           overload; virtual;
     procedure Add(BooleanValue: boolean);      overload; virtual;
-//  procedure Add2(BooleanValue:Boolean);      overload; virtual;
     procedure Add(FloatValue: TFloatType);     overload; virtual;
     procedure Add(words: TStrings);            overload; virtual;
-//  procedure Add(WordValue:word);             overload; virtual;
     procedure Add(Version: TFreeFileVersion);  overload; virtual;
     procedure Add(Coordinate: T3DVector);      overload; virtual;
-//  procedure Add(NameData: TNameData);        overload; virtual;
-//  procedure Add(AnchorData: TAnchorData);    overload; virtual;
-//  procedure Add(LCData:TLinearConstraintData); overload; virtual;
     procedure Add(Plane: T3DPlane);            overload; virtual;
     procedure Add(Data: TFreeDelftSeriesResistanceData); overload; virtual;
     procedure Add(Data: TFreeKAPERResistanceData); overload; virtual;
-//  procedure Add(const source;Size:Integer);  overload;virtual;
     procedure Add(JPegImage: TJPEGImage);      overload; virtual;
-
     procedure LoadInteger(var Output: integer);   virtual;
     procedure LoadString(var Output: AnsiString); virtual;
-//  procedure Load(var Output:Word);              virtual;
     procedure LoadTStrings(var Output: TStrings); virtual;
     procedure LoadTFreeFileVersion(var Output: TFreeFileVersion); virtual;
     procedure LoadBoolean(var Output: boolean); virtual;
     procedure LoadTColor(var Output: TColor); virtual;
-//    procedure LoadTNameData(var NameData: TNameData); virtual;
-//    procedure LoadTAnchorData(var AnchorData: TAnchorData); virtual;
-//    procedure LoadTLinearConstraintData(var LCData: TLinearConstraintData); virtual;
     procedure LoadTFloatType(var Output: TFloatType); virtual;
     procedure LoadT3DVector(var Output: T3DVector); virtual;
     procedure LoadT3DPlane(var Output: T3DPlane); virtual;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); virtual;
     procedure LoadTFreeKAPERResistanceData(var Data: TFreeKAPERResistanceData); virtual;
     procedure LoadTFreeDelftSeriesResistanceData(var Data: TFreeDelftSeriesResistanceData); virtual;
+//  procedure Add2(BooleanValue:Boolean);      overload; virtual;
+//  procedure Add(WordValue:word);             overload; virtual;
+//  procedure Add(NameData: TNameData);        overload; virtual;
+//  procedure Add(AnchorData: TAnchorData);    overload; virtual;
+//  procedure Add(LCData:TLinearConstraintData); overload; virtual;
+//  procedure Add(const source;Size:Integer);  overload;virtual;
+//  procedure Load( var Output:Word ); virtual;
+//  procedure LoadTNameData(var NameData: TNameData); virtual;
+//  procedure LoadTAnchorData(var AnchorData: TAnchorData); virtual;
+//  procedure LoadTLinearConstraintData(var LCData: TLinearConstraintData); virtual;
 // ?procedure Load(var Dest;Size:Integer); overload;virtual;
     constructor Create;
     procedure Clear; virtual;
@@ -96,19 +95,17 @@ TFreeFileBuffer = class
     procedure FSetCapacity( val: integer ); override;
   public
     constructor Create;
+    destructor Destroy; override;
+    procedure Clear; override;
     procedure Add(IntegerValue: integer); override; overload;
     procedure Add(Text: Ansistring); override; overload;
     procedure Add(BooleanValue: boolean); override; overload;
     procedure Add(FloatValue: TFloatType); override; overload;
     procedure Add(words: TStrings); override; overload;
     procedure Add(PVersion: TFreeFileVersion); override; overload;
-//    procedure Add(NameData: TNameData); override; overload;
-//    procedure Add(LCData: TLinearConstraintData); override; overload;
     procedure Add(Coordinate: T3DVector); override; overload;
     procedure Add(Plane: T3DPlane); override; overload;
-//  procedure Add(const source;Size:Integer);     override;
     procedure Add(JPegImage: TJPEGImage); override; overload;
-
     procedure LoadInteger(var Output: integer); override;
     procedure LoadString(var Output: Ansistring); override;
     procedure LoadTFreeFileVersion(var Output: TFreeFileVersion); override;
@@ -116,20 +113,20 @@ TFreeFileBuffer = class
     procedure LoadTColor(var Output: TColor); override;
     procedure LoadTFloatType(var Output: TFloatType); override;
     procedure LoadTStrings(var Output: TStrings); override;
-//    procedure LoadTNameData(var Output: TNameData); override;
-//    procedure LoadTLinearConstraintData(var Output: TLinearConstraintData); override;
     procedure LoadT3DVector(var Output: T3DVector); override;
     procedure LoadT3DPlane(var Output: T3DPlane); override;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); override;
-
-    procedure Clear; override;
     procedure LoadFromFile(Filename: AnsiString); override;
     procedure Reset; override;                 // reset the data before reading
     function SaveToFile(Filename: AnsiString):boolean; override;
     function GetPosition:integer; override;
-    destructor Destroy; override;
     property Capacity: integer read FGetCapacity write FSetCapacity;
     property Position: integer read GetPosition;
+//  procedure Add(NameData: TNameData); override; overload;
+//  procedure Add(LCData: TLinearConstraintData); override; overload;
+//  procedure Add(const source;Size:Integer);     override;
+//  procedure LoadTNameData(var Output: TNameData); override;
+//  procedure LoadTLinearConstraintData(var Output: TLinearConstraintData); override;
   end;
 
 
@@ -678,9 +675,9 @@ begin
   Stream.Position:=0;
   Add(Size);
 
-  S:=StrAlloc(Size * 2+2);
-  S[Size * 2]:=#0;
-  S[Size * 2+1]:=#0;
+  S:=StrAlloc(Size*2+2);
+  S[Size*2]:=#0;
+  S[Size*2+1]:=#0;
   P:=Stream.Memory;
   BinToHex(P, S, size);
   L:=StrPas(S);

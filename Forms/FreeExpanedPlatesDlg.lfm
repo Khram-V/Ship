@@ -6,6 +6,8 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
   ClientHeight = 800
   ClientWidth = 1200
   Position = poDefault
+  BorderIcons = []
+  Caption = 'Развёртка поверхностей бортовой обшивки'
   LCLVersion = '3.2.0.0'
   object Panel2: TPanel
     Left = 910
@@ -31,6 +33,29 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
       ClientHeight = 376
       ClientWidth = 288
       TabOrder = 0
+      object PaneLayer: TPanel
+        Left = 0
+        Height = 30
+        Top = 4
+        Width = 288
+        object Label5: TLabel
+          Left = 10
+          Height = 26
+          Top = 10
+          Width = 60
+          Caption = 'Имя слоя'
+          ParentColor = False
+        end
+        object _Label6: TLabel
+          Left = 70
+          Height = 26
+          Top = 10
+          Width = 218
+          Font.Style = [fsBold]
+          ParentColor = False
+          ParentFont = False
+        end
+      end
       object Panel1: TPanel
         Left = 0
         Height = 216
@@ -46,32 +71,12 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
         ClientHeight = 216
         ClientWidth = 288
         TabOrder = 0
-        object Label5: TLabel
-          Left = 10
-          Height = 26
-          Top = 10
-          Width = 187
-          Caption = 'Part name'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object _Label6: TLabel
-          Left = 203
-          Height = 26
-          Top = 10
-          Width = 70
-          Caption = '_Label6'
-          Font.Style = [fsBold]
-          Layout = tlCenter
-          ParentColor = False
-          ParentFont = False
-        end
         object Label1: TLabel
           Left = 10
           Height = 26
           Top = 44
           Width = 187
-          Caption = 'Minimum edge error'
+          Caption = 'Погрешности на рёбрах в минус'
           Layout = tlCenter
           ParentColor = False
         end
@@ -80,7 +85,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 26
           Top = 44
           Width = 70
-          Caption = '_Label2'
           Layout = tlCenter
           ParentColor = False
         end
@@ -89,7 +93,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 26
           Top = 78
           Width = 187
-          Caption = 'Maximum edge error'
+          Caption = 'Неточности по рёбрам в плюс'
           Layout = tlCenter
           ParentColor = False
         end
@@ -98,7 +102,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 26
           Top = 78
           Width = 70
-          Caption = 'Label2'
           Layout = tlCenter
           ParentColor = False
         end
@@ -107,7 +110,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 26
           Top = 112
           Width = 187
-          Caption = 'Maximum area error'
+          Caption = 'Максимальный недочёт площади'
           Layout = tlCenter
           ParentColor = False
         end
@@ -116,7 +119,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 26
           Top = 112
           Width = 70
-          Caption = 'Label2'
           Layout = tlCenter
           ParentColor = False
         end
@@ -125,7 +127,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 26
           Top = 146
           Width = 187
-          Caption = 'Total area error'
+          Caption = 'Общая погрешость по площадям'
           Layout = tlCenter
           ParentColor = False
         end
@@ -134,7 +136,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 26
           Top = 146
           Width = 70
-          Caption = 'Label2'
           Layout = tlCenter
           ParentColor = False
         end
@@ -143,7 +144,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 26
           Top = 180
           Width = 187
-          Caption = 'No. iterations'
+          Caption = 'Количество расчётных итераций'
           Layout = tlCenter
           ParentColor = False
         end
@@ -152,7 +153,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 26
           Top = 180
           Width = 70
-          Caption = 'Label2'
           Layout = tlCenter
           ParentColor = False
         end
@@ -177,7 +177,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 36
           Top = 10
           Width = 123
-          Caption = 'Rotation'
+          Caption = 'Поворот листа развёртки'
           Layout = tlCenter
           ParentColor = False
         end
@@ -198,7 +198,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 36
           Top = 10
           Width = 53
-          Caption = '[degr]'
+          Caption = '[°]'
           Layout = tlCenter
           ParentColor = False
         end
@@ -207,7 +207,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 36
           Top = 48
           Width = 123
-          Caption = 'X grid spacing'
+          Caption = 'Шаг продольной разметки:'
           Layout = tlCenter
           ParentColor = False
         end
@@ -225,7 +225,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 36
           Top = 48
           Width = 53
-          Caption = '[m]'
           Layout = tlCenter
           ParentColor = False
         end
@@ -234,7 +233,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 36
           Top = 86
           Width = 123
-          Caption = 'Y grid spacing'
+          Caption = 'Поперечный шаг сетки:'
           Layout = tlCenter
           ParentColor = False
         end
@@ -252,7 +251,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
           Height = 36
           Top = 86
           Width = 53
-          Caption = '[m]'
           Layout = tlCenter
           ParentColor = False
         end
@@ -262,7 +260,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
         Height = 28
         Top = 348
         Width = 288
-        Caption = 'Mirror'
+        Caption = ' без зеркального отображения'
         TabOrder = 2
         OnClick = CheckBoxMirrorClick
       end
@@ -276,6 +274,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
       ItemHeight = 0
       TabOrder = 1
       TopIndex = -1
+      OnClick = ListBoxClick
       OnClickCheck = ListBoxClickCheck
     end
   end
@@ -285,7 +284,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
     Top = 0
     Width = 1200
     AutoSize = True
-    Caption = 'ToolBar1'
     Color = clForm
     Images = MenuImages
     Indent = 5
@@ -342,7 +340,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
       Height = 22
       Top = 2
       AutoSize = True
-      Caption = '_ToolButton4'
       ImageIndex = 5
       Style = tbsSeparator
     end
@@ -369,7 +366,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
       Height = 22
       Top = 2
       AutoSize = True
-      Caption = '_ToolButton6'
       ImageIndex = 1
       Style = tbsSeparator
     end
@@ -399,7 +395,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
     end
     object ToolButton26: TToolButton
       Left = 368
-      Hint = 'Show dimensions of the unfolded plates.'
+      Hint = 'Сетка и размерения на графическом поле.'
       Top = 2
       Action = ShowDimensions
       AutoSize = True
@@ -440,7 +436,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
       Height = 22
       Top = 2
       AutoSize = True
-      Caption = '_ToolButton14'
       ImageIndex = 12
       Style = tbsSeparator
     end
@@ -473,7 +468,6 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
       Height = 22
       Top = 2
       AutoSize = True
-      Caption = '_ToolButton21'
       ImageIndex = 12
       Style = tbsSeparator
     end
@@ -486,7 +480,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
     object SpinEditFontSize: TSpinEdit
       Left = 228
       Height = 36
-      Hint = 'Font Size'
+      Hint = 'Размер надписей'
       Top = 2
       Width = 40
       MaxValue = 20
@@ -500,177 +494,153 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
     Images = MenuImages
     Left = 32
     Top = 48
-    object ZoomExtents: TAction
-      Category = 'Zoom'
-      Caption = 'Extents'
-      Hint = 'Zoom all.'
-      ImageIndex = 0
-      OnExecute = ZoomExtentsExecute
-      ShortCut = 16449
+    object RotateCCW1: TAction
+      Category = 'Rotate'
+      Hint = 'Поворот -1° против часовой стрелки.'
+      ImageIndex = 8
+      OnExecute = RotateCCW1Execute
+    end
+    object RotateCW1: TAction
+      Category = 'Rotate'
+      Hint = 'Поворот 1° по часовой стрелке.'
+      ImageIndex = 9
+      OnExecute = RotateCW1Execute
     end
     object RotateCCW5: TAction
       Category = 'Rotate'
-      Caption = '-5'
-      Hint = 'Rotate part 5 degr. counter clockwise.'
+      Hint = 'Поворот -5° против часовой стрелки.'
       ImageIndex = 1
       OnExecute = RotateCCW5Execute
     end
     object RotateCCW90: TAction
       Category = 'Rotate'
-      Caption = '-90'
-      Hint = 'Rotate part 90 degr. counter clockwise.'
+      Hint = 'Прямой угол -90° против часовой стрелки'
       ImageIndex = 2
       OnExecute = RotateCCW90Execute
     end
     object RotateCW5: TAction
       Category = 'Rotate'
-      Caption = '+5'
-      Hint = 'Rotate part 5 degr. clockwise.'
+      Hint = 'Поворот 5° по часовой стрелке.'
       ImageIndex = 3
       OnExecute = RotateCW5Execute
     end
     object RotateCW90: TAction
       Category = 'Rotate'
-      Caption = '+90'
-      Hint = 'Rotate part 90 degr. clockwise.'
+      Hint = 'Прямой угол 90° по часовой стрелке.'
       ImageIndex = 4
       OnExecute = RotateCW90Execute
     end
+    object ZoomExtents: TAction
+      Category = 'Zoom'
+      Hint = 'Вместить изображение в графическое поле.'
+      ImageIndex = 0
+      OnExecute = ZoomExtentsExecute
+      ShortCut = 16449
+    end
     object ZoomOut: TAction
       Category = 'Zoom'
-      Caption = 'Zoom out'
-      Hint = 'Zoom out.'
+      Hint = 'Отдалить, уменьшить изображение.'
       ImageIndex = 6
       OnExecute = ZoomOutExecute
       ShortCut = 16463
     end
     object ZoomIn: TAction
       Category = 'Zoom'
-      Caption = 'ZoomIn'
-      Hint = 'Zoom in'
+      Hint = 'Приблизить, увеличить изображение'
       ImageIndex = 7
       OnExecute = ZoomInExecute
       ShortCut = 16457
     end
-    object RotateCCW1: TAction
-      Category = 'Rotate'
-      Caption = '-1'
-      Hint = 'Rotate part 1 degr. counter clockwise.'
-      ImageIndex = 8
-      OnExecute = RotateCCW1Execute
-    end
-    object RotateCW1: TAction
-      Category = 'Rotate'
-      Caption = '+1'
-      Hint = 'Rotate part 1 degr. clockwise.'
-      ImageIndex = 9
-      OnExecute = RotateCW1Execute
-    end
     object SaveBitmap: TAction
       Category = 'Export'
-      Caption = 'Save bitmap'
-      Hint = 'Save the current layout as a PNG.'
+      Hint = 'Сохранить изображение как .png.'
       ImageIndex = 10
       OnExecute = SaveBitmapExecute
     end
     object ExportDXF: TAction
       Category = 'Export'
-      Caption = 'DXF'
-      Hint = 'Export the visible plates to a DXF file.'
+      Hint = 'Сохранить результат в AutoCAD.dxf.'
       ImageIndex = 11
       OnExecute = ExportDXFExecute
     end
     object ShowButtocks: TAction
       Category = 'Visibility'
-      Caption = 'Buttocks'
-      Hint = 'Show buttocks on developed plates.'
+      Hint = 'Батоксы на листах обшивки.'
       ImageIndex = 12
       OnExecute = ShowButtocksExecute
     end
     object ShowWaterlines: TAction
       Category = 'Visibility'
-      Caption = 'Waterlines'
-      Hint = 'Show waterlines on developed plates.'
+      Hint = 'Ватерлинии на листах обшивки.'
       ImageIndex = 13
       OnExecute = ShowWaterlinesExecute
     end
     object ShowStations: TAction
       Category = 'Visibility'
-      Caption = 'Stations'
-      Hint = 'Show stations on developed plates.'
+      Hint = 'Шпангоуты на листах обшивки.'
       ImageIndex = 14
       OnExecute = ShowStationsExecute
     end
     object ShowInteriorEdges: TAction
       Category = 'Visibility'
-      Caption = 'Interior edges'
-      Hint = 'Show interior edges.'
+      Hint = 'Внутренние рёбра по корпусной разметке.'
       ImageIndex = 15
       OnExecute = ShowInteriorEdgesExecute
     end
     object ShowFillColor: TAction
       Category = 'Visibility'
-      Caption = 'Solid'
-      Hint = 'Show plates with fillcolor.'
+      Hint = 'Сплошная закраска поверхностей.'
       ImageIndex = 16
       OnExecute = ShowFillColorExecute
     end
     object ShowErrorEdges: TAction
       Category = 'Visibility'
-      Caption = 'ShowErrorEdges'
       Checked = True
-      Hint = 'Highlight compressed or stretched edges.'
+      Hint = 'Сжатые или растянуые рёбра.'
       ImageIndex = 18
       OnExecute = ShowErrorEdgesExecute
     end
     object ShowDiagonals: TAction
       Category = 'Visibility'
-      Caption = 'Diagonals'
-      Hint = 'Show diagonals on developed plates.'
+      Hint = 'Рыбины на листах обшивки.'
       ImageIndex = 19
       OnExecute = ShowDiagonalsExecute
     end
     object Print: TAction
       Category = 'Export'
-      Caption = 'Print'
-      Hint = 'Send unfolded plates to printer or plotter.'
+      Hint = 'Распечать результат на принтере или плоттере.'
       ImageIndex = 20
       OnExecute = PrintExecute
     end
     object ShowDimensions: TAction
       Category = 'Visibility'
-      Caption = 'ShowDimensions'
       Checked = True
-      Hint = 'Show dimensions at grid intersections.'
+      Hint = 'Сетка и размерения на графическом поле.'
       ImageIndex = 21
       OnExecute = ShowDimensionsExecute
     end
     object ShowPartName: TAction
       Category = 'Visibility'
-      Caption = 'Part name'
       Checked = True
-      Hint = 'Show the name of each developed part.'
+      Hint = 'Название каждого листа развёртки.'
       ImageIndex = 22
       OnExecute = ShowPartNameExecute
     end
     object ShowSubmergedArea: TAction
       Category = 'Visibility'
-      Caption = 'ShowSubmergedArea'
-      Hint = 'Show the submerged surface areas in a different color.'
+      Hint = 'Расцветка для обводов и верхнего борта корпуса.'
       ImageIndex = 23
       OnExecute = ShowSubmergedAreaExecute
     end
     object ExportTextFile: TAction
       Category = 'Export'
-      Caption = 'Text file'
-      Hint = 'Export the visible plates to a TXT file.'
+      Hint = 'Сохранить результат в текстовом формате.TXT.'
       ImageIndex = 24
       OnExecute = ExportTextFileExecute
     end
     object CloseDialog: TAction
       Category = 'Dialog'
-      Caption = 'Close Dialog'
-      Hint = 'Close Dialog'
+      Hint = 'Завершить разметку развёрток'
       ImageIndex = 25
       OnExecute = CloseDialogExecute
     end

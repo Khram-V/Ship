@@ -2,10 +2,11 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
   Left = 780
   Height = 600
   Top = 215
-  Width = 857
+  Width = 856
+  BorderIcons = []
   Caption = 'Таблица кривых элементов теоретического чертежа'
   ClientHeight = 600
-  ClientWidth = 857
+  ClientWidth = 856
   Font.Color = clBlack
   Font.Name = 'Arial'
   OnResize = FormResize
@@ -15,12 +16,12 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
     Left = 0
     Height = 24
     Top = 0
-    Width = 857
+    Width = 856
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 24
-    ClientWidth = 857
+    ClientWidth = 856
     Font.Color = clBlack
     ParentFont = False
     TabOrder = 0
@@ -28,12 +29,12 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       Left = 2
       Height = 20
       Top = 2
-      Width = 90
+      Width = 91
       Align = alLeft
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 90
-      Caption = '&Распечатать'
+      Caption = 'Рас&печатать'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -74,7 +75,7 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       OnClick = ButtonPrintClick
     end
     object ButtonSave: TSpeedButton
-      Left = 100
+      Left = 95
       Height = 20
       Top = 2
       Width = 116
@@ -124,7 +125,7 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       OnClick = ButtonSaveClick
     end
     object ButtonClose: TSpeedButton
-      Left = 775
+      Left = 774
       Height = 20
       Top = 2
       Width = 80
@@ -177,19 +178,19 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
     Left = 0
     Height = 576
     Top = 24
-    Width = 857
+    Width = 856
     Align = alClient
     BevelOuter = bvLowered
     BorderWidth = 8
     ClientHeight = 576
-    ClientWidth = 857
+    ClientWidth = 856
     TabOrder = 1
     object Splitter1: TSplitter
       Cursor = crVSplit
       Left = 9
       Height = 3
       Top = 181
-      Width = 839
+      Width = 838
       Align = alTop
       ResizeAnchor = akTop
     end
@@ -197,7 +198,7 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       Left = 9
       Height = 383
       Top = 184
-      Width = 839
+      Width = 838
       Align = alClient
       ColCount = 17
       DefaultColWidth = 49
@@ -219,7 +220,7 @@ object FreeHydrostaticsResultsDialog: TFreeHydrostaticsResultsDialog
       Left = 9
       Height = 172
       Top = 9
-      Width = 839
+      Width = 838
       Align = alTop
       Font.Color = clBlack
       Font.Height = -12

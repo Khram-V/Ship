@@ -81,8 +81,9 @@ var
   TmpArea: TFloatType;
   TmpCOG,MomI: T3DVector;
 
-  procedure CalculateSplineArea(Spline: TFreeSpline; var SplineArea: TFloatType;
-  var SplineCOG, MomInertia: T3DVector);
+  procedure CalculateSplineArea
+  ( Spline: TFreeSpline; var SplineArea: TFloatType;
+                         var SplineCOG,MomInertia: T3DVector);
   var
     ClosedSpline: boolean;
     IntersectionData: TFreeIntersectionData;
@@ -93,13 +94,11 @@ var
     P1,P2,C,MomI: T2DCoordinate;
 
     function ProjectTo2D( P: T3DVector ): T2DCoordinate;
-    begin
-      case IntersectionType of
-        fiStation:   begin Result.X:=P.Y; Result.Y:=P.Z; end;
-        fiButtock:   begin Result.X:=P.X; Result.Y:=P.Z; end;
-        fiWaterline: begin Result.X:=P.X; Result.Y:=P.Y; end;
-                else begin Result.X:=0.0; Result.Y:=0.0; end;
-      end;
+    begin case IntersectionType of
+               fiStation:   begin Result.X:=P.Y; Result.Y:=P.Z; end;
+               fiButtock:   begin Result.X:=P.X; Result.Y:=P.Z; end;
+               fiWaterline: begin Result.X:=P.X; Result.Y:=P.Y; end;
+                       else begin Result.X:=0.0; Result.Y:=0.0; end; end;
     end; {ProjectTo2D}
 
   begin
@@ -135,7 +134,7 @@ var
       end;
     end;
     ArraySort( Parameters,NoPoints );
-//  SortFloatArray(Parameters, NoPoints);
+//  SortFloatArray(Parameters,NoPoints);
     if NoPoints > 0 then begin
       T1:=0.0;
       for I:=2 to NoPoints do begin
@@ -158,8 +157,7 @@ var
               MomI.Y:=MomI.Y+(1.0 / 12.0) *
                 (P2.X * P2.X * (3 * P2.Y+P1.Y)+2 * P1.X * P2.X *
                 (P1.Y+P2.Y)+P1.X * P1.X * (3 * P1.Y+P2.Y)) * (P2.X-P1.X);
-            end;
-            P1:=P2;
+            end; P1:=P2;
           end;    // The point lies at the back of the plane, include this area
         T1:=T2;
       end;
@@ -169,8 +167,7 @@ var
         MomI.X:=abs(MomI.X);
         MomI.Y:=abs(MomI.Y);
         case IntersectionType of
-          fiStation:
-          begin
+          fiStation: begin
             SplineCOG.X:=-FPlane.d;
             SplineCOG.Y:=C.X;
             SplineCOG.Z:=C.Y;
@@ -178,8 +175,7 @@ var
             MomInertia.Y:=MomI.X;
             MomInertia.Z:=MomI.Y;
           end;
-          fiButtock:
-          begin
+          fiButtock: begin
             SplineCOG.X:=C.X;
             SplineCOG.Y:=-FPlane.d;
             SplineCOG.Z:=C.Y;
@@ -187,8 +183,7 @@ var
             MomInertia.Z:=MomI.Y;
             MomInertia.Y:=0;
           end;
-          fiWaterline:
-          begin
+          fiWaterline: begin
             SplineCOG.X:=C.X;
             SplineCOG.Y:=C.Y;
             SplineCOG.Z:=-FPlane.d;
@@ -196,12 +191,10 @@ var
             MomInertia.Y:=MomI.Y;
             MomInertia.Z:=0;
           end;
-
         end;
       end;
     end;
-  end;{CalculateSplineArea}
-
+  end; {CalculateSplineArea}
 begin
   Area:=0.0;
   COG:=ZERO;
@@ -212,17 +205,17 @@ begin
   if Count > 0 then begin
     CreateStarboardPart;             // This also ensures correct winding order
     if Count >= 2 then isymm:=2;
-    for I:=1 to Count do begin
-      CalculateSplineArea(Items[I-1], TmpArea, TmpCOG, MomI);
+    for I:=0 to Count-1 do begin
+      CalculateSplineArea( Items[I],TmpArea,TmpCOG,MomI );
       Area:=Area+TmpArea;
-      COG.X:=COG.X+TmpArea * TmpCOG.X;
-      COG.Y:=COG.Y+TmpArea * TmpCOG.Y;
-      COG.Z:=COG.Z+TmpArea * TmpCOG.Z;
+      COG.X:=COG.X+TmpArea*TmpCOG.X;
+      COG.Y:=COG.Y+TmpArea*TmpCOG.Y;
+      COG.Z:=COG.Z+TmpArea*TmpCOG.Z;
     end;
-    if Area <> 0.0 then begin
-      COG.X:=COG.X / Area;
-      COG.Y:=COG.Y / Area;
-      COG.Z:=COG.Z / Area;
+    if Area<>0.0 then begin
+      COG.X:=COG.X/Area;
+      COG.Y:=COG.Y/Area;
+      COG.Z:=COG.Z/Area;
       if IntersectionType = fiWaterline then begin
         MomentOfInertia.X:=(MomI.X-COG.Y * COG.Y * Area) * isymm;
         MomentOfInertia.Y:=abs(MomI.Y-COG.X * COG.X * Area);
@@ -239,8 +232,7 @@ begin
 end;
 
 procedure TFreeIntersection.Clear;
-var
-  I: integer;
+var I: integer;
 begin
   for I:=1 to Count do Items[I-1].Free;
   FItems.Clear;

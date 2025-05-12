@@ -4,7 +4,7 @@ interface uses
   LResources, LCLType, Classes, SysUtils,
   PrintersDlgs, Printers, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Buttons,
-  FreePrinter,FreeLanguageSupport;
+  FreePrinter,FreeShipUnit,FreeLanguageSupport;
 type                                                { TFreeHydrostaticsDialog }
   TFreeHydrostaticsDialog = class(TForm)
     Edit: TMemo;
@@ -48,20 +48,21 @@ procedure TFreeHydrostaticsDialog.ButtonSaveClick(Sender: TObject);
 begin
   if SaveDialog.Execute then
     case SaveDialog.FilterIndex of
-      1: Edit.Lines.SaveToFile(ChangeFileExt(SaveDialog.FileName,'.txt')); // save as plain text
+      1: Edit.Lines.SaveToFile(ChangeFileExt( SaveDialog.FileName,'.txt') ); // save as plain text
     end;
 end;
-procedure TFreeHydrostaticsDialog.FormShow(Sender: TObject);
+procedure TFreeHydrostaticsDialog.FormShow( Sender: TObject );
 var
   I: integer;
   S: AnsiString;
-begin
+begin  //SaveDialog.FileName:=Ship{(Sender as TFreeShip)}.FileName;
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'')+'.txt';
   I:=Edit.Lines.Count;
   S:=Edit.Lines.CommaText;                       // Place cursor at beginning
   Edit.CaretPos:=TPoint(Point(0, 0));
   I:=Edit.Lines.Count;
   S:=Edit.Lines.CommaText;
-  ShowTranslatedValues(Self);
+  ShowTranslatedValues( Self );
 end;
 
 end.

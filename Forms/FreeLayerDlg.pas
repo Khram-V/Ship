@@ -1,13 +1,10 @@
 unit FreeLayerDlg;
-{$mode objfpc}{$H+}  //{$MODE Delphi}{$H+}
+{$MODE Delphi}{$H+}        // {$mode objfpc}{$H+}
 interface uses
     SysUtils, Controls,
     StdCtrls, ExtCtrls,
     Forms,    CheckLst,
-    Dialogs,  ComCtrls,
-    Spin,
-    FreeTypes,FreeShipUnit,FreeGeometry;
-
+    Dialogs,  ComCtrls, Spin, FreeTypes,FreeShipUnit,FreeGeometry;
 type
   TFreeLayerDialog  = class( TForm )
     ToolBar1: TToolBar;
@@ -20,12 +17,12 @@ type
     Edit2,Edit3,WeightBox,XgBox,YgBox,ZgBox:                    TFloatSpinEdit;
     GroupBox1: TGroupBox;
     Label3,Label4,Label5,Label7,Label8,Label9,_Label10,_Label11,_Label12,_Label4,
-    _Label6,Label6_,Label6_0,Label6_1,Label6_1_,Label6_2,Label6_3,Label6_4:TLabel;
+    _Label6,Label6_,Label6_0,Label6_1,Label6_1_,Label6_2,Label6_3,Label6_4: TLabel;
     Panel1,Panel2,Panel4,Panel5,Panel6,Panel7,Panel8,Panel9: TPanel;
     MenuImages: TImageList;
     AlphaBar: TTrackBar;
-    ToolButton1,_ToolButton2,ToolButton3,_ToolButton4,ToolButton20,
-                     MoveUp,MoveDown:                              TToolButton;
+    ToolButton1,_ToolButton2,ToolButton3,_ToolButton4,
+    ToolButton20,MoveUp,MoveDown:                                  TToolButton;
     procedure cbControlNetVisibleClick(Sender: TObject);
     procedure LayerBoxClick(Sender: TObject);
     procedure LayerBoxClickCheck(Sender: TObject);
@@ -74,14 +71,12 @@ type
 
 var FreeLayerDialog : TFreeLayerDialog;
 
-implementation
-uses FreeLinesplanFrame;
-  {$R *.lfm}
+implementation uses FreeLinesplanFrame;
+{$R *.lfm}
 
 procedure TFreeLayerDialog.UpdateMenu;
-var I,N : INteger;
-begin
-   N:=0;
+  var I,N: INteger;
+begin N:=0;
    for I:=1 to FFreeship.NumberOfLayers do if FFreeship.Layer[I-1].Count=0 then inc(N);
    Toolbutton3.Enabled:=(N>0) and (N<FFreeship.NumberOfLayers);
    MoveUp.Enabled:=False;
@@ -93,60 +88,54 @@ begin
 end;
 
 function TFreeLayerDialog.Execute(FreeShip:TFreeShip):Boolean;
-var Undo : TFreeUndoObject;
-begin
-   FFreeShip:=FreeShip;
-   Undo:=Freeship.Edit.CreateUndoObject( 'Layer properties ',False);
-   FFillBox;
-   _Label4.Caption:=DensityStr(FFreeship.ProjectSettings.ProjectUnits);
-   if FFreeship.ProjectSettings.ProjectUnits=fuImperial
-      then _Label6.Caption:=LenMMStr( FFreeship.ProjectSettings.ProjectUnits )
-      else _Label6.Caption:=LenMMStr( FFreeship.ProjectSettings.ProjectUnits );
-   UpdateMenu;
-   ShowModal;
-   Result:=ModalResult=mrOk;
-   if Result then Undo.Accept
-             else begin Undo.Restore; FreeAndNil(Undo); end;
+  var Undo: TFreeUndoObject;
+begin FFreeShip:=FreeShip;
+  Undo:=Freeship.Edit.CreateUndoObject( 'LayProp ',False );
+  FFillBox;
+  _Label4.Caption:=DensityStr( FFreeship.ProjectSettings.ProjectUnits );
+  if FFreeship.ProjectSettings.ProjectUnits=fuImperial
+     then _Label6.Caption:=LenMMStr( FFreeship.ProjectSettings.ProjectUnits )
+     else _Label6.Caption:=LenMMStr( FFreeship.ProjectSettings.ProjectUnits );
+  UpdateMenu;
+  ShowModal; Result:=ModalResult=mrOk;
+  if Result then Undo.Accept
+      else begin Undo.Restore; FreeAndNil( Undo ); end;
 end;
 
 procedure TFreeLayerDialog.FFillBox;
-var I,N   : Integer;
-    Layer : TFreeSubdivisionLayer;
+  var I,N: Integer; Layer: TFreeSubdivisionLayer;
 begin
    LayerBox.Items.BeginUpdate;
    LayerBox.Clear;
-// try
-      for I:=1 to FFreeShip.NumberOfLayers do begin
-         Layer:=FFreeShip.Layer[I-1];
-         N:=Layerbox.Items.AddObject(Layer.Name,Layer);
-         LayerBox.Checked[N]:=Layer.SurfaceVisible;
-      end;
-// finally
-      LayerBox.Items.EndUpdate;
-      if LayerBox.Count>0 then begin
-         LayerBox.ItemIndex:=0;
-         LayerBoxItemClick(self,0);
-      end;
-// end;
+   for I:=1 to FFreeShip.NumberOfLayers do begin
+       Layer:=FFreeShip.Layer[I-1];
+       N:=Layerbox.Items.AddObject(Layer.Name,Layer);
+       LayerBox.Checked[N]:=Layer.SurfaceVisible;
+   end;
+   LayerBox.Items.EndUpdate;
+   if LayerBox.Count>0 then begin
+      LayerBox.ItemIndex:=0;
+      LayerBoxItemClick(self,0);
+   end;
 end;
 
 function TFreeLayerDialog.FGetSelectedLayer:TFreeSubdivisionLayer;
 begin
-   if Layerbox.ItemIndex<>-1 then Result:=Layerbox.Items.Objects[Layerbox.ItemIndex] as TFreeSubdivisionLayer
-                             else Result:=nil;
+  if Layerbox.ItemIndex<>-1
+  then Result:=Layerbox.Items.Objects[Layerbox.ItemIndex] as TFreeSubdivisionLayer
+  else Result:=nil;
 end;
 
 
 procedure TFreeLayerDialog.LayerBoxClickCheck(Sender: TObject);
-var index : integer; chk : boolean;
-    Layer   : TFreeSubdivisionLayer;
+var index: integer; chk: boolean;
+    Layer: TFreeSubdivisionLayer;
 begin
    index:=Layerbox.ItemIndex;
    chk:=Layerbox.Checked[index];
    Layer:=Layerbox.Items.Objects[index] as TFreeSubdivisionLayer;
    if Layer=nil then exit;
-   if Layer.SurfaceVisible <> chk then
-     begin
+   if Layer.SurfaceVisible <> chk then begin
      Layer.SurfaceVisible:=chk;
      FFreeShip.FileChanged:=true;
      FFreeShip.Redraw;
@@ -234,9 +223,8 @@ begin
   _Label12.Caption:=Makelength(Prop.SurfaceCenterOfGravity.X,2,7)+','+
                   Makelength(Prop.SurfaceCenterOfGravity.Y,2,7)+', '+
                   Makelength(Prop.SurfaceCenterOfGravity.Z,2,7)+#32+LengthStr(FFreeship.ProjectSettings.ProjectUnits);
-
-  AlphaBar.Position:=round((255-Layer.AlphaBlend) * 100 / 255);
-  //_label1.Caption:=FloatToStrF(100*(255-Layer.AlphaBlend)/255,ffFixed,7,1)+'%';
+  AlphaBar.Position:=round( ( 255-Layer.AlphaBlend )*100/255 );
+//_label1.Caption:=FloatToStrF(100*(255-Layer.AlphaBlend)/255,ffFixed,7,1)+'%';
   UpdateMenu;
   FProgrammaticalChange:=false;
 end;
@@ -388,8 +376,7 @@ procedure TFreeLayerDialog.MoveUpClick(Sender: TObject);
 var Index : Integer;
     Layer:TFreeSubdivisionLayer;
 begin
-   if SelectedLayer<>nil then
-   begin
+   if SelectedLayer<>nil then begin
       Layer:=SelectedLayer;
       Layer.MoveUp;
       FFillBox;
@@ -404,8 +391,7 @@ procedure TFreeLayerDialog.MoveDownClick(Sender: TObject);
 var Index : Integer;
     Layer:TFreeSubdivisionLayer;
 begin
-   if SelectedLayer<>nil then
-   begin
+   if SelectedLayer<>nil then begin
       Layer:=SelectedLayer;
       Layer.MoveDown;
       FFillBox;
@@ -429,8 +415,8 @@ end;
 
 procedure TFreeLayerDialog.CheckBox5Click(Sender: TObject);
 begin
-   if SelectedLayer<>nil then if SelectedLayer.Symmetric<>Checkbox5.Checked then
-   begin
+   if SelectedLayer<>nil then if SelectedLayer.Symmetric<>Checkbox5.Checked
+   then begin
       SelectedLayer.Symmetric:=CheckBox5.Checked;
       FFreeship.Built:=False; // forces to rebuild all hydrostatic calculations
       FFreeShip.FileChanged:=true;
@@ -448,8 +434,7 @@ begin
 		 Weightbox.Enabled:=True;
 		 Xgbox.Enabled:=True;
 		 Ygbox.Enabled:=True;
-		 Zgbox.Enabled:=True;
-   end;
+		 Zgbox.Enabled:=True; end;
 end;
 
 procedure TFreeLayerDialog.AlphaBarChange(Sender: TObject);

@@ -1,34 +1,35 @@
 object FreeHydrostaticsForm: TFreeHydrostaticsForm
   Left = 616
-  Height = 200
+  Height = 197
   Top = 359
-  Width = 315
+  Width = 305
   AutoSize = True
   BorderStyle = bsDialog
+  BorderIcons = []
   Caption = 'Кривые элементов теоретического чертежа'
-  ClientHeight = 200
-  ClientWidth = 315
+  ClientHeight = 197
+  ClientWidth = 305
   Position = poOwnerFormCenter
   LCLVersion = '3.8.0.0'
   object Panel2: TPanel
     Left = 0
     Height = 20
     Top = 0
-    Width = 315
+    Width = 305
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 20
-    ClientWidth = 315
+    ClientWidth = 305
     TabOrder = 0
     object Button1: TSpeedButton
-      Left = 262
+      Left = 235
       Height = 20
       Top = 0
-      Width = 53
+      Width = 70
       Align = alRight
       AutoSize = True
-      Caption = 'Закрыть'
+      Caption = '&Закрыть'
       Flat = True
       Glyph.Data = {
         F6000000424DF600000000000000760000002800000010000000100000000100
@@ -47,10 +48,10 @@ object FreeHydrostaticsForm: TFreeHydrostaticsForm
       Height = 20
       Hint = 'Построение таблицы кривых элементов теоретического чертежа.'
       Top = 0
-      Width = 73
+      Width = 61
       Align = alLeft
       AutoSize = True
-      Caption = 'Расчёт'
+      Caption = '&Расчёт'
       Flat = True
       Glyph.Data = {
         F6000000424DF600000000000000760000002800000010000000100000000100
@@ -62,15 +63,16 @@ object FreeHydrostaticsForm: TFreeHydrostaticsForm
         0333330888888888033333080000000803333308000E0E080333330800000008
         0333330888888888033333088888888803333370000000007333
       }
-      ShowHint = True
       OnClick = Button2Click
+      ShowHint = True
+      ParentShowHint = False
     end
   end
   object Panel1: TPanel
     Left = 0
-    Height = 180
+    Height = 177
     Top = 20
-    Width = 315
+    Width = 305
     Align = alClient
     AutoSize = True
     BevelOuter = bvLowered
@@ -82,20 +84,20 @@ object FreeHydrostaticsForm: TFreeHydrostaticsForm
     ChildSizing.EnlargeHorizontal = crsHomogenousSpaceResize
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 3
-    ClientHeight = 180
-    ClientWidth = 315
+    ClientHeight = 177
+    ClientWidth = 305
     TabOrder = 1
     object Label1: TLabel
-      Left = 35
+      Left = 29
       Height = 23
       Top = 27
-      Width = 55
+      Width = 111
       Caption = 'Нижний уровень '
       Layout = tlCenter
       ParentColor = False
     end
     object FloatSpinEdit1: TFloatSpinEdit
-      Left = 114
+      Left = 158
       Height = 23
       Top = 27
       Width = 80
@@ -107,24 +109,24 @@ object FreeHydrostaticsForm: TFreeHydrostaticsForm
       Value = 0.5
     end
     object _Label5: TLabel
-      Left = 218
+      Left = 256
       Height = 23
       Top = 27
-      Width = 45
+      Width = 1
       Layout = tlCenter
       ParentColor = False
     end
     object Label2: TLabel
-      Left = 35
+      Left = 29
       Height = 23
       Top = 52
-      Width = 55
+      Width = 111
       Caption = 'Верхняя ватерлиния'
       Layout = tlCenter
       ParentColor = False
     end
     object FloatSpinEdit2: TFloatSpinEdit
-      Left = 114
+      Left = 158
       Height = 23
       Top = 52
       Width = 80
@@ -136,24 +138,24 @@ object FreeHydrostaticsForm: TFreeHydrostaticsForm
       Value = 1
     end
     object _Label11: TLabel
-      Left = 218
+      Left = 256
       Height = 23
       Top = 52
-      Width = 45
+      Width = 1
       Layout = tlCenter
       ParentColor = False
     end
     object Label3: TLabel
-      Left = 35
+      Left = 29
       Height = 23
       Top = 77
-      Width = 55
+      Width = 111
       Caption = 'Шаг по аппликате'
       Layout = tlCenter
       ParentColor = False
     end
     object FloatSpinEdit3: TFloatSpinEdit
-      Left = 114
+      Left = 158
       Height = 23
       Top = 77
       Width = 80
@@ -165,24 +167,24 @@ object FreeHydrostaticsForm: TFreeHydrostaticsForm
       Value = 1
     end
     object _Label10: TLabel
-      Left = 218
+      Left = 256
       Height = 23
       Top = 77
-      Width = 45
+      Width = 1
       Layout = tlCenter
       ParentColor = False
     end
     object Label4: TLabel
-      Left = 35
+      Left = 29
       Height = 23
       Top = 102
-      Width = 55
+      Width = 111
       Caption = 'Дифферент'
       Layout = tlCenter
       ParentColor = False
     end
     object FloatSpinEdit4: TFloatSpinEdit
-      Left = 114
+      Left = 158
       Height = 23
       Top = 102
       Width = 80
@@ -193,10 +195,10 @@ object FreeHydrostaticsForm: TFreeHydrostaticsForm
       TabOrder = 3
     end
     object Label9: TLabel
-      Left = 218
+      Left = 256
       Height = 23
       Top = 102
-      Width = 45
+      Width = 1
       Layout = tlCenter
       ParentColor = False
     end
