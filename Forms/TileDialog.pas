@@ -1,7 +1,6 @@
 unit TileDialog;
 {$mode objfpc}{$H+}
-interface
-uses
+interface uses
   Classes,Forms,Controls,Graphics,ExtCtrls,
   Buttons,StdCtrls,ActnList,Menus,FreeLanguageSupport;
 type
@@ -18,9 +17,7 @@ type
     property CaptionLabel: TLabel read FLabel write FLabel;
   end;
 
-  { TTileDialog }
-
-  TTileDialog = class(TForm)
+  TTileDialog = class( TForm )
     ActionOpen: TAction;
     ActionRemove: TAction;
     ActionOpenAnother: TAction;
@@ -60,13 +57,9 @@ type
     //procedure add(aFileName:AnsiString);
   end;
 
-var
-  Form2: TTileDialog;
+var Form2: TTileDialog;
 
-implementation
-
-uses LazFileUtils;
-
+implementation uses LazFileUtils;
 {$R *.lfm}
 
  constructor TTile.Create(TheOwner: TComponent);
@@ -165,13 +158,11 @@ procedure TTileDialog.SetCursor( Value: TCursor );
   begin
     for i:=0 to parentCtl.ControlCount-1 do begin
        parentCtl.Controls[i].Cursor:=cursr;
-       if parentCtl.Controls[i] is TWinControl then
-          setCursorOnControls( parentCtl.Controls[i] as TWinControl,cursr );
+       if parentCtl.Controls[i] is TWinControl
+       then setCursorOnControls( parentCtl.Controls[i] as TWinControl,cursr );
     end;
   end;
-begin
-  inherited; setCursorOnControls( self,value );
-end;
+begin inherited; setCursorOnControls( self,value ); end;
 
 end.
 

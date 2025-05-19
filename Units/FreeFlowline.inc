@@ -1,14 +1,31 @@
 {---------------------------------------------------------}
-{                                           TFreeFlowline }
+{                                        FreeShipUnit.pas }
 {---------------------------------------------------------}
+constructor TFreeFlowline.Create( Owner: TFreeShip );
+begin inherited Create( Owner.Surface );
+      FFreeShip:=Owner;
+      FFlowLine:=TFreeSpline.Create( Owner.Surface ); Clear;
+end;
+destructor TFreeFlowline.Destroy;
+begin Clear; FFlowLine.Destroy;
+             inherited Destroy;
+end;
+procedure TFreeFlowline.Clear;
+begin FProjectionPoint.X:=0;
+      FProjectionPoint.Y:=0;
+      FProjectionView:=fvProfile;
+      FFlowLine.Clear;
+      FBuild:=False;
+//    FMethodNew:=False;
+end;
 function TFreeFlowline.FGetColor: TColor;
 begin if Selected then Result:=FreeShip.Preferences.SelectColor else
 //    if FMethodNew then Result:=clRed else
-                            Result:=clAqua; // clLime; // clGreen; // clBlue;
+                         Result:=clAqua; // clLime; // clGreen; // clBlue;
 end;
-
 function TFreeFlowline.FGetSelected: boolean;
-begin Result:=FreeShip.FSelectedFlowlines.IndexOf(self)<>-1; end;
+begin Result:=FreeShip.FSelectedFlowlines.IndexOf(self)<>-1;
+end;
 
 function TFreeFlowline.FGetVisible: boolean;
 begin Result:=FreeShip.Visibility.ShowFlowlines; end;
@@ -28,24 +45,6 @@ end;
 procedure TFreeFlowline.FSetBuild(val: boolean);
 begin FBuild:=val; if not Build then FFlowline.Clear; end;
 
-procedure TFreeFlowline.Clear;
-begin
-  FProjectionPoint.X:=0;
-  FProjectionPoint.Y:=0;
-  FProjectionView:=fvProfile;
-  FFlowLine.Clear;
-  FBuild:=False;
-//FMethodNew:=False;
-end;
-
-constructor TFreeFlowline.Create( Owner: TFreeShip );
-begin
-  inherited Create( Owner.Surface );
-  FFreeShip:=Owner;
-  FFlowLine:=TFreeSpline.Create( Owner.Surface );
-  Clear;
-end;
-
 procedure TFreeFlowline.Delete;
   var Index: integer;
 begin Index:=FreeShip.FSelectedFlowlines.IndexOf( Self );
@@ -53,13 +52,6 @@ begin Index:=FreeShip.FSelectedFlowlines.IndexOf( Self );
       Index:=FreeShip.FFlowLines.IndexOf( Self );
    if Index <> -1 then FreeShip.FFlowlines.Delete( Index );
    Destroy;
-end;
-
-destructor TFreeFlowline.Destroy;
-begin
-  Clear;
-  FreeAndNil(FFlowLine);
-  inherited Destroy;
 end;
 
 function TFreeFlowline.DistanceToCursor(X,Y:integer; Viewport:TFreeViewport):integer;
@@ -114,101 +106,79 @@ begin
   end;
 end;
 
-procedure TFreeFlowline.Draw(Viewport: TFreeViewport);
+procedure TFreeFlowline.Draw( Viewport: TFreeViewport );
+const Fragm=12;
 var
-  I, J: integer;
-  Scale: integer;
-  Size: integer;
-  Plane: T3DPlane;
+  NParam,I,J,Scale,Size: integer; Plane: T3DPlane; P3D: T3DVector;
+  T: TFloatType;   Pt: TPoint;
   Output: TFreeIntersectionData;
   Param: TFloatArray;
-  NParam: integer;
-  P3D: T3DVector;
-  PArray1: array of TPoint;
-  Pt: TPoint;
-  Fragm: integer;
-  T: TFloatType;
+  PArray1: array [0..Fragm] of TPoint;
 begin
   if not build then rebuild;
   FFlowline.Color:=Color;
-  FFlowline.Fragments:=600;
-  if (FFlowline.NumberOfPoints > 0)
-  and (Viewport.ViewportMode = vmWireframe) then begin // draw flowline source
+  FFlowline.Fragments:=FFlowline.NumberOfPoints*Fragm; //600;
+  if (FFlowline.NumberOfPoints>0)
+  and (Viewport.ViewportMode=vmWireframe) then begin    // draw flowline source
     P3D:=FFlowline.Point[0];
-    if (Viewport.ViewType = fvBodyplan) and (FreeShip.Visibility.ModelView <> mvBoth) and
-      (P3D.X < FreeShip.ProjectSettings.ProjectSplitSectionLocation) then
-       P3D.Y:=-P3D.Y;
+    if (Viewport.ViewType=fvBodyplan) and (FreeShip.Visibility.ModelView<>mvBoth)
+    and (P3D.X < FreeShip.ProjectSettings.ProjectSplitSectionLocation) then P3D.Y:=-P3D.Y;
     Pt:=Viewport.Project(P3D);
     Size:=Round(Sqrt(Viewport.Zoom) * (FreeShip.Preferences.PointSize+1));
     if size < 1 then size:=1;
     Viewport.BrushStyle:=bsClear;
-    if Viewport.Printing then
-      Size:=round(Size * Viewport.PrintResolution / 150);
+    if Viewport.Printing then Size:=round(Size*Viewport.PrintResolution/150);
     Viewport.PenColor:=clDkGray;
-    Viewport.BrushColor:=clOlive; // clWhite;
-    Viewport.BrushStyle:=bsSolid;             // Draw entire circle in white;
-    Viewport.Ellipse(Pt.X-Size, Pt.Y-Size, Pt.X+Size, Pt.Y+Size);
-    if FreeShip.Visibility.ModelView = mvBoth then
-    begin
+    Viewport.BrushColor:=clOlive;              // clWhite;
+    Viewport.BrushStyle:=bsSolid;              // Draw entire circle in white;
+    Viewport.Ellipse( Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size );
+    if FreeShip.Visibility.ModelView = mvBoth then begin
       P3D.Y:=-P3D.Y;
-      Pt:=Viewport.Project(P3D);              // Draw entire circle in white;
-      Viewport.Ellipse(Pt.X-Size, Pt.Y-Size, Pt.X+Size, Pt.Y+Size);
+      Pt:=Viewport.Project( P3D );             // Draw entire circle in white;
+      Viewport.Ellipse( Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size );
     end;
   end;
-
-  if (Viewport.ViewType = fvBodyPlan)
+  if (Viewport.ViewType=fvBodyPlan)
   and (FreeShip.Visibility.ModelView<>mvBoth) then begin
     Plane:=SetPlane(1.0,0.0,0.0,-FreeShip.ProjectSettings.ProjectSplitSectionLocation);
     NParam:=2;
-    Setlength(Param, NParam);
+    Setlength( Param,2+Output.NumberOfIntersections );
     Param[0]:=0.0;
     Param[1]:=1.0;
-    if FFlowline.IntersectPlane(Plane, Output) then begin
-      Setlength(Param, NParam+Output.NumberOfIntersections);
+    if FFlowline.IntersectPlane( Plane,Output ) then begin
       for I:=1 to Output.NumberOfIntersections do begin
-        Param[NParam]:=Output.Parameters[I-1];
-        Inc(NParam);
+        Param[NParam]:=Output.Parameters[I-1]; Inc( NParam );
       end;
       ArraySort( Param,NParam );
-//    SortFloatArray(Param, NParam);
     end;
     for I:=2 to NParam do begin
-      P3D:=FFlowline.Value(0.5 * (Param[I-2]+Param[I-1]));
-      if P3D.X < FreeShip.ProjectSettings.ProjectSplitSectionLocation
-         then Scale:=-1
-         else scale:=1;
-      Fragm:=Round((Param[I-1]-Param[I-2]) * FFlowline.Fragments);
-      if Fragm < 10 then
-        Fragm:=10;
-      SetLength(PArray1, Fragm);
+      P3D:=FFlowline.Value( ( Param[I-2]+Param[I-1] )/2.0 );          Scale:=1;
+      if P3D.X<FreeShip.ProjectSettings.ProjectSplitSectionLocation then Scale:=-1;
+//      Fragm:=Round( ( Param[I-1]-Param[I-2] )*6 ); //FFlowline.Fragments );
+//      if Fragm<10 then Fragm:=10; SetLength( PArray1,Fragm );
       for J:=1 to Fragm do begin
-        T:=Param[I-2]+(Param[I-1]-Param[I-2]) * (J-1) / (Fragm-1);
+        T:=Param[I-2]+(Param[I-1]-Param[I-2])*(J-1)/(Fragm-1);
         P3D:=FFlowline.Value(T);
-        P3D.Y:=P3D.Y * Scale;
+        P3D.Y:=P3D.Y*Scale;
         PArray1[J-1]:=Viewport.Project(P3D);
       end;
       Viewport.SetPenWidth(1);
       Viewport.PenColor:=FFlowline.Color;
       Viewport.PenStyle:=FFlowline.Penstyle;
-      Viewport.Polyline(PArray1);
+      Viewport.Polyline( PArray1 );
     end;
   end else begin
     FFlowline.Draw(Viewport);
     if FreeShip.Visibility.ModelView = mvBoth then begin
       for I:=1 to FFlowline.NumberOfPoints do begin
-        P3D:=FFlowline.Point[I-1];
-        P3D.Y:=-P3D.Y;
-        FFlowline.Point[I-1]:=P3D;
+        P3D:=FFlowline.Point[I-1]; P3D.Y:=-P3D.Y;
+             FFlowline.Point[I-1]:=P3D;
       end;
-//    try
-        FFlowline.Draw(Viewport);
-//    finally
-        for I:=1 to FFlowline.NumberOfPoints do begin
-          P3D:=FFlowline.Point[I-1];
-          P3D.Y:=-P3D.Y;
-          FFlowline.Point[I-1]:=P3D;
-        end;
-//    end;
+      FFlowline.Draw(Viewport);
+      for I:=1 to FFlowline.NumberOfPoints do begin
+        P3D:=FFlowline.Point[I-1]; P3D.Y:=-P3D.Y;
+             FFlowline.Point[I-1]:=P3D;
+      end;
     end;
   end;
 end;
@@ -229,22 +199,17 @@ type
   end;
 
 var
-  Points     : TFasterListTFreeSubdivisionPoint;
-  Faces      : TFasterListTFreeSubdivisionFace;
-  Face       : TFreeSubdivisionControlFace;
-  Point      : TFreeSubdivisionPoint;
-  Child      : TFreeSubdivisionFace;
-  I,J,K,L,Index : integer;
-  Layer      : TFreeSubdivisionLayer;
-  WlHeight   : TFloatType;
-  Triangles  : array of TTriangle;
-  NTriangles : integer;
-  Iteration  : integer;
-  Skip1,Skip2: integer;
-  TriangleCapacity: integer;
+  Points   : TFasterListTFreeSubdivisionPoint;
+  Faces    : TFasterListTFreeSubdivisionFace;
+  Face     : TFreeSubdivisionControlFace;
+  Point    : TFreeSubdivisionPoint;
+  Child    : TFreeSubdivisionFace;
+  Layer    : TFreeSubdivisionLayer;
+  I,J,K,L,Index,NTriangles,Iteration,Skip1,Skip2,TriangleCapacity: integer;
+  WlHeight : TFloatType;
+  Triangles: array of TTriangle;
   PointData: array of TPointData;
-  StartPoint, EndPoint,
-  Intersection, Direction: T3DVector;
+  StartPoint,EndPoint,Intersection,Direction: T3DVector;
   Valid: boolean;
 
   procedure AddTriangleToPoint(var Point: TPointData; TriangleIndex: integer);
@@ -283,8 +248,8 @@ var
     Normal:=Point.Normal;
     P:=Point.Coordinate;
     Plane:=PlanePointNormal(P,Normal);
-    Direction:=Normalize(AddPoint(Normal,Incoming));
-    Incoming:=AddPoint(P,Direction);
+    Direction:=Normalize( Normal+Incoming );
+    Incoming:=P+Direction;
     Proj:=ProjectPointOnPlane(Incoming,Plane);
     Direction:=Proj-P;
     Result:=Normalize(Direction);
@@ -570,19 +535,19 @@ var
   P: T3DVector;
   K: boolean;
 begin
-  Source.LoadTFloatType(FProjectionPoint.X);
-  Source.LoadTFloatType(FProjectionPoint.Y);
-  Source.LoadInteger(I);
-  FProjectionView:=TFreeviewType(I);
-  Source.LoadBoolean(FBuild);
-  Source.LoadBoolean(K);
-  if K then FreeShip.FSelectedFlowlines.Add(self);
-  Source.LoadInteger(N);
+  Source.LoadTFloatType( FProjectionPoint.X );
+  Source.LoadTFloatType( FProjectionPoint.Y );
+  Source.LoadInteger( I );
+  FProjectionView:=TFreeviewType( I );
+  Source.LoadBoolean( FBuild );
+  Source.LoadBoolean( K );
+  if K then FreeShip.FSelectedFlowlines.Add( self );
+  Source.LoadInteger( N );
   FFlowline.Capacity:=N;
   for I:=1 to N do begin
-    Source.LoadT3DVector(P);
-    Source.LoadBoolean(K);
-    FFlowline.Add(P);
+    Source.LoadT3DVector( P );
+    Source.LoadBoolean( K );
+    FFlowline.Add( P );
     FFlowline.Knuckle[FFlowline.NumberOfPoints-1]:=K;
   end;
 end;

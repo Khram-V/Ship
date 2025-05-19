@@ -689,8 +689,8 @@ object MainForm: TMainForm
     end
     object ShowControlNet: TAction
       Category = 'Visibility'
-      Caption = 'Опоные точки '
-      Hint = 'Вывод опорных точек для редактирования.'
+      Caption = 'Опоные узлы '
+      Hint = 'Вывод опорных узлов и рёбер для редактирования.'
       ImageIndex = 2
       OnExecute = ShowControlNetExecute
     end
@@ -775,7 +775,7 @@ object MainForm: TMainForm
     object NewEdge: TAction
       Category = 'Edge'
       Caption = 'Рассечение'
-      Hint = 'Разрезка грани по новому ребру между двумя точками.'
+      Hint = 'Разрезка грани по новому ребру между двумя узлами.'
       ImageIndex = 10
       ShortCut = 69
       OnExecute = NewEdgeExecute
@@ -796,8 +796,8 @@ object MainForm: TMainForm
     end
     object PointCollapse: TAction
       Category = 'Point'
-      Caption = 'Сброс угловой точки'
-      Hint = 'Объединить два крайних ребра со сбросом общей точки.'
+      Caption = 'Сброс углового узла'
+      Hint = 'Объединить два крайних ребра со сбросом общих узлов.'
       ImageIndex = 12
       OnExecute = PointCollapseExecute
     end
@@ -876,7 +876,7 @@ object MainForm: TMainForm
     object EdgeSplit: TAction
       Category = 'Edge'
       Caption = 'Разделение поплам'
-      Hint = 'Установка точки с разделением ребра на две части.'
+      Hint = 'Установка узла с разделением ребра пополам на две части.'
       ImageIndex = 20
       ShortCut = 83
       OnExecute = EdgeSplitExecute
@@ -1024,7 +1024,7 @@ object MainForm: TMainForm
     object AddPoint: TAction
       Category = 'Point'
       Caption = 'Добавить точку'
-      Hint = 'Добавляется одна опрная точка.'
+      Hint = 'Добавляется одна свободная точка в прострнстве.'
       ShortCut = 80
       OnExecute = AddPointExecute
     end
@@ -1113,8 +1113,8 @@ object MainForm: TMainForm
     end
     object InsertPlane: TAction
       Category = 'Point'
-      Caption = 'Точки в базовой плоскости'
-      Hint = 'Вставка точек на рёбрах в пересечение базовой плоскости.'
+      Caption = 'Узлы в базовой плоскости'
+      Hint = 'Вставка узлов на рёбрах в пересечение базовой плоскости.'
       ImageIndex = 42
       OnExecute = InsertPlaneExecute
     end
@@ -1156,7 +1156,7 @@ object MainForm: TMainForm
     object PointAlign: TAction
       Category = 'Point'
       Caption = 'Выравнивание вдоль линии'
-      Hint = 'Установка всех выбранных точек на прямую линию, проходящую от первой до последней точки.'
+      Hint = 'Выстраивание всех выбранных точек на прямую линию, проходящую между крайними узлами.'
       ImageIndex = 48
       OnExecute = PointAlignExecute
     end
@@ -1204,6 +1204,13 @@ object MainForm: TMainForm
       Hint = 'Поиск и устоновка опорных точек на линии пересечения поверхностей.'
       ImageIndex = 51
       OnExecute = LayerIntersectionExecute
+    end
+    object KeelRudderWizard: TAction
+      Category = 'Tools'
+      Caption = 'Изготовление киля и руля'
+      Hint = 'Создание профилированного руля или яхтенного киля с наделками.'
+      ImageIndex = 52
+      OnExecute = KeelRudderWizardExecute
     end
     object Redo: TAction
       Category = 'Edit'
@@ -1286,14 +1293,14 @@ object MainForm: TMainForm
     end
     object AddPointToGroup: TAction
       Category = 'Point'
-      Caption = 'Добавить точку'
-      Hint = 'Добавить точку в именованную связную группу.'
+      Caption = 'Добавить узел'
+      Hint = 'Включить ещё один узел в именованную связную группу.'
       OnExecute = AddPointToGroupExecute
     end
     object PointAlighnPermanently: TAction
       Category = 'Point'
-      Caption = 'Связать точки на линии'
-      Hint = 'Связная группа лежит на прямой линии между крайними точками'
+      Caption = 'Уложить узлы по линии'
+      Hint = 'Связная группа лежит на прямой линии между крайними узлами'
       ImageIndex = 48
       OnExecute = PointAlighnPermanentlyExecute
     end
@@ -1337,7 +1344,7 @@ object MainForm: TMainForm
     object PointsCoincide: TAction
       Category = 'Point'
       Caption = 'Присоединение'
-      Hint = 'Объединить выбранные точки с первой из избранных.'
+      Hint = 'Объединить выбранные узлы с первым из выбранных.'
       OnExecute = PointsCoincideExecute
     end
     object PointExtrude: TAction
@@ -2035,8 +2042,8 @@ object MainForm: TMainForm
       end
     end
     object Point1: TMenuItem
-      Caption = 'Точка'
-      Hint = 'Подборка операций с опорными точками.'
+      Caption = 'Узел'
+      Hint = 'Подборка операций с опорными узлами.'
       object Add1: TMenuItem
         Action = AddPoint
       end
@@ -2226,6 +2233,9 @@ object MainForm: TMainForm
       end
       object Developplates1: TMenuItem
         Action = DevelopLayers
+      end
+      object KeelRudderMen: TMenuItem
+        Action = KeelRudderWizard
       end
       object Markers2: TMenuItem
         Caption = 'Маркеры'

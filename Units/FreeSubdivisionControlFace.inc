@@ -1080,13 +1080,11 @@ end;
 // select all controlfaces connected to the current one that belong to the same layer and are not separated by a crease edge
 procedure TFreeSubdivisionControlFace.Trace;
 var
-  ToDoList: TFasterListTFreeSubdivisionControlFace;
-  I: integer;
+  ToDoList: TFasterListTFreeSubdivisionControlFace; I: integer;
   Face: TFreeSubdivisionControlface;
   Prev: TCursor;
-
-  procedure FindAttachedFaces(List: TFasterListTFreeSubdivisionControlFace;
-                              Face: TFreeSubdivisionControlFace);
+  procedure FindAttachedFaces( List: TFasterListTFreeSubdivisionControlFace;
+                               Face: TFreeSubdivisionControlFace);
   var I,J,Index: integer;
       P1,P2: TFreeSubdivisionPoint;
       Edge: TFreeSubdivisionEdge;
@@ -1110,7 +1108,6 @@ var
         end; P1:=p2;
     end;
   end; {FindAttachedFaces}
-
 begin
   Prev:=screen.Cursor;
   Screen.Cursor:=crHourglass;
@@ -1119,8 +1116,8 @@ begin
     ToDoList.capacity:=Layer.Count;
     for I:=1 to Layer.Count do begin
       Face:=Layer.Items[I-1];
-      if (Face <> self)
-      and (Face.Selected <> self.Selected) then ToDoList.Add(Layer.Items[I-1]);
+      if (Face<>self)
+      and (Face.Selected<>self.Selected) then ToDoList.Add(Layer.Items[I-1]);
     end;
 //  ToDoList.Sort;
     FindAttachedFaces(ToDoList, self);

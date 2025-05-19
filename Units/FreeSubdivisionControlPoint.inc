@@ -280,7 +280,7 @@ end;
 
 constructor TFreeSubdivisionControlPoint.Create(Owner: TFreeSubdivisionSurface);
 begin
-  inherited Create(Owner);
+  inherited Create( Owner );
   FLinearConstrainedPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
   FAnchoredPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
 end;

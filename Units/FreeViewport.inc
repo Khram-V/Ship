@@ -310,8 +310,7 @@ begin
   begin FDrawingBuffer.BeginUpdate(False); FUpdating:=True; end;
 end;
 procedure TFreeViewport.EndUpdate;
-begin
-  if FUpdating then begin FDrawingBuffer.EndUpdate; FUpdating:=False; end;
+begin if FUpdating then begin FDrawingBuffer.EndUpdate; FUpdating:=False; end;
 end;
 procedure TFreeViewport.GetPixel( X,Y: integer; out R,G,B: byte );
 var A: byte;

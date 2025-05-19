@@ -168,7 +168,7 @@ begin
 end;
 
 destructor TFreeSubdivisionFace.Destroy;
-begin // Unreference;
+begin if self=nil then exit; // Unreference;
   Clear;
   FreeAndNil( FPoints );
   inherited Destroy;

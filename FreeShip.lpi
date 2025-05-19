@@ -117,7 +117,7 @@
         <PackageName Value="Printer4Lazarus"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="89">
+    <Units Count="90">
       <Unit0>
         <Filename Value="Forms/FreeShip.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -584,6 +584,13 @@
         <Filename Value="Units/HistoryExamples.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit88>
+      <Unit89>
+        <Filename Value="Forms/FreeKeelWizardDlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FreeKeelWizardDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit89>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -604,7 +611,7 @@
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
       <Optimizations>
-        <OptimizationLevel Value="4"/>
+        <OptimizationLevel Value="3"/>
       </Optimizations>
       <SmallerCode Value="True"/>
     </CodeGeneration>
@@ -612,7 +619,7 @@
       <Debugging>
         <GenerateDebugInfo Value="False"/>
         <RunWithoutDebug Value="True"/>
-        <UseValgrind Value="True"/>
+        <UseLineInfoUnit Value="False"/>
         <StripSymbols Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>

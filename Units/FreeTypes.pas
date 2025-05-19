@@ -11,9 +11,9 @@ Const Radian=57.295779513082320876798154814105;              // 180/π = °\rad
 Type
   TFloatType   = single;        // All floatingpoint variables are of this type
   TFloatArray  = array of TFloatType;
-  T2DCoordinate= record X,Y:TFloatType; end;   // 2D coordinate type
-  T3DVector    = record X,Y,Z:TFloatType; end; // 3D coordinate type
-  T3DLine      = record A,B:T3DVector; end;    // 3D line type
+  T2DCoordinate= record X,Y    :TFloatType; end; // 2D coordinate type
+  T3DVector    = record X,Y,Z  :TFloatType; end; // 3D coordinate type
+  T3DLine      = record A,B    :T3DVector;  end; // 3D line type
   T3DPlane     = record a,b,c,d:TFloatType; end;
                                      // Description 3D plane: a*x+b*y+c*z-d=0.0
   TFreeUnitType=(fuMetric,fuImperial); // Switch between metric and imperial units
@@ -34,18 +34,17 @@ Type
 
   pRGBTripleArray      = ^TRGBTripleArray;
   TRGBTripleArray      = array[0..PixelCountMax-1] of TRGBTriple;
-//TRGBTripleArray      = array of TRGBTriple;
   T3DVectorArray       = array of T3DVector;
   TPointArray          = array of TPoint;
-  TFreePrecisionType   =(fpLow,fpMedium,fpHigh,fpVeryHigh);                  // Precision of the ship-model
-  TFreeIntersectionType=(fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal); // Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
-  TFreeModelView       =(mvPort,mvBoth);                                     // Show half the hull or the entire hull
-  TFreeEditMode        =(emSelectItems,emAddPoint,emAddFlowLine);            // The program responds differnt to mouse actions depending on the editmode of the component
-//TFreeHydrostaticsMode=(fhSingleCalculation,fhMultipleCalculations);        // Used when creating hydrostatic reports
-  TFreeHydrostaticsCalculation= (hcAll,hcVolume,hcMidship,hcWaterline,hcSAC,hcLateralArea,hcBulbSection);
-  TFreeHydrostaticsCalculate  = set of TFreeHydrostaticsCalculation;         // Set with all calculations to be performed
-  TFreeHydrostaticsCalculateGravity = set of TFreeHydrostaticsCalculation;
-  TFreeHydrostaticCoeff       = (fcProjectSettings,fcActualData);
+  TFreePrecisionType   =( fpLow,fpMedium,fpHigh,fpVeryHigh );                // Precision of the ship-model
+  TFreeIntersectionType=( fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal);// Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
+  TFreeModelView       =( mvPort,mvBoth );                                   // Show half the hull or the entire hull
+  TFreeEditMode        =( emSelectItems,emAddPoint,emAddFlowLine );          // The program responds differnt to mouse actions depending on the editmode of the component
+  TFreeHydrostaticCoeff=( fcProjectSettings,fcActualData );
+  TFreeHydrostaticsCalculation=(hcAll,hcVolume,hcMidship,hcWaterline,hcSAC,hcLateralArea,hcBulbSection);
+  TFreeHydrostaticsCalculate = set of TFreeHydrostaticsCalculation;   // Set with all calculations to be performed
+//TFreeHydrostaticsCalculateGravity = set of TFreeHydrostaticsCalculation;
+//TFreeHydrostaticsMode=(fhSingleCalculation,fhMultipleCalculations); // Used when creating hydrostatic reports
   TFreeDelftSeriesResistanceData=record
                                     StartSpeed,
                                     EndSpeed,
@@ -79,9 +78,8 @@ Type
                                     EntranceAngle     : TFloatType;
                                     Extract           : Boolean;
                                  end;
-Const
-  ZERO : T3DVector = (X:0.0;Y:0.0;Z:0.0);
-  EOL              = #13#10;
+Const ZERO: T3DVector=( X:0.0;Y:0.0;Z:0.0 );
+       EOL           = #13#10;
 
 Function F2S( Value: TFloatType ): TFloatType;
 function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
@@ -94,10 +92,12 @@ function FloatToDec( Value: TFloatType; Maxlength: integer ): AnsiString;
 Function FloatTypeToStr( Value: TFloatType ): AnsiString;
 Procedure WestPoint;
 Function BlankOff( S: AnsiString ): AnsiString;
+
 function Abs( const P: T2DCoordinate ): extended; overload;
 function Sqr( const V: T3DVector ): extended; overload;
 function Abs( const V: T3DVector ): extended; overload;
 Function AxisStep( D: double ): double;            // для разметки осевых линий
+
 procedure ArraySort( var FloatArray: TFloatArray; var N:integer );
 Procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
 ( XX: TFloatType;            // аргумент поиска

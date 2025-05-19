@@ -325,9 +325,7 @@ begin
 end;
 
 destructor TFreeSubdivisionEdge.Destroy;
-begin
-  if self = nil then exit;
-  //Unreference;
+begin if self=nil then exit;  //Unreference;
   Clear;
   FreeAndNil(FFaces);
   inherited Destroy;

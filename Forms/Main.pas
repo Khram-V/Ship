@@ -53,7 +53,6 @@ type
      EditProjectSettings,           CheckModel,
      ShowNormals,ImportVRML,ImportSTL,ImportOBJ,ImportFEF,
      ResistanceDelft,ResistanceKaper:                       TAction;
-
      AuroraHullVsl,
      miSelectionDialog,             miShowLayerVisibilityDialog,
      miSetSplitSection,             miShowFreeObjects,
@@ -168,12 +167,9 @@ type
 //    ResistanceDelft: TAction;
 //    Delftyachtseries1: TMenuItem;
 //    ResistanceKaper: TAction;
-
     StatusPanel3: TPanel;
     PointAlign: TAction;            Projectline1: TMenuItem;
     N6: TMenuItem;
-
-
     ShowHydrostatics: TAction;      Hydrostaticdata1: TMenuItem;
     MirrorFace: TAction;            MirrorFace1: TMenuItem;
     ransform1: TMenuItem;
@@ -185,8 +181,7 @@ type
     ImportPart: TAction;            Part2: TMenuItem;
     LayerIntersection: TAction;
     Saveas1: TMenuItem;
-//  KeelRudderWizard: TAction;
-    Deleteempty3: TMenuItem;
+    KeelRudderWizard: TAction;   KeelRudderMen: TMenuItem;     // = KeelWizard
     ClearUndo: TAction;          N7: TMenuItem;
     Undohistory1: TMenuItem;     Clear1: TMenuItem;
     ShowUndoHistory: TAction;    Show1: TMenuItem;
@@ -200,7 +195,6 @@ type
  // CrossCurves: TAction;
  // Crosscurves1: TMenuItem;
     SelectionSeparator1: TMenuItem;
-
  // FMDIChildList : TList;
     PanelManager: WinPanelManager;                       { FMDIPanelManager }
     procedure FormActivate             (Sender: TObject); { OnActivate=FormActivate }
@@ -342,7 +336,7 @@ type
     procedure SelectLeakPointsExecute  (Sender: TObject);
     procedure LoadMostRecentFile;
     procedure InitiallyLoadModel;
-//  procedure KeelRudderWizardExecute  (Sender: TObject);
+    procedure KeelRudderWizardExecute  (Sender: TObject);
    private                                             { Private declarations }
       FDestroying: boolean;
       FSplitSectionDialog: TFreeSplitSectionDialog;
@@ -383,6 +377,7 @@ var MainForm: TMainForm;
 implementation
 uses FreeLinesplanForm,
      FreeEmptyModelChooserDlg,
+     FreeKeelWizardDlg,
      TileDialog,
      FreePointGroupForm;
 {$R *.lfm}
@@ -670,11 +665,11 @@ begin              //    according to the current state and selected items
    BothSides.Enabled:=FreeShip.Surface.NumberOfControlFaces>0;
    // Delete
    Delete.Enabled:=Freeship.NumberOfSelectedControlPoints
-                +FreeShip.NumberOfSelectedControlEdges
-                +Freeship.NumberOfSelectedControlFaces
-                +Freeship.NumberOfSelectedControlCurves
-                +Freeship.NumberOfSelectedFlowLines
-                +Freeship.NumberOfselectedMarkers>0;
+                 + FreeShip.NumberOfSelectedControlEdges
+                 + Freeship.NumberOfSelectedControlFaces
+                 + Freeship.NumberOfSelectedControlCurves
+                 + Freeship.NumberOfSelectedFlowLines
+                 + Freeship.NumberOfselectedMarkers>0;
    // Window menu actions
    TileWindow.Enabled:=MDIChildCount>0;
    CascadeWindow.Enabled:=MDIChildCount>0;
@@ -689,7 +684,7 @@ begin              //    according to the current state and selected items
    for I:=1 to FreeShip.NumberOfLayers do
      if (FreeShip.Layer[I-1].Developable) and (FreeShip.Layer[I-1].Count>0)
        then begin DevelopLayers.Enabled:=True; break; end;
-// KeelRudderWizard.Enabled:=MDIChildCount>0;
+   KeelRudderWizard.Enabled:=MDIChildCount>0;
    DeleteMarkers.Enabled:=Freeship.NumberofMarkers>0;
    // Calculations
    DesignHydrostatics.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
@@ -1486,6 +1481,13 @@ procedure TMainForm.ImportPartExecute(Sender: TObject);
     begin Freeship.Edit.File_ImportPart; UpdateMenu; end;
 procedure TMainForm.LayerIntersectionExecute(Sender: TObject);
     begin Freeship.Edit.Point_IntersectLayer; UpdateMenu; end;
+procedure TMainForm.KeelRudderWizardExecute(Sender: TObject);
+    begin if not Assigned(FreeKeelWizardDialog) then
+          FreeKeelWizardDialog := TFreeKeelWizardDialog.Create(Self);
+        //ShowTranslatedValues(FreeKeelWizardDialog);
+          FreeKeelWizardDialog.Execute; //(freeship);
+          UpdateMenu;
+    end;
 procedure TMainForm.RedoExecute(Sender: TObject);
     begin FreeShip.Edit.Redo; UpdateMenu; SetCaption; end;
 procedure TMainForm.ClearUndoExecute(Sender: TObject);

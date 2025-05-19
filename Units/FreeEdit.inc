@@ -12,7 +12,7 @@ var
   Tmp,Ext: AnsiString;
 begin
   AlreadyPresent:=False;
-  FFreeShip.Preferences.LastDirectory:=ExtractFilePath( FileName );
+  FreeShip.Preferences.LastDirectory:=ExtractFilePath( FileName );
   Ext:=Uppercase( ExtractFileExt( Filename ) );
   Index:=-1;
   Tmp:=FreeShip.Preferences.OnlyName( Trim( Filename ),false );
@@ -35,21 +35,19 @@ end;
 procedure TFreeEdit.BackgroundImage_Delete(Viewport: TFreeViewport);
 var I: integer;
 begin
-  if MessageDlg(Userstring(68), mtConfirmation, [mbYes, mbNo], 0) = mrYes then
-  begin
-    for I:=FFreeShip.NumberofBackgroundImages downto 1 do
-      if FFreeShip.BackgroundImage[I-1].AssignedView = Viewport.ViewType then
-      begin
-        FFreeShip.BackgroundImage[I-1].Destroy;
-        FFreeShip.FBackgroundImages.Delete(I-1);
-        FFreeShip.FileChanged:=True;
-        break;
-      end;
+  if MessageDlg(Userstring(68),mtConfirmation,[mbYes,mbNo],0)=mrYes then begin
+    for I:=FreeShip.NumberofBackgroundImages downto 1 do
+    if FreeShip.BackgroundImage[I-1].AssignedView=Viewport.ViewType then begin
+       FreeShip.BackgroundImage[I-1].Destroy;
+       FreeShip.FBackgroundImages.Delete(I-1);
+       FreeShip.FileChanged:=True;
+       break;
+    end;
     for I:=0 to FreeShip.NumberOfViewports-1 do
-      if FreeShip.Viewport[I].ViewType = Viewport.ViewType then begin
-         FreeShip.Viewport[I].BackgroundImage.Clear;
-         FreeShip.Viewport[I].Refresh;
-      end;
+    if FreeShip.Viewport[I].ViewType = Viewport.ViewType then begin
+       FreeShip.Viewport[I].BackgroundImage.Clear;
+       FreeShip.Viewport[I].Refresh;
+    end;
   end;
 end;
 
@@ -80,8 +78,8 @@ begin
     //Dialog.Options:=[ofHideReadOnly];
   if Dialog.Execute then begin
     if Data = nil then begin
-      Data:=TFreeBackgroundImageData.Create(FFreeShip);
-      FFreeShip.FBackgroundImages.Add(Data);
+      Data:=TFreeBackgroundImageData.Create(FreeShip);
+      FreeShip.FBackgroundImages.Add(Data);
     end;
     Data.Clear;
     if Uppercase(ExtractFileExt(Dialog.Filename)) = '.JPG' then begin
@@ -112,13 +110,12 @@ begin
     FreeShip.FileChanged:=True;
   end;
   FreeAndNil(Dialog);
-
 end;
 
-constructor TFreeEdit.Create(FreeShip: TFreeShip);
+constructor TFreeEdit.Create( ShipCreates: TFreeShip );
 begin
   inherited Create;
-  FFreeShip:=FreeShip;
+  FreeShip:=ShipCreates;
   RecentFiles:=TStringList.Create;
 end;{TFreeEdit.Create}
 
@@ -151,7 +148,7 @@ begin
 end;
 
 // Creates undodata just prior to modifications
-function TFreeEdit.CreateUndoObject(UndoText: AnsiString; Accept: boolean): TFreeUndoObject;
+function TFreeEdit.CreateUndoObject( UndoText: String; Accept: boolean): TFreeUndoObject;
 var
   UndoObject: TFreeUndoObject;
   Version: TFreeFileVersion;
@@ -160,13 +157,12 @@ var
 begin                                               // Result:=nil; exit;
   UndoObject:=TFreeUndoObject.Create(FreeShip);
   Result:=UndoObject;
-  //if UndoText<>'' then UndoText[1]:=Lowercase(UndoText[1]);
   UndoObject.FUndoText:=UndoText;
   Version:=FreeShip.FileVersion;
   Preview:=FreeShip.ProjectSettings.SavePreview;
 //try                                       // delete all undo objects after the current one
-    for I:=FFreeShip.FUndoObjects.Count downto FreeShip.FUndoPosition+1 do
-      FreeShip.UndoObject[I-1].Delete;    // Temp. set to the latest fileversion so that no data will be lost
+    for I:=FreeShip.FUndoObjects.Count downto FreeShip.FUndoPosition+1 do
+            FreeShip.UndoObject[I-1].Delete;    // Temp. set to the latest fileversion so that no data will be lost
     FreeShip.FFileVersion:=Currentversion;
     // Temp. disable saving of preview image
     FreeShip.ProjectSettings.SavePreview:=False;
@@ -558,7 +554,7 @@ begin
   if FreeShip.NumberOfSelectedControlFaces = 0 then begin
     SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
     ShowTranslatedValues(SelectDlg);
-    if SelectDlg.Execute(FFreeShip, fsFaces) then
+    if SelectDlg.Execute(FreeShip, fsFaces) then
       SelectDlg.ExtractSelectedFaces(Faces)
     else begin
       for I:=FreeShip.NumberOfSelectedControlFaces downto 1 do
@@ -688,7 +684,7 @@ begin
   if Points.Count = 0 then begin
     SelectDlg:=TFreeSelectLayersDialog.Create( FreeShip );
     ShowTranslatedValues( SelectDlg );
-    if SelectDlg.Execute( FFreeShip,fsPoints )
+    if SelectDlg.Execute( FreeShip,fsPoints )
     then SelectDlg.ExtractSelectedPoints(Points)
     else begin
       for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do FreeShip.SelectedControlPoint[I-1].Selected:=False;
@@ -830,7 +826,7 @@ begin
   if Points.Count = 0 then begin
     SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
     ShowTranslatedValues(SelectDlg);
-    if SelectDlg.Execute(FFreeShip, fsPoints)
+    if SelectDlg.Execute(FreeShip, fsPoints)
     then SelectDlg.ExtractSelectedPoints(Points)
     else begin
       for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do
@@ -913,7 +909,7 @@ begin
   if Points.Count = 0 then begin
     SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
     ShowTranslatedValues(SelectDlg);
-    if SelectDlg.Execute(FFreeShip, fsPoints) then
+    if SelectDlg.Execute(FreeShip, fsPoints) then
       SelectDlg.ExtractSelectedPoints(Points)
     else begin
       for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do
@@ -1056,11 +1052,11 @@ end;
 procedure TFreeEdit.OnFaceRebuilt (Sender: TObject; current:integer; total:integer);
 var P:integer;
 begin
-  if FProgressBar = nil then exit;
+  if ProgressBar = nil then exit;
   P:=current * 10 div total;
-  if P<>FProgressBar.Position then begin
-    FProgressBar.Max:=10;
-    FProgressBar.Position :=P;
+  if P<>ProgressBar.Position then begin
+    ProgressBar.Max:=10;
+    ProgressBar.Position :=P;
     //for some reason in GTK2 ProgressBar does not refresh unless Label is refreshed. weird.
     Main.MainForm.LabelProgress.Caption:=format('%d / %d',[current,total]);
     Main.MainForm.LabelProgress.Refresh;
@@ -1188,10 +1184,9 @@ end;
 // save as FREE!ship file without prompting for a filename (must already been set)
 
 function TFreeEdit.File_Save: boolean;
-var
-  Backup, Str, Ext: AnsiString;
+var Answer: word;
+  Backup,Str,Ext: AnsiString;
   Destination: TFreeFileBuffer;
-  Answer: word;
   fAttr: longint;  fh:THandle;
   MinFileVersion: TFreeFileVersion;
 begin Result:=false;
@@ -1255,8 +1250,7 @@ begin result:=mrOk;
   end;
 end;
 
-function TFreeEdit.File_SaveAs: boolean;
-var SaveDialog : TSaveDialog;
+function TFreeEdit.File_SaveAs: boolean; var SaveDialog: TSaveDialog;
 begin result:=false;
    SaveDialog:=TSaveDialog.Create( FreeShip );
    SaveDialog.InitialDir:=FreeShip.Preferences.SaveDirectory; //+ConfigDirectory
@@ -1271,45 +1265,35 @@ begin result:=false;
       FreeShip.Filename:=Savedialog.Filename;
       FreeShip.FilenameSet:=True;
       Result:=File_Save;
-      if Result then FreeShip.Preferences.LastDirectory
-                 :=ExtractFilePath( SaveDialog.FileName );
+      if Result then FreeShip.Preferences.LastDirectory:=ExtractFilePath(SaveDialog.FileName);
    end;
    SaveDialog.Destroy;
-end;{TFreeEdit.File_SaveAs}
+end;
 
 procedure TFreeEdit.Flowline_Add(Source: T2DCoordinate; View: TFreeviewType);
-var Flowline: TFreeFlowline; vUndo: TFreeUndoObject;
-begin
-  vUndo:=CreateUndoObject( 'AddFlow',False );
+var Flowline: TFreeFlowline;                                                    // vUndo: TFreeUndoObject;
+begin                                                                           // vUndo:=CreateUndoObject( 'AddFlow',False );
   Flowline:=TFreeFlowline.Create( FreeShip );
   FreeShip.FFlowLines.Add( Flowline );
   Flowline.FProjectionPoint:=Source;
-  Flowline.FProjectionView:=View;
-  // Flowline.FMethodNew:=True;
+  Flowline.FProjectionView:=View;                                               // Flowline.FMethodNew:=True;
   Flowline.Rebuild;
-  if Flowline.FFlowLine.NumberOfPoints>0 then begin                ///***???
-    FreeShip.FileChanged:=True;
-    vUndo.Accept;
+  if Flowline.FFlowLine.NumberOfPoints>0 then begin
+    FreeShip.FileChanged:=True;                                                 // vUndo.Accept;
     Freeship.RebuildModel;
-  end else begin
-    vUndo.Delete;
-    Flowline.Delete;
+  end else begin                                                                // vUndo.Delete;
+    Flowline.Destroy;                                                           // Delete;
   end;
 end;
 
 procedure TFreeEdit.Geometry_AddCylinder;
 var
-  StartPoint: T3DVector;
-  EndPoint: T3DVector;
-  P1, P2: T3DVector;
+  StartPoint,EndPoint,P1,P2: T3DVector;
   I,J, NPoints, Ne: integer;
   Points: TFreeCoordinateGrid;
   CPoints:TFasterListTFreeSubdivisionControlPoint;
-  Radius: TFloatType;
-  Angle: TFloatType;
-  Matrix: TFreeMatrix;
-  Inv, OrgPts: TFreeMatrix;
-  NewPts: TFreeMatrix;
+  Radius,Angle: TFloatType;
+  Matrix,Inv,OrgPts,NewPts: TFreeMatrix;
   Dialog: TFreeCylinderDialog;
   Layer: TFreeSubdivisionLayer;
   Grid: TFreeSubdivisionControlPointGrid;
@@ -1320,7 +1304,6 @@ begin
   Dialog.EndPoint:=Vector( 0,1 );
   Dialog.Radius.Value:=1.0;
   Dialog.NoOfPoints.Value:=Dialog.NoOfPoints.MinValue+2;
-
   if Dialog.Execute(LengthStr(FreeShip.ProjectSettings.ProjectUnits)) then begin
     CreateUndoObject( 'Cylinder',True );
     Layer:=FreeShip.Surface.ActiveLayer;
@@ -1336,9 +1319,9 @@ begin
     Matrix.Fill(0.0);
     Matrix.Value[0, 0]:=1.0;
     for I:=2 to NPoints+3 do begin
-      Matrix.Value[I-1, I-2]:=1 / 6;
-      Matrix.Value[I-1, I-1]:=2 / 3;
-      Matrix.Value[I-1, I]:=1 / 6;
+      Matrix.Value[I-1,I-2]:=1/6;
+      Matrix.Value[I-1,I-1]:=2/3;
+      Matrix.Value[I-1,I]:=1/6;
     end;
     Matrix.Value[NPoints+3, NPoints+3]:=1.0;                   // Invert matrix
     Inv:=Matrix.Invert;
@@ -1346,26 +1329,26 @@ begin
     OrgPts:=TFreeMatrix.Create;
     OrgPts.SetSize(3, NPoints+4);
     for I:=1 to NPoints do begin
-      Angle:=-((I-1) / NPoints) * 2 * Pi;
-      P1.x:=StartPoint.x+Sin(Angle) * Radius;
-      P1.y:=StartPoint.y+Cos(Angle) * Radius;
+      Angle:=-((I-1)/NPoints)*2*Pi;
+      P1.x:=StartPoint.x+Sin(Angle)*Radius;
+      P1.y:=StartPoint.y+Cos(Angle)*Radius;
       P1.z:=StartPoint.z;
       P2:=RotatePointAroundVector( P1,StartPoint,EndPoint-StartPoint );
-      OrgPts.Value[I+1, 0]:=P2.X;
-      OrgPts.Value[I+1, 1]:=P2.Y;
-      OrgPts.Value[I+1, 2]:=P2.Z;
+      OrgPts.Value[I+1,0]:=P2.X;
+      OrgPts.Value[I+1,1]:=P2.Y;
+      OrgPts.Value[I+1,2]:=P2.Z;
     end;
     for I:=0 to 2 do begin
-      OrgPts.Value[1, I]:=OrgPts.Value[NPoints+1, I];
-      OrgPts.Value[0, I]:=OrgPts.Value[NPoints, I];
-      OrgPts.Value[NPoints+2, I]:=OrgPts.Value[2, I];
-      OrgPts.Value[NPoints+3, I]:=OrgPts.Value[3, I];
+      OrgPts.Value[1,I]:=OrgPts.Value[NPoints+1,I];
+      OrgPts.Value[0,I]:=OrgPts.Value[NPoints,I];
+      OrgPts.Value[NPoints+2,I]:=OrgPts.Value[2,I];
+      OrgPts.Value[NPoints+3,I]:=OrgPts.Value[3,I];
     end;                                                // calculate new points
     NewPts:=Inv.Multiply(OrgPts);
     for I:=1 to NPoints do begin
-      P1.X:=NewPts.Value[I+1, 0];
-      P1.Y:=NewPts.Value[I+1, 1];
-      P1.Z:=NewPts.Value[I+1, 2];
+      P1.X:=NewPts.Value[I+1,0];
+      P1.Y:=NewPts.Value[I+1,1];
+      P1.Z:=NewPts.Value[I+1,2];
       Points[0][I-1]:=P1;
       Points[1][I-1]:=Vector( P1.X+EndPoint.X-StartPoint.X,
                               P1.Y+EndPoint.Y-StartPoint.Y,
@@ -1378,19 +1361,16 @@ begin
     FreeAndNil(NewPts);
     Ne:=FreeShip.Surface.NumberOfControlEdges;
     Setlength(Grid, 2);
-    for I:=0 to 1 do begin
-      Setlength(Grid[I], NPoints+1);
-      for J:=0 to NPoints do
-        Grid[I][J]:=FreeShip.Surface.AddControlPoint(Points[I][J]);
+    for I:=0 to 1 do begin Setlength(Grid[I], NPoints+1);
+      for J:=0 to NPoints do Grid[I][J]:=FreeShip.Surface.AddControlPoint(Points[I][J]);
     end;
     FreeShip.Surface.ImportControlPointGrid(Grid, NPoints+1, 2, Layer);
     for I:=Ne+1 to FreeShip.Surface.NumberOfControlEdges do
-      FreeShip.Surface.ControlEdge[I-1].Crease:=False;
+                   FreeShip.Surface.ControlEdge[I-1].Crease:=False;
     if Dialog.CloseStartDisk.Checked then begin
       CPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
       for I:=NPoints-1  downto 0 do CPoints.Add(Grid[0][I]);
-      FreeShip.Surface.AddControlFaceN(CPoints, true, Layer);
-      CPoints.Free;
+      FreeShip.Surface.AddControlFaceN(CPoints,true,Layer); CPoints.Free;
     end;
     if Dialog.CloseEndDisk.Checked then begin
       CPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
@@ -1405,10 +1385,10 @@ end;
 
 procedure TFreeEdit.Geometry_AddGridPanel;
 var
-  StartPoint,Point {,P1,P2}: T3DVector;
-  I,J, Cols,Rows, Plane, Ne: integer;
+  StartPoint,Point: T3DVector;
+  I,J,Cols,Rows,Plane,Ne: integer;
   CPoints:TFasterListTFreeSubdivisionControlPoint;
-  SizeA,SizeB, x,y,z, dX,dY,dZ: TFloatType;
+  SizeA,SizeB,x,y,z,dX,dY,dZ: TFloatType;
   Dialog: TFreeGridDialog;
   Layer: TFreeSubdivisionLayer;
   Grid: TFreeSubdivisionControlPointGrid;
@@ -1462,40 +1442,7 @@ begin
   Result.Calculate;
   Result.ShowData;                                   //( fhSingleCalculation );
 end;
-(*
-// Opens the dialog to calculate crosscurves
-procedure TFreeEdit.Hydrostatics_Crosscurves;
-var
-  Dialog: TFreeCrosscurvesDialog;
-begin
-  if not FreeShip.ProjectSettings.FMainparticularsHasBeenset then
-    MessageDlg(UserString(196), mtError, [mbOK], 0)
-  else begin                                 // Check model for inconsistencies
-    if not FreeShip.ProjectSettings.DisableModelCheck then Model_Check(False);
-    Dialog:=TFreeCrosscurvesDialog.Create(FreeShip);
-    ShowTranslatedValues(Dialog);
-    Dialog.SetDisplacements(FreeShip.ProjectSettings.FDisplacements,FreeShip.ProjectSettings.FNoDisplacements);
-    Dialog.FreeNumInput2.Value:=FreeShip.ProjectSettings.FMinimumDisplacement;
-    Dialog.FreeNumInput3.Value:=FreeShip.ProjectSettings.FMaximumDisplacement;
-    Dialog.FreeNumInput4.Value:=FreeShip.ProjectSettings.FDisplIncrement;
-    Dialog.CheckBox1.Checked:=FreeShip.ProjectSettings.FUseDisplIncrements;
-    Dialog.SetHeelingAngles(FreeShip.ProjectSettings.FAngles,FreeShip.ProjectSettings.FNoAngles);
-    if Dialog.Execute(FreeShip) then begin
-      CreateUndoObject('crosscurves settings', True);
-      FreeShip.ProjectSettings.FMinimumDisplacement:=Dialog.FreeNumInput2.Value;
-      FreeShip.ProjectSettings.FMaximumDisplacement:=Dialog.FreeNumInput3.Value;
-      ;
-      FreeShip.ProjectSettings.FDisplIncrement:=Dialog.FreeNumInput4.Value;
-      Dialog.GetDisplacements(FreeShip.ProjectSettings.FDisplacements,
-        FreeShip.ProjectSettings.FNoDisplacements);
-      FreeShip.ProjectSettings.FUseDisplIncrements:=Dialog.CheckBox1.Checked;
-      Dialog.GetHeelingAngles(FreeShip.ProjectSettings.FAngles,FreeShip.ProjectSettings.FNoAngles);
-      FreeShip.FileChanged:=True;
-    end;
-    FreeAndNil(Dialog);
-  end;
-end;
-*)
+
 // Opens the hydrostatics dialog and calculates hydrostatic data for a range of inputdata
 procedure TFreeEdit.Hydrostatics_Dialog;
 var HydrostaticsForm: TFreeHydrostaticsForm; DP: double; MIN,MAX: T3DVector;
@@ -1590,30 +1537,23 @@ var I,J: integer;
       end; P1:=p2;
     end;
   end;
-
 begin
   ToDoList:=TList.Create;
   DoneList:=TList.Create;
 //try
     if FreeShip.NumberOfSelectedControlFaces>0 then begin // Use only the selected ones
       ToDoList.Capacity:=ToDoList.Count+FreeShip.NumberOfSelectedControlFaces;
-      for I:=1 to FreeShip.NumberOfSelectedControlFaces do
-      begin
+      for I:=1 to FreeShip.NumberOfSelectedControlFaces do begin
         Face:=FreeShip.SelectedControlFace[I-1];
         ToDoList.Add(Face);
       end;
-    end
-    else
-      for I:=1 to FreeShip.NumberOfLayers do
-      begin
-        Layer:=FreeShip.Layer[I-1];
+    end else
+      for I:=1 to FreeShip.NumberOfLayers do begin Layer:=FreeShip.Layer[I-1];
         if Layer.SurfaceVisible then begin
           ToDoList.Capacity:=ToDoList.Count+Layer.Count;
-          for J:=1 to Layer.Count do
-            ToDoList.Add(Layer.Items[J-1]);
+          for J:=1 to Layer.Count do ToDoList.Add(Layer.Items[J-1]);
         end;
-      end// use all visible faces
-    ;
+      end;                                             // use all visible faces
     if ToDoList.Count>0 then begin
       CreateUndoObject('LGroup',True);
       while ToDoList.Count>0 do begin
@@ -1627,8 +1567,8 @@ begin
       // Assign all groups to different layers
       for I:=1 to DoneList.Count do begin
         Current:=TList(DoneList[I-1]);
-        if Current.Count > 0 then begin
-          SameLayer:=True;   // check if all selected faces currently belong to the same layer
+        if Current.Count>0 then begin
+          SameLayer:=True; // check if all selected faces currently belong to the same layer
           Face:=TFreeSubdivisionControlFace(Current[0]);
           for J:=2 to Current.Count do begin
             Face2:=TFreeSubdivisionControlFace(Current[J-1]);
@@ -1647,12 +1587,11 @@ begin
             Layer.Color:=clLtGray; //RandomColor;
           end;
           if Layer <> nil then
-            for J:=1 to Current.Count do begin
-              Face:=TFreeSubdivisionControlFace(Current[J-1]);
-              Face.Layer:=Layer;
-            end;
-        end;
-        FreeAndNil(Current);
+          for J:=1 to Current.Count do begin
+            Face:=TFreeSubdivisionControlFace(Current[J-1]);
+            Face.Layer:=Layer;
+          end;
+        end; FreeAndNil( Current );
       end;
       FreeShip.ActiveLayer:=FreeShip.Layer[FreeShip.NumberOfLayers-1]; // Delete empty layers
       Layer_DeleteEmpty(True);
@@ -2069,15 +2008,18 @@ begin
     L:=FreeNewModelDialog.Length;
     B:=FreeNewModelDialog.Breadth;
     D:=FreeNewModelDialog.Draft/2;
-    if FreeNewModelDialog.ShipBox.ItemIndex=0 then Default:=Ship_A
-                                              else Default:=Ship_B;
+    if FreeNewModelDialog.ShipBox.ItemIndex=0
+                         then Default:=Ship_A
+                         else Default:=Ship_B;
     FreeShip.Clear;
-    with FreeShip.ProjectSettings do begin
-      ProjectUnits:=TFreeUnitType(FreeNewModelDialog.ComboBox1.ItemIndex);
+    with FreeShip.ProjectSettings do begin                       // «Free!Ship»
+      ProjectUnits:=TFreeUnitType( FreeNewModelDialog.ComboBox1.ItemIndex );
       ProjectLength:=L;
       ProjectBeam:=B;
       ProjectDraft:=D*2;
-      FProjectName:='Корпус всепогодного корабля среднего водоизмещения (галеон)';
+      FreeShip.Filename:=FreeNewModelDialog.ShipBox.Items[FreeNewModelDialog.ShipBox.ItemIndex];
+      FProjectName:='«'+ChangeFileExt(ExtractFilename(Freeship.FileName),'')
+                   +'». Корпус всепогодного корабля среднего водоизмещения (галеон)';
       FProjectDesigner:='Подсекция штормовой мореходности, Научно-инженерное общество корабелов им.А.Н.Крылова';
       FProjectComment:='Вариант эволюционного совершенствования корабельных обводов из эпохи Великих Испанских географических открытий';
       FProjectFileCreatedBy:='Free!Ship (c)'+TimeString; // FormatDateTime('YYYY-MM-DD_hh:nn',Now );
@@ -2086,8 +2028,7 @@ begin
     TrvSplines:=TFasterListTFreeSpline.Create;
     StemPoint:=nil;        // First create tmp. splines in transverse direction
     S1:=nil; S2:=nil;
-    for I:=0 to 6 do begin
-      Spline1:=TFreeSpline.Create( FreeShip.Surface );
+    for I:=0 to 6 do begin Spline1:=TFreeSpline.Create( FreeShip.Surface );
       for J:=0 to 4 do begin P:=Default[I,J];
         P.X:=P.X*L;
         P.Y:=P.Y*B;
@@ -2105,7 +2046,7 @@ begin
         Spline1:=TrvSplines[J];
         P:=Spline1.Value(I/Rows);
         Spline2.Add( P );
-      end;      // now calculate all points on the longitudinal spline and send it to the surface
+      end; // now calculate all points on the longitudinal spline and send it to the surface
       for J:=0 to Cols do begin
         P:=Spline2.Value(J/Cols);
         Pts[I,J]:=TFreeSubdivisionControlPoint.Create( FreeShip.Surface );
@@ -2118,11 +2059,11 @@ begin
         Pts[I,J].Coordinate:=P;
         if (I=0) and (J=Cols) then StemPoint:=Pts[I,J];
       end;
-      FreeAndNil(Spline2);
+      Spline2.Destroy; // FreeAndNil(Spline2);
     end;
     for I:=0 to TrvSplines.Count-1 do begin              // Destroy tmp splines
       Spline1:=TrvSplines[I];
-      FreeAndNil( Spline1 );
+      Spline1.Destroy; // FreeAndNil( Spline1 );
     end;
     TrvPoints:=TFasterListTFreeSubdivisionControlPoint.Create; // finally create the controlfaces over the newly calculated points
 
@@ -2160,7 +2101,7 @@ begin
     for I:=1 to 4 do Intersection_Add( fiDiagonal,(I*2+1)*D );
     FreeShip.FileChanged:=True;
     FreeShip.ModelIsLoaded:=True;
-    FreeShip.Filename:='Example_Ship.ftm';
+//  FreeShip.Filename:='Example_Ship.ftm';
     if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
     Result:=True;
     FreeAndNil( TrvSplines );

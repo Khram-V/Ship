@@ -100,18 +100,17 @@ begin
       C:=Face.FaceCenter;
       N:=ZERO;
       for J:=2 to Face.NumberOfpoints do begin
-        N:=AddPoint(N, UnifiedNormal(C, Face.Point[J-2].Coordinate,
-          Face.Point[J-1].Coordinate));
+        N:=N+UnifiedNormal(C,Face.Point[J-2].Coordinate,Face.Point[J-1].Coordinate);
       end;
       N:=Normalize(N);
-      Result:=AddPoint(Result, N);
+      Result:=N+Result;
     end else begin
       Index:=Face.FPoints.IndexOf(Self);
       J:=(Index+Face.FPoints.Count-1) mod (Face.FPoints.Count);
       P1:=Face.Point[J].Coordinate;
       J:=(Index+Face.FPoints.Count+1) mod (Face.FPoints.Count);
       P3:=Face.Point[J].Coordinate;
-      Result:=AddPoint(Result, UnifiedNormal(P1, FCoordinate, P3));
+      Result:=Result+UnifiedNormal( P1,FCoordinate,P3 );
     end;
   end;
   Result:=Normalize(Result);
@@ -513,8 +512,7 @@ begin
 end;
 
 destructor TFreeSubdivisionPoint.Destroy;
-begin
-  //Unreference;
+begin if self=nil then exit;            //Unreference;
   Clear;
   FreeAndNil(FFaces);
   FreeAndNil(FEdges);

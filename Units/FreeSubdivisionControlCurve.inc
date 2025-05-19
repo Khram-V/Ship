@@ -1,15 +1,12 @@
-{---------------------------------------------------------------------------------------------------}
-{                                           TFreeSubdivisionControlCurve                            }
-{---------------------------------------------------------------------------------------------------}
+{------------------------------}
+{ TFreeSubdivisionControlCurve }
+{------------------------------}
 procedure TFreeSubdivisionControlCurve.SetBuilt(Val: boolean);
-begin
-  FBuilt:=Val;
-    //if not FBuilt then FSubdividedPoints.Clear;
+begin FBuilt:=Val;  //if not FBuilt then FSubdividedPoints.Clear;
 end;
 
 procedure TFreeSubdivisionControlCurve.FSetSelected(val: boolean);
-var
-  Index: integer;
+var Index: integer;
 begin
   Index:=Surface.FSelectedControlCurves.IndexOf(self);
   if Val then begin                // Only add if it is not already in the list
@@ -17,25 +14,19 @@ begin
   end else begin
     if Index <> -1 then Surface.FSelectedControlCurves.Delete(index);
   end;
-  //if Assigned(Surface.FOnSelectItemListeners) then
-  //  Surface.FOnSelectItemListeners(self);
+  //if Assigned(Surface.FOnSelectItemListeners) then Surface.FOnSelectItemListeners(self);
   Surface.ExecuteOnSelectItem(Self);
 end;
-
 procedure TFreeSubdivisionControlCurve.AddPoint(P: TFreeSubdivisionControlPoint);
-begin
-  FControlPoints.Add(P);
-  Built:=False;
+begin FControlPoints.Add(P);
+      Built:=False;
 end;
-
 procedure TFreeSubdivisionControlCurve.ClearSubdivision;
 var i:integer; P:TFreeSubdivisionPoint;
-begin
-  FSubdividedPoints.Clear;
-  FSpline.Clear;
-  Built:=false;
+begin FSubdividedPoints.Clear;
+      FSpline.Clear;
+      Built:=false;
 end;
-
 procedure TFreeSubdivisionControlCurve.DeleteSubdivision;
 var i,j:integer; P:TFreeSubdivisionPoint;
   edgesToDel:TFasterListTFreeSubdivisionEdge;
@@ -83,20 +74,16 @@ begin
   FSpline.Clear;
   FSpline.Capacity:=FControlPoints.Count;
 
-  for i:=0 to Surface.DesiredSubdivisionLevel-1 do
-    SubdivideFreeStanding(i);
+  for i:=0 to Surface.DesiredSubdivisionLevel-1 do SubdivideFreeStanding(i);
   {
-  for i:=1 to FSubdividedPoints.Count-2 do
-    begin
+  for i:=1 to FSubdividedPoints.Count-2 do begin
     P:=FSubdividedPoints[i];
     //if P.SubdivisionLevel = Surface.DesiredSubdivisionLevel then
-      LastAveragePoint( FSubdividedPoints[i-1],
-                        P,
+      LastAveragePoint( FSubdividedPoints[i-1],P,
                         FSubdividedPoints[i+1]);
     end;
   }
-  for i:=0 to FSubdividedPoints.Count-1 do      // TODO SubdivideFreeStanding
-  begin
+  for i:=0 to FSubdividedPoints.Count-1 do begin  // TODO SubdivideFreeStanding
     P:=FSubdividedPoints[i];
     if P.VertexType =  svCorner then //(svRegular, svCrease, svDart, svCorner)
       FSpline.AddKnuckle(P.Coordinate)
@@ -167,148 +154,108 @@ end;
 
 constructor TFreeSubdivisionControlCurve.Create(aSurface: TFreeSubdivisionSurface);
 begin
-  inherited Create(aSurface);
+  inherited Create( aSurface );
   FControlPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
   FSubdividedPoints:=TFasterListTFreeSubdivisionPoint.Create;
-  FSpline:=TFreeSpline.Create(aSurface);
+  FSpline:=TFreeSpline.Create( aSurface );
   Clear;
 end;
 
 procedure TFreeSubdivisionControlCurve.Delete;
 var
-  Index: integer;
-  I: integer;
+  Index,I: integer;
   P1, P2: TFreeSubdivisionPoint;
   Edge: TFreeSubdivisionEdge;
 begin
   Index:=Surface.FSelectedControlCurves.IndexOf(self);
-  if Index <> -1 then
-    Surface.FSelectedControlCurves.Delete(Index);
+  if Index <> -1 then Surface.FSelectedControlCurves.Delete(Index);
   Index:=Surface.FControlCurves.IndexOf(self);
   if Index <> -1 then
     Surface.FControlCurves.Delete(Index);  // Remove references from control edges
-  for I:=2 to FControlPoints.Count do
-  begin
+  for I:=2 to FControlPoints.Count do begin
     P1:=FControlPoints[I-2];
     P2:=FControlPoints[I-1];
-    Edge:=Surface.EdgeExists(P1, P2);
-    if Edge <> nil then
-    begin
-      Edge.FCurve:=nil;
-    end;
+    Edge:=Surface.EdgeExists(P1,P2);
+    if Edge<>nil then Edge.FCurve:=nil;
   end;
   FControlPoints.Clear;                    // Remove references from subdivided edges
-  for I:=2 to FSubdividedPoints.Count do
-  begin
+  for I:=2 to FSubdividedPoints.Count do begin
     P1:=FSubdividedPoints[I-2];
     P2:=FSubdividedPoints[I-1];
-    Edge:=Surface.EdgeExists(P1, P2);
-    if Edge <> nil then
-    begin
-      Edge.FCurve:=nil;
-    end;
+    Edge:=Surface.EdgeExists(P1,P2);
+    if Edge <> nil then Edge.FCurve:=nil;
   end;
   FSubdividedPoints.Clear;
+  FSpline.Destroy;
   Destroy;
 end;
 
 procedure TFreeSubdivisionControlCurve.DeleteEdge(Edge: TFreeSubdivisionControlEdge);
 var
-  I, J: integer;
-  CP1, CP2: TFreeSubdivisionControlPoint;
-  P1, P2: TFreeSubdivisionPoint;
+  I,J: integer;
+  CP1,CP2: TFreeSubdivisionControlPoint;
+  P1,P2: TFreeSubdivisionPoint;
   AnEdge: TFreeSubdivisionEdge;
   NewCurve: TFreeSubdivisionControlCurve;
   DelCurve: boolean;
-
 begin
   DelCurve:=False;
   I:=2;
   while I <= FControlPoints.Count do
   begin
-    if ((FControlPoints[I-2] = Edge.FStartPoint) and
-      (FControlPoints[I-1] = Edge.EndPoint)) or
-      ((FControlPoints[I-2] = Edge.EndPoint) and
-      (FControlPoints[I-1] = Edge.FStartPoint)) then
-    begin
-      // Remove references to this Spline from control edges
-      for J:=2 to FControlPoints.Count do
-      begin
+    if ((FControlPoints[I-2] = Edge.FStartPoint)
+    and (FControlPoints[I-1] = Edge.EndPoint))
+    or ((FControlPoints[I-2] = Edge.EndPoint)
+    and (FControlPoints[I-1] = Edge.FStartPoint)) then begin // Remove references to this Spline from control edges
+      for J:=2 to FControlPoints.Count do begin
         CP1:=FControlPoints[J-2];
         CP2:=FControlPoints[J-1];
-        AnEdge:=Surface.EdgeExists(CP1, CP2);
-        if AnEdge <> nil then
-          AnEdge.FCurve:=nil;
+        AnEdge:=Surface.EdgeExists(CP1,CP2);
+        if AnEdge<>nil then AnEdge.FCurve:=nil;
+      end;                           // Remove references from subdivided edges
+      if Built then for J:=2 to FSubdividedPoints.Count do begin
+        P1:=FSubdividedPoints[J-2];
+        P2:=FSubdividedPoints[J-1];
+        AnEdge:=Surface.EdgeExists(P1,P2);
+        if AnEdge<>nil then AnEdge.FCurve:=nil;
       end;
-      // Remove references from subdivided edges
-      if Built then
-        for J:=2 to FSubdividedPoints.Count do
-        begin
-          P1:=FSubdividedPoints[J-2];
-          P2:=FSubdividedPoints[J-1];
-          AnEdge:=Surface.EdgeExists(P1, P2);
-          if AnEdge <> nil then
-            AnEdge.FCurve:=nil;
-        end;
       FSubdividedPoints.Clear;
-
-
-      if I-2 > 0 then
-      begin
-        // Built first new Spline
+      if I-2 > 0 then begin                           // Built first new Spline
         NewCurve:=TFreeSubdivisionControlCurve.Create(Surface);
         NewCurve.FControlPoints.Capacity:=I-1;
         Surface.AddControlCurve(Newcurve);
         CP1:=nil;
-        for J:=0 to I-2 do
-        begin
+        for J:=0 to I-2 do begin
           CP2:=FControlPoints[J];
           NewCurve.FControlPoints.Add(CP2);
-          if J > 0 then
-          begin
+          if J>0 then begin
             AnEdge:=Surface.EdgeExists(CP1, CP2);
-            if AnEdge <> nil then
-              AnEdge.FCurve:=NewCurve;
-          end;
-          CP1:=CP2;
-        end;
-        NewCurve.Selected:=Selected;
+            if AnEdge <> nil then AnEdge.FCurve:=NewCurve;
+          end; CP1:=CP2;
+        end; NewCurve.Selected:=Selected;
       end;
-      if I-1 < FControlPoints.Count-1 then
-      begin
-        // Built second new Spline
+      if I-1 < FControlPoints.Count-1 then begin     // Built second new Spline
         NewCurve:=TFreeSubdivisionControlCurve.Create(Surface);
         NewCurve.FControlPoints.Capacity:=FControlPoints.Count-(I-1);
         Surface.AddControlCurve(NewCurve);
         CP1:=nil;
-        for J:=I-1 to FControlPoints.Count-1 do
-        begin
+        for J:=I-1 to FControlPoints.Count-1 do begin
           CP2:=FControlPoints[J];
           NewCurve.FControlPoints.Add(CP2);
-          if J > I-1 then
-          begin
-            AnEdge:=Surface.EdgeExists(CP1, CP2);
-            if AnEdge <> nil then
-              AnEdge.FCurve:=NewCurve;
-          end;
-          CP1:=CP2;
-        end;
-        NewCurve.Selected:=Selected;
-      end;
-      DelCurve:=True;
-      break;
-    end;
-    Inc(I);
+          if J>I-1 then begin
+            AnEdge:=Surface.EdgeExists(CP1,CP2);
+            if AnEdge<>nil then AnEdge.FCurve:=NewCurve;
+          end; CP1:=CP2;
+        end; NewCurve.Selected:=Selected;
+      end; DelCurve:=True; break;
+    end; Inc(I);
   end;
-  if DelCurve then
-  begin
+  if DelCurve then begin
     FControlPoints.Clear;
-    J:=Surface.FSelectedControlCurves.IndexOf(self);
-    if J <> -1 then
-      Surface.FSelectedControlCurves.Delete(J);
-    J:=Surface.FControlCurves.IndexOf(self);
-    if J <> -1 then
-      Surface.FControlCurves.Delete(J);
+               J:=Surface.FSelectedControlCurves.IndexOf(self);
+    if J<>-1 then Surface.FSelectedControlCurves.Delete(J);
+               J:=Surface.FControlCurves.IndexOf(self);
+    if J<>-1 then Surface.FControlCurves.Delete(J);
     Destroy;
   end;
 
@@ -786,8 +733,7 @@ var i:integer;
   end;
 
 begin
-  if level = 0 then
-  begin
+  if level = 0 then begin
     Self.FSubdividedPoints.Clear;
     for i:=1 to FControlPoints.Count-1 do begin
       V1:=FControlPoints[i-1];
@@ -796,8 +742,8 @@ begin
       E0.Crease:=true;
       if (i=1) then V1.VertexType:=svCorner;               // fix vertex type
       if (i=FControlPoints.Count-1) then V2.VertexType:=svCorner; // fix vertex type
-      if V1.VertexType<>svCorner then V1.VertexType :=svCrease;
-      if V2.VertexType<>svCorner then V2.VertexType :=svCrease;
+      if V1.VertexType<>svCorner then V1.VertexType:=svCrease;
+      if V2.VertexType<>svCorner then V2.VertexType:=svCrease;
       if i=1 then begin
         P1:=TFreeSubdivisionPoint.Create(Surface);
         P1.Coordinate:=V1.Coordinate;

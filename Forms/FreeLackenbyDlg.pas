@@ -98,11 +98,9 @@ type
       MaxIterations: integer; UpdateWindows: boolean; var Succeeded: boolean );
   end;
 
-var
-  FreeLackenbyDialog: TFreeLackenbyDialog;
+var FreeLackenbyDialog: TFreeLackenbyDialog;
 
-implementation
-uses Math;
+implementation uses Math;
 {$R *.lfm}
 
 procedure TFreeLackenbyDialog.CalulateHydrostaticProperties(Wlplane: T3DPlane;
@@ -175,7 +173,7 @@ begin
   if MainArea <> 0
      then Prop.Cp:=Prop.Displacement/(Prop.Length*Mainarea)
      else Prop.Cp:=0.0;
-  Stations.Capacity:=Stations.Capacity;
+//Stations.Capacity:=Stations.Capacity;
 end;
 
 procedure TFreeLackenbyDialog.CopyValues;
@@ -848,17 +846,11 @@ begin
   for I:=1 to FOriginalStations.Count do begin
     Spline:=FOriginalStations[I-1];
     if Spline.NumberOfPoints > 0 then begin
-      if First then begin
-        Min:=Spline.Min;
-        Max:=Spline.Max;
-        First:=False;
-      end else Spline.Extents(Min, Max);
+      if First then begin Min:=Spline.Min; Max:=Spline.Max; First:=False; end
+               else Spline.Extents( Min,Max );
     end;
   end;
-  if First then begin
-    Min:=Vector(-1, -1, -1);
-    Max:=Vector(1, 1, 1);
-  end;
+  if First then begin Min:=Vector(-1,-1,-1); Max:=Vector(1, 1, 1); end;
 end;
 
 procedure TFreeLackenbyDialog.ViewportRedraw(Sender: TObject);
@@ -1019,7 +1011,7 @@ begin
         Spline.ShowCurvature:=False;
         Spline.Fragments:=400;
         Spline.Draw(TopView);
-        if Spline.NumberOfPoints > 0 then begin
+        if Spline.NumberOfPoints>0 then begin
           Pt:=TopView.Project(Spline.Value(0.5));
           TopView.TextOut(Pt.X, Pt.Y, 'DWL');
         end;

@@ -4,6 +4,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
   Top = 100
   Width = 1024
   BorderStyle = bsSingle
+  BorderIcons = []
   Caption = 'Трансформация корпуса по Lackenby.'
   ClientHeight = 640
   ClientWidth = 1024

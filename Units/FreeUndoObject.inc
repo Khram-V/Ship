@@ -1,5 +1,4 @@
 {-----------------------------------------------------------------}
-{                                       TFreeUndoObject           }
 {   TFreeUndoObject is an object class for undoing actions.       }
 {   It's function is very basic, just before each modification    }
 {   the file is saved to a the undo object rather then to a file. }

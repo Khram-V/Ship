@@ -5,12 +5,12 @@
 {   This plane can be a orthogonal plane (eg. stations, waterlines, buttocks) }
 {    or a freely oriented 3D plane (sent)                                     }
 {-----------------------------------------------------------------------------}
-procedure TFreeIntersection.DeleteItem(Item: TFreeSpline);
+procedure TFreeIntersection.DeleteItem( Item: TFreeSpline );
 var Index: integer;
 begin
   Index:=FItems.IndexOf(Item);
-  if Index <> -1 then FItems.Delete(index);
-  FreeAndNil(Item);
+  if Index<>-1 then FItems.Delete( index );
+  Item.Destroy; // FreeAndNil(Item);
 end;
 
 function TFreeIntersection.FGetColor: TColor;
@@ -295,12 +295,10 @@ begin
       // Either this spline has a very small area(0.01m x 0.01m) or it is an unconnected
       // straight line. In both cases it may be deleted as long as at least one valid
       // spline segment remains.
-      FreeAndNil(Spline);
+      Spline.Destroy; // FreeAndNil(Spline);
       FItems.Delete(I-1);
-    end
-    else if Area < 0 then
-      Spline.InvertDirection// spline is defined clockwise, so invert the controlpoints
-    ;
+    end else
+    if Area<0 then Spline.InvertDirection; // spline is defined clockwise, so invert the controlpoints
   end;
 end;
 

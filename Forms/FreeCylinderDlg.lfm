@@ -1,30 +1,30 @@
 object FreeCylinderDialog: TFreeCylinderDialog
   Left = 86
-  Height = 168
+  Height = 162
   Top = 136
-  Width = 461
+  Width = 473
   BorderStyle = bsDialog
-  Caption = 'Add a cylinder.'
-  ClientHeight = 168
-  ClientWidth = 461
+  Caption = 'Построение цилиндра\трубы\мачты.'
+  ClientHeight = 162
+  ClientWidth = 473
   LCLVersion = '3.8.0.0'
   object Panel2: TPanel
     Left = 0
-    Height = 144
+    Height = 138
     Top = 24
-    Width = 461
+    Width = 473
     Align = alClient
     BevelOuter = bvNone
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 144
-    ClientWidth = 461
+    ClientHeight = 138
+    ClientWidth = 473
     TabOrder = 0
     object Panel3: TPanel
       Left = 0
       Height = 68
       Top = 0
-      Width = 460
+      Width = 632
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 10
       ChildSizing.TopBottomSpacing = 10
@@ -33,19 +33,19 @@ object FreeCylinderDialog: TFreeCylinderDialog
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 6
       ClientHeight = 68
-      ClientWidth = 460
+      ClientWidth = 632
       TabOrder = 0
       object Label1: TLabel
         Left = 10
         Height = 23
         Top = 10
-        Width = 52
-        Caption = 'Startpoint'
+        Width = 178
+        Caption = 'Координаты начала\степса\корня'
         Layout = tlCenter
         ParentColor = False
       end
       object StartPointX: TFloatSpinEdit
-        Left = 68
+        Left = 194
         Height = 23
         Top = 10
         Width = 80
@@ -56,7 +56,7 @@ object FreeCylinderDialog: TFreeCylinderDialog
         TabOrder = 0
       end
       object StartPointY: TFloatSpinEdit
-        Left = 154
+        Left = 280
         Height = 23
         Top = 10
         Width = 80
@@ -67,7 +67,7 @@ object FreeCylinderDialog: TFreeCylinderDialog
         TabOrder = 1
       end
       object StartPointZ: TFloatSpinEdit
-        Left = 240
+        Left = 366
         Height = 23
         Top = 10
         Width = 80
@@ -78,33 +78,33 @@ object FreeCylinderDialog: TFreeCylinderDialog
         TabOrder = 2
       end
       object _Label3: TLabel
-        Left = 326
+        Left = 452
         Height = 23
         Top = 10
-        Width = 19
-        Caption = '[m]'
+        Width = 17
+        Caption = '[м]'
         Layout = tlCenter
         ParentColor = False
       end
       object CloseStartDisk: TCheckBox
-        Left = 351
+        Left = 475
         Height = 23
         Top = 10
-        Width = 99
-        Caption = 'Close Start Disk'
+        Width = 147
+        Caption = 'Диск в корневом торце'
         TabOrder = 3
       end
       object Label2: TLabel
         Left = 10
         Height = 23
         Top = 35
-        Width = 52
-        Caption = 'Endpoint'
+        Width = 178
+        Caption = 'Концевые, топовые координаты'
         Layout = tlCenter
         ParentColor = False
       end
       object EndPointX: TFloatSpinEdit
-        Left = 68
+        Left = 194
         Height = 23
         Top = 35
         Width = 80
@@ -114,7 +114,7 @@ object FreeCylinderDialog: TFreeCylinderDialog
         TabOrder = 4
       end
       object EndPointY: TFloatSpinEdit
-        Left = 154
+        Left = 280
         Height = 23
         Top = 35
         Width = 80
@@ -124,7 +124,7 @@ object FreeCylinderDialog: TFreeCylinderDialog
         TabOrder = 5
       end
       object EndPointZ: TFloatSpinEdit
-        Left = 240
+        Left = 366
         Height = 23
         Top = 35
         Width = 80
@@ -134,20 +134,20 @@ object FreeCylinderDialog: TFreeCylinderDialog
         TabOrder = 6
       end
       object _Label6: TLabel
-        Left = 326
+        Left = 452
         Height = 23
         Top = 35
-        Width = 19
-        Caption = '[m]'
+        Width = 17
+        Caption = '[м]'
         Layout = tlCenter
         ParentColor = False
       end
       object CloseEndDisk: TCheckBox
-        Left = 351
+        Left = 475
         Height = 23
         Top = 35
-        Width = 99
-        Caption = 'Close End Disk'
+        Width = 147
+        Caption = 'Топовый диск'
         TabOrder = 7
       end
     end
@@ -155,7 +155,7 @@ object FreeCylinderDialog: TFreeCylinderDialog
       Left = 0
       Height = 68
       Top = 68
-      Width = 460
+      Width = 632
       BevelOuter = bvNone
       ChildSizing.LeftRightSpacing = 10
       ChildSizing.TopBottomSpacing = 10
@@ -164,14 +164,14 @@ object FreeCylinderDialog: TFreeCylinderDialog
       ChildSizing.Layout = cclTopToBottomThenLeftToRight
       ChildSizing.ControlsPerLine = 2
       ClientHeight = 68
-      ClientWidth = 460
+      ClientWidth = 632
       TabOrder = 1
       object Label4: TLabel
         Left = 10
         Height = 23
         Top = 10
-        Width = 55
-        Caption = 'Radius'
+        Width = 199
+        Caption = 'Радиус цилиндра'
         Layout = tlCenter
         ParentColor = False
       end
@@ -179,13 +179,13 @@ object FreeCylinderDialog: TFreeCylinderDialog
         Left = 10
         Height = 23
         Top = 35
-        Width = 55
-        Caption = 'No. points'
+        Width = 199
+        Caption = 'Количество оконтуривающих точек'
         Layout = tlCenter
         ParentColor = False
       end
       object Radius: TFloatSpinEdit
-        Left = 71
+        Left = 215
         Height = 23
         Top = 10
         Width = 80
@@ -198,7 +198,7 @@ object FreeCylinderDialog: TFreeCylinderDialog
         Value = 0.001
       end
       object NoOfPoints: TSpinEdit
-        Left = 71
+        Left = 215
         Height = 23
         Top = 35
         Width = 80
@@ -209,11 +209,11 @@ object FreeCylinderDialog: TFreeCylinderDialog
         Value = 4
       end
       object _Label9: TLabel
-        Left = 157
+        Left = 301
         Height = 23
         Top = 10
-        Width = 19
-        Caption = '[m]'
+        Width = 17
+        Caption = '[м]'
         Layout = tlCenter
         ParentColor = False
       end
@@ -223,15 +223,15 @@ object FreeCylinderDialog: TFreeCylinderDialog
     Left = 0
     Height = 24
     Top = 0
-    Width = 461
+    Width = 473
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 24
-    ClientWidth = 461
+    ClientWidth = 473
     TabOrder = 1
     object BitBtn1: TSpeedButton
-      Left = 297
+      Left = 309
       Height = 20
       Top = 2
       Width = 80
@@ -239,7 +239,7 @@ object FreeCylinderDialog: TFreeCylinderDialog
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 80
-      Caption = 'OK'
+      Caption = '&Есть!'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100
@@ -280,7 +280,7 @@ object FreeCylinderDialog: TFreeCylinderDialog
       OnClick = BitBtn1Click
     end
     object BitBtn2: TSpeedButton
-      Left = 379
+      Left = 391
       Height = 20
       Top = 2
       Width = 80
@@ -288,7 +288,7 @@ object FreeCylinderDialog: TFreeCylinderDialog
       AutoSize = True
       BorderSpacing.Around = 2
       Constraints.MinWidth = 80
-      Caption = 'Cancel'
+      Caption = '&Сброс'
       Flat = True
       Glyph.Data = {
         36040000424D3604000000000000360000002800000010000000100000000100

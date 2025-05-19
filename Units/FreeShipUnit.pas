@@ -5,12 +5,9 @@ interface uses
   Windows, LazFileUtils, LazUTF8, IniFiles,
   Interfaces, Graphics, Controls, Forms,
   Dialogs,    Classes,  ExtCtrls, ExtDlgs, ComCtrls,
-  FreeTypes,  FreeVersionUnit,  FasterList,
-  FreeFileBuffer,  FreeGeometry, FreeMatrices,
-  FreeLanguageSupport,  FreeControlPointFrm,  FreeStringUtils;
-
-// FREE!ship uses British imperial format, eg 1 long ton=2240 lbs
-
+  FreeTypes, FreeFileBuffer, FreeGeometry, FasterList,
+  FreeVersionUnit, FreeControlPointFrm, FreeLanguageSupport,
+  FreeStringUtils, FreeMatrices;     // British imperial eg 1 long ton=2240 lbs
 const
   FreeShipExtention='.ftm'; // Default extention for hull model files
   SelectDistance = 3;       // Max. distance in pixels between an item and the cursor in order to be selected
@@ -59,7 +56,7 @@ type
     Weight_: TFloatType;                 // Weight and coordinates of CoG
     CenterOfGravity_: T3DVector;
 //  BulbSectionarea: TFloatType;         // BulbSection properties
-//  BulbSectionCOG: T3DVector;
+//  BulbSectionCOG : T3DVector;
 //  BulbSectionCoeff: TFloatType;
     SDP:TFloatType; // LateralArea above DWL and coordinates Z of CoG above DWL
     SDPCOG: T3DVector;
@@ -78,19 +75,16 @@ type
     Kt,Kq,Eta0,Jp,Dpr,n_nom,Nprop,Ndiag,Zp,Teta,P_D,Peng,EtaG,EtaS: TFloatType;
 }
   end;
-(*
-  TFreeCrosscurvesData = record
+(*TFreeCrosscurvesData = record
     WaterlinePlane: T3DPlane;
     AbsoluteDraft, // Depth of the lowest point of the hull beneath the waterplane
     Volume,                   // The following properties are always calculated
     Displacement: TFloatType; // Displaced volume of the hull
     CenterOfBuoyancy: T3DVector; // Displacement
-                                       // Center of gravity of displaced volume
-    KNSinPhi: TFloatType;              // Stability data
-  end;
+    KNSinPhi: TFloatType;        // Center of gravity of displaced volume
+  end;                           // Stability data
 *)
   {-----------------------------------------------------------------}
-  {                                       TFreeUndoObject           }
   {   TFreeUndoObject is an object class for undoing actions.       }
   {   It's function is very basic, just before each modification    }
   {   the file is saved to a the undo object rather then to a file. }
@@ -124,9 +118,7 @@ type
     property UndoText: AnsiString read FGetUndoText;
 
   end;
-
   {--------------------------------------------------------------------}
-  {                                       TFreeBackgroundImageData     }
   {   Freeship can import a max. of three different background images  }
   {   that may be coupled either to the bodyplan, profile or planview. }
   {    These images can be used to trace the lines of an               }
@@ -164,9 +156,7 @@ type
     property Transparent: boolean read FTransparent;
     property TransparentColor: TColor read FTransparentColor;
   end;
-
   {-------------------------------------------------------------------------}
-  {                                       TFreeHydrostaticCalc              }
   {   TFreeHydrostaticCalc is an object class for hydrostatic calculations. }
   {   Each calculation has it's own draft, trim and angle of heel.          }
   {   Multiple calculations can be stored and then send to a report.        }
@@ -193,11 +183,11 @@ type
   public
     constructor Create(Owner: TFreeShip); virtual;
     destructor Destroy; override;
-    procedure AddData(Strings: TStringList );                                   // Mode: TFreeHydrostaticsMode; Separator: char);
+    procedure AddData(Strings: TStringList );            // Mode: TFreeHydrostaticsMode; Separator: char);
 //  Add calculated data to a stringlist to either show in a report or save to disc
     procedure AddHeader(Strings: TStringList );
-    procedure AddFooter(Strings: TStringList );                                 // Mode: TFreeHydrostaticsMode);
-    procedure ShowData;                                                         // (Mode: TFreeHydrostaticsMode);
+    procedure AddFooter(Strings: TStringList );          // Mode: TFreeHydrostaticsMode);
+    procedure ShowData;                                  //(Mode: TFreeHydrostaticsMode);
 //  function Balance(Displacement: TFloatType; FreeToTrim: boolean; var Output: TFreeCrosscurvesData): boolean;
 
     procedure Calculate;
@@ -219,9 +209,7 @@ type
     property TrimAngle: TFloatType read FGetTrimAngle;
     property WaterlinePlane: T3DPLane read FGetWlPlane;
   end;
-
   {--------------------------------------------------------------------------}
-  {                                       TFreeIntersection                  }
   {   TFreeIntersection is a list of curves calculated from the intersection }
   {   of a ship hull (represented by a subdivision surface) and a plane.     }
   {   This plane can be a orthogonal plane (eg. stations, waterlines,        }
@@ -235,8 +223,7 @@ type
     FPlane: T3DPlane;
     FBuilt: boolean;
     FShowCurvature: boolean;
-    FUseHydrostaticsSurfacesOnly: boolean;
-    // used for lateral area, midship/mainframe and waterplane properties
+    FUseHydrostaticsSurfacesOnly: boolean; // used for lateral area, midship/mainframe and waterplane properties
     FSelected: boolean;
     function FGetColor: TColor;
     function FGetDistance: TFloatType;
@@ -246,17 +233,15 @@ type
     function FGetItem(Index: integer): TFreeSpline;
     procedure FSetBuilt(Val: boolean);
     procedure FSetDistance(val: TFloatType);
-
   public
+    constructor Create( Owner: TFreeShip );
+    destructor Destroy; override;
     procedure Add(Item: TFreeSpline);
     procedure CalculateArea(Plane: T3DPlane; var Area: TFloatType; var COG: T3DVector; var MomentOfInertia: T2DCoordinate);
     procedure Clear;
-    constructor Create(Owner: TFreeShip);
-    procedure CreateStarboardPart;
-    // Create the starboardhalf of the ship, for use in hydrostatic calculations
+    procedure CreateStarboardPart; // Create the starboardhalf of the ship, for use in hydrostatic calculations
     procedure Delete(Redraw: boolean);
     procedure DeleteItem(Item: TFreeSpline);
-    destructor Destroy; override;
     procedure Draw(Viewport: TFreeViewport);
     procedure DrawAll;
     procedure Extents(var Min, Max: T3DVector);
@@ -297,29 +282,27 @@ type
     property Selected: boolean read FGetSelected write FSetSelected;
     property Visible: boolean read FVisible write FVisible;
   end;
-
-  {---------------------------------------------------------}
-  {                                          TFreeFlowline  }
-  {---------------------------------------------------------}
-
-  TFreeFlowline = class (TFreeNamedObject)
+  {--------------------------------------------------------}
+  {                                          TFreeFlowline }
+  {--------------------------------------------------------}
+  TFreeFlowline=class( TFreeNamedObject ) // ( TFreeSpline )
   private
-    FProjectionPoint  : T2DCoordinate;
-    FProjectionView   : TFreeViewType;
-    FFlowLine         : TFreeSpline;
-    FBuild            : boolean;
-    FFreeShip         : TFreeShip;
-//  FMethodNew        : boolean;
+    FProjectionPoint: T2DCoordinate;
+    FProjectionView : TFreeViewType;
+    FFlowLine       : TFreeSpline;
+    FBuild          : boolean;
+    FFreeShip       : TFreeShip;
+//  FMethodNew      : boolean;
     function  FGetColor: TColor;
     function  FGetSelected: boolean; override;
     function  FGetVisible: boolean;
-    procedure FSetBuild(val: boolean);
-    procedure FSetSelected(aValue: boolean); override;
+    procedure FSetBuild( val: boolean );
+    procedure FSetSelected( aValue: boolean ); override;
   public
-    procedure   Clear;
     constructor Create(Owner:TFreeShip); overload;
-    procedure   Delete;
     destructor  Destroy; override;
+    procedure   Delete;
+    procedure   Clear;
     function    DistanceToCursor(X,Y:integer; Viewport:TFreeViewport):integer;
     procedure   Draw(Viewport: TFreeViewport);
     procedure   LoadBinary(Source: TFreeFileBuffer);
@@ -331,37 +314,34 @@ type
     property    Selected: boolean read FGetSelected write FSetSelected;
     property    Visible: boolean read FGetvisible;
   end;
-
   {----------------------------------------------------------}
-  {                                       TFreeVisibility    }
   {   This object stores all visibility options for the hull }
   {----------------------------------------------------------}
   TFreeVisibility = class(TPersistent)
   private
-    FFreeShip         : TFreeShip;
-    FShowControlNet   : boolean;
-    FShowFreeObjects  : boolean;
-    FShowInteriorEdges: boolean;        // Show the surface edges
-    FShowStations     : boolean;        // Show the calculated stations
-    FShowButtocks     : boolean;        // Show the calculated Buttocks
-    FShowWaterlines   : boolean;        // Show the calculated Waterlines
-    FShowDiagonals    : boolean;        // Show the calculated Diagonals
-    FModelView        : TFreeModelView; // Show half or entire ship
-    FShowNormals      : boolean;        // Show normals of selected surface patches
-    FShowGrid         : boolean;        // Show the grid of intersections in the plan,profile and bodyplan view
-//  FShowBothSides    : boolean;        // show both sides
-
-    FShowMarkers: boolean;
-    FShowControlCurves: boolean;
-    FShowCurvature: boolean;
-    FShowHydrostaticData: boolean;
-    FShowHydrostDisplacement: boolean;
-    FShowHydrostLateralArea: boolean;
-    FShowHydrostSectionalAreas: boolean;
-    FShowHydrostMetacentricHeight: boolean;
-    FShowHydrostLCF: boolean;
+    FFreeShip : TFreeShip;
+    FModelView: TFreeModelView; // Show half or entire ship
+    FShowControlNet,
+    FShowFreeObjects,
+    FShowInteriorEdges,         // Show the surface edges
+    FShowStations,              // Show the calculated stations
+    FShowButtocks,              // Show the calculated Buttocks
+    FShowWaterlines,            // Show the calculated Waterlines
+    FShowDiagonals,             // Show the calculated Diagonals
+    FShowNormals,               // Show normals of selected surface patches
+    FShowGrid,                  // Show the grid of intersections in the plan,profile and bodyplan view
+//  FShowBothSides              // show both sides
+    FShowMarkers,
+    FShowControlCurves,
+    FShowCurvature,
+    FShowHydrostaticData,
+    FShowHydrostDisplacement,
+    FShowHydrostLateralArea,
+    FShowHydrostSectionalAreas,
+    FShowHydrostMetacentricHeight,
+    FShowHydrostLCF,
     FShowFlowlines: boolean;
-    FCurvatureScale: TFloatType;  // Scalefactor used to increase or decrease the size of the curvature plot
+    FCurvatureScale,              // Scalefactor used to increase or decrease the size of the curvature plot
     FCursorIncrement: TFloatType; // Distance added when the active controlpoint is moved withe the arrow keys
     procedure FSetCursorIncrement(val: TFloatType);
     procedure FSetCurvatureScale(Val: TFloatType);
@@ -409,24 +389,22 @@ type
     property ShowWaterlines: boolean read FShowWaterlines write FSetShowWaterlines;
 //  property ShowBothSides: boolean read FShowBothSides write FSetShowBothSides;
   end;
-
   {-----------------------------------------------------------}
-  {                                       TFreeEdit           }
   {   Container class for all editing commandsns for the hull }
   {-----------------------------------------------------------}
   TFreeEdit = class
   private
-    FFreeShip: TFreeShip;
 //  FRecentFiles: TStringList;
     PreviewFrm: TForm;
     PreviewImg: TImage;
-    FProgressBar: TProgressBar;
 //  function FGetRecentFile(Index: integer): AnsiString;
 //  function FGetRecentFileCount: integer;
 //  procedure SaveDialogTypeChange(Sender: TObject);
   public
+    FreeShip: TFreeShip;
     RecentFiles: TStringList;
-    constructor Create(FreeShip: TFreeShip);
+    ProgressBar: TProgressBar;
+    constructor Create( ShipCreates: TFreeShip );
     procedure File_Load; overload; virtual; // Load a FREE!ship file by showing an opendialog
     procedure File_Load( FileName: AnsiString ); reintroduce; overload; // Loads the given filename quietly
     function File_Save:boolean;             // save as FREE!ship file without prompting for a filename (must already been set)
@@ -439,7 +417,7 @@ type
     procedure BackgroundImage_Open(Viewport: TFreeViewport);   // browse for and open a backgroundimage
     function CheckIfChangedAndAskToSave():boolean;
     function CreateRedoObject: TFreeUndoObject; // Creates redo data before an undo is done
-    function CreateUndoObject(UndoText: AnsiString; Accept: boolean): TFreeUndoObject; // Creates undodata just prior to modifications
+    function CreateUndoObject(UndoText: String; Accept: boolean): TFreeUndoObject; // Creates undodata just prior to modifications
     procedure Curve_Add;                  // Add a new controlcurve
     destructor Destroy; override;
     procedure Edge_Collapse;              // Remove an edge by replacing the two connected faces by one controlface
@@ -528,11 +506,11 @@ type
     procedure Point_Unlock;       // Unlocks all selected locked points
     procedure Point_UnlockAll;    // Unlocks all points
     function ProceedWhenLockedPoints: boolean; // Function that shows a warning when certain edit commands are invoked and the model contains locked points
-    procedure Redo;                // Restores the state of the model as it was after the previous undone
- // procedure Resistance_Delft;    // Calculate resistance of yachts according to Delft systematic yacht series
- // procedure Resistance_Kaper;    // Calculate resistance of slender hulls (canoes) according to John Winters
-    procedure Selection_Clear;     // Deselect all selected items at once
-    procedure Selection_Delete;    // Delete all selected items
+    procedure Redo;             // Restores the state of the model as it was after the previous undone
+ // procedure Resistance_Delft; // Calculate resistance of yachts according to Delft systematic yacht series
+ // procedure Resistance_Kaper; // Calculate resistance of slender hulls (canoes) according to John Winters
+    procedure Selection_Clear;  // Deselect all selected items at once
+    procedure Selection_Delete; // Delete all selected items
     procedure Selection_SelectAll; // Select all visible items
     procedure Selection_SelectAllControlPoints;
     procedure Selection_SelectLeakPoints;    // Select all leakpoints
@@ -541,18 +519,13 @@ type
     procedure Undo_ShowHistory; //Show the undo history
  // procedure OnFilePreview(Sender: TObject; filename: AnsiString);
     procedure OnFaceRebuilt (Sender: TObject; current:integer; total:integer);
-    property FreeShip: TFreeShip read FFreeShip write FFreeShip;
-    property ProgressBar:TProgressBar read FProgressBar write FProgressBar;
 //  property RecentFiles: TStringList read FRecentFiles write FRecentFiles;
 //  property RecentFile[index: integer]: AnsiString read FGetRecentFile; // retrieve a filename from the recently used file list
 //  property RecentFileCount: integer read FGetRecentFileCount;    // The number of files in the recently used file list
   end;
-
   {--------------------------------------------------------------}
-  {   TFreePreferences                                           }
   {   Container class for all program settings                   }
   {--------------------------------------------------------------}
-
   TApplicationScope=(asMachine,asUser);
   TFreePreferences = class(TPersistent)
   private
@@ -561,7 +534,6 @@ type
     FViewportColor: TColor;
     // Half width of controlpoints in pixels when drawn on screen
     // Colors
-
     FIntersectionLineWidth,
     FControlEdgeLineWidth,
     FInteriorEdgeLineWidth,
@@ -626,7 +598,6 @@ type
     property ViewportColor: TColor read FViewportColor write FSetViewportColor;
   end;
   {------------------------------------------------------------}
-  {                                       TFreeProjectSettings }
   {   Container class for project settings for each projecttl  }
   {------------------------------------------------------------}
   TFreeProjectSettings = class
@@ -725,9 +696,8 @@ type
   TFasterListTFreeHydrostaticCalc = specialize TFasterList<TFreeHydrostaticCalc>;
   TFasterListTFreeUndoObject      = specialize TFasterList<TFreeUndoObject>;
   {-------------------------------------------------}
-  {                                       TFreeShip }
-  {   TFreeShip is the actual component used        }
-  {   for modelling and representing the ship       }
+  {   <<< TFreeShip >>> is the actual component     }
+  {   used for modelling and representing the ship  }
   {-------------------------------------------------}
   TFreeShip = class( TComponent )
   private                                              { Private declarations }
@@ -748,10 +718,10 @@ type
     FVisibility        : TFreeVisibility;
 //  FOnFileChanged,FOnUpdateUndoData,FOnUpdateRecentFileList: TNotifyEvent;
 //  FOnUpdateGeometryInfo,FOnChangeCursorIncrement: TNotifyEvent;
-//    FFreeLinesplanFrme: TFrame; // This event is raised whenever items are added or deleted from the surface
-//    FFilenameSet: boolean; // Flag to determine if the filename already has been set
-//    FModelIsLoaded: boolean; // Flag to determine if the model is created new or loaded.
-//    FStopAskingForFileVersion: boolean;
+//  FFreeLinesplanFrme: TFrame; // This event is raised whenever items are added or deleted from the surface
+//  FFilenameSet: boolean; // Flag to determine if the filename already has been set
+//  FModelIsLoaded: boolean; // Flag to determine if the model is created new or loaded.
+//  FStopAskingForFileVersion: boolean;
     FCurrentlyMoving: boolean;
     FPointHasBeenMoved: boolean;
     FPrevCursorPosition: TPoint;
@@ -840,23 +810,21 @@ type
 //  function FGetOnSelectItem: TNotifyEvent;
 //  procedure FSetOnSelectItem( Val:TNotifyEvent );
 //  procedure SetOnChangeActiveControlPoint( AValue: TNotifyEvent );
-  protected                                          { Protected declarations }
+  protected
     procedure ViewportRequestExtents( Sender:TObject; var Min,Max:T3DVector );
-  public                                                { Public declarations }
+  public
     MainForm: TForm;
     IsRebuildAsyncDisabled,
     FilenameSet,    // Flag to determine if the filename already has been set
     ModelIsLoaded,  // Flag to determine if the model is created new or loaded.
     FileIsReadOnly, // The folowing private variables are for moving controlpoints with the mouse
     StopAskingForFileVersion: boolean;
-
-    LinesplanFrame: TFrame;                  // read FFreeLinesplanFrme write FFreeLinesplanFrme;
-    OnFileChanged: TNotifyEvent;             // read FOnFileChanged write FOnFileChanged;
-    OnChangeCursorIncrement: TNotifyEvent;   // read FOnChangeCursorIncrement write FOnChangeCursorIncrement;
-    OnUpdateGeometryInfo: TNotifyEvent;      // read FOnUpdateGeometryInfo write FOnUpdateGeometryInfo;
-    OnUpdateRecentFileList: TNotifyEvent;    // read FOnUpdateRecentFileList write FOnUpdateRecentFileList;
-    OnUpdateUndoData: TNotifyEvent;          // read FOnUpdateUndoData write FOnUpdateUndoData;
-
+    LinesplanFrame: TFrame;
+    OnFileChanged          : TNotifyEvent;
+    OnChangeCursorIncrement: TNotifyEvent;
+    OnUpdateGeometryInfo   : TNotifyEvent;
+    OnUpdateRecentFileList : TNotifyEvent;
+    OnUpdateUndoData       : TNotifyEvent;
     constructor Create( AOwner: TComponent ); override;
     destructor Destroy; override;
     procedure AddViewport( Viewport: TFreeViewport ); ///*** Add a viewport to the list of viewports connected to the model
@@ -870,32 +838,15 @@ type
     function GetFocusedViewport: TFreeViewport;
     function AdjustMarkers: boolean;
     function FindLowestHydrostaticsPoint: TFloatType;
-//  function FindByName(aName:AnsiString):TFreeNamedObject;
-//  function GetAllNamedPoints:TStringList;
     procedure ImportChines(Np: integer; Chines: TFasterListTFreeSpline); // imports a number of longitudinally lines and creates developable surfaces between each two subsequent chines
     procedure LoadProject(Source: TFreeFileBuffer);
-//  procedure CreateOutputHeader( CalcHeader: AnsiString; Strings: TStrings ); ///*** Creates a header with all relevant project data
-//  procedure LoadControlPointNames( Source:TFreeFileBuffer );    // fv421
-//  procedure LoadControlEdgeNames( Source:TFreeFileBuffer );
-//  procedure LoadControlFaceNames( Source:TFreeFileBuffer );
-//  procedure LoadControlCurveNames( Source:TFreeFileBuffer );
-//  procedure LoadControlPointLinearConstraints( Source:TFreeFileBuffer );
-//  procedure LoadControlPointGroups( Source:TFreeFileBuffer );   // fv430
-//  procedure LoadControlPointAnchors( Source:TFreeFileBuffer );  // fv462
     procedure LoadPreview( Filename: AnsiString; Image: TJPegImage ); // loads the preview image from a file
     procedure RebuildAsync( Data: PtrInt );
     procedure RebuildModel; // Force to rebuild the entire ship and recalculate all data
     procedure RebuildModelIfRequired;
-    procedure Redraw;  // Redraws the model on all viewports
+    procedure Redraw;       // Redraws the model on all viewports
     function  DetectMinFileVersion:TFreeFileVersion ;
     procedure SaveProject( Destination: TFreeFileBuffer );
-//  procedure SaveControlPointNames(Destination:TFreeFileBuffer);  // fv421
-//  procedure SaveControlEdgeNames(Destination:TFreeFileBuffer);
-//  procedure SaveControlFaceNames(Destination:TFreeFileBuffer);
-//  procedure SaveControlCurveNames(Destination:TFreeFileBuffer);
-//  procedure SaveControlPointAnchors(Destination:TFreeFileBuffer);
-//  procedure SaveControlPointGroups(Destination:TFreeFileBuffer);  // fv430
-//  procedure SaveControlPointLinearConstraints(Destination:TFreeFileBuffer); // fv462
     procedure SavePart(Faces: TFasterListTFreeSubdivisionControlFace);
     procedure SelectPointsInFrame(Viewport: TfreeViewport; rect:TRect);
     procedure SubmergedHullExtents(Wlplane: T3DPlane; var Min, Max: T3DVector);
@@ -908,8 +859,7 @@ type
     procedure MouseMove(Viewport: TFreeViewport; Shift: TShiftState; X,Y: integer);
     procedure AdjustRelatedPointsToLinearConstraint( Viewport: TFreeViewport; Point: TFreeSubdivisionControlPoint); procedure InvalidateIntersections;
     procedure MouseUp(Viewport: TFreeViewport; Shift: TShiftState; X,Y: integer);
-    ///*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MainForm.FreeShip
-//  property MainForm: TForm read FMainForm write FMainForm;
+///*** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MainForm.FreeShip
     property Viewport[index: integer]: TFreeViewport read FGetViewport;
     property Viewports: TFasterListTFreeViewPort read FViewports;
     property DesignHydrostatics: TFreeHydrostaticCalc read FDesignHydrostatics;
@@ -926,7 +876,6 @@ type
     property Diagonal[index: integer]: TFreeIntersection read FGetDiagonal;
     property Edit: TFreeEdit read FEdit; // Containerclass for all editing commands
     property EditMode: TFreeEditMode read FEditMode write FSetEditMode;
-
     property Flowline[index: integer]: TFreeFlowline read FGetFlowline;
     property HydrostaticCalculation[index: integer]: TFreeHydrostaticCalc read FGetHydrostaticCalculation;
     property Layer[index: integer]: TFreeSubdivisionLayer read FGetLayer;
@@ -971,15 +920,13 @@ type
 //  property OnSelectItem: TNotifyEvent read FGetOnSelectItem write FSetOnSelectItem;
 //  property OnChangeActiveControlPoint: TNotifyEvent read GetOnChangeActiveControlPoint write SetOnChangeActiveControlPoint;
   published                                          { Published declarations }
-{
-    property LinesplanFrame: TFrame read FFreeLinesplanFrme write FFreeLinesplanFrme;
+{   property LinesplanFrame: TFrame read FFreeLinesplanFrme write FFreeLinesplanFrme;
     property OnFileChanged: TNotifyEvent read FOnFileChanged write FOnFileChanged;
     property OnChangeCursorIncrement: TNotifyEvent read FOnChangeCursorIncrement write FOnChangeCursorIncrement;
     property OnUpdateGeometryInfo: TNotifyEvent read FOnUpdateGeometryInfo write FOnUpdateGeometryInfo;
     property OnUpdateRecentFileList: TNotifyEvent read FOnUpdateRecentFileList write FOnUpdateRecentFileList;
     property OnUpdateUndoData: TNotifyEvent read FOnUpdateUndoData write FOnUpdateUndoData;
-}
-    property FileChanged: boolean read FFileChanged write FSetFileChanged;
+}   property FileChanged: boolean read FFileChanged write FSetFileChanged;
     property Filename: AnsiString read FGetFilename write FSetFileName;
     property FileVersion: TFreeFileVersion read FFileVersion write FSetFileVersion;
     property Precision: TFreePrecisionType read FPrecision write FSetPrecision;

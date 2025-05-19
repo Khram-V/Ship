@@ -1,80 +1,94 @@
 {------------------------------------------------------------------------}
-{                                           TFreeSpline                  }
-{ 3D CSpline                                                             }
+{ TFreeGeometry.pas  3D CSpline                                          }
 { Copied from page 107 of the book: "Numerical recipes in fortan 77"     }
 { Url: http://www.library.cornell.edu/nr/bookfpdf/f3-3.pdf               }
 { Modified to use chordlength parametrisation for smoother interpolation }
 { and to accept knuckles in the controlpoints                            }
 {------------------------------------------------------------------------}
+constructor TFreeSpline.Create( Owner: TFreeSubdivisionSurface );
+begin
+  inherited Create(Owner);
+  Setlength( FPoints,0 );
+  Setlength( FDerivatives,0 );
+  Setlength( FParameters,0 );
+  Setlength( FKnuckles,0 );
+  FCapacity:=0;
+  FNoPoints:=0;
+end;
+
+destructor TFreeSpline.Destroy;
+begin Clear;
+  Setlength( FPoints,0 );
+  Setlength( FDerivatives,0 );
+  Setlength( FParameters,0 );
+  Setlength( FKnuckles,0 );
+  inherited Destroy;
+end;
+                                                                                // var c:integer=0;
+procedure TFreeSpline.FSetCapacity( Val: integer );
+begin if Val>=FNoPoints then begin FCapacity:=Val+IncrementSize;
+                                   Setlength( FPoints,FCapacity );
+                                   Setlength( FKnuckles,FCapacity );            // inc(c); writeln( c,': ',FNoPoints,' <= ',Fcapacity,' => ',Val );
+                             end;
+end;
+
+procedure TFreeSpline.Clear;
+begin
+//  Setlength( FDerivatives,0 );
+//  Setlength( FParameters,0 );
+  FTotalLength:=0.0;
+  FNoPoints:=0;
+  inherited Clear;
+  Built:=False;
+//  Setlength( FPoints,0 );
+//  FCapacity:=0;
+  FNoPoints:=0;
+  FFragments:=0;
+  CurvatureScale:=0.10;
+  CurvatureColor:=clFuchsia;
+  ShowCurvature:=False;
+  ShowPoints:=False;
+end;
+
 procedure TFreeSpline.SetBuilt(val: boolean);
 begin
   if not val then begin
-    Setlength(FDerivatives, 0);
-    Setlength(FParameters, 0);                                // Clear extents
-    FMin.X:=0;
-    FMin.Y:=0;
-    FMin.Z:=0;
+//  Setlength( FDerivatives,0 );
+//  Setlength( FParameters,0 );                                // Clear extents
+    FMIN:=ZERO; // FMin.X:=0;
+                // FMin.Y:=0;
+                // FMin.Z:=0;
     FMax.X:=1;
     FMax.Y:=1;
     Fmax.Z:=1;
     FTotalLength:=0.0;
   end;
-  inherited SetBuilt(Val);
+  inherited SetBuilt( Val );
 end;
-procedure TFreeSpline.FSetCapacity(Val: integer);
-begin                                   // MM: this logic may cause Built not set in case of decrease of Capacity.
-  if Val <> FCapacity then begin        // MM: Replacing it with unconditional Built:=false;
-    FCapacity:=Val;
-    Setlength( FPoints,FCapacity );
-    Setlength( FKnuckles,FCapacity );
-    if FNoPoints>FCapacity then begin FNoPoints:=FCapacity; // Make sure that number of points does not exceed the capacity of the curve
-         Built:=false;
-    end; ///*** Built:=false;
-  end;
-end;
-
 procedure TFreeSpline.FSetFragments(Val: integer);
-begin if Val<>FFragments then begin FFragments:=val; Built:=False; end;
-end;
-
+    begin if Val<>FFragments then begin FFragments:=val; Built:=False; end;
+    end;
 function TFreeSpline.FGetFragments: integer;
-begin if not Built then Rebuild; Result:=FFragments;
-end;
-
+   begin if not Built then Rebuild; Result:=FFragments;
+   end;
 function TFreeSpline.FGetKnuckle(Index: integer): boolean;
-begin
-  Result:=FKnuckles[Index];
-{ // will capture with debugger
-  if (Index >= 0) and (Index < FNoPoints) then Result:=FKnuckles[Index]
-  else WriteLn('List index out of bounds in '+ClassName+'.FGetKnuckle. ('+IntToStr(Index)+').');
-}
-end;
-
+   begin Result:=FKnuckles[Index]; end;
 procedure TFreeSpline.FSetKnuckle(Index: integer; Value: boolean);
-begin
-  FKnuckles[Index]:=Value;
-  Built:=False;
-{ if (Index >= 0) and (Index < FNoPoints) then begin FKnuckles[Index]:=Value; Built:=False; end
-  else WriteLn('List index out of bounds in '+ClassName+'.FSetKnuckle. ('+IntToStr(Index)+').');
-}
+    begin FKnuckles[Index]:=Value; Built:=False;
 end;
-
 procedure TFreeSpline.FSetPoint(Index: integer; P: T3DVector);
     begin FPoints[index]:=P; Built:=False; end;
-
 function TFreeSpline.FGetParameter(Index: integer): TFloatType;
    begin if not Built then rebuild; Result:=FParameters[Index]; end;
-
 function TFreeSpline.FGetPoint(Index: integer): T3DVector;
    begin Result:=FPoints[index]; end;
 
 procedure TFreeSpline.Rebuild;
 var
   I, K, K1, I1, I2: integer;
-  Len, Sig, P: TFloatType;
+  Len,Sig,P,DPar1,DPar2,DPar3: TFloatType;
   U: TFreeCoordinateArray;
   Un, Qn: T3DVector;
-  DPar1, DPar2, DPar3: single;
 begin
   if FIsBuilding then exit;
   FIsBuilding:=true;
@@ -87,9 +101,9 @@ begin
     Inc(I);
   end;
   if FNoPoints > 1 then begin
-    SetLength(FDerivatives, FNoPoints);
-    SetLength(FParameters, FNoPoints);
-    SetLength(U, FNoPoints);
+    SetLength( FDerivatives,FNoPoints );
+    SetLength( FParameters, FNoPoints );
+    SetLength( U,FNoPoints);
     Len:=0;
     if abs(FTotalLength) < 1e-5 then begin // zero arclength, use uniform parameterisation
       for I:=0 to FNoPoints-1 do FParameters[I]:=I / (FNoPoints-1);
@@ -155,7 +169,7 @@ begin
   end;
   // MM: Suspicious setting of FBuilt before inherited Rebuild.
   // MM: FBuilt:=true; is moved to TFreeEntity.Rebuild;
-  //FBuilt:=true;
+//  FBuilt:=true;
 
   // Determine min/max values
   if FNoPoints > 0 then begin
@@ -173,19 +187,15 @@ function TFreeSpline.SecondDerive(Parameter: TFloatType): T3DVector;
 var
   Lo, Hi, K: integer;
   Frac: TFloatType;
-begin
-  Result.X:=0;
-  Result.Y:=0;
-  Result.Z:=0;
+begin Result:=ZERO;
+//  Result.X:=0;
+//  Result.Y:=0;
+//  Result.Z:=0;
   if FNoPoints < 2 then exit;
   if not FBuilt then Rebuild;
   if FNoPoints < 2 then exit;
-  if FNoPoints = 2 then begin
-    Lo:=0;
-    Hi:=1;
-  end else begin
-    Lo:=0;
-    Hi:=FNoPoints-1;
+  if FNoPoints = 2 then begin Lo:=0; Hi:=1; end else
+  begin Lo:=0; Hi:=FNoPoints-1;
     repeat
       K:=(Lo+Hi) div 2;
 //    try
@@ -204,6 +214,7 @@ begin
 end;
 
 // Remove points that do not contribute significantly to the shape
+
 function TFreeSpline.Simplify( Criterium: TFloatType ): boolean;
 var
   Weights: array of TFloatType;
@@ -215,7 +226,7 @@ var
     P1,P2,P3: T3DVector;
     Length,Dist: TFloatType;
   begin
-    if (Index=0) or (Index=NumberOfPoints-1) or (Knuckle[Index]) then Result:=1e10
+    if (Index=0) or (Index=FNoPoints-1) or (Knuckle[Index]) then Result:=1e10
     else begin
       P1:=Point[Index-1];
       P2:=Point[Index];
@@ -236,11 +247,11 @@ var
     I: integer;
   begin
     Result:=-1;
-    if NumberOfPoints < 3 then exit;
+    if FNoPoints < 3 then exit;
     MinVal:=Weights[1];
     Result:=1;
     I:=2;
-    while (I < NumberOfPoints) and (MinVal > 0) do begin
+    while (I < FNoPoints) and (MinVal > 0) do begin
       if Weights[I-1] < MinVal then begin
         MinVal:=Weights[I-1];
         Result:=I-1;
@@ -248,17 +259,16 @@ var
       Inc(I);
     end;
   end;                                                          {FindNextPoint}
-
 begin
   Result:=False;
-  if NumberOfPoints < 3 then begin Result:=True; exit; end;
+  if FNoPoints < 3 then begin Result:=True; exit; end;
   N1:=0;
   N2:=0;
-  for I:=1 to numberofpoints do if Knuckle[I-1] then Inc(N1);
+  for I:=1 to FNoPoints do if Knuckle[I-1] then Inc(N1);
   TotalLength:=FTotalLength * FTotalLength;
   if TotalLength = 0 then exit;
-  SetLength(Weights, NumberOfPoints);
-  for I:=1 to NumberOfPoints do Weights[I-1]:=Weight(I-1) / TotalLength;
+  SetLength( Weights,FNoPoints );
+  for I:=1 to FNoPoints do Weights[I-1]:=Weight(I-1) / TotalLength;
 //  try
     repeat
       Index:=FindNextPoint;
@@ -280,28 +290,25 @@ begin
     until index = -1;
     Result:=True;
 //except Result:=False; end;
-  for I:=1 to numberofpoints do if Knuckle[I-1] then inc(N2);
+  for I:=1 to FNoPoints do if Knuckle[I-1] then inc(N2);
   if N1<>N2 then Built:=false;
-  Capacity:=NumberOfPoints;        ///Fragments:=NumberOfPoints-1;
+  Capacity:=FNoPoints; Fragments:=NumberOfPoints-1;
   Built:=False;
 end;
 
-procedure TFreeSpline.Add(P: T3DVector);
+procedure TFreeSpline.Add( P: T3DVector );
 begin
-  if NumberOfPoints = Capacity then begin // Make sure that the allocated memory is sufficient
-    Capacity:=capacity+IncrementSize;
-  end;
-  FPoints[FNoPoints]:=P;
+  Capacity:=FNoPoints+1;
+    FPoints[FNoPoints]:=P;
   FKnuckles[FNoPoints]:=False;
-  Inc(FNoPoints);
-  if FFragments < FNoPoints-1 then FFragments:=FNoPoints-1;
+        Inc(FNoPoints);
+//if FFragments<FNoPoints-1 then
+     FFragments:=FNoPoints-1;
   Built:=False;                                    // Curve needs to be rebuild
 end;
 
 procedure TFreeSpline.AddKnuckle(P: T3DVector);
-begin
-  Add( P ); Knuckle[NumberOfPoints-1]:=True;
-end;
+    begin Add( P ); Knuckle[FNoPoints-1]:=True; end;
 
 procedure TFreeSpline.Assign( Spline: TFreeSpline ); // Copy all data from another spline
 begin
@@ -310,32 +317,30 @@ begin
   PenWidth:=Spline.Penwidth;
   Color:=Spline.Color;
   Penstyle:=Spline.PenStyle;
-  Capacity:=Spline.NumberOfPoints;                        // Copy controlpoints
-  Move(Spline.FPoints[0],FPoints[0],Spline.NumberOfPoints*SizeOf(T3DVector));
+  Capacity:=Spline.FNoPoints;                        // Copy controlpoints
+  Move(Spline.FPoints[0],FPoints[0],Spline.FNoPoints*SizeOf(T3DVector));
   // copy knuckles
-  Move(Spline.FKnuckles[0],FKnuckles[0],Spline.NumberOfPoints*SizeOf(boolean));
-  FNoPoints:=Spline.NumberOfPoints;
-
+  Move(Spline.FKnuckles[0],FKnuckles[0],Spline.FNoPoints*SizeOf(boolean));
+  FNoPoints:=Spline.FNoPoints;
   //FFragments:=FNoPoints-1;
   FFragments:=Spline.Fragments;
-  if FFragments < FNoPoints-1 then FFragments:=FNoPoints-1;
-
+  if FFragments<FNoPoints-1 then FFragments:=FNoPoints-1;
   ShowCurvature:=Spline.ShowCurvature;
   CurvatureScale:=Spline.CurvatureScale;
   CurvatureColor:=Spline.CurvatureColor;
   Built:=False;
 end;
 
-function TFreeSpline.CoordLength(T1, T2: TFloatType): TFloatType;
+function TFreeSpline.CoordLength( T1,T2: TFloatType ): TFloatType;
 var
   I: integer;
   T: TFloatType;
-  P1, P2: T3DVector;
+  P1,P2: T3DVector;
 begin
-  Result:=0.0;
-  P1.X:=0;
-  P1.Y:=0;
-  P1.Z:=0;
+  Result:=0.0; P1:=ZERO;
+//  P1.X:=0;
+//  P1.Y:=0;
+//  P1.Z:=0;
   if not Built then Rebuild;
   if not Built then exit;
   for I:=0 to Fragments do begin
@@ -386,16 +391,6 @@ begin
   end;
 end;
 
-constructor TFreeSpline.Create(Owner: TFreeSubdivisionSurface);
-begin
-  inherited Create(Owner);
-  Setlength( FPoints,0 );
-  Setlength( FDerivatives,0 );
-  Setlength( FParameters,0 );
-  Setlength( FKnuckles,0 );
-  FCapacity:=0;
-  FNoPoints:=0;
-end;
 
 function TFreeSpline.Curvature(Parameter: TFloatType;
   var Value, Normal: T3DVector): TFloatType;
@@ -426,8 +421,7 @@ begin
 end;
 
 procedure TFreeSpline.DeletePoint(Index: integer);
-var
-  I: integer;
+var I: integer;
 begin
   if NumberOfPoints > 0 then begin
     Dec(FNoPoints);
@@ -448,8 +442,7 @@ var
   V1, V2, P: T3DVector;
   Param: TFloatType;
 begin
-  Result:=1000000;
-  // Check if cursor position lies within the boundaries
+  Result:=10000;         // Check if cursor position lies within the boundaries
   Pt.X:=X;
   Pt.Y:=Y;
   if (Pt.X >= 0)
@@ -463,10 +456,7 @@ begin
       V2:=Value((I-1) / (Fragments-1));
       P2:=Viewport.Project(V2);
       Tmp:=Round( DistanceToLine( P1,P2, X,Y, Param ) );
-      if Tmp < Result then begin
-        Result:=Tmp;
-        P:=Interpolate(V1, V2, Param);
-      end;
+      if Tmp<Result then begin Result:=Tmp; P:=Interpolate( V1,V2,Param ); end;
       P1:=P2;
       V1:=V2;
     end;
@@ -489,21 +479,21 @@ begin
   Result.Z:=(P2.Z-P1.Z)/(T2-T1);
 end;
 
-procedure TFreeSpline.Insert(Index: integer; P: T3DVector);
+procedure TFreeSpline.Insert( Index: integer; P: T3DVector );
 var
   I: integer;
 begin
-  if (Index >= 0) and (Index < NumberOfPoints) then begin
-    if NumberOfPoints = Capacity then Capacity:=Capacity+IncrementSize;
-    for I:=NumberOfPoints-1 downto Index do begin
-      FPoints[I+1]:=FPoints[I];
+  if (Index>=0) and (Index<FNoPoints) then begin
+//  if NumberOfPoints = Capacity then
+    Capacity:=FNoPoints+1; // IncrementSize;
+    for I:=FNoPoints-1 downto Index do begin
+        FPoints[I+1]:=FPoints[I];
       FKnuckles[I+1]:=FKnuckles[I];
     end;
     FPoints[Index]:=P;
     FKnuckles[Index]:=False;
-    Inc(FNoPoints);
-    //FFragments:=FNoPoints-1;
-    if FFragments < FNoPoints-1 then FFragments:=FNoPoints-1;
+    Inc( FNoPoints );
+    if FFragments<FNoPoints-1 then FFragments:=FNoPoints-1;
     Built:=False;
   end;
 //  else
@@ -517,7 +507,7 @@ var I,J: integer;
   Pn, Pn1,Pn2: integer;
 begin
   Result:=[];
-  SetLength(Result, FFragments+FNoPoints);
+  SetLength( Result,FFragments+FNoPoints );
   J:=0; Pn:=0;
   for I:=0 to Fragments-1 do begin
     P1:=Value(I / (FFragments-1), Pn1,Pn2);
@@ -529,15 +519,14 @@ begin
     Result[J]:=P1;
     inc(J);
   end;
-  SetLength(Result, J);
+  SetLength( Result,J );
 end;
 
 // Get all projected points of the spline, also embeds knuckles
 function TFreeSpline.GetValuesProjected(Viewport: TFreeViewport): TPointArray;
-var I,J: integer;
+var I,J,Pn, Pn1,Pn2: integer;
   P1, P2, Pkn: T3DVector;
   P:TPoint;
-  Pn, Pn1,Pn2: integer;
 begin
   Result:=[];
   SetLength(Result, FFragments+FNoPoints);
@@ -621,14 +610,13 @@ begin
     R:=GetRValue( Color );
     G:=GetGValue( Color );
     B:=GetBValue( Color );
-
     { replaced to code below, coz it draws knuckles correctly
       TODO remove
-    P1:=Value(0.0);
-    for I:=1 to Fragments do begin P2:=Value(I/Fragments);
-      Viewport.DrawLineToZBuffer( P1,P2, R,G,B );
-      P1:=P2;
-    end;
+      P1:=Value(0.0);
+      for I:=1 to Fragments do begin P2:=Value(I/Fragments);
+        Viewport.DrawLineToZBuffer( P1,P2, R,G,B );
+        P1:=P2;
+      end;
     }
     PArray3dc:=self.GetValues;
     for I:=1 to length(PArray3dc)-1 do begin
@@ -638,38 +626,37 @@ begin
     end;
   end;
 end;
-
-procedure TFreeSpline.InsertSpline(Index: integer; Invert, DuplicatePoint: boolean;
-  Source: TFreeSpline);
+procedure TFreeSpline.InsertSpline
+( Index: integer; Invert, DuplicatePoint: boolean; Source: TFreeSpline );
 var I,NoNewPoints: integer;
 begin
-  if NumberOfPoints = 0 then begin
-    Capacity:=Source.NumberOfPoints;
+  if FNoPoints=0 then begin
+    Capacity:=Source.FNoPoints;
     if Invert then begin
-      for I:=0 to Source.NumberOfPoints-1 do begin
-        FPoints[Source.NumberOfPoints-1-I]:=Source.FPoints[I];
-        FKnuckles[Source.NumberOfPoints-1-I]:=Source.FKnuckles[I];
+      for I:=0 to Source.FNoPoints-1 do begin
+        FPoints[Source.FNoPoints-1-I]:=Source.FPoints[I];
+        FKnuckles[Source.FNoPoints-1-I]:=Source.FKnuckles[I];
       end;
     end else begin
-      for I:=0 to Source.NumberOfPoints-1 do begin
+      for I:=0 to Source.FNoPoints-1 do begin
         FPoints[I]:=Source.FPoints[I];
         FKnuckles[I]:=Source.FKnuckles[I];
       end;
     end;
-    FNoPoints:=Source.NumberOfpoints;
-    //FFragments:=FNoPoints-1;
-    if FFragments < FNoPoints-1 then FFragments:=FNoPoints-1;
+    FNoPoints:=Source.FNoPoints;
+    FFragments:=FNoPoints-1;
+////if FFragments<FNoPoints-1 then FFragments:=FNoPoints-1;
     Built:=False;
   end else begin
-    if DuplicatePoint then NoNewPoints:=Source.NumberOfPoints-1
-                      else NoNewPoints:=Source.NumberOfPoints;
-    Capacity:=NumberOfPoints+NoNewPoints;
+    if DuplicatePoint then NoNewPoints:=Source.FNoPoints-1
+                      else NoNewPoints:=Source.FNoPoints;
+    Capacity:=FNoPoints+NoNewPoints;
     Built:=False;
-    if Index < NumberOfPoints then begin         // insert space for new points
-      Move(FPoints[Index],FPoints[Index+NoNewPoints],(NumberOfPoints-Index)*SizeOf(T3DVector));
-      Move(FKnuckles[Index],FKnuckles[Index+NoNewPoints],(NumberOfPoints-Index)); // Insert the new data
+    if Index < FNoPoints then begin         // insert space for new points
+      Move(FPoints[Index],FPoints[Index+NoNewPoints],(FNoPoints-Index)*SizeOf(T3DVector));
+      Move(FKnuckles[Index],FKnuckles[Index+NoNewPoints],(FNoPoints-Index)); // Insert the new data
       if Invert then begin
-        Knuckle[index]:=Knuckle[Index] or Source.Knuckle[Source.NumberOfPoints-1];
+        Knuckle[index]:=Knuckle[Index] or Source.Knuckle[Source.FNoPoints-1];
         for I:=1 to NoNewPoints do begin
           FPoints[Index+I-1]:=Source.FPoints[Source.FNoPoints-I];
           FKnuckles[Index+I-1]:=Source.FKnuckles[Source.FNoPoints-I];
@@ -681,8 +668,7 @@ begin
       end;
     end else begin
       if Invert then begin
-        Knuckle[NumberOfPoints-1]:=Knuckle[NumberOfPoints-1] or
-                                    Source.Knuckle[Source.NumberOfPoints-1];
+        Knuckle[FNoPoints-1]:=Knuckle[FNoPoints-1] or Source.Knuckle[Source.FNoPoints-1];
         for I:=1 to NoNewPoints do begin
           FPoints[FNoPoints-1+I]:=Source.FPoints[Source.FNoPoints-I-1];
           FKnuckles[FNoPoints-1+I]:=Source.FKnuckles[Source.FNoPoints-I-1];
@@ -698,38 +684,37 @@ begin
         end;
       end;
     end;
-    Inc(FNoPoints, NoNewPoints);
-    //FFragments:=FNoPoints-1;
-    if FFragments < FNoPoints-1 then FFragments:=FNoPoints-1;
+    Inc( FNoPoints,NoNewPoints );
+    FFragments:=FNoPoints-1;
+//  if FFragments<FNoPoints-1 then FFragments:=FNoPoints-1;
     if not DuplicatePoint then Fknuckles[index]:=True;
     Built:=False;
   end;
 end;
 
-function TFreeSpline.IntersectPlane(Plane: T3DPlane;
-        var Output: TFreeIntersectionData): boolean;
+function TFreeSpline.IntersectPlane
+( Plane: T3DPlane; var Output: TFreeIntersectionData ): boolean;
 var
-  I,Capacity: integer;
+  I,Caps: integer;
   P1, P2: T3DVector;
   S1, S2, T1, T2, T: TFloatType;
 
   procedure AddToOutput(P: T3DVector; Parameter: TFloatType);
   begin
-    if Output.NumberOfIntersections = Capacity then begin
-      Inc(Capacity, 10);
-      Setlength(Output.Points, Capacity);
-      Setlength(Output.Parameters, Capacity);
+    if Output.NumberOfIntersections=Caps then begin
+      Inc( Caps,10 );
+      Setlength( Output.Points, Caps);
+      Setlength( Output.Parameters,Caps);
     end;
     Output.Points[Output.NumberOfIntersections]:=P;
     Output.Parameters[Output.NumberOfIntersections]:=Parameter;
-    Inc(Output.NumberOfIntersections);
+    Inc( Output.NumberOfIntersections );
   end;
-
 begin
-  Capacity:=0;
+  Caps:=0;
   Output.NumberOfIntersections:=0;
-  Setlength(Output.Points, Capacity);
-  Setlength(Output.Parameters, Capacity);
+  Setlength( Output.Points,0 );
+  Setlength( Output.Parameters,0 );
   T1:=0.0;
   P1:=Value(T1);
   S1:=Plane.a * P1.x+Plane.b * P1.y+Plane.c * P1.z+Plane.d;
@@ -737,7 +722,7 @@ begin
   for I:=1 to Fragments do begin
     T2:=I / Fragments;
     P2:=Value(T2);
-    S2:=Plane.a * P2.x+Plane.b * P2.y+Plane.c * P2.z+Plane.d;
+    S2:=Plane.a*P2.x + Plane.b*P2.y + Plane.c*P2.z + Plane.d;        ///*** dist2place
     if abs(S2) < 1e-6 then
       AddToOutput(P2, T2);
     if ((S1<0.0) and (S2>0.0)) or ((S2<0.0) and (S1>0.0)) then begin // intersection found
@@ -749,10 +734,11 @@ begin
     S1:=S2;
     T1:=T2;
   end;
-  Result:=Output.NumberOfIntersections > 0;
+  Result:=Output.NumberOfIntersections>0;
 end;
 
 // Invert the direction of controlpoints and knuckles
+
 procedure TFreeSpline.InvertDirection;
 var
   I,Mid: integer;
@@ -801,37 +787,16 @@ begin
   end;
 end;
 
-procedure TFreeSpline.Clear;
-begin
-  Setlength( FDerivatives,0 );
-  Setlength( FParameters,0 );
-  FTotalLength:=0.0;
-  FNoPoints:=0;
-  inherited Clear;
-  Built:=False;
-  Setlength(FPoints, 0);
-  FCapacity:=0;
-  FNoPoints:=0;
-  FFragments:=0;
-  CurvatureScale:=0.10;
-  CurvatureColor:=clFuchsia;
-  ShowCurvature:=False;
-  ShowPoints:=False;
-end;
-
 function TFreeSpline.Value( Parameter: extended ): T3DVector;
-var Pn1,Pn2: integer;
-begin
-  result:=Value( Parameter,Pn1,Pn2 );
-end;
+     var Pn1,Pn2: integer; begin result:=Value( Parameter,Pn1,Pn2 );
+     end;
 
 function TFreeSpline.Value(Parameter: extended; var PointNo1, PointNo2: integer): T3DVector;
-var
-  K,Lo,Hi: integer; H,a,b,a3,b3,h2: TFloatType;
-begin
-  Result.X:=0;
-  Result.Y:=0;
-  Result.Z:=0;
+var K,Lo,Hi: integer; H,a,b,a3,b3,h2: TFloatType;
+begin Result:=ZERO;
+//  Result.X:=0;
+//  Result.Y:=0;
+//  Result.Z:=0;
   PointNo1:=0;
   PointNo2:=0;
   if not FBuilt then Rebuild;

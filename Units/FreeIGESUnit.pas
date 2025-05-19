@@ -272,7 +272,7 @@ begin
    FParameterSection:=TStringList.Create;
    FTerminateSection:=TStringList.Create;
    Clear;
-end;{TFreeIGESList.Create}
+end;
 
 destructor TFreeIGESList.Destroy;
 begin Clear;
@@ -282,7 +282,7 @@ begin Clear;
    FreeAndNil(FParameterSection);
    FreeAndNil(FTerminateSection);
    inherited Destroy;
-end;{TFreeIGESList.Destroy}
+end;
 
 procedure TFreeIGESList.SaveToFile(Filename:AnsiString);
 var Str,Tmp: AnsiString;     // TimeStr,

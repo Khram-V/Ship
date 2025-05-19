@@ -1266,7 +1266,7 @@ begin
   if FreeShip.NumberOfSelectedControlFaces = 0 then begin
     SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
     ShowTranslatedValues(SelectDlg);
-    if SelectDlg.Execute(FFreeShip, fsFaces) then
+    if SelectDlg.Execute(FreeShip, fsFaces) then
       SelectDlg.ExtractSelectedFaces(Faces);
     for I:=FreeShip.NumberOfSelectedControlFaces downto 1 do
       FreeShip.SelectedControlFace[I-1].Selected:=False;

@@ -56,9 +56,9 @@ var
   I,N,PointN: Integer;
   Str,PointName: AnsiString;
   Intersection: TFreeIntersection;
-  vMarker: TFreeMarker;
   Data: TFreeBackgroundImageData;
   vFlowline: TFreeFlowline;
+  vMarker: TFreeMarker;
   // PreviewImg : TJPegImage;
   // CF0:TFreeSubdivisionControlFace;
 const WN: array[0..3] of Integer=( 3,1,0,2 );
@@ -133,9 +133,10 @@ begin    // Remember the filename because it will be erased by the clear method
                 end;
                 Source.LoadInteger(N);                         // TFreeFlowline
                 FFlowlines.Capacity:=N;
-                for I:=1 to N do begin vFlowline:=TFreeFlowline.Create(self);
-                  FFlowlines.Add(vFlowline);
-                  vFlowline.LoadBinary(Source);
+                for I:=1 to N do begin
+                  vFlowline:=TFreeFlowline.Create(self);
+                  FFlowlines.Add( vFlowline );
+                  vFlowline.LoadBinary( Source );
                 end;
               end;   // V >= fv250
             end;     // V >= fv210
@@ -161,12 +162,12 @@ begin    // Remember the filename because it will be erased by the clear method
 //  end;
 //  finally
     Surface.DesiredSubdivisionLevel:=Ord(Precision)+1;
-//    MessageDlg( '///begin???',mtError,[mbOK],0 );
-//    CF0:=Surface.ControlFace[0];
-//    MessageDlg( '...begin???',mtError,[mbOK],0 );
-//  Surface.Rebuild;                             // it will be rebuilt in Draw
+//  MessageDlg( '///begin???',mtError,[mbOK],0 );
+//  CF0:=Surface.ControlFace[0];
+//  MessageDlg( '...begin???',mtError,[mbOK],0 );
+//  Surface.Rebuild;                            // it will be rebuilt in Draw
     Screen.Cursor:=PrevCursor;
-//  for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;  ///!!! -->> File_Load(Name)
+//  for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews; -->> File_Load(Name)
     if Assigned( OnUpdateGeometryInfo ) then OnUpdateGeometryInfo( self );
 //  end;
 end;
@@ -308,7 +309,7 @@ begin
     for J:=1 to Intersection.Count do begin
       Spline:=TFreeSpline.Create( Surface );
       Spline.Assign(Intersection.Items[J-1]);
-      // Quick check to determine if the frame runs from bottom to top
+               // Quick check to determine if the frame runs from bottom to top
       if Spline.Value(0.0).Z > Spline.Value(1.0).Z then
          Spline.InvertDirection;              // If not then reverse the points
       TmpList.Add(Spline);
@@ -327,18 +328,18 @@ begin
       if I=1 then Min:=Spline.Min.Z else
       if Spline.Min.Z < Min then Min:=Spline.Min.Z;
     end;
-    FreeAndNil(Tmplist);
-  end;                 // Now shift all stations up or down so that the
-                       // lowest point of all stations is on the baseline z=0.0
-  if Min <> 0.0 then
-    for I:=1 to Destination.Count do begin
-      Spline:=Destination[I-1];
-      for J:=1 to Spline.NumberOfPoints do begin
-        P:=Spline.Point[J-1];
-        P.Z:=P.Z-Min;
-        Spline.Point[J-1]:=P;
-      end;
+    FreeAndNil( Tmplist );
+  end;                 // Now shift all stations up or down so that the lowest
+                       //  point of all stations is on the baseline z=0.0
+  if Min<>0.0 then
+  for I:=1 to Destination.Count do begin
+    Spline:=Destination[I-1];
+    for J:=1 to Spline.NumberOfPoints do begin
+      P:=Spline.Point[J-1];
+      P.Z:=P.Z-Min;
+      Spline.Point[J-1]:=P;
     end;
+  end;
 end;
 
 function TFreeShip.GetActiveControlCurve: TFreeSubdivisionControlCurve;

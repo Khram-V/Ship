@@ -163,7 +163,7 @@ end;
     FCoordinates: TVRML2Coordinates;
     function FGetFace(Index: integer): TIntArray;
     procedure FSetCapacity(val: integer);
-    function FGetCapacity: integer;
+//  function FGetCapacity: integer;
     function FGetCount: integer;
   private
     FColor: TColor;
@@ -182,7 +182,7 @@ end;
     property Coordinates: TVRML2Coordinates
       read FCoordinates;
     property Count: integer read FGetCount;
-    property Capacity: integer read FGetCapacity write FSetCapacity;
+    property Capacity: integer write FSetCapacity;
     property Face[index: integer]: TIntArray read FGetFace;
   public
     constructor Create(Scene: TVRML2Scene; Parent:TVRML2Object); override;
@@ -1013,8 +1013,8 @@ end;
 procedure TVRML2IndexedFaceSet.FSetCapacity(val: integer);
 begin FFaces.Capacity:=val; end;
 
-function TVRML2IndexedFaceSet.FGetCapacity: integer;
-   begin Result:=FFaces.Capacity; end;
+//function TVRML2IndexedFaceSet.FGetCapacity: integer;
+//   begin Result:=FFaces.Capacity; end;
 function TVRML2IndexedFaceSet.FGetCount: integer;
    begin Result:=FFaces.Count; end;
 
