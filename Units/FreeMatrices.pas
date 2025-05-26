@@ -1,8 +1,6 @@
 unit FreeMatrices;
 {$mode objfpc}{$H+}
-interface
-uses Classes,SysUtils;
-
+interface uses Classes,SysUtils,FreeTypes;
 const Singulier=True;
       Regulier=false;
       MatrixError = 1e-5;
@@ -248,7 +246,7 @@ begin
    for I:=1 to RowCount do begin Str:='';
      for J:=1 to ColCount do begin
         V:=Value[I-1,J-1];
-        Tmp:=FloatToStrF( V,ffFixed,7,5 );
+        Tmp:=FloatToDec( V,5 );
         while length(Tmp)<9 do Tmp:=#32+Tmp;
         Str:=Str+#32+Tmp;
      end;

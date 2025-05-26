@@ -20,7 +20,7 @@ begin
   else
   if Index <> -1 then
     Owner.FSelectedMarkers.Delete(index);
-    Owner.Surface.ExecuteOnSelectItem(self);
+//  Owner.Surface.ExecuteOnSelectItem(self);
 end;
 
 procedure TFreeMarker.Clear;

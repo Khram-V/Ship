@@ -1375,7 +1375,7 @@ type
 //  function IsObjectSelected(aObject: TFreeNamedObject): boolean;
 //  procedure SetObjectSelected(aObject: TFreeNamedObject; aSelected: boolean);
                               // Notifies all OnSelectItemNotificationReceivers
-    procedure ExecuteOnSelectItem(Sender:TObject);
+//  procedure ExecuteOnSelectItem(Sender:TObject); ///*** проверить нужность!
                               // Adds OnSelectItemNotificationReceiver if Handler is not nil
                               // Deletes OnSelectItemNotificationReceiver if Handler is nil
     procedure AddOnSelectItemListener(aListener: TNotifyEvent);

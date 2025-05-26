@@ -53,6 +53,7 @@ object MainForm: TMainForm
       ParentBackground = False
       ParentFont = False
       TabOrder = 0
+      OnClick = StatusUndoActiveClick
       object LabelUndoMemory: TLabel
         Left = 11
         Height = 15
@@ -62,6 +63,7 @@ object MainForm: TMainForm
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
+        OnClick = StatusUndoActiveClick
       end
     end
     object StatusPanel3: TPanel
@@ -111,7 +113,6 @@ object MainForm: TMainForm
       ParentBackground = False
       ParentFont = False
       TabOrder = 2
-      OnClick = StatusPanel3Click
       object LabelNumbers: TLabel
         Left = 11
         Height = 15
@@ -121,7 +122,6 @@ object MainForm: TMainForm
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
-        OnClick = StatusPanel3Click
       end
     end
     object StatusPanel5: TPanel
@@ -689,8 +689,8 @@ object MainForm: TMainForm
     end
     object ShowControlNet: TAction
       Category = 'Visibility'
-      Caption = 'Опоные узлы '
-      Hint = 'Вывод опорных узлов и рёбер для редактирования.'
+      Caption = 'Опорные узлы '
+      Hint = 'Разметка опорных узлов и рёбер для редактирования.'
       ImageIndex = 2
       OnExecute = ShowControlNetExecute
     end
@@ -1113,15 +1113,15 @@ object MainForm: TMainForm
     end
     object InsertPlane: TAction
       Category = 'Point'
-      Caption = 'Узлы в базовой плоскости'
+      Caption = 'Расстановка узлов по плоскости'
       Hint = 'Вставка узлов на рёбрах в пересечение базовой плоскости.'
       ImageIndex = 42
       OnExecute = InsertPlaneExecute
     end
     object PointsLock: TAction
       Category = 'Point'
-      Caption = 'Блокирование точек'
-      Hint = 'Фиксация положения нескольких опорных точек вместе.'
+      Caption = 'Блокирование узлов'
+      Hint = 'Фиксация положения нескольких опорных узлов.'
       ImageIndex = 44
       OnExecute = PointsLockExecute
     end
@@ -1293,8 +1293,8 @@ object MainForm: TMainForm
     end
     object AddPointToGroup: TAction
       Category = 'Point'
-      Caption = 'Добавить узел'
-      Hint = 'Включить ещё один узел в именованную связную группу.'
+      Caption = 'Узлы в именованных группах'
+      Hint = 'Добавить или поправить именованные группы опорных узлов.'
       OnExecute = AddPointToGroupExecute
     end
     object PointAlighnPermanently: TAction

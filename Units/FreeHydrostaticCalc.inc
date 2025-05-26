@@ -227,7 +227,7 @@ begin
       k_test:=(FData.BeamWaterline+h_min * 2) / FData.LengthWaterline +
       Owner.ProjectSettings.Projectdraft * m_ballast / 2;
       Strings.Add(S4+MakeLength(Userstring(1444),Ls)+
-      ' :  '+MakeLength(k_test, -1, 12)+' if >= 0,8 then OK');
+      ' :  '+MakeLength(k_test, -1, 12)+' if ≥ 0,8 then OK');
     end;
   end;
   Strings.Add('');
@@ -244,7 +244,7 @@ begin
                ' │ '+Makelength(UserString(35),9)+
                ' │ '+Makelength(UserString(36),8)+
                ' │  CoG X  │  CoG Y  │  CoG Z  │' );
-    Strings.Add('│ '+MakeLength('', 23)+
+    Strings.Add('│ '+MakeLength( '',23 )+
                ' │  '+Makelength(AreaStr(Owner.ProjectSettings.ProjectUnits),6) +
                ' │    '+Makelength(LenMMStr(Owner.ProjectSettings.ProjectUnits),6)+
                ' │   '+Makelength(WeightStr(Owner.ProjectSettings.ProjectUnits),6)+
@@ -253,9 +253,9 @@ begin
                ' │   '+MakeLength(LengthStr(Owner.ProjectSettings.ProjectUnits),5)+' │');
     Strings.Add( Line_2 );
     for I:=1 to Owner.NumberOfLayers do
-    if Owner.Layer[I-1].Count > 0 then begin
-      Str:=Owner.Layer[I-1].Name;
-(*    if Owner.ProjectSettings.EnableBonjeanSAC then begin
+    if Owner.Layer[I-1].Count > 0 then begin Str:=Owner.Layer[I-1].Name;
+(*
+      if Owner.ProjectSettings.EnableBonjeanSAC then begin
       if FileExistsUTF8('Weights.txt') { *Converted from FileExists* } then
       begin  Assignfile(FFile1, 'Weights.txt'); Append(FFile1); end
         else begin Assignfile(FFile1, 'Weights.txt'); Rewrite(FFile1); end;
@@ -269,15 +269,15 @@ begin
       if Owner.ProjectSettings.ProjectUnits = fuImperial
          then Properties.Weight:=Properties.Weight / (12 * 2240)
          else Properties.Weight:=Properties.Weight / 1000;
-      Strings.Add(
-               '│ '+MakeLength( Str,23 ) +
-              ' │ '+Makelength(Properties.SurfaceArea, -1, 7) +
-              ' │ '+MakeLength(Owner.Layer[I-1].Thickness, 3, 9) +
-              ' │ '+Makelength(Properties.Weight, 3, 8)+
-              ' │ '+MakeLength(Properties.SurfaceCenterOfGravity.X, 3, 7)+
-              ' │ '+MakeLength(Properties.SurfaceCenterOfGravity.Y,3, 7)+
-              ' │ '+MakeLength(Properties.SurfaceCenterOfGravity.Z+FData.ModelMin.Z,3,7)+
-              ' │');
+      Strings.Add
+      ( '│ '+MakeLength( Str,23 ) +
+       ' │ '+Makelength(Properties.SurfaceArea,-1,7) +
+       ' │ '+MakeLength(Owner.Layer[I-1].Thickness,3,9) +
+       ' │ '+Makelength(Properties.Weight,3,8)+
+       ' │ '+MakeLength(Properties.SurfaceCenterOfGravity.X,3,7)+
+       ' │ '+MakeLength(Properties.SurfaceCenterOfGravity.Y,3,7)+
+       ' │ '+MakeLength(Properties.SurfaceCenterOfGravity.Z+FData.ModelMin.Z,3,7)+
+       ' │');
       Total.SurfaceArea:=Total.SurfaceArea+Properties.SurfaceArea;
       Total.Weight:=Total.Weight+Properties.Weight;
       Total.SurfaceCenterOfGravity.X:=Total.SurfaceCenterOfGravity.X+Properties.Weight*Properties.SurfaceCenterOfGravity.X;
@@ -290,22 +290,21 @@ begin
       Total.SurfaceCenterOfGravity.Y := Total.SurfaceCenterOfGravity.Y / Total.Weight;
       Total.SurfaceCenterOfGravity.Z := Total.SurfaceCenterOfGravity.Z / Total.Weight+FData.ModelMin.Z;
     end;
-    if N > 1 then begin // if more then 1 layer is added, then show the properties of all layers together
+    if N>1 then begin // if more then 1 layer is added, then show the properties of all layers together
       Strings.Add('  '+MakeLength(UserString(37),24)+'   '+Makelength(Total.SurfaceArea,-1,6)+
-      MakeLength('',15)+Makelength(Total.Weight, 3, 8)+'   ' +
-      MakeLength(Total.SurfaceCenterOfGravity.X, 3, 7)+'   ' +
-      MakeLength(Total.SurfaceCenterOfGravity.Y, 3, 7)+'   ' +
-      MakeLength(Total.SurfaceCenterOfGravity.Z, 3, 7));
+      MakeLength('',15)+Makelength(Total.Weight,3,8)+'   ' +
+      MakeLength(Total.SurfaceCenterOfGravity.X,3,7)+'   ' +
+      MakeLength(Total.SurfaceCenterOfGravity.Y,3,7)+'   ' +
+      MakeLength(Total.SurfaceCenterOfGravity.Z,3,7));
     end;
   end;
-//    Расчет средней осадки и углов крена и дифферента
-// if (FData.Displacement<0.01) or (FData.WaterplaneArea<0.01) then begin
-//     ShowMessage('Project Draft or Weight are very large/small!!!');
-//     exit;
-// end;
-// dDispl:=Total.Weight / FData.Displacement-1.;
+//     Расчет средней осадки и углов крена и дифферента
+{ if ( FData.Displacement<0.01) or (FData.WaterplaneArea<0.01) then begin
+       ShowMessage('Project Draft or Weight are very large/small!!!'); exit;
+  end; dDispl:=Total.Weight/FData.Displacement-1.;
+}
   dT:=0;
-  if Total.Weight > 0.01 then begin
+  if Total.Weight>0.01 then begin
     dT:=(Total.Weight-FData.Displacement)/FData.WaterplaneArea/Owner.ProjectSettings.ProjectWaterDensity;
     if abs(dT) > 0.001 then begin
       Strings.Add('  ');
@@ -369,36 +368,31 @@ begin
   end;
   Strings.Add(S4);
 
-      // Расчет координат штевней для СПШ и масштаба Бонжана
-
-(*    if (Owner.NumberofWaterlines > 0) and (Owner.NumberofWaterlines < 100) and
-        (Owner.NumberofStations < 100) and Owner.ProjectSettings.EnableBonjeanSAC then
-      begin
-        Assignfile(FFile, 'Sterns.txt');
-         {$I-}
-        Rewrite(FFile);
-{$I+}
-        Writeln(FFile, Owner.NumberofWaterlines: 3, Owner.NumberofStations: 3);
-        Writeln(FFile, ' ');
-        HydObject:=TFreeHydrostaticCalc.Create(Owner);
-        for I:=0 to Owner.NumberofWaterlines-1 do
-        begin
-          FData.WaterlinePlane.D:=Owner.Waterline[I].FPlane.d;
-          Twl[I+1]:=-FData.WaterlinePlane.D;
-          HydObject.Draft:=Twl[I+1];
-          HydObject.Calculate;
-          Xaft[I+1]:=HydObject.Data.WlMin.X;
-          Xfor[I+1]:=HydObject.Data.WlMax.X;
-          Writeln(FFile, -FData.WaterlinePlane.D: 9: 3, HydObject.Data.WlMin.X: 9: 3,
-            HydObject.Data.WlMax.X: 9: 3);
-        end;
-        FreeAndNil(HydObject);
-        Writeln(FFile, ' ');
-        Writeln(FFile, 'EOF ');
-        CloseFile(FFile);
-      end;
-*)
-      // Расчет грузового размера, если включено автоперемещение
+  // Расчет координат штевней для СПШ и масштаба Бонжана
+{ if (Owner.NumberofWaterlines > 0) and (Owner.NumberofWaterlines < 100) and
+     (Owner.NumberofStations < 100) and Owner.ProjectSettings.EnableBonjeanSAC then
+  begin
+    Assignfile(FFile, 'Sterns.txt');
+    Rewrite(FFile);
+    Writeln(FFile,Owner.NumberofWaterlines:3,Owner.NumberofStations:3 );
+    Writeln(FFile,' ');
+    HydObject:=TFreeHydrostaticCalc.Create(Owner);
+    for I:=0 to Owner.NumberofWaterlines-1 do begin
+      FData.WaterlinePlane.D:=Owner.Waterline[I].FPlane.d;
+      Twl[I+1]:=-FData.WaterlinePlane.D;
+      HydObject.Draft:=Twl[I+1];
+      HydObject.Calculate;
+      Xaft[I+1]:=HydObject.Data.WlMin.X;
+      Xfor[I+1]:=HydObject.Data.WlMax.X;
+      Writeln(FFile,-FData.WaterlinePlane.D:9:3,HydObject.Data.WlMin.X:9:3,HydObject.Data.WlMax.X:9:3);
+    end;
+    FreeAndNil(HydObject);
+    Writeln(FFile, ' ');
+    Writeln(FFile, 'EOF ');
+    CloseFile(FFile);
+  end;
+}
+  // Расчет грузового размера, если включено автоперемещение
 
   if (Owner.ProjectSettings.EnableModelAutoMove) and (abs(dT)>0.0005) then begin
   //    Strings.Add(S4+MakeLength('Старая осадка',44)+' : '+Makelength(Draft,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
@@ -457,11 +451,11 @@ ExitDo:               // Рассчитываем новую осадку по �
 }
     FreeAndNil(HydObject);
   end;
-  //  Strings.Add(S4+MakeLength('Максимум возможной осадки',44)+' : '+Makelength(Owner.Surface.Max.Z,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
-  // Add sectional Area data
+{ Strings.Add(S4+MakeLength('Максимум возможной осадки',44)+' : '+Makelength(Owner.Surface.Max.Z,-1,8)+' '+LengthStr(Owner.ProjectSettings.ProjectUnits));
+}//  Add sectional Area data
   N:=Length(FData.SAC); // ************************************************
-  //if N > 100 then ShowMessage('N='+FloatToStrF(N,ffFixed,6,0)+' - '+UserString(1484) );
-  if N > 0 then begin
+{ if N > 100 then ShowMessage('N='+FloatToDec(N,0)+' - '+UserString(1484));
+} if N > 0 then begin
     Strings.Add('');
     Strings.Add(UserString(38)+':');
     Strings.Add('');

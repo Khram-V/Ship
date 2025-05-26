@@ -6,10 +6,7 @@
 // Takes a filename and adds it to the list with recent files
 
 procedure TFreeEdit.AddToRecentFiles( Filename: AnsiString );
-var
-  I,Index: integer;
-  AlreadyPresent: boolean;
-  Tmp,Ext: AnsiString;
+var I,Index: integer; AlreadyPresent: boolean; Tmp,Ext: AnsiString;
 begin
   AlreadyPresent:=False;
   FreeShip.Preferences.LastDirectory:=ExtractFilePath( FileName );
@@ -154,18 +151,17 @@ var
   Version: TFreeFileVersion;
   Preview: boolean;
   I: integer;
-begin                                               // Result:=nil; exit;
+begin Result:=nil; //if not MainForm.UndoActive then exit;
   UndoObject:=TFreeUndoObject.Create(FreeShip);
   Result:=UndoObject;
   UndoObject.FUndoText:=UndoText;
   Version:=FreeShip.FileVersion;
   Preview:=FreeShip.ProjectSettings.SavePreview;
-//try                                       // delete all undo objects after the current one
+//try                                            // delete all undo objects after the current one
     for I:=FreeShip.FUndoObjects.Count downto FreeShip.FUndoPosition+1 do
-            FreeShip.UndoObject[I-1].Delete;    // Temp. set to the latest fileversion so that no data will be lost
+            FreeShip.UndoObject[I-1].Delete;     // Temp. set to the latest fileversion so that no data will be lost
     FreeShip.FFileVersion:=Currentversion;
-    // Temp. disable saving of preview image
-    FreeShip.ProjectSettings.SavePreview:=False;
+    FreeShip.ProjectSettings.SavePreview:=False; // Temp. disable saving of preview image
     UndoObject.FFileChanged:=FreeShip.FileChanged;
     UndoObject.FFileName:=FreeShip.Filename;
     UndoObject.FEditMode:=FreeShip.EditMode;
@@ -286,7 +282,7 @@ procedure TFreeEdit.Edge_Crease;
 var
   I: integer;
 begin
-  CreateUndoObject('AngEdge',True);
+  CreateUndoObject('CrEdge',True);
   for I:=FreeShip.NumberOfSelectedControlEdges downto 1 do
     FreeShip.SelectedControlEdge[I-1].Crease :=
       not FreeShip.SelectedControlEdge[I-1].Crease;
@@ -313,7 +309,7 @@ begin
   Dialog.ZValue:=0.0;
   Str:=LengthStr(FreeShip.ProjectSettings.ProjectUnits);
   if Dialog.Execute(Str) then begin
-    vUndo:=CreateUndoObject('PointOff',False);
+    vUndo:=CreateUndoObject('PtOff',False);
     Vector.X:=Dialog.XValue;
     Vector.Y:=Dialog.YValue;
     Vector.Z:=Dialog.ZValue;                     // Assemble Points in a list
@@ -687,7 +683,8 @@ begin
     if SelectDlg.Execute( FreeShip,fsPoints )
     then SelectDlg.ExtractSelectedPoints(Points)
     else begin
-      for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do FreeShip.SelectedControlPoint[I-1].Selected:=False;
+      for I:=FreeShip.NumberOfSelectedControlPoints downto 1 do
+             FreeShip.SelectedControlPoint[I-1].Selected:=False;
       for I:=1 to FreeShip.NumberOfViewports do FreeShip.Viewport[I-1].Refresh;
     end;
     FreeAndNil(SelectDlg);
@@ -1271,19 +1268,17 @@ begin result:=false;
 end;
 
 procedure TFreeEdit.Flowline_Add(Source: T2DCoordinate; View: TFreeviewType);
-var Flowline: TFreeFlowline;                                                    // vUndo: TFreeUndoObject;
-begin                                                                           // vUndo:=CreateUndoObject( 'AddFlow',False );
+var Flowline: TFreeFlowline; vUndo: TFreeUndoObject;
+begin vUndo:=CreateUndoObject( 'AddFlow',False );
   Flowline:=TFreeFlowline.Create( FreeShip );
   FreeShip.FFlowLines.Add( Flowline );
   Flowline.FProjectionPoint:=Source;
   Flowline.FProjectionView:=View;                                               // Flowline.FMethodNew:=True;
   Flowline.Rebuild;
   if Flowline.FFlowLine.NumberOfPoints>0 then begin
-    FreeShip.FileChanged:=True;                                                 // vUndo.Accept;
+    FreeShip.FileChanged:=True; vUndo.Accept;
     Freeship.RebuildModel;
-  end else begin                                                                // vUndo.Delete;
-    Flowline.Destroy;                                                           // Delete;
-  end;
+  end else begin vUndo.Delete; Flowline.Destroy; end;                           // Delete;
 end;
 
 procedure TFreeEdit.Geometry_AddCylinder;
@@ -1653,11 +1648,8 @@ end;
 
 // Delete all layers that are empty from the model
 procedure TFreeEdit.Layer_DeleteEmpty(Quiet: boolean);
-var
-  I, N: integer;
-  vUndo: TFreeUndoObject;
-begin
-  N:=0;
+var I,N: integer; vUndo: TFreeUndoObject;
+begin N:=0;
   if Quiet then vUndo:=nil
            else vUndo:=CreateUndoObject('LayDel',False);
   for I:=FreeShip.NumberOfLayers downto 1 do
@@ -1672,7 +1664,7 @@ begin
     vUndo.Accept;
     ShowMessage(IntToStr(N)+#32+Userstring(141)+'.');
   end;
-  if (N = 0) and (vUndo <> nil) then vUndo.Delete;
+  if (N=0) and (vUndo<>nil) then vUndo.Delete;
 end;
 
 // Show layer dialog window
@@ -1917,7 +1909,7 @@ begin
                 Face:=Pt0.Face[I-1];
                 normal:=Face.FaceNormal;
               end;
-            end;                                                                // MessageDlg('flip I='+FloatToStrF(I,ffFixed,7,3)+' N.X='+FloatToStrF(Normal.X,ffFixed,7,3)+' N.Y='+FloatToStrF(Normal.Y,ffFixed,7,3)+' N.Z='+FloatToStrF(Normal.Z,ffFixed,7,3),mtError,[mbOk],0);
+            end;                     // ShowMessage('flip I='+FloatToDec(I,3)+' N.X='+FloatToDec(Normal.X,3)+' N.Y='+FloatToDec(Normal.Y,3)+' N.Z='+FloatToDec(Normal.Z,3));
         if Face <> nil then
         if Normal.Z > 0.0 then begin // normal points upward, all faces in this group must be inverted
           for I:=0 to NewGroup.Count-1 do begin
@@ -1936,9 +1928,9 @@ begin
       Str:=Str+EOL;
       for I:=1 to Leaks.Count do begin
         Point:=Leaks[I-1];
-        Str:=Str+EOL+FloatToStrF( Point.Coordinate.X,ffFixed,7,3 ) +
-                ', '+FloatToStrF( Point.Coordinate.Y,ffFixed,7,3 ) +
-                ', '+FloatToStrF( Point.Coordinate.Z,ffFixed,7,3 );
+        Str:=Str+EOL+FloatToDec( Point.Coordinate.X,3 ) +
+                ', '+FloatToDec( Point.Coordinate.Y,3 ) +
+                ', '+FloatToDec( Point.Coordinate.Z,3 );
         if I=12 then break;
       end;
       MessageDlg( Str,mtWarning,[mbOK],0 );
@@ -2327,11 +2319,10 @@ end;
 
 // Locks all selected points
 procedure TFreeEdit.Point_Lock;
-var
-  I: integer;
+var I: integer;
 begin
-  if FreeShip.NumberOfSelectedLockedPoints < FreeShip.NumberOfSelectedControlPoints then
-  begin
+  if FreeShip.NumberOfSelectedLockedPoints < FreeShip.NumberOfSelectedControlPoints
+  then begin
     self.CreateUndoObject('LockPoint', True);
     for I:=1 to FreeShip.NumberOfSelectedControlPoints do
       FreeShip.SelectedControlPoint[I-1].Locked:=True;
@@ -2380,34 +2371,40 @@ begin
 end;
 
 // Add a new point to the model with no edges/faces attached
-
+{
 function TFreeEdit.Point_New: TFreeSubdivisionControlPoint;
 begin
   Result:=TFreeSubdivisionControlPoint.Create(FreeShip.Surface);
-  FreeShip.Surface.AddControlPoint(Result);
+  FreeShip.Surface.AddControlPoint( Result );
   Result.Coordinate:=ZERO;
   FreeShip.ActiveControlPoint:=Result;
-  FreeShip.Surface.Selection_Add(Result);
+  FreeShip.Surface.Selection_Add( Result );
   FreeShip.FileChanged:=True;
-  Freeship.ReDraw; // we do not rebuild model because no impact on subdivision yet
-  if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
+//Freeship.ReDraw; // we do not rebuild model because no impact on subdivision yet
+//if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
 end;
-
+}
 // Add a new point with XYZ to the model with no edges/faces attached
-function TFreeEdit.Point_New(coord:T3DVector): TFreeSubdivisionControlPoint;
+
+function TFreeEdit.Point_New( coord:T3DVector ): TFreeSubdivisionControlPoint;
 begin
   Result:=TFreeSubdivisionControlPoint.Create(FreeShip.Surface);
-  FreeShip.Surface.AddControlPoint(Result);
+  FreeShip.Surface.AddControlPoint( Result );
   Result.Coordinate:=coord;
   FreeShip.ActiveControlPoint:=Result;
-  FreeShip.Surface.Selection_Add(Result);
+  FreeShip.Surface.Selection_Add( Result );
   FreeShip.FileChanged:=true;
-  FreeShip.Surface.Changed:=true;
+//FreeShip.Surface.Changed:=true;
   Freeship.ReDraw;
   if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
+  Freeship.EditMode:=emSelectItems;
 end;
-
+{
+function TFreeEdit.Point_New_Z: TFreeSubdivisionControlPoint;
+   begin Result:=Point_New( ZERO ); end;
+}
 // Anchor all selected points onto the first point
+
 procedure TFreeEdit.Point_AnchorToPoint;
 var
   I: integer;
@@ -2653,7 +2650,7 @@ begin
         FreeShip.Layer[I-1].Items[J-1].Selected:=True;}
   for I:=0 to FreeShip.Surface.NumberOfControlPoints-1 do
     if FreeShip.Surface.ControlPoint[I].Visible then
-      FreeShip.Surface.ControlPoint[I].Selected:=True;
+       FreeShip.Surface.ControlPoint[I].Selected:=True;
   Freeship.ReDraw;
 end;
 
@@ -2668,15 +2665,15 @@ end;
 procedure TFreeEdit.Undo;
 var UndoObject: TFreeUndoObject; Preview: boolean;
 begin
-  if FreeShip.FUndoObjects.Count > 0 then begin
+  if FreeShip.FUndoObjects.Count>0 then begin
     Preview:=FreeShip.ProjectSettings.SavePreview;
-    if FreeShip.FUndoPosition = FreeShip.UndoCount then
+    if FreeShip.FUndoPosition=FreeShip.UndoCount then
       if FreeShip.UndoObject[FreeShip.UndoCount-1].FIsTempRedoObject then //??
-      else CreateRedoObject;
-    if FreeShip.FPreviousUndoPosition < FreeShip.FUndoPosition then
-      Dec(FreeShip.FUndoPosition);
+      begin end else CreateRedoObject;
+    if FreeShip.FPreviousUndoPosition<FreeShip.FUndoPosition
+       then Dec( FreeShip.FUndoPosition );
     FreeShip.FPreviousUndoPosition:=FreeShip.FUndoPosition;
-    Dec(FreeShip.FUndoPosition);
+    Dec( FreeShip.FUndoPosition );
     UndoObject:=FreeShip.FUndoObjects[FreeShip.FUndoPosition];
     UndoObject.Restore;
     FreeShip.ProjectSettings.SavePreview:=Preview;

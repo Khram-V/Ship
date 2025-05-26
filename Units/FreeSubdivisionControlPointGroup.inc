@@ -24,7 +24,7 @@ begin
   for i:=0 to FControlPoints.Count-1 do FControlPoints[i].Selected:=val;
   if Val then Surface.FSelectedControlPointGroups.Add(self)
          else Surface.FSelectedControlPointGroups.Delete(index);
-  Surface.ExecuteOnSelectItem(Self);
+//Surface.ExecuteOnSelectItem(Self);
 end;
 
 procedure TFreeSubdivisionControlPointGroup.FSetLocked(val: boolean);

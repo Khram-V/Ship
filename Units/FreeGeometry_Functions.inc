@@ -181,10 +181,10 @@ begin
                else Feet:=Trunc(Value);
     Inches:=abs(Value-Feet) * 12;
     Result:=IntToStr(Feet);
-    if (Feet = 0) and (Value < 0) then Result:='-'+Result;
-    Result:=Result+''''+#32+FloatToStrF(Inches, ffFixed, 7, 1)+'''''';
+    if (Feet=0) and (Value<0) then Result:='-'+Result;
+    Result:=Result+''''+#32+FloatToDec(Inches,1)+'''''';
   end else
-  Result:=FloatToStr( Round( Value*100 )/100 );
+  Result:=FloatToDec( Value,2 ); //Str( Round( Value*100 )/100 );
 end;
 
 function DistancePointToLine( P,P1,P2: T3DVector ): TFloatType;

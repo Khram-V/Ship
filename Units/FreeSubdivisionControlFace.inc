@@ -19,7 +19,7 @@ begin
   if (Index < 0) and not Val then exit;
   if Val then Surface.FSelectedControlFaces.Add(self)
          else Surface.FSelectedControlFaces.Delete(index);
-              Surface.ExecuteOnSelectItem( Self );
+//Surface.ExecuteOnSelectItem( Self );
 end;
 function TFreeSubdivisionControlFace.FGetPoint(Index: integer): TFreeSubdivisionControlPoint;
    begin Result:=TFreeSubdivisionControlPoint(inherited); end;

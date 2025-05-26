@@ -29,7 +29,6 @@ begin
       FreeShip.RebuildModel;
       FreeShip.FileChanged:=True;
       FreeShip.Redraw;
-
 //    finally
       FreeAndNil(Strings);
       if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
@@ -1446,8 +1445,7 @@ var
 
   procedure readSurface(Cols, Rows: integer; var Points: TFreeCoordinateGrid);
   var J,K: integer;
-    begin
-      // Initialize points
+    begin // Initialize points
       Setlength(Points, Rows);
       for J:=1 to Rows do begin
         Setlength(Points[J-1], Cols);

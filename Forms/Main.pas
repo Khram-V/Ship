@@ -310,6 +310,8 @@ type
  // procedure ResistanceKaperExecute   (Sender: TObject);
  // procedure ResistanceDelftExecute   (Sender: TObject);
     procedure FreeShipChangeCursorIncrement(Sender: TObject);
+
+    procedure StatusUndoActiveClick    (Sender: TObject);
     procedure StatusPanel3Click        (Sender: TObject);
     procedure PointAlignExecute        (Sender: TObject);
     procedure PointAlighnPermanentlyExecute(Sender: TObject);
@@ -356,7 +358,10 @@ type
       procedure FOpenHullWindows;  // Creates 4 different views on the hullform
    public     { Public declarations }
       FFileName : AnsiString;
-//    ModelInitallyLoaded : boolean;
+//    ModelInitallyLoaded :
+      UndoActive: boolean;
+      constructor Create(AOwner: TComponent); override;
+//+++ destructor Destroy; override;
       procedure RecentFilesDialogActivate(Sender: TObject);
       procedure ShowRecentFilesDialog;
       function  MDIChildCount: Integer; reintroduce;
@@ -366,8 +371,6 @@ type
       procedure Tile;
       procedure Cascade;
       procedure CustomExceptionHandler(Sender: TObject; E: Exception);
-      constructor Create(AOwner: TComponent); override;
-//+++ destructor Destroy; override;
       procedure SetCaption;
       procedure UpdateMenu;
   end;
@@ -387,7 +390,10 @@ procedure TMainForm.CustomExceptionHandler( Sender:TObject; E:Exception );
 
 constructor TMainForm.Create( AOwner:TComponent );
 begin Application.OnException:=CustomExceptionHandler;
-  inherited Create(AOwner); PanelManager:=WinPanelManager.Create; FFileName:='';
+      inherited Create(AOwner);
+      PanelManager:=WinPanelManager.Create;
+      UndoActive:=True;
+      FFileName:='';
 //FreeShip.Preferences.SetDefaults;
 end;
 (*
@@ -478,21 +484,16 @@ end;
 
 procedure TMainForm.AddPointToGroupExecute(Sender: TObject);
 var pgf:TFreePointGroupForm;
-begin
-  pgf:=TFreePointGroupForm.Create(Self);
-  pgf.FreeShip:=FreeShip;
-  pgf.LoadGroups;
-  if pgf.ShowModal = mrOk then begin end;
+begin pgf:=TFreePointGroupForm.Create( Self );     //pgf.FreeShip:=FreeShip;
+      pgf.LoadGroups;
+   if pgf.ShowModal=mrOk then begin end;
 end;
-
 procedure TMainForm.cbPrecisionChange(Sender: TObject);
-begin
-  if cbPrecision.ItemIndex = ord( FreeShip.Precision ) then exit;
-  FreeShip.Precision:=TFreePrecisionType( cbPrecision.ItemIndex );
-  FreeShip.RebuildModel;
-  UpdateMenu;
+begin if cbPrecision.ItemIndex = ord( FreeShip.Precision ) then exit;
+      FreeShip.Precision:=TFreePrecisionType( cbPrecision.ItemIndex );
+      FreeShip.RebuildModel;
+      UpdateMenu;
 end;
-
 procedure TMainForm.AddFlowLineExecute(Sender: TObject);
     begin FreeShip.EditMode:=emAddFlowLine; UpdateMenu; end;
 procedure TMainForm.AddGridPanelExecute(Sender: TObject);
@@ -503,7 +504,6 @@ begin Calculation:=Freeship.Edit.Hydrostatics_Calculate
       (  Freeship.ProjectSettings.ProjectDraft,0.0,0.0  );
       if Calculation<>nil then begin FreeAndNil( Calculation ); end;
 end;
-
 procedure TMainForm.ActionCheckUpdatesExecute( Sender: TObject );
   var Calculation : TFreeHydrostaticCalc;
 begin Calculation:=Freeship.Edit.Hydrostatics_Calculate
@@ -511,7 +511,6 @@ begin Calculation:=Freeship.Edit.Hydrostatics_Calculate
       if Calculation<>nil then FreeAndNil( Calculation );
    // DesignHydrostaticsExecute( Sender ); //TObject )
 end;
-
 procedure TMainForm.OnSelectItem( Sender:TObject );
 var Face1,Face2 : TFreeSubdivisionControlFace;
     Diff : Boolean;
@@ -526,10 +525,8 @@ begin
       FreeShip.ActiveControlPoint:=nil;
    end;
 }
-   if FreeShip.NumberOfSelectedControlFaces>0 then begin
-      // set the layerbox itemindex to the index of the layer of the selected controlfaces
-      Face1:=FreeShip.SelectedControlFace[0];
-      // check if all selected controlfaces belong to the same layer
+   if FreeShip.NumberOfSelectedControlFaces>0 then begin // set the layerbox itemindex to the index of the layer of the selected controlfaces
+      Face1:=FreeShip.SelectedControlFace[0];            // check if all selected controlfaces belong to the same layer
       Diff:=False;
       for I:=1 to FreeShip.NumberOfSelectedControlFaces do begin
          Face2:=FreeShip.SelectedControlFace[I-1];
@@ -540,16 +537,14 @@ begin
    end else FreeShip.ActiveLayer:=FreeShip.ActiveLayer;  //FreeShipChangeActiveLayer( self,FreeShip.ActiveLayer );
    UpdateMenu;
 end;
-
 procedure TMainForm.OnChangeActiveControlPoint(Sender: TObject);
 begin
    if (Sender=nil) and assigned(FreeShip) and assigned(FreeShip.ControlpointForm)
-   then FreeShip.ControlpointForm.ActiveControlPoint:=nil;
+     then FreeShip.ControlpointForm.ActiveControlPoint:=nil;
    if (Sender is TFreeSubdivisionControlPoint) then
      FreeShip.ControlpointForm.ActiveControlPoint:=Sender as TFreeSubdivisionControlPoint;
    UpdateMenu;
 end;
-
 procedure TMainForm.OnChangeActiveControlEdge(Sender: TObject);
     begin UpdateMenu; end;
 procedure TMainForm.OnChangeActiveControlFace(Sender: TObject);
@@ -638,8 +633,9 @@ begin              //    according to the current state and selected items
                                  ((Freeship.NumberofWaterlines>0) and (FreeShip.Visibility.ShowWaterlines));
    ExportDXFFaces.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
    ExportIGES.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
-   ExportOffsets.Enabled:=FreeShip.NumberofStations+Freeship.NumberofButtocks+Freeship.NumberofWaterlines+
-                          Freeship.NumberofDiagonals+Freeship.NumberOfControlCurves>0;
+   ExportOffsets.Enabled:=FreeShip.NumberofStations+Freeship.NumberofButtocks
+                         +Freeship.NumberofWaterlines+Freeship.NumberofDiagonals
+                         +Freeship.NumberOfControlCurves>0;
    ExportArchimedes.Enabled:=FreeShip.NumberofStations>0;
    ExportGHS.Enabled:=FreeShip.NumberofStations>0;
 // ExportPAM.Enabled:=FreeShip.NumberofStations>0;
@@ -651,11 +647,9 @@ begin              //    according to the current state and selected items
    // Show controledges and controlpoints
    ShowControlNet.Enabled:=FreeShip.Surface.NumberOfControlPoints>0;
    ShowControlNet.Checked:=FreeShip.Visibility.ShowControlNet;
-
    // Show free (not having faces) points and edges
    ShowFreeObjects.Enabled:=(FreeShip.Surface.NumberOfControlPoints>0);
    ShowFreeObjects.Checked:=FreeShip.Visibility.ShowFreeObjects;
-
    // Show interior edges
    ShowInteriorEdges.Enabled:=FreeShip.Surface.NumberOfControlFaces
                            +FreeShip.NumberofControlcurves>0;
@@ -715,8 +709,7 @@ begin              //    according to the current state and selected items
    RemoveUnusedPoints.Enabled:=False;
    for I:=1 to Freeship.Surface.NumberOfControlPoints do
      if Freeship.Surface.ControlPoint[I-1].NumberOfFaces=0 then begin
-        RemoveUnusedPoints.Enabled:=True;
-        break;
+        RemoveUnusedPoints.Enabled:=True; break;
    end;
    InvertFace.Enabled:=Freeship.NumberOfSelectedControlFaces>0;
    ShowStations.Enabled:=Freeship.NumberofStations>0;
@@ -741,7 +734,6 @@ begin              //    according to the current state and selected items
    ShowHydrostatics.Enabled:=(Freeship.Surface.NumberOfControlFaces>2);
    ShowFlowlines.Checked:=Freeship.Visibility.ShowFlowlines;
    ShowFlowlines.Enabled:=Freeship.NumberOfFlowLines>0;
-
    NewFace.Enabled:=FreeShip.NumberOfSelectedControlPoints>2;
    IntersectionDialog.Enabled:=FreeShip.Surface.NumberOfControlFaces>0;
    EdgeExtrude.Enabled:=FreeShip.NumberOfSelectedControlEdges>0;
@@ -751,19 +743,19 @@ begin              //    according to the current state and selected items
    ScaleModel.Enabled:=FreeShip.Surface.NumberOfControlPoints>0;
    MoveModel.Enabled:=FreeShip.Surface.NumberOfControlPoints>0;
    Mirrorface.Enabled:=Freeship.Surface.NumberOfControlFaces>0;
-   if (Freeship.Undoposition-1>=0) and (Freeship.Undoposition-1<Freeship.UndoCount)
-     then Undo.Caption:='Отменить <'+Freeship.UndoObject[Freeship.Undoposition-1].Undotext+'>'
-     else Undo.Caption:='Отмена';
+   ClearUndo.Enabled:=Freeship.UndoCount>0;                        // Undo+Redo
+   Undohistory1.Enabled:=Freeship.UndoCount>0;
    Undo.Enabled:=(FreeShip.UndoCount>0) and (Freeship.UndoPosition>0);
    Redo.Enabled:=(FreeShip.UndoCount>0) and (Freeship.UndoPosition<Freeship.UndoCount);
+   ToolButtonUndo.Enabled:=Undo.Enabled;
+   ToolButtonRedo.Enabled:=Redo.Enabled;
+   if not Undo.Enabled then Undo.Caption:='Отмена...' else
+      Undo.Caption:='Отменить <'+Freeship.UndoObject[Freeship.Undoposition-1].Undotext+'>';
+   if not Redo.Enabled then Redo.Caption:='Возврат...' else
+      Redo.Caption:='Вернуть <'+Freeship.UndoObject[Freeship.Undoposition].Undotext+'>';
 
- //if Undo.Enabled then Undo.Caption:='Undo '+Freeship.UndoObject[Freeship.Undoposition-1].Undotext
- //                else Undo.Caption:='Undo';
- //if Redo.Enabled then Redo.Caption:='Redo '+Freeship.UndoObject[Freeship.Undoposition].Undotext
- //                else Undo.Caption:='Redo';
-   Undohistory1.Enabled:=Freeship.UndoCount>0;
-   ClearUndo.Enabled:=Freeship.UndoCount>0;
-   PointsLock.Enabled:=(Freeship.NumberOfSelectedControlPoints>0) and (Freeship.NumberOfSelectedLockedPoints<Freeship.NumberOfSelectedControlPoints);
+   PointsLock.Enabled:=(Freeship.NumberOfSelectedControlPoints>0) and
+        (Freeship.NumberOfSelectedLockedPoints<Freeship.NumberOfSelectedControlPoints);
    PointsUnlock.Enabled:=Freeship.NumberOfSelectedLockedPoints>0;
    PointsUnlockAll.Enabled:=Freeship.NumberOfLockedPoints>0;
    PointAlign.Enabled:=Freeship.NumberOfSelectedControlPoints>2;
@@ -774,9 +766,14 @@ begin              //    according to the current state and selected items
    if cbPrecision.ItemIndex<>ord(FreeShip.Precision) then cbPrecision.ItemIndex:=ord(FreeShip.Precision);
    FreeShip.ControlpointForm.Reload;
    FreeShip.ControlpointForm.FormStyle:=fsSystemStayOnTop;
-   if FreeShip.ActiveControlPoint <> nil then
-   // FreeShip.ControlpointForm.Visible:=true;
-      FreeShip.ControlpointForm.Show;
+   if Freeship.NumberOfSelectedControlPoints>0 then begin
+      if FreeShip.ActiveControlPoint=nil then
+         FreeShip.ActiveControlPoint:=FreeShip.SelectedControlPoint[0];
+         FreeShip.ControlpointForm.Visible:=true;
+         FreeShip.ControlpointForm.Show;
+   end;
+   if Assigned( FreeShip.OnUpdateGeometryInfo )
+           then FreeShip.OnUpdateGeometryInfo(FreeShip);
 end;
 
 procedure TMainForm.LoadFileExecute( Sender:TObject );
@@ -1075,7 +1072,6 @@ begin
      FreeShip.Surface.RemoveOnSelectItemListener( OnSelectItem );
   end;
 end;
-
 procedure TMainForm.FreeShipChangeActiveLayer
 ( Sender: TObject; Layer: TFreeSubdivisionLayer ); var Index: Integer;
 begin       // do not switch to the active layer when controlfaces are selected
@@ -1091,7 +1087,6 @@ begin       // do not switch to the active layer when controlfaces are selected
      end;
    end;
 end;
-
 procedure TMainForm.ActiveLayerColorExecute( Sender: TObject );
 begin                         // change the color of the currently active layer
    ColorDialog.Color:=FreeShip.ActiveLayer.Color;
@@ -1103,7 +1098,6 @@ begin                         // change the color of the currently active layer
       UpdateMenu;
    end;
 end;
-
 procedure TMainForm.LayerBoxChange( Sender: TObject );
   var Layer: TFreeSubdivisionLayer; Index: Integer;
 begin
@@ -1120,7 +1114,6 @@ begin
    FreeShip.Redraw;
    UpdateMenu;
 end;
-
 procedure TMainForm.ColorButton_Click( Sender:TObject );
   var I: Integer; Layer: TFreeSubdivisionLayer;
 begin I:=Layerbox.ItemIndex;
@@ -1138,7 +1131,6 @@ begin I:=Layerbox.ItemIndex;
      end;
    end;
 end;
-
 procedure TMainForm.DeleteEmptyLayersExecute( Sender: TObject );
     begin Freeship.Edit.Layer_DeleteEmpty(False); UpdateMenu; end;
 procedure TMainForm.LayerDialogExecute( Sender: TObject );
@@ -1235,8 +1227,7 @@ begin
 end;
 
 procedure TMainForm.ImportVRMLExecute(Sender: TObject);
-//var DateTime : TDateTime;
-//    str_1,str_2 : AnsiString;
+//var DateTime : TDateTime; str_1,str_2 : AnsiString;
 begin
    //   DateTime:=Time;                      // store the current date and time
    //   str_1:=TimeToStr(DateTime);           // convert the time into a string
@@ -1249,7 +1240,6 @@ begin
    //   MessageDlg(('Time import='+str_2+' - '+str_1),mtInformation,[mbOK],0);
    UpdateMenu;
 end;
-
 procedure TMainForm.RemoveNegativeExecute(Sender: TObject);
     begin Freeship.Edit.Face_DeleteNegative; UpdateMenu; end;
 procedure TMainForm.RotateModelExecute(Sender: TObject);
@@ -1264,19 +1254,33 @@ procedure TMainForm.ShowGridExecute(Sender: TObject);
     begin Freeship.Visibility.ShowGrid:=not Freeship.Visibility.ShowGrid;
           UpdateMenu;
     end;
-procedure TMainForm.UndoExecute(Sender: TObject);
-    begin FreeShip.Edit.Undo; UpdateMenu; SetCaption; end;
-
-procedure TMainForm.FreeShipUpdateUndoData(Sender:TObject); var Memory :Integer;
+procedure TMainForm.StatusPanel3Click(Sender: TObject);
+  var Str: Ansistring; I: integer; Value: TFloatType;
+    begin
+      if Freeship.Surface.NumberOfControlPoints=0 then exit;
+      Str:=FloatToDec(Freeship.Visibility.CursorIncrement,5);
+      if InputQuery('',UserString(285)+' : ',Str) then begin Val(Str,Value,I);
+         if I=0 then Freeship.Visibility.CursorIncrement:=Value;
+      end;
+    end;
+procedure TMainForm.StatusUndoActiveClick(Sender: TObject);
+    begin UndoActive:=not UndoActive;
+          FreeShipUpdateUndoData( Sender )
+    end;
+procedure TMainForm.UndoExecute( Sender: TObject );
+    begin FreeShip.Edit.Undo; UpdateMenu; SetCaption; UpdateMenu; end;
+procedure TMainForm.FreeShipUpdateUndoData( Sender:TObject );
+var Memory :Integer; Str:String;
 begin
+  if UndoActive then Str:=UserString(283) else Str:=UserString(1676); //=Останов отката
   Memory:=Trunc( Freeship.UndoMemory/1024 );
-  if Memory<1024 then LabelUndoMemory.Caption:=UserString(283)+' : '+IntToStr(Memory)+' Kb.'
-                 else LabelUndoMemory.Caption:=UserString(283)+' : '+FloatToDec(Memory/1024,3)+' Mb.';
+  if Memory<1024
+     then LabelUndoMemory.Caption:=Str+' : '+IntToStr(Memory)+' Kb.'
+     else LabelUndoMemory.Caption:=Str+' : '+FloatToDec(Memory/1024,3)+' Mb.';
    Undo.Enabled:=FreeShip.UndoCount>0;
    SetCaption;
    UpdateMenu;
 end;
-
 procedure TMainForm.HydrostaticsDialogExecute(Sender: TObject);
     begin Freeship.Edit.Hydrostatics_Dialog; UpdateMenu; end;
 procedure TMainForm.ExportObjExecute(Sender: TObject);
@@ -1286,13 +1290,11 @@ procedure TMainForm.InvertFaceExecute(Sender: TObject);
 procedure TMainForm.PreferencesExecute(Sender: TObject);
     begin FreeShip.Preferences.Edit; UpdateMenu; { LoadToolIcons;}  end;
 procedure TMainForm.ImportBodyplanExecute(Sender: TObject);
-begin
-   FreeShip.Edit.ImportFrames;
-   FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
-end;
-
+    begin FreeShip.Edit.ImportFrames;
+          FOpenHullWindows;
+          SetCaption;
+          UpdateMenu;
+    end;
 procedure TMainForm.ExportAuroraHullVslExecute(Sender: TObject);
     begin Freeship.Edit.File_Export_Aurora_Experiments; UpdateMenu; end;
 procedure TMainForm.ExportDXF3DPolylinesExecute(Sender: TObject);
@@ -1314,27 +1316,22 @@ procedure TMainForm.ExportOffsetsExecute(Sender: TObject);
     begin Freeship.Edit.File_ExportOffsets; UpdateMenu; end;
 procedure TMainForm.ExportArchimedesExecute(Sender: TObject);
     begin FreeShip.Edit.File_ExportArchimedes; UpdateMenu; end;
-    procedure TMainForm.AddPointExecute(Sender: TObject);
+procedure TMainForm.AddPointExecute(Sender: TObject);
     begin Freeship.EditMode:=emAddPoint;
-        //Freeship.Edit.Point_New;
-          UpdateMenu;
+//        Freeship.Edit.Point_New_Z;
+//        UpdateMenu;
     end;
 procedure TMainForm.DevelopLayersExecute(Sender: TObject);
-begin
-   Screen.Cursor:=crCross; //Hourglass;
-   Application.ProcessMessages;
-   FreeShip.Edit.Layer_Develop;
-   Screen.Cursor:=crDefault;
-   UpdateMenu;
-end;
-
+    begin Screen.Cursor:=crCross; //Hourglass;
+          Application.ProcessMessages;
+          FreeShip.Edit.Layer_Develop;
+          Screen.Cursor:=crDefault;
+          UpdateMenu;
+    end;
 procedure TMainForm.ShowLinesplanExecute( Sender: TObject );
-var I          : Integer;
-//  AlreadyOpen: Boolean;
-    Form       : TFreeLinesplanForm;
-//--  SPrecision : TFreePrecisionType;
-begin
-//-- SPrecision:=FreeShip.Precision;
+var I: Integer; Form: TFreeLinesplanForm;  // AlreadyOpen: Boolean;
+begin                                     //-- SPrecision: TFreePrecisionType;
+                                          //-- SPrecision:=FreeShip.Precision;
 // AlreadyOpen:=False;
 // for I:=0 to FreeShip.NumberOfViewports-1 do         == не срабатывает по MDI
 //   for I:=0 to MDIChildCount do
@@ -1350,8 +1347,7 @@ begin
    begin
       Form:=TFreeLinesplanForm.Create( self );
       Form.LinesplanFrame.FreeShip:=FreeShip;
-//--    if FreeShip.Precision>fpMedium then
-//--       Form.LinesplanFrame.FreeShip.Precision:=fpMedium;
+//--  if FreeShip.Precision>fpMedium then Form.LinesplanFrame.FreeShip.Precision:=fpMedium;
       Form.LinesplanFrame.Viewport.ZoomExtents;
    end;
 //-- FreeShip.Precision:=SPrecision;
@@ -1437,15 +1433,6 @@ procedure TMainForm.FreeShipChangeCursorIncrement(Sender: TObject);
     begin if (csdestroying in componentstate) then exit;
       LabelDistance.Caption:=UserString(284)+' : '+FloatToDec(Freeship.Visibility.CursorIncrement,7);
     end;
-procedure TMainForm.StatusPanel3Click(Sender: TObject);
-  var Str: Ansistring; I: integer; Value: TFloatType;
-begin
-   if Freeship.Surface.NumberOfControlPoints=0 then exit;
-   Str:=FloatToDec(Freeship.Visibility.CursorIncrement,5);
-   if InputQuery('',UserString(285)+' : ',Str) then begin Val(Str,Value,I);
-      if I=0 then Freeship.Visibility.CursorIncrement:=Value;
-   end;
-end;
 procedure TMainForm.PointAlignExecute(Sender: TObject);
     begin Freeship.Edit.Point_ProjectStraightLine; UpdateMenu; end;
 procedure TMainForm.PointAlighnPermanentlyExecute(Sender: TObject);
@@ -1464,12 +1451,32 @@ procedure TMainForm.MirrorFaceExecute(Sender: TObject);
 procedure TMainForm.ExportDXF2DPolylinesExecute(Sender: TObject);
     begin Freeship.Edit.File_ExportDXF_2DPolylines; UpdateMenu; end;
 procedure TMainForm.FreeShipUpdateGeometryInfo(Sender: TObject);
-begin LabelNumbers.Caption:=
-   IntToStr(Freeship.Surface.NumberOfControlFaces) +' '+UserString(286)+', ' // Faces
-  +IntToStr(Freeship.Surface.NumberOfControlEdges) +' '+UserString(287)+', ' // Edges
-  +IntToStr(Freeship.Surface.NumberOfControlPoints)+' '+UserString(288)+', ' // Points
-  +IntToStr(Freeship.Surface.NumberOfControlCurves)+' '+UserString(289);     // Curves
-  if Freeship.Surface.Changed then UpdateMenu;
+Var Str: AnsiString;
+begin with FreeShip.Surface do begin
+  Str:=UserString(288);           // Узлы Points
+  if NumberOfControlPoints>NumberofSelectedControlPoints then Str:=Str+' '+IntToStr( NumberOfControlPoints );
+  if NumberofSelectedControlPoints>0 then Str:=Str+'\'+IntToStr( NumberOfSelectedControlPoints );
+  Str:=Str+', '+UserString(287);  // Рёбра Edges
+  if NumberOfControlEdges>NumberofSelectedControlEdges then Str:=Str+' '+IntToStr( NumberOfControlEdges );
+  if NumberofSelectedControlEdges>0 then Str:=Str+'\'+IntToStr( NumberOfSelectedControlEdges );
+  if NumberOfControlFaces>0 then begin
+    Str:=Str+', '+UserString(286);  // Грани Faces
+    if NumberOfControlFaces>NumberofSelectedControlFaces then Str:=Str+' '+IntToStr( NumberOfControlFaces );
+    if NumberofSelectedControlFaces>0 then Str:=Str+'\'+IntToStr( NumberOfSelectedControlFaces );
+  end;
+  if NumberOfControlCurves>0 then begin
+    Str:=Str+', '+UserString(289);  // Контуры Curves
+    if NumberOfControlCurves>NumberofSelectedControlEdges then Str:=Str+' '+IntToStr( NumberOfControlCurves );
+    if NumberofSelectedControlCurves>0 then Str:=Str+'\'+IntToStr( NumberOfSelectedControlCurves );
+  end;
+  LabelNumbers.Caption:=Str;
+  if Changed then UpdateMenu;
+{    IntToStr(NumberOfControlFaces) +' '+UserString(286)+', ' // Faces
+    +IntToStr(NumberOfControlEdges) +' '+UserString(287)+', ' // Edges
+    +IntToStr(NumberOfControlPoints)+' '+UserString(288)+', ' // Points
+    +IntToStr(NumberOfControlCurves)+' '+UserString(289);     // Curves
+}
+  end;
 end;
 procedure TMainForm.TransformLackenbyExecute(Sender: TObject);
     begin Freeship.Edit.Model_LackenbyTransformation; UpdateMenu; end;

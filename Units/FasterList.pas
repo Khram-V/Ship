@@ -36,19 +36,20 @@ implementation
 constructor TFasterList.Create;
       begin inherited Create; FList:=nil; FCount:=0;
                               FData:=nil; FCapacity:=0; end;
-
 destructor TFasterList.Destroy;
-  begin Setlength( FData,0 ); Setlength( FData,0 ); inherited Destroy; end;
-
+     begin Setlength( FData,0 ); Setlength( FData,0 ); inherited Destroy; end;
 procedure TFasterList.Clear;                             // leave it as created
     begin FCount:=0; FUseUserData:=False; end;
-
+function TFasterList.IndexOf( Item: TItemType ): integer; var I: integer;
+   begin Result:=-1;
+     for I:=0 to FCount-1 do if (FList[I])=Item then begin Result:=I; break; end;
+   end;
 procedure TFasterList.FSetCapacity( NewCapacity: integer );
-begin if FCapacity<=NewCapacity then        // +1 предусматривается всегда
-  begin FCapacity:=NewCapacity+16; Setlength( FList,FCapacity );
-              if FUseUserData then Setlength( FData,FCapacity );
-  end; // if FCapacity<=FCount then FCount:=Fcapacity;
-end;
+    begin if FCapacity<=NewCapacity then
+      begin FCapacity:=NewCapacity+16; SetLength( FList,FCapacity );
+        if FUseUserData then SetLength( FData,FCapacity );
+      end;
+    end;
 procedure TFasterList.AddList( List:TFasterList ); //var NewCap: Integer;
 begin if List.FCount=0 then exit;
    Capacity:=FCount+List.FCount;       // здесь выделение новой памяти ?)
@@ -66,11 +67,11 @@ begin Capacity:=FCount+1;
       FList[FCount]:=Item; if FUseUserData then FData[FCount]:=nil; Inc(FCount);
 end;
 procedure TFasterList.AddObject( Item: TItemType; UserObject: Pointer );
-begin Capacity:=FCount;
+begin Capacity:=FCount+1;
    if not FUseUserdata then
       begin Setlength( FData,FCapacity ); FUseUserdata:=True; end;
-      FList[FCount]:=Item;
-      FData[FCount]:=UserObject; Inc( FCount );
+   FList[FCount]:=Item;
+   FData[FCount]:=UserObject; Inc( FCount );
 end;
 procedure TFasterList.Assign( List: TFasterList );    // переприсвоение = копия
 begin FUseUserdata:=List.FUseUserData; FCount:=List.Count; Capacity:=FCount;
@@ -80,8 +81,7 @@ begin FUseUserdata:=List.FUseUserData; FCount:=List.Count; Capacity:=FCount;
 end;
 procedure TFasterList.Delete( Index: Integer );
 begin
-  if (FCount<=0) or (Index<0) or (Index>=FCount) then exit;
-  Dec( FCount );
+  if (FCount<=0) or (Index<0) or (Index>=FCount) then exit; Dec( FCount );
   if Index<FCount then begin
     Move( FList[Index+1],FList[Index],(FCount-Index)*SizeOf(TItemType) );
     if FUseUserData then
@@ -89,13 +89,13 @@ begin
   end;
 end;
 procedure TFasterList.DeleteItem( Item: TItemType ); var I: integer;
-begin repeat I:=IndexOf( Item ); if I>=0 then Delete( I ); until I=-1;
-end;
+    begin repeat I:=IndexOf( Item ); if I>=0 then Delete( I ); until I=-1;
+    end;
 procedure TFasterList.DeleteList( const aList: TFasterList ); var I: integer;
     begin for I:=0 to aList.Count-1 do DeleteItem( aList[I] );
     end;
 procedure TFasterList.Exchange( Index1,Index2: integer );
-var vItem: TItemType; vData:Pointer;
+  var vItem: TItemType; vData:Pointer;
 begin
   vItem:=FList[Index1]; FList[Index1]:=FList[Index2]; FList[Index2]:=vItem;
   if FUseUserData then begin
@@ -103,21 +103,17 @@ begin
   end;
 end;
 function TFasterList.FGet( Index: integer ): TItemType;
-begin if (Index>=0) and (Index<FCount) then Result:=FList[Index] else Result:=nil;
+begin Result:=nil; if (Index>=0) and (Index<FCount) then Result:=FList[Index];
 end;
 function TFasterList.FGetObject( Index: integer ): Pointer;
 begin if (Index>=0) and (Index<FCount) and (FUseUserData) then Result:=FData[Index]
       else Result:=nil;
 end;
-function TFasterList.IndexOf( Item: TItemType ): integer; var I: integer;
-begin Result:=-1;
-  for I:=0 to FCount-1 do if FList[I]=Item then begin Result:=I; break; end;
-end;
 procedure TFasterList.Insert( Index: Integer; Item: TItemType );
 begin
   if Index<0 then Index:=0 else
   if Index>FCount then Index:=FCount; // if FCount>=FCapacity then FSetCapacity( FCount+32 );
-  Capacity:=FCount;
+  Capacity:=FCount+1;
   if Index<FCount then begin
     Move( FList[Index],FList[Index+1],(FCount-Index)*SizeOf(TItemType) );
     if FUseUserData then
@@ -140,10 +136,9 @@ begin
   FData[Index]:=UserObject;
 end;
 end.
-
-// function FGetMemory: integer;   // property Memory: integer read FGetMemory;
-// procedure FGrow;
 {
+function FGetMemory: integer;   // property Memory: integer read FGetMemory;
+procedure FGrow;
 function TFasterList.FGetMemory: integer;
 begin
   Result:=SizeOf(Pointer)+    // self        : TItemType
@@ -161,22 +156,6 @@ begin
                              if Delta>1024 then Delta:=1024; end else
   if FCapacity>8 then Delta:=16 else Delta:=4;
   FSetCapacity( FCapacity+Delta );
-end;
-procedure TFasterList.AddList( List: TFasterList ); var NewCap: integer;
-begin if List.FCount=0 then exit;
-  NewCap:=FCount+List.FCount;
-  if (not FUseUserData) and (List.FUseUserData) then
-    if NewCap>FCapacity then Setlength( FData,NewCap )
-                        else Setlength( FData,FCapacity );
-  FUseUserData:=FUseUserData or List.FUseUserData;
-  if NewCap>FCapacity then begin FCapacity:=NewCap;
-                                 Setlength( FList,FCapacity );
-         // if FUseUserData then Setlength( FData,FCapacity );
-  end;
-  Move( List.FList[0],FList[FCount],List.FCount*SizeOf(TItemType) );
-  if FUseUserData then
-     Move( List.FData[0],FData[FCount],List.FCount*SizeOf(Pointer) );
-  Inc( FCount,List.FCount );
 end;
 }
 

@@ -123,17 +123,17 @@ begin
     Tmp.Capacity:=NumberOfControlPoints;
     for I:=0 to NumberOfControlPoints-1 do begin
       Strings.Add
-      ( 'v '+FloatToStrF( ControlPoint[I].Coordinate.x,ffFixed,7,4 )+ #32
-            +FloatToStrF( ControlPoint[I].Coordinate.z,ffFixed,7,4 )+ #32
-            +FloatToStrF( ControlPoint[I].Coordinate.y,ffFixed,7,4 ) );
+      ( 'v '+FloatToDec( ControlPoint[I].Coordinate.x,4 )+ #32
+            +FloatToDec( ControlPoint[I].Coordinate.z,4 )+ #32
+            +FloatToDec( ControlPoint[I].Coordinate.y,4 ) );
       if ControlPoint[I].Coordinate.y>0 then Tmp.Add( ControlPoint[I] );
     end;
     if DrawMirror then begin               // Create ControlPoints for portside
 //    Tmp.Sort;
       for I:=0 to Tmp.Count-1 do begin P:=Tmp[I];
-        Strings.Add( 'v '+FloatToStrF( P.Coordinate.x,ffFixed,7,4 )+#32
-                         +FloatToStrF( P.Coordinate.z,ffFixed,7,4 )+#32
-                         +FloatToStrF(-P.Coordinate.y,ffFixed,7,4 ) );
+        Strings.Add( 'v '+FloatToDec( P.Coordinate.x,4 )+#32
+                         +FloatToDec( P.Coordinate.z,4 )+#32
+                         +FloatToDec(-P.Coordinate.y,4 ) );
       end;
     end;
     for I:=1 to NumberOfControlFaces do begin

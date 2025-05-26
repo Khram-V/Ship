@@ -35,7 +35,7 @@ begin
   if (Index < 0) and not Val then exit;
   if Val then Surface.FSelectedControlEdges.Add(self)
          else Surface.FSelectedControlEdges.Delete(index);
-  Surface.ExecuteOnSelectItem(Self);
+//Surface.ExecuteOnSelectItem(Self);
 end;
 
 function TFreesubdivisionControlEdge.FGetSelected: boolean;

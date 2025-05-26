@@ -4,7 +4,7 @@ interface uses
      Classes,   SysUtils,
      Controls,  Forms,
      ExtCtrls,  Dialogs,
-     StdCtrls,  Buttons;
+     StdCtrls,  Buttons, FreeTypes;
 type TSaveImageDialog = class(TForm)
      Edit1, Edit2, Edit3: TEdit;
      Panel1,Panel2,Panel3: TPanel;
@@ -41,8 +41,8 @@ implementation
 procedure TSaveImageDialog.SetImageSize;
   var Size: single;
 begin Size:=ImageWidth*ImageHeight*3/1024;
-   if size>1024 then _Label5.caption:=FloatToStrF(Size/1024,ffFixed,7,2)+' MB'
-                else _Label5.caption:=FloatToStrF(Size,ffFixed,7,0)+' KB'
+   if size>1024 then _Label5.caption:=FloatToDec(Size/1024,2)+' MB'
+                else _Label5.caption:=FloatToDec(Size,0)+' KB'
 end;
 function TSaveImageDialog.FGetFilename:AnsiString;
    begin Result:=Edit3.Text; end;

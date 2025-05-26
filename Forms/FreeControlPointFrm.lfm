@@ -1,8 +1,8 @@
 object FreeControlPointForm: TFreeControlPointForm
   Left = 1361
-  Height = 257
+  Height = 237
   Top = 194
-  Width = 302
+  Width = 269
   AlphaBlend = True
   AlphaBlendValue = 210
   AutoSize = True
@@ -10,8 +10,8 @@ object FreeControlPointForm: TFreeControlPointForm
   Caption = ' '
   ChildSizing.Layout = cclLeftToRightThenTopToBottom
   ChildSizing.ControlsPerLine = 1
-  ClientHeight = 257
-  ClientWidth = 302
+  ClientHeight = 237
+  ClientWidth = 269
   FormStyle = fsStayOnTop
   OnActivate = FormActivate
   OnCreate = FormCreate
@@ -19,9 +19,9 @@ object FreeControlPointForm: TFreeControlPointForm
   LCLVersion = '3.8.0.0'
   object Panel1: TPanel
     Left = 0
-    Height = 85
+    Height = 79
     Top = 0
-    Width = 282
+    Width = 269
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
@@ -31,249 +31,197 @@ object FreeControlPointForm: TFreeControlPointForm
     ChildSizing.VerticalSpacing = 2
     ChildSizing.Layout = cclTopToBottomThenLeftToRight
     ChildSizing.ControlsPerLine = 3
-    ClientHeight = 85
-    ClientWidth = 282
-    ShowHint = True
+    ClientHeight = 79
+    ClientWidth = 269
     ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 0
     object LabelX: TLabel
       Left = 10
-      Height = 23
+      Height = 21
       Top = 6
-      Width = 29
+      Width = 31
       Caption = 'ось X'
+      Font.Color = clBlue
+      Font.Style = [fsBold]
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
     end
     object LabelY: TLabel
       Left = 10
-      Height = 23
-      Top = 31
-      Width = 29
+      Height = 21
+      Top = 29
+      Width = 31
       Caption = 'ось Y'
+      Font.Color = clBlue
+      Font.Style = [fsBold]
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
     end
     object LabelZ: TLabel
       Left = 10
-      Height = 23
-      Top = 56
-      Width = 29
+      Height = 21
+      Top = 52
+      Width = 31
       Caption = 'ось Z'
+      Font.Color = clBlue
+      Font.Style = [fsBold]
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
     end
     object SpeedButton4: TSpeedButton
-      Left = 45
-      Height = 23
+      Left = 47
+      Height = 21
+      Hint = '⏴ Заброс в корму по абсциссе  ⏵'
       Top = 6
-      Width = 14
+      Width = 27
+      Caption = '-⏴ '
       Flat = True
       Font.Color = clTeal
       Font.Height = 18
       Font.Style = [fsBold]
-      Caption = '-⏴ '
-      Hint = '⏴ Заброс в корму по абсциссе  ⏵'
       OnClick = SpeedButton4Click
+      ParentFont = False
     end
     object SpeedButton5: TSpeedButton
-      Left = 45
-      Height = 23
-      Top = 31
-      Width = 14
+      Left = 47
+      Height = 21
+      Hint = '⏴ Сжатие по ординате в сторону диаметральной плоскости ⏵'
+      Top = 29
+      Width = 27
+      Caption = '-⏴ '
       Flat = True
       Font.Color = clTeal
       Font.Height = 18
       Font.Style = [fsBold]
-      Caption = '-⏴ '
-      Hint = '⏴ Сжатие по ординате в сторону диаметральной плоскости ⏵'
       OnClick = SpeedButton5Click
+      ParentFont = False
     end
     object SpeedButton6: TSpeedButton
-      Left = 45
-      Height = 23
-      Top = 56
-      Width = 14
+      Left = 47
+      Height = 21
+      Hint = '⏴ Спуск узла по аппликате ⏵'
+      Top = 52
+      Width = 27
+      Caption = '-⏴ '
       Flat = True
       Font.Color = clTeal
       Font.Height = 18
       Font.Style = [fsBold]
-      Caption = '-⏴ '
-      Hint = '⏴ Спуск по аппликате ⏵'
       OnClick = SpeedButton6Click
+      ParentFont = False
     end
     object Edit1: TEdit
-      Left = 65
-      Height = 23
+      Left = 80
+      Height = 21
       Top = 6
-      Width = 60
-      Font.Height = 18
+      Width = 80
       BorderStyle = bsNone
+      Font.Height = 18
+      ParentFont = False
       TabOrder = 0
-      OnExit = Edit1Exit
+      Text = 'X'
       OnKeyPress = Edit1KeyPress
     end
     object Edit2: TEdit
-      Left = 65
-      Height = 23
-      Top = 31
-      Width = 60
-      Font.Height = 18
+      Left = 80
+      Height = 21
+      Top = 29
+      Width = 80
       BorderStyle = bsNone
+      Font.Height = 18
+      ParentFont = False
       TabOrder = 1
-      OnExit = Edit2Exit
+      Text = 'Y'
       OnKeyPress = Edit2KeyPress
     end
     object Edit3: TEdit
-      Left = 65
-      Height = 23
-      Top = 56
-      Width = 60
-      Font.Height = 18
+      Left = 80
+      Height = 21
+      Top = 52
+      Width = 80
       BorderStyle = bsNone
+      Font.Height = 18
+      ParentFont = False
       TabOrder = 2
-      OnExit = Edit3Exit
+      Text = 'Z'
       OnKeyPress = Edit3KeyPress
     end
     object SpeedButton1: TSpeedButton
-      Left = 131
-      Height = 23
+      Left = 166
+      Height = 21
+      Hint = '⏴ Вынос вперёд по абсциссе  ⏵'
       Top = 6
-      Width = 14
+      Width = 31
+      Caption = '⏵+ '
       Flat = True
       Font.Color = clTeal
       Font.Height = 18
       Font.Style = [fsBold]
-      Caption = '⏵+ '
-      Hint = '⏴ Вынос вперёд по абсциссе  ⏵'
       OnClick = SpeedButton1Click
+      ParentFont = False
     end
     object SpeedButton2: TSpeedButton
-      Left = 131
-      Height = 23
-      Top = 31
-      Width = 14
+      Left = 166
+      Height = 21
+      Hint = '⏴ Сдвиг узла в расширение по ординате ⏵'
+      Top = 29
+      Width = 31
+      Caption = '⏵+ '
       Flat = True
       Font.Color = clTeal
       Font.Height = 18
       Font.Style = [fsBold]
-      Caption = '⏵+ '
-      Hint = '⏴ Сдвиг узла в расширение по ординате ⏵'
       OnClick = SpeedButton2Click
+      ParentFont = False
     end
     object SpeedButton3: TSpeedButton
-      Left = 131
-      Height = 23
-      Top = 56
-      Width = 14
+      Left = 166
+      Height = 21
+      Hint = '⏴ Подъём узла вверх по аппликате ⏵'
+      Top = 52
+      Width = 31
+      Caption = '⏵+ '
       Flat = True
       Font.Color = clTeal
       Font.Height = 18
       Font.Style = [fsBold]
-      Caption = '⏵+ '
-      Hint = '⏴ Подъём узла вверх по аппликате ⏵'
       OnClick = SpeedButton3Click
+      ParentFont = False
     end
-    object Label1: TLabel
-      Left = 171
-      Height = 23
+    object LabelA: TLabel
+      Left = 203
+      Height = 21
       Top = 6
       Width = 7
       BorderSpacing.Left = 6
-      Caption = ' α'
+      Caption = 'α'
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
     end
-    object Label2: TLabel
-      Left = 171
-      Height = 23
-      Top = 31
+    object LabelB: TLabel
+      Left = 203
+      Height = 21
+      Top = 29
       Width = 7
       BorderSpacing.Left = 6
-      Caption = ' β'
+      Caption = 'β'
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
     end
-    object Label3: TLabel
-      Left = 171
-      Height = 23
-      Top = 56
+    object LabelG: TLabel
+      Left = 203
+      Height = 21
+      Top = 52
       Width = 7
       BorderSpacing.Left = 6
-      Caption = ' γ'
-      Layout = tlCenter
-      ParentColor = False
-      ParentFont = False
-    end
-    object EditAX: TFloatSpinEdit
-      Left = 184
-      Height = 23
-      Top = 6
-      Width = 80
-      Alignment = taRightJustify
-      Constraints.MinWidth = 80
-      Increment = 0.01
-      ParentFont = False
-      ReadOnly = True
-      TabOrder = 3
-    end
-    object EditAY: TFloatSpinEdit
-      Left = 184
-      Height = 23
-      Top = 31
-      Width = 80
-      Alignment = taRightJustify
-      Constraints.MinWidth = 80
-      Increment = 0.01
-      OnChange = EditYChange
-      ParentFont = False
-      ReadOnly = True
-      TabOrder = 4
-    end
-    object EditAZ: TFloatSpinEdit
-      Left = 184
-      Height = 23
-      Top = 56
-      Width = 80
-      Alignment = taRightJustify
-      Constraints.MinWidth = 80
-      Increment = 0.01
-      OnChange = EditZChange
-      ParentFont = False
-      ReadOnly = True
-      TabOrder = 5
-    end
-    object LabelAX: TLabel
-      Left = 270
-      Height = 23
-      Top = 6
-      Width = 5
-      Caption = 'º'
-      Layout = tlCenter
-      ParentColor = False
-      ParentFont = False
-    end
-    object LabelAY: TLabel
-      Left = 270
-      Height = 23
-      Top = 31
-      Width = 5
-      Caption = 'º'
-      Layout = tlCenter
-      ParentColor = False
-      ParentFont = False
-    end
-    object LabelAZ: TLabel
-      Left = 270
-      Height = 23
-      Top = 56
-      Width = 5
-      Caption = 'º'
+      Caption = 'γ'
       Layout = tlCenter
       ParentColor = False
       ParentFont = False
@@ -281,9 +229,9 @@ object FreeControlPointForm: TFreeControlPointForm
   end
   object Panel2: TPanel
     Left = 0
-    Height = 60
-    Top = 85
-    Width = 282
+    Height = 42
+    Top = 79
+    Width = 269
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
@@ -293,15 +241,15 @@ object FreeControlPointForm: TFreeControlPointForm
     ChildSizing.VerticalSpacing = 2
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 60
-    ClientWidth = 282
+    ClientHeight = 42
+    ClientWidth = 269
     ParentFont = False
     TabOrder = 1
     object CheckBoxCorner: TCheckBox
       Left = 10
       Height = 19
       Top = 2
-      Width = 251
+      Width = 252
       Caption = 'Угол слома'
       ParentFont = False
       TabOrder = 0
@@ -311,81 +259,50 @@ object FreeControlPointForm: TFreeControlPointForm
     end
     object Panel5: TPanel
       Left = 10
-      Height = 35
+      Height = 17
       Top = 23
-      Width = 251
+      Width = 252
       AutoSize = True
       BevelOuter = bvNone
+      BorderStyle = bsSingle
       ChildSizing.TopBottomSpacing = 6
       ChildSizing.HorizontalSpacing = 6
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 4
-      ClientHeight = 35
-      ClientWidth = 251
+      ClientHeight = 13
+      ClientWidth = 248
       ParentFont = False
       TabOrder = 1
-      object Label4: TLabel
+      object LabelInf: TLabel
         Left = 0
-        Height = 23
+        Height = 1
         Top = 6
-        Width = 63
-        Caption = 'Расстояние'
+        Width = 240
+        BorderSpacing.Right = 8
+        Constraints.MinWidth = 240
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
-      end
-      object EditDistance: TFloatSpinEdit
-        Left = 69
-        Height = 23
-        Top = 6
-        Width = 80
-        Alignment = taRightJustify
-        Constraints.MinWidth = 80
-        DecimalPlaces = 4
-        ParentFont = False
-        ReadOnly = True
-        TabOrder = 0
-      end
-      object Label5: TLabel
-        Left = 155
-        Height = 23
-        Top = 6
-        Width = 26
-        Caption = 'Угол'
-        Layout = tlCenter
-        ParentColor = False
-        ParentFont = False
-      end
-      object EditAngles: TFloatSpinEdit
-        Left = 187
-        Height = 23
-        Top = 6
-        Width = 64
-        Alignment = taRightJustify
-        Constraints.MinWidth = 64
-        ParentFont = False
-        ReadOnly = True
-        TabOrder = 1
       end
     end
   end
   object GroupBoxLinearConstraint: TGroupBox
     Left = 0
     Height = 55
-    Top = 145
-    Width = 282
+    Top = 121
+    Width = 269
     Align = alTop
     AutoSize = True
     Caption = 'Сборная прямая'
     ClientHeight = 35
-    ClientWidth = 278
+    ClientWidth = 265
     ParentFont = False
     TabOrder = 3
     object Panel4: TPanel
       Left = 0
       Height = 35
       Top = 0
-      Width = 282
+      Width = 265
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
@@ -396,35 +313,39 @@ object FreeControlPointForm: TFreeControlPointForm
       ChildSizing.Layout = cclTopToBottomThenLeftToRight
       ChildSizing.ControlsPerLine = 1
       ClientHeight = 35
-      ClientWidth = 282
+      ClientWidth = 265
       ParentFont = False
       TabOrder = 0
       object EditLinearConstraintA: TEdit
         Left = 10
         Height = 23
         Top = 6
-        Width = 108
+        Width = 97
+        Enabled = False
+        Font.Color = clNavy
         ParentFont = False
         ReadOnly = True
         TabOrder = 0
       end
       object EditLinearConstraintB: TEdit
-        Left = 124
+        Left = 113
         Height = 23
         Top = 6
-        Width = 108
+        Width = 97
+        Enabled = False
+        Font.Color = clNavy
         ParentFont = False
         ReadOnly = True
         TabOrder = 1
       end
       object Panel7: TPanel
-        Left = 238
+        Left = 216
         Height = 23
         Top = 6
-        Width = 50
+        Width = 39
         BevelOuter = bvNone
         ClientHeight = 23
-        ClientWidth = 50
+        ClientWidth = 39
         ParentFont = False
         TabOrder = 2
         object SpeedButtonRemoveLinearConstraint: TSpeedButton
@@ -436,7 +357,7 @@ object FreeControlPointForm: TFreeControlPointForm
           Align = alLeft
           Constraints.MaxWidth = 24
           Constraints.MinWidth = 24
-          Caption = 'x'
+          Caption = '[x]'
           OnClick = SpeedButtonRemoveLinearConstraintClick
           ParentFont = False
         end
@@ -446,20 +367,20 @@ object FreeControlPointForm: TFreeControlPointForm
   object GroupBoxAnchorConstraint: TGroupBox
     Left = 0
     Height = 55
-    Top = 200
-    Width = 282
+    Top = 176
+    Width = 269
     Align = alTop
     AutoSize = True
     Caption = 'Реперная точка'
     ClientHeight = 35
-    ClientWidth = 282
+    ClientWidth = 265
     ParentFont = False
     TabOrder = 2
     object Panel6: TPanel
       Left = 0
       Height = 35
       Top = 0
-      Width = 278
+      Width = 265
       Align = alTop
       AutoSize = True
       BevelOuter = bvNone
@@ -470,26 +391,28 @@ object FreeControlPointForm: TFreeControlPointForm
       ChildSizing.Layout = cclTopToBottomThenLeftToRight
       ChildSizing.ControlsPerLine = 1
       ClientHeight = 35
-      ClientWidth = 278
+      ClientWidth = 265
       ParentFont = False
       TabOrder = 0
       object EditAnchorPoint: TEdit
         Left = 10
         Height = 23
         Top = 6
-        Width = 123
+        Width = 106
+        Enabled = False
+        Font.Color = clNavy
         ParentFont = False
         ReadOnly = True
         TabOrder = 0
       end
       object Panel8: TPanel
-        Left = 139
+        Left = 122
         Height = 23
         Top = 6
-        Width = 149
+        Width = 133
         BevelOuter = bvNone
         ClientHeight = 23
-        ClientWidth = 149
+        ClientWidth = 133
         ParentFont = False
         TabOrder = 1
         object SpeedButtonRemoveAnchorPoint: TSpeedButton
@@ -501,7 +424,7 @@ object FreeControlPointForm: TFreeControlPointForm
           Align = alLeft
           BorderSpacing.Left = 8
           Constraints.MinWidth = 24
-          Caption = 'x'
+          Caption = '[x]'
           OnClick = SpeedButtonRemoveAnchorPointClick
           ParentFont = False
         end

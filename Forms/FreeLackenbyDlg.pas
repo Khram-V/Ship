@@ -242,13 +242,13 @@ begin
   LongCoBCurrent.Value:=TotalProp.LCB;
   Label4.Caption:=WeightStr(FFreeship.ProjectSettings.ProjectUnits);
   Label9.Caption:=LengthStr(FFreeship.ProjectSettings.ProjectUnits);
-  _Label12.Caption:=': '+FloatToStrF(AftProperties.Cp, ffFixed, 7, 4);
-  _Label14.Caption:=': '+FloatToStrF(ForeProperties.Cp, ffFixed, 7, 4);
+  _Label12.Caption:=': '+FloatToDec(AftProperties.Cp,4);
+  _Label14.Caption:=': '+FloatToDec(ForeProperties.Cp,4);
   MaxDispl:=VolumeToDisplacement(Totalprop.Length * FMainArea,
     FFreeship.ProjectSettings.ProjectWaterDensity,
     FFreeship.ProjectSettings.ProjectAppendageCoefficient,
     FFreeship.ProjectSettings.ProjectUnits);
-  _Label16.Caption:=': '+FloatToStrF(MaxDispl, ffFixed, 7, NumberOfDecimals(MaxDispl)) +
+  _Label16.Caption:=': '+FloatToDec(MaxDispl,NumberOfDecimals(MaxDispl)) +
     #32+WeightStr(FFreeship.ProjectSettings.ProjectUnits);
 end;
 

@@ -33,7 +33,7 @@ implementation
 {$R *.lfm}
 
 procedure TFreeUndoHistoryDialog.CreateFreeShip;
-begin  FreeShip1:= TFreeShip.Create(Self);
+begin  FreeShip1:=TFreeShip.Create(Self);
   with FreeShip1 do begin
     FileChanged:=True;
     Filename:='~uShip.fbm';
@@ -86,10 +86,10 @@ begin
       Undo:=Freeship.UndoObject[I];
       if length( Undo.UndoText )>Max then Max:=Length( Undo.UndoText );
    end;
-   inc( Max,2 );
+   Inc( Max,2 );
    for I:=0 to Freeship.UndoCount-1 do begin
       Undo:=Freeship.UndoObject[I];
-      Str:=Str+'  ('+Undo.Time+')';
+      Str:={Str+}Undo.UndoText+'('+Undo.Time+')';
       UndoBox.Items.AddObject( Str,Undo );
    end;
    UndoBox.Items.EndUpdate;

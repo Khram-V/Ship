@@ -1,8 +1,12 @@
 unit FreeTypes;
-{$mode objfpc}{$H+}
+{$mode objfpc}{$H+} // {$mode Delphi}{$H+}
+Interface Uses      // System,
+     Classes,
+    SysUtils,
+    Graphics,
+    Math;
+//     System;
 
-Interface
-Uses Classes,SysUtils,Graphics,Math;
 Const Radian=57.295779513082320876798154814105;              // 180/π = °\rad
       PixelCountMax=32768; // used for faster pixel acces when shading to viewport
 //    DirectorySeparator='\';
@@ -86,11 +90,12 @@ function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVecto
 Function GetFloat( var S: AnsiString): TFloatType;
 Function GetInteger( var S:AnsiString ): Integer;
 Function GetBoolean( var S:AnsiString ): Boolean;
-function FloatToDec( Value: TFloatType; Maxlength: integer ): AnsiString;
+Function FloatToDec( Value: TFloatType; Maxlength: integer ): AnsiString;
                  // Convert a floatingpoint to a string value with a max.number
                  // of specified decimals All trailing zeros will be removed
 Function FloatTypeToStr( Value: TFloatType ): AnsiString;
-Procedure WestPoint;
+Function Angles( V: T3DVector; Rad: TFloatType=Radian ): T3DVector;   // => [°]
+Procedure WestPoint;            // ... или сброс всех запятых с заменой точками
 Function BlankOff( S: AnsiString ): AnsiString;
 
 function Abs( const P: T2DCoordinate ): extended; overload;
@@ -105,7 +110,7 @@ Procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКС
   X,Y: array of TFloatType;  // собственно аргумент и функция
   var YY: TFloatType         // результат
 );                           // и без проверок интервалов аргумента !!!
-function FindWaterViscosity( Temper:TFloatType; Units:TFreeUnitType ):TFloatType;
+function FindWaterViscosity(Temper:TFloatType; Units:TFreeUnitType):TFloatType;
 function TimeString: String;
 
 Implementation
@@ -113,7 +118,14 @@ function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVecto
    begin Result.X:=X;
          Result.Y:=Y;                                            // == SetPoint
          Result.Z:=Z; end;
-
+Function Angles( V: T3DVector; Rad: TFloatType=Radian ): T3DVector;
+  Var R: TFloatType;
+begin R:=Abs( V );
+      if R<1e-5 then Result:=ZERO else begin
+         Result.x:=arccos( V.x/R )*Rad;
+         Result.y:=arccos( V.y/R )*Rad;
+         Result.z:=arccos( V.z/R )*Rad; end;
+end;
 operator = ( const A,B: T3DVector ): boolean;
 begin result:=(A.x=B.x) and (A.y=A.y) and (A.z=B.z); end;
 
@@ -190,12 +202,13 @@ end;
 //   begin Result:=UTF8Length( Str ); end;
 
 function F2S( Value: TFloatType ): TFloatType; var W: extended;
-begin if abs( Value )<1e-5 then Result:=0 else begin
-           W:=Value; W:=Round( W*1e6 ); Result:=W/1e6; end;
+begin if abs( Value )<1e-5 then Result:=0 // else Result:=Round( Value,6 );
+//                         else Result:=Int( 0.5+Value*1e6 )/1e6;
+         else begin W:=Value; W:=Int( 0.5+W*1e6 ); Result:=W/1e6; end;
 end;
 
 function FloatTypeToStr( Value: TFloatType ): AnsiString;
-   begin Result:=FloatToStr( F2S( Value ) ); end;
+   begin Result:=FloatToDec( F2S( Value ),6 ); end;
 // begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
 
 function FloatToDec(Value: TFloatType; Maxlength: integer): AnsiString;
@@ -203,11 +216,15 @@ function FloatToDec(Value: TFloatType; Maxlength: integer): AnsiString;
 begin  //  fmt:=DefaultFormatSettings;
        //  fmt.DecimalSeparator:='.';
        //  fmt.ThousandSeparator:=',';
-  Result:=FloatToStrF( Value,ffFixed,10,Maxlength ); //, fmt);
-  while Result[Length(Result)]='0' do Delete(Result,Length(Result),1);
+  Result:=FloatToStrF( Value,ffFixed,MaxLength+2,Maxlength ); //, fmt);
+  MaxLength:=Length( Result );
+  while Result[MaxLength]='0' do dec( MaxLength );
+  if Result[MaxLength] in ['.', ','] then Inc(MaxLength);
+  SetLength( Result,MaxLength );
+{ while Result[Length(Result)]='0' do Delete(Result,Length(Result),1);
   if Length(Result)<MaxLength then Result:=Result+'0' else
-  if Result[Length(Result)] in ['.', ','] then Result:=Result+'0';
-end;{FloatToDec}
+  if Result[Length(Result)] in ['.', ','] then Result:=Result+'0'; }
+end; {FloatToDec}
 
 Function GetFloat( var S: AnsiString ): TFloatType;
   var LocalFormatSettings: TFormatSettings; I,J,K: Integer; R:extended;

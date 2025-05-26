@@ -152,10 +152,10 @@ begin
     FloatSpinEdit1.Value := 0;
     CheckBoxMirror.Checked := False;
   end else begin
-    _Label2.Caption := ': ' + FloatToStrF(Val.MinError, ffFixed,7,5);
-    _Label4.Caption := ': ' + FloatToStrF(Val.MaxError, ffFixed,7,5);
-    _Label16.Caption:= ': ' + FloatToStrF(Val.MaxAreaError, ffFixed,7,6);
-    _Label18.Caption:= ': ' + FloatToStrF(Val.TotalAreaError, ffFixed,7,6);
+    _Label2.Caption := ': ' + FloatToDec(Val.MinError,5);
+    _Label4.Caption := ': ' + FloatToDec(Val.MaxError,5);
+    _Label16.Caption:= ': ' + FloatToDec(Val.MaxAreaError,6);
+    _Label18.Caption:= ': ' + FloatToDec(Val.TotalAreaError,6);
     _Label6.Caption := ': ' + Val.Name;
     _Label9.Caption := IntToStr(Val.NumberOfIterations);
     FloatSpinEdit1.Value := Val.Rotation;

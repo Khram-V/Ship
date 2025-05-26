@@ -1,7 +1,7 @@
 { 
   1 = © Aurora.Vsl-штормовой вычислительный эксперимент
   2 = WaveFront.Obj
-  3-Standard triangle.Stl
+  3 - Standard triangle.Stl
 }
 //
 // Export for Aurora-Hull computational experiments
@@ -81,7 +81,7 @@ begin
   Dialog.Filter:=createDialogFilter( 'Aurora+Hull Vessel(db)file',['vsl'] );
   dialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
   if Dialog.Execute then begin WestPoint;
-    FreeShip.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
+    FreeShip.Preferences.ExportDirectory:=ExtractFilePath( Dialog.FileName );
     Strings:=TStringList.Create;
     with FreeShip.FProjectSettings do
     Strings.Add( '; FREE!Ship'+EOL+';'
@@ -91,7 +91,7 @@ begin
          +EOL +'; Create by: '+ProjectFileCreatedBy
          +EOL +'; Comment  : '+ProjectComment
          +EOL +';'
-         +EOL+#30+' < '+ExtractFilename( Dialog.FileName )+' > '      ///+++!!! уточнить где мидель
+         +EOL+#30+' < '+ExtractFilename( Dialog.FileName )+' > ' // уточнить где мидель
          +EOL+InttoStr( FreeShip.NumberofStations )
          +' '+InttoStr( FreeShip.NumberofStations div 2 )
          +EOL+FloatToStrF( FProjectLength,ffGeneral,6,1)
@@ -121,22 +121,19 @@ begin
 //      or ( ( (Point[0]-T3) * (Point[N]-T3) ).X>=0.0 )
 //      or ( Point[0].Y=0.0 )
 //      if Dis
-        then begin for K:=0 to N do with Point[K] do Str2( Z,Y ); end
-        else begin for K:=N downto 0 do with Point[K] do Str2( Z,Y ); end;
-
+         then begin for K:=0 to N do with Point[K] do Str2( Z,Y ); end
+         else begin for K:=N downto 0 do with Point[K] do Str2( Z,Y ); end;
         if J=0 then S:=Str else begin if Dis then S:=S+Str else S:=Str+S; end;
       end;
       Strings.Add( Title+S );//+' ['+InttoStr(Count)+'] = '+floattostr(P0.y)+' < '+floattostr(PN.y) );
     end;
-    Strings.Add( EOL+' 0' );                         // форштевень в завершение
-    StemStern( true );  // и в заключение еще и все контрольные точки и контуры
-                        //
+    Strings.Add( EOL+' 0' );          // форштевень в завершение и в заключение
+    StemStern( true );                //  еще и все контрольные точки и контуры
     if FreeShip.NumberOfControlCurves>0 then begin
       Strings.Add( EOL+'ContorlCurves['+IntToStr(FreeShip.NumberOfControlCurves)+']' );
       for I:=0 to FreeShip.NumberOfControlCurves-1 do
                   SendSpline( FreeShip.ControlCurve[I].Spline );
     end;
-
     EdgePointLists:=TFasterListTFasterListTFreeSubdivisionPoint.Create;
     FreeShip.Surface.ExtractAllEdgeLoops( EdgePointLists );
     if EdgePointLists.Count>0 then begin
@@ -167,10 +164,10 @@ var
 begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.obj');
-  SaveDialog.Filter:=createDialogFilter( 'Wavefront export subdivided surface',['obj'],false )
-               +'|'+ createDialogFilter( 'Wavefront export the controlnet only',['obj'],false );
-  Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'.obj');
+  SaveDialog.Filter:=createDialogFilter('Wavefront export subdivided surface',['obj'],false)
+               +'|'+ createDialogFilter('Wavefront export the controlnet only',['obj'],false);
+  Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   SaveDialog.FilterIndex:=1;
   if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
@@ -200,18 +197,16 @@ procedure TFreeEdit.File_ExportSTL;
 var
   SaveDialog: TSaveDialog;
   FFile: TextFile;
-  I, J, K, L: integer;
-  C1, C2, C3: T3DVector;
+  I,J,K,L: integer;
+  C1,C2,C3: T3DVector;
   Layer: TFreeSubdivisionLayer;
   Face: TFreeSubdivisionControlface;
   Child: TFreeSubdivisionface;
 
   procedure Addfacet( C1,C2,C3: T3DVector );
-  var
-    Normal: T3DVector;
+  var Normal: T3DVector;
   begin
     Normal:=UnifiedNormal( C1,C2,C3 );
-//  Write(FFile,   'facet normal ');
     writeln(FFile, 'facet normal '+FloatToDec(normal.X, 4)
                             +#32+FloatToDec(normal.Y, 4)
                             +#32+FloatToDec(normal.Z, 4));
@@ -244,28 +239,25 @@ begin
       for I:=1 to FreeShip.Surface.NumberOfLayers do begin
         Layer:=FreeShip.Surface.Layer[I-1];
         if Layer.SurfaceVisible then
-          for J:=1 to Layer.Count do begin
-            Face:=Layer.Items[J-1];
-            for K:=1 to Face.ChildCount do begin
-              Child:=face.Child[K-1];
-              for L:=3 to Child.NumberOfpoints do begin
-                C1:=Child.Point[0].Coordinate;
-                C2:=Child.Point[L-2].Coordinate;
-                C3:=Child.Point[L-1].Coordinate;
-                AddFacet( C1,C2,C3 );       // mirror points, starboard to port
-                C1.Y:=-C1.Y;
-                C2.Y:=-C2.Y;
-                C3.Y:=-C3.Y;
-                AddFacet( C3,C2,C1 );
-              end;
+        for J:=1 to Layer.Count do begin
+          Face:=Layer.Items[J-1];
+          for K:=1 to Face.ChildCount do begin
+            Child:=face.Child[K-1];
+            for L:=3 to Child.NumberOfpoints do begin
+              C1:=Child.Point[0].Coordinate;
+              C2:=Child.Point[L-2].Coordinate;
+              C3:=Child.Point[L-1].Coordinate;
+              AddFacet( C1,C2,C3 );       // mirror points, starboard to port
+              C1.Y:=-C1.Y;
+              C2.Y:=-C2.Y;
+              C3.Y:=-C3.Y;
+              AddFacet( C3,C2,C1 );
             end;
           end;
-      end;
-      writeln(FFile, 'endsolid');
-      Closefile(FFile);
+        end;
+      end; writeln(FFile, 'endsolid'); Closefile(FFile);
     end else MessageDlg( Userstring(97),mtError,[mbOK],0 );
-  end;
-  FreeAndNil(SaveDialog);
+  end; FreeAndNil( SaveDialog );
 end;
 //
 //  DXF AutoCAD ++
@@ -300,14 +292,11 @@ procedure TFreeSpline.SaveToDXF
 ( Strings: TStringList;
   Layername: AnsiString;
   SendMirror: boolean );
-var
-  I,J,Ind,NParams: Integer;
-  P: T3DVector;
-  Params: TFloatArray;
+var I,J,Ind,NParams: Integer; P: T3DVector; Params: TFloatArray;
 begin
   Ind:=FindDXFColorIndex( Color );
   NParams:=0;
-  Setlength( Params,NumberOfPoints );          // count number of knucklepoints
+  Setlength( Params,NumberOfPoints );    // count number of knucklepoints
   if not Built then Rebuild;
   for I:=2 to NumberOfPoints-1 do
    if Knuckle[I-1] then begin Params[NParams]:=Parameter[I-1]; Inc(NParams); end;
@@ -316,16 +305,16 @@ begin
   ArraySort( Params,NParams );
 //SortFloatArray(Params,NParams);
   Strings.Add('0'+EOL+'POLYLINE');
-  Strings.Add('8'+EOL+LayerName);          // layername
-  Strings.Add('62'+EOL+IntToStr(Ind));     // color by layer
-  Strings.Add('70'+EOL+'10');              // not closed
-  Strings.Add('66'+EOL+'1');               // vertices follow
+  Strings.Add('8'+EOL+LayerName);        // layername
+  Strings.Add('62'+EOL+IntToStr(Ind));   // color by layer
+  Strings.Add('70'+EOL+'10');            // not closed
+  Strings.Add('66'+EOL+'1');             // vertices follow
   for J:=1 to NParams do begin P:=Value(Params[J-1]);
     Strings.Add('0'+EOL+'VERTEX');
     Strings.Add('8'+EOL+LayerName);
-    Strings.Add('10'+EOL+FloatToDec(P.X, 4));
-    Strings.Add('20'+EOL+FloatToDec(P.Y, 4));
-    Strings.Add('30'+EOL+FloatToDec(P.Z, 4));
+    Strings.Add('10'+EOL+FloatToDec(P.X,4));
+    Strings.Add('20'+EOL+FloatToDec(P.Y,4));
+    Strings.Add('30'+EOL+FloatToDec(P.Z,4));
     Strings.Add('70'+EOL+'32');          // 3D polyline mesh vertex
   end;
   Strings.Add('0'+EOL+'SEQEND');
@@ -340,9 +329,9 @@ begin
       P.Y:=-P.Y;
       Strings.Add('0'+EOL+'VERTEX');
       Strings.Add('8'+EOL+LayerName);
-      Strings.Add('10'+EOL+FloatToDec(P.X, 4));
-      Strings.Add('20'+EOL+FloatToDec(P.Y, 4));
-      Strings.Add('30'+EOL+FloatToDec(P.Z, 4));
+      Strings.Add('10'+EOL+FloatToDec(P.X,4));
+      Strings.Add('20'+EOL+FloatToDec(P.Y,4));
+      Strings.Add('30'+EOL+FloatToDec(P.Z,4));
       Strings.Add('70'+EOL+'32');          // 3D polyline mesh vertex
     end;
     Strings.Add('0'+EOL+'SEQEND');
@@ -760,9 +749,9 @@ begin
           Np:=Frame.NumberOfPoints;
           Write(FFile, 'FRAME_INDEX: '+IntToStr(I-1)+#10);
           Write(FFile, 'FRAME_NAME'+#10);
-          Write(FFile, 'Frame @ Y= '+FloatToStrF(0.5 * (Frame.Min.X+Frame.Max.X), ffFixed, 7, 4)+#10);
+          Write(FFile, 'Frame @ Y= '+FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4)+#10);
           Write(FFile, 'FRAME_Y'+#10);
-          Write(FFile, FloatToStrF(0.5 * (Frame.Min.X+Frame.Max.X),ffFixed, 7, 4)+#10);
+          Write(FFile, FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4)+#10);
           Write(FFile, 'NUMBER_OF_COORDINATES'+#10);
           Write(FFile, IntToStr(2 * Np-1)+#10);
           Write(FFile, '***START_OF_ORDINATES***'+#10);
@@ -823,9 +812,9 @@ begin
           Np:=2 * Frame.NumberOfPoints+1;
           Strings.Add('<SECTION>');
           Strings.Add('<SECTION_NAME>');
-          Strings.Add(FloatToStrF(0.5 * (Frame.Min.X+Frame.Max.X), ffFixed, 7, 4));
+          Strings.Add(FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4));
           Strings.Add('</SECTION_NAME>');
-          Strings.Add('<YCOORD>'+#32+FloatToStrF(0.5 * (Frame.Min.X+Frame.Max.X), ffFixed, 7, 4)+#32+'</YCOORD>');
+          Strings.Add('<YCOORD>'+#32+FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4)+#32+'</YCOORD>');
           Strings.Add('<OFFSET_COUNT>'+#32+IntToStr(2 * Np-1) +
             #32+'</OFFSET_COUNT>');
           Strings.Add('<OFFSETS>');            // First send the starboard side
@@ -1158,9 +1147,9 @@ begin
     if Length(Str) > 58 then Str:=Copy( Str,1,58 );
     Strings.Add(Str);
     // ProjectDescription, max 58 characters
-    Strings.Add('L:'+FloatToStrF(Scale*FreeShip.ProjectSettings.ProjectLength,ffFixed,7,3));
+    Strings.Add('L:'+FloatToDec(Scale*FreeShip.ProjectSettings.ProjectLength,3));
     // Length
-    Strings.Add('W:'+FloatToStrF(Scale*FreeShip.ProjectSettings.ProjectBeam,ffFixed,7,3));
+    Strings.Add('W:'+FloatToDec(Scale*FreeShip.ProjectSettings.ProjectBeam,3));
     // Beam
     Strings.Add('OL:Frame 0');
     Strings.Add('OT:Centerplane');
@@ -1228,12 +1217,9 @@ begin
     Strings.Add('HULL');          // Partname and description
     Strings.Add('WATER');         // FluidName
     strings.Add('1');             // part type (displacement)
-    if FreeShip.ProjectSettings.ProjectUnits=fuMetric then
-      Strings.Add(FloatToStrF(FreeShip.ProjectSettings.ProjectWaterDensity,ffFixed,7,3))
-    // specific gravity of water
-    else
-      Strings.Add(FloatToStrF(FreeShip.ProjectSettings.ProjectWaterDensity /
-        WeightConversionFactor, ffFixed, 7, 3));
+    if FreeShip.ProjectSettings.ProjectUnits=fuMetric
+    then Strings.Add(FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity,3)) // specific gravity of water
+    else Strings.Add(FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity/WeightConversionFactor,3));
     Strings.Add('0,0,0');      // ReferencePoint
     Strings.Add('1');          // Number of components
     Strings.Add('HULL.C');     // Componentname

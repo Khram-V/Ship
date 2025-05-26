@@ -41,8 +41,8 @@ begin
     fiDiagonal: Result :='Diagonal '; else Result:='Free';
   end;
   if IntersectionType = fiDiagonal
-  then Result:=Result+#32+FloatToStrF(-FPLane.d / FPlane.c, ffFixed, 7, 3)
-  else Result:=Result+#32+FloatToStrF(-FPLane.d, ffFixed, 7, 3);
+  then Result:=Result+#32+FloatToDec(-FPLane.d / FPlane.c,3)
+  else Result:=Result+#32+FloatToDec(-FPLane.d,3);
 end;
 
 function TFreeIntersection.FGetDistance: TFloatType;

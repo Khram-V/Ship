@@ -14,8 +14,8 @@ begin
   end else begin
     if Index <> -1 then Surface.FSelectedControlCurves.Delete(index);
   end;
-  //if Assigned(Surface.FOnSelectItemListeners) then Surface.FOnSelectItemListeners(self);
-  Surface.ExecuteOnSelectItem(Self);
+//if Assigned(Surface.FOnSelectItemListeners) then Surface.FOnSelectItemListeners(self);
+//Surface.ExecuteOnSelectItem(Self);
 end;
 procedure TFreeSubdivisionControlCurve.AddPoint(P: TFreeSubdivisionControlPoint);
 begin FControlPoints.Add(P);

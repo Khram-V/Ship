@@ -1,6 +1,4 @@
-
 unit FreeFileBuffer;
-{ $mode objfpc}{$H+}
 {$mode Delphi}{$H+}
 interface uses
   Classes,
@@ -563,8 +561,8 @@ begin
   Size:=SizeOf( FloatValue );
 //if Count+Size > Capacity then FGrow(Size);
   if Count+Size>Capacity then Capacity:=Count+Size;          // FGrow( Size );
-  Move(FloatValue,FData[FCount], Size);
-  Inc(FCount,Size);
+  Move( FloatValue,FData[FCount],Size );
+  Inc( FCount,Size );
 end;
 
 procedure TFreeFileBuffer.Add(words: TStrings); Var I: Integer;

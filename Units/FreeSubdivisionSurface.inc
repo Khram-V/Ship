@@ -55,23 +55,23 @@ begin
       end;
     end;
   end;
-  if Result = nil then Result:=NewPoint(P);
-  if Result <> nil then begin ExecuteOnChangeItem(Result);
+  if Result=nil then Result:=NewPoint(P);
+  if Result<>nil then begin ExecuteOnChangeItem(Result);
     if Result.Selected then begin
       FSelectedControlPoints.Add(Result);
-      ExecuteOnSelectItem(Result);
+//    ExecuteOnSelectItem(Result);
     end;
   end;
 end;
 
 procedure TFreeSubdivisionSurface.AddControlPoint(P: TFreeSubdivisionControlPoint);
 begin
-  if FControlPoints.IndexOf(P) = -1 then begin
-    FControlPoints.Add(P);
+  if FControlPoints.IndexOf( P )=-1 then begin
+    FControlPoints.Add( P );
     P.Surface:=self;
     ExecuteOnChangeItem( P );
-    if P.Selected then begin FSelectedControlPoints.Add(P);
-                             ExecuteOnSelectItem(P);
+    if P.Selected then begin FSelectedControlPoints.Add( P );
+//  ExecuteOnSelectItem(P);
     end;
   end; Built:=False;
 end;
@@ -84,18 +84,18 @@ begin
   FControlPoints.Add(Result);
   ExecuteOnChangeItem(Result);
 end;
-
+(*
 procedure TFreeSubdivisionSurface.ExecuteOnSelectItem(Sender: TObject);
 var ne:TNotifyEvent; i: Integer;
 begin
   if FIsLoading then exit;
-  if FOnSelectItemListeners = nil then exit;
+  if FOnSelectItemListeners=nil then exit;
   for i:=0 to FOnSelectItemListeners.Count-1 do begin
     ne:=FOnSelectItemListeners[i];
     ne( Sender );
   end;
 end;
-
+*)
 procedure TFreeSubdivisionSurface.UnreferenceControlPoint(P: TFreeSubdivisionControlPoint);
 var i: integer;
 begin
@@ -1535,7 +1535,7 @@ begin
   FSelectedControlEdges.Clear;
   FSelectedControlFaces.Clear;
   FSelectedControlCurves.Clear;
-  self.ExecuteOnSelectItem(nil);
+//self.ExecuteOnSelectItem(nil);
   FActiveControlPoint:=nil;
   ExecuteOnChangeActiveControlPoint(nil);
 end;
@@ -3122,18 +3122,18 @@ var I: integer;
 begin // we will rebuild whole mesh anyway. lets cleare it before changes in control mesh
   ClearMesh;      // First controlcurves, then faces, edges and finally points!
   I:=NumberOfSelectedControlCurves;
-  while I >= 1 do begin
+  while I>=1 do begin
     SelectedControlCurve[I-1].Delete; Dec(I);
-    if I > NumberOfSelectedControlCurves then I:=NumberOfSelectedControlCurves;
+    if I>NumberOfSelectedControlCurves then I:=NumberOfSelectedControlCurves;
   end;
   I:=self.NumberOfSelectedControlFaces;
-  while I >= 1 do begin
+  while I>=1 do begin
     SelectedControlFace[I-1].Delete; Dec(I);
-    if I > NumberOfSelectedControlFaces then I:=NumberOfSelectedControlFaces;
+    if I>NumberOfSelectedControlFaces then I:=NumberOfSelectedControlFaces;
   end;
   I:=self.NumberOfSelectedControlEdges;
-  while I >= 1 do begin SelectedControlEdge[I-1].Delete; Dec(I);
-    if I > NumberOfSelectedControlEdges then begin
+  while I>=1 do begin SelectedControlEdge[I-1].Delete; Dec(I);
+    if I>NumberOfSelectedControlEdges then begin
       // Security check ==> if an edge is deleted from one isolated patch (with all edges only attached
       // to the current face), the patch will become degenerate and therefore the patch (and the other
       // edges) will be deleted, and NumberOfSelectedControlEdges may become smaller than index I
@@ -3141,11 +3141,11 @@ begin // we will rebuild whole mesh anyway. lets cleare it before changes in con
     end;
   end;
   I:=self.NumberOfSelectedControlPoints;
-  while I >= 1 do begin
+  while I>=1 do begin
     if not SelectedControlPoint[I-1].Locked then SelectedControlPoint[I-1].Delete;
     Dec(I);
-    if I > NumberOfSelectedControlPoints then begin // Same as above
-      I:=NumberOfSelectedControlPoints;
+    if I>NumberOfSelectedControlPoints then begin // Same as above
+       I:=NumberOfSelectedControlPoints;
     end;
   end;
   ExecuteOnChangeItem(nil);
@@ -3160,7 +3160,7 @@ begin
   if item is TFreeSubdivisionControlEdge then FSelectedControlEdges.Add(item as TFreeSubdivisionControlEdge);
   if item is TFreeSubdivisionControlCurve then FSelectedControlCurves.Add(item as TFreeSubdivisionControlCurve);
   if item is TFreeSubdivisionControlPointGroup then FSelectedControlPointGroups.Add(item as TFreeSubdivisionControlPointGroup);
-  ExecuteOnSelectItem(item);
+//ExecuteOnSelectItem(item);
 end;
 
 procedure TFreeSubdivisionSurface.SortEdges(Edges: TFasterListTFreeSubdivisionEdge);
@@ -3272,43 +3272,35 @@ begin
         RefEdges.AddObject(Edge, PSD);
         end;
     end;
-  end
-  else //next times we use control face children and control edges
-  begin
+  end else begin //next times we use control face children and control edges
     RefFaces.Capacity:=4 * NumberOfControlFaces;
-    for I:=0 to NumberOfControlFaces-1 do
-    begin
+    for I:=0 to NumberOfControlFaces-1 do begin
       CtrlFace:=ControlFace[I];
       CtrlFace.SubdivisionLevel:=PrevCurrentSubdivisionLevel;
-      for J:=0 to CtrlFace.ChildCount-1 do
-        begin
+      for J:=0 to CtrlFace.ChildCount-1 do begin
         CtrlFaceChild:=CtrlFace.Child[J];
         CtrlFaceChild.SubdivisionLevel:=PrevCurrentSubdivisionLevel;
         PSD:=CtrlFaceChild.CalculateFaceCenterPoint;
         //it is normal that triangle faces do not have centerpoint, it will be nil
-        if PSD<>nil then
-        begin
+        if PSD<>nil then begin
           PSD.SubdivisionLevel:=FCurrentSubdivisionLevel;
           RefFaces.AddObject(CtrlFaceChild, PSD);
         end;
-        end;
-      for J:=0 to CtrlFace.EdgeCount-1 do
-        begin
+      end;
+      for J:=0 to CtrlFace.EdgeCount-1 do begin
         Edge:=CtrlFace.Edge[J];
         Edge.SubdivisionLevel:=PrevCurrentSubdivisionLevel;
         PSD:=Edge.CalculateEdgeCenterPoint;
         PSD.SubdivisionLevel:=FCurrentSubdivisionLevel;
         RefEdges.AddObject(Edge, PSD);
-        end;
+      end;
     end;
   end;
-
   // Calculate other edgepoints
   RefEdges.Capacity:=RefEdges.Count+NumberOfSubDivEdges;
-  for I:=0 to NumberOfSubDivEdges-1 do
-    begin
+  for I:=0 to NumberOfSubDivEdges-1 do begin
     Edge:=self.SubDivEdge[I];
-    if Edge.FFaces.Count=0 then continue;    ///
+    if Edge.FFaces.Count=0 then continue;
     Edge.SubdivisionLevel:=PrevCurrentSubdivisionLevel;
     PSD:=Edge.CalculateEdgeCenterPoint;
     PSD.SubdivisionLevel:=FCurrentSubdivisionLevel;
@@ -3316,8 +3308,7 @@ begin
     end;
 
   RefEdges.Capacity:=RefEdges.Count+NumberOfControlEdges;
-  for I:=0 to NumberOfControlEdges-1 do
-    begin
+  for I:=0 to NumberOfControlEdges-1 do begin
     Edge:=self.ControlEdge[I];
     if Edge.FFaces.Count=0 then continue;    ///
     Edge.SubdivisionLevel:=PrevCurrentSubdivisionLevel;
@@ -3328,8 +3319,7 @@ begin
 
   // Calculate vertexpoints
   RefVertexPoints.Capacity:=RefVertexPoints.Count+NumberOfSubDivPoints;
-  for I:=0 to NumberOfSubDivPoints-1 do
-    begin
+  for I:=0 to NumberOfSubDivPoints-1 do begin
       P:=Self.SubDivPoint[I];
       if P.FFaces.Count=0 then continue;    ///
       P.SubdivisionLevel:=PrevCurrentSubdivisionLevel;
@@ -3338,8 +3328,7 @@ begin
       RefVertexPoints.AddObject(P, PSD);
     end;
   RefVertexPoints.Capacity:=RefVertexPoints.Count+NumberOfControlPoints;
-  for I:=0 to NumberOfControlPoints-1 do
-    begin
+  for I:=0 to NumberOfControlPoints-1 do begin
       P:=Self.ControlPoint[I];
       if P.FFaces.Count=0 then continue;    ///
       P.SubdivisionLevel:=PrevCurrentSubdivisionLevel;
@@ -3349,9 +3338,9 @@ begin
     end;
 
   // Sort the new points for faster acces
-  //RefVertexPoints.Sort;
-  //RefEdges.Sort;
-  //RefFaces.Sort;
+  // RefVertexPoints.Sort;
+  // RefEdges.Sort;
+  // RefFaces.Sort;
 
   {for I:=0 to RefFaces.Count-1 do // investigation
   begin
@@ -3390,25 +3379,17 @@ begin
   FPoints.Clear;
 
   {// investigation
-  for I:=0 to RefVertexPoints.Count-1 do
-  begin
+  for I:=0 to RefVertexPoints.Count-1 do begin
     P:=TFreeSubdivisionPoint(RefVertexPoints.Objects[I]);
-    if P.SubdivisionLevel <> FCurrentSubdivisionLevel
-    then X:=0;
+    if P.SubdivisionLevel <> FCurrentSubdivisionLevel then X:=0;
   end;
-
-  for I:=0 to RefEdges.Count-1 do
-  begin
+  for I:=0 to RefEdges.Count-1 do begin
     P:=TFreeSubdivisionPoint(RefEdges.Objects[I]);
-    if P.SubdivisionLevel <> FCurrentSubdivisionLevel
-    then X:=0;
+    if P.SubdivisionLevel <> FCurrentSubdivisionLevel then X:=0;
   end;
-
-  for I:=0 to RefFaces.Count-1 do
-  begin
+  for I:=0 to RefFaces.Count-1 do begin
     P:=TFreeSubdivisionPoint(RefFaces.Objects[I]);
-    if P.SubdivisionLevel <> FCurrentSubdivisionLevel
-    then X:=0;
+    if P.SubdivisionLevel <> FCurrentSubdivisionLevel then X:=0;
   end;
   }
 
@@ -3431,7 +3412,7 @@ begin
   // TODO: later make Averaging separate and call it without previous Rebuild
   // when control points just moved, and no other structural changes,
   // such as points/edges deleted/inserted/crease etc
-{ /// EXPERIMENTAL. Moved Averaging to Average;
+{ // EXPERIMENTAL. Moved Averaging to Average;
   // perform averaging procedure to smooth the new mesh
   Setlength(TmpPoints, FPoints.Count);
   for I:=0 to FPoints.Count-1 do

@@ -56,8 +56,8 @@ begin
   MaxV:=MaxV-1e-4;
   FloatSpinEdit1.MinValue:=MinV;
   FloatSpinEdit1.MaxValue:=MaxV;
-  Edit1.Caption:=FloatToStrF(MinV,ffFixed,7,4);
-  Edit2.Caption:=FloatToStrF(MaxV,ffFixed,7,4);
+  Edit1.Caption:=FloatToDec(MinV,4);
+  Edit2.Caption:=FloatToDec(MaxV,4);
 end;
 function TFreeInsertPlaneDialog.Execute: boolean;
    begin FUpdate;

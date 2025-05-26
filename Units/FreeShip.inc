@@ -394,6 +394,7 @@ function TFreeShip.FGetNumberOfLockedPoints: integer;
    begin Result:=Surface.NumberOfLockedPoints; end;
 function TFreeShip.FGetNumberOfLayers: integer;
    begin Result:=Surface.NumberOfLayers; end;
+
 function TFreeShip.FGetActiveLayer: TFreeSubdivisionlayer;
    begin Result:=Surface.ActiveLayer; end;
 procedure TFreeShip.FSetActiveLayer( Val: TFreeSubdivisionLayer );
@@ -441,11 +442,9 @@ begin
   end;
 end;
 
-procedure TFreeShip.FSetEditMode(Val: TFreeEditMode);
-var i:integer;
+procedure TFreeShip.FSetEditMode( Val: TFreeEditMode ); Var I: Integer;
 begin
-  if Val <> FEditMode then begin
-    FEditMode:=Val;
+  if Val<>FEditMode then begin FEditMode:=Val;
     case EditMode of
       emSelectItems: for i:=0 to Viewports.Count-1 do
         if Viewports[i].ViewType<>fvPerspective then Viewports[i].Cursor:=crCross;
@@ -551,8 +550,8 @@ begin
   ClearUndo;
   Clear;
   if not (csDesigning in ComponentState) then begin
-    FControlpointForm:=TFreeControlPointForm.Create(Self);
-    FControlpointForm.FreeShip:=self;
+    FControlpointForm:=TFreeControlPointForm.Create( Self );
+//  FControlpointForm.FreeShip:=self;
   end;
   //  TFreeSubdivisionLayer.LayerIndex=0;
   //  FSurface.Layerbox.ItemIndex=3;
@@ -1121,29 +1120,29 @@ begin
     begin                                                // Center of bouyancy
       if Visibility.FShowHydrostDisplacement then
         DrawPoint( FDesignHydrostatics.FData.CenterOfBuoyancy, 'C:' +          // Displ
-          FloatToStrF( FDesignHydrostatics.Data.Displacement,ffFixed,4,2),True );
+          FloatToDec( FDesignHydrostatics.Data.Displacement,2),True );
       if abs(FDesignHydrostatics.Data.WaterplaneCOG.Y)<0.01 then begin // Transverse metacentric height
         if Visibility.FShowHydrostMetacentricHeight then
           DrawPoint( Vector(FDesignHydrostatics.FData.CenterOfBuoyancy.X,
                         0.0,FDesignHydrostatics.FData.KMtransverse),'m:' +      // KM
-            FloatToStrF(FDesignHydrostatics.Data.KMtransverse +
-            FDesignHydrostatics.Data.ModelMin.Z, ffFixed,4,2),True);
+            FloatToDec(FDesignHydrostatics.Data.KMtransverse +
+            FDesignHydrostatics.Data.ModelMin.Z,2),True);
         if Visibility.FShowHydrostLCF then // Longitudinal center of floatation
           DrawPoint(FDesignHydrostatics.FData.WaterplaneCOG, 'S:' +             //LCF
-            FloatToStrF(FDesignHydrostatics.Data.WaterplaneCOG.X,ffFixed,4,2),False);
+            FloatToDec(FDesignHydrostatics.Data.WaterplaneCOG.X,2),False);
       end;
       // Weight center
       if Visibility.FShowHydrostDisplacement and
         (FDesignHydrostatics.Data.Weight_ > 0) then
         DrawPoint(FDesignHydrostatics.FData.CenterOfGravity_,'G:'+              // Weight=
-          FloatToStrF(FDesignHydrostatics.Data.Weight_,ffFixed,4,2), True);
+          FloatToDec(FDesignHydrostatics.Data.Weight_,2), True);
       // Lateral center
       if Visibility.FShowHydrostLateralArea then
         DrawPoint(FDesignHydrostatics.FData.LateralCOG,Userstring(29)+          // подводная ДП
-          ':'+FloatToStrF(FDesignHydrostatics.Data.LateralArea,ffFixed,4,2),True);
+          ':'+FloatToDec(FDesignHydrostatics.Data.LateralArea,2),True);
       if Visibility.FShowHydrostLateralArea then
         DrawPoint(FDesignHydrostatics.FData.sdpCOG,Userstring(1436)+
-          ':'+FloatToStrF(FDesignHydrostatics.Data.SDP,ffFixed,4,2),True);  // парусность центр
+          ':'+FloatToDec(FDesignHydrostatics.Data.SDP,2),True);  // парусность центр
       if (Viewport.ViewType = fvProfile) and
         (Visibility.FShowHydrostSectionalAreas) then begin // draw sectionalarea curve
         Curve:=TFreespline.Create(Surface);
@@ -1174,7 +1173,7 @@ begin
           Viewport.LineTo(Pt.X, Pt.Y+Size);
           Viewport.MoveTo(Pt.X-Size, Pt.Y);
           Viewport.LineTo(Pt.X+Size, Pt.Y);
-          Str:=FloatToStrF(FDesignHydrostatics.FData.SAC[I-1].Y, ffFixed, 7, 2);
+          Str:=FloatToDec(FDesignHydrostatics.FData.SAC[I-1].Y,2);
           if P.X < FProjectsettings.ProjectSplitSectionLocation then
             Viewport.TextOut(Pt.X-Viewport.TextWidth(str), Pt.Y -
               Viewport.TextHeight(str), Str)
@@ -1223,11 +1222,11 @@ begin
         Tmp:=(I-1) / (NRect-1);
         if Tmp >= 0.5 then begin
           Tmp:=2 * (Tmp-0.5);
-          Str:=FloatToStrF(Surface.MinGaussCurvature * Tmp, ffFixed, 7, NDecimal);
+          Str:=FloatToDec(Surface.MinGaussCurvature*Tmp,NDecimal);
         end
         else if Tmp < 0.5 then begin
           Tmp:=2 * (0.5-Tmp);
-          Str:=FloatToStrF(Surface.MaxGaussCurvature * Tmp, ffFixed, 7, NDecimal);
+          Str:=FloatToDec(Surface.MaxGaussCurvature*Tmp,NDecimal);
         end else Str:='0.0';
         Viewport.TextOut(Rect.Right+5,
           (Rect.Top+Rect.Bottom-Viewport.TextHeight(str)) div 2, Str);
@@ -1605,67 +1604,46 @@ begin
 end;
 
 procedure TFreeShip.KeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
-const
-  Left = 37;
-  Right = 39;
-  Up = 38;
-  Down = 40;
+const Left=37; Right=39; Up=38; Down=40;
 var
-  vViewport: TFreeViewport;
-  Point: TFreeSubdivisionControlPoint;
-  P: T3DVector;
+  vViewport: TFreeViewport; {Point: TFreeSubdivisionControlPoint; P: T3DVector;}
 begin
-  if Sender is TFreeViewport then
-     vViewport:=Sender as TFreeViewport;
-  if Sender is TFreeHullWindow then
-     vViewport:=(Sender as TFreeHullWindow).Viewport;
+  if Sender is TFreeViewport then vViewport:=Sender as TFreeViewport;
+  if Sender is TFreeHullWindow then vViewport:=(Sender as TFreeHullWindow).Viewport;
   if (Key in [Left..Down])
-    and (vViewport.ViewType <> fvPerspective)
-    and (ActiveControlPoint <> nil) then begin
-//  Edit.CreateUndoObject('ShiftPts',True);   // 'перемещение точки'
-    Point:=ActiveControlPoint;
-    FileChanged:=True;
-    Built:=False;
-    P:=Point.Coordinate;
+  and (vViewport.ViewType <> fvPerspective)
+  and (ActiveControlPoint <> nil) then begin     // перемещение выбранных узлов
+    ControlPointform.ActiveControlPoint:=ActiveControlPoint;
+    vViewport.SetFocus;
     case vViewport.Viewtype of
       fvProfile: case Key of
-           Left: P.X:=P.X-Visibility.CursorIncrement;
-             Up: P.Z:=P.Z+Visibility.CursorIncrement;
-          Right: P.X:=P.X+Visibility.CursorIncrement;
-           Down: P.Z:=P.Z-Visibility.CursorIncrement;
-        end;
-      fvPlan: case Key of
-        Left: P.X:=P.X-Visibility.CursorIncrement;
-          Up: P.Y:=P.Y+Visibility.CursorIncrement;
-       Right: P.X:=P.X+Visibility.CursorIncrement;
-        Down: P.Y:=P.Y-Visibility.CursorIncrement;
-        end;
-      fvBodyplan: case Key of
-          Left:
-            if P.X<=self.ProjectSettings.ProjectSplitSectionLocation
-              then P.Y:=P.Y+Visibility.CursorIncrement
-              else P.Y:=P.Y-Visibility.CursorIncrement;
-          Up:      P.Z:=P.Z+Visibility.CursorIncrement;
-          Right:
-            if P.X <= self.ProjectSettings.ProjectSplitSectionLocation
-              then P.Y:=P.Y-Visibility.CursorIncrement
-              else P.Y:=P.Y+Visibility.CursorIncrement;
-          Down: P.Z:=P.Z-Visibility.CursorIncrement;
+         Left: FControlpointForm.SpeedButton4Click( FControlpointForm );
+           Up: FControlpointForm.SpeedButton3Click( FControlpointForm );
+        Right: FControlpointForm.SpeedButton1Click( FControlpointForm );
+         Down: FControlpointForm.SpeedButton6Click( FControlpointForm );
+          end;
+       fvPlan: case Key of
+         Left: FControlpointForm.SpeedButton4Click( FControlpointForm );
+           Up: FControlpointForm.SpeedButton2Click( FControlpointForm );
+        Right: FControlpointForm.SpeedButton1Click( FControlpointForm );
+         Down: FControlpointForm.SpeedButton5Click( FControlpointForm );
+          end;
+   fvBodyplan: case Key of // if X<=self.ProjectSettings.ProjectSplitSectionLocation
+         Left: FControlpointForm.SpeedButton5Click( FControlpointForm );
+           Up: FControlpointForm.SpeedButton3Click( FControlpointForm );
+        Right: FControlpointForm.SpeedButton2Click( FControlpointForm );
+         Down: FControlpointForm.SpeedButton6Click( FControlpointForm );
         end;
     end;
-    Point.Coordinate:=P;
-    //ActiveControlPoint:=Point;
-    if ControlpointForm.Visible then begin // This lines updates the coordinate information in the controlpoint form
-      ControlPointform.ActiveControlPoint:=Point; // and forces a repaint of the form
-      if not vViewport.Focused then vViewport.SetFocus;
-      application.ProcessMessages;
-    end;
-    Built:=False;
-    RebuildModel;
-    Redraw;
-    Key:=0;  //disable further processing
+//  Built:=False;
+//  RebuildModel;
+//  Redraw;
+    if not vViewport.Focused then vViewport.SetFocus;
+    Key:=0;                                       //disable further processing
   end;
-  if Key in [66{b}] then RebuildModel;
+  if Key in [66{b},13,32] then                    ///***
+  begin RebuildModel; if assigned(MainForm) then TMainForm(MainForm).UpdateMenu;
+  end;
 end;
 
 procedure TFreeShip.KeyUp(Sender: TObject; var Key: word; Shift: TShiftState);
@@ -1684,9 +1662,7 @@ begin
  M:=trunc(log10(Visibility.CursorIncrement));
  N:=I;
  D:=0; E:=1;
- for P:=0 to 10 do begin
-   if (I>=E) and (I<E*10) then D:=E; E:=E*10;
- end;
+ for P:=0 to 10 do begin if (I>=E) and (I<E*10) then D:=E; E:=E*10; end;
  if (S<0) then
  if (I < 1000000000) then
    if (I > D) then N:=N-D
@@ -1695,9 +1671,8 @@ begin
  else
    if (I >= 1) then N:=N+D
                else N:=N+1;
-
  if N > 1000000000 then N:=1000000000;
- if N>0 then Visibility.CursorIncrement:=N / 1000000
+ if N>0 then Visibility.CursorIncrement:=N/1000000
         else Visibility.CursorIncrement:=1e-6;
 end; {TFreeShip.KeyUp}
 
@@ -1720,8 +1695,8 @@ begin
           Point:=Surface.ControlPoint[I];
           P2D:=Viewport.Project(Point.Coordinate);
           if (P2D.x >= rect.Left) and (P2D.x <= rect.Right)
-             and (P2D.y >= rect.Top) and (P2D.y <= rect.Bottom)
-          then self.Surface.Selection_Add(Point);
+          and (P2D.y >= rect.Top) and (P2D.y <= rect.Bottom)
+          then self.Surface.Selection_Add( Point );
             // ItemSelected:=True;
             // Draw the selected point to all viewports
 //          for J:=0 to NumberOfViewports-1 do
@@ -1757,54 +1732,44 @@ begin                                  ///***??? mouse-select = выбор эл�
     if Tmp<=SelectDistance then begin
       Entity:=Point;
       ItemSelected:=True;           // Draw the selected point to all viewports
-//    for J:=0 to NumberOfViewports-1 do
-      for J:=0 to Viewports.Count-1 do
-        if self.Viewport[J].ViewportMode=vmWireframe then Point.Draw( self.Viewport[J] );
+      for J:=0 to Viewports.Count-1 do // NumberOfViewports-1
+      if self.Viewport[J].ViewportMode=vmWireframe then Point.Draw( self.Viewport[J] );
       break;
     end;
   end;
-  I:=0;                                            // Second check the vertices
   if Entity=nil then
-  while I<Surface.NumberOfControlPoints do begin
-    if Surface.ControlPoint[I].Visible then begin
-      Point:=Surface.ControlPoint[I];
-      Tmp:=Point.DistanceToCursor( X,Y,Viewport );
-      if Tmp<=SelectDistance then begin
-        Entity:=Point;              // Point.Selected:=not Point.Selected;
-        ItemSelected:=True;         // Draw the selected point to all viewports
-//      for J:=0 to NumberOfViewports-1 do
-        for J:=0 to Viewports.Count-1 do
-          if self.Viewport[J].ViewportMode=vmWireframe then
-             Point.Draw(self.Viewport[J]);
-        break;
-      end;
-    end; Inc(I);
-  end;
-  if Entity=nil then begin   // No points found, search for nearest controlEdge
-    I:=0;
-    while I<Surface.NumberOfControlEdges do begin
-      if Surface.ControlEdge[I].Visible then begin
-        Edge:=Surface.ControlEdge[I];
-        Tmp:=Edge.DistanceToCursor( X,Y,P3D,Viewport );
-        if Tmp<=SelectDistance then begin
-          Entity:=Edge;
-          Edge.Selected:=not Edge.Selected;
-                   // If CTRL key is pressed, select multiple edges in one pass
-                  // by tracing regular edges to a boundary or irregular points
-          if (ssCtrl in shift) then Edge.Trace;
-          ItemSelected:=Edge.Selected;   // Draw selected edge to all viewports
-//        for J:=0 to NumberOfViewports-1 do
-          for J:=0 to Viewports.Count-1 do
-                 Self.Viewport[J].Refresh;
-          break;
-        end;
-      end; Inc(I);
+  for I:=0 to Surface.NumberOfControlPoints-1 do   // Second check the vertices
+  if Surface.ControlPoint[I].Visible then begin
+    Point:=Surface.ControlPoint[I];
+    Tmp:=Point.DistanceToCursor( X,Y,Viewport );
+    if Tmp<=SelectDistance then begin
+      Entity:=Point;                 // Point.Selected:=not Point.Selected;
+      ItemSelected:=True;           // Draw the selected point to all viewports
+      for J:=0 to Viewports.Count-1 do // NumberOfViewports-1
+        if self.Viewport[J].ViewportMode=vmWireframe then Point.Draw(self.Viewport[J]);
+      break;
     end;
   end;
-  if (Entity=nil) and (Visibility.ShowInteriorEdges) then begin
+  if Entity=nil then         // No points found, search for nearest controlEdge
+  for I:=0 to Surface.NumberOfControlEdges-1 do
+  if Surface.ControlEdge[I].Visible then begin
+    Edge:=Surface.ControlEdge[I];
+    Tmp:=Edge.DistanceToCursor( X,Y,P3D,Viewport );
+    if Tmp<=SelectDistance then begin
+      Entity:=Edge;
+      Edge.Selected:=not Edge.Selected;
+                   // If CTRL key is pressed, select multiple edges in one pass
+                  // by tracing regular edges to a boundary or irregular points
+      if (ssCtrl in shift) then Edge.Trace;
+      ItemSelected:=Edge.Selected;       // Draw selected edge to all viewports
+      for J:=0 to Viewports.Count-1 do Self.Viewport[J].Refresh;
+      break;
+    end;                    { end; Inc(I); end; }
+  end;
+  if Entity=nil then
+  if Visibility.ShowInteriorEdges then begin
     Surface.ShowInteriorEdges:=True; // No edges found, search for nearest control-face
-    I:=0;
-    while I<Surface.NumberOfControlFaces do begin
+    for I:=0 to Surface.NumberOfControlFaces-1 do begin
       if Surface.ControlFace[I].Visible then begin
         Face:=Surface.ControlFace[I];
         Tmp:=Face.DistanceToCursor( X,Y,P3D,Viewport );
@@ -1816,45 +1781,38 @@ begin                                  ///***??? mouse-select = выбор эл�
              // and have the same selected state
           if (ssCtrl in shift) then Face.Trace;
           ItemSelected:=True;       // Draw the selected faces to all viewports
-//        for J:=0 to NumberOfViewports-1 do
-          for J:=0 to Viewports.Count-1 do
-                 Self.Viewport[J].Refresh;
+          for J:=0 to Viewports.Count-1 do Self.Viewport[J].Refresh;
           break;
         end;
-      end; Inc(I);
+      end;
     end;
   end;
-  if (Entity=nil) then begin
-    I:=0;
-    while I<Surface.NumberOfControlCurves do begin
-      if Surface.ControlCurve[I].Visible then begin
-        Curve:=Surface.ControlCurve[I];
-        Tmp:=Curve.DistanceToCursor( X,Y,Viewport );
-        if Tmp<=SelectDistance then begin
-          Entity:=Curve;
-          Curve.Selected:=not Curve.Selected;
-          ItemSelected:=True;        // Draw the selected edge to all viewports
-//        for J:=0 to NumberOfViewports-1 do
-          for J:=0 to Viewports.Count-1 do
-            if self.Viewport[J].ViewportMode=vmWireframe then Curve.Draw(self.Viewport[J]);
-          break;
-        end;
-      end; Inc(I);
+  if (Entity=nil) then
+  for I:=0 to Surface.NumberOfControlCurves-1 do begin
+    if Surface.ControlCurve[I].Visible then begin
+      Curve:=Surface.ControlCurve[I];
+      Tmp:=Curve.DistanceToCursor( X,Y,Viewport );
+      if Tmp<=SelectDistance then begin
+        Entity:=Curve;
+        Curve.Selected:=not Curve.Selected;
+        ItemSelected:=True;        // Draw the selected edge to all viewports
+        for J:=0 to Viewports.Count-1 do
+          if self.Viewport[J].ViewportMode=vmWireframe then Curve.Draw(self.Viewport[J]);
+        break;
+      end;
     end;
   end;                                                       // check flowlines
-  if (Entity=nil) and (not ItemSelected) and (Visibility.ShowFlowlines) then begin
-    I:=0;
-    while I<NumberOfFlowlines do begin
-      Tmp:=Flowline[I].DistanceToCursor( X,Y,Viewport );
-      if Tmp<=SelectDistance then begin
-        Flowline[I].Selected:=not Flowline[I].Selected;
-        ItemSelected:=True;      // Draw the selected flowline to all viewports
-//      for J:=0 to NumberOfViewports-1 do
-        for J:=0 to Viewports.Count-1 do
-          if self.Viewport[J].ViewportMode=vmWireframe then
-             Flowline[I].Draw( self.Viewport[J] );
-        break;
-      end; Inc( I );
+  if Entity=nil then
+  if not ItemSelected then
+  if Visibility.ShowFlowlines then
+  for I:=0 to NumberOfFlowlines-1 do begin
+    Tmp:=Flowline[I].DistanceToCursor( X,Y,Viewport );
+    if Tmp<=SelectDistance then begin
+      Flowline[I].Selected:=not Flowline[I].Selected;
+      ItemSelected:=True;      // Draw the selected flowline to all viewports
+      for J:=0 to Viewports.Count-1 do
+        if self.Viewport[J].ViewportMode=vmWireframe then Flowline[I].Draw( self.Viewport[J] );
+      break;
     end;
   end;                                                         // check Markers
   if (Entity=nil) and (not ItemSelected) and (Visibility.ShowMarkers) then begin
@@ -1864,122 +1822,106 @@ begin                                  ///***??? mouse-select = выбор эл�
       if Tmp<=SelectDistance then begin
         Marker[I].Selected:=not Marker[I].Selected;
         ItemSelected:=True;        // Draw the selected Marker to all viewports
-//      for J:=0 to NumberOfViewports-1 do
         for J:=0 to Viewports.Count-1 do
           if self.Viewport[J].ViewportMode=vmWireframe then
             Marker[I].Draw(self.Viewport[J]); break;
       end; Inc(I);
     end;
   end;                                                     // search by surface
-  if (Entity=nil) and (Viewport.ViewPortMode<>vmWireFrame ) then begin
+  if Entity=nil then
+  if Viewport.ViewPortMode<>vmWireFrame then begin
     MinDistance:=1e6; // ~10e18
     P.x:=X; P.y:=Y;
     p3d:=ViewPort.ProjectBack( P,ZERO );
     P:=ViewPort.Project( p3d );
-    for I:=0 to Surface.NumberOfControlFaces-1 do begin
-      if Surface.ControlFace[I].Visible then begin Face:=Surface.ControlFace[I];
-        if Face.PointInFace( X,Y,P3D,Dist,Viewport ) then begin
-          if Dist<MinDistance then begin MinDistance:=Dist; Entity:=Face; end;
-        end;
-      end;
+    for I:=0 to Surface.NumberOfControlFaces-1 do
+    if Surface.ControlFace[I].Visible then begin Face:=Surface.ControlFace[I];
+      if Face.PointInFace( X,Y,P3D,Dist,Viewport ) then
+        if Dist<MinDistance then begin MinDistance:=Dist; Entity:=Face; end;
     end;
     if Entity<>nil then begin
-      Face:=TFreeSubdivisionControlFace( Entity );
-      Face.Selected:=not Face.Selected;
-                   // If CTRL key is pressed, select all connected controlfaces
-                   // that belong to the same layer and are not separated
-                   // by a crease edgea nd have the same selected state
-      if (ssCtrl in shift) then Face.Trace;
-      ItemSelected:=True;           // Draw the selected faces to all viewports
-//    for J:=0 to NumberOfViewports-1 do
-      for J:=0 to Viewports.Count-1 do
-             Self.Viewport[J].Refresh;
+      Face:=TFreeSubdivisionControlFace( Entity ); // If CTRL key is pressed, select all connected controlfaces
+      Face.Selected:=not Face.Selected;            // that belong to the same layer and are not separated
+      if (ssCtrl in shift) then Face.Trace;        // by a crease edgea nd have the same selected state
+      ItemSelected:=True;                          // Draw the selected faces to all viewports
+      for J:=0 to Viewports.Count-1 do Self.Viewport[J].Refresh;
     end;
   end;
-  if Entity<>nil then                 // apparently SOMEthing has been selected
-    if Entity is TFreeSubdivisionControlPoint          ///***??? проблемы мышки
-    then begin   // If CTRL key is pressed, selection of multiple controlpoints
-                 // is allowed, otherwise select only ONE controlpoint
-      Point:=Entity as TFreeSubdivisionControlPoint;
-      if not (ssCtrl in shift) then begin
-        if NumberOfSelectedControlPoints>0 then
-          for I:=NumberOfSelectedControlPoints-1 downto 0
-            do SelectedControlPoint[I].Selected:=False;
-        if NumberOfSelectedControlPointGroups>0 then
-          for I:=0 to NumberOfSelectedControlPointGroups-1
-            do SelectedControlPointGroup[I].Selected:=False;                    ///***writeln( 'pass-N='+inttostr( NumberOfSelectedControlPoints )+' \ '+inttostr( NumberOfSelectedControlPointGroups ) );
-        Point.Selected:=True;          // select all points in a group if there
-        ActiveControlPoint:=Point;
-        if Surface.ControlPointGroups.Count>0 then
-        for I:=0 to Surface.ControlPointGroups.Count-1 do
-          if Surface.ControlPointGroups[I].ControlPoints.IndexOf(Point)>=0 then
-             Surface.ControlPointGroups[I].Selected:=true;                      ///***writeln( 'exit-N='+inttostr(Surface.ControlPoints.Count)+' \ '+inttostr(Surface.ControlPointGroups.Count) );
-      end else begin
-        Point.Selected:=not Point.Selected;
-        if not Point.Selected
-          then Point:=SelectedControlPoint[NumberOfSelectedControlPoints-1];
-      end;
-//    for J:=0 to NumberOfViewports-1 do
-      for J:=0 to Viewports.Count-1 do
-             self.Viewport[J].Refresh;
-      if ActiveControlPoint<>Point then ActiveControlPoint:=Point;
-      FCurrentlyMoving:=True;
-      FPointHasBeenMoved:=False;
-      FPrevCursorPosition.X:=X;
-      FPrevCursorPosition.Y:=Y;
-    end else
-    if Entity is TFreeSubdivisionControlEdge then begin
-       ActiveControlEdge:=Entity as TFreeSubdivisionControlEdge;
-    end else
-    if Entity is TFreeSubdivisionControlFace then begin
-       ActiveControlFace:=Entity as TFreeSubdivisionControlFace;
-//     ActiveLayer:=ActiveControlFace.Layer;
-    end else
-    if Entity is TFreeSubdivisionControlCurve then begin
-//    for J:=0 to NumberOfViewports-1 do
-      for J:=0 to Viewports.Count-1 do
-        if self.Viewport[J].ViewportMode=vmWireframe then self.Viewport[J].Refresh;
-      ActiveControlCurve:=Entity as TFreeSubdivisionControlCurve;
+  if Entity<>nil then               ///***??? проблемы мышки apparently SOMEthing has been selected
+  if Entity is TFreeSubdivisionControlPoint then begin // If CTRL key is pressed, selection of multiple controlpoints is allowed, otherwise select only ONE controlpoint
+    Point:=Entity as TFreeSubdivisionControlPoint;
+    if not (ssCtrl in shift) then begin
+      if NumberOfSelectedControlPoints>0 then
+        for I:=NumberOfSelectedControlPoints-1 downto 0
+          do SelectedControlPoint[I].Selected:=False;
+      if NumberOfSelectedControlPointGroups>0 then
+        for I:=0 to NumberOfSelectedControlPointGroups-1
+          do SelectedControlPointGroup[I].Selected:=False;
+      Point.Selected:=True;            // select all points in a group if there
+      ActiveControlPoint:=Point;
+      if Surface.ControlPointGroups.Count>0 then
+      for I:=0 to Surface.ControlPointGroups.Count-1 do
+        if Surface.ControlPointGroups[I].ControlPoints.IndexOf(Point)>=0 then
+           Surface.ControlPointGroups[I].Selected:=true;
+    end else begin
+      Point.Selected:=not Point.Selected;
+      if not Point.Selected
+        then Point:=SelectedControlPoint[NumberOfSelectedControlPoints-1];
     end;
+    for J:=0 to Viewports.Count-1 do self.Viewport[J].Refresh;
+    if ActiveControlPoint<>Point then ActiveControlPoint:=Point;
+    FCurrentlyMoving:=True;
+    FPointHasBeenMoved:=False;
+    FPrevCursorPosition.X:=X;
+    FPrevCursorPosition.Y:=Y;
+  end else
+  if Entity is TFreeSubdivisionControlEdge then begin
+     ActiveControlEdge:=Entity as TFreeSubdivisionControlEdge;
+  end else
+  if Entity is TFreeSubdivisionControlFace then begin
+     ActiveControlFace:=Entity as TFreeSubdivisionControlFace;
+//   ActiveLayer:=ActiveControlFace.Layer;
+  end else
+  if Entity is TFreeSubdivisionControlCurve then begin
+     for J:=0 to Viewports.Count-1 do
+       if self.Viewport[J].ViewportMode=vmWireframe then self.Viewport[J].Refresh;
+     ActiveControlCurve:=Entity as TFreeSubdivisionControlCurve;
+  end;
 end;
 
-procedure TFreeShip.DoAddPoint(const Viewport: TFreeViewport; const X, Y: integer;
-  const Button: TMouseButton;  const Shift: TShiftState;
-  var ItemSelected: boolean);
-var Select  : Boolean = False;
+procedure TFreeShip.DoAddPoint
+( const Viewport: TFreeViewport; const X,Y: integer;
+  const Button: TMouseButton; const Shift: TShiftState;
+  var ItemSelected: boolean );
+var Select: Boolean=False;
   P:TPoint;
   P2D:T2DCoordinate;
   P3D:T3DVector;
 begin
   P.X:=X; P.Y:=Y; P2D:=Viewport.ProjectBackTo2D( P );
-  if (Visibility.ModelView=mvBoth) and (Viewport.ViewType=fvBodyplan)
-     then P2D.X:=abs(P2D.X);
-  if Viewport.ViewType=fvBodyplan then
-     begin P3D.X:=Surface.Max.X; P3D.Y:=P2D.X; P3D.Z:=P2D.Y; end;
-  if Viewport.ViewType=fvProfile then
-     begin P3D.X:=P2D.X; P3D.Y:=0; P3D.Z:=P2D.Y; end;
-  if Viewport.ViewType=fvPlan then
-     begin P3D.X:=P2D.X; P3D.Y:=P2D.Y; P3D.Z:=0; end;
-  Edit.Point_New(P3D);
+  if (Visibility.ModelView=mvBoth) and (Viewport.ViewType=fvBodyplan) then P2D.X:=abs(P2D.X);
+  if Viewport.ViewType=fvBodyplan then begin P3D.X:=Surface.Max.X; P3D.Y:=P2D.X; P3D.Z:=P2D.Y; end;
+  if Viewport.ViewType=fvProfile  then begin P3D.X:=P2D.X; P3D.Y:=0; P3D.Z:=P2D.Y; end;
+  if Viewport.ViewType=fvPlan     then begin P3D.X:=P2D.X; P3D.Y:=P2D.Y; P3D.Z:=0; end;
+  Edit.Point_New( P3D );
   EditMode:=emSelectItems;
   ItemSelected:=true;
 end;
 
-procedure TFreeShip.DoAddFlowLine(const Viewport: TFreeViewport; const X, Y: integer;
-          const Button: TMouseButton; const Shift: TShiftState;
-          var ItemSelected: boolean );
-var P: TPoint;
-    P2D:T2DCoordinate;
+procedure TFreeShip.DoAddFlowLine
+( const Viewport: TFreeViewport;
+  const X,Y: integer;
+  const Button: TMouseButton;
+  const Shift: TShiftState; var ItemSelected: boolean );
+var P:TPoint; P2D:T2DCoordinate;
 begin
-  if (ssAlt in Shift) and                                             ///***???
-  (Viewport.Viewtype<>fvPerspective) then begin
-     P.X:=X; P.Y:=Y;
-     P2D:=Viewport.ProjectBackTo2D(P);
-     if (Visibility.ModelView=mvBoth) and (Viewport.ViewType=fvBodyplan)
-        then P2D.X:=abs(P2D.X);
+  if ssAlt in Shift then                                             ///***???
+  if Viewport.Viewtype<>fvPerspective then begin
+     P.X:=X; P.Y:=Y; P2D:=Viewport.ProjectBackTo2D( P );
+     if (Visibility.ModelView=mvBoth) and (Viewport.ViewType=fvBodyplan) then P2D.X:=abs(P2D.X);
      Edit.Flowline_Add( P2D,Viewport.Viewtype );
      ItemSelected:=true;
-     if assigned(MainForm) then TMainForm(MainForm).UpdateMenu;
+     if assigned( MainForm ) then TMainForm( MainForm ).UpdateMenu;
   end;
 end;
 
@@ -1987,85 +1929,77 @@ procedure TFreeShip.MouseDown
 ( Viewport: TFreeViewport; Button: TMouseButton;
   Shift: TShiftState; X,Y: integer; var ItemSelected: boolean );
 begin ItemSelected:=False;
+  if not Viewport.Focused then Viewport.SetFocus;
   if Button = mbLeft then begin
     case EditMode of
-      emSelectItems: DoSelectItems( ViewPort, X,Y,Button, Shift,ItemSelected );
-      emAddPoint:    DoAddPoint   ( ViewPort, X,Y,Button, Shift,ItemSelected );
-      emAddFlowLine: DoAddFlowLine( ViewPort, X,Y,Button, Shift,ItemSelected );
+      emSelectItems: DoSelectItems( ViewPort,X,Y,Button,Shift,ItemSelected );
+      emAddPoint:    DoAddPoint   ( ViewPort,X,Y,Button,Shift,ItemSelected );
+      emAddFlowLine: DoAddFlowLine( ViewPort,X,Y,Button,Shift,ItemSelected );
     end;
   end else if Button=mbRight then EditMode:=emSelectItems;
-//if not Viewport.Focused then Viewport.SetFocus;
 end;
 
 procedure TFreeShip.MouseMove
-        ( Viewport: TFreeViewport; Shift: TShiftState;  X,Y: integer);          ///***???
+        ( Viewport: TFreeViewport; Shift: TShiftState; X,Y: integer); ///***???
 var
-  I,J: integer;
+  I,J: integer; dX,dY,dZ: TFloatType;
   P2D: T2DCoordinate; P,oP,gP: T3DVector; Pt: TPoint;
-  Point, gPoint: TFreeSubdivisionControlPoint;
-  dX,dY,dZ: TFloatType;
+  Point,gPoint: TFreeSubdivisionControlPoint;
 begin
   case EditMode of
     emSelectItems:
       if (ActiveControlPoint<>nil) and (FCurrentlyMoving)
       and (ssLeft in shift) and (Viewport.ViewType<>fvPerspective) then
-        if (X<>FPrevCursorPosition.X) or (Y<>FPrevCursorPosition.Y) then begin  ///***??? mouse WriteLn( 'mouse: начало' );
-          if FPointHasBeenMoved=False then begin
-                                 // This is the first time the vertex is moved
-                                 // Apply a certain threshold to make sure that
-                                 // the controlpoint is not moved by accident
-//          if Sqrt(Sqr(X-FPrevCursorPosition.X)+Sqr(Y-FPrevCursorPosition.Y))<Threshold then exit;
-            if ActiveControlPoint.Locked then begin MessageDlg(Userstring(191)+'!',mtWarning,[mbOK],0 ); exit; end;
-//          Edit.CreateUndoObject( 'MouMove',True );    // 'перемещение точки'
-          end;
-          Point:=ActiveControlPoint;
-          FileChanged:=True;
-          Built:=False;
-          FPointHasBeenMoved:=True;
-          Pt.X:=X;
-          Pt.Y:=Y;
-          P2D:=Viewport.ProjectBackTo2D( Pt );
-          P:=Point.Coordinate;
-          case Viewport.Viewtype of
-            fvProfile: begin P.X:=P2D.X; P.Z:=P2D.Y; end;
-            fvPlan:    begin P.X:=P2D.X; P.Y:=P2D.Y; end;
-            fvBodyplan: begin
-              if P.X<=ProjectSettings.ProjectSplitSectionLocation
-                 then P.Y:=-P2D.X
-                 else P.Y:=P2D.X; P.Z:=P2D.Y;
-            end;
-          end;
-          oP:=Point.Coordinate; Point.SetCoordinate( ViewPort,P,nil );
-          {
-          // TODO Move to TFreeSubdivisionControlPoint.MoveBy
-            dX:= Point.Coordinate.X-oP.X;
-            dY:= Point.Coordinate.Y-oP.Y;
-            dZ:= Point.Coordinate.Z-oP.Z;
-          // move all points of selected groups if there
-            for I:=0 to NumberOfSelectedControlPointGroups-1 do
-              for j:=0 to SelectedControlPointGroup[i].ControlPoints.Count-1 do
-                if SelectedControlPointGroup[i].ControlPoints[j] <> Point then
-                begin
-                  gPoint:=SelectedControlPointGroup[i].ControlPoints[j];
-                  gP:=gPoint.Coordinate;
-                //gPoint.MoveBy(Viewport, dX, dY, dZ, nil);
-                  gPoint.MoveBy(Viewport, dX, dY, dZ);
-                end;
-          }
-          ActiveControlPoint:=Point;
-          Built:=False;
-          if ControlpointForm.Visible then begin // This lines updates the coordinate information in the controlpoint form
-            ControlPointform.ActiveControlPoint:=Point;   // and forces a repaint of the form
-            if not Viewport.Focused then Viewport.SetFocus; // Application.ProcessMessages;
-            TControl(Viewport.Owner).BringToFront;
-          end;
-//        for J:=0 to NumberOfViewports-1 do
-          for I:=0 to Viewports.Count-1 do
-                 self.Viewport[I].Refresh;
-          if LinesplanFrame<>nil then TFreeLinesplanframe(LinesplanFrame).Viewport.Refresh;
-          FPrevCursorPosition.X:=X;
-          FPrevCursorPosition.Y:=Y;
+      if (X<>FPrevCursorPosition.X) or (Y<>FPrevCursorPosition.Y) then begin  ///***??? mouse WriteLn( 'mouse: начало' );
+        if FPointHasBeenMoved=False then begin                                // This is the first time the vertex is moved
+       //  Apply a certain threshold to make sure that the controlpoint is not moved by accident
+       // if Sqrt(Sqr(X-FPrevCursorPosition.X)+Sqr(Y-FPrevCursorPosition.Y))<Threshold then exit;
+          if ActiveControlPoint.Locked then begin ShowMessage(Userstring(191)+'!'); exit; end;
+          Edit.CreateUndoObject( 'MouMove',True );     // 'перемещение точки'
         end;
+        Point:=ActiveControlPoint;
+        FileChanged:=True;
+        Built:=False;
+        FPointHasBeenMoved:=True;
+        Pt.X:=X;
+        Pt.Y:=Y;
+        P2D:=Viewport.ProjectBackTo2D( Pt );
+        P:=Point.Coordinate;
+        case Viewport.Viewtype of
+          fvProfile: begin P.X:=P2D.X; P.Z:=P2D.Y; end;
+          fvPlan:    begin P.X:=P2D.X; P.Y:=P2D.Y; end;
+          fvBodyplan: begin
+            if P.X<=ProjectSettings.ProjectSplitSectionLocation
+               then P.Y:=-P2D.X
+               else P.Y:=P2D.X; P.Z:=P2D.Y;
+          end;
+        end;
+        oP:=Point.Coordinate; Point.SetCoordinate( ViewPort,P,nil );
+      { dX:= Point.Coordinate.X-oP.X;  // TODO Move to TFreeSubdivisionControlPoint.MoveBy
+        dY:= Point.Coordinate.Y-oP.Y;
+        dZ:= Point.Coordinate.Z-oP.Z;  // move all points of selected groups if there
+        for I:=0 to NumberOfSelectedControlPointGroups-1 do
+        for j:=0 to SelectedControlPointGroup[i].ControlPoints.Count-1 do
+        if SelectedControlPointGroup[i].ControlPoints[j]<>Point then begin
+           gPoint:=SelectedControlPointGroup[i].ControlPoints[j];
+           gP:=gPoint.Coordinate;
+         //gPoint.MoveBy(Viewport, dX, dY, dZ, nil);
+           gPoint.MoveBy(Viewport, dX, dY, dZ);
+        end;
+      }
+        ActiveControlPoint:=Point;
+        Built:=False;
+        if ControlpointForm.Visible then begin // This lines updates the coordinate information in the controlpoint form
+          ControlPointform.ActiveControlPoint:=Point; // and forces a repaint of the form
+          if not Viewport.Focused then Viewport.SetFocus; // Application.ProcessMessages;
+          TControl(Viewport.Owner).BringToFront;
+        end;
+//      for J:=0 to NumberOfViewports-1 do
+        for I:=0 to Viewports.Count-1 do self.Viewport[I].Refresh;
+        if LinesplanFrame<>nil then TFreeLinesplanframe(LinesplanFrame).Viewport.Refresh;
+        FPrevCursorPosition.X:=X;
+        FPrevCursorPosition.Y:=Y;
+      end;
   end;
 end;
 
@@ -2093,11 +2027,13 @@ end;
 procedure TFreeShip.MouseUp(Viewport: TFreeViewport; Shift: TShiftState; X, Y: integer);
 begin
   if FCurrentlyMoving and FPointHasBeenMoved then begin
-//   Edit.CreateUndoObject( rsPointMove,True );
+     Edit.CreateUndoObject( 'PointMove',True );
      Built:=False;
      FileChanged:=True;
      Redraw;
-     end;
+  end;
+  if assigned( MainForm ) then TMainForm( MainForm ).FreeShipUpdateGeometryInfo( Self );
+//if assigned( MainForm ) then TMainForm( MainForm ).UpdateMenu;
   FCurrentlyMoving:=False;
 //if not Viewport.Focused then Viewport.SetFocus;
 end;

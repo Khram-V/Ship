@@ -218,13 +218,13 @@ begin
     then Prop.Weight:=Prop.Weight/(12*2240)
     else Prop.Weight:=Prop.Weight/1000;
 
-  _Label10.Caption:=FloatToStrF(Prop.SurfaceArea,ffFixed,7,3)+#32+AreaStr(FFreeship.ProjectSettings.ProjectUnits);
-  _Label11.Caption:=FloatToStrF(Prop.Weight,ffFixed,7,3)+#32+WeightStr(FFreeship.ProjectSettings.ProjectUnits);
+  _Label10.Caption:=FloatToDec(Prop.SurfaceArea,3)+#32+AreaStr(FFreeship.ProjectSettings.ProjectUnits);
+  _Label11.Caption:=FloatToDec(Prop.Weight,3)+#32+WeightStr(FFreeship.ProjectSettings.ProjectUnits);
   _Label12.Caption:=Makelength(Prop.SurfaceCenterOfGravity.X,2,7)+','+
                   Makelength(Prop.SurfaceCenterOfGravity.Y,2,7)+', '+
                   Makelength(Prop.SurfaceCenterOfGravity.Z,2,7)+#32+LengthStr(FFreeship.ProjectSettings.ProjectUnits);
   AlphaBar.Position:=round( ( 255-Layer.AlphaBlend )*100/255 );
-//_label1.Caption:=FloatToStrF(100*(255-Layer.AlphaBlend)/255,ffFixed,7,1)+'%';
+//_label1.Caption:=FloatToDec(100*(255-Layer.AlphaBlend)/255,1)+'%';
   UpdateMenu;
   FProgrammaticalChange:=false;
 end;
@@ -341,18 +341,13 @@ begin
    if Key=#13 then Edit2Exit(self);
 end;
 
-procedure TFreeLayerDialog.Edit2Exit(Sender: TObject);
-var Value:TFloatType;
+procedure TFreeLayerDialog.Edit2Exit( Sender: TObject ); var Value:TFloatType;
 begin
-   if SelectedLayer<>nil then
-   begin
-      Value:=Edit2.Value;
-      if Value<>SelectedLayer.MaterialDensity then
-      begin
-         SelectedLayer.MaterialDensity:=Value;
-      end;
-      LayerBoxItemClick(self,Layerbox.ItemIndex);
-   end;
+  if SelectedLayer<>nil then begin
+    Value:=Edit2.Value;
+    if Value<>SelectedLayer.MaterialDensity then begin SelectedLayer.MaterialDensity:=Value; end;
+    LayerBoxItemClick(self,Layerbox.ItemIndex);
+  end;
 end;
 
 procedure TFreeLayerDialog.Edit3KeyPress(Sender: TObject; var Key: Char);
@@ -444,7 +439,7 @@ begin
    Val:=round(255-Alphabar.Position * 255 / 100);
    if SelectedLayer<>nil then if SelectedLayer.AlphaBlend<>val then begin
       SelectedLayer.AlphaBlend:=val;
-    //_label1.Caption:=FloatToStrF(100*(255-SelectedLayer.AlphaBlend)/255,ffFixed,7,1)+'%';
+   //_label1.Caption:=FloatToDec(100*(255-SelectedLayer.AlphaBlend)/255,1)+'%';
       FFreeShip.FileChanged:=true;
       FFreeShip.Redraw;
    end;

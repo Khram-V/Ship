@@ -713,7 +713,7 @@ var
     if not FMirror then P3D:=Point[Index]
                    else P3D:=MirrorPoint[Index];
     P3D:=P3D-Min;
-    Strings.Add(FloatToStrF(P3D.X,ffFixed,7,3)+#32+FloatToStrF(P3D.Y,ffFixed,7,3));
+    Strings.Add(FloatToDec(P3D.X,3)+#32+FloatToDec(P3D.Y,3));
   end;
 begin                                             // Extract edges as polylines
   Source := TFasterListTFreeSubdivisionEdge.Create;

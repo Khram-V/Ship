@@ -335,7 +335,7 @@ var
     // Jouk   Cx0=(1.4320923*10^(-7))*x^3-(1.0331613*10^(-5))*x^2+(5.1494225*10^(-4))*x+0.0091237
     // Calculate lift and drag
     x:=2*MaxY / MeanChord*100.;
-    //        MessageDlg(FloatToStrF(x,ffFixed,6,3),mtInformation,[mbOk],0);
+    //        MessageDlg(FloatToDec(x,3),mtInformation,[mbOk],0);
     //  Cx0:=0.01;
     Cx0:=1.4320923e-7*x*x*x-1.0331613e-5*x*x+5.1494225e-4*x+0.0091237;
     {    x:=2*MaxY/MeanChord;
@@ -343,7 +343,7 @@ var
       Cf0:=0.455/power(log10(Re),2.58);
       Cx0:=(2+2.4*x+17*x*x*x)*Cf0;  // по формуле Шольца
     }
-    //        MessageDlg(FloatToStrF(Cx0,ffFixed,6,3),mtInformation,[mbOk],0);
+    //        MessageDlg(FloatToDec(Cx0,3),mtInformation,[mbOk],0);
     x:=EffAspectRatio;
     if x >= 5 then x:=5;
                   ak:=-0.0842831*x*x*x+0.0460527*x*x+0.6917343*x-0.001387;
@@ -402,15 +402,15 @@ var
       Label13.Caption:=str[6];
       Label15.Caption:=str[7];
       Label24.Caption:=str[8];
-     _Label19.Caption:=FloatToStrF(Volume,ffFixed,7,3)+#32+VolStr(Ship.ProjectSettings.ProjectUnits);
-     _Label21.Caption:=FloatToStrF(VolCOG.X/Volume/0.75,ffFixed,7,3)+','+FloatToStrF(VolCOG.Z/Volume*2,ffFixed,7,3)+#32+LengthStr(Ship.ProjectSettings.ProjectUnits);
-     _Label23.Caption:=FloatToStrF(WettedArea,ffFixed,7,3)+#32+AreaStr(Ship.ProjectSettings.ProjectUnits);
-     _Label8.Caption:=FloatToStrF(Area,ffFixed,7,3)+#32+AreaStr(Ship.ProjectSettings.ProjectUnits);
-     _Label10.Caption:=FloatToStrF(COG.X,ffFixed,7,3)+','+FloatToStrF(COG.Y,ffFixed,7,3)+#32+LengthStr(Ship.ProjectSettings.ProjectUnits);
-     _Label12.Caption:=FloatToStrF(MeanChord,ffFixed,7,3)+#32+LengthStr(Ship.ProjectSettings.ProjectUnits);
-     _Label14.Caption:=FloatToStrF(GeomAspectRatio,ffFixed,7,3);
-     _Label16.Caption:=FloatToStrF(EffAspectRatio,ffFixed,7,3);
-     _Label25.Caption:=FloatToStrF(2*MaxY,ffFixed,7,3)+#32+LengthStr(Ship.ProjectSettings.ProjectUnits);
+     _Label19.Caption:=FloatToDec(Volume,3)+#32+VolStr(Ship.ProjectSettings.ProjectUnits);
+     _Label21.Caption:=FloatToDec(VolCOG.X/Volume/0.75,3)+','+FloatToDec(VolCOG.Z/Volume*2,3)+#32+LengthStr(Ship.ProjectSettings.ProjectUnits);
+     _Label23.Caption:=FloatToDec(WettedArea,3)+#32+AreaStr(Ship.ProjectSettings.ProjectUnits);
+     _Label8.Caption:=FloatToDec(Area,3)+#32+AreaStr(Ship.ProjectSettings.ProjectUnits);
+     _Label10.Caption:=FloatToDec(COG.X,3)+','+FloatToDec(COG.Y,3)+#32+LengthStr(Ship.ProjectSettings.ProjectUnits);
+     _Label12.Caption:=FloatToDec(MeanChord,3)+#32+LengthStr(Ship.ProjectSettings.ProjectUnits);
+     _Label14.Caption:=FloatToDec(GeomAspectRatio,3);
+     _Label16.Caption:=FloatToDec(EffAspectRatio,3);
+     _Label25.Caption:=FloatToDec(2*MaxY,3)+#32+LengthStr(Ship.ProjectSettings.ProjectUnits);
     end else
     if Combobox.ItemIndex=0
     then GroupBox1.Caption:=UserString(1119)+' '+UserString(1120)+':'  // Keel's_properties with_bulb
@@ -704,11 +704,11 @@ begin
      then _Label19.Caption:=FloatToStrF(Volume,ffFixed,8,4)+#32+VolStr(Ship.ProjectSettings.ProjectUnits)
      else _Label19.Caption:=FloatToStrF(Volume,ffFixed,8,6)+#32+VolStr(Ship.ProjectSettings.ProjectUnits);
     if VolBulb*InputBulbDensity.Value >= 0.05 then begin
-     _Label21.Caption:=FloatToStrF(VolBulb,ffFixed,8,4)+#32+VolStr(Ship.ProjectSettings.ProjectUnits);
-     _Label23.Caption:=FloatToStrF(VolBulb*InputBulbDensity.Value,ffFixed,8,3)+#32+WeightStr(Ship.ProjectSettings.ProjectUnits);
+     _Label21.Caption:=FloatToDec(VolBulb,4)+#32+VolStr(Ship.ProjectSettings.ProjectUnits);
+     _Label23.Caption:=FloatToDec(VolBulb*InputBulbDensity.Value,3)+#32+WeightStr(Ship.ProjectSettings.ProjectUnits);
     end else begin
-     _Label21.Caption:=FloatToStrF(VolBulb,ffFixed,8,6)+#32+VolStr(Ship.ProjectSettings.ProjectUnits);
-     _Label23.Caption:=FloatToStrF(VolBulb*InputBulbDensity.Value,ffFixed,8,6)+#32+WeightStr(Ship.ProjectSettings.ProjectUnits);
+     _Label21.Caption:=FloatToDec(VolBulb,6)+#32+VolStr(Ship.ProjectSettings.ProjectUnits);
+     _Label23.Caption:=FloatToDec(VolBulb*InputBulbDensity.Value,6)+#32+WeightStr(Ship.ProjectSettings.ProjectUnits);
     end;
   end;
   IsUptoDate:=True;
@@ -779,10 +779,8 @@ begin
 end;
 
 function TFreeKeelWizardDialog.Execute: boolean; //( Freeship: TFreeShip ): boolean;
-//Var vUndo: TFreeUndoObject;
 begin
   createViewport();
-//vUndo:=Ship.Edit.CreateUndoObject( 'Keel',False );
   str[0]:=Label18.Caption;
   str[1]:=Label20.Caption;
   str[2]:=Label22.Caption;

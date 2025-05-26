@@ -37,9 +37,9 @@ begin
 //if (Index>=0) and aValue then exit;
 //if (Index<0) and not aValue then exit;
   if aValue then begin             // Only add if it is not already in the list
-   if Index=-1 then FreeShip.FSelectedFlowlines.Add(self); end else
-   if Index<>-1 then FreeShip.FSelectedFlowlines.Delete(index);
-                     FreeShip.Surface.ExecuteOnSelectItem(self);
+  if Index=-1 then FreeShip.FSelectedFlowlines.Add(self); end else
+  if Index<>-1 then FreeShip.FSelectedFlowlines.Delete(index);
+//FreeShip.Surface.ExecuteOnSelectItem(self);
 end;
 
 procedure TFreeFlowline.FSetBuild(val: boolean);

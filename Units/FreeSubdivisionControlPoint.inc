@@ -24,10 +24,10 @@ function TFreeSubdivisionControlPoint.FGetIsLeak: boolean;
 begin Result:=( abs( Coordinate.Y )>1e-4 ) and (IsBoundaryVertex); end;
 
 function TFreeSubdivisionControlPoint.GetIsFreeStanding: boolean;
-begin Result:=(FFaces.Count+FEdges.Count) = 0; end;
+begin Result:=(FFaces.Count+FEdges.Count)=0; end;
 
 function TFreeSubdivisionControlPoint.FGetSelected: boolean;
-begin Result:=Surface.FSelectedControlPoints.IndexOf(self) <> -1; end;
+begin Result:=Surface.FSelectedControlPoints.IndexOf(self)<>-1; end;
 
 function TFreeSubdivisionControlPoint.FGetVisible: boolean;
   var I: integer; CFace: TFreeSubdivisionControlFace;
@@ -58,17 +58,16 @@ begin
   end;
 end;
 
-procedure TFreeSubdivisionControlPoint.FSetSelected(val: boolean);
+procedure TFreeSubdivisionControlPoint.FSetSelected( val: boolean );
 var Index: integer;
 begin
-  Index:=Surface.FSelectedControlPoints.IndexOf(self);
+  Index:=Surface.FSelectedControlPoints.IndexOf( self );
   if (Index>=0) and Val then exit;
   if (Index<0) and not Val then exit;
-  if Val then Surface.FSelectedControlPoints.Add(self)
+  if Val then Surface.FSelectedControlPoints.Add( self )
          else Surface.FSelectedControlPoints.Delete( index );
-//if Assigned( Surface.FOnSelectItemListeners ) then
-//  Surface.FOnSelectItemListeners( self );
-    Surface.ExecuteOnSelectItem( Self );
+//if Assigned( Surface.FOnSelectItemListeners ) then Surface.FOnSelectItemListeners( self );
+//Surface.ExecuteOnSelectItem( Self );
 end;
 
 procedure TFreeSubdivisionControlPoint.FSetLocked(val: boolean);
@@ -573,14 +572,12 @@ begin                                                       // FCoordinate
   end else FVertextype:=TFreeVertexType(0);
 end;
 
-procedure TFreeSubdivisionControlPoint.MoveBy( Viewport:TFreeViewPort; dX,dY,dZ: TFloatType;
-                                               vAnchor:TFreeSubdivisionControlPoint );
-var i:integer; C:T3DVector;
-begin
-  C.X:=FCoordinate.X+dX;
-  C.Y:=FCoordinate.Y+dY;
-  C.Z:=FCoordinate.Z+dZ;
-  SetCoordinate(Viewport, C, vAnchor);
+procedure TFreeSubdivisionControlPoint.MoveBy
+( Viewport:TFreeViewPort; dX,dY,dZ: TFloatType; vAnchor:TFreeSubdivisionControlPoint );
+  var C:T3DVector;
+begin C.X:=FCoordinate.X+dX;
+      C.Y:=FCoordinate.Y+dY;
+      C.Z:=FCoordinate.Z+dZ; SetCoordinate( Viewport,C,vAnchor );
 end;
 
 procedure TFreeSubdivisionControlPoint.SaveBinary(Destination: TFreeFileBuffer);
@@ -594,12 +591,11 @@ end;
 procedure TFreeSubdivisionControlPoint.SaveToStream(Strings: TStringList);
 var Str: AnsiString;
 begin
-  Str:=FloatToDec(Fcoordinate.X, 5)
-    +#32+FloatToDec(Fcoordinate.Y, 5)
-    +#32+FloatToDec(Fcoordinate.Z, 5);
-  Str:=Str+#32+IntToStr(Ord(VertexType));
-  Str:=Str+#32+BoolToStr(Selected);
-  Strings.Add(Str);
+  Str:=FloatToDec( Fcoordinate.X,5 )+#32
+      +FloatToDec( Fcoordinate.Y,5 )+#32
+      +FloatToDec( Fcoordinate.Z,5 )+#32
+      +IntToStr( Ord( VertexType ) )+#32+BoolToStr( Selected );
+  Strings.Add( Str );
 end;
 
 procedure TFreeSubdivisionControlPoint.SetLinearConstraint(pointA, pointB: TFreeSubdivisionControlPoint);

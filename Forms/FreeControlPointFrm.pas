@@ -6,361 +6,179 @@ interface uses
   Forms,    Dialogs,
   Math,     StdCtrls, StrUtils,
   Buttons,  ExtCtrls,
-  Spin,FreeTypes,FreeGeometry,FreeStringUtils,FreeLanguageSupport;
+  FreeTypes,FreeGeometry,FreeStringUtils,FreeLanguageSupport;
 type
-  TEntryMethod = ( emNone, emTyping, emArrowKeys, emMouse, emPaste );
+{TEntryMethod = ( emNone, emTyping, emArrowKeys, emMouse, emPaste );
+TFormStyle=(fsNormal,fsMDIChild,fsMDIForm,fsStayOnTop,fsSplash,fsSystemStayOnTop);
+TFormBorderStyle=(bsNone,bsSingle,bsSizeable,bsDialog,bsToolWindow,bsSizeToolWin);
+}
 
-  TFreeControlPointForm=class( TForm )               { TFreeControlPointForm }
-    CheckBoxAnchorHard,CheckBoxCorner:                 TCheckBox;
-    SpeedButtonRemoveLinearConstraint,
-    SpeedButtonRemoveAnchorPoint:                      TSpeedButton;
-    EditLinearConstraintA,EditAnchorPoint,
-    EditLinearConstraintB:                             TEdit;
-    Label1,Label2,Label3,Label4,Label5,
-    LabelX,LabelY,LabelZ,LabelAX,LabelAY,LabelAZ:      TLabel;
-    Panel1,Panel2,Panel4,Panel5,Panel6,Panel7,Panel8:  TPanel;
-   {EditX,EditY,EditZ,} EditAX,EditAY,EditAZ,
-    EditDistance,EditAngles:                           TFloatSpinEdit;
+  TFreeControlPointForm=class( TForm )
+    SpeedButtonRemoveLinearConstraint,SpeedButtonRemoveAnchorPoint: TSpeedButton;
+    EditLinearConstraintA,EditAnchorPoint,EditLinearConstraintB: TEdit;
+    LabelInf,LabelX,LabelY,LabelZ:             TLabel;
+    Panel1,Panel2,Panel4,Panel5,Panel6,Panel7,Panel8: TPanel;
+//  EditDistance,EditAngles:                          TFloatSpinEdit;
     GroupBoxLinearConstraint,GroupBoxAnchorConstraint: TGroupBox;
+    SpeedButton4:TSpeedButton; Edit1:TEdit; SpeedButton1:TSpeedButton; LabelA:Tlabel;
+    SpeedButton5:TSpeedButton; Edit2:TEdit; SpeedButton2:TSpeedButton; LabelB:Tlabel;
+    SpeedButton6:TSpeedButton; Edit3:TEdit; SpeedButton3:TSpeedButton; LabelG:Tlabel;
+    CheckBoxAnchorHard,CheckBoxCorner: TCheckBox;
 
-    SpeedButton4: TSpeedButton; Edit1: TEdit; SpeedButton1: TSpeedButton;
-    SpeedButton5: TSpeedButton; Edit2: TEdit; SpeedButton2: TSpeedButton;
-    SpeedButton6: TSpeedButton; Edit3: TEdit; SpeedButton3: TSpeedButton;
-
-    Function Change( Text: String; Comp: Integer ):String; // Comp: 0:X,1:Y,2:Z
-    procedure Increment( P: T3DVector );
-    procedure Edit1Exit(Sender: TObject);
-    procedure Edit2Exit(Sender: TObject);
-    procedure Edit3Exit(Sender: TObject);
-    procedure Edit1KeyPress(Sender: TObject; var Key: Char);
-    procedure Edit2KeyPress(Sender: TObject; var Key: Char);
-    procedure Edit3KeyPress(Sender: TObject; var Key: Char);
-
+    Function Change( Text: String; Comp: Integer ): String; // Comp: 0:X,1:Y,2:Z
+    procedure Edit1Exit(Sender:TObject); procedure Edit1KeyPress(Sender:TObject; var Key:Char);
+    procedure Edit2Exit(Sender:TObject); procedure Edit2KeyPress(Sender:TObject; var Key:Char);
+    procedure Edit3Exit(Sender:TObject); procedure Edit3KeyPress(Sender:TObject; var Key:Char);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
     procedure SpeedButton4Click(Sender: TObject);
     procedure SpeedButton5Click(Sender: TObject);
     procedure SpeedButton6Click(Sender: TObject);
-
-
-    procedure CheckBoxAnchorHardChange(Sender: TObject);
     procedure CheckBoxCornerChange(Sender: TObject);
-    procedure OrdinateEditorEnter(Sender: TObject);  //  только в
-    procedure OrdinateEditorExit(Sender: TObject);   //  CheckBoxCorner
-    procedure EditYChange(Sender: TObject);          // угол aY
-    procedure EditZChange(Sender: TObject);          // угол aZ а под Х нет
+    procedure OrdinateEditorEnter(Sender: TObject);  // только в
+    procedure OrdinateEditorExit(Sender: TObject);   // CheckBoxCorner
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure CheckBoxAnchorHardChange(Sender: TObject);
     procedure SpeedButtonRemoveAnchorPointClick(Sender: TObject);
     procedure SpeedButtonRemoveLinearConstraintClick(Sender: TObject);
-   private                                             { Private declarations }
-      FActiveControlPoint : TFreeSubdivisionControlPoint;
-      FPointEditorChanging,
-      FSkipCheckbox1OnClick,
-      FActiveControlPointChanging,
-      FilterComboBoxLinearConstraintAPopulating,
-      FilterComboBoxLinearConstraintBPopulating : boolean; //TODO delete if not used
-      EnteredControl: TControl;
-      EntryMethod: TEntryMethod;
-      procedure FSetActiveControlPoint( Val:TFreeSubdivisionControlPoint );
-      procedure FSetActiveControlPointCorner( isCorner: boolean );
-   public                                               { Public declarations }
-      FreeShip: TComponent;
-      procedure Reload;
-      property ActiveControlPoint: TFreeSubdivisionControlPoint
-          read FActiveControlPoint
-         write FSetActiveControlPoint;
-   // property FreeShip: TComponent read FFreeShip write FFreeShip;
-   // property FreeShip: TFreeShip read FFreeShip write FFreeShip;
+   private
+    FActiveControlPoint : TFreeSubdivisionControlPoint;
+    FSkipCheckbox1OnClick : boolean;
+    EnteredControl: TControl;
+    procedure FSetActiveControlPoint( Val:TFreeSubdivisionControlPoint );
+    procedure FSetActiveControlPointCorner( isCorner: boolean );
+   public
+    procedure Reload;
+    property ActiveControlPoint: TFreeSubdivisionControlPoint
+                            read FActiveControlPoint
+                           write FSetActiveControlPoint;
 end;
-
-function ConvertCoordinate(Coord: String; OldCoord: TFloatType):TFloatType;
+function ConvertCoordinate( Coord: String; OldCoord: TFloatType ): TFloatType;
 
 var FreeControlPointForm: TFreeControlPointForm;
 
-implementation
-uses FreeShipUnit;
+implementation uses FreeShipUnit;
 {$R *.lfm}
 
-procedure TFreeControlPointForm.FSetActiveControlPoint(Val:TFreeSubdivisionControlPoint);
-var I,N,Npoi : Integer;
-    BCol,FCol: TColor;
-    R,R1,R2,alfa,beta,gamma,acos,len,
-    cos1a,cos2a,cos1b,cos2b,cos1g,cos2g : TFloatType;
-    C0,CN,C1,C2,C3,Cp,Ci: T3DVector;
+procedure TFreeControlPointForm.FSetActiveControlPoint
+  ( Val:TFreeSubdivisionControlPoint );
+var I,N,Npoi: Integer; BCol,FCol: TColor; Str: String=''; Len: TFloatType;
+    Angle,C0,CN,C1,Cp,Ci: T3DVector;
     IsPointDifferent: boolean;
-//  FreeShip:TFreeShip;
-begin // FreeShip:=Ship;
-   ShowTranslatedValues( Self );
-   IsPointDifferent:=FActiveControlPoint<>Val;
-   FActiveControlPoint:=Val;
-   FActiveControlPointChanging:=true;
-   if ActiveControlPoint=nil then begin Visible:=False;
-      Edit1.Text:='';        //      EditX.Value:=0.0;
-      Edit2.Text:='';        //      EditY.Value:=0.0;
-      Edit3.Text:='';        //      EditZ.Value:=0.0;
-      EditAX.Value:=0.0;
-      EditAY.Value:=0.0;
-      EditAZ.Value:=0.0;
-      CheckBoxCorner.Checked:=false;
-//    EditName.Text:='';
-      Self.Caption:='';
-   end else begin
-//    if Ship.Surface.SelectedControlPoints.IndexOf(ActiveControlPoint)=-1
-//       then Ship.Surface.SelectedControlPoints.Add(ActiveControlPoint);
-      R:=0.0;
-      EditDistance.Value:=0.0;
-      Self.Caption:='Point['+IntToStr( FActiveControlPoint.Id )+']: '
-//                + FActiveControlPoint.Name {
-                  +' ('+FloatToStrF( FActiveControlPoint.Coordinate.X,ffFixed,5,3 )
-                  + ','+FloatToStrF( FActiveControlPoint.Coordinate.Y,ffFixed,5,3 )
-                  + ','+FloatToStrF( FActiveControlPoint.Coordinate.Z,ffFixed,5,3 ) + ')'; // };
-//    Npoi:=Ship.NumberOfSelectedControlPoints-1;
-      Npoi:=Ship.NumberOfSelectedControlPoints-1;
-      if Npoi>=0 then begin
-         C0:=Ship.SelectedControlPoint[0].Coordinate;
-         CN:=Ship.SelectedControlPoint[Npoi].Coordinate;;
-      end;
-      if Npoi>=1 then begin
-         R:=Abs( C0-CN );
-         EditDistance.Value:=R;
-         EditAngles.Value:=0.0;
-      end else EditDistance.Value:=0.0;
-      if Npoi>=4 then begin
-         R:=Abs( C0-CN );
-         EditDistance.Value:=R;
-         Len:=0;
-         for I:=1 to Npoi do begin
-           Cp:=Ship.SelectedControlPoint[i-1].Coordinate;
-           Ci:=Ship.SelectedControlPoint[i].Coordinate;
-           R:=Abs( Cp-Ci );
-           Len:=Len+R;
-         end;
-         Label5.Caption:=UserString(1493); // 'Length';
-         EditAngles.Value:=Len;
-      end;
-      if R=0 then R:=0.0001;
-      if Npoi=0 then begin
-        R:=Abs( C0 );
-        if R=0 then R:=0.0001;
-        alfa:=C0.X/R;
-        beta:=C0.Y/R;
-        gamma:=C0.Z/R;
-        EditAX.Value:=ArcCos( alfa )*Radian;
-        EditAY.Value:=ArcCos( beta )*Radian;
-        EditAZ.Value:=ArcCos( gamma )*Radian;
-        {EditAngles.Text:=FloatToDec(ArcCos(alfa)*Radian,2)+';'+FloatToDec(ArcCos(beta)*Radian,2)+';'+FloatToDec(ArcCos(gamma)*Radian,2);}
-      end else
-      if Npoi=1 then begin
-        alfa:=abs(C0.X-CN.X)/R;
-        beta:=abs(C0.Y-CN.Y)/R;
-        gamma:=abs(C0.Z-CN.Z)/R;
-        EditAX.Value:=ArcCos( alfa )*Radian;
-        EditAY.Value:=ArcCos( beta )*Radian;
-        EditAZ.Value:=ArcCos( gamma )*Radian;
-      end else
-      if  Npoi=2 then begin
-        C1:=Ship.SelectedControlPoint[1].Coordinate;
-        C2:=Ship.SelectedControlPoint[2].Coordinate;
-        R1:=Abs( C0-C1 );
-        R2:=Abs( C1-C2 );
-        if R1>0 then begin
-          cos1a:=abs(C0.X-C1.X)/R1;
-          cos1b:=abs(C0.Y-C1.Y)/R1;
-          cos1g:=abs(C0.Z-C1.Z)/R1;
-        end else begin cos1a:=0; cos1b:=0; cos1g:=0; end;
-        if R2>0 then begin
-          cos2a:=abs(C1.X-C2.X)/R2;
-          cos2b:=abs(C1.Y-C2.Y)/R2;
-          cos2g:=abs(C1.Z-C2.Z)/R2;
-        end else begin cos2a:=0; cos2b:=0; cos2g:=0; end;
-        acos:=cos1a*cos2a+cos1b*cos2b+cos1g*cos2g;
-        if acos>1 then acos:=1;
-        if acos<-1 then acos:=-1;
-        EditAngles.Value:=ArcCos(acos)*Radian;
-      end else
-      if  Npoi=3 then begin
-        C1:=Ship.SelectedControlPoint[1].Coordinate;
-        C2:=Ship.SelectedControlPoint[2].Coordinate;
-        C3:=Ship.SelectedControlPoint[3].Coordinate;
-        R1:=Abs( C0-C1 );
-        R2:=Abs( C2-C3 );
-        if R1>0 then begin
-          cos1a:=abs(C0.X-C1.X)/R1;
-          cos1b:=abs(C0.Y-C1.Y)/R1;
-          cos1g:=abs(C0.Z-C1.Z)/R1;
-        end else begin
-          cos1a:=0;
-          cos1b:=0;
-          cos1g:=0;
-        end;
-        if R2>0 then begin
-          cos2a:=(C2.X-C3.X)/R2;
-          cos2b:=(C2.Y-C3.Y)/R2;
-          cos2g:=(C2.Z-C3.Z)/R2;
-        end else begin
-          cos1a:=0;
-          cos1b:=0;
-          cos1g:=0;
-        end;
-        acos:=cos1a*cos2a+cos1b*cos2b+cos1g*cos2g;
-        if acos>1 then acos:=1;
-        if acos<-1 then acos:=-1;
-        EditAngles.Value:=ArcCos(acos)*Radian;
-      end;
-      Edit1.Text:=FloatToStrF( FActiveControlPoint.Coordinate.X,ffFixed,6,4 );
-      Edit2.Text:=FloatToStrF( FActiveControlPoint.Coordinate.Y,ffFixed,6,4 );
-      Edit3.Text:=FloatToStrF( FActiveControlPoint.Coordinate.Z,ffFixed,6,4 );
-      if true or IsPointDifferent then begin
-//      if  (Npoi<2) or (NPoi>3) then I:=1476 else I:=1477;
-        Label5.Caption:=UserString(1476);
-        if (CheckBoxCorner.Checked<>(FActiveControlPoint.VertexType=svCorner))
-        then begin
-          FSkipCheckbox1OnClick:=true;
-          CheckBoxCorner.Checked:=FActiveControlPoint.VertexType=svCorner;
-          FSkipCheckbox1OnClick:=false;
-        end;        // Count the number of crease edges connected to this point
-        N:=0;
-        for I:=1 to FActiveControlPoint.NumberOfEdges do
-          if FActiveControlPoint.Edge[I-1].Crease then inc(N);
-        CheckBoxCorner.Enabled:=((N>0) and (N<3) and (not Val.Locked)); // points with more than two crease edges must always be a corner
-        Edit1.Enabled:=not Val.Locked;
-        Edit2.Enabled:=not Val.Locked;
-        Edit3.Enabled:=not Val.Locked;
-        if Val.Locked then begin BCol:=clBtnFace; FCol:=clDkgray; end
-                      else begin BCol:=clWindow; FCol:=clBlack; end;
-        if Edit1.Color<>BCol then Edit1.Color:=BCol;
-        if Edit1.Font.Color<>FCol then Edit1.Font.Color:=FCol;
-        if Edit2.Color<>BCol then Edit2.Color:=BCol;
-        if Edit2.Font.Color<>FCol then Edit2.Font.Color:=FCol;
-        if Edit3.Color<>BCol then Edit3.Color:=BCol;
-        if Edit3.Font.Color<>FCol then Edit3.Font.Color:=FCol;
+begin
+  IsPointDifferent:=FActiveControlPoint<>Val;
+  FActiveControlPoint:=Val;
+//FActiveControlPointChanging:=true;
+  if ActiveControlPoint=nil then begin Visible:=False; exit; end;       // ! убрать ?
+{ if Ship.Surface.SelectedControlPoints.IndexOf(ActiveControlPoint)=-1 then
+     Ship.Surface.SelectedControlPoints.Add( ActiveControlPoint ); }
 
-//        EditX.Enabled:=not Val.Locked;
-//        EditY.Enabled:=not Val.Locked;
-//        EditZ.Enabled:=not Val.Locked;
-      { if Val.Locked then begin BCol:=clBtnFace; FCol:=clDkgray; end
-                      else begin BCol:=clWindow; FCol:=clBlack; end;
-        if EditX.Color<>BCol then EditX.Color:=BCol;
-        if EditX.Font.Color<>FCol then EditX.Font.Color:=FCol;
-        if EditY.Color<>BCol then EditY.Color:=BCol;
-        if EditY.Font.Color<>FCol then EditY.Font.Color:=FCol;
-        if EditZ.Color<>BCol then EditZ.Color:=BCol;
-        if EditZ.Font.Color<>FCol then EditZ.Font.Color:=FCol;}
+  Visible:=True;
+  C0:=FActiveControlPoint.Coordinate;
+  ShowTranslatedValues( Self );
+  Self.Caption:=UserString(1675)+'['+IntToStr(FActiveControlPoint.Id )+']: '
+         +' ( '+FloatToDec(C0.X,3)
+         + ', '+FloatToDec(C0.Y,3)
+         + ', '+FloatToDec(C0.Z,3)
+         +' ) из '+IntToStr( Ship.NumberOfSelectedControlPoints );
+  Npoi:=Ship.NumberOfSelectedControlPoints-1;
 
-//      EditName.Text:=Val.Name;
-//      EditName.Color:= clDefault;
-
-        //PopulateFilterComboBoxLinearConstraintA(nil); //TODO delete if not used
-        //PopulateFilterComboBoxLinearConstraintB(nil); //TODO delete if not used
-
-        if (FActiveControlPoint.LinearConstraintPointA<>nil)
-        and (FActiveControlPoint.LinearConstraintPointB<>nil) then begin
-            GroupBoxLinearConstraint.Visible:=true;
-            EditLinearConstraintA.Text:='';
-            EditLinearConstraintB.Text:='';
-            if (FActiveControlPoint.LinearConstraintPointA<>nil) then
-//             if (FActiveControlPoint.LinearConstraintPointA.Name > '') then
-//             EditLinearConstraintA.Text:=FActiveControlPoint.LinearConstraintPointA.Name else
-               EditLinearConstraintA.Text:='Point['+IntToStr(FActiveControlPoint.LinearConstraintPointA.Id)+']';
-            if (FActiveControlPoint.LinearConstraintPointB<>nil) then
-//             if (FActiveControlPoint.LinearConstraintPointB.Name > '') then
-//             EditLinearConstraintB.Text:=FActiveControlPoint.LinearConstraintPointB.Name else
-               EditLinearConstraintB.Text:='Point['+IntToStr(FActiveControlPoint.LinearConstraintPointB.Id)+']';
-          end
-        else GroupBoxLinearConstraint.Visible:=false;
-
-        if (FActiveControlPoint.AnchorPoint<>nil) then begin
-          GroupBoxAnchorConstraint.Visible:=true;
-          CheckBoxAnchorHard.Checked:=FActiveControlPoint.IsAnchorHard;
-          EditAnchorPoint.Text:='';
-//        if (FActiveControlPoint.AnchorPoint.Name>'') then
-//          EditAnchorPoint.Text:=FActiveControlPoint.AnchorPoint.Name else
-            EditAnchorPoint.Text:='Point['+IntToStr(FActiveControlPoint.AnchorPoint.Id)+']';
-        end else GroupBoxAnchorConstraint.Visible:=false;
-      end;
-   end; FActiveControlPointChanging:=false;
+  if Npoi>=0 then begin                                // крайние точки
+     C0:=Ship.SelectedControlPoint[0].Coordinate;      // из всего списка
+     CN:=Ship.SelectedControlPoint[Npoi].Coordinate;;  // избранных
+     if NPoi>0 then Angle:=CN-C0 else Angle:=C0;       // от первой к последней
+     Str:=' '+Userstring(236)+' [1..'+inttostr(NPoi+1)+'] = '
+             +FloatToDec( Abs( Angle ),4 );
+     Angle:=Angles( Angle );                           // и направление
+     if Npoi>=2 then begin Len:=0.0;                   // длина всего пути
+       for I:=1 to Npoi do begin
+         Cp:=Ship.SelectedControlPoint[i-1].Coordinate;
+         Ci:=Ship.SelectedControlPoint[i].Coordinate;
+         Len:=Len+Abs( Cp-Ci );
+       end;
+       Str:=Str+'.  '+UserString(1493)+' = '+FloatToDec( Len,4 );
+    end;
+  end;
+  LabelA.Caption:=' α  '+FloatToDec( Angle.x,2 )+' °'; // Alpha;
+  LabelB.Caption:=' β  '+FloatToDec( Angle.y,2 )+' °'; // Beta;
+  LabelG.Caption:=' γ  '+FloatToDec( Angle.z,2 )+' °'; // Gamma;
+  LabelInf.Caption:=Str;
+  Edit1.Text:=FloatToDec( FActiveControlPoint.Coordinate.X,4 );
+  Edit2.Text:=FloatToDec( FActiveControlPoint.Coordinate.Y,4 );
+  Edit3.Text:=FloatToDec( FActiveControlPoint.Coordinate.Z,4 );
+  if IsPointDifferent then begin
+     if (CheckBoxCorner.Checked<>(FActiveControlPoint.VertexType=svCorner))
+     then begin
+       FSkipCheckbox1OnClick:=true;
+       CheckBoxCorner.Checked:=FActiveControlPoint.VertexType=svCorner;
+       FSkipCheckbox1OnClick:=false;
+     end;           // Count the number of crease edges connected to this point
+     N:=0;
+     for I:=1 to FActiveControlPoint.NumberOfEdges do
+              if FActiveControlPoint.Edge[I-1].Crease then inc( N );
+     CheckBoxCorner.Enabled:=((N>0) and (N<3) and (not Val.Locked)); // points with more than two crease edges must always be a corner
+     Edit1.Enabled:=not Val.Locked;
+     Edit2.Enabled:=not Val.Locked;
+     Edit3.Enabled:=not Val.Locked;
+     if Val.Locked then begin BCol:=clBtnFace; FCol:=clDkgray; end
+                   else begin BCol:=clWindow; FCol:=clBlack; end;
+     if Edit1.Color<>BCol then Edit1.Color:=BCol;
+     if Edit1.Font.Color<>FCol then Edit1.Font.Color:=FCol;
+     if Edit2.Color<>BCol then Edit2.Color:=BCol;
+     if Edit2.Font.Color<>FCol then Edit2.Font.Color:=FCol;
+     if Edit3.Color<>BCol then Edit3.Color:=BCol;
+     if Edit3.Font.Color<>FCol then Edit3.Font.Color:=FCol;
+     if (FActiveControlPoint.LinearConstraintPointA<>nil)
+     and (FActiveControlPoint.LinearConstraintPointB<>nil) then begin
+         GroupBoxLinearConstraint.Visible:=true;
+         EditLinearConstraintA.Text:='';
+         EditLinearConstraintB.Text:='';
+         if (FActiveControlPoint.LinearConstraintPointA<>nil)
+         then EditLinearConstraintA.Text:=UserString(1675)
+             +'['+IntToStr(FActiveControlPoint.LinearConstraintPointA.Id)+']';
+         if (FActiveControlPoint.LinearConstraintPointB<>nil)
+         then EditLinearConstraintB.Text:=UserString(1675)
+             +'['+IntToStr(FActiveControlPoint.LinearConstraintPointB.Id)+']';
+     end else GroupBoxLinearConstraint.Visible:=false;
+     if (FActiveControlPoint.AnchorPoint<>nil) then begin
+         GroupBoxAnchorConstraint.Visible:=true;
+         CheckBoxAnchorHard.Checked:=FActiveControlPoint.IsAnchorHard;
+         EditAnchorPoint.Text:='';
+         EditAnchorPoint.Text:=UserString(1675)+'['+IntToStr(FActiveControlPoint.AnchorPoint.Id)+']';
+     end else GroupBoxAnchorConstraint.Visible:=false;
+  end;     // FActiveControlPointChanging:=false;
 end;
-
 procedure TFreeControlPointForm.Reload;
     begin FSetActiveControlPoint( ActiveControlPoint ); end;
-
-procedure TFreeControlPointForm.EditYChange( Sender: TObject );
-var P: T3DVector;
-begin
-   if FActiveControlPointChanging then exit;
-   if FPointEditorChanging then exit;
-   if EnteredControl<>Edit2 then exit;
-   if not(Edit2.Focused and Edit2.Enabled and not Edit2.ReadOnly) then exit;
-   FPointEditorChanging:=true;
-   if ActiveControlPoint<>nil then
-   if EntryMethod<>emTyping then begin
-//    Ship.Edit.CreateUndoObject( 'moveY',True );
-      P:=ActiveControlPoint.Coordinate;
-//    P.Y:=P.Y+Ship.Visibility.CursorIncrement;
-      P.Y:=StrToFloat( Edit2.Text ); //Value );
-      ActiveControlPoint.SetCoordinate( nil,P,nil );
-      Ship.Built:=False;
-      Ship.FileChanged:=True;
-      Ship.Redraw;
-   ///ActiveControlPoint:=ActiveControlPoint;
-   end;
-   FPointEditorChanging:=false;
-end;
-
-procedure TFreeControlPointForm.EditZChange(Sender: TObject);
-var P: T3DVector;
-begin
-   if FActiveControlPointChanging then exit;
-   if FPointEditorChanging then exit;
-   if EnteredControl<>Edit3 then exit;
-   if not(Edit3.Focused and Edit3.Enabled and not Edit3.ReadOnly) then exit;
-   FPointEditorChanging:=true;
-   if ActiveControlPoint<>nil then
-   if EntryMethod<>emTyping then begin
-//    Ship.Edit.CreateUndoObject( 'moveZ',True);
-      P:=ActiveControlPoint.Coordinate;
-//    P.Z:=P.Z+Ship.Visibility.CursorIncrement;
-      P.Z:=StrToFloat( Edit3.Text ); //  EditZ.Value;
-      ActiveControlPoint.SetCoordinate( nil,P,nil );
-      Ship.Built:=False;
-      Ship.FileChanged:=True;
-      Ship.Redraw;
-//    ActiveControlPoint:=ActiveControlPoint;
-   end; FPointEditorChanging:=false;
-end;
-
+procedure TFreeControlPointForm.CheckBoxCornerChange( Sender: TObject );
+    begin if FSkipCheckbox1OnClick then exit;
+             FSetActiveControlPointCorner( CheckBoxCorner.Checked );
+    end;
 procedure TFreeControlPointForm.OrdinateEditorEnter(Sender: TObject);
-    begin EntryMethod:=emNone;
-          EnteredControl:=Sender as TControl;
-          FActiveControlPointChanging:=false;
-          FPointEditorChanging:=false;
+    begin EnteredControl:=Sender as TControl;
+//        FActiveControlPointChanging:=false;
+//        FPointEditorChanging:=false;  //EntryMethod:=emNone;
    end;
 procedure TFreeControlPointForm.OrdinateEditorExit(Sender: TObject);
-    begin EnteredControl:=nil;
-          EntryMethod:=emNone;
+    begin EnteredControl:=nil; // EntryMethod:=emNone;
     end;
-procedure TFreeControlPointForm.CheckBoxCornerChange( Sender: TObject );
-begin if FSkipCheckbox1OnClick then exit;
-         FSetActiveControlPointCorner( CheckBoxCorner.Checked );
-end;
 procedure TFreeControlPointForm.CheckBoxAnchorHardChange(Sender: TObject);
-begin ActiveControlPoint.IsAnchorHard:=CheckBoxAnchorHard.Checked;
-end;
-
+    begin ActiveControlPoint.IsAnchorHard:=CheckBoxAnchorHard.Checked;
+    end;
 procedure TFreeControlPointForm.FSetActiveControlPointCorner(isCorner: boolean);
-var I,N: Integer;
-    OldType: TFreeVertexType;                                                  //  Undo: TFreeUndoObject;
+var I,N: Integer; OldType: TFreeVertexType; Undo: TFreeUndoObject;
 begin
   if (ActiveControlPoint<>nil)
-  and (isCorner <> (ActiveControlPoint.VertexType=svCorner)) then begin // Count the number of crease edges connected to this point
-    OldType:=ActiveControlPoint.VertexType;                                     //  Undo:=Ship.Edit.CreateUndoObject( 'Corner ',false );
+  and (isCorner<>(ActiveControlPoint.VertexType=svCorner)) then begin // Count the number of crease edges connected to this point
+    OldType:=ActiveControlPoint.VertexType;
+    Undo:=Ship.Edit.CreateUndoObject( 'Corner',false );
     if (ActiveControlPoint.Vertextype=svCorner) and (not isCorner) then begin
       N:=0;                        // Count the number of incident crease edges
       for I:=1 to ActiveControlPoint.NumberOfEdges do
-      if FActiveControlPoint.Edge[I-1].Crease then inc(N);
+      if FActiveControlPoint.Edge[I-1].Crease then inc( N );
       Case N of
         0 : ActiveControlPoint.Vertextype:=svRegular;
         1 : ActiveControlPoint.VertexType:=svDart;
@@ -369,61 +187,113 @@ begin
     end;
     if (ActiveControlPoint.Vertextype<>svCorner) and (isCorner)
     then ActiveControlPoint.VertexType:=svCorner;
-    if ActiveControlPoint.VertexType<>OldType then begin                        // Undo.Accept;
+    if ActiveControlPoint.VertexType<>OldType then begin Undo.Accept;
        Ship.Built:=False;
        Ship.FileChanged:=True;
        Ship.Redraw;
        ActiveControlPoint:=ActiveControlPoint;
-    end;                                                                        // else Undo.Delete;
+    end else Undo.Delete;
   end;
 end;
-
-procedure TFreeControlPointForm.FormActivate(Sender: TObject);
-begin
-  FSkipCheckbox1OnClick:=false;
-  //  EditX.Increment:=Ship.Visibility.CursorIncrement;
-  //  EditY.Increment:=Ship.Visibility.CursorIncrement;
-  //  EditZ.Increment:=Ship.Visibility.CursorIncrement;
-  //  LabelAX.Caption:='°'; //cDegree;
-  //  LabelAY.Caption:='°'; //cDegree;
-  //  LabelAZ.Caption:='°'; //cDegree;
-  //  Label1.Caption:='α';  //cAlpha;
-  //  Label2.Caption:='β';  //cBeta;
-  //  Label3.Caption:='γ';  //cGamma;
-end;
-
+procedure TFreeControlPointForm.FormActivate( Sender: TObject );
+    begin FSkipCheckbox1OnClick:=false; end;
 procedure TFreeControlPointForm.FormCreate( Sender: TObject ); begin end;
-
 procedure TFreeControlPointForm.FormShow(Sender: TObject);
     begin Caption:=Caption; end;
-
 procedure TFreeControlPointForm.SpeedButtonRemoveAnchorPointClick( Sender: TObject );
-begin
-   if ActiveControlPoint<>nil then begin
-//     Ship.Edit.CreateUndoObject( 'UnAncDel',True );
-       ActiveControlPoint.AnchorPoint:=nil;
-       EditAnchorPoint.Text:='';
-       Ship.FileChanged:=True;
-       Ship.Redraw;
-       ActiveControlPoint:=ActiveControlPoint;
-    end;
+begin if ActiveControlPoint<>nil then begin
+        Ship.Edit.CreateUndoObject( 'AncDel',True );
+        ActiveControlPoint.AnchorPoint:=nil;
+        EditAnchorPoint.Text:='';
+        Ship.FileChanged:=True;
+        Ship.Redraw;
+        ActiveControlPoint:=ActiveControlPoint;
+        GroupBoxAnchorConstraint.Visible:=false; end;
 end;
-
 procedure TFreeControlPointForm.SpeedButtonRemoveLinearConstraintClick( Sender: TObject );
-begin
-  if ActiveControlPoint<>nil then begin
-//    Ship.Edit.CreateUndoObject( 'UnLineDel',True );
-      ActiveControlPoint.SetLinearConstraint(nil,nil);
-      EditLinearConstraintA.Text:='';
-      EditLinearConstraintB.Text:='';
-      Ship.FileChanged:=True;
-      Ship.Redraw;
-      ActiveControlPoint:=ActiveControlPoint;
-   end;
+begin if ActiveControlPoint<>nil then begin
+        Ship.Edit.CreateUndoObject( 'LineDel',True );
+        ActiveControlPoint.SetLinearConstraint(nil,nil);
+        EditLinearConstraintA.Text:='';
+        EditLinearConstraintB.Text:='';
+        Ship.FileChanged:=True;
+        Ship.Redraw;
+        ActiveControlPoint:=ActiveControlPoint;
+        GroupBoxLinearConstraint.visible:=false; end;
 end;
 
-/////////////////////////////////////////////////////////////////////////////
-function ConvertCoordinate( Coord: String; OldCoord: TFloatType ):TFloatType;
+procedure TFreeControlPointForm.Edit1KeyPress( Sender: TObject;var Key: Char );
+begin if (Key in [#8,'1'..'9','0','-','@',#13])
+      or ((Ship.ProjectSettings.ProjectUnits=fuImperial) and (Key='+'))
+      or (Key=FormatSettings.DecimalSeparator) then else key:=#0;
+      if Key=#13 then Edit1Exit( Self ) else
+      if not Assigned( Edit1.OnEditingDone ) then Edit1.OnEditingDone:=Edit1Exit;
+end;
+procedure TFreeControlPointForm.Edit2KeyPress( Sender: TObject;var Key: Char );
+begin if (Key in [#8,'1'..'9','0','-','@',#13])
+      or ((Ship.ProjectSettings.ProjectUnits=fuImperial) and (Key='+'))
+      or (Key=FormatSettings.DecimalSeparator) then else key:=#0;
+      if Key=#13 then Edit2Exit( Self ) else
+      if not Assigned( Edit2.OnEditingDone ) then Edit2.OnEditingDone:=Edit2Exit;
+end;
+procedure TFreeControlPointForm.Edit3KeyPress( Sender: TObject; var Key: Char );
+begin if (Key in [#8,'1'..'9','0','-','@',#13])
+      or ((Ship.ProjectSettings.ProjectUnits=fuImperial) and (Key='+'))
+      or (Key=FormatSettings.DecimalSeparator) then else key:=#0;
+      if Key=#13 then Edit3Exit( Self ) else
+      if not Assigned( Edit3.OnEditingDone ) then Edit3.OnEditingDone:=Edit3Exit;
+end;
+
+Var IdUndo: Integer=1;
+
+Function TFreeControlPointForm.Change( Text: String; Comp: Integer ):String; // Comp: 0:X,1:Y,2:Z
+var Saved: Boolean; I: Integer;
+    Val,R: TFloatType; P: T3DVector;  Undo: TFreeUndoObject;
+begin
+  Edit1.OnEditingDone:=nil; Result:=Text;  writeln( Text,'[',Comp,'] ',' N=',Ship.NumberOfSelectedControlPoints );
+  Edit2.OnEditingDone:=nil; Saved:=false; // сброс повторных прерывений
+  Edit3.OnEditingDone:=nil; if ActiveControlPoint=nil then exit;
+  P:=ActiveControlPoint.Coordinate;
+  if Comp=2 then R:=P.Z else if Comp=1 then R:=P.Y else R:=P.X;
+  Val:=ConvertCoordinate( Text,R );
+  Result:=FloatToDec( Val,4 );
+  Undo:=Ship.Edit.CreateUndoObject('Coord_'+inttostr(IdUndo),False); Inc(IdUndo);
+  for I:=Ship.NumberOfSelectedControlPoints-1 downto 0 do begin
+     P:=Ship.SelectedControlPoint[I].Coordinate;
+     if Comp=2 then R:=P.Z else if Comp=1 then R:=P.Y else R:=P.X;
+     Val:=ConvertCoordinate( Text,R );
+     if abs( R-Val )>1e-5 then begin Saved:=true;
+       if Comp=2 then P.Z:=Val else if Comp=1 then P.Y:=Val else P.X:=Val;
+       Ship.SelectedControlPoint[I].Coordinate:=P;
+     end;
+  end;
+  if not Saved then Undo.Delete else begin Undo.Accept;
+    ActiveControlPoint:=ActiveControlPoint;
+    Ship.FileChanged:=True;
+    Ship.Redraw;
+  end;
+end;
+procedure TFreeControlPointForm.Edit1Exit( Sender: TObject ); // OnEditingDone = Edit1Exit
+    begin Edit1.Text:=Change( Edit1.Text,0 ); end;           ///  или OnExit = ???
+procedure TFreeControlPointForm.Edit2Exit( Sender: TObject );
+    begin Edit2.Text:=Change( Edit2.Text,1 ); end;
+procedure TFreeControlPointForm.Edit3Exit( Sender: TObject );
+    begin Edit3.Text:=Change( Edit3.Text,2 ); end;
+
+procedure TFreeControlPointForm.SpeedButton1Click(Sender: TObject);
+begin Edit1.Text:=Change('@'+FloatToDec(Ship.Visibility.CursorIncrement,4),0); end;
+procedure TFreeControlPointForm.SpeedButton2Click(Sender: TObject);
+begin Edit2.Text:=Change('@'+FloatToDec(Ship.Visibility.CursorIncrement,4),1); end;
+procedure TFreeControlPointForm.SpeedButton3Click(Sender: TObject);
+begin Edit3.Text:=Change('@'+FloatToDec(Ship.Visibility.CursorIncrement,4),2); end;
+procedure TFreeControlPointForm.SpeedButton4Click(Sender: TObject);
+begin Edit1.Text:=Change('@'+FloatToDec(-Ship.Visibility.CursorIncrement,4),0); end;
+procedure TFreeControlPointForm.SpeedButton5Click(Sender: TObject);
+begin Edit2.Text:=Change('@'+FloatToDec(-Ship.Visibility.CursorIncrement,4),1); end;
+procedure TFreeControlPointForm.SpeedButton6Click(Sender: TObject);
+begin Edit3.Text:=Change('@'+FloatToDec(-Ship.Visibility.CursorIncrement,4),2); end;
+
+{═══════════════════════════════════════════════════════════════════════}
 { parses input "Coord" and and returns the new value of a coordinate    }
 { if first character of input is (RelIdentifier - currently '@')        }
 {    then the input value is added to the old value "OldCoord".         }
@@ -432,29 +302,26 @@ function ConvertCoordinate( Coord: String; OldCoord: TFloatType ):TFloatType;
 { if the remainding value contains ONE '-'                              }
 {    then the part after that '-' is considered as a fraction of a unit }
 {    The size of the fraction is const. "InchFractions"                 }
-var myString:    String;
-    myFactor:    TFloatType;
-    myOldValue:  TFloatType;
-    myWholeFeet: TFloatType;
-    myWholeInch: TFloatType;
-    myFracInch:  TFloatType;
-    myFracPos:   Integer;
-const RelIdentifier: String = '@';
-      InchFractions: TFloatType = 8;
+
+function ConvertCoordinate( Coord: String; OldCoord: TFloatType ): TFloatType;
+var
+  myString: String;  myFracPos: Integer;
+  myFactor,myOldValue,myWholeFeet,myWholeInch,myFracInch: TFloatType;
+const RelIdentifier: String='@'; InchFractions: TFloatType=8;
 begin
   myString:=Coord;
-  myFactor:=   1.0;
-  myOldValue:= OldCoord;
+  myFactor:=1.0;
+  myOldValue:=OldCoord;
   myWholeFeet:=0.0;
   myWholeInch:=0.0;
-  myFracInch:= 0.0;
-  if LeftStr( myString,1 )=RelIdentifier then begin        // get rid of the '@'
-    myString:=MidStr( myString,2,255 );
+  myFracInch:=0.0;
+  if LeftStr(myString,1)=RelIdentifier then begin        // get rid of the '@'
+    myString:= MidStr(myString,2,255);
     if Pos(RelIdentifier,myString)>0 then myString:='0'; // make sure not to have another '@' (and a 0 doesn't hurt)
-  end else myOldValue:=0;                               // we have a new value now, so don't add the old one!
-  if LeftStr(myString,1)='-' then begin                // get rid of the minus
-     myFactor:=-1.0;
-     myString:=MidStr(myString,2,255);
+  end else myOldValue:= 0;  // we have a new value now, so don't add the old one!
+  if LeftStr(myString, 1)='-' then begin                // get rid of the minus
+    myFactor:=-1.0;
+    myString:=MidStr(myString,2,255);
   end;
   myFracPos:=Pos('-',myString);
   if myFracPos>0 then begin      // check whether we have imperial input format
@@ -464,103 +331,18 @@ begin
     end;
     myFracPos:=Pos('-',myString); // is there a second "-", i.e. do we have also fractional inches?
     if myFracPos>0 then begin
-      if myFracPos>1 then begin  // check whether there is an whole inch value
-        myWholeInch:=StrToFloat(LeftStr(myString, myFracPos-1));
+      if myFracPos>1 then begin   // check whether there is an whole inch value
+        myWholeInch:=StrToFloat(LeftStr(myString,myFracPos-1));
         myString:=MidStr(myString,myFracPos,255);
-      end;                       // new: check whether there is a + or a - to add or subtract a half fraction
-      myString:=MidStr( myString,2,255 );
+      end; // new: check whether there is a + or a - to add or subtract a half fraction
+      myString:= MidStr(myString,2,255);
       if RightStr(myString,1)='-' then myFracInch:=StrToFloat(LeftStr(myString,Pos('-',myString)-1))-0.5 else
       if RightStr(myString,1)='+' then myFracInch:=StrToFloat(LeftStr(myString,Pos('+',myString)-1))+0.5 else
-                                       myFracInch:=StrToFloat( myString ); // end new
-    end else myWholeInch:= StrToFloat(myString);     // no fractional inches
+                                       myFracInch:=StrToFloat(myString); // end new
+    end else myWholeInch:=StrToFloat(myString);         // no fractional inches
   end else myWholeFeet:=StrToFloat(myString);       // no imperial input format
-  Result:=myOldValue + myFactor*(myWholeFeet + myWholeInch/12 + myFracInch/(12*InchFractions));
+  Result:=myOldValue+myFactor*(myWholeFeet+myWholeInch/12+myFracInch/(12*InchFractions));
 end; {ConvertCoordinate}
 
-procedure TFreeControlPointForm.Edit1KeyPress(Sender: TObject;var Key: Char);
-begin
-   if (Key in [#8,'1'..'9','0','-','@',#13])
-   or ((Ship.ProjectSettings.ProjectUnits=fuImperial) and (Key='+'))
-   or (Key=FormatSettings.DecimalSeparator) then else key:=#0; //SAP: added the '@'
-   if Key=#13 then Edit1Exit( Self );
-end;
-procedure TFreeControlPointForm.Edit2KeyPress(Sender: TObject;var Key: Char);
-begin
-   if (Key in [#8,'1'..'9','0','-','@',#13])
-   or ((Ship.ProjectSettings.ProjectUnits=fuImperial) and (Key='+'))
-   or (Key=FormatSettings.DecimalSeparator) then else key:=#0; //SAP: added the '@'
-   if Key=#13 then Edit2Exit(Self);
-end;
-procedure TFreeControlPointForm.Edit3KeyPress(Sender: TObject; var Key: Char);
-begin
-   if (Key in [#8,'1'..'9','0','-','@',#13])
-   or ((Ship.ProjectSettings.ProjectUnits=fuImperial) and (Key='+'))
-   or (Key=FormatSettings.DecimalSeparator) then else key:=#0; //SAP: added the '@'
-   if Key=#13 then Edit3Exit( Self );
-end;
-
-Function TFreeControlPointForm.Change( Text: String; Comp: Integer ):String; // Comp: 0:X,1:Y,2:Z
-var P: T3DVector; Val,R: TFloatType; I: Integer; Saved: Boolean;
-begin Saved:=false; Result:=Text;
-  if ActiveControlPoint<>nil then begin // do only something, if the value has really been changed:
-    P:=ActiveControlPoint.Coordinate;
-    if Comp=2 then R:=P.Z else if Comp=1 then R:=P.Y else R:=P.X;
-    Val:=ConvertCoordinate( Text,R );
-    if (abs(R-Val)>1e-4)
-    or (Ship.NumberOfSelectedControlPoints>1) then begin // SAP change all selected points
-      I :=1;
-      while I<=Ship.NumberOfSelectedControlPoints do begin
-        P :=Ship.SelectedControlPoint[I-1].Coordinate;
-        if Comp=2 then R:=P.Z else if Comp=1 then R:=P.Y else R:=P.X;
-        Val:=ConvertCoordinate( Text,R );
-        if abs( R-Val )>1e-5 then begin
-          if not Saved then //Saved:=true;
-             begin Ship.Edit.CreateUndoObject( 'Coords',True); Saved:=True; end;
-          if Comp=2 then P.Z:=Val else if Comp=1 then P.Y:=Val else P.X:=Val;
-          Ship.SelectedControlPoint[I-1].Coordinate:=P;
-        end; Inc( I );
-      end;                                   //  finally update the text field:
-      if Text<>'' then begin
-        P:=ActiveControlPoint.Coordinate;
-        if Comp=2 then R:=P.Z else if Comp=1 then R:=P.Y else R:=P.X;
-        Val:=ConvertCoordinate( Text,R );
-      end else Val:=0;
-      Result:=FloatToStrF( Val,ffFixed,6,4 );                                   // Truncate(Val,4); // update the field in case of input errors
-      if Saved then begin
-        Ship.FileChanged:=True;
-        Ship.Redraw;
-        ActiveControlPoint:=ActiveControlPoint;
-      end;
-    end;
-  end;
-end;
-
-procedure TFreeControlPointForm.Edit1Exit( Sender: TObject );
-    begin Edit1.Text:=Change( Edit1.Text,0 ); end;
-procedure TFreeControlPointForm.Edit2Exit( Sender: TObject );
-    begin Edit2.Text:=Change( Edit2.Text,1 ); end;
-procedure TFreeControlPointForm.Edit3Exit( Sender: TObject );
-    begin Edit3.Text:=Change( Edit3.Text,2 ); end;
-
-procedure TFreeControlPointForm.Increment( P: T3DVector );
-begin P:=Ship.Visibility.CursorIncrement*P;
-      P:=P+ActiveControlPoint.Coordinate;
-      ActiveControlPoint.Coordinate:=P;
-      Ship.FileChanged:=True;
-      Ship.Redraw;
-      ActiveControlPoint:=ActiveControlPoint;
-end;
-procedure TFreeControlPointForm.SpeedButton1Click(Sender: TObject);
-    begin if ActiveControlPoint<>nil then Increment(Vector(1,0,0)); end;
-procedure TFreeControlPointForm.SpeedButton2Click(Sender: TObject);
-    begin if ActiveControlPoint<>nil then Increment(Vector(0,1,0)); end;
-procedure TFreeControlPointForm.SpeedButton3Click(Sender: TObject);
-    begin if ActiveControlPoint<>nil then Increment(Vector(0,0,1)); end;
-procedure TFreeControlPointForm.SpeedButton4Click(Sender: TObject);
-    begin if ActiveControlPoint<>nil then Increment(Vector(-1,0,0)); end;
-procedure TFreeControlPointForm.SpeedButton5Click(Sender: TObject);
-    begin if ActiveControlPoint<>nil then Increment(Vector(0,-1,0)); end;
-procedure TFreeControlPointForm.SpeedButton6Click(Sender: TObject);
-    begin if ActiveControlPoint<>nil then Increment(Vector(0,0,-1)); end;
-
 end.
+

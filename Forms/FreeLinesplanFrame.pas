@@ -1095,10 +1095,10 @@ begin
       + '  ' + WeightStr( FreeShip.ProjectSettings.ProjectUnits ) );
 } Pt.y-=ViewPort.FontHeight;
    ViewPort.TextOut( Pt.X,Pt.Y,Userstring(7)+' : δ='
-          + FloatToStrF( FreeShip.DesignHydrostatics.Data.BlockCoefficient,ffFixed,4,3 ) );
+          + FloatToDec( FreeShip.DesignHydrostatics.Data.BlockCoefficient,3 ) );
   Pt.y-=ViewPort.FontHeight;
     ViewPort.TextOut( Pt.X,Pt.Y,Userstring(8)+' : φ='
-           + FloatToStrF( FreeShip.DesignHydrostatics.Data.PrismCoefficient,ffFixed,4,3 ) );
+           + FloatToDec( FreeShip.DesignHydrostatics.Data.PrismCoefficient,3 ) );
   Pt.y-=ViewPort.FontHeight;                       // площадь смоченной обшивки
     ViewPort.TextOut( Pt.X,Pt.Y,Userstring(10)+' : '
       + ConvertDimension( FreeShip.DesignHydrostatics.Data.WettedSurface,Freeship.ProjectSettings.ProjectUnits)

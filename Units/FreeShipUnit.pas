@@ -495,7 +495,7 @@ type
     procedure Point_IntersectLayer;    // Calculates the intersection points of two layers
     procedure Point_Lock;  // Locks all selected points
     procedure Point_Extrude; // Create new controlPoints by extruding selected points
-    function Point_New: TFreeSubdivisionControlPoint; // Add a new point to the model with no edges/faces attached
+//  function Point_New_Z: TFreeSubdivisionControlPoint; // Add a new point to the model with no edges/faces attached
     function Point_New(coord:T3DVector): TFreeSubdivisionControlPoint; overload;
     procedure Point_AnchorToPoint;
     procedure Point_CoinsideToPoint;
