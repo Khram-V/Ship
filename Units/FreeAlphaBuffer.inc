@@ -1,13 +1,10 @@
-{ included in FreeGometry.pas }
-{------------------------------------------------------------}
-{                                           TFreeAlphaBuffer }
+{ in FreeGometry.pas }
+{--------------------------------------------------}
+{                                 TFreeAlphaBuffer }
+{ Alpha-buffer class used in the shading algorithm }
+{--------------------------------------------------}
 constructor TFreeAlphaBuffer.Create;
-begin inherited Create;
-      FFirstRow:=0;
-      FLastRow:=-1;
-end;
-{ Alpha-buffer class used in the shading algorithm           }
-{------------------------------------------------------------}
+     begin inherited Create; FFirstRow:=0; FLastRow:=-1; end;
 procedure TFreeAlphaBuffer.AddPixelData(X, Y: integer; R, G, B, Alpha: byte; Z: single);
 var
   Data, DataU: TAlphaBlendData; i,N:integer; t:byte; s:single;
@@ -51,7 +48,6 @@ end;
 
 procedure TFreeAlphaBuffer.Draw;
 var Y,X: integer;
-
   procedure ProcessPixel( X,Y: integer; PixData: TAlphaBlendPixelArray );
     procedure ZSort; var I,J,N: integer; Tmp: TAlphaBlendData;
     begin N:=PixData.Number;
@@ -125,10 +121,10 @@ begin
     end;
   end;
 end;
-{--------------------------------------------------------}
-{                                           TFreeZBuffer }
-{ Z-buffer class used in the shading algorithm           }
-{--------------------------------------------------------}
+{----------------------------------------------}
+{                                 TFreeZBuffer }
+{ Z-buffer class used in the shading algorithm }
+{----------------------------------------------}
 procedure TFreeZBuffer.Initialize;
 var
   I: integer;

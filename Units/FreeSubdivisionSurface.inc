@@ -1,10 +1,8 @@
-{ FreeGeometry ---------------------------------------------------}
-{                                         TFreeSubdivisionSurface }
-{-----------------------------------------------------------------}
+{ FreeGeometry -----------}
+{ TFreeSubdivisionSurface }
+{-------------------------}
 function TFreeSubdivisionSurface.AddControlPoint
-( P: T3DVector;
-  aTolerance:double=1e-6
-):
+       ( P: T3DVector; aTolerance:double=1e-6 ):
 TFreeSubdivisionControlPoint;
 var
   I: integer;
@@ -59,7 +57,7 @@ begin
   if Result<>nil then begin ExecuteOnChangeItem(Result);
     if Result.Selected then begin
       FSelectedControlPoints.Add(Result);
-//    ExecuteOnSelectItem(Result);
+      ExecuteOnSelectItem(Result);
     end;
   end;
 end;
@@ -71,7 +69,7 @@ begin
     P.Surface:=self;
     ExecuteOnChangeItem( P );
     if P.Selected then begin FSelectedControlPoints.Add( P );
-//  ExecuteOnSelectItem(P);
+    ExecuteOnSelectItem( P );
     end;
   end; Built:=False;
 end;
@@ -84,7 +82,7 @@ begin
   FControlPoints.Add(Result);
   ExecuteOnChangeItem(Result);
 end;
-(*
+
 procedure TFreeSubdivisionSurface.ExecuteOnSelectItem(Sender: TObject);
 var ne:TNotifyEvent; i: Integer;
 begin
@@ -95,7 +93,7 @@ begin
     ne( Sender );
   end;
 end;
-*)
+
 procedure TFreeSubdivisionSurface.UnreferenceControlPoint(P: TFreeSubdivisionControlPoint);
 var i: integer;
 begin
@@ -1535,7 +1533,7 @@ begin
   FSelectedControlEdges.Clear;
   FSelectedControlFaces.Clear;
   FSelectedControlCurves.Clear;
-//self.ExecuteOnSelectItem(nil);
+  self.ExecuteOnSelectItem(nil);
   FActiveControlPoint:=nil;
   ExecuteOnChangeActiveControlPoint(nil);
 end;
@@ -2799,9 +2797,8 @@ begin                       // Try to isolate individual (closed) sets of edges
   FreeAndNil(TmpEdges);
 end;
 
-procedure TFreeSubdivisionSurface.LoadBinary(Source: TFreeFileBuffer);
-var
-  I, N: integer;
+procedure TFreeSubdivisionSurface.LoadBinary( Source: TFreeFileBuffer );
+var I,N: integer;
   Point: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
   Face: TFreeSubdivisionControlFace;
@@ -2818,39 +2815,43 @@ begin
     FLayers.Capacity:=N;
     for I:=1 to N do begin
       Layer:=AddNewLayer;
-      Layer.LoadBinary(Source);
+      Layer.LoadBinary( Source );
     end;
-  end else begin      // No layers in the file, so keep the current default one
-  end;
+  end; //else begin end;=No layers in the file, so keep the current default one
+
   if assigned( FOnChangeLayerData ) then FOnChangeLayerData(self);
   Source.LoadInteger( N );                        // Read index of active layer
   ActiveLayer:=self.Layer[N];
   if assigned(FOnChangeActiveLayer ) then FOnChangeActiveLayer( self,self.Layer[N] );
+
   Source.LoadInteger( N );                                // Read controlpoints
   FControlPoints.Capacity:=N;
   for I:=1 to N do begin
-    Point:=TFreeSubdivisionControlPoint.Create(self);
-    Point.LoadBinary(Source);                                                   //Point.Name:=IntToStr(I-1); //for debug. assign point numbers (as they are in file) as names
-    FControlPoints.Add(Point);
-  end;                                                     // Read controlEdges
-  Source.LoadInteger(N);
+    Point:=TFreeSubdivisionControlPoint.Create( self );
+    Point.LoadBinary( Source );  //Point.Name:=IntToStr(I-1); //for debug. assign point numbers (as they are in file) as names
+    FControlPoints.Add( Point );
+  end;
+
+  Source.LoadInteger( N );                                 // Read controlEdges
   FControlEdges.Capacity:=N;
   for I:=1 to N do begin
-    Edge:=TFreeSubdivisionControlEdge.Create(self);
+    Edge:=TFreeSubdivisionControlEdge.Create( self );
     Edge.FControlEdge:=True;
-    Edge.LoadBinary(Source);
-    FControlEdges.Add(Edge);
+    Edge.LoadBinary( Source );
+    FControlEdges.Add( Edge );
   end;
+
   if Source.Version >= fv195 then begin                   // Load controlcurves
-    Source.LoadInteger(N);
+    Source.LoadInteger( N );
     FControlCurves.Capacity:=N;
     for I:=1 to N do begin
       Curve:=TFreeSubdivisionControlCurve.Create(self);
       Curve.LoadBinary(Source);
       FControlCurves.Add(Curve);
     end;
-  end;                                                     // Read controlFaces
-  Source.LoadInteger(N);
+  end;
+
+  Source.LoadInteger( N );                                 // Read controlFaces
   FControlFaces.Capacity:=N;
   for I:=1 to N do begin
     Face:=TFreeSubdivisionControlFace.Create(self);
@@ -3160,7 +3161,7 @@ begin
   if item is TFreeSubdivisionControlEdge then FSelectedControlEdges.Add(item as TFreeSubdivisionControlEdge);
   if item is TFreeSubdivisionControlCurve then FSelectedControlCurves.Add(item as TFreeSubdivisionControlCurve);
   if item is TFreeSubdivisionControlPointGroup then FSelectedControlPointGroups.Add(item as TFreeSubdivisionControlPointGroup);
-//ExecuteOnSelectItem(item);
+  ExecuteOnSelectItem(item);
 end;
 
 procedure TFreeSubdivisionSurface.SortEdges(Edges: TFasterListTFreeSubdivisionEdge);

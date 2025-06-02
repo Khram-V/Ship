@@ -15,7 +15,7 @@ begin
     if Index <> -1 then Surface.FSelectedControlCurves.Delete(index);
   end;
 //if Assigned(Surface.FOnSelectItemListeners) then Surface.FOnSelectItemListeners(self);
-//Surface.ExecuteOnSelectItem(Self);
+  Surface.ExecuteOnSelectItem(Self);
 end;
 procedure TFreeSubdivisionControlCurve.AddPoint(P: TFreeSubdivisionControlPoint);
 begin FControlPoints.Add(P);
@@ -553,22 +553,22 @@ end;
 
 procedure TFreeSubdivisionControlCurve.LoadBinary(Source: TFreeFileBuffer);
 var
-  I, N, Ind: integer;
-  CP1, CP2: TFreeSubdivisionControlPoint;
+  I,N,Ind: integer;
+  CP1,CP2: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionEdge;
   Sel: boolean;
 begin
   ClearSubdivision;
-  Source.LoadInteger(N);
+  Source.LoadInteger( N );
   FControlPoints.Capacity:=N;
   CP1:=nil;
   for I:=1 to N do begin
     Source.LoadInteger(Ind);
     CP2:=Surface.FControlPoints[ind];
-    FControlPoints.Add(CP2);
-    if I > 1 then begin
-      Edge:=Surface.EdgeExists(CP1, CP2);
-      if Edge <> nil then begin Edge.FCurve:=Self; end;
+    FControlPoints.Add( CP2 );          ///*** явно что-то не то
+    if I>1 then begin
+      Edge:=Surface.EdgeExists(CP1,CP2);
+      if Edge<>nil then begin Edge.FCurve:=Self; end;
     end;
     CP1:=CP2;
   end;

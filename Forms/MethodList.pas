@@ -27,7 +27,7 @@ function TMethodList.FGet( Index: integer ): TItemType;
                                          else Result:=nil;
   end;
 procedure TMethodList.Add( Item: TItemType );
-  begin if FCount=FCapacity then begin                                 //FGrow;
+  begin if FCount=FCapacity then begin
            FCapacity+=256; Setlength( FList,FCapacity ); end;
         FList[FCount]:=Item; Inc( FCount );
   end;

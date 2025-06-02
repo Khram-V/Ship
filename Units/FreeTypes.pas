@@ -85,7 +85,8 @@ Type
 Const ZERO: T3DVector=( X:0.0;Y:0.0;Z:0.0 );
        EOL           = #13#10;
 
-Function F2S( Value: TFloatType ): TFloatType;
+Function I2S( Value: Integer ): String;
+//Function F2S( Value: TFloatType ): TFloatType;
 function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
 Function GetFloat( var S: AnsiString): TFloatType;
 Function GetInteger( var S:AnsiString ): Integer;
@@ -198,18 +199,24 @@ begin
     begin YY:=Y[I]+((XX-X[I]))*(Y[I+1]-Y[I])/(X[I+1]-X[I]); break; end;
 end;
 
-//Function Length( Str: AnsiString ): Integer; overload; // ??? reintroduce; override; virtual;
-//   begin Result:=UTF8Length( Str ); end;
-
-function F2S( Value: TFloatType ): TFloatType; var W: extended;
-begin if abs( Value )<1e-5 then Result:=0 // else Result:=Round( Value,6 );
-//                         else Result:=Int( 0.5+Value*1e6 )/1e6;
-         else begin W:=Value; W:=Int( 0.5+W*1e6 ); Result:=W/1e6; end;
+Function I2S( Value: Integer ): String;
+begin if abs( Value )>=$4000 then Result:='$'+IntToHex( Value,4 )
+                             else Result:=IntToStr( Value );
 end;
-
-function FloatTypeToStr( Value: TFloatType ): AnsiString;
-   begin Result:=FloatToDec( F2S( Value ),6 ); end;
-// begin Result:=FloatToStrF( F2S( Value ),ffGeneral,6,1 ); end;
+{
+Function Length( Str: AnsiString ): Integer; overload; // ??? reintroduce; override; virtual;
+   begin Result:=UTF8Length( Str ); end;
+Function F2S( Value: TFloatType ): TFloatType; var W: extended;
+   begin if abs( Value )<1e-5 then Result:=0 // else Result:=Round( Value,6 );
+//                            else Result:=Int( 0.5+Value*1e6 )/1e6;
+         else begin W:=Value; W:=Int( 0.5+W*1e6 ); Result:=W/1e6; end;
+   end;
+}
+function FloatTypeToStr( Value: TFloatType ): AnsiString; var W: extended;
+   begin if abs( Value )<1e-5 then Value:=0.0
+            else begin W:=Value; W:=Int( 0.5+W*1e6 ); Value:=W/1e6; end;
+     Result:=FloatToDec(Value,6); // или FloatToStrF(F2S(Value),ffGeneral,6,1);
+   end;
 
 function FloatToDec(Value: TFloatType; Maxlength: integer): AnsiString;
        //var fmt:TFormatSettings;

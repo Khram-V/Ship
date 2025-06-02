@@ -250,7 +250,7 @@ Function TFreeControlPointForm.Change( Text: String; Comp: Integer ):String; // 
 var Saved: Boolean; I: Integer;
     Val,R: TFloatType; P: T3DVector;  Undo: TFreeUndoObject;
 begin
-  Edit1.OnEditingDone:=nil; Result:=Text;  writeln( Text,'[',Comp,'] ',' N=',Ship.NumberOfSelectedControlPoints );
+  Edit1.OnEditingDone:=nil; Result:=Text; // writeln( Text,'[',Comp,'] ',' N=',Ship.NumberOfSelectedControlPoints );
   Edit2.OnEditingDone:=nil; Saved:=false; // сброс повторных прерывений
   Edit3.OnEditingDone:=nil; if ActiveControlPoint=nil then exit;
   P:=ActiveControlPoint.Coordinate;

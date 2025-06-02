@@ -118,16 +118,13 @@ end;
 implementation
 
 constructor TFreeBitmapFormatHelper.Create(aBitmap:TBitmap);
-begin
-  inherited Create;
-  if Assigned(aBitmap) then
-    DetectBitMapDataFormat(aBitmap);
-end;
-
+      begin inherited Create;
+            if Assigned(aBitmap) then DetectBitMapDataFormat(aBitmap);
+      end;
 procedure TFreeBitmapFormatHelper.DetectBitMapDataFormat(ABitmap:TBitmap);
-var Desc : TRawImageDescription;
+var Desc: TRawImageDescription;
 begin
-  FBitMapDataFormat:=bmdf_BPP24_B8G8R8; //default Windows
+  FBitMapDataFormat:=bmdf_BPP24_B8G8R8;                       //default Windows
   Desc:=ABitmap.RawImage.Description;
   FBytesPerPixel:=Desc.BitsPerPixel div 8;
   With Desc do begin
@@ -144,8 +141,8 @@ begin
       and (BlueShift=11)
       and (AlphaPrec=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat:=bmdf_BPP16_R5G6B5
-    else if (Format=ricfRGBA) and (PaletteColorCount=0)
+    then FBitMapDataFormat:=bmdf_BPP16_R5G6B5 else
+    if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 16) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = riboLSBFirst)
@@ -158,10 +155,8 @@ begin
       and (BlueShift=0)
       and (AlphaPrec=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat:=bmdf_BPP16_B5G6R5
-    //  24
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    then FBitMapDataFormat:=bmdf_BPP16_B5G6R5 else                        // 24
+    if (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = DefaultByteOrder)
@@ -175,8 +170,8 @@ begin
       and (AlphaPrec=0)
       and (AlphaShift=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat:=bmdf_BPP24_B8G8R8
-    else if (Format=ricfRGBA) and (PaletteColorCount=0)
+    then FBitMapDataFormat:=bmdf_BPP24_B8G8R8 else
+    if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = riboLSBFirst)
@@ -189,8 +184,8 @@ begin
       and (BlueShift=16)
       and (AlphaPrec=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat:=bmdf_BPP24_R8G8B8
-    else if (Format=ricfRGBA) and (PaletteColorCount=0)
+    then FBitMapDataFormat:=bmdf_BPP24_R8G8B8 else
+    if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboReversedBits)
       and (ByteOrder = riboLSBFirst)
@@ -202,9 +197,9 @@ begin
       and (BluePrec = 8)
       and (BlueShift=0)
       and (AlphaPrec=0)
-      //and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat:=bmdf_BPP24_B8G8R8      // not sure what reverce bit order means here
-    else if (Format=ricfRGBA) and (PaletteColorCount=0)
+    //and (MaskBitsPerPixel=0)
+    then FBitMapDataFormat:=bmdf_BPP24_B8G8R8 else // not sure what reverce bit order means here
+    if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = riboLSBFirst)
@@ -216,9 +211,9 @@ begin
       and (BluePrec = 8)
       and (BlueShift=16)
       and (AlphaPrec=0)
-      //and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat:=bmdf_BPP32_R8G8B8
-    else if (Format=ricfRGBA) and (PaletteColorCount=0)
+    //and (MaskBitsPerPixel=0)
+    then FBitMapDataFormat:=bmdf_BPP32_R8G8B8 else
+    if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboReversedBits)
       and (ByteOrder = riboLSBFirst)
@@ -230,9 +225,9 @@ begin
       and (BluePrec = 8)
       and (BlueShift=0)
       and (AlphaPrec=0)
-      //and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat:=bmdf_BPP32_B8G8R8      // not sure what reverce bit order means here
-    else if (Format=ricfRGBA) and (PaletteColorCount=0)
+    //and (MaskBitsPerPixel=0)
+    then FBitMapDataFormat:=bmdf_BPP32_B8G8R8 else // not sure what reverce bit order means here
+    if (Format=ricfRGBA) and (PaletteColorCount=0)
       and (Depth = 24) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = DefaultByteOrder)
@@ -246,10 +241,8 @@ begin
       and (AlphaPrec=0)
       and (AlphaShift=0)
       //and (MaskBitsPerPixel=0) // Ignore mask, we do not need it for our purposes
-    then FBitMapDataFormat:=bmdf_BPP32_B8G8R8
-    // 32
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    then FBitMapDataFormat:=bmdf_BPP32_B8G8R8 else                        // 32
+    if (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 32) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = riboLSBFirst)
@@ -263,9 +256,8 @@ begin
       and (AlphaPrec=8)
       and (AlphaShift=0)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat:=bmdf_BPP32_A8R8G8B8
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    then FBitMapDataFormat:=bmdf_BPP32_A8R8G8B8 else
+    if (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 32) // used bits per pixel
       and (BitOrder = riboBitsInOrder)
       and (ByteOrder = riboLSBFirst)
@@ -279,9 +271,8 @@ begin
       and (AlphaPrec=8)
       and (AlphaShift=24)
       and (MaskBitsPerPixel=0)
-    then FBitMapDataFormat:=bmdf_BPP32_R8G8B8A8
-    else if
-      (Format = ricfRGBA) and (PaletteColorCount = 0)
+    then FBitMapDataFormat:=bmdf_BPP32_R8G8B8A8  else
+    if (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 32) // used bits per pixel
       and (ByteOrder = DefaultByteOrder)
       and (BitsPerPixel = 32) // bits per pixel. can be greater than Depth.
@@ -294,13 +285,11 @@ begin
       and (AlphaPrec=8)
       and (AlphaShift=24)
       and (MaskBitsPerPixel=0)
-    then
-      begin;
-      if (BitOrder = riboBitsInOrder) then
-        FBitMapDataFormat:=bmdf_BPP32_B8G8R8A8
-        else
-          FBitMapDataFormat:=bmdf_BPP32_B8G8R8A8_r;
-      end;
+    then begin;
+      if (BitOrder = riboBitsInOrder)
+        then FBitMapDataFormat:=bmdf_BPP32_B8G8R8A8
+        else FBitMapDataFormat:=bmdf_BPP32_B8G8R8A8_r;
+    end;
 //  else raise Exception.Create('Unsupported bitmap format:'+Desc.AsString);
   end;
 

@@ -1,7 +1,7 @@
 
 // Based upon IniLang v 0.9
 // Freeware unit for Delphi 4 projects
-// by Frйdйric Sigonneau <aFas member> 24/04/1999
+// by Frédéric Sigonneau <aFas member> 24/04/1999
 // e-mail : frederic.sigonneau@wanadoo.fr
 // Modified to suit FREEship and adapted to new components
 
@@ -17,17 +17,13 @@ type TLanguageIniFile = class( TMemIniFile )               { TLanguageIniFile }
 public Name: AnsiString;
   constructor Create( const AName:AnsiString; const AFileName:AnsiString );
 end;
-var
- CurrentLanguage: TLanguageIniFile=nil; // Global variable for current language
 
-//user procs
+var CurrentLanguage: TLanguageIniFile=nil; // Global variable for current language
 function LoadLanguage(aName:AnsiString; aFileName:AnsiString):TLanguageIniFile;overload;
 procedure ShowTranslatedValues( Component:TComponent );
 function UserString( Index:Integer ): AnsiString;
 
 implementation
-
-//var I:integer=0;
 
 function LoadLanguage( aName:AnsiString; aFileName:AnsiString ):TLanguageIniFile;
 begin if aName<>'' then                  // leave with default English language
@@ -116,7 +112,7 @@ end;
 { TLanguageIniFile }
 
 constructor TLanguageIniFile.Create(const AName: AnsiString; const AFileName: AnsiString);
-begin Name:=aName; inherited Create( AFileName,false ); end;
+      begin Name:=aName; inherited Create( AFileName,false ); end;
 {
 initialization
    CurrentLanguage:=nil;

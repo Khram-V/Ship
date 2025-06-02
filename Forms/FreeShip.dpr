@@ -34,7 +34,7 @@ begin
          else WriteLn( sHelp );                       // UTF8ToConsole( sHelp )
 end;
 {$R *.res}
-begin // SetConsoleOutputCP( CP_UTF8 ); SetConsoleCP( CP_UTF8 ); //==65001
+begin      // SetConsoleOutputCP( CP_UTF8 ); SetConsoleCP( CP_UTF8 ); //==65001
   WestPoint;
   InitByParameters;
   PrintParametersHelp( false );
@@ -55,10 +55,10 @@ try
 except                 // Floating point operation - сбои и ошибки игнорируются
     on E: EMathError do;      // ( 'General floating-point exception caught!' )
     on E: EAccessViolation do;    // -- не знаю.., может быть так будут не хуже
-//  on E: EIntError  do Writeln( 'General integer exception!' );
-//  on E: EDivByZero do Writeln( 'Division by zero exception!' );
-//  on E: EOverflow  do Writeln( 'Overflow exception!' );
-//  on E: EUnderflow do Writeln( 'Underflow exception!' );
+{   on E: EIntError  do Writeln( 'General integer exception!' );
+    on E: EDivByZero do Writeln( 'Division by zero exception!' );
+    on E: EOverflow  do Writeln( 'Overflow exception!' );
+    on E: EUnderflow do Writeln( 'Underflow exception!' ); }
 end
 end.
 

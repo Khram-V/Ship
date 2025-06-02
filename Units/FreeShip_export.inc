@@ -12,7 +12,7 @@ var
   Strings: TStringList;
 
   Procedure Str2( A,B: single );
-    begin Str:=Str+format( ' %1.5g %1.5g',[F2S(A),F2S(B)] );
+    begin Str:=Str+format( ' %1.5g %1.5g',[A,B] );
     end;
   Procedure StemStern( Dir:boolean );                 // Dir=true - форштевень
     var I,J,K,M,N: Integer; z1:single;
@@ -60,8 +60,8 @@ var
   begin N:=Spline.NumberOfPoints-1;
     Str:=format( ' %3d ',[N+1] );
     if Spline.Point[0].Z<=Spline.Point[N].Z
-    then for J:=0 to N do with Spline.Point[J] do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] )
-    else for J:=N downto 0 do with Spline.Point[J] do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] );
+    then for J:=0 to N do with Spline.Point[J] do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[X,Y,Z] )
+    else for J:=N downto 0 do with Spline.Point[J] do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[X,Y,Z] );
     Strings.Add( Str );
   end;
 
@@ -113,7 +113,7 @@ begin
 //      T3.Z:=0.98*T3.Z/N;
 //      T3.Y:=-FreeShip.FProjectSettings.FProjectBeam;
 //      T3.X:=Items[0].Point[0].X;
-      Title:=format( '%3d %-4.4g',[N,F2S(Items[0].Point[0].X)] ); S:='';
+      Title:=format( '%3d %-4.4g',[N,Items[0].Point[0].X] ); S:='';
       for J:=0 to Count-1 do with Items[J] do begin
         N:=NumberOfPoints-1; Str:='';   // ещё и сортировки только и не хватало
         if ( Point[N].Z>=Point[0].Z )                // == может быть на палубе
@@ -142,8 +142,8 @@ begin
         Points:=EdgePointLists[I]; N:=Points.Count-1;
         Str:=format( ' %3d ',[N+1] );          // ' '+IntToStr( Points.Count );
         if Points[0].Coordinate.Z<=Points[N].Coordinate.Z
-        then for J:=0 to N do with Points[J].Coordinate do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] )
-        else for J:=N downto 0 do with Points[J].Coordinate do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[F2S(X),F2S(Y),F2S(Z)] );
+        then for J:=0 to N do with Points[J].Coordinate do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[X,Y,Z] )
+        else for J:=N downto 0 do with Points[J].Coordinate do Str:=Str+format( ' %1.5g %1.5g %1.5g ',[X,Y,Z] );
         Strings.Add( Str );
         FreeAndNil(Points);
       end;
@@ -1094,16 +1094,16 @@ begin
       #32+FloatToDec(FreeShip.ProjectSettings.ProjectBeam,4)+#32 +
       FloatToDec(FreeShip.ProjectSettings.ProjectDraft,4)+#32 +
       FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity,5)+#32 +
-      FloatToDec(FreeShip.ProjectSettings.ProjectAppendageCoefficient,5) +
-      #32+IntToStr(Ord(FreeShip.ProjectSettings.ProjectUnits)) {+#32 +}
-      +' 1 '+ //BoolToStr(FreeShip.ProjectSettings.MainparticularsHasBeenset) +
-      {#32+} IntToStr(Ord(FreeShip.Precision)));
-    FreeShip.Surface.ExportFeFFile(Strings);
-    Strings.SaveToFile(ChangeFileExt(Savedialog.FileName, '.fef'));
-    FreeAndNil(Strings);
+      FloatToDec(FreeShip.ProjectSettings.ProjectAppendageCoefficient,5)+
+      #32+IntToStr(Ord(FreeShip.ProjectSettings.ProjectUnits))+' 1 '+
+    //#32+BoolToStr(FreeShip.ProjectSettings.MainparticularsHasBeenset)+#32+
+      IntToStr( Ord( FreeShip.Precision ) ) );
+    FreeShip.Surface.ExportFeFFile( Strings );
+    Strings.SaveToFile( ChangeFileExt( Savedialog.FileName,'.fef' ) );
+    FreeAndNil( Strings );
   end;
-  FreeAndNil(SaveDialog);
-end;{TFreeEdit.File_ExportFEF}
+  FreeAndNil( SaveDialog );
+end;
 
 // Save ordinates to the GHS file format
 procedure TFreeEdit.File_ExportGHS;

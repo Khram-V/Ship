@@ -23,13 +23,8 @@ function TFreeSubdivisionLayer.FGetLayerIndex: integer;
 
 function TFreeSubdivisionLayer.FGetSurfaceProperties: TLayerProperties;
 var
-  I,J,K: integer;
-  Child: TFreeSubdivisionFace;
-  Area:  TFloatType;
-  Center: T3DVector;
-
-  procedure ProcessTriangle(P1, P2, P3: T3DVector);
-  var ax,ay,az: TFloatType;
+  I,J,K:Integer; Area:TFloatType; Child:TFreeSubdivisionFace; Center:T3DVector;
+  procedure ProcessTriangle(P1, P2, P3: T3DVector); var ax,ay,az: TFloatType;
   begin
     Center.X:=(P1.X+P2.X+P3.X)/3;
     Center.Y:=(P1.Y+P2.Y+P3.Y)/3;
@@ -43,55 +38,38 @@ var
     Result.SurfaceCenterOfGravity.Y:=Result.SurfaceCenterOfGravity.Y+Area*Center.Y;
     Result.SurfaceCenterOfGravity.Z:=Result.SurfaceCenterOfGravity.Z+Area*Center.Z;
   end;
-
 begin
-//  II:=0;
 //Coeff:=Thickness*MaterialDensity;
   Fillchar( Result,SizeOf(Result),0 );
-(*if FileExists('Weights.txt') { *Converted from FileExists* }
-  and (coeff > 0) then begin
-    Assignfile(FFile,'Weights.txt');
-    Append(FFile);
-    II:=1;
-    if Symmetric then begin
-      writeln(ffile,Count:4,Items[0].ChildCount:4,' 2'); Coeff:=Coeff*2;
-    end else
-      writeln(ffile,IntToStr(Count)+' '+IntToStr(Items[0].ChildCount)+' 1');
-  end;
-*)
   for I:=1 to Count do begin
-    for J:=1 to Items[I-1].ChildCount do begin
-      Child:=Items[I-1].Child[J-1];
-      for K:=3 to Child.NumberOfpoints do ProcessTriangle
-        ( Child.Point[0].Coordinate,
-          Child.Point[K-2].Coordinate,
-          Child.Point[K-1].Coordinate
-        );
-(*
-      if ii = 1 then begin
-        if Child.NumberOfpoints = 3 then begin
+    for J:=1 to Items[I-1].ChildCount do begin Child:=Items[I-1].Child[J-1];
+      for K:=3 to Child.NumberOfpoints do
+      ProcessTriangle( Child.Point[0].Coordinate,
+                       Child.Point[K-2].Coordinate,
+                       Child.Point[K-1].Coordinate );
+{     if ii=1 then begin
+        if Child.NumberOfpoints=3 then begin
           Xmin:=Child.Point[0].Coordinate.X;
           Xmax:=Child.Point[0].Coordinate.X;
           if Child.Point[1].Coordinate.X > Xmax then Xmax:=Child.Point[1].Coordinate.X;
           if Child.Point[2].Coordinate.X > Xmax then Xmax:=Child.Point[2].Coordinate.X;
           if Child.Point[1].Coordinate.X < Xmin then Xmin:=Child.Point[1].Coordinate.X;
           if Child.Point[2].Coordinate.X < Xmin then Xmin:=Child.Point[2].Coordinate.X;
-          if area * coeff > 10000
-          then Write(ffile,Center.X:7:3,Center.Y:7:3,Center.Z:7:3, Area*Coeff:10:1)
-          else Write(ffile,Center.X:7:3,Center.Y:7:3,Center.Z:7:3, Area*Coeff:10:3);
-          writeln(ffile, Xmin: 8: 3, Xmax: 8: 3, ' 3');
+          if area*coeff>10000
+          then Write(ffile,Center.X:7:3,Center.Y:7:3,Center.Z:7:3,Area*Coeff:10:1)
+          else Write(ffile,Center.X:7:3,Center.Y:7:3,Center.Z:7:3,Area*Coeff:10:3);
+          writeln( ffile,Xmin:8:3,Xmax:8:3,' 3' );
         end else begin
-          if area * coeff > 10000 then
-            writeln(ffile, Center.X: 7: 3, Center.Y: 7: 3, Center.Z: 7: 3, Area * Coeff: 10: 1,
-              (Child.Point[0].Coordinate.X+Child.Point[3].Coordinate.X) / 2: 8: 3,
-              (Child.Point[1].Coordinate.X+Child.Point[2].Coordinate.X) / 2: 8: 3, ' 4')
+          if area*coeff>10000 then
+            writeln(ffile, Center.X:7:3,Center.Y:7:3, Center.Z:7:3,Area*Coeff:10:1,
+              (Child.Point[0].Coordinate.X+Child.Point[3].Coordinate.X)/2:8:3,
+              (Child.Point[1].Coordinate.X+Child.Point[2].Coordinate.X)/2:8:3,' 4')
           else
-            writeln(ffile, Center.X: 7: 3, Center.Y: 7: 3, Center.Z: 7: 3, Area * Coeff: 10: 3,
-              (Child.Point[0].Coordinate.X+Child.Point[3].Coordinate.X) / 2: 8: 3,
-              (Child.Point[1].Coordinate.X+Child.Point[2].Coordinate.X) / 2: 8: 3, ' 4');
+            writeln(ffile,Center.X:7:3,Center.Y:7:3,Center.Z:7:3,Area*Coeff:10:3,
+              (Child.Point[0].Coordinate.X+Child.Point[3].Coordinate.X)/2:8:3,
+              (Child.Point[1].Coordinate.X+Child.Point[2].Coordinate.X)/2:8:3,' 4');
         end;
-      end;
-*)
+      end; }
     end;
   end;
   if Result.SurfaceArea<>0 then begin
@@ -104,17 +82,14 @@ begin
      end;
      Result.Weight:=Result.SurfaceArea*Thickness*MaterialDensity;
   end;
-(*if ii = 1 then begin
-    writeln(ffile,
+{ if ii = 1 then begin writeln(ffile,
        Result.SurfaceCenterOfGravity.X:7:3,
        Result.SurfaceCenterOfGravity.Y:7:3,
        Result.SurfaceCenterOfGravity.Z:7:3,
        Result.SurfaceArea*Thickness*MaterialDensity:12:1,
-       Thickness:8:3,
-       MaterialDensity:8:3 );
+       Thickness:8:3,MaterialDensity:8:3 );
     closefile(ffile);
-  end;
-*)
+  end; }
 end;
 
 procedure TFreeSubdivisionLayer.FSetFDevelopable(Val: boolean);
@@ -126,11 +101,10 @@ end;
 
 procedure TFreeSubdivisionLayer.FSetName( Val: AnsiString );
 begin
-  if Uppercase(Val)<>Uppercase(FDescription) then begin
-    FDescription:=Val;
+  if Uppercase(Val)<>Uppercase(FDescription) then begin FDescription:=Val;
     if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
-    if (self=Surface.ActiveLayer) and (assigned(Surface.FOnChangeActiveLayer)) then
-      Surface.FOnChangeActiveLayer( Surface,Surface.ActiveLayer );
+    if (self=Surface.ActiveLayer) and (assigned(Surface.FOnChangeActiveLayer))
+      then Surface.FOnChangeActiveLayer( Surface,Surface.ActiveLayer );
   end;
 end;
 
@@ -143,8 +117,7 @@ end;
 
 procedure TFreeSubdivisionLayer.FSetColor( Val: TColor );
 begin
-  if Val<>FColor then
-  begin FColor:=Val;
+  if Val<>FColor then begin FColor:=Val;
     if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
     if (self = Surface.ActiveLayer) and (assigned(Surface.FOnChangeActiveLayer))
        then Surface.FOnChangeActiveLayer(Surface, Surface.ActiveLayer);
@@ -184,21 +157,15 @@ end;
 
 procedure TFreeSubdivisionLayer.FSetControlNetVisible(Val: boolean);
 begin
-  if Val <> FControlNetVisible then
-  begin
-    FControlNetVisible:=Val;
-    if assigned(Surface.FOnChangeLayerData) then
-      Surface.FOnChangeLayerData(self);
+  if Val <> FControlNetVisible then begin FControlNetVisible:=Val;
+    if assigned(Surface.FOnChangeLayerData) then Surface.FOnChangeLayerData(self);
   end;
 end;
 
 procedure TFreeSubdivisionLayer.AddControlFace(ControlFace: TFreeSubdivisionControlFace);
-begin
-  // disconnect from current layer
-  if ControlFace.Layer <> nil then
-    ControlFace.Layer.DeleteControlFace(ControlFace);
-  if FPatches.Indexof(ControlFace) = -1 then
-    FPatches.Add(ControlFace);
+begin                                          // disconnect from current layer
+  if ControlFace.Layer<>nil then ControlFace.Layer.DeleteControlFace(ControlFace);
+  if FPatches.Indexof(ControlFace)=-1 then FPatches.Add(ControlFace);
   ControlFace.FLayer:=self;
 end;
 
@@ -215,111 +182,81 @@ begin
 end;
 
 function ToStr( c: T3DVector ): AnsiString;
-begin
-  Result:='('+FloatToStr( c.X )+','
-             +FloatToStr( c.Y )+','
-             +FloatToStr( c.Z )+')';
+begin Result:='('+FloatToStr( c.X )+','
+                 +FloatToStr( c.Y )+','
+                 +FloatToStr( c.Z )+')';
 end;
 
-procedure TFreeSubdivisionLayer.FindEdgeFaceIntersectionPoints(
-  Layer: TFreeSubdivisionLayer; var NewEdge: TFreeSubdivisionControlEdge;
-  var NewPoints: TFasterListTFreeSubdivisionControlPoint);
+procedure TFreeSubdivisionLayer.FindEdgeFaceIntersectionPoints
+( Layer: TFreeSubdivisionLayer; var NewEdge: TFreeSubdivisionControlEdge;
+  var NewPoints: TFasterListTFreeSubdivisionControlPoint );
 var
-  I, J, K, L: integer;
+  I,J,K,L: integer;
   Edges: TFasterListTFreeSubdivisionControlEdge;
-  P1, P2: TFreeSubdivisionControlPoint;
-  P: TFreeSubdivisionControlPoint;
+  P,P1,P2: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
   Face: TFreeSubdivisionControlFace;
   Child: TFreeSubdivisionFace;
-  IntFound: boolean;
-  Inserted: boolean;
+  IntFound,Inserted,PiT,esl,psl: boolean;
   Plane: T3DPlane;
-  S1, S2, T: TFloatType;
-  P2D, P3D, esp, eep, CP0, CP2, CP1: T3DVector;
+  S1,S2,T: TFloatType;
+  P2D,P3D,esp,eep,CP0,CP2,CP1: T3DVector;
   PP3D: ^T3DVector;
-  PiT, esl, psl: boolean;
-label
-  StartAgain;
+label StartAgain;
 begin
   Edges:=TFasterListTFreeSubdivisionControlEdge.Create;
 //  try
-    StartAgain:                          // assemble all controledges in a list
-      for I:=1 to Layer.Count do begin
-        Face:=Layer.Items[I-1];
-        P1:=Face.Point[Face.NumberOfPoints-1];
-        for J:=1 to Face.NumberOfpoints do begin
-          P2:=Face.Point[J-1];
-          Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
-          if Edge <> nil then begin
-            if Edges.IndexOf(Edge) = -1 then Edges.Add(Edge);
-          end;
-          P1:=P2;
-        end;
-      end;                 // now check all edges for intersection with layer 2
+StartAgain:                              // assemble all controledges in a list
+    for I:=1 to Layer.Count do begin
+      Face:=Layer.Items[I-1];
+      P1:=Face.Point[Face.NumberOfPoints-1];
+      for J:=1 to Face.NumberOfpoints do begin P2:=Face.Point[J-1];
+        Edge:=Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
+        if Edge <> nil then begin
+          if Edges.IndexOf(Edge) = -1 then Edges.Add(Edge);
+        end; P1:=P2;
+      end;
+    end;                   // now check all edges for intersection with layer 2
     I:=1;
-    while I <= Edges.Count do begin
+    while I<=Edges.Count do begin
       Edge:=Edges[I-1];
       IntFound:=False;
       esp:=Edge.FStartpoint.FCoordinate;
       eep:=Edge.FEndpoint.FCoordinate;
       J:=1;
-      while (J <= NewEdge.FFaces.Count) and (not IntFound) do begin
+      while (J<=NewEdge.FFaces.Count) and (not IntFound) do begin
         Face:=TFreeSubdivisionControlFace(NewEdge.Face[J-1]);
         esl:=Edge.Selected;
         psl:=Face.Selected;
-        if esl then
-          if psl then
-            T:=0;
+        if esl then if psl then T:=0;
         K:=1;
-        while (K <= Face.ChildCount) and (not IntFound) do begin
+        while (K<=Face.ChildCount) and (not IntFound) do begin
           Child:=Face.Child[K-1];
           L:=3;
-          while (L <= Child.NumberOfpoints) and (not IntFound) do begin
+          while (L<=Child.NumberOfpoints) and (not IntFound) do begin
             CP0:=Child.Point[0].Coordinate;
             CP2:=Child.Point[L-2].Coordinate;
             CP1:=Child.Point[L-1].Coordinate;
-
             Plane:=PlanePPP(CP0, CP2, CP1);
-
-            S1:=Plane.a * esp.X+Plane.b * esp.Y
-             +Plane.c * esp.Z+Plane.d;
-            S2:=Plane.a * eep.X+Plane.b * eep.Y
-             +Plane.c * eep.Z+Plane.d;
+            S1:=Plane.a*esp.X + Plane.b*esp.Y + Plane.c*esp.Z + Plane.d;
+            S2:=Plane.a*eep.X + Plane.b*eep.Y + Plane.c*eep.Z + Plane.d;
             if ((S1 < 0) and (S2 > 0)) or ((S1 > 0) and (S2 < 0)) then begin
               // Edge intersects the plane, does it lie in the triangle?
               if S1 = S2 then T:=0.5
                          else T:=-s1 / (s2-s1);
-              P3D.X:=esp.X+T * (eep.X-esp.X);
-              P3D.Y:=esp.Y+T * (eep.Y-esp.Y);
-              P3D.Z:=esp.Z+T * (eep.Z-esp.Z);
-
+              P3D.X:=esp.X+T*(eep.X-esp.X);
+              P3D.Y:=esp.Y+T*(eep.Y-esp.Y);
+              P3D.Z:=esp.Z+T*(eep.Z-esp.Z);
               PiT:=False; //PIT0:=false;
               //if PointInBlock(P3D, Face.Min, Face.Max) then
               begin
-                //PiT:=PointInTriangleBarycentric(P3D, CP0, CP2, CP1); // sometimes gives false positive
+              //PiT:=PointInTriangleBarycentric(P3D, CP0, CP2, CP1); // sometimes gives false positive
                 PiT:=PointInTriangle(P3D, CP0,CP2,CP1);
               end;
-              //if Edge.Selected or Face.Selected then
-              //write('P3D:',ToStr(P3D), ' CP0:',ToStr(CP0),' CP2:',ToStr(CP2),' CP1:',ToStr(CP1));
-              //if PIT<>PIT0
-              //then writeln ('PIT<>PIT0');
               if PiT then begin
-                //if Edge.Selected or Face.Selected then
-                //   write(' :IN');
-                // Yes, we have a valid intersection here
-                //writeln('FreeGeometry.CalculateIntersectionPoint: Intersection found. Edge:',I,' FaceChild:',K,' Point:',L);
-                //writeln('FreeGeometry.CalculateIntersectionPoint: Intersection found. P3D(',P3D.X,',',P3D.Y,',',P3D.Z,')');
-
                 P:=TFreeSubdivisionControlPoint.Create(Surface);
                 if (P<>nil) then begin
-                  P.FSetCoordinate(P3D);
-                  {New(PP3D);
-                  PP3D^.X:=P3D.X;
-                  PP3D^.Y:=P3D.Y;
-                  PP3D^.Z:=P3D.Z;
-                  NewPoints.Add(PP3D);}
-                  NewPoints.Add(P);
+                  P.FSetCoordinate( P3D ); NewPoints.Add( P );
                 end;
               end;
               //if Edge.Selected or Face.Selected then
@@ -821,74 +758,59 @@ var
 begin
   if SurfaceVisible and (Count > 0) then begin
     if (Viewport.ViewportMode <> vmWireframe) then begin
-      if Viewport.ViewportMode = vmShadeGauss then
-        for i:=0 to Count-1 do
-          Items[i].Draw(Viewport, Surface.FMinGaussCurvature,
-            Surface.FMaxGaussCurvature)
-      else
-        for i:=0 to Count-1 do
-          if items[i] is TFreeSubdivisionControlFace then
-            Items[i].Draw(Viewport)
+      if Viewport.ViewportMode=vmShadeGauss
+      then for i:=0 to Count-1 do
+        Items[i].Draw(Viewport,Surface.FMinGaussCurvature,Surface.FMaxGaussCurvature)
+      else for i:=0 to Count-1 do
+        if items[i] is TFreeSubdivisionControlFace then Items[i].Draw(Viewport);
     end else begin
-      Viewport.Canvas.AntialiasingMode:=amOn; // MM 04/22/2019 10:30:47 AM. added
+      Viewport.Canvas.AntialiasingMode:=amOn;
       if Surface.ShowInteriorEdges then begin
         Viewport.SetPenWidth(1);
         Viewport.PenColor:=Color;
         for I:=0 to Count-1 do Items[I].Draw(Viewport);
-      end;
-      // Draw all interior crease-edges
+      end;                                    // Draw all interior crease-edges
       Viewport.PenWidth:=Surface.InternalEdgeLineWidth;
       Viewport.PenStyle:=psSolid;
       Viewport.PenColor:=Surface.CreaseColor;
-
-      for I:=0 to Count-1 do begin
-        Face:=Items[I];
-        for J:=0 to Face.FEdges.Count-1 do begin
-          Edge:=Face.FEdges[J];
-          if Edge.FCrease or (Edge.NumberOfFaces<2) then begin
-            Edge.Draw(Surface.DrawMirror and Symmetric, Viewport);
-          end;
-        end;           //MM 2019-04-21. added to draw boundary and crease edges
+      for I:=0 to Count-1 do begin Face:=Items[I];
+        for J:=0 to Face.FEdges.Count-1 do begin Edge:=Face.FEdges[J];
+          if Edge.FCrease or (Edge.NumberOfFaces<2) then
+             Edge.Draw( Surface.DrawMirror and Symmetric,Viewport );
+        end;
         for J:=0 to Face.FControlDescendantEdges.Count-1 do begin
           Edge:=Face.FControlDescendantEdges[J];
           if Edge.FCrease or (Edge.NumberOfFaces<2) then begin
             Edge.Draw(Surface.DrawMirror and Symmetric,Viewport);
           end;
         end;
-      end;
-      Viewport.Canvas.AntialiasingMode:=amOff; // MM 04/22/2019 10:30:47 AM. added
+      end; Viewport.Canvas.AntialiasingMode:=amOff;
     end;
   end;
 end;
 
-procedure TFreeSubdivisionLayer.Extents(var Min, Max: T3DVector);
-var
-  I: integer; Face: TFreeSubdivisionControlface; P: T3DVector;
+procedure TFreeSubdivisionLayer.Extents( var Min,Max: T3DVector );
+var I: integer; Face: TFreeSubdivisionControlface; P: T3DVector;
 begin
-  if SurfaceVisible then
-    for I:=1 to Count do begin
-      Face:=Items[I-1];
-      MinMax(Face.Min, Min, Max);
-      MinMax(Face.Max, Min, Max);
-      if (Symmetric) and (Surface.DrawMirror) then begin
-        P:=Face.Min;
-        P.Y:=-P.Y;
-        MinMax(P, Min, Max);
-        P:=Face.Max;
-        P.Y:=-P.Y;
-        MinMax(P, Min, Max);
-      end;
+  if SurfaceVisible then for I:=1 to Count do begin Face:=Items[I-1];
+    MinMax( Face.Min,Min,Max );
+    MinMax( Face.Max,Min,Max );
+    if (Symmetric) and (Surface.DrawMirror) then begin
+      P:=Face.Min; P.Y:=-P.Y; MinMax(P, Min, Max);
+      P:=Face.Max; P.Y:=-P.Y; MinMax(P, Min, Max);
     end;
+  end;
 end;
 
-procedure TFreeSubdivisionLayer.LoadBinary(Source: TFreeFileBuffer);
-var
-  I: integer;
+procedure TFreeSubdivisionLayer.LoadBinary( Source: TFreeFileBuffer );
+var I: integer;
 begin
   Source.LoadString(FDescription);
   Source.LoadInteger(FLayerID);
   if FLayerID>Surface.FLastusedLayerID then Surface.FLastusedLayerID:=FLayerID;
-  Source.LoadTColor(FColor);
+  Source.LoadInteger( FColor );                // LoadTColor( FColor,FAlphaBlend );
+    FAlphaBlend:=255-byte( Cardinal( FColor ) shr 24 );
+    FColor:=FColor and $FFFFFF;
   Source.LoadBoolean(FSurfaceVisible);
   Source.LoadBoolean(FSymmetric);
   Source.LoadBoolean(FDevelopable);
@@ -897,15 +819,15 @@ begin
   FUseForIntersections:=True;
   FUseInHydrostatics:=True;
   FShowInLinesplan:=True;
-  if Source.Version >= fv180 then begin
+  if Source.Version>=fv180 then begin
     Source.LoadBoolean(FUseForIntersections);
     Source.LoadBoolean(FUseInHydrostatics);
-    if Source.Version >= fv191 then begin
+    if Source.Version>=fv191 then begin
       Source.LoadTFloatType(FMaterialDensity);
       Source.LoadTFloatType(FThickness);
-      if Source.Version >= fv201 then begin
+      if Source.Version>=fv201 then begin
         Source.LoadBoolean(FShowInLinesplan);
-        if Source.Version >= fv261 then begin
+        if Source.Version>=fv261 then begin
           Source.LoadInteger(I);
           FAlphaBlend:=I;
         end;
@@ -917,21 +839,23 @@ end;
 procedure TFreeSubdivisionLayer.LoadFromStream(var LineNr: integer; Strings: TStringList);
 var
   Str: AnsiString;
-begin                                        // read description
+begin                                                       // read description
   Inc(LineNr);
-  FDescription:=Strings[LineNr];           // read Layer identification
+  FDescription:=Strings[LineNr];                   // read Layer identification
   Inc(LineNr);
   Str:=Strings[LineNr];
   FLayerID:=GetInteger( Str);
   if FLayerID > Surface.FLastusedLayerID then
-    Surface.FLastusedLayerID:=FLayerID;    // read color
-  FColor:=GetInteger( Str);     // read SurfaceVisible
+    Surface.FLastusedLayerID:=FLayerID;                           // read color
+  FColor:=GetInteger( Str);                              // read SurfaceVisible
+    FAlphaBlend := 255-byte( Cardinal( FColor ) shr 24 );
+    FColor:=FColor and $FFFFFF;
   FSurfaceVisible:=GetBoolean( Str);
-  FSymmetric:=GetBoolean( Str); // read developability
+  FSymmetric:=GetBoolean( Str);                          // read developability
   if Str<>'' then FDevelopable:=GetBoolean( Str)
-             else FDevelopable:=False;   // read calc. intersections flag
+             else FDevelopable:=False;         // read calc. intersections flag
   if Str<>'' then FUseForIntersections:=GetBoolean( Str)
-             else FUseForIntersections:=True; // read use in hydrostatics flag
+             else FUseForIntersections:=True;  // read use in hydrostatics flag
   if Str<>'' then FUseInHydrostatics:=GetBoolean( Str)
              else FUseInHydrostatics:=True;
 end;
@@ -944,60 +868,54 @@ begin
 end;
 
 procedure TFreeSubdivisionLayer.MoveUp;
-var
-  Index: integer;
-begin
-  Index:=Surface.FLayers.IndexOf(self);
-  if index > 0 then
-    Surface.FLayers.Exchange(Index-1, index);
+var Index: integer;
+begin Index:=Surface.FLayers.IndexOf(self);
+   if index>0 then Surface.FLayers.Exchange( Index-1,index );
 end;
 
-procedure TFreeSubdivisionLayer.SaveBinary(Destination: TFreeFileBuffer);
+procedure TFreeSubdivisionLayer.SaveBinary( Destination: TFreeFileBuffer );
+  Var C: Cardinal;
 begin
-  Destination.Add(FDescription);
-  Destination.Add(FLayerID);
-  Destination.Add(FColor);
-  Destination.Add(FSurfaceVisible);
-  Destination.Add(FSymmetric);
-  Destination.Add(FDevelopable);
-  if Destination.Version >= fv180 then begin
-    Destination.Add(FUseForIntersections);
-    Destination.Add(FUseInHydrostatics);
-    if Destination.Version >= fv191 then begin
-      Destination.Add(FMaterialDensity);
-      Destination.Add(FThickness);
-      if Destination.Version >= fv201 then begin
-        Destination.Add(FShowInLinesplan);
-        if Destination.Version >= fv261 then begin
-          Destination.Add(FAlphaBlend);
+  Destination.Add( FDescription );
+  Destination.Add( FLayerID );
+  C:=(Cardinal(FColor) and $FFFFFF)+(Cardinal(255-FAlphaBlend) shl 24);
+  Destination.Add( Integer( C ) );
+//Destination.Add( FColor,FAlphaBlend );
+  Destination.Add( FSurfaceVisible );
+  Destination.Add( FSymmetric );
+  Destination.Add( FDevelopable );
+  if Destination.Version>=fv180 then begin
+     Destination.Add(FUseForIntersections);
+     Destination.Add(FUseInHydrostatics);
+     if Destination.Version>=fv191 then begin
+        Destination.Add(FMaterialDensity);
+        Destination.Add(FThickness);
+        if Destination.Version>=fv201 then begin
+           Destination.Add(FShowInLinesplan);
+           if Destination.Version>=fv261 then begin
+              Destination.Add(FAlphaBlend);
+           end;
         end;
-      end;
-    end;
+     end;
   end;
 end;
-
 procedure TFreeSubdivisionLayer.SaveToStream(Strings: TStringList);
-var Str: AnsiString;
-begin
-  Strings.Add(FDescription);
-  Str:=IntToStr(FLayerID)+#32+IntToStr(FColor)+#32 +
-    BoolToStr(FSurfaceVisible)+#32+BoolToStr(FSymmetric)+#32 +
-    BoolToStr(FDevelopable);
-  Str:=Str+#32+BoolToStr(FUseForIntersections)+#32+BoolToStr(FUseInHydrostatics);
+  var Str: AnsiString;
+begin Strings.Add( FDescription );
+  Str:=IntToStr(FLayerID)+#32+
+   UIntToStr(Cardinal(Color and $FFFFFF)+(Cardinal(255-FAlphaBlend) shl 24))+#32+
+   BoolToStr(FSurfaceVisible)+#32+BoolToStr(FSymmetric)+#32+BoolToStr(FDevelopable);
+  Str:=Str+#32+BoolToStr( FUseForIntersections )+#32+BoolToStr( FUseInHydrostatics );
   Strings.Add(Str);
 end;
 
 procedure TFreeSubdivisionLayer.SelectAll;
-var I: integer;
-begin
-  for i:=0 to Count-1 do Items[i].Selected:=True;
-end;
+var I: integer; begin for i:=0 to Count-1 do Items[i].Selected:=True; end;
 
 procedure TFreeSubdivisionLayer.Unroll(Destination: TFasterListTFreeDevelopedPatch);
 var
-  ToDoList: TFasterListTFreeSubdivisionControlFace;
+  Current,ToDoList: TFasterListTFreeSubdivisionControlFace;
   DoneList: TFasterList<TFasterListTFreeSubdivisionControlFace>;
-  Current: TFasterListTFreeSubdivisionControlFace;
   I: Integer;
   Face, Face1: TFreeSubdivisionControlFace;
   Patch, Copy: TFreeDevelopedPatch;

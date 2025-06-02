@@ -430,18 +430,20 @@ procedure TFreeSubdivisionSurface.ExportFeFFile( Strings: TStringList );
 var I: integer;
 begin                                                 // Add layer information
   Strings.Add(IntToStr(NumberOfLayers));
-  for I:=0 to NumberOfLayers-1 do begin
-    Strings.Add(Layer[I].Name);
-    Strings.Add(IntToStr(Layer[I].LayerID)+#32+
-       IntToStr(Layer[I].Color)+#32+
-      BoolToStr(Layer[I].SurfaceVisible)+#32+
-      BoolToStr(Layer[I].Developable)+#32+
-      BoolToStr(Layer[I].Symmetric)+#32+
-      BoolToStr(Layer[I].FUseForIntersections)+#32+
-      BoolToStr(Layer[I].FUseInHydrostatics)+#32+
-      BoolToStr(Layer[I].FShowInLinesplan)+#32+
-      FloatToStrF(Layer[I].MaterialDensity,ffFixed,10,8)+#32+
-      FloatToStrF(Layer[I].Thickness,ffFixed,10,8));
+  for I:=0 to NumberOfLayers-1 do
+  with Layer[I] do begin
+    Strings.Add(Name);
+    Strings.Add(IntToStr(LayerID)+#32+
+      I2S(Cardinal(Color and $FFFFFF)+(Cardinal(255-FAlphaBlend) shl 24))+#32+
+//    IntToStr(Color)+#32+
+      BoolToStr(SurfaceVisible)+#32+
+      BoolToStr(Developable)+#32+
+      BoolToStr(Symmetric)+#32+
+      BoolToStr(FUseForIntersections)+#32+
+      BoolToStr(FUseInHydrostatics)+#32+
+      BoolToStr(FShowInLinesplan)+#32+
+      FloatToStrF(MaterialDensity,ffFixed,10,8)+#32+
+      FloatToStrF(Thickness,ffFixed,10,8));
   end;     // first sort controlpoints for faster acces of function (Indexof())
 //FControlPoints.Sort;
   Strings.Add(IntToStr(NumberOfControlPoints));
@@ -481,6 +483,8 @@ begin
     Layer.FLayerID:=GetInteger( Str );
     if Layer.FLayerID>FLastusedLayerID then FLastusedLayerID:=Layer.FLayerID;
     Layer.FColor:=GetInteger( Str );
+      Layer.FAlphaBlend := 255-Byte( Layer.FColor shr 24 );
+      Layer.FColor:=Layer.FColor and $FFFFFF;
     Layer.FSurfaceVisible:=GetBoolean( Str );
     Layer.FDevelopable:=GetBoolean( Str );
     Layer.FSymmetric:=GetBoolean( Str );

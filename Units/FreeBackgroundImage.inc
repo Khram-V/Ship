@@ -192,26 +192,26 @@ begin
           pPixel:=pRow+BitmapFormatHelper.BytesPerPixel * J;
           Pixel:=BitmapFormatHelper.ToTRGBTriple(pPixel);
           // Replace transparent pixels with the viewport color
-          if Transparent and
-              (abs(Pixel.rgbtRed-Rt) <= FTolerance) and
-              (abs(Pixel.rgbtGreen-Gt) <= FTolerance) and
-              (abs(Pixel.rgbtBlue-Bt) <= FTolerance) then
-          begin Pixel:=Backgr; end
-          else if (FAlpha<>255) then begin // Blend all pixels with the viewport
+          if Transparent
+          and (abs(Pixel.rgbtRed-Rt)  <= FTolerance)
+          and (abs(Pixel.rgbtGreen-Gt)<= FTolerance)
+          and (abs(Pixel.rgbtBlue-Bt) <= FTolerance)
+          then Pixel:=Backgr else
+          if FAlpha<>255 then begin       // Blend all pixels with the viewport
             Pixel.rgbtRed:=(Tmpval * Backgr.rgbtRed+FAlpha * Pixel.rgbtRed) shr 8;
-            Pixel.rgbtGreen:=(Tmpval * Backgr.rgbtGreen+FAlpha * Pixel.rgbtGreen) shr 8;
-            Pixel.rgbtBlue:=(Tmpval * Backgr.rgbtBlue+FAlpha * Pixel.rgbtBlue) shr 8;
+            Pixel.rgbtGreen:=(Tmpval*Backgr.rgbtGreen+FAlpha*Pixel.rgbtGreen) shr 8;
+            Pixel.rgbtBlue:=(Tmpval *Backgr.rgbtBlue+FAlpha *Pixel.rgbtBlue) shr 8;
           end;
           BitmapFormatHelper.FromTRGBTriple(Pixel, pPixel);
-          //FCachedBmp.Canvas.Pixels[J,I]:= RGBtoColor(Pixel.rgbtRed,Pixel.rgbtGreen,Pixel.rgbtBlue);
+        //FCachedBmp.Canvas.Pixels[J,I]:= RGBtoColor(Pixel.rgbtRed,Pixel.rgbtGreen,Pixel.rgbtBlue);
         end;
-      end; //for I
+      end; // for I
       FCachedBmp.EndUpdate( False );
     end;
     Owner.StretchDraw( DestRect,FCachedBmp );
     if Owner.Backgroundmode = emSetFrame then drawFrame;
-    FreeAndNil(BitmapFormatHelper);
-    BitmapFormatHelper:=nil;
+    FreeAndNil( BitmapFormatHelper );
+                BitmapFormatHelper:=nil;
   end;
 end;
 

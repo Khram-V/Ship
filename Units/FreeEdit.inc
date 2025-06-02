@@ -1122,12 +1122,12 @@ end;
 
 procedure TFreeEdit.File_Load; var Answer: word; OpenDialog: TOpenDialog;
 begin
-  FreeShip.Edit.Selection_Clear;                       ///***  Selection_Clear
+  FreeShip.Edit.Selection_Clear;                        ///***  Selection_Clear
   OpenDialog:=TOpenDialog.Create( FreeShip );
   OpenDialog.InitialDir:=FreeShip.Preferences.OpenDirectory; //+ConfigDirectory
-  OpenDialog.Filter:=createDialogFilter('FreeShip files',['fbm','ftm'],False )
-                +'|'+createDialogFilter('FreeShip Text files',['ftm'],False)
-                +'|'+createDialogFilter('FreeShip Binary files',['fbm'] );
+  OpenDialog.Filter:=createDialogFilter( 'FreeShip files',['fbm','ftm'],False )
+                +'|'+createDialogFilter( 'FreeShip Text files',['ftm'],False )
+                +'|'+createDialogFilter( 'FreeShip Binary files',['fbm'] );
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
      Answer:=Freeship.Edit.File_SaveCheck;
@@ -1146,7 +1146,7 @@ begin
   if Ext='.ftm' then Source:=TFreeTextBuffer.Create else begin
                WriteLN( 'Unsupported model: '+Ext); halt;
   end;
-//FreeShip.Surface.Clearselection;          // Make sure no items are selected
+//FreeShip.Surface.Clearselection;           // Make sure no items are selected
   FreeShip.Edit.Selection_Clear;
   FreeShip.FSelectedFlowlines.Clear;
   FreeShip.FSelectedMarkers.Clear;
@@ -1190,9 +1190,7 @@ begin Result:=false;
   if not FreeShip.FilenameSet or FreeShip.FileIsReadOnly
      then begin FreeShip.FilenameSet:=false; result:=File_SaveAs; exit; end;
   if not FreeShip.FilenameSet then exit;
-
   MinFileVersion:=FreeShip.DetectMinFileVersion;
-
   if (FreeShip.FileVersion<MinFileVersion) //and (not FreeShip.FStopAskingForFileVersion)
   then begin
     Str:=format( 'The current file version is %s.%sDo you want to save the file as version %s ?',
@@ -2370,22 +2368,6 @@ begin
   else Result:=True;
 end;
 
-// Add a new point to the model with no edges/faces attached
-{
-function TFreeEdit.Point_New: TFreeSubdivisionControlPoint;
-begin
-  Result:=TFreeSubdivisionControlPoint.Create(FreeShip.Surface);
-  FreeShip.Surface.AddControlPoint( Result );
-  Result.Coordinate:=ZERO;
-  FreeShip.ActiveControlPoint:=Result;
-  FreeShip.Surface.Selection_Add( Result );
-  FreeShip.FileChanged:=True;
-//Freeship.ReDraw; // we do not rebuild model because no impact on subdivision yet
-//if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
-end;
-}
-// Add a new point with XYZ to the model with no edges/faces attached
-
 function TFreeEdit.Point_New( coord:T3DVector ): TFreeSubdivisionControlPoint;
 begin
   Result:=TFreeSubdivisionControlPoint.Create(FreeShip.Surface);
@@ -2399,10 +2381,7 @@ begin
   if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
   Freeship.EditMode:=emSelectItems;
 end;
-{
-function TFreeEdit.Point_New_Z: TFreeSubdivisionControlPoint;
-   begin Result:=Point_New( ZERO ); end;
-}
+
 // Anchor all selected points onto the first point
 
 procedure TFreeEdit.Point_AnchorToPoint;
@@ -2422,7 +2401,7 @@ begin
     // Number of lovked points must be smaller then NumberOfSelectedControlPoints-2
     if NLocked < FreeShip.NumberOfSelectedControlPoints-1 then begin
       P1:=FreeShip.SelectedControlPoint[0];
-      vUndo:=CreateUndoObject( 'CPAncConsChange',False ); // 'ControlPoint Anchor Constraint Changed'
+      vUndo:=CreateUndoObject( 'CPAncCons',False ); // 'ControlPoint Anchor Constraint Changed'
       NChanged:=0;
       for I:=1 to FreeShip.NumberOfSelectedControlPoints-1 do begin
         Point:=FreeShip.SelectedControlPoint[I];
@@ -2784,9 +2763,7 @@ end;
 // Add a new intersection of the specified type at the specified location
 procedure TFreeEdit.Intersection_Change(Intersection: TFreeIntersection;
   Distance: TFloatType);
-var
-  TargetList: TFasterListTFreeIntersection;
-  I: integer;
+var TargetList: TFasterListTFreeIntersection; I: integer;
 begin
   case Intersection.IntersectionType of
     fiStation: begin
@@ -2799,9 +2776,9 @@ begin
       Intersection.FPlane.c:=1.0;
       Intersection.FPlane.d:=-Distance; end;
     fiDiagonal: begin
-      Intersection.FPlane.b:=1 / Sqrt(2);
-      Intersection.FPlane.c:=1 / Sqrt(2);
-      Intersection.FPlane.d:=-Intersection.FPlane.c * Distance; end;
+      Intersection.FPlane.b:=1/Sqrt(2);
+      Intersection.FPlane.c:=1/Sqrt(2);
+      Intersection.FPlane.d:=-Intersection.FPlane.c*Distance; end;
   end;
   Intersection.Rebuild;
 end;

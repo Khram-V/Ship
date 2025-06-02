@@ -250,12 +250,12 @@ procedure TFreePreferencesDialog.ComboBoxEncodingFillItems; // для *.fbm фа
 begin                                                      // или совместимость
   with ComboBoxEncoding.Items do begin                    // к старым версиям
     AddObject('UTF-8 (Unicode Transformation Format, 8-bit) — стандарт кодирования Unicode(65001)',TObject(string('utf8')));
-    AddObject('CP1251 ANSI Cyrillic(Windows)',TObject(string('cp1251')));
-    AddObject('CP1252 ANSI Latin; Western European(Windows)',TObject(string('cp1252')));
-    AddObject('CP1255 Hebrew', TObject(string('cp1255')));
-    AddObject('CP1258 Vietnam',TObject(string('cp1258')));
-    AddObject('CP866 DOS and Windows console Cyrillic',TObject(string('cp866')));
-    AddObject('CP950 ANSI/OEM Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
+    AddObject('CP866 Русский DOS and Windows console',TObject(string('cp866')));
+    AddObject('CP950 中文 (漢語/汉语) Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
+    AddObject('CP1251 Русский (Windows)',TObject(string('cp1251')));
+    AddObject('CP1252 Latin; Western European',TObject(string('cp1252')));
+    AddObject('CP1255 עִבְרִית Hebrew', TObject(string('cp1255')));
+    AddObject('CP1258 Việt ngữ (越語) Vietnam',TObject(string('cp1258')));
 (*  AddObject('ISO_8859_1-Central Europe',TObject(string('iso88591')));
     AddObject('ISO_8859_15-Western European languages',TObject(string('iso885915')));
     AddObject('ISO_8859_2-Eastern Europe', TObject(string('iso88592')));

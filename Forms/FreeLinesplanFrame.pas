@@ -55,7 +55,7 @@ type
 //  Descr: TStringList;
     procedure FSetFreeShip( Val: TFreeShip );
     procedure CreateViewport;
-  public                                                { Public declarations }
+  public
     Viewport: TFreeViewport;
     FontSize: integer;
     constructor Create( TheOwner: TComponent ); override;

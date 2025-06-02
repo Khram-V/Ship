@@ -9,7 +9,7 @@ interface uses SysUtils,
      FreeTypes,FreeGeometry,FreeShipUnit,MDIPanel,
      FreeLanguageSupport;
 type
- TFreeHullWindow = class( TMDIPanel )                       { TFreeHullWindow }
+ TFreeHullWindow = class( TCustomMDIPanel ) // ( TMDIPanel ){ TFreeHullWindow }
    Viewport: TFreeViewport;
    ActionListHull: TActionList;
    ImagesHull: TImageList;
@@ -144,6 +144,7 @@ published
   property OnClose;
   property OnCreate;
   property OnKeyPress;
+  property OnKeyDown;
   property OnKeyUp;
   property OnShow;
   property Position;
@@ -322,14 +323,13 @@ procedure TFreeHullWindow.FormActivate(Sender: TObject); begin end;
 
 procedure TFreeHullWindow.FormCreate(Sender: TObject);
 var o:TObject;
-begin
-  CreateFreeViewport;        // CreateComponents;
-   FAllowPanOrZoom:=False;
-   FreeShip:=Ship;           // SetFreeShip( Ship );
-   o:=self.PopupMenuHull;
-   o:=self.ActionListHull;
-   o:=self.ImagesHull;
-   o:=self.PrintDialogHull;
+begin CreateFreeViewport;        // CreateComponents;
+      FAllowPanOrZoom:=False;
+      FreeShip:=Ship;            // SetFreeShip( Ship );
+      o:=self.PopupMenuHull;
+      o:=self.ActionListHull;
+      o:=self.ImagesHull;
+      o:=self.PrintDialogHull;
 end;
 
 procedure TFreeHullWindow.FormClose( Sender: TObject; var aAction: TCloseAction );
@@ -468,7 +468,7 @@ begin
 end;
 
 procedure TFreeHullWindow.DeselectAllExecute(Sender: TObject);
-begin FreeShip.Edit.Selection_Clear; end;
+    begin FreeShip.Edit.Selection_Clear; end;
 
 procedure TFreeHullWindow.ViewportMouseLeave(Sender: TObject);
 begin            // stop panning or zooming when the cursor leaves the viewport

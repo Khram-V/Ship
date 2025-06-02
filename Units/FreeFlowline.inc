@@ -1,6 +1,6 @@
-{---------------------------------------------------------}
-{                                        FreeShipUnit.pas }
-{---------------------------------------------------------}
+{------------------}
+{ FreeShipUnit.pas }
+{------------------}
 constructor TFreeFlowline.Create( Owner: TFreeShip );
 begin inherited Create( Owner.Surface );
       FFreeShip:=Owner;
@@ -39,7 +39,7 @@ begin
   if aValue then begin             // Only add if it is not already in the list
   if Index=-1 then FreeShip.FSelectedFlowlines.Add(self); end else
   if Index<>-1 then FreeShip.FSelectedFlowlines.Delete(index);
-//FreeShip.Surface.ExecuteOnSelectItem(self);
+  FreeShip.Surface.ExecuteOnSelectItem(self);
 end;
 
 procedure TFreeFlowline.FSetBuild(val: boolean);
@@ -473,13 +473,12 @@ begin                   // clear any present data
           StartPoint.Z:=FProjectionPoint.Y;
           EndPoint:=Vector(FreeShip.Surface.Min.X-10,StartPoint.Y,StartPoint.Z);
       end;
-    end;
-    // find the initial triangle
+    end;                                           // find the initial triangle
     Index:=FindInitialTriangle(StartPoint,EndPoint,Intersection,Direction);
     Skip1:=-1;
     Skip2:=-1;
     if index<>-1 then begin
-      FFlowline.Add( Intersection );             // trace triangles from here
+      FFlowline.Add( Intersection );               // trace triangles from here
       Iteration:=0;
       repeat
          if Triangles[index].Processed then Valid:=False
@@ -489,7 +488,7 @@ begin                   // clear any present data
          inc( Iteration );
       until (not valid) or (index=-1) or (Iteration>5000);
       if index<>-1 then begin
-        FFlowline.Add( Intersection ); // trace triangles from here
+        FFlowline.Add( Intersection );             // trace triangles from here
         Iteration:=0;
         repeat
           if Triangles[index].Processed then Valid:=False
@@ -506,17 +505,17 @@ begin                   // clear any present data
         and (FFlowline.Point[FFlowline.NumberOfPoints-2].Z < WlHeight)
         then begin
           Endpoint.X:=FFlowline.Point[FFlowline.NumberOfPoints-2].X
-                  +( FFlowline.Point[FFlowline.NumberOfPoints-1].X
-                    -FFlowline.Point[FFlowline.NumberOfPoints-2].X )
-                   * ( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
-                   / ( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
-                    -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
+                   +( FFlowline.Point[FFlowline.NumberOfPoints-1].X
+                     -FFlowline.Point[FFlowline.NumberOfPoints-2].X )
+                  * ( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
+                  / ( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
+                     -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
           Endpoint.Y:=FFlowline.Point[FFlowline.NumberOfPoints-2].Y
-                  +( FFlowline.Point[FFlowline.NumberOfPoints-1].Y
-                    -FFlowline.Point[FFlowline.NumberOfPoints-2].Y )
-                   * ( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
-                   / ( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
-                    -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
+                   +( FFlowline.Point[FFlowline.NumberOfPoints-1].Y
+                     -FFlowline.Point[FFlowline.NumberOfPoints-2].Y )
+                  * ( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
+                  / ( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
+                     -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
           EndPoint.Z:=wlHeight;
           FFlowline.Point[FFlowline.NumberOfPoints-1]:=EndPoint;
         end else break;
@@ -530,10 +529,7 @@ begin                   // clear any present data
 end;
 
 procedure TFreeFlowline.LoadBinary(Source: TFreeFileBuffer);
-var
-  I, N: integer;
-  P: T3DVector;
-  K: boolean;
+var I,N: integer; P: T3DVector; K: boolean;
 begin
   Source.LoadTFloatType( FProjectionPoint.X );
   Source.LoadTFloatType( FProjectionPoint.Y );
@@ -553,8 +549,7 @@ begin
 end;
 
 procedure TFreeFlowline.SaveBinary(Destination: TFreeFileBuffer);
-var
-  I: integer;
+var I: integer;
 begin
   Destination.Add(FProjectionPoint.X);
   Destination.Add(FProjectionPoint.Y);

@@ -10,14 +10,14 @@ object MainForm: TMainForm
   Constraints.MinHeight = 200
   Constraints.MinWidth = 300
   Menu = MainMenu1
-  Position = poDefault
-  ShowHint = True
-  LCLVersion = '3.8.0.0'
   OnActivate = FormActivate
   OnClose = MainFormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
+  Position = poDefault
+  ShowHint = True
+  LCLVersion = '3.8.0.0'
   object StatusBar: TPanel
     Left = 0
     Height = 27
@@ -329,10 +329,10 @@ object MainForm: TMainForm
         Constraints.MinWidth = 40
         MaxValue = 20
         MinValue = 3
+        OnChange = SpinEditFontSizeChange
         ParentFont = False
         TabOrder = 0
         Value = 8
-        OnChange = SpinEditFontSizeChange
       end
       object cbPrecision: TComboBox
         Tag = 16
@@ -601,8 +601,8 @@ object MainForm: TMainForm
       end
       object HintBar: TStatusBar
         Left = 30
-        Height = 24
-        Top = 0
+        Height = 23
+        Top = 1
         Width = 800
         AutoHint = True
         Panels = <>
@@ -740,8 +740,8 @@ object MainForm: TMainForm
       Category = 'Visibility'
       Caption = 'Уменьшение масштаба кривизны'
       Hint = 'Сближение точек контурных прорисовок.'
-      ShortCut = 120
       OnExecute = DecreaseCurvatureScaleExecute
+      ShortCut = 120
     end
     object LayerAutoGroup: TAction
       Category = 'Layer'
@@ -762,8 +762,8 @@ object MainForm: TMainForm
       Caption = 'Удалить выбранное'
       Hint = 'Удаление всех отмеченных объектов.'
       ImageIndex = 8
-      ShortCut = 16472
       OnExecute = DeleteExecute
+      ShortCut = 16472
     end
     object EdgeCollapse: TAction
       Category = 'Edge'
@@ -777,8 +777,8 @@ object MainForm: TMainForm
       Caption = 'Рассечение'
       Hint = 'Разрезка грани по новому ребру между двумя узлами.'
       ImageIndex = 10
-      ShortCut = 69
       OnExecute = NewEdgeExecute
+      ShortCut = 69
     end
     object EdgeCrease: TAction
       Category = 'Edge'
@@ -820,16 +820,16 @@ object MainForm: TMainForm
       Caption = 'Свойства графических слоёв'
       Hint = 'Интерактивное управление свойствами слоя.'
       ImageIndex = 24
-      ShortCut = 16460
       OnExecute = LayerDialogExecute
+      ShortCut = 16460
     end
     object NewModel: TAction
       Category = 'File'
       Caption = 'Новая модель...'
       Hint = 'Создать корпус по аналитической модели.'
       ImageIndex = 13
-      ShortCut = 16462
       OnExecute = NewModelExecute
+      ShortCut = 16462
     end
     object ShowStations: TAction
       Category = 'Visibility'
@@ -878,8 +878,8 @@ object MainForm: TMainForm
       Caption = 'Разделение поплам'
       Hint = 'Установка узла с разделением ребра пополам на две части.'
       ImageIndex = 20
-      ShortCut = 83
       OnExecute = EdgeSplitExecute
+      ShortCut = 83
     end
     object EditProjectSettings: TAction
       Category = 'Project'
@@ -974,8 +974,8 @@ object MainForm: TMainForm
       Caption = 'Отмена'
       Hint = 'Отмена последних действий.'
       ImageIndex = 56
-      ShortCut = 16474
       OnExecute = UndoExecute
+      ShortCut = 16474
     end
     object HydrostaticsDialog: TAction
       Category = 'Calculate'
@@ -1025,8 +1025,8 @@ object MainForm: TMainForm
       Category = 'Point'
       Caption = 'Добавить точку'
       Hint = 'Добавляется одна свободная точка в прострнстве.'
-      ShortCut = 80
       OnExecute = AddPointExecute
+      ShortCut = 80
     end
     object DevelopLayers: TAction
       Category = 'Tools'
@@ -1086,16 +1086,16 @@ object MainForm: TMainForm
       Category = 'Visibility'
       Caption = 'Масштаб кривизны'
       Hint = 'Увеличить масштаб видимости кривизны поверхностей'
-      ShortCut = 121
       OnExecute = IncreaseCurvatureScaleExecute
+      ShortCut = 121
     end
     object FileSave: TAction
       Category = 'File'
       Caption = 'Сохранить'
       Hint = 'Сохранить модель как есть.'
       ImageIndex = 5
-      ShortCut = 16467
       OnExecute = FileSaveExecute
+      ShortCut = 16467
     end
     object ShowControlCurves: TAction
       Category = 'Visibility'
@@ -1217,8 +1217,8 @@ object MainForm: TMainForm
       Caption = 'Возврат'
       Hint = 'Возврат отменённых действий.'
       ImageIndex = 57
-      ShortCut = 16466
       OnExecute = RedoExecute
+      ShortCut = 16466
     end
     object ClearUndo: TAction
       Category = 'Edit'
@@ -1269,8 +1269,8 @@ object MainForm: TMainForm
       Caption = 'Выбрать всё сразу'
       Hint = 'Выбор для корректировки сразу всех графических объектов.'
       ImageIndex = 58
-      ShortCut = 16449
       OnExecute = SelectAllExecute
+      ShortCut = 16449
     end
     object ExportSTL: TAction
       Category = 'Export'
@@ -2219,7 +2219,7 @@ object MainForm: TMainForm
         Action = SelectLeakPoints
       end
     end
-    object ools1: TMenuItem
+    object Tools1: TMenuItem
       Caption = 'Средства'
       Hint = 'Специальные инструменты для преобразования цифровой модели корпуса.'
       object Analyzesurface1: TMenuItem
@@ -2257,7 +2257,7 @@ object MainForm: TMainForm
         Action = AddFlowLine
       end
     end
-    object ransform1: TMenuItem
+    object RansForm1: TMenuItem
       Caption = 'Трансформация'
       Hint = 'Геометрическое перестроение размерений или положения корпуса...'
       object Scale3D1: TMenuItem
@@ -2292,7 +2292,7 @@ object MainForm: TMainForm
         Action = HydrostaticsDialog
       end
     end
-    object Window1: TMenuItem
+    object WindowAct: TMenuItem
       Caption = 'Кульман'
       Hint = 'Добавление или обновление расположения чертёжных проекций по окнам Free!Ship.'
       object NewWindow1: TMenuItem

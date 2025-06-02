@@ -35,7 +35,7 @@ begin
   if (Index < 0) and not Val then exit;
   if Val then Surface.FSelectedControlEdges.Add(self)
          else Surface.FSelectedControlEdges.Delete(index);
-//Surface.ExecuteOnSelectItem(Self);
+  Surface.ExecuteOnSelectItem(Self);
 end;
 
 function TFreesubdivisionControlEdge.FGetSelected: boolean;
@@ -489,7 +489,7 @@ var
 begin                                                        // Read startpoint
   Source.LoadInteger(Index);
   if Index = -1 then Index:=0;
-  if Index <> -1 then begin
+  if Index <> -1 then begin                                  ///***???
     FStartPoint:=Surface.FControlPoints[Index];
     FStartPoint.FEdges.Add(Self);
   end;                                                         // Read endpoint
@@ -499,8 +499,8 @@ begin                                                        // Read startpoint
     FEndPoint:=Surface.FControlPoints[Index];
     FEndPoint.FEdges.Add(Self);
   end;
-  Source.LoadBoolean(FCrease);
-  Source.LoadBoolean(Sel);
+  Source.LoadBoolean( FCrease );
+  Source.LoadBoolean( Sel );
   if Sel then selected:=True;
 end;
 

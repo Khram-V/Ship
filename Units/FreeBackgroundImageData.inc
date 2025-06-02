@@ -36,8 +36,7 @@ begin
 end;
 
 procedure TFreeBackgroundImageData.LoadBinary(Source: TFreeFileBuffer);
-var
-  I: integer;
+var I: integer;                                          // Alfa: Byte=0;
 begin
   Source.LoadInteger(I);
   FAssignedView:=TFreeViewType(I);
@@ -48,9 +47,10 @@ begin
   Source.LoadTFloatType(FScale);
   Source.LoadInteger(FBlendingValue);
   Source.LoadBoolean(FTransparent);
-  Source.LoadTColor(FTransparentColor);
-  Source.LoadInteger(FTolerance);
-  Source.LoadTJPEGImage(FImageData);
+//Source.LoadTColor( FTransparentColor,Alfa ); // Alfa здесь не используется
+  Source.LoadInteger( FTransparentColor );
+  Source.LoadInteger( FTolerance );
+  Source.LoadTJPEGImage( FImageData );
 end;
 
 procedure TFreeBackgroundImageData.SaveBinary(Destination: TFreeFileBuffer);

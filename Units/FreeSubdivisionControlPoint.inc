@@ -67,7 +67,7 @@ begin
   if Val then Surface.FSelectedControlPoints.Add( self )
          else Surface.FSelectedControlPoints.Delete( index );
 //if Assigned( Surface.FOnSelectItemListeners ) then Surface.FOnSelectItemListeners( self );
-//Surface.ExecuteOnSelectItem( Self );
+  Surface.ExecuteOnSelectItem( Self );
 end;
 
 procedure TFreeSubdivisionControlPoint.FSetLocked(val: boolean);
@@ -525,21 +525,18 @@ begin
   then Surface.Built:=false;
 end;
 
-function TFreeSubdivisionControlPoint.DistanceToCursor(X, Y: integer;
-  Viewport: TFreeViewport): integer;
-var
-  Pt: TPoint;
-  P: T3DVector;
-begin
-  // Check if cursor position lies within the boundaries
+function TFreeSubdivisionControlPoint.DistanceToCursor
+( X,Y: integer; Viewport: TFreeViewport ): integer;
+var Pt: TPoint; P: T3DVector;
+begin                    // Check if cursor position lies within the boundaries
   P:=FCoordinate;
-  if (Viewport.ViewType = fvBodyplan) and (P.X <= Surface.SplitSectionLocation) then
-    P.Y:=-P.Y;
-  Pt:=Viewport.Project(P);
+  if Viewport.ViewType=fvBodyplan then
+  if P.X<=Surface.SplitSectionLocation then P.Y:=-P.Y;
+  Pt:=Viewport.Project( P );
   if (Pt.X>=0) and (Pt.X<=Viewport.Width)
   and (Pt.Y>=0) and (Pt.Y<=Viewport.Height)
-  then Result:=Round( Hypot(Pt.X-X,Pt.Y-Y) ) // Sqrt(Sqr(Pt.X-X)+SQR(Pt.Y-Y)))
-  else Result:=1000000;
+    then Result:=Round( Hypot(Pt.X-X,Pt.Y-Y) )
+    else Result:=1000000;
 end;
 
 procedure TFreeSubdivisionControlPoint.LoadBinary(Source: TFreeFileBuffer);
@@ -585,7 +582,7 @@ begin
   Destination.Add(FCoordinate);
   Destination.Add(Ord(VertexType));
   Destination.Add(Selected);
-  if Destination.Version >= fv198 then begin Destination.Add(Locked); end;
+  if Destination.Version>=fv198 then begin Destination.Add(Locked); end;
 end;
 
 procedure TFreeSubdivisionControlPoint.SaveToStream(Strings: TStringList);

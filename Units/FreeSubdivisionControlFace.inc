@@ -1,6 +1,6 @@
-{---------------------------------------------------------------------}
-{                                         TFreeSubdivisionControlFace }
-{---------------------------------------------------------------------}
+{-----------------------------}
+{ TFreeSubdivisionControlFace }
+{-----------------------------}
 function TFreeSubdivisionControlFace.FGetChild(Index: integer): TFreeSubdivisionFace;
    begin Result:=FChildren[index]; end;
 function TFreeSubdivisionControlFace.FGetChildCount: integer;
@@ -19,7 +19,7 @@ begin
   if (Index < 0) and not Val then exit;
   if Val then Surface.FSelectedControlFaces.Add(self)
          else Surface.FSelectedControlFaces.Delete(index);
-//Surface.ExecuteOnSelectItem( Self );
+  Surface.ExecuteOnSelectItem( Self );
 end;
 function TFreeSubdivisionControlFace.FGetPoint(Index: integer): TFreeSubdivisionControlPoint;
    begin Result:=TFreeSubdivisionControlPoint(inherited); end;
@@ -886,8 +886,8 @@ begin                                                 // Read controlpoint data
   FPoints.Capacity:=N;
   for I:=1 to N do begin
     Source.LoadInteger(Index);
-    if Index = -1 then Index:=0;
-    if Index <> -1 then begin
+    if Index=-1 then Index:=0;
+    if Index<>-1 then begin
       P1:=Surface.FControlPoints[Index];
       FPoints.Add(P1);
       P1.FFaces.Add(Self);
@@ -897,7 +897,7 @@ begin                                                 // Read controlpoint data
   if (Index>=0) and (Index<Surface.FLayers.Count) then FLayer:=Surface.Layer[Index]
   else FLayer:=Surface.Layer[0]; // Reference to an invalid layer. Assign to owners default layer
 
-  if FLayer <> nil then FLayer.AddControlFace( self );
+  if FLayer<>nil then FLayer.AddControlFace( self );
   //else WriteLn('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadBinary!');
 
   Source.LoadBoolean( Sel );

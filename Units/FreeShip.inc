@@ -85,9 +85,9 @@ begin    // Remember the filename because it will be erased by the clear method
         FPrecision:=TFreePrecisionType( I );
         Visibility.LoadBinary( Source );
         ProjectSettings.LoadBinary( Source,nil ); // Load actual subdivision-surface data.
-        Surface.LoadBinary( Source );
+        Surface.LoadBinary( Source );             ///***!!!
 //      if Surface.NumberOfControlFaces>0 then CF0:=Surface.ControlFace[0];
-        Source.LoadInteger(N);                    // Load stations
+        Source.LoadInteger( N );                  // Load stations
         FStations.Capacity:=N;
         for I:=1 to N do begin Intersection:=TFreeIntersection.Create(self);
           FStations.Add(Intersection);
@@ -1266,11 +1266,9 @@ begin
 end;
 
 function TFreeShip.FindLowestHydrostaticsPoint: TFloatType;
-var
-  I,J: integer; First: boolean; vLayer: TFreeSubdivisionLayer;
+var I,J: integer; First: boolean; vLayer: TFreeSubdivisionLayer;
 begin
-  Result:=Surface.Min.Z;
-  First:=True;
+  Result:=Surface.Min.Z; First:=True;
   for I:=1 to NumberOfLayers do begin
     vLayer:=Surface.Layer[I-1];
     if vLayer.UseInHydrostatics then
@@ -1334,19 +1332,18 @@ procedure TFreeShip.RebuildModelIfRequired;
 //
 ///*** Detect Minimal File Version depneding on features used
 //
-function TFreeShip.DetectMinFileVersion:TFreeFileVersion;
+function TFreeShip.DetectMinFileVersion( isText: boolean ): TFreeFileVersion;
 var I: integer;
 begin result:=fv160;                           // с картинкой - никак не меньше
-  if NumberOfDiagonals > 0 then result:=fv180;
-  if NumberOfMarkers > 0   then result:=fv191; // не очень надо, но пусть будет
-//if (FResistanceDelftData.EndSpeed>0)  -- завсегда пропускаются
+  if NumberOfDiagonals>0 then result:=fv180;
+  if NumberOfMarkers>0   then result:=fv191;   // не очень надо, но пусть будет
+//if (FResistanceDelftData.EndSpeed>0)         -- завсегда пропускаются
 //or (FResistanceKaperData.Draft>0) then result:=fv210;
   if ProjectSettings.FSavePreview then Result:=fv210;
-  if (NumberOfbackgroundImages>0)
-  or (NumberOfFlowlines>0) then result:=fv250;
-
-  for i:=0 to Surface.NumberOfLayers-1 do
-    if Surface.Layer[i].AlphaBlend < 255 then result:=fv261;
+  if (NumberOfbackgroundImages>0) or (NumberOfFlowlines>0) then result:=fv250;
+  if not isText then                     // TFreeFileBuffer или TFreeTextBuffer
+    for i:=0 to Surface.NumberOfLayers-1 do
+      if Surface.Layer[i].AlphaBlend<255 then result:=fv261;
 (*
   if (FResistanceHoltrData.EndSpeed>0) or (FPropellerTask1Data.Dat2>0)
   or (FPropellerTask2Data.Dat2>0)      or (FPropellerTask3Data.Dat2>0)
@@ -1383,47 +1380,44 @@ end;
 procedure TFreeShip.SaveProject( Destination: TFreeFileBuffer );
 var
   PrevCursor: TCursor;
-  I,N: integer;
-begin
+  I,N: integer;                         // B: Boolean;
+begin                                   // B := Destination is TFreeTextBuffer;
   PrevCursor:=Screen.Cursor;
   //Screen.Cursor:=crHourGlass;
-  //try
-    FileVersion:=DetectMinFileVersion;
-    Destination.Encoding:=Preferences.FbmEncoding;
-    Destination.Add( 'FREE!ship' );
-    Destination.Add( FileVersion );
-    Destination.Add( Ord( Precision ) );
-    Visibility.SaveBinary( Destination );
-    ProjectSettings.SaveBinary( Destination ); // Save actual subdivision-surface data.
-    Surface.SaveBinary(Destination);           // Save stations
-    Destination.Add(NumberOfStations);
-    for I:=1 to NumberOfStations do Station[I-1].SaveBinary(Destination);    // Save Buttocks
-    Destination.Add(NumberOfButtocks);
-    for I:=1 to NumberOfButtocks do Buttock[I-1].SaveBinary(Destination);    // Save Waterlines
-    Destination.Add(NumberOfWaterlines);
-    for I:=1 to NumberOfWaterlines do Waterline[I-1].SaveBinary(Destination);
-    if FileVersion >= fv180 then begin          // Save Diagonals
-      Destination.Add(NumberOfDiagonals);
-      for I:=1 to NumberOfDiagonals do Diagonal[I-1].SaveBinary(Destination);
-      if FileVersion >= fv191 then begin        // Save markers
-        Destination.Add(NumberOfMarkers);
-        for I:=1 to NumberOfMarkers do Marker[I-1].SaveBinary(Destination);
-        if FileVersion >= fv210 then begin
-          Destination.Add(FResistanceDelftData);
-          Destination.Add(FResistanceKaperData);
-          if FileVersion >= fv250 then begin
-            Destination.Add( NumberOfbackgroundImages );
-            for I:=1 to NumberOfBackgroundImages do BackgroundImage[I-1].SaveBinary(Destination);
-            Destination.Add(NumberOfFlowlines);
-            for I:=1 to NumberOfFlowlines do Flowline[I-1].SaveBinary(Destination);
-          end;
+  FileVersion:=DetectMinFileVersion( Destination is TFreeTextBuffer );
+  Destination.Encoding:=Preferences.FbmEncoding;
+  Destination.Add( 'FREE!ship' );
+  Destination.Add( FileVersion );
+  Destination.Add( Ord( Precision ) );
+  Visibility.SaveBinary( Destination );
+  ProjectSettings.SaveBinary( Destination ); // Save actual subdivision-surface data.
+  Surface.SaveBinary(Destination);           // Save stations
+  Destination.Add(NumberOfStations);
+  for I:=1 to NumberOfStations do Station[I-1].SaveBinary(Destination); // Save Buttocks
+  Destination.Add(NumberOfButtocks);
+  for I:=1 to NumberOfButtocks do Buttock[I-1].SaveBinary(Destination); // Save Waterlines
+  Destination.Add(NumberOfWaterlines);
+  for I:=1 to NumberOfWaterlines do Waterline[I-1].SaveBinary(Destination);
+  if FileVersion >= fv180 then begin                          // Save Diagonals
+    Destination.Add(NumberOfDiagonals);
+    for I:=1 to NumberOfDiagonals do Diagonal[I-1].SaveBinary(Destination);
+    if FileVersion >= fv191 then begin                           // Save markers
+      Destination.Add(NumberOfMarkers);
+      for I:=1 to NumberOfMarkers do Marker[I-1].SaveBinary(Destination);
+      if FileVersion >= fv210 then begin
+        Destination.Add(FResistanceDelftData);
+        Destination.Add(FResistanceKaperData);
+        if FileVersion >= fv250 then begin
+          Destination.Add( NumberOfbackgroundImages );
+          for I:=1 to NumberOfBackgroundImages do BackgroundImage[I-1].SaveBinary(Destination);
+          Destination.Add(NumberOfFlowlines);
+          for I:=1 to NumberOfFlowlines do Flowline[I-1].SaveBinary(Destination);
         end;
       end;
     end;
-//finally
+  end;
   FileChanged:=False;
   Screen.Cursor:=PrevCursor;
-//end;
 end;
 
 procedure TFreeShip.SavePart(Faces: TFasterListTFreeSubdivisionControlFace);

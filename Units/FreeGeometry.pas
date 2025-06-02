@@ -264,7 +264,6 @@ type
     FMargin: TFloatType;  // margin around to viewport to keep clear; and it also is the direction at which the camera looks
     FBackgroundMode: TFreeViewportBackgroundMode;
     FViewType: TFreeViewType;  // Switch to sideview, frontview, topview or perspective view
-//  FDrawingCanvas: TCanvas;
 //  FMidPoint: T3DVector; // Midpoint of the boundarybox determined by FMin3D and FMax3D. This point is used as centerpoint for rotating the 3D model
 //  FCameraLocation: T3DVector; // Position of the camera, following from the field of view and the distance of the camera
     FCameraType: TFreeCameraType; // Determines the focalpoint of the camera
@@ -398,7 +397,6 @@ type
     property BrushStyle: TBrushStyle read FGetBrushStyle write FSetBrushStyle;
     property BackgroundMode: TFreeViewportBackgroundMode read FBackgroundMode write FSetBackgroundMode;
 {   property CameraLocation: T3DVector read FCameraLocation write FCameraLocation;
-    property DrawingCanvas: TCanvas read FDrawingCanvas write FDrawingCanvas;
     property SceneMidPoint: T3DVector read FMidPoint write FMidPoint;
     property HorScrollbar: TScrollBar  read FHorScrollbar write FSetHorScrollbar;
     property VertScrollbar: TScrollBar read FVertScrollbar write FSetVertScrollbar;
@@ -929,9 +927,9 @@ type
     property VertexType: TFreeVertexType read FVertexType write SetVertexType;
   end;
 
-  {-----------------------------------------------------------------}
-  {                                    TFreeSubdivisionControlPoint }
-  {-----------------------------------------------------------------}
+  {------------------------------}
+  { TFreeSubdivisionControlPoint }
+  {------------------------------}
   TFreeSubdivisionControlPoint = class(TFreeSubdivisionPoint)
   private
     FLinearConstraintPointA: TFreeSubdivisionControlPoint; // if defined, the point can be locate on the line between these A and B points only
@@ -1021,12 +1019,10 @@ type
   {----------------------------------------------------------------}
   TFreeSubdivisionEdge = class(TFreeSubdivisionBase)
   private
-    FStartpoint: TFreeSubdivisionPoint;
-    FEndpoint: TFreeSubdivisionPoint;
+    FStartpoint,FEndpoint: TFreeSubdivisionPoint;
     FFaces: TFasterListTFreeSubdivisionFace;
-    FCrease: boolean;
-    FControlEdge: boolean;
-    FCurve: TFreeSubdivisionControlCurve;
+    FCrease,FControlEdge: boolean;
+    FCurve: TFreeSubdivisionControlCurve;            // принадлежность курве...
     function FGetIndex: integer; virtual;
     function FGetIsBoundaryEdge: boolean; virtual;
     function FGetFace(Index: integer): TFreeSubdivisionFace;
@@ -1038,6 +1034,10 @@ type
     procedure SetStartPoint(aPoint:TFreeSubdivisionPoint);
     procedure SetEndPoint(aPoint:TFreeSubdivisionPoint);
   public
+    property StartPoint: TFreeSubdivisionPoint read FStartPoint write SetStartPoint;
+    property EndPoint: TFreeSubdivisionPoint read FEndPoint write SetEndPoint;
+    property Face[index: integer] : TFreeSubdivisionFace read FGetFace;
+    property Faces: TFasterListTFreeSubdivisionFace read FFaces;
     procedure AddFace(Face: TFreeSubdivisionFace);
     procedure Assign(Edge: TFreeSubdivisionEdge); virtual;
     function CalculateEdgeCenterPoint: TFreeSubdivisionPoint;
@@ -1054,18 +1054,14 @@ type
     property Crease: boolean read FCrease write FSetCrease;
     property Curve: TFreeSubdivisionControlCurve read FCurve write SetCurve;
     property EdgeIndex: integer read FGetIndex;
-    property EndPoint: TFreeSubdivisionPoint read FEndPoint write SetEndPoint;
-    property Face[index: integer] : TFreeSubdivisionFace read FGetFace;
-    property Faces: TFasterListTFreeSubdivisionFace read FFaces;
     property IsBoundaryEdge: boolean read FGetIsBoundaryEdge;
     property NextEdge: TFreeSubdivisionEdge read FGetNextEdge;
     property NumberOfFaces: integer read FGetNumberOfFaces;
     property PreviousEdge: TFreeSubdivisionEdge read FGetPreviousEdge;
-    property StartPoint: TFreeSubdivisionPoint read FStartPoint write SetStartPoint;
   end;
-  {---------------------------------------------------------------------}
-  {                                         TFreesubdivisionControlEdge }
-  {---------------------------------------------------------------------}
+  {-----------------------------}
+  { TFreesubdivisionControlEdge }
+  {-----------------------------}
   TFreesubdivisionControlEdge = class(TFreeSubdivisionEdge)
   private
     IsDeleting : boolean;
@@ -1167,36 +1163,30 @@ type
     procedure Clear; override;
     procedure ClearChildren;
     constructor Create(Owner: TFreeSubdivisionSurface); override;
-    function DistanceToCursor(X, Y: integer;
-      var P: T3DVector; Viewport: TFreeViewport): integer;
-    function PointInFace(X, Y: integer;
-      var IntersectionCoord: T3DVector; var Proximity:TFloatType;
-      Viewport: TFreeViewport): boolean;
+    function DistanceToCursor(X,Y: integer; var P: T3DVector; Viewport: TFreeViewport): integer;
+    function PointInFace(X,Y: integer; var IntersectionCoord: T3DVector; var Proximity:TFloatType; Viewport: TFreeViewport): boolean;
     procedure Delete; override;
     procedure Unreference; override;
     destructor Destroy;  override;
     procedure Draw(Viewport: TFreeViewport); overload; virtual;
-    procedure Draw(Viewport: TFreeViewport;
-                   MinCurvature, MaxCurvature: TFloatType); reintroduce; overload;
-    function InsertEdge( P1, P2: TFreeSubdivisionControlPoint;
-                         var IsFaceDeleted:boolean): TFreesubdivisionControlEdge;
+    procedure Draw(Viewport: TFreeViewport; MinCurvature, MaxCurvature: TFloatType); reintroduce; overload;
+    function InsertEdge( P1, P2: TFreeSubdivisionControlPoint; var IsFaceDeleted:boolean): TFreesubdivisionControlEdge;
     procedure LoadBinary(Source: TFreeFileBuffer);
     procedure LoadFromStream( var LineNr: integer; Strings: TStringList );
     procedure RemoveReferences;
     procedure SaveBinary(Destination: TFreeFileBuffer);
     procedure SaveToDXF(Strings: TStringList);
     procedure SaveToStream(Strings: TStringList); virtual;
-    procedure Subdivide(
-      aOwner: TFreeSubdivisionSurface;
+    procedure Subdivide
+    ( aOwner: TFreeSubdivisionSurface;
       aControlFace: boolean;
       aVertexPoints:TFasterListTFreeSubdivisionPoint;
       aEdgePoints:TFasterListTFreeSubdivisionEdge;
       aFacePoints:TFasterListTFreeSubdivisionFace;
       aInteriorEdges:TFasterListTFreeSubdivisionEdge;
       aControlEdges:TFasterListTFreeSubdivisionEdge;
-      aDest: TFasterListTFreeSubdivisionFace);
-    procedure Trace;
-    // select all controlfaces connected to the current one that belong to the same layer and are not separated by a crease edge
+      aDest: TFasterListTFreeSubdivisionFace );
+    procedure Trace; // select all controlfaces connected to the current one that belong to the same layer and are not separated by a crease edge
     property Color: TColor  read FGetColor;
     property ControlDescendantEdge[index: integer] : TFreeSubdivisionEdge read FGetControlDescendantEdge;
     property ControlDescendantEdgeCount: integer  read FGetControlDescendantEdgeCount;
@@ -1375,7 +1365,7 @@ type
 //  function IsObjectSelected(aObject: TFreeNamedObject): boolean;
 //  procedure SetObjectSelected(aObject: TFreeNamedObject; aSelected: boolean);
                               // Notifies all OnSelectItemNotificationReceivers
-//  procedure ExecuteOnSelectItem(Sender:TObject); ///*** проверить нужность!
+    procedure ExecuteOnSelectItem(Sender:TObject); ///*** проверить нужность!
                               // Adds OnSelectItemNotificationReceiver if Handler is not nil
                               // Deletes OnSelectItemNotificationReceiver if Handler is nil
     procedure AddOnSelectItemListener(aListener: TNotifyEvent);

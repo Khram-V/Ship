@@ -176,7 +176,7 @@ begin
 // Shades the underwaterpart of the hull in a different color
   ProjectUnderWaterColor:=FreeShip.Preferences.UnderWaterColor;
   ProjectUnderWaterColorAlpha:=FreeShip.Preferences.UnderWaterColorAlpha;
-  FProjectUnits:=TFreeUnitType(0); // Default is metric units
+  FProjectUnits:=TFreeUnitType( 0 ); // Default is metric units
   FUseDefaultSplitSectionLocation:=True;
   FProjectSplitSectionLocation:=0.0;
   FEnableModelAutoMove:=False;
@@ -320,9 +320,10 @@ begin
   //   Source.LoadTFloatType(FProjectWaterTemper);
   Source.LoadTFloatType(FProjectAppendageCoefficient);
   Source.LoadBoolean(FProjectShadeUnderwaterShip);
-  Source.LoadTColor(ProjectUnderWaterColor);
-     ProjectUnderWaterColorAlpha:=255-Byte( ProjectUnderWaterColor shr 24 );
-     ProjectUnderWaterColor:=ProjectUnderWaterColor and $FFFFFF;
+//     Source.LoadTColor( ProjectUnderWaterColor,ProjectUnderWaterColorAlpha );
+  Source.LoadInteger( ProjectUnderWaterColor );
+         ProjectUnderWaterColorAlpha:=255-Byte(ProjectUnderWaterColor shr 24);
+         ProjectUnderWaterColor:=ProjectUnderWaterColor and $FFFFFF;
   Source.LoadInteger(I);
   FProjectUnits:=TFreeUnitType(I);
   Source.LoadBoolean(FUseDefaultSplitSectionLocation);
@@ -390,8 +391,9 @@ begin
  // Destination.Add( FProjectWaterTemper );
     Destination.Add( FProjectAppendageCoefficient );
     Destination.Add( FProjectShadeUnderwaterShip );
-    Destination.Add( (ProjectUnderWaterColor and $FFFFFF )
-                  or (TColor( 255-ProjectUnderWaterColorAlpha ) shl 24) );
+//  Destination.Add( ProjectUnderWaterColor,ProjectUnderWaterColorAlpha );
+    Destination.Add( (ProjectUnderWaterColor and $FFFFFF)
+                  or (TColor(255-ProjectUnderWaterColorAlpha) shl 24) );
     Destination.Add( Ord(FProjectUnits) );
     if FreeShip.FileVersion>=fv160 then begin
        Destination.Add(FUseDefaultSplitSectionLocation);
