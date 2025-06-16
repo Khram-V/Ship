@@ -17,7 +17,7 @@ interface uses Interfaces,
      FreeLayerVisibilityDlg,FreeLanguageSupport, // FreeSelectedDlg,
      FreeSplitSectionDlg,MDIPanel,FreeLinesPlanFrame;
 type
-  TMainForm = class( TForm )                                       // TMainForm
+  TMainForm = class( TForm )
      FreeShip: TFreeShip;
      MainMenu1: TMainMenu;
      HintBar: TStatusBar;
@@ -88,35 +88,29 @@ type
      Calculations,                  Hydrostatics1,
      VRML1,MenuItemOBJ,MenuItemSTL,Normals1,Export1,Import1: TMenuItem;
 
-     LayerBox,cbPrecision      : TComboBox;
-     ColorButton1              : TColorButton;
-//   ColorToolButton           : TToolButton;
-     FontDialog1               : TFontDialog;
-     HelpAction                : THelpAction;
+     LayerBox,cbPrecision: TComboBox;
+     ColorButton1        : TColorButton;
+//   ColorToolButton     : TToolButton;
+     FontDialog1         : TFontDialog;
+     HelpAction          : THelpAction;
      LabelProgress,LabelNumbers,LabelDistance,LabelUndoMemory: TLabel;
-     ProgressBarMain           : TProgressBar;
-     SpinEditFontSize          : TSpinEdit;
-     MenuImages                : TImageList;
+     ProgressBarMain     : TProgressBar;
+     SpinEditFontSize    : TSpinEdit;
+     MenuImages          : TImageList;
 
-     tbShowFreeObjects,ToolButton1,   ToolButton39,
-     ToolButtonSelect, ToolButtonRedo,ToolButtonUndo,
-     ToolButtonDelete, ToolButton2,   ToolButton5,
-     ToolButton6,      ToolButton8,   ToolButton9,
-     ToolButton10,     ToolButton13,  ToolButton16,
-     ToolButton17,     ToolButton18,  ToolButton21,
-     ToolButton22,     ToolButton23,  ToolButton24,
-     ToolButton26,     ToolButton27,  ToolButton29,
-     ToolButton30,     ToolButton31,  ToolButton32,
-     ToolButton33,     ToolButton34,  ToolButton35,
-     ToolButton36,     ToolButton37,  ToolButton40,
-     ToolButton41,     ToolButton42,  ToolButton43,
-     ToolButton44,     ToolButton45,  ToolButton46,
-     ToolButton47,     ToolButton48:  TToolButton;
+     ToolButtonSelect,ToolButtonRedo,ToolButtonUndo,ToolButtonDelete,
+     ToolButton1,  ToolButton2,  ToolButton5,  ToolButton6,  ToolButton8,
+     ToolButton9,  ToolButton10, ToolButton13, ToolButton16, ToolButton17,
+     ToolButton18, ToolButton21, ToolButton22, ToolButton23, ToolButton24,
+     ToolButton26, ToolButton27, ToolButton29, ToolButton30, ToolButton31,
+     ToolButton32, ToolButton33, ToolButton34, ToolButton35, ToolButton36,
+     ToolButton37, ToolButton39, ToolButton40, ToolButton41, ToolButton42,
+     ToolButton43, ToolButton44, ToolButton45, ToolButton46, ToolButton47,
+     ToolButton48, tbShowFreeObjects:                        TToolButton;
 
     StatusPanel2  : TPanel;
     ColorDialog   : TColorDialog;
     ExportAurora,
-
     FileSave      : TAction;     Save2          : TMenuItem;
     Preferences   : TAction;     Preferences1   : TMenuItem;
     RemoveNegative: TAction;     RemoveNegative1: TMenuItem;
@@ -163,23 +157,17 @@ type
     Curvature1: TMenuItem;
     Curve1: TMenuItem;
     Import2: TMenuItem;
-//    Resistance1: TMenuItem;
-//    Kaper1: TMenuItem;
-//    ResistanceDelft: TAction;
-//    Delftyachtseries1: TMenuItem;
-//    ResistanceKaper: TAction;
     StatusPanel3: TPanel;
-    PointAlign: TAction;            Projectline1: TMenuItem;
-    N6: TMenuItem;
-    ShowHydrostatics: TAction;      Hydrostaticdata1: TMenuItem;
-    MirrorFace: TAction;            MirrorFace1: TMenuItem;
+    PointAlign: TAction;         Projectline1,N6: TMenuItem;
+    ShowHydrostatics: TAction;   Hydrostaticdata1: TMenuItem;
+    MirrorFace: TAction;         MirrorFace1: TMenuItem;
     ransform1: TMenuItem;
-    ExportDXF2DPolylines: TAction;  DXF2DPolylines1: TMenuItem;
+    ExportDXF2DPolylines: TAction; DXF2DPolylines1: TMenuItem;
     StatusPanel4: TPanel;
-    TransformLackenby: TAction;     Lackenby1: TMenuItem;
-    ExportIGES: TAction;            IGES1: TMenuItem;
-    ExportPart: TAction;            Part1: TMenuItem;
-    ImportPart: TAction;            Part2: TMenuItem;
+    TransformLackenby: TAction;  Lackenby1: TMenuItem;
+    ExportIGES: TAction;         IGES1: TMenuItem;
+    ExportPart: TAction;         Part1: TMenuItem;
+    ImportPart: TAction;         Part2: TMenuItem;
     LayerIntersection: TAction;
     Saveas1: TMenuItem;
     KeelRudderWizard: TAction;   KeelRudderMen: TMenuItem;     // = KeelWizard
@@ -193,10 +181,10 @@ type
     AddCylinder: TAction;        AddCylinder1: TMenuItem;
     SelectAll: TAction;          Selectall1: TMenuItem;
     ExportSTL: TAction;          STL1: TMenuItem;
- // CrossCurves: TAction;
- // Crosscurves1: TMenuItem;
     SelectionSeparator1: TMenuItem;
- // FMDIChildList : TList;
+//  Crosscurves1,Resistance1,Kaper1,Delftyachtseries1: TMenuItem;
+//  CrossCurves,ResistanceDelft,ResistanceKaper: TAction;
+//  FMDIChildList : TList;
     PanelManager: WinPanelManager;                       { FMDIPanelManager }
     procedure FormActivate             (Sender: TObject); { OnActivate=FormActivate }
     procedure ActionCheckUpdatesExecute(Sender: TObject);
@@ -308,10 +296,7 @@ type
     procedure PointsUnlockExecute      (Sender: TObject);
     procedure PointsUnlockAllExecute   (Sender: TObject);
     procedure ImportMarkersExecute     (Sender: TObject);
- // procedure ResistanceKaperExecute   (Sender: TObject);
- // procedure ResistanceDelftExecute   (Sender: TObject);
     procedure FreeShipChangeCursorIncrement(Sender: TObject);
-
     procedure StatusUndoActiveClick    (Sender: TObject);
     procedure StatusPanel3Click        (Sender: TObject);
     procedure PointAlignExecute        (Sender: TObject);
@@ -335,29 +320,31 @@ type
     procedure AddCylinderExecute       (Sender: TObject);
     procedure SelectAllExecute         (Sender: TObject);
     procedure ExportSTLExecute         (Sender: TObject);
-//  procedure CrossCurvesExecute       (Sender: TObject);
     procedure SelectLeakPointsExecute  (Sender: TObject);
     procedure LoadMostRecentFile;
     procedure InitiallyLoadModel;
     procedure KeelRudderWizardExecute  (Sender: TObject);
-   private                                             { Private declarations }
-      FDestroying: boolean;
-      FSplitSectionDialog: TFreeSplitSectionDialog;
-      function  Load_and_Scale( FileName: AnsiString ): Boolean;
-      procedure FLoadRecentFile(sender:TObject);
-      procedure FreeLayerVisibilityDialogChange(Sender: TObject);
-      procedure FreeShipChangeLayerData(Sender: TObject);
-      procedure FreeShipChangeActiveLayer(Sender: TObject;Layer: TFreeSubdivisionLayer);
-      procedure OnSplitSectionLocationChange(Sender: TObject; aValue: TFloatType);
-      procedure OnSelectItem(Sender:TObject);
-      procedure OnChangeActiveControlPoint(Sender:TObject);
-      procedure OnChangeActiveControlEdge(Sender:TObject);
-      procedure OnChangeActiveControlFace(Sender:TObject);
-      procedure OnChangeActiveControlCurve(Sender:TObject);
-      procedure HullformWindowOnClose(Sender:TObject; var CloseAction:TCloseAction);
-      procedure CloseHullWindows;
-      procedure FOpenHullWindows;  // Creates 4 different views on the hullform
-   public     { Public declarations }
+//  procedure CrossCurvesExecute       (Sender: TObject);
+//  procedure ResistanceKaperExecute   (Sender: TObject);
+//  procedure ResistanceDelftExecute   (Sender: TObject);
+   private
+    FDestroying: boolean;
+    FSplitSectionDialog: TFreeSplitSectionDialog;
+    function  Load_and_Scale( FileName: AnsiString ): Boolean;
+    procedure FLoadRecentFile(sender:TObject);
+    procedure FreeLayerVisibilityDialogChange(Sender: TObject);
+    procedure FreeShipChangeLayerData(Sender: TObject);
+    procedure FreeShipChangeActiveLayer(Sender: TObject;Layer: TFreeSubdivisionLayer);
+    procedure OnSplitSectionLocationChange(Sender: TObject; aValue: TFloatType);
+    procedure OnSelectItem(Sender:TObject);
+    procedure OnChangeActiveControlPoint(Sender:TObject);
+    procedure OnChangeActiveControlEdge(Sender:TObject);
+    procedure OnChangeActiveControlFace(Sender:TObject);
+    procedure OnChangeActiveControlCurve(Sender:TObject);
+    procedure HullformWindowOnClose(Sender:TObject; var CloseAction:TCloseAction);
+    procedure CloseHullWindows;
+    procedure FOpenHullWindows;  // Creates 4 different views on the hullform
+   public
       FFileName : AnsiString;
 //    ModelInitallyLoaded :
       UndoActive: boolean;
@@ -582,8 +569,8 @@ end;
 
 procedure TMainForm.SetCaption;
 begin if FreeShip.FileChanged
- then Caption:='«Free!Ship» :  '+ExtractFileName(FreeShip.Filename)+'  ('+UserString(280)+')'
- else Caption:='«Free!Ship» :  '+ExtractFileName(FreeShip.Filename)+'  ['+UserString(281)+']';
+ then Caption:='«Free!Ship» : '+ExtractFileName(FreeShip.Filename)+' ('+UserString(280)+')'
+ else Caption:='«Free!Ship» : '+ExtractFileName(FreeShip.Filename)+' ['+UserString(281)+']';
 end;
 (*
 procedure TMainForm.SetAllActionsEnabled( val: boolean );
@@ -925,7 +912,7 @@ var HullformWindow: TFreeHullWindow; I: Integer;
 begin                                                      // open a new window
     I:=MainClientPanel.ControlCount;
     HullformWindow:=TFreeHullWindow.Create( Self );
-//    HullformWindow.CaptionButtons:=[cbSystemMenu,cbMaximize,cbMinimize,cbRestore];
+//  HullformWindow.CaptionButtons:=[cbSystemMenu,cbMaximize,cbMinimize,cbRestore];
     HullformWindow.Name:='HullformWindow'+IntToStr( I );
     HullformWindow.Viewport.Name:='Viewport'+IntToStr( I );
     HullformWindow.FreeShip:=FreeShip;
@@ -976,8 +963,8 @@ procedure TMainForm.PointCollapseExecute(Sender: TObject);
     begin Freeship.Edit.Point_Collapse; UpdateMenu; end;
 procedure TMainForm.BothSidesExecute(Sender: TObject);
     begin if FreeShip.Visibility.ModelView=mvBoth
-            then FreeShip.Visibility.ModelView:=mvPort
-            else FreeShip.Visibility.ModelView:=mvBoth; UpdateMenu; end;
+             then FreeShip.Visibility.ModelView:=mvPort
+             else FreeShip.Visibility.ModelView:=mvBoth; UpdateMenu; end;
 procedure TMainForm.FileSaveasExecute(Sender: TObject);
     begin FreeShip.Edit.File_SaveAs; UpdateMenu; SetCaption; end;
 procedure TMainForm.LayerAutoGroupExecute(Sender: TObject);

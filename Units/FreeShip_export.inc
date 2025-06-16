@@ -2,9 +2,11 @@
   1 = © Aurora.Vsl-штормовой вычислительный эксперимент
   2 = WaveFront.Obj
   3 - Standard triangle.Stl
+  4 - dxf - три варианта
+  5 - iges
 }
 //
-// Export for Aurora-Hull computational experiments
+// Export for Aurora-Hull stormy computational experiments (simulations)
 //
 procedure TFreeEdit.File_Export_Aurora_Experiments;
 var
@@ -180,7 +182,6 @@ begin
 end;
 
 // Export the surface to a STL file
-
 // The native STL format has to fulfill the following specifications:
 // 1. The normal and each vertex of every facet are specified by three coordinates each,
 //    so there is a total of 12 numbers stored for each facet.
@@ -715,16 +716,14 @@ begin
         assignfile(ffile, ChangeFileExt(SaveDialog.FileName, '.app'));
         rewrite(FFile);
         Write(FFile,
-        '***************************************************************'+#10+
-        '**                                                           **'+#10+
-        '**     Appendage Hydrostatics Generator                      **'+#10+
-        '**     Version 1.0.1                                         **'+#10+
-        '**     Copyright : John A. MacSween-2000                     **'+#10+
-        '**     Please visit the website for updates and new versions **'+#10+
-        '**                                                           **'+#10+
-        '**                 www.naval-architecture.co.uk              **'+#10+
-        '** File generated with FREE!ship                             **'+#10+
-        '***************************************************************'+#10);
+        '***********************************************************'+#10+
+        '** Appendage Hydrostatics Generator                      **'+#10+
+        '** Version 1.0.1                                         **'+#10+
+        '** Copyright : John A. MacSween-2000                     **'+#10+
+        '** Please visit the website for updates and new versions **'+#10+
+        '**                 www.naval-architecture.co.uk          **'+#10+
+        '** File generated with FREE!ship                         **'+#10+
+        '***********************************************************'+#10);
         // Hull name
         Write(FFile, 'APPENDAGE_NAME'+#10);
         if FreeShip.ProjectSettings.ProjectName <> ''
@@ -868,17 +867,15 @@ begin
 {$I+}
     if IOResult=0 then begin
       FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
-         {
-         for I:=1 to FreeShip.Surface.NumberOfControlPoints do
-         begin
+      {  for I:=1 to FreeShip.Surface.NumberOfControlPoints do begin
             Point:=FreeShip.Surface.ControlPoint[I-1];
             Writeln(FFile,MakeLength(Point.Coordinate.X,6,12),#32,
                           MakeLength(Point.Coordinate.Y,6,12),#32,
                           MakeLength(Point.Coordinate.Z,6,12));
          end;
-         }
-      //         MessageDlg(FloatToStrF(FreeShip.Surface.NumberOfControlPoints,ffFixed,6,0),mtError,[mbOk],0);
-      //         MessageDlg(FloatToStrF(FreeShip.Surface.NumberOfPoints,ffFixed,6,0),mtError,[mbOk],0);
+      }
+      // MessageDlg(FloatToStrF(FreeShip.Surface.NumberOfControlPoints,ffFixed,6,0),mtError,[mbOk],0);
+      // MessageDlg(FloatToStrF(FreeShip.Surface.NumberOfPoints,ffFixed,6,0),mtError,[mbOk],0);
       for I:=1 to FreeShip.Surface.NumberOfSubDivPoints do begin
         Point:=FreeShip.Surface.SubDivPoint[I-1];
         Writeln(FFile, MakeLength(Point.Coordinate.X, 6, 12), #32,
@@ -889,7 +886,6 @@ begin
     end else MessageDlg(Userstring(97), mtError, [mbOK], 0);
   end;
   FreeAndNil(SaveDialog);
-
 end;{TFreeEdit.File_ExportCoordinates}
 
 // Exports all intersections to a textfile as 3D points
@@ -1062,7 +1058,7 @@ begin
 //    try
         Strings.SaveToFile(ChangeFileExt(Dialog.FileName, '.dxf'));
 //    except
-//      MessageDlg('Could not access '+ChangeFileExt(Dialog.FileName, '.dxf'),mtError, [mbOK], 0);
+//      ShowMessage('Could not access '+ChangeFileExt(Dialog.FileName, '.dxf'));
 //    end;
 //  finally
       Screen.Cursor:=Prev;

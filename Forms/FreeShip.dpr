@@ -1,6 +1,6 @@
 program FreeShip;                                                 { FREE!ship }
 {$mode objfpc}{$H+}
-uses Controls, Forms, Dialogs, //Windows,     // System,
+uses Controls, Forms, Dialogs,               // Windows, System,
      SysUtils, Math, LazUTF8,                // this includes the LCL widgetset
      DefaultTranslator, Interfaces,
      Main                in 'Main.pas',                              {MainForm}
@@ -8,7 +8,7 @@ uses Controls, Forms, Dialogs, //Windows,     // System,
      FreeVersionUnit     in '../Units/FreeVersionUnit.pas',
      FreeLanguageSupport in '../Units/FreeLanguageSupport.pas';
  var ParametersHelp: boolean=false;
-     sOpenFile: AnsiString='';                                  // UTF8ToWinCP(
+     sOpenFile: AnsiString='';                                   // UTF8ToWinCP
 
 procedure InitByParameters; var S: AnsiString; p: integer; begin
   for p:=1 to ParamCount do begin S:=ParamStr( p );
@@ -63,5 +63,5 @@ end
 end.
 
 { Function Experience( Kod: Integer ): Integer; cdecl; external;
-  WriteLn( 'Experience in C=3+3='+inttostr( Experience( 3 ) ) );
+  WriteLn( 'Experience in C=3+3=' + inttostr( Experience( 3 ) ) );
 }
