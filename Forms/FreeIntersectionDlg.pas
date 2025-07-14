@@ -1,20 +1,20 @@
 unit FreeIntersectionDlg;
 {$MODE Delphi}{$H+}
 interface uses
-  SysUtils,    Classes,
-  Forms,       Controls,
-  StdCtrls,    ExtCtrls,
-  Dialogs,     FreeTypes,
+  SysUtils,   Classes,
+  Forms,      Controls,
+  StdCtrls,   ExtCtrls,
+  Dialogs,    FreeTypes,
   FreeShipUnit,ComCtrls,
-  ActnList,    Grids;
+  ActnList,   Grids;
 type
   TFreeIntersectionDialog = class( TForm )          { TFreeIntersectionDialog }
     PageControl1: TPageControl;
     ToolBar1: TToolBar;
     Panel1: TPanel;
-    sgStations, sgWaterlines, sgButtocks, sgDiagonals: TStringGrid;
-    tsStations, tsWaterlines, tsButtocks, tsDiagonals: TTabSheet;
-    tbStations, tbWaterlines, tbButtocks, tbDiagonals: TToolButton;
+    sgStations,sgWaterlines,sgButtocks,sgDiagonals: TStringGrid;
+    tsStations,tsWaterlines,tsButtocks,tsDiagonals: TTabSheet;
+    tbStations,tbWaterlines,tbButtocks,tbDiagonals: TToolButton;
     ShowStations,ShowWaterlines,ShowButtocks,ShowDiagonals: TAction;
     DeleteSelected: TAction;
     ToolButton14: TToolButton;
@@ -32,14 +32,14 @@ type
     procedure ListBoxKeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure ListBoxSelectionChange(Sender: TObject; User: boolean);
     procedure PageControl1Change(Sender: TObject);
-    procedure sgButtocksCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
+    procedure sgButtocksCheckboxToggled(sender: TObject; aCol,aRow: Integer; aState: TCheckboxState);
 //  procedure sgButtocksEditingDone(Sender: TObject);
 //  procedure sgDiagonalsEditingDone(Sender: TObject);
     procedure OnGridEditingDone(Sender: TObject);
-    procedure OnGridGetEditMask(Sender: TObject; ACol, ARow: Integer; var Value: AnsiString);
-//  procedure sgStationsSelectEditor(Sender: TObject; aCol, aRow: Integer;  var Editor: TWinControl);
-    procedure OnGridSelection(Sender: TObject; aCol, aRow: Integer);
-    procedure OnGridValidateEntry(sender: TObject; aCol, aRow: Integer; const OldValue: AnsiString; var NewValue: AnsiString);
+    procedure OnGridGetEditMask(Sender: TObject; ACol,ARow: Integer; var Value: AnsiString);
+//  procedure sgStationsSelectEditor(Sender: TObject; aCol,aRow: Integer;  var Editor: TWinControl);
+    procedure OnGridSelection(Sender: TObject; aCol,aRow: Integer);
+    procedure OnGridValidateEntry(sender: TObject; aCol,aRow: Integer; const OldValue: AnsiString; var NewValue: AnsiString);
 //  procedure sgWaterlinesEditingDone(Sender: TObject);
     procedure ShowStationsExecute(Sender: TObject);
     procedure ShowButtocksExecute(Sender: TObject);
@@ -106,7 +106,7 @@ begin
 end;
 (*
 procedure TFreeIntersectionDialog.FillBox;
-var I, Ind, PrevInd: integer;
+var I,Ind,PrevInd: integer;
 begin
   PrevInd:=ListBox.ItemIndex;
   ListBox.Items.BeginUpdate;
@@ -231,7 +231,7 @@ end; {TFreeIntersectionDialog.ListBoxKeyDown}
 
 procedure TFreeIntersectionDialog.ListBoxSelectionChange
   ( Sender: TObject; User: boolean );
-  var Intersection: TFreeIntersection;  i, ii:integer;
+  var Intersection: TFreeIntersection;  i,ii:integer;
 begin
   ii:=ListBox.ItemIndex; UnselectAll;
   if ListBox.ItemIndex <> -1 then begin
@@ -252,7 +252,7 @@ begin
 end;
 
 procedure TFreeIntersectionDialog.sgButtocksCheckboxToggled
-  ( sender: TObject; aCol, aRow: Integer; aState: TCheckboxState );
+  ( sender: TObject; aCol,aRow: Integer; aState: TCheckboxState );
   var grid: TStringGrid; Intersection: TFreeIntersection; I: integer;
 begin
   if aCol=2 then begin
@@ -270,26 +270,26 @@ procedure TFreeIntersectionDialog.sgButtocksEditingDone(Sender: TObject);
 var f:TFloatType; intersection:TFreeIntersection; i:integer;
 begin
   try
-    intersection:=sgButtocks.Objects[1, sgButtocks.Row] as TFreeIntersection;
-    f:=StrToFloat(sgButtocks.Cells[1, sgButtocks.Row]);
+    intersection:=sgButtocks.Objects[1,sgButtocks.Row] as TFreeIntersection;
+    f:=StrToFloat(sgButtocks.Cells[1,sgButtocks.Row]);
     intersection.Distance:=f;
     intersection.Rebuild;
     FFreeship.Redraw;
   except
-    sgButtocks.Cells[sgButtocks.Col, sgButtocks.Row]:=format('%7.4f',[intersection.Distance]);
+    sgButtocks.Cells[sgButtocks.Col,sgButtocks.Row]:=format('%7.4f',[intersection.Distance]);
   end;
 end;
 procedure TFreeIntersectionDialog.sgDiagonalsEditingDone(Sender: TObject);
 var f:TFloatType; intersection:TFreeIntersection; i:integer;
 begin
   try
-    intersection:=sgDiagonals.Objects[1, sgDiagonals.Row] as TFreeIntersection;
-    f:=StrToFloat(sgDiagonals.Cells[1, sgDiagonals.Row]);
+    intersection:=sgDiagonals.Objects[1,sgDiagonals.Row] as TFreeIntersection;
+    f:=StrToFloat(sgDiagonals.Cells[1,sgDiagonals.Row]);
     intersection.Distance:=f;
     intersection.Rebuild;
     FFreeship.Redraw;
   except
-    sgDiagonals.Cells[sgDiagonals.Col, sgDiagonals.Row]:=format('%7.4f',[intersection.Distance]);
+    sgDiagonals.Cells[sgDiagonals.Col,sgDiagonals.Row]:=format('%7.4f',[intersection.Distance]);
   end;
 end;
 *)
@@ -306,7 +306,7 @@ begin Grid:=Sender as TStringGrid;
 end;
 
 procedure TFreeIntersectionDialog.OnGridGetEditMask
-( Sender: TObject; ACol,  ARow: Integer; var Value: string );
+( Sender: TObject; ACol, ARow: Integer; var Value: string );
 begin //if aCol = 1 then Value:='#000.9999';
 end;
 {
@@ -316,7 +316,7 @@ begin //if aCol = 1 then Editor:=FloatSpinEdit1;
 end;
 }
 function TFreeIntersectionDialog.GridRowSelected(grid: TStringGrid; aRow: Integer):boolean;
-  var Intersection: TFreeIntersection;  i, ii, r,r1,r2:integer;
+  var Intersection: TFreeIntersection;  i,ii,r,r1,r2:integer;
 begin
   Result:=false;
   for r:=0 to grid.SelectedRangeCount-1 do begin
@@ -345,13 +345,13 @@ begin
 end;
 
 procedure TFreeIntersectionDialog.OnGridValidateEntry(sender: TObject;
-  aCol, aRow: Integer; const OldValue: AnsiString; var NewValue: AnsiString);
+  aCol,aRow: Integer; const OldValue: AnsiString; var NewValue: AnsiString);
 var  grid: TStringGrid;
   F: TFloatType;
 begin
   if aCol <> 1 then exit;
   grid:=Sender as TStringGrid;
-  if TryStrToFloat(NewValue, F) then NewValue:=format('%7.4f',[F])
+  if TryStrToFloat(NewValue,F) then NewValue:=format('%7.4f',[F])
                                 else NewValue:=OldValue;
 end;
 
@@ -360,13 +360,13 @@ procedure TFreeIntersectionDialog.sgWaterlinesEditingDone(Sender: TObject);
 var f:TFloatType; intersection:TFreeIntersection; i:integer;
 begin
   try
-    intersection:=sgWaterlines.Objects[1, sgWaterlines.Row] as TFreeIntersection;
-    f:=GetFloat(sgWaterlines.Cells[1, sgWaterlines.Row]);
+    intersection:=sgWaterlines.Objects[1,sgWaterlines.Row] as TFreeIntersection;
+    f:=GetFloat(sgWaterlines.Cells[1,sgWaterlines.Row]);
     intersection.Distance:=f;
     intersection.Rebuild;
     FFreeship.Redraw;
   except
-    sgWaterlines.Cells[sgWaterlines.Col, sgWaterlines.Row]:=format('%7.4f',[intersection.Distance]);
+    sgWaterlines.Cells[sgWaterlines.Col,sgWaterlines.Row]:=format('%7.4f',[intersection.Distance]);
   end;
 end;
 
@@ -450,20 +450,20 @@ var Str: ansistring; Int: TFreeIntersection;
 begin Str:='1.0';
   if InputQuery( 'New intersection ','Distance: ',Str ) then begin Int:=nil;
     if ShowStations.Checked then
-      Int:=FFreeShip.Edit.Intersection_Add( fiStation, GetFloat(Str) );
+      Int:=FFreeShip.Edit.Intersection_Add( fiStation,GetFloat(Str) );
     if ShowButtocks.Checked then
-      Int:=FFreeShip.Edit.Intersection_Add( fiButtock, GetFloat(Str) );
+      Int:=FFreeShip.Edit.Intersection_Add( fiButtock,GetFloat(Str) );
     if ShowWaterlines.Checked then
-      Int:=FFreeShip.Edit.Intersection_Add(fiWaterline, GetFloat(Str));
+      Int:=FFreeShip.Edit.Intersection_Add(fiWaterline,GetFloat(Str));
     if ShowDiagonals.Checked then
-      Int:=FFreeShip.Edit.Intersection_Add(fiDiagonal, GetFloat(Str));
-    if Int<>nil then FillGrids; //FillBox// Added and sorted, refill the list
+      Int:=FFreeShip.Edit.Intersection_Add(fiDiagonal,GetFloat(Str));
+    if Int<>nil then FillGrids; //FillBox// Added and sorted,refill the list
     UpdateMenu;
   end;
 end;
 procedure TFreeIntersectionDialog.AddRangeExecute(Sender: TObject);
 var Str: ansistring;
-    Min, Max: T3DVector;
+    Min,Max: T3DVector;
     Start,Stop,Step: TFloatType;
     Index: integer;
 begin Str:='1.0';
@@ -477,12 +477,12 @@ begin Str:='1.0';
   if ShowDiagonals.Checked then  begin Start:=Min.Z; Stop:=2*Max.Z; end
                             else begin Start:=0.0; Stop:=-0.01; end;
   Index:=Trunc( (Start/step)-2 );
-  Start:=Index * Step;
+  Start:=Index*Step;
   while Start <= Stop do begin
-    if ShowStations.Checked then FFreeShip.Edit.Intersection_Add(fiStation, Start);
-    if ShowButtocks.Checked then FFreeShip.Edit.Intersection_Add(fiButtock, Start);
-    if ShowWaterlines.Checked then FFreeShip.Edit.Intersection_Add(fiWaterline, Start);
-    if ShowDiagonals.Checked then FFreeShip.Edit.Intersection_Add(fidiagonal, Start);
+    if ShowStations.Checked then FFreeShip.Edit.Intersection_Add(fiStation,Start);
+    if ShowButtocks.Checked then FFreeShip.Edit.Intersection_Add(fiButtock,Start);
+    if ShowWaterlines.Checked then FFreeShip.Edit.Intersection_Add(fiWaterline,Start);
+    if ShowDiagonals.Checked then FFreeShip.Edit.Intersection_Add(fidiagonal,Start);
     Start:=Start+step;
   end;
   FFreeShip.Redraw;

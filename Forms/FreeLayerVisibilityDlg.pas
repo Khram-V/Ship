@@ -1,8 +1,8 @@
 unit FreeLayerVisibilityDlg;
 {$mode objfpc}{$H+}
 interface uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, Grids,
+  Classes,SysUtils,Forms,Controls,Graphics,Dialogs,ExtCtrls,Buttons,
+  StdCtrls,Grids,
      FreeShipUnit,
      FreeTypes,
      FreeGeometry,
@@ -20,8 +20,8 @@ type
     procedure CheckBox2Click(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure sgLayersCheckboxToggled(sender: TObject; aCol, aRow: Integer; aState: TCheckboxState);
-    procedure sgLayersGetCellHint(Sender: TObject; ACol, ARow: Integer; var HintText: AnsiString);
+    procedure sgLayersCheckboxToggled(sender: TObject; aCol,aRow: Integer; aState: TCheckboxState);
+    procedure sgLayersGetCellHint(Sender: TObject; ACol,ARow: Integer; var HintText: AnsiString);
   private
     FFreeShip : TFreeShip;
     FOnChange: TNotifyEvent;
@@ -89,7 +89,7 @@ begin
 end;
 
 procedure TFreeLayerVisibilityDialog.sgLayersCheckboxToggled(sender: TObject;
-  aCol, aRow: Integer; aState: TCheckboxState);
+  aCol,aRow: Integer; aState: TCheckboxState);
 var index : integer; chk : boolean;
     Layer   : TFreeSubdivisionLayer;
 begin

@@ -2,7 +2,7 @@
 {                                       TFreeIntersection                     }
 {   TFreeIntersection is a list of curves calculated from the intersection    }
 {   of a ship hull (represented by a subdivision surface) and a plane.        }
-{   This plane can be a orthogonal plane (eg. stations, waterlines, buttocks) }
+{   This plane can be a orthogonal plane (eg. stations,waterlines,buttocks) }
 {    or a freely oriented 3D plane (sent)                                     }
 {-----------------------------------------------------------------------------}
 procedure TFreeIntersection.DeleteItem( Item: TFreeSpline );
@@ -41,13 +41,13 @@ begin
     fiDiagonal: Result :='Diagonal '; else Result:='Free';
   end;
   if IntersectionType = fiDiagonal
-  then Result:=Result+#32+FloatToDec(-FPLane.d / FPlane.c,3)
+  then Result:=Result+#32+FloatToDec(-FPLane.d/FPlane.c,3)
   else Result:=Result+#32+FloatToDec(-FPLane.d,3);
 end;
 
 function TFreeIntersection.FGetDistance: TFloatType;
 begin
-  if IntersectionType = fiDiagonal then Result:=-FPLane.d / FPlane.c
+  if IntersectionType = fiDiagonal then Result:=-FPLane.d/FPlane.c
                                    else Result:=-FPLane.d;
 end;
 
@@ -64,7 +64,7 @@ begin
 end;
 
 procedure TFreeIntersection.FSetDistance(val: TFloatType);
-begin if IntersectionType = fiDiagonal then FPLane.d:=-val * FPlane.c
+begin if IntersectionType = fiDiagonal then FPLane.d:=-val*FPlane.c
                                        else FPLane.d:=-val;
 end;
 
@@ -122,11 +122,11 @@ var
 
     Spline.Fragments:=500;
     NoPoints:=2;
-    Setlength(Parameters, 2);
+    Setlength(Parameters,2);
     Parameters[0]:=0.0;
     Parameters[1]:=1.0;
     if IntersectionType <> fiWaterline then
-    if Spline.IntersectPlane(Plane, IntersectionData) then begin
+    if Spline.IntersectPlane(Plane,IntersectionData) then begin
       Setlength( Parameters,NoPoints+Intersectiondata.NumberOfIntersections );
       for I:=1 to Intersectiondata.NumberOfIntersections do begin
         Parameters[NoPoints]:=Intersectiondata.Parameters[I-1];
@@ -139,31 +139,31 @@ var
       T1:=0.0;
       for I:=2 to NoPoints do begin
         T2:=Parameters[I-1];
-        T:=0.5 * (T1+T2);
+        T:=0.5*(T1+T2);
         P:=Spline.Value(T);   // check on which side of the plane this point is
-        Side:=Plane.a * P.x+Plane.b * P.y+Plane.c * P.z+Plane.d;
+        Side:=Plane.a*P.x+Plane.b*P.y+Plane.c*P.z+Plane.d;
         if (Side < 0) or (IntersectionType = fiWaterline) then
           for J:=0 to 500 do begin
-            T:=T1+(J / 500) * (T2-T1);
+            T:=T1+(J/500)*(T2-T1);
             P:=Spline.Value(T);
             P2:=ProjectTo2D(P);
             if J > 0 then begin
-              DeltaA:=0.5 * (P2.X+P1.X) * (P2.Y-P1.Y);
+              DeltaA:=0.5*(P2.X+P1.X)*(P2.Y-P1.Y);
               SplineArea:=SplineArea+DeltaA;
-              C.X:=C.X+DeltaA * 0.25 * (P2.X+P1.X);
-              C.Y:=C.Y+DeltaA * 0.50 * (P2.Y+P1.Y);
-              MomI.X:=MomI.X+(1.0 / 12.0) * (P1.Y+P2.Y) *
-                (P1.Y * P1.Y+P2.Y * P2.Y) * (P2.X-P1.X);
-              MomI.Y:=MomI.Y+(1.0 / 12.0) *
-                (P2.X * P2.X * (3 * P2.Y+P1.Y)+2 * P1.X * P2.X *
-                (P1.Y+P2.Y)+P1.X * P1.X * (3 * P1.Y+P2.Y)) * (P2.X-P1.X);
+              C.X:=C.X+DeltaA*0.25*(P2.X+P1.X);
+              C.Y:=C.Y+DeltaA*0.50*(P2.Y+P1.Y);
+              MomI.X:=MomI.X+(1.0/12.0)*(P1.Y+P2.Y) *
+                (P1.Y*P1.Y+P2.Y*P2.Y)*(P2.X-P1.X);
+              MomI.Y:=MomI.Y+(1.0/12.0) *
+                (P2.X*P2.X*(3*P2.Y+P1.Y)+2*P1.X*P2.X *
+                (P1.Y+P2.Y)+P1.X*P1.X*(3*P1.Y+P2.Y))*(P2.X-P1.X);
             end; P1:=P2;
-          end;    // The point lies at the back of the plane, include this area
+          end;    // The point lies at the back of the plane,include this area
         T1:=T2;
       end;
       if SplineArea <> 0.0 then begin
-        C.X:=C.X / SplineArea;
-        C.Y:=C.Y / SplineArea;
+        C.X:=C.X/SplineArea;
+        C.Y:=C.Y/SplineArea;
         MomI.X:=abs(MomI.X);
         MomI.Y:=abs(MomI.Y);
         case IntersectionType of
@@ -217,8 +217,8 @@ begin
       COG.Y:=COG.Y/Area;
       COG.Z:=COG.Z/Area;
       if IntersectionType = fiWaterline then begin
-        MomentOfInertia.X:=(MomI.X-COG.Y * COG.Y * Area) * isymm;
-        MomentOfInertia.Y:=abs(MomI.Y-COG.X * COG.X * Area);
+        MomentOfInertia.X:=(MomI.X-COG.Y*COG.Y*Area)*isymm;
+        MomentOfInertia.Y:=abs(MomI.Y-COG.X*COG.X*Area);
       end;
     end;
   end;
@@ -251,17 +251,17 @@ begin
   Clear;
 end;
 
-// Create the starboardhalf of the ship, for use in hydrostatic calculations
+// Create the starboardhalf of the ship,for use in hydrostatic calculations
 procedure TFreeIntersection.CreateStarboardPart;
 var
-  I, J: integer;
+  I,J: integer;
   Spline: TFreeSpline;
-  P1, P2: T3DVector;
+  P1,P2: T3DVector;
   Area,DeltaA: TFloatType;
 begin
   if self.IntersectionType <> fiButtock then begin
     // Copy all present splines and mirror the y-coordinate
-    FItems.Capacity:=FItems.Count * 2;
+    FItems.Capacity:=FItems.Count*2;
     for I:=Count downto 1 do begin
       Spline:=TFreeSpline.Create(FFreeShip.Surface);
       Spline.Assign(Items[I-1]);
@@ -273,7 +273,7 @@ begin
       FItems.Add(Spline);
     end;
     // Try to connect the splines
-    JoinSplineSegments(0.05, False, FItems);
+    JoinSplineSegments(0.05,False,FItems);
   end;
   // Check if the orientation is counterclockwise
   for I:=Count downto 1 do begin
@@ -281,11 +281,11 @@ begin
     Area:=0;
     P1:=Spline.Point[Spline.NumberOfPoints-1];
     for J:=0 to 500 do begin
-      P2:=Spline.Value(J / 500);
+      P2:=Spline.Value(J/500);
       case IntersectionType of
-        fiStation: DeltaA:=0.5 * (P2.Y+P1.Y) * (P2.Z-P1.Z);
-        fiButtock: DeltaA:=0.5 * (P2.X+P1.X) * (P2.Z-P1.Z);
-        fiWaterline: DeltaA:=0.5 * (P2.X+P1.X) * (P2.Y-P1.Y);
+        fiStation: DeltaA:=0.5*(P2.Y+P1.Y)*(P2.Z-P1.Z);
+        fiButtock: DeltaA:=0.5*(P2.X+P1.X)*(P2.Z-P1.Z);
+        fiWaterline: DeltaA:=0.5*(P2.X+P1.X)*(P2.Y-P1.Y);
 //    else WriteLn('Unknown intersection type!');
       end;
       Area:=Area+DeltaA;
@@ -298,7 +298,7 @@ begin
       Spline.Destroy; // FreeAndNil(Spline);
       FItems.Delete(I-1);
     end else
-    if Area<0 then Spline.InvertDirection; // spline is defined clockwise, so invert the controlpoints
+    if Area<0 then Spline.InvertDirection; // spline is defined clockwise,so invert the controlpoints
   end;
 end;
 
@@ -352,13 +352,13 @@ begin Clear; FreeAndNil( FItems ); inherited Destroy; end;
 
 procedure TFreeIntersection.Draw(Viewport: TFreeViewport);
 var
-  I, J, frags: integer;
-  Spline, SplineSB: TFreeSpline;
-  P, P2, N: T3DVector;
+  I,J,frags: integer;
+  Spline,SplineSB: TFreeSpline;
+  P,P2,N: T3DVector;
   Pts: array of TPoint;
   CPts: array of TPoint;
   Curv: TFloatType;
-  R, G, B: integer;
+  R,G,B: integer;
   DrawIt: boolean;
 
 begin
@@ -371,11 +371,11 @@ begin
       Spline.PenWidth:=FreeShip.Preferences.FIntersectionLineWidth;
 
       if IntersectionType = fiStation then
-        if Viewport.ViewType in [fvProfile, fvPlan] then Spline.PenStyle:=psDot;
+        if Viewport.ViewType in [fvProfile,fvPlan] then Spline.PenStyle:=psDot;
       if IntersectionType = fiButtock then
-        if Viewport.ViewType in [fvBodyplan, fvPlan] then Spline.PenStyle:=psDot;
+        if Viewport.ViewType in [fvBodyplan,fvPlan] then Spline.PenStyle:=psDot;
       if IntersectionType = fiWaterline then
-        if Viewport.ViewType in [fvProfile, fvBodyplan] then Spline.PenStyle:=psDot;
+        if Viewport.ViewType in [fvProfile,fvBodyplan] then Spline.PenStyle:=psDot;
       if Spline.PenStyle = psDot then Spline.Color:=clSilver;
 
       Spline.CurvatureColor:=FreeShip.Preferences.CurvaturePlotColor;
@@ -393,25 +393,25 @@ begin
         fpHigh: frags:=1024;
         fpVeryHigh: frags:=2048;
       end;
-      if Spline.ShowCurvature then Spline.Fragments:=(frags * 3) div 2
+      if Spline.ShowCurvature then Spline.Fragments:=(frags*3) div 2
                               else Spline.Fragments:=frags;
       {
       TODO remove
       --try
         //writeln('Try to allocate ',Spline.Fragments+1,' TPoints');
-        Setlength(Pts, Spline.Fragments+1);
+        Setlength(Pts,Spline.Fragments+1);
       except
-        writeln('Failure to allocate ', Spline.Fragments+1, ' TPoints');
+        writeln('Failure to allocate ',Spline.Fragments+1,' TPoints');
         raise;
       end;
       if Spline.ShowCurvature then
-        Setlength(CPts, Spline.Fragments+1);
+        Setlength(CPts,Spline.Fragments+1);
       if (IntersectionType = fiWaterline) and (Viewport.ViewType in [fvPlan])
       then R:=0; // debug catch
       }
 
       // Draw portside
-      DrawIt:=IntersectionType in [fiButtock, fiWaterline, fiDiagonal];
+      DrawIt:=IntersectionType in [fiButtock,fiWaterline,fiDiagonal];
       if IntersectionType = fiStation then
         Drawit:=(Viewport.ViewType <> fvBodyplan) or
           (FreeShip.Visibility.ModelView = mvBoth) or (Spline.Max.X >=
@@ -443,16 +443,16 @@ begin
         for J:=0 to Spline.Fragments do
           if Spline.ShowCurvature then
           begin
-            Curv:=Spline.Curvature(J / Spline.Fragments, P, N);
+            Curv:=Spline.Curvature(J/Spline.Fragments,P,N);
             Pts[J]:=Viewport.Project(P);
-            P2.X:=P.X-Curv * Spline.CurvatureScale * N.X;
-            P2.Y:=P.Y-Curv * Spline.CurvatureScale * N.Y;
-            P2.Z:=P.Z-Curv * Spline.CurvatureScale * N.Z;
+            P2.X:=P.X-Curv*Spline.CurvatureScale*N.X;
+            P2.Y:=P.Y-Curv*Spline.CurvatureScale*N.Y;
+            P2.Z:=P.Z-Curv*Spline.CurvatureScale*N.Z;
             CPts[J]:=Viewport.Project(P2);
           end
           else
           begin
-            P:=Spline.Value(J / Spline.Fragments);
+            P:=Spline.Value(J/Spline.Fragments);
             Pts[J]:=Viewport.Project(P);
           end;
         if Spline.ShowCurvature then
@@ -463,8 +463,8 @@ begin
           for J:=0 to Spline.Fragments do
             if (J mod 10 = 0) or (J = 0) or (J = Spline.Fragments) then
             begin
-              Viewport.MoveTo(Pts[J].X, Pts[J].Y);
-              Viewport.LineTo(CPts[J].X, CPts[J].Y);
+              Viewport.MoveTo(Pts[J].X,Pts[J].Y);
+              Viewport.LineTo(CPts[J].X,CPts[J].Y);
             end;
           Viewport.Polyline(CPts);
         end;
@@ -488,18 +488,18 @@ begin
         for J:=0 to Spline.Fragments do
           if Spline.ShowCurvature then
           begin
-            Curv:=Spline.Curvature(J / Spline.Fragments, P, N);
+            Curv:=Spline.Curvature(J/Spline.Fragments,P,N);
             N.Y:=-N.Y;
             P.Y:=-P.Y;
             Pts[J]:=Viewport.Project(P);
-            P2.X:=P.X-Curv * Spline.CurvatureScale * N.X;
-            P2.Y:=P.Y-Curv * Spline.CurvatureScale * N.Y;
-            P2.Z:=P.Z-Curv * Spline.CurvatureScale * N.Z;
+            P2.X:=P.X-Curv*Spline.CurvatureScale*N.X;
+            P2.Y:=P.Y-Curv*Spline.CurvatureScale*N.Y;
+            P2.Z:=P.Z-Curv*Spline.CurvatureScale*N.Z;
             CPts[J]:=Viewport.Project(P2);
           end
           else
           begin
-            P:=Spline.Value(J / Spline.Fragments);
+            P:=Spline.Value(J/Spline.Fragments);
             P.Y:=-P.Y;
             Pts[J]:=Viewport.Project(P);
           end;
@@ -511,8 +511,8 @@ begin
           for J:=0 to Spline.Fragments do
             if (J mod 10 = 0) or (J = 0) or (J = Spline.Fragments) then
             begin
-              Viewport.MoveTo(Pts[J].X, Pts[J].Y);
-              Viewport.LineTo(CPts[J].X, CPts[J].Y);
+              Viewport.MoveTo(Pts[J].X,Pts[J].Y);
+              Viewport.LineTo(CPts[J].X,CPts[J].Y);
             end;
           Viewport.Polyline(CPts);
         end;
@@ -558,8 +558,8 @@ begin
       P:=Spline.Value(0.0);
       for J:=1 to Spline.Fragments do
       begin
-        P2:=Spline.Value(J / Spline.Fragments);
-        Viewport.DrawLineToZBuffer(P, P2, R, G, B);
+        P2:=Spline.Value(J/Spline.Fragments);
+        Viewport.DrawLineToZBuffer(P,P2,R,G,B);
         P:=P2;
       end;
       }
@@ -573,9 +573,9 @@ begin
         P.Y:=-P.Y;
         for J:=1 to Spline.Fragments do
         begin
-          P2:=Spline.Value(J / Spline.Fragments);
+          P2:=Spline.Value(J/Spline.Fragments);
           P2.Y:=-P2.Y;
-          Viewport.DrawLineToZBuffer(P, P2, R, G, B);
+          Viewport.DrawLineToZBuffer(P,P2,R,G,B);
           P:=P2;
         end;
         }
@@ -599,7 +599,7 @@ begin
   for I:=1 to FreeShip.NumberOfViewports do Draw(FreeShip.Viewport[I-1]);
 end;
 
-procedure TFreeIntersection.Extents(var Min, Max: T3DVector);
+procedure TFreeIntersection.Extents(var Min,Max: T3DVector);
 var I: integer;
 begin
   if not Built then Rebuild;
@@ -608,7 +608,7 @@ end;
 
 procedure TFreeIntersection.LoadBinary(Source: TFreeFileBuffer);
 var
-  I, J, M, N: integer;
+  I,J,M,N: integer;
   Spline: TFreeSpline;
   P: T3DVector;
   Bool: boolean;
@@ -668,7 +668,7 @@ end;
 
 procedure TFreeIntersection.SaveBinary(Destination: TFreeFileBuffer);
 var
-  I, J: integer;
+  I,J: integer;
   Spline: TFreeSpline;
   P: T3DVector;
 begin

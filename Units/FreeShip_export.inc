@@ -81,7 +81,7 @@ begin
   Dialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
   Dialog.FileName:=ChangeFileExt( Title,'.vsl');
   Dialog.Filter:=createDialogFilter( 'Aurora+Hull Vessel(db)file',['vsl'] );
-  dialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if Dialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath( Dialog.FileName );
     Strings:=TStringList.Create;
@@ -120,7 +120,7 @@ begin
         N:=NumberOfPoints-1; Str:='';   // ещё и сортировки только и не хватало
         if ( Point[N].Z>=Point[0].Z )                // == может быть на палубе
 //      or ( Point[N].X>Point[0].X )
-//      or ( ( (Point[0]-T3) * (Point[N]-T3) ).X>=0.0 )
+//      or ( ( (Point[0]-T3)*(Point[N]-T3) ).X>=0.0 )
 //      or ( Point[0].Y=0.0 )
 //      if Dis
          then begin for K:=0 to N do with Point[K] do Str2( Z,Y ); end
@@ -151,7 +151,7 @@ begin
       end;
     end;
     FreeAndNil( EdgePointLists );
-    Strings.SaveToFile( ChangeFileExt(Dialog.FileName, '.vsl' ));
+    Strings.SaveToFile( ChangeFileExt(Dialog.FileName,'.vsl' ));
     FreeAndNil(Strings);
   end;
   FreeAndNil(Dialog);
@@ -187,7 +187,7 @@ end;
 //    so there is a total of 12 numbers stored for each facet.
 // 2. Each facet is part of the boundary between the interior and the exterior of the object.
 //    The orientation of the facets is specified redundantly in two ways which must be consistent.
-//    First, the direction of the normal is outward. Second, the vertices are listed in
+//    First,the direction of the normal is outward. Second,the vertices are listed in
 //    counterclockwise order when looking at the object from the outside.
 // 3. Each triangle must share two vertices with each of its adjacent triangles.
 //    This is known as vertex-to-vertex rule.
@@ -208,28 +208,28 @@ var
   var Normal: T3DVector;
   begin
     Normal:=UnifiedNormal( C1,C2,C3 );
-    writeln(FFile, 'facet normal '+FloatToDec(normal.X, 4)
-                            +#32+FloatToDec(normal.Y, 4)
-                            +#32+FloatToDec(normal.Z, 4));
-    writeln(FFile, '  outer loop');
-    writeln(FFile, '    vertex '+FloatToDec(C1.X, 4)
-                          +#32+FloatToDec(C1.Y, 4)
-                          +#32+FloatToDec(C1.Z, 4) );
-    writeln(FFile, '    vertex '+FloatToDec(C2.X, 4)
-                          +#32+FloatToDec(C2.Y, 4)
-                          +#32+FloatToDec(C2.Z, 4) );
-    writeln(FFile, '    vertex '+FloatToDec(C3.X, 4)
-                          +#32+FloatToDec(C3.Y, 4)
-                          +#32+FloatToDec(C3.Z, 4) );
-    writeln(FFile, '  endloop');
-    Writeln(FFile, 'endfacet');
+    writeln(FFile,'facet normal '+FloatToDec(normal.X,4)
+                            +#32+FloatToDec(normal.Y,4)
+                            +#32+FloatToDec(normal.Z,4));
+    writeln(FFile,'  outer loop');
+    writeln(FFile,'    vertex '+FloatToDec(C1.X,4)
+                          +#32+FloatToDec(C1.Y,4)
+                          +#32+FloatToDec(C1.Z,4) );
+    writeln(FFile,'    vertex '+FloatToDec(C2.X,4)
+                          +#32+FloatToDec(C2.Y,4)
+                          +#32+FloatToDec(C2.Z,4) );
+    writeln(FFile,'    vertex '+FloatToDec(C3.X,4)
+                          +#32+FloatToDec(C3.Y,4)
+                          +#32+FloatToDec(C3.Z,4) );
+    writeln(FFile,'  endloop');
+    Writeln(FFile,'endfacet');
   end; {Addfacet}
 begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
   SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'.stl');
   SaveDialog.Filter:=createDialogFilter( rsSTLFile,['stl','txt'] );
-  Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
     AssignFile( FFile,Changefileext( SaveDialog.FileName,'.stl' ) );
@@ -248,7 +248,7 @@ begin
               C1:=Child.Point[0].Coordinate;
               C2:=Child.Point[L-2].Coordinate;
               C3:=Child.Point[L-1].Coordinate;
-              AddFacet( C1,C2,C3 );       // mirror points, starboard to port
+              AddFacet( C1,C2,C3 );       // mirror points,starboard to port
               C1.Y:=-C1.Y;
               C2.Y:=-C2.Y;
               C3.Y:=-C3.Y;
@@ -256,7 +256,7 @@ begin
             end;
           end;
         end;
-      end; writeln(FFile, 'endsolid'); Closefile(FFile);
+      end; writeln(FFile,'endsolid'); Closefile(FFile);
     end else MessageDlg( Userstring(97),mtError,[mbOK],0 );
   end; FreeAndNil( SaveDialog );
 end;
@@ -301,7 +301,7 @@ begin
   if not Built then Rebuild;
   for I:=2 to NumberOfPoints-1 do
    if Knuckle[I-1] then begin Params[NParams]:=Parameter[I-1]; Inc(NParams); end;
-  Setlength(Params, NParams+Fragments);
+  Setlength(Params,NParams+Fragments);
   for I:=1 to Fragments do begin Params[NParams]:=(I-1)/(Fragments-1); Inc(NParams); end;
   ArraySort( Params,NParams );
 //SortFloatArray(Params,NParams);
@@ -349,7 +349,7 @@ var
   ScaleFactor: double;
   SegLength: double;
   PrevCursor: TCursor;
-  Filename, Layername: AnsiString;
+  Filename,Layername: AnsiString;
   Intersections: TFasterListTFreeIntersection;
   CreateIndividualLayers: Boolean;
 
@@ -404,7 +404,7 @@ var
       Stringlist.add('0');
       Stringlist.add('LAYER');
       Stringlist.add('2');
-      Stringlist.add( format(LayerPrefix+'%.2d', [I]) );
+      Stringlist.add( format(LayerPrefix+'%.2d',[I]) );
       Stringlist.add('70');
       Stringlist.add('64');
       Stringlist.add('62');
@@ -433,10 +433,10 @@ var
     procedure SaveSpline(Spline: TFreeSpline; Strings: TStringList;
       IntersectionType: TFreeIntersectiontype);
     var
-      I,Ind,NParams,Cap, Pn,Pn1,Pn2: integer;
+      I,Ind,NParams,Cap,Pn,Pn1,Pn2: integer;
       Params: TFloatArray;
       SplineLength,T: double;
-      P1, P2, Pkn: T3DVector;
+      P1,P2,Pkn: T3DVector;
       SplineValues: T3DVectorArray;
 
       procedure SaveVertex(P:T3DVector); // port side
@@ -445,14 +445,14 @@ var
         Strings.Add('8'+EOL+LayerName);
         case IntersectionType of
           fiStation: begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * P.Y, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * P.Z, 5)); end;
+            Strings.Add('10'+EOL+FloatToDec(Scale*P.Y,5));
+            Strings.Add('20'+EOL+FloatToDec(Scale*P.Z,5)); end;
           fiButtock: begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * P.X, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * P.Z, 5)); end;
+            Strings.Add('10'+EOL+FloatToDec(Scale*P.X,5));
+            Strings.Add('20'+EOL+FloatToDec(Scale*P.Z,5)); end;
           fiWaterline: begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * P.X, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * P.Y, 5)); end;
+            Strings.Add('10'+EOL+FloatToDec(Scale*P.X,5));
+            Strings.Add('20'+EOL+FloatToDec(Scale*P.Y,5)); end;
         end;
       end;
       procedure SaveVertexSB(P:T3DVector); // starboard side
@@ -461,11 +461,11 @@ var
         Strings.Add('8'+EOL+LayerName);
         case IntersectionType of
           fiStation: begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * -P.Y, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * P.Z, 5)); end;
+            Strings.Add('10'+EOL+FloatToDec(Scale*-P.Y,5));
+            Strings.Add('20'+EOL+FloatToDec(Scale*P.Z,5)); end;
           fiWaterline: begin
-            Strings.Add('10'+EOL+FloatToDec(Scale * P.X, 5));
-            Strings.Add('20'+EOL+FloatToDec(Scale * -P.Y, 5)); end;
+            Strings.Add('10'+EOL+FloatToDec(Scale*P.X,5));
+            Strings.Add('20'+EOL+FloatToDec(Scale*-P.Y,5)); end;
         end;
       end;
     begin
@@ -485,32 +485,32 @@ var
       P1:=Spline.Value(0.0);
       for I:=1 to 150 do
       begin
-        P2:=Spline.Value(I / 150);
-        SplineLength:=SplineLength+DistPP3D(P1, P2);
+        P2:=Spline.Value(I/150);
+        SplineLength:=SplineLength+DistPP3D(P1,P2);
         P1:=P2;
       end;  *)
       SplineLength:=Spline.TotalLength;
-      SplineLength:=SplineLength * ScaleFactor;
+      SplineLength:=SplineLength*ScaleFactor;
 
       if SplineLength > 0 then begin
-        N:=Round(SplineLength / (SegLength));
+        N:=Round(SplineLength/(SegLength));
         if N < 2*Spline.NumberOfPoints then N:=2*Spline.NumberOfPoints;
         if N > 3500 then N:=3500;
         Spline.Fragments:=N;
         (*
-        Cap:=NParams+100;        Setlength(Params, Cap);
+        Cap:=NParams+100;        Setlength(Params,Cap);
         Inc(Nparams);            Params[NParams-1]:=0.0;
         Inc(Nparams);            Params[NParams-1]:=1.0;
         for I:=1 to Spline.Fragments do begin
-          T:=Spline.ChordlengthApproximation(I * SegLength / SplineLength);
+          T:=Spline.ChordlengthApproximation(I*SegLength/SplineLength);
           if NParams >= Cap then begin
-            Inc(Cap, 50);
-            Setlength(Params, Cap);
+            Inc(Cap,50);
+            Setlength(Params,Cap);
           end;
           Inc(NParams);
           Params[NParams-1]:=T;
         end;
-        ArraySort(Params, NParams);
+        ArraySort(Params,NParams);
         *)
         // now export the actual calculated points
         Strings.Add('0'+EOL+'POLYLINE');
@@ -520,7 +520,7 @@ var
         (*
         Pn:=0;
         for I:=0 to NParams-1 do begin
-          P1:=Spline.Value(Params[I], Pn1, Pn2);
+          P1:=Spline.Value(Params[I],Pn1,Pn2);
           if (Pn <> Pn1) and Spline.Knuckle[Pn1] then begin
             Pn:=Pn1;
             Pkn:=Spline.Point[Pn1];
@@ -546,7 +546,7 @@ var
           Pn:=0;
           for I:=0 to NParams-1 do
           begin
-            P1:=Spline.Value(Params[I], Pn1, Pn2);
+            P1:=Spline.Value(Params[I],Pn1,Pn2);
             if (Pn <> Pn1) and Spline.Knuckle[Pn1] then
             begin
               Pn:=Pn1;
@@ -574,7 +574,7 @@ var
       Filename:=FreeShip.Preferences.ExportDirectory+Intersection.Description+'.dxf';
       for I:=1 to Intersection.Count do begin
         Intersection.Items[I-1].Color:=Intersection.Color;
-        SaveSpline(Intersection.Items[I-1], Strings, Intersection.IntersectionType);
+        SaveSpline(Intersection.Items[I-1],Strings,Intersection.IntersectionType);
       end;
     end;
   end;
@@ -625,10 +625,10 @@ begin
         for I:=1 to Intersections.Count do begin
           Strings.Clear;
           Layername:=getLayerName(Intersections[I-1].IntersectionType);
-          DefineLayers(Strings, Layername, I, 1);
+          DefineLayers(Strings,Layername,I,1);
           Strings.Add('0'+EOL+'SECTION');
           Strings.Add('2'+EOL+'ENTITIES');
-          CreateDXFData(Intersections[I-1], I, Strings, ScaleFactor, Filename);
+          CreateDXFData(Intersections[I-1],I,Strings,ScaleFactor,Filename);
           Strings.Add('0'+EOL+'ENDSEC');
           Strings.Add('0'+EOL+'EOF');
           Strings.SaveToFile(Filename);
@@ -639,11 +639,11 @@ begin
         begin
           Strings.Clear;
           Layername:=getLayerName(fiStation);
-          DefineLayers(Strings, Layername, 1, FreeShip.NumberofStations);
+          DefineLayers(Strings,Layername,1,FreeShip.NumberofStations);
           Strings.Add('0'+EOL+'SECTION');
           Strings.Add('2'+EOL+'ENTITIES');
           for I:=1 to FreeShip.NumberofStations do
-            CreateDXFData(FreeShip.Station[I-1], I, Strings, ScaleFactor, Filename);
+            CreateDXFData(FreeShip.Station[I-1],I,Strings,ScaleFactor,Filename);
           Strings.Add('0'+EOL+'ENDSEC');
           Strings.Add('0'+EOL+'EOF');
           Filename:=FreeShip.Preferences.ExportDirectory+'stations.dxf';
@@ -653,11 +653,11 @@ begin
         and (FreeShip.NumberofButtocks > 0) then begin
           Strings.Clear;
           Layername:=getLayerName(fiButtock);
-          DefineLayers(Strings, Layername, 1, FreeShip.NumberofButtocks);
+          DefineLayers(Strings,Layername,1,FreeShip.NumberofButtocks);
           Strings.Add('0'+EOL+'SECTION');
           Strings.Add('2'+EOL+'ENTITIES');
           for I:=1 to FreeShip.NumberofButtocks do
-            CreateDXFData(FreeShip.Buttock[I-1], I, Strings, ScaleFactor, Filename);
+            CreateDXFData(FreeShip.Buttock[I-1],I,Strings,ScaleFactor,Filename);
           Strings.Add('0'+EOL+'ENDSEC');
           Strings.Add('0'+EOL+'EOF');
           Filename:=FreeShip.Preferences.ExportDirectory+'buttocks.dxf';
@@ -667,11 +667,11 @@ begin
         and (FreeShip.NumberofWaterlines > 0) then begin
           Strings.Clear;
           Layername:=getLayerName(fiWaterline);
-          DefineLayers(Strings, Layername, 1, FreeShip.NumberofWaterlines);
+          DefineLayers(Strings,Layername,1,FreeShip.NumberofWaterlines);
           Strings.Add('0'+EOL+'SECTION');
           Strings.Add('2'+EOL+'ENTITIES');
           for I:=1 to FreeShip.NumberofWaterlines do
-            CreateDXFData(FreeShip.Waterline[I-1], I, Strings, ScaleFactor, Filename);
+            CreateDXFData(FreeShip.Waterline[I-1],I,Strings,ScaleFactor,Filename);
           Strings.Add('0'+EOL+'ENDSEC');
           Strings.Add('0'+EOL+'EOF');
           Filename:=FreeShip.Preferences.ExportDirectory+'waterlines.dxf';
@@ -692,28 +692,28 @@ procedure TFreeEdit.File_ExportArchimedes;
 var
   Frames: TFasterListTFreeSpline;
   Frame: TFreeSpline;
-  Tmp, Str: AnsiString;
-  I, J, Np: integer;
+  Tmp,Str: AnsiString;
+  I,J,Np: integer;
   P: T3DVector;
   SaveDialog: TSaveDialog;
   ffile: textfile;
   Strings: TStringList;
 begin
   Frames:=TFasterListTFreeSpline.Create;
-  FreeShip.FBuildValidFrameTable(Frames, True);
+  FreeShip.FBuildValidFrameTable(Frames,True);
   if Frames.Count > 0 then begin
     SaveDialog:=TSaveDialog.Create(FreeShip);
     SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-    SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '');
+    SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'');
     SaveDialog.Filter :=
-     createDialogFilter( 'ArchimedesMB multi body hull data',['hll'], False)
+     createDialogFilter( 'ArchimedesMB multi body hull data',['hll'],False)
      +'|'+createDialogFilter('Archimedes single body hull data',['app']);
     SaveDialog.FilterIndex:=1;
-    Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
     if SaveDialog.Execute then begin WestPoint;
       FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
       if SaveDialog.FilterIndex = 2 then begin       // Single body Archimedes
-        assignfile(ffile, ChangeFileExt(SaveDialog.FileName, '.app'));
+        assignfile(ffile,ChangeFileExt(SaveDialog.FileName,'.app'));
         rewrite(FFile);
         Write(FFile,
         '***********************************************************'+#10+
@@ -725,52 +725,52 @@ begin
         '** File generated with FREE!ship                         **'+#10+
         '***********************************************************'+#10);
         // Hull name
-        Write(FFile, 'APPENDAGE_NAME'+#10);
+        Write(FFile,'APPENDAGE_NAME'+#10);
         if FreeShip.ProjectSettings.ProjectName <> ''
           then Tmp:=FreeShip.ProjectSettings.ProjectName
-          else Tmp:=ChangeFileExt(ExtractFilename(FreeShip.Filename), '');
-        Write(FFile, Tmp+#10);
+          else Tmp:=ChangeFileExt(ExtractFilename(FreeShip.Filename),'');
+        Write(FFile,Tmp+#10);
         // Aft perpendicular
-        Write(FFile, 'AP'+#10);
-        Write(FFile, '0.0'+#10);
+        Write(FFile,'AP'+#10);
+        Write(FFile,'0.0'+#10);
         // Forward perpendicular
-        Write(FFile, 'FP'+#10);
-        Write(FFile, FloatToDec(FreeShip.ProjectSettings.ProjectLength, 4)+#10);
+        Write(FFile,'FP'+#10);
+        Write(FFile,FloatToDec(FreeShip.ProjectSettings.ProjectLength,4)+#10);
         // Water density
-        Write(FFile, 'DENSITY'+#10);
-        Write(FFile, FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity, 3)+#10);
+        Write(FFile,'DENSITY'+#10);
+        Write(FFile,FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity,3)+#10);
         // Now send the frames
-        Write(FFile, 'NUMBER_OF_FRAMES'+#10);
-        Write(FFile, IntToStr(Frames.Count)+#10);
-        Write(FFile, '***START_OF_FRAME_INFORMATION***'+#10);
+        Write(FFile,'NUMBER_OF_FRAMES'+#10);
+        Write(FFile,IntToStr(Frames.Count)+#10);
+        Write(FFile,'***START_OF_FRAME_INFORMATION***'+#10);
         for I:=1 to Frames.Count do begin
           Frame:=Frames[I-1];
           Np:=Frame.NumberOfPoints;
-          Write(FFile, 'FRAME_INDEX: '+IntToStr(I-1)+#10);
-          Write(FFile, 'FRAME_NAME'+#10);
-          Write(FFile, 'Frame @ Y= '+FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4)+#10);
-          Write(FFile, 'FRAME_Y'+#10);
-          Write(FFile, FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4)+#10);
-          Write(FFile, 'NUMBER_OF_COORDINATES'+#10);
-          Write(FFile, IntToStr(2 * Np-1)+#10);
-          Write(FFile, '***START_OF_ORDINATES***'+#10);
+          Write(FFile,'FRAME_INDEX: '+IntToStr(I-1)+#10);
+          Write(FFile,'FRAME_NAME'+#10);
+          Write(FFile,'Frame @ Y= '+FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4)+#10);
+          Write(FFile,'FRAME_Y'+#10);
+          Write(FFile,FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4)+#10);
+          Write(FFile,'NUMBER_OF_COORDINATES'+#10);
+          Write(FFile,IntToStr(2*Np-1)+#10);
+          Write(FFile,'***START_OF_ORDINATES***'+#10);
           // First send the starboard side
           for J:=Np downto 1 do begin           //P:=Frame.Value((J-1)/(Np-1));
             P:=Frame.Point[J-1];
             P.Y:=-P.Y;
-            Write(FFile, FloatToDec(P.Y, 4)+#10);
-            Write(FFile, FloatToDec(P.Z, 4)+#10);
+            Write(FFile,FloatToDec(P.Y,4)+#10);
+            Write(FFile,FloatToDec(P.Z,4)+#10);
           end;
           // then port side
           for J:=2 to Np do begin               //P:=Frame.Value((J-1)/(Np-1));
             P:=Frame.Point[J-1];
-            Write(FFile, FloatToDec(P.Y, 4)+#10);
-            Write(FFile, FloatToDec(P.Z, 4)+#10);
+            Write(FFile,FloatToDec(P.Y,4)+#10);
+            Write(FFile,FloatToDec(P.Z,4)+#10);
           end;
-          Write(FFile, '***END_OF_ORDINATES***'+#10);
+          Write(FFile,'***END_OF_ORDINATES***'+#10);
           FreeAndNil(Frame);
         end;
-        Write(FFile, '***END_OF_FILE***'+#10);
+        Write(FFile,'***END_OF_FILE***'+#10);
         closefile(FFile);
       end else begin                                 // Multi body ArchimedesMB
         Strings:=TStringList.Create;                   // Add file version info
@@ -779,23 +779,23 @@ begin
         Strings.Add('<HULL_NAME>');
         if FreeShip.ProjectSettings.ProjectName <> ''
            then Str:=FreeShip.ProjectSettings.ProjectName
-           else Str:=ChangeFileExt(ExtractFilename(FreeShip.Filename), '');
+           else Str:=ChangeFileExt(ExtractFilename(FreeShip.Filename),'');
         Strings.Add(Str);
         Strings.Add('</HULL_NAME>');                           // Water density
         Strings.Add('<DENSITY>'+#32+FloatToDec(
-          FreeShip.ProjectSettings.ProjectWaterDensity, 3)+#32+'</DENSITY>');
+          FreeShip.ProjectSettings.ProjectWaterDensity,3)+#32+'</DENSITY>');
         // Aft perpendicular
         Strings.Add('<AP> 0.0 </AP>');                 // Forward perpendicular
         Strings.Add('<FP>'+#32+FloatToDec(FreeShip.ProjectSettings.ProjectLength,4)
                           +#32+'</FP>' );
         // Draught marks
         Strings.Add('<FWD_DRAUGHT_MARK>'+#32+FloatToDec(
-          FreeShip.ProjectSettings.ProjectDraft, 4)+#32+'</FWD_DRAUGHT_MARK>');
+          FreeShip.ProjectSettings.ProjectDraft,4)+#32+'</FWD_DRAUGHT_MARK>');
         Strings.Add('<MID_DRAUGHT_MARK>'+#32+FloatToDec(
-          FreeShip.ProjectSettings.ProjectDraft, 4)+#32+'</MID_DRAUGHT_MARK>');
+          FreeShip.ProjectSettings.ProjectDraft,4)+#32+'</MID_DRAUGHT_MARK>');
         Strings.Add('<AFT_DRAUGHT_MARK>'+#32+FloatToDec(
-          FreeShip.ProjectSettings.ProjectDraft, 4)+#32+'</AFT_DRAUGHT_MARK>');
-        // Number of appendages (only 1, the main hull)
+          FreeShip.ProjectSettings.ProjectDraft,4)+#32+'</AFT_DRAUGHT_MARK>');
+        // Number of appendages (only 1,the main hull)
         Strings.Add('<APPENDAGE_COUNT> 1 </APPENDAGE_COUNT>');
         Strings.Add('<APPENDAGE>');
         Strings.Add('<APPENDAGE_NAME>');
@@ -808,24 +808,24 @@ begin
                                      +#32+'</SECTION_COUNT>');
         for I:=1 to Frames.Count do begin
           Frame:=Frames[I-1];
-          Np:=2 * Frame.NumberOfPoints+1;
+          Np:=2*Frame.NumberOfPoints+1;
           Strings.Add('<SECTION>');
           Strings.Add('<SECTION_NAME>');
           Strings.Add(FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4));
           Strings.Add('</SECTION_NAME>');
           Strings.Add('<YCOORD>'+#32+FloatToDec(0.5*(Frame.Min.X+Frame.Max.X),4)+#32+'</YCOORD>');
-          Strings.Add('<OFFSET_COUNT>'+#32+IntToStr(2 * Np-1) +
+          Strings.Add('<OFFSET_COUNT>'+#32+IntToStr(2*Np-1) +
             #32+'</OFFSET_COUNT>');
           Strings.Add('<OFFSETS>');            // First send the starboard side
           for J:=Np downto 1 do begin
-            P:=Frame.Value((J-1) / (Np-1));
+            P:=Frame.Value((J-1)/(Np-1));
             P.Y:=-P.Y;
-            Strings.Add(FloatToDec(P.Y, 4)+#32+FloatToDec(P.Z, 4));
+            Strings.Add(FloatToDec(P.Y,4)+#32+FloatToDec(P.Z,4));
           end;
           // then port side
           for J:=2 to Np do begin
-            P:=Frame.Value((J-1) / (Np-1));
-            Strings.Add(FloatToDec(P.Y, 4)+#32+FloatToDec(P.Z, 4));
+            P:=Frame.Value((J-1)/(Np-1));
+            Strings.Add(FloatToDec(P.Y,4)+#32+FloatToDec(P.Z,4));
           end;
           Strings.Add('</OFFSETS>');
           Strings.Add('</SECTION>');
@@ -833,7 +833,7 @@ begin
         end;
         Strings.Add('</APPENDAGE>');                        // end of appendage
         Strings.Add('</HULL>');                             // end of hull
-        Strings.SaveToFile(ChangeFileExt(SaveDialog.FileName, '.hll'));
+        Strings.SaveToFile(ChangeFileExt(SaveDialog.FileName,'.hll'));
         FreeAndNil(Strings);
       end;
     end else
@@ -857,11 +857,11 @@ var
 begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '');
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'');
   SaveDialog.Filter:=createDialogFilter(rsTextFile,['txt']);
-  Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
-    Assignfile(FFile, ChangeFileExt(SaveDialog.FileName, '.txt'));
+    Assignfile(FFile,ChangeFileExt(SaveDialog.FileName,'.txt'));
 {$I-}
     Rewrite(FFile);
 {$I+}
@@ -878,12 +878,12 @@ begin
       // MessageDlg(FloatToStrF(FreeShip.Surface.NumberOfPoints,ffFixed,6,0),mtError,[mbOk],0);
       for I:=1 to FreeShip.Surface.NumberOfSubDivPoints do begin
         Point:=FreeShip.Surface.SubDivPoint[I-1];
-        Writeln(FFile, MakeLength(Point.Coordinate.X, 6, 12), #32,
-          MakeLength(Point.Coordinate.Y, 6, 12), #32,
-          MakeLength(Point.Coordinate.Z, 6, 12));
+        Writeln(FFile,MakeLength(Point.Coordinate.X,6,12),#32,
+          MakeLength(Point.Coordinate.Y,6,12),#32,
+          MakeLength(Point.Coordinate.Z,6,12));
       end;
       CloseFile(FFile);
-    end else MessageDlg(Userstring(97), mtError, [mbOK], 0);
+    end else MessageDlg(Userstring(97),mtError,[mbOK],0);
   end;
   FreeAndNil(SaveDialog);
 end;{TFreeEdit.File_ExportCoordinates}
@@ -927,7 +927,7 @@ begin
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
   SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'.txt');
   SaveDialog.Filter:=createDialogFilter('Offsets as 3D points',['txt']);
-  Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
     Strings:=TStringList.Create;
@@ -939,7 +939,7 @@ begin
       Strings.Add('CONTROLCURVE');
       SendSpline( FreeShip.ControlCurve[I].Spline );
     end;
-    Strings.SaveToFile(ChangeFileExt(Savedialog.FileName, '.txt'));
+    Strings.SaveToFile(ChangeFileExt(Savedialog.FileName,'.txt'));
     FreeAndNil(Strings);
   end;
   FreeAndNil(SaveDialog);
@@ -949,7 +949,7 @@ end;
 
 procedure TFreeEdit.File_ExportDXF_3DPolylines;
 var
-  I, J, ind: integer;
+  I,J,ind: integer;
   Strings: TStringList;
   Dialog: TSaveDialog;
   EdgePointLists: TFasterListTFasterListTFreeSubdivisionPoint;
@@ -959,9 +959,9 @@ var
 begin
   Dialog:=TSaveDialog.Create( FreeShip );
   Dialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-  Dialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.dxf');
+  Dialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'.dxf');
   Dialog.Filter:=createDialogFilter(rsAutocadDxfFile,['dxf']);
-  dialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if Dialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
     Strings:=TStringList.Create;
@@ -996,9 +996,9 @@ begin
         Point:=Points[J-1];
         Strings.Add('0'+EOL+'VERTEX');
         Strings.Add('8'+EOL+LayerName);
-        Strings.Add('10'+EOL+FloatToDec(Point.Coordinate.X, 4));
-        Strings.Add('20'+EOL+FloatToDec(Point.Coordinate.Y, 4));
-        Strings.Add('30'+EOL+FloatToDec(Point.Coordinate.Z, 4));
+        Strings.Add('10'+EOL+FloatToDec(Point.Coordinate.X,4));
+        Strings.Add('20'+EOL+FloatToDec(Point.Coordinate.Y,4));
+        Strings.Add('30'+EOL+FloatToDec(Point.Coordinate.Z,4));
         Strings.Add('70'+EOL+'32');              // 3D polyline mesh vertex
       end;
       Strings.Add('0'+EOL+'SEQEND');
@@ -1012,9 +1012,9 @@ begin
           Point:=Points[J-1];
           Strings.Add('0'+EOL+'VERTEX');
           Strings.Add('8'+EOL+LayerName);
-          Strings.Add('10'+EOL+FloatToDec(Point.Coordinate.X, 4));
-          Strings.Add('20'+EOL+FloatToDec(-Point.Coordinate.Y, 4));
-          Strings.Add('30'+EOL+FloatToDec(Point.Coordinate.Z, 4));
+          Strings.Add('10'+EOL+FloatToDec(Point.Coordinate.X,4));
+          Strings.Add('20'+EOL+FloatToDec(-Point.Coordinate.Y,4));
+          Strings.Add('30'+EOL+FloatToDec(Point.Coordinate.Z,4));
           Strings.Add('70'+EOL+'32');    // 3D polyline mesh vertex
         end;
         Strings.Add('0'+EOL+'SEQEND');
@@ -1024,7 +1024,7 @@ begin
     FreeAndNil(EdgePointLists);
     Strings.Add('0'+EOL+'ENDSEC');
     Strings.Add('0'+EOL+'EOF');
-    Strings.SaveToFile(ChangeFileExt(Dialog.FileName, '.dxf'));
+    Strings.SaveToFile(ChangeFileExt(Dialog.FileName,'.dxf'));
     FreeAndNil(Strings);
   end;
   FreeAndNil(Dialog);
@@ -1040,9 +1040,9 @@ var
 begin
   Dialog:=TSaveDialog.Create(FreeShip);
   Dialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-  Dialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.dxf');
+  Dialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'.dxf');
   Dialog.Filter:=createDialogFilter(rsAutocadDxfFile,['dxf']);
-  dialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if Dialog.Execute then begin WestPoint;
     Prev:=Screen.Cursor;
     Screen.Cursor:=crHourglass;
@@ -1056,9 +1056,9 @@ begin
       Strings.Add('0'+EOL+'ENDSEC');
       Strings.Add('0'+EOL+'EOF');
 //    try
-        Strings.SaveToFile(ChangeFileExt(Dialog.FileName, '.dxf'));
+        Strings.SaveToFile(ChangeFileExt(Dialog.FileName,'.dxf'));
 //    except
-//      ShowMessage('Could not access '+ChangeFileExt(Dialog.FileName, '.dxf'));
+//      ShowMessage('Could not access '+ChangeFileExt(Dialog.FileName,'.dxf'));
 //    end;
 //  finally
       Screen.Cursor:=Prev;
@@ -1075,9 +1075,9 @@ var
 begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.fef');
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'.fef');
   SaveDialog.Filter:=createDialogFilter('FREE!ship Exchange Format',['fef']);
-  Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if SaveDialog.Execute then begin WestPoint;
     FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
     Strings:=TStringList.Create;
@@ -1104,7 +1104,7 @@ end;
 // Save ordinates to the GHS file format
 procedure TFreeEdit.File_ExportGHS;
 var
-  I, J: integer;
+  I,J: integer;
   Section: TFreeSpline;
   SaveDialog: TSaveDialog;
   Strings: TStringList;
@@ -1112,21 +1112,21 @@ var
   Scale: TFloatType;
   Frames: TFasterListTFreeSpline;
   Str: AnsiString;
-  P, Pkn: T3DVector;
+  P,Pkn: T3DVector;
   NParams: integer;
   Params: TFloatArray;
-  Pn, Pn1, Pn2: integer;
+  Pn,Pn1,Pn2: integer;
 begin
   SaveDialog:=TSaveDialog.Create(FreeShip);
   SaveDialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
   Str:=ChangeFileExt(ExtractFilename(FreeShip.Filename),'.GF'); // no spaces allowed in filename
   repeat
-    I:=Pos(#32, Str);
-    if I <> 0 then Delete(Str, I, 1);
+    I:=Pos(#32,Str);
+    if I <> 0 then Delete(Str,I,1);
   until I = 0;
   Savedialog.FileName:=Str;
   SaveDialog.Filter:=createDialogFilter( 'GHS files',['gf'] );
-  Savedialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if not SaveDialog.Execute then begin FreeAndNil(Savedialog); exit; end;
   WestPoint;
   FreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
@@ -1142,7 +1142,7 @@ begin
     Str:=FreeShip.ProjectSettings.ProjectName;
     if Length(Str) > 58 then Str:=Copy( Str,1,58 );
     Strings.Add(Str);
-    // ProjectDescription, max 58 characters
+    // ProjectDescription,max 58 characters
     Strings.Add('L:'+FloatToDec(Scale*FreeShip.ProjectSettings.ProjectLength,3));
     // Length
     Strings.Add('W:'+FloatToDec(Scale*FreeShip.ProjectSettings.ProjectBeam,3));
@@ -1165,7 +1165,7 @@ begin
         Section.Add(Section.Point[Section.NumberOfPoints-1]);
       end;
       NParams:=0;
-      Setlength(Params, Section.NumberOfPoints); // count number of knucklepoints
+      Setlength(Params,Section.NumberOfPoints); // count number of knucklepoints
       for J:=2 to Section.NumberOfPoints-1 do
       if Section.Knuckle[J-1] then begin
         Params[NParams]:=Section.Parameter[J-1];
@@ -1173,46 +1173,46 @@ begin
       end;
       if Section.NumberOfPoints > 100 then begin
         Section.Fragments:=100;
-        Setlength(Params, NParams+Section.Fragments);
+        Setlength(Params,NParams+Section.Fragments);
         for J:=1 to Section.Fragments do begin
-          Params[NParams]:=(J-1) / (Section.Fragments-1);
+          Params[NParams]:=(J-1)/(Section.Fragments-1);
           Inc(NParams);
         end;
       end else begin
-        Setlength(Params, NParams+Section.NumberOfPoints);
+        Setlength(Params,NParams+Section.NumberOfPoints);
         for J:=1 to Section.NumberOfPoints do begin
           Params[NParams]:=Section.Parameter[J-1];
           Inc(NParams);
         end;
       end;
       ArraySort( Params,NParams );
-//    SortFloatArray(Params, NParams);
-      Strings.Add(FloatToDec(-Scale * Section.Min.X, 4)+','+IntToStr(NParams));
+//    SortFloatArray(Params,NParams);
+      Strings.Add(FloatToDec(-Scale*Section.Min.X,4)+', '+IntToStr(NParams));
       Pn:=0;
       for J:=0 to NParams-1 do begin
-        P:=Section.Value(Params[J], Pn1, Pn2);
+        P:=Section.Value(Params[J],Pn1,Pn2);
         if (Pn<>Pn1) and Section.Knuckle[Pn1] then begin Pn:=Pn1;
           Pkn:=Section.Point[Pn1];
-          Strings.Add(FloatToDec(Scale * Pkn.Y, 4)+','+FloatToDec(Scale * Pkn.Z, 4));
+          Strings.Add(FloatToDec(Scale*Pkn.Y,4)+', '+FloatToDec(Scale*Pkn.Z,4));
         end;
-        Strings.Add(FloatToDec(Scale * P.Y, 4)+','+FloatToDec(Scale * P.Z, 4));
+        Strings.Add(FloatToDec(Scale*P.Y,4)+', '+FloatToDec(Scale*P.Z,4));
       end;
       FreeAndNil(Section);
     end;
-    Strings.Add('0,0,0');         // shell thickness data of shape
-                                  // save Component
+    Strings.Add('0,0,0');      // shell thickness data of shape
+                               // save Component
     Strings.Add('**');
-    Strings.Add('HULL.C');        // ComponentName
-                                  // side
-    Strings.Add('0');             // side=center
-    Strings.Add('1.0');           // effectivenes
-    Strings.Add('0,0,0');         // attachpoint
-    Strings.Add('HULL');          // partname
-                                  // Save part
+    Strings.Add('HULL.C');     // ComponentName
+                               // side
+    Strings.Add('0');          // side=center
+    Strings.Add('1.0');        // effectivenes
+    Strings.Add('0,0,0');      // attachpoint
+    Strings.Add('HULL');       // partname
+                               // Save part
     Strings.Add('***');
-    Strings.Add('HULL');          // Partname and description
-    Strings.Add('WATER');         // FluidName
-    strings.Add('1');             // part type (displacement)
+    Strings.Add('HULL');       // Partname and description
+    Strings.Add('WATER');      // FluidName
+    strings.Add('1');          // part type (displacement)
     if FreeShip.ProjectSettings.ProjectUnits=fuMetric
     then Strings.Add(FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity,3)) // specific gravity of water
     else Strings.Add(FloatToDec(FreeShip.ProjectSettings.ProjectWaterDensity/WeightConversionFactor,3));
@@ -1221,7 +1221,7 @@ begin
     Strings.Add('HULL.C');     // Componentname
                                // Mark end of file
     Strings.Add('****');
-    Str:=ChangeFileExt(ExtractFilename(Savedialog.FileName), '.GF');
+    Str:=ChangeFileExt(ExtractFilename(Savedialog.FileName),'.GF');
     // no spaces allowed in filename
     repeat
       I:=Pos( #32,Str );
@@ -1248,7 +1248,7 @@ begin
   if FreeShip.NumberOfSelectedControlFaces = 0 then begin
     SelectDlg:=TFreeSelectLayersDialog.Create(FreeShip);
     ShowTranslatedValues(SelectDlg);
-    if SelectDlg.Execute(FreeShip, fsFaces) then
+    if SelectDlg.Execute(FreeShip,fsFaces) then
       SelectDlg.ExtractSelectedFaces(Faces);
     for I:=FreeShip.NumberOfSelectedControlFaces downto 1 do
       FreeShip.SelectedControlFace[I-1].Selected:=False;
@@ -1268,7 +1268,7 @@ procedure TFreeEdit.File_ExportIGES;
 const MinimizeFaces = True;
       SendTriangles = False;//true;
 var
-  I,J,K,LI, Cols,Rows, NAssembled, PrevLevel,ColorIndex,NSurfaces : integer;
+  I,J,K,LI,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces : integer;
   Dialog: TSaveDialog;
   Prev: TCursor;
   Layers: TFasterListTFreeSubdivisionLayer;
@@ -1284,7 +1284,7 @@ var
 
   function FindFourtPoint( P1,P2,p3: TFreeSubdivisionPoint ): TFreeSubdivisionPoint;
   var Face: TFreeSubdivisionFace;
-      I, J: integer;
+      I,J: integer;
       List: TList;
   begin
     Result:=nil;
@@ -1305,17 +1305,17 @@ var
       end;
   end;{FindFourtPoint}
 
-  procedure FindOpposingPoints(P1, P2, P3, P4: TFreeSubdivisionPoint;
-  var OppPoint2, OppPoint3: TFreeSubdivisionPoint);
+  procedure FindOpposingPoints(P1,P2,P3,P4: TFreeSubdivisionPoint;
+  var OppPoint2,OppPoint3: TFreeSubdivisionPoint);
   // find the points opposite to P2 and P3
   var
-    I, Index: integer;
+    I,Index: integer;
     Edge: TFreeSubdivisionEdge;
     Face: TFreeSubdivisionface;
   begin
     OppPoint2:=nil;
     OppPoint3:=nil;
-    Edge:=FreeShip.Surface.EdgeExists(P2, P3);
+    Edge:=FreeShip.Surface.EdgeExists(P2,P3);
     if Edge <> nil then
       if not Edge.Crease then
         for I:=1 to Edge.NumberOfFaces do begin
@@ -1348,14 +1348,14 @@ var
         end;
   end;{FindOpposingPoints}
 
-  procedure AssembleTriangle(var Cols, Rows: integer; var Grid: TFreeSubdivisionPointGrid;
+  procedure AssembleTriangle(var Cols,Rows: integer; var Grid: TFreeSubdivisionPointGrid;
     Face: TFreeSubdivisionControlface);
   var
-    I,J,N, Index: integer;
+    I,J,N,Index: integer;
     Points: TFasterListTFreeSubdivisionPoint;
     Faces: TFasterListTFreeSubdivisionface;
     Child: TFreeSubdivisionface;
-    P, InteriorPoint: TFreeSubdivisionPoint;
+    P,InteriorPoint: TFreeSubdivisionPoint;
   begin // Initialize grid
     Cols:=0;
     Rows:=0;
@@ -1381,9 +1381,9 @@ var
     if Interiorpoint<>nil then begin
       Cols:=3;
       Rows:=3;
-      Setlength(Grid, Rows);
+      Setlength(Grid,Rows);
       for I:=1 to Rows do begin
-        Setlength(Grid[I-1], Cols);
+        Setlength(Grid[I-1],Cols);
         for J:=1 to Cols do Grid[I-1][J-1]:=nil;
       end;
       Grid[1][1]:=InteriorPoint;
@@ -1392,8 +1392,8 @@ var
       Grid[1][0]:=Child.Point[(index+1) mod 4];
       Grid[0][0]:=Child.Point[(index+2) mod 4];
       Grid[0][1]:=Child.Point[(index+3) mod 4];
-      FindOpposingPoints(Grid[0][0], Grid[0][1], Grid[1][1], Grid[1][0], Grid[0][2], Grid[1][2]);
-      FindOpposingPoints(Grid[0][1], Grid[1][1], Grid[1][0], Grid[0][0], Grid[2][1], Grid[2][0]);
+      FindOpposingPoints(Grid[0][0],Grid[0][1],Grid[1][1],Grid[1][0],Grid[0][2],Grid[1][2]);
+      FindOpposingPoints(Grid[0][1],Grid[1][1],Grid[1][0],Grid[0][0],Grid[2][1],Grid[2][0]);
       Grid[2][2]:=Grid[2][1];
 //      for I:=1 to Rows do
 //        for J:=1 to cols do
@@ -1403,11 +1403,11 @@ var
     FreeAndNil(Points);
   end; {AssembleTriangle}
 
-  procedure ProcessGrid( Cols, Rows: integer; Grid: TFreeSubdivisionPointGrid;
+  procedure ProcessGrid( Cols,Rows: integer; Grid: TFreeSubdivisionPointGrid;
      ColorInd: integer; LayerIsSymmetric: boolean);   // convert grid to a NURB
   var
-    NURB, NURB2: TFreeNURBsurface;
-    I, J: integer;
+    NURB,NURB2: TFreeNURBsurface;
+    I,J: integer;
     BottomRow: array of TFreeSubdivisionPoint;
     TopRow: array of TFreeSubdivisionPoint;
     LeftColumn: array of TFreeSubdivisionPoint;
@@ -1416,36 +1416,36 @@ var
     BottomPresent,LeftPresent,RightPresent,TopPresent: boolean;
     P: T3DVector;
 
-    function PhantomPoint(BorderPoint, InnerPoint: T3DVector): T3DVector;
+    function PhantomPoint(BorderPoint,InnerPoint: T3DVector): T3DVector;
     begin
-      Result.X:=2 * BorderPoint.X-InnerPoint.X;
-      Result.Y:=2 * BorderPoint.Y-InnerPoint.Y;
-      Result.Z:=2 * BorderPoint.Z-InnerPoint.Z;
+      Result.X:=2*BorderPoint.X-InnerPoint.X;
+      Result.Y:=2*BorderPoint.Y-InnerPoint.Y;
+      Result.Z:=2*BorderPoint.Z-InnerPoint.Z;
     end;{PhantomPoint}
 
-    function CornerPoint(P5, P6, P8, P9: T3DVector): T3DVector;
+    function CornerPoint(P5,P6,P8,P9: T3DVector): T3DVector;
     var
-      P2, P3, P4, P7: T3DVector;
+      P2,P3,P4,P7: T3DVector;
     begin
-      P2:=PhantomPoint(P5, P8);
-      P3:=PhantomPoint(P6, P9);
-      P4:=PhantomPoint(P5, P6);
-      P7:=PhantomPoint(P8, P9);
-      Result.X:=20 * P5.X-4 * P2.X-P3.X-4 * P4.X-4 * P6.X - P7.X-4 * P8.X-P9.X;
-      Result.Y:=20 * P5.Y-4 * P2.Y-P3.Y-4 * P4.Y-4 * P6.Y - P7.Y-4 * P8.Y-P9.Y;
-      Result.Z:=20 * P5.Z-4 * P2.Z-P3.Z-4 * P4.Z-4 * P6.Z - P7.Z-4 * P8.Z-P9.Z;
+      P2:=PhantomPoint(P5,P8);
+      P3:=PhantomPoint(P6,P9);
+      P4:=PhantomPoint(P5,P6);
+      P7:=PhantomPoint(P8,P9);
+      Result.X:=20*P5.X-4*P2.X-P3.X-4*P4.X-4*P6.X - P7.X-4*P8.X-P9.X;
+      Result.Y:=20*P5.Y-4*P2.Y-P3.Y-4*P4.Y-4*P6.Y - P7.Y-4*P8.Y-P9.Y;
+      Result.Z:=20*P5.Z-4*P2.Z-P3.Z-4*P4.Z-4*P6.Z - P7.Z-4*P8.Z-P9.Z;
     end;{CornerPoint}
 
   begin
     if (Cols > 0) and (Rows > 0) then begin
-      Setlength(BottomRow, Cols);
-      Setlength(TopRow, Cols);
-      Setlength(LeftColumn, Rows);
-      Setlength(RightColumn, Rows);      // assemble bottom row to set tangency
+      Setlength(BottomRow,Cols);
+      Setlength(TopRow,Cols);
+      Setlength(LeftColumn,Rows);
+      Setlength(RightColumn,Rows);      // assemble bottom row to set tangency
       BottomPresent:=True;
       for I:=2 to Cols do begin
-        FindOpposingPoints(Grid[Rows-2][I-2], Grid[Rows-1][I-2],
-          Grid[Rows-1][I-1], Grid[Rows-2][I-1], BottomRow[I-2],
+        FindOpposingPoints(Grid[Rows-2][I-2],Grid[Rows-1][I-2],
+          Grid[Rows-1][I-1],Grid[Rows-2][I-1],BottomRow[I-2],
           BottomRow[I-1]);
         if (BottomRow[I-2] = nil) or (BottomRow[I-1] = nil) then
           BottomPresent:=False;
@@ -1453,8 +1453,8 @@ var
       RightPresent:=True;              // assemble right column to set tangency
       for I:=2 to Rows do
       begin
-        FindOpposingPoints(Grid[I-1][Cols-2], Grid[I-1][Cols-1],
-          Grid[I-2][Cols-1], Grid[I-2][Cols-2], RightColumn[I-1],
+        FindOpposingPoints(Grid[I-1][Cols-2],Grid[I-1][Cols-1],
+          Grid[I-2][Cols-1],Grid[I-2][Cols-2],RightColumn[I-1],
           RightColumn[I-2]);
         if (RightColumn[I-1] = nil) or (RightColumn[I-2] = nil) then
           RightPresent:=False;
@@ -1462,16 +1462,16 @@ var
       // assemble top row
       TopPresent:=True;
       for I:=2 to Cols do begin
-        FindOpposingPoints(Grid[1][I-1], Grid[0][I-1], Grid[0][I-2],
-          Grid[1][I-2], TopRow[I-1], TopRow[I-2]);
+        FindOpposingPoints(Grid[1][I-1],Grid[0][I-1],Grid[0][I-2],
+          Grid[1][I-2],TopRow[I-1],TopRow[I-2]);
         if (TopRow[I-2] = nil) or (TopRow[I-1] = nil) then
           TopPresent:=False;
       end;
       // Assemble left column
       LeftPresent:=True;
       for I:=2 to Rows do begin
-        FindOpposingPoints(Grid[I-2][1], Grid[I-2][0], Grid[I-1]
-          [0], Grid[I-1][1], LeftColumn[I-2], LeftColumn[I-1]);
+        FindOpposingPoints(Grid[I-2][1],Grid[I-2][0],Grid[I-1]
+          [0],Grid[I-1][1],LeftColumn[I-2],LeftColumn[I-1]);
         if (LeftColumn[I-1] = nil) or (LeftColumn[I-2] = nil) then
           LeftPresent:=False;
       end;
@@ -1486,26 +1486,26 @@ var
         BottomRight:=FindFourtPoint(RightColumn[Rows-1],Grid[Rows-1][Cols-1],BottomRow[Cols-1]);
       // find bottomRight cornerpoint
       if TopPresent and leftPresent then
-        TopLeft:=FindFourtPoint(LeftColumn[0], Grid[0][0], TopRow[0]);
+        TopLeft:=FindFourtPoint(LeftColumn[0],Grid[0][0],TopRow[0]);
       // find Topleft cornerpoint
       if TopPresent and RightPresent then
-        TopRight:=FindFourtPoint(RightColumn[0], Grid[0][Cols-1], TopRow[Cols-1]);
+        TopRight:=FindFourtPoint(RightColumn[0],Grid[0][Cols-1],TopRow[Cols-1]);
       // find TopRight cornerpoint
 
       NURB:=TFreeNURBsurface.Create(FreeShip.Surface);
-      NURB.SetCapacity(Cols+2, Rows+2);
+      NURB.SetCapacity(Cols+2,Rows+2);
       NURB.ColCount:=Nurb.ColCapacity;
       NURB.RowCount:=Nurb.RowCapacity;
       for I:=1 to Rows do
         for J:=1 to COLS do
-          NURB.Point[J, I]:=Grid[I-1][J-1].Coordinate;
+          NURB.Point[J,I]:=Grid[I-1][J-1].Coordinate;
 
       if SendTriangles then
         if (Grid[Rows-1][Cols-1] = Grid[Rows-1][Cols-2])
         and (Grid[Rows-1][Cols-1] = Grid[Rows-2][Cols-1]) then begin
-          Nurb.Point[Cols, Rows]:=Grid[Rows-1][Cols-1].LimitPoint;
-          Nurb.Point[Cols-1, Rows]:=Grid[Rows-1][Cols-1].LimitPoint;
-          Nurb.Point[Cols, Rows-1]:=Grid[Rows-1][Cols-1].LimitPoint;
+          Nurb.Point[Cols,Rows]:=Grid[Rows-1][Cols-1].LimitPoint;
+          Nurb.Point[Cols-1,Rows]:=Grid[Rows-1][Cols-1].LimitPoint;
+          Nurb.Point[Cols,Rows-1]:=Grid[Rows-1][Cols-1].LimitPoint;
           Nurb.RowCount:=Nurb.RowCount-1+1;
         end;                                // check for special triangle case
 
@@ -1519,28 +1519,28 @@ var
       then for I:=1 to Rows do Nurb.Point[0,I]:=LeftColumn[I-1].Coordinate
       else for I:=1 to Rows do Nurb.Point[0,I]:=PhantomPoint(Nurb.Point[1,I],Nurb.Point[2,I]);
       if RightPresent
-      then for I:=1 to Rows do Nurb.Point[Cols+1, I]:=RightColumn[I-1].Coordinate
-      else for I:=1 to Rows do Nurb.Point[Cols+1, I]:=PhantomPoint(Nurb.Point[Cols,I],Nurb.Point[Cols-1,I]);
+      then for I:=1 to Rows do Nurb.Point[Cols+1,I]:=RightColumn[I-1].Coordinate
+      else for I:=1 to Rows do Nurb.Point[Cols+1,I]:=PhantomPoint(Nurb.Point[Cols,I],Nurb.Point[Cols-1,I]);
 
       if TopLeft <> nil
       then Nurb.Point[0,0]:=TopLeft.Coordinate
-      else Nurb.Point[0,0]:=CornerPoint(Nurb.Point[1,1],Nurb.Point[2,1],Nurb.Point[1,2], Nurb.Point[2,2]);
+      else Nurb.Point[0,0]:=CornerPoint(Nurb.Point[1,1],Nurb.Point[2,1],Nurb.Point[1,2],Nurb.Point[2,2]);
       if TopRight <> nil
       then Nurb.Point[Nurb.ColCount-1,0]:=TopRight.Coordinate
-      else Nurb.Point[Nurb.ColCount-1,0]:=CornerPoint(Nurb.Point[Nurb.Colcount-2, 1],
+      else Nurb.Point[Nurb.ColCount-1,0]:=CornerPoint(Nurb.Point[Nurb.Colcount-2,1],
            Nurb.Point[Nurb.Colcount-3,1],Nurb.Point[Nurb.Colcount-2,2],
            Nurb.Point[Nurb.Colcount-3,2] );
       if BottomLeft <> nil
-      then Nurb.Point[0, Nurb.RowCount-1]:=BottomLeft.Coordinate
-      else Nurb.Point[0, Nurb.RowCount-1]:=CornerPoint(Nurb.Point[1, Nurb.Rowcount-2],
-           Nurb.Point[2, Nurb.Rowcount-2], Nurb.Point[1,Nurb.Rowcount-3],
-           Nurb.Point[2, Nurb.Rowcount-3]);
+      then Nurb.Point[0,Nurb.RowCount-1]:=BottomLeft.Coordinate
+      else Nurb.Point[0,Nurb.RowCount-1]:=CornerPoint(Nurb.Point[1,Nurb.Rowcount-2],
+           Nurb.Point[2,Nurb.Rowcount-2],Nurb.Point[1,Nurb.Rowcount-3],
+           Nurb.Point[2,Nurb.Rowcount-3]);
       if BottomRight <> nil
-      then Nurb.Point[Nurb.ColCount-1, Nurb.RowCount-1]:=BottomRight.Coordinate
-      else Nurb.Point[Nurb.ColCount-1, Nurb.RowCount-1]:=CornerPoint(Nurb.Point[Nurb.Colcount-2, Nurb.Rowcount-2],
-          Nurb.Point[Nurb.Colcount-3, Nurb.Rowcount-2],
-          Nurb.Point[Nurb.Colcount-2, Nurb.Rowcount-3],
-          Nurb.Point[Nurb.Colcount-3, Nurb.Rowcount-3]);
+      then Nurb.Point[Nurb.ColCount-1,Nurb.RowCount-1]:=BottomRight.Coordinate
+      else Nurb.Point[Nurb.ColCount-1,Nurb.RowCount-1]:=CornerPoint(Nurb.Point[Nurb.Colcount-2,Nurb.Rowcount-2],
+          Nurb.Point[Nurb.Colcount-3,Nurb.Rowcount-2],
+          Nurb.Point[Nurb.Colcount-2,Nurb.Rowcount-3],
+          Nurb.Point[Nurb.Colcount-3,Nurb.Rowcount-3]);
       NURB.ColDegree:=3;
       NURB.RowDegree:=3;
       NURB.SetUniformColKnotvector;
@@ -1572,28 +1572,28 @@ var
          if BottomLeft=nil then Nurb.Point[0,Rows+1]:=LimitPoint(Grid[Rows-1][0]);
          if bottomright=nil then Nurb.Point[Cols+1,Rows+1]:=LimitPoint(Grid[Rows-1][Cols-1]);
          }
-      Nurb.Point[0, 0]:=Grid[0][0].LimitPoint;
-      Nurb.Point[Cols+1, 0]:=Grid[0][Cols-1].LimitPoint;
-      Nurb.Point[0, Rows+1]:=Grid[Rows-1][0].LimitPoint;
-      Nurb.Point[Cols+1, Rows+1]:=Grid[Rows-1][Cols-1].LimitPoint;
-      IGESList.Add_Entity_128(NURB, ColorInd);
+      Nurb.Point[0,0]:=Grid[0][0].LimitPoint;
+      Nurb.Point[Cols+1,0]:=Grid[0][Cols-1].LimitPoint;
+      Nurb.Point[0,Rows+1]:=Grid[Rows-1][0].LimitPoint;
+      Nurb.Point[Cols+1,Rows+1]:=Grid[Rows-1][Cols-1].LimitPoint;
+      IGESList.Add_Entity_128(NURB,ColorInd);
       if (FreeShip.Visibility.ModelView = mvBoth)
       and LayerIsSymmetric then begin
         NURB2:=TFreeNURBsurface.Create(FreeShip.Surface);
-        NURB2.SetCapacity(Nurb.ColCount, Nurb.RowCount);
+        NURB2.SetCapacity(Nurb.ColCount,Nurb.RowCount);
         NURB2.ColCount:=Nurb2.ColCapacity;
         NURB2.RowCount:=Nurb2.RowCapacity;
         NURB2.ColDegree:=Nurb.ColDegree;
         NURB2.RowDegree:=Nurb.RowDegree;
         for I:=Nurb.ColCount downto 1 do
           for J:=Nurb.RowCount downto 1 do begin
-            P:=NURB.Point[I-1, J-1];
+            P:=NURB.Point[I-1,J-1];
             P.Y:=-P.Y;
-            NURB2.Point[NURB2.Colcount-I, Nurb2.RowCount-J]:=P;
+            NURB2.Point[NURB2.Colcount-I,Nurb2.RowCount-J]:=P;
           end;
         NURB2.SetDefaultColKnotvector;
         NURB2.SetDefaultRowKnotvector;
-        IGESList.Add_Entity_128(NURB2, ColorInd);
+        IGESList.Add_Entity_128(NURB2,ColorInd);
         Inc(NSurfaces);
         FreeAndNil(NURB2);
       end;
@@ -1605,9 +1605,9 @@ var
 begin
   Dialog:=TSaveDialog.Create(FreeShip);
   Dialog.InitialDir:=FreeShip.Preferences.ExportDirectory;
-  Dialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName), '.igs');
+  Dialog.FileName:=ChangeFileExt(ExtractFilename(FreeShip.FileName),'.igs');
   Dialog.Filter:=createDialogFilter('IGES files',['igs']);
-  dialog.Options:=[ofOverwritePrompt, ofHideReadOnly];
+  dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
   if Dialog.Execute then begin WestPoint;
     Prev:=Screen.Cursor;
     Screen.Cursor:=crHourglass;
@@ -1629,18 +1629,18 @@ begin
         if (FreeShip.Layer[I].SurfaceVisible) and (FreeShip.Layer[I].Count > 0) then
           Layers.Add(FreeShip.Layer[I]);
 //    Layers.Sort;
-      Setlength(ColorIndices, Layers.Count);
+      Setlength(ColorIndices,Layers.Count);
       for I:=0 to Layers.Count-1 do begin
         Layer:=Layers[I];
         ColorIndices[I]:=IGESList.Add_Entity_314(Layer.Color);
       end;
       if MinimizeFaces then begin
-        FreeShip.Surface.AssembleFacesToPatches(Layers, amNURBS, Assembled, NAssembled);
+        FreeShip.Surface.AssembleFacesToPatches(Layers,amNURBS,Assembled,NAssembled);
         CheckFaces:=TFasterListTFreeSubdivisionFace.Create;
         for I:=1 to NAssembled do begin
           FaceData:=Assembled[I-1];
           CheckFaces.Clear;
-          Checkfaces.Capacity:=FaceData.NCols * FaceData.NRows;
+          Checkfaces.Capacity:=FaceData.NCols*FaceData.NRows;
           for J:=1 to Facedata.NRows do
             for K:=1 to FaceData.NCols do
               CheckFaces.Add(Facedata.Faces[J-1][K-1]);
@@ -1652,23 +1652,23 @@ begin
               CtrlFace:=FaceData.Faces[0][0];
               LI:=Layers.IndexOf(Ctrlface.Layer);
               ColorIndex:=ColorIndices[LI];
-              FreeShip.Surface.ConvertToGrid(FaceData, Cols, Rows, Grid);
-              ProcessGrid(Cols, Rows, Grid, ColorIndex, Ctrlface.Layer.Symmetric);
+              FreeShip.Surface.ConvertToGrid(FaceData,Cols,Rows,Grid);
+              ProcessGrid(Cols,Rows,Grid,ColorIndex,Ctrlface.Layer.Symmetric);
             end else begin
               CtrlFace:=FaceData.Faces[0][0];
               if Layers.IndexOf(Ctrlface.Layer) <> -1
               then ColorIndex:=ColorIndices[Layers.IndexOf(Ctrlface.Layer)]
               else Colorindex:=0;
               if (CtrlFace.NumberOfpoints = 3) and (SendTriangles) then begin
-                AssembleTriangle(Cols, Rows, Grid, CtrlFace);
+                AssembleTriangle(Cols,Rows,Grid,CtrlFace);
                 if (Cols > 0) and (Rows > 0) then
-                  ProcessGrid(Cols, Rows, Grid, ColorIndex, Ctrlface.Layer.Symmetric);
+                  ProcessGrid(Cols,Rows,Grid,ColorIndex,Ctrlface.Layer.Symmetric);
               end else begin
                 Cols:=2;
                 Rows:=2;
-                Setlength(Grid, 2);
-                Setlength(Grid[0], 2);
-                Setlength(Grid[1], 2);
+                Setlength(Grid,2);
+                Setlength(Grid[0],2);
+                Setlength(Grid[1],2);
                 for J:=1 to CtrlFace.ChildCount do
                 begin
                   Face:=CtrlFace.Child[J-1];
@@ -1676,7 +1676,7 @@ begin
                   Grid[0][0]:=Face.Point[1];
                   Grid[1][0]:=Face.Point[2];
                   Grid[1][1]:=Face.Point[3];
-                  ProcessGrid(Cols, Rows, Grid, ColorIndex, Ctrlface.Layer.Symmetric);
+                  ProcessGrid(Cols,Rows,Grid,ColorIndex,Ctrlface.Layer.Symmetric);
                 end;
               end;
             end;
@@ -1691,31 +1691,31 @@ begin
           if CtrlFace.NumberOfpoints = 4 then begin
             FaceData.NCols:=1;
             FaceData.NRows:=1;
-            Setlength(FaceData.Faces, 1);
-            Setlength(FaceData.Faces[0], 1);
+            Setlength(FaceData.Faces,1);
+            Setlength(FaceData.Faces[0],1);
             FaceData.Faces[0][0]:=Ctrlface;
-            FreeShip.Surface.ConvertToGrid(FaceData, Cols, Rows, Grid);
-            ProcessGrid(Cols, Rows, Grid, ColorIndex, Ctrlface.Layer.Symmetric);
+            FreeShip.Surface.ConvertToGrid(FaceData,Cols,Rows,Grid);
+            ProcessGrid(Cols,Rows,Grid,ColorIndex,Ctrlface.Layer.Symmetric);
           end else begin
             Cols:=2;
             Rows:=2;
-            Setlength(Grid, 2);
-            Setlength(Grid[0], 2);
-            Setlength(Grid[1], 2);
+            Setlength(Grid,2);
+            Setlength(Grid[0],2);
+            Setlength(Grid[1],2);
             for J:=1 to CtrlFace.ChildCount do begin
               Face:=CtrlFace.Child[J-1];
               Grid[0][1]:=Face.Point[0];
               Grid[0][0]:=Face.Point[1];
               Grid[1][0]:=Face.Point[2];
               Grid[1][1]:=Face.Point[3];
-              ProcessGrid(Cols, Rows, Grid, ColorIndex, Ctrlface.Layer.Symmetric);
+              ProcessGrid(Cols,Rows,Grid,ColorIndex,Ctrlface.Layer.Symmetric);
             end;
           end;
         end;
       if NSurfaces > 0 then begin
         IGESList.SaveToFile( ChangeFileExt(Dialog.Filename,'.igs') );
         MessageDlg('Exported '+IntToStr(NSurfaces)+' surfaces.',mtInformation,[mbOK],0);
-      end else MessageDlg(Userstring(100), mtInformation, [mbOK], 0);
+      end else MessageDlg(Userstring(100),mtInformation,[mbOK],0);
       FreeAndNil(IGESList);
       FreeAndNil(Layers);
 //  finally

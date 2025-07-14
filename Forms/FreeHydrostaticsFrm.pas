@@ -2,10 +2,10 @@
 unit FreeHydrostaticsFrm;
 {$MODE Delphi}
 interface uses
-  SysUtils,  Classes,
-  Controls,  Forms,
-  StdCtrls,  Buttons,
-  Spin,      ExtCtrls,
+  SysUtils, Classes,
+  Controls, Forms,
+  StdCtrls, Buttons,
+  Spin,     ExtCtrls,
   FreeShipUnit,FreeTypes,FreeGeometry,
   FreeHydrostaticsResultsDlg,FreeLanguageSupport;
 type
@@ -73,7 +73,7 @@ begin FFreeShip:=Freeship;
 end;
 
 procedure TFreeHydrostaticsForm.Edit1KeyPress(Sender: TObject; var Key: char);
-    begin if not (Key in [#8, '0'..'9', '.', '-', #13]) then key:=#0; end;
+    begin if not (Key in [#8,'0'..'9','.','-',#13]) then key:=#0; end;
 procedure TFreeHydrostaticsForm.Button1Click(Sender: TObject);
     begin ModalResult:=mrOk; end;
 procedure TFreeHydrostaticsForm.Edit1Exit(Sender: TObject);
@@ -91,7 +91,7 @@ var
   ResultsDlg: TFreeHydrostaticsResultsDialog;
   Units: TFreeUnitType;
   Strings: TStringList;
-  Value, Cb, Cm, Cp, Zmin: single;
+  Value,Cb,Cm,Cp,Zmin: single;
   PrevCursor: TCursor;
 begin
   if (StartDraft<EndDraft) and (DraftStep>0.0001) then begin
@@ -150,7 +150,7 @@ begin
       HydObject.HeelingAngle:=0.0;
       HydObject.Trim:=Trim;
       HydObject.Draft:=0;                 //-Ship.ProjectSettings.ProjectDraft; //0;
-      HydObject.Calculate;                // ..., если основная линия проходит по килю
+      HydObject.Calculate;                // ...,если основная линия проходит по килю
       Zmin:=HydObject.Data.ModelMin.Z;    //+Ship.ProjectSettings.ProjectDraft; // =добавка(++)
 //    Zmin:=-Ship.ProjectSettings.ProjectDraft; // =добавка(++)
       I:=2;
@@ -163,8 +163,8 @@ begin
         HydObject.Calculate;                  // Пересчет коэфФициентов полноты
 //      if true or (abs( HydObject.Data.ModelMin.Z )>0.001) then begin
 //        Zmin:=HydObject.Data.ModelMin.Z;
-//          Cb:=HydObject.Data.BlockCoefficient * (HydObject.Draft+Zmin) / (HydObject.Draft-HydObject.Data.ModelMin.Z);
-//          Cm:=HydObject.Data.MidshipCoeff     * (HydObject.Draft+Zmin) / (HydObject.Draft-HydObject.Data.ModelMin.Z);
+//          Cb:=HydObject.Data.BlockCoefficient*(HydObject.Draft+Zmin)/(HydObject.Draft-HydObject.Data.ModelMin.Z);
+//          Cm:=HydObject.Data.MidshipCoeff    *(HydObject.Draft+Zmin)/(HydObject.Draft-HydObject.Data.ModelMin.Z);
 //      end else begin
           Cb:=HydObject.Data.BlockCoefficient;
           Cm:=HydObject.Data.MidshipCoeff;
@@ -174,22 +174,22 @@ begin
 //      if Cm<1e-3 then Cm:=1.0;
         begin //Cp:=Cb/Cm;
           ResultsDlg.Grid.RowCount:=I+1;
-          ResultsDlg.Grid.Cells[0,I]:=FloatToStrF(HydObject.Draft+Zmin,          ffFixed,7,2);
-          ResultsDlg.Grid.Cells[1,I]:=FloatToStrF(HydObject.Trim,                ffFixed,5,2);
+          ResultsDlg.Grid.Cells[0,I]:=FloatToStrF(HydObject.Draft+Zmin,         ffFixed,7,2);
+          ResultsDlg.Grid.Cells[1,I]:=FloatToStrF(HydObject.Trim,               ffFixed,5,2);
           ResultsDlg.Grid.Cells[2,I]:=FloatToStrF(HydObject.Data.LengthWaterline,ffFixed,7,2);
-          ResultsDlg.Grid.Cells[3,I]:=FloatToStrF(HydObject.Data.BeamWaterline,  ffFixed,7,2);
-          ResultsDlg.Grid.Cells[4,I]:=FloatToStrF(HydObject.Data.Volume,         ffFixed,8,NumberOfDecimals(HydObject.Data.Volume));
-          ResultsDlg.Grid.Cells[5,I]:=FloatToStrF(HydObject.Data.Displacement,   ffFixed,8,NumberOfDecimals(HydObject.Data.Displacement));
+          ResultsDlg.Grid.Cells[3,I]:=FloatToStrF(HydObject.Data.BeamWaterline, ffFixed,7,2);
+          ResultsDlg.Grid.Cells[4,I]:=FloatToStrF(HydObject.Data.Volume,        ffFixed,8,NumberOfDecimals(HydObject.Data.Volume));
+          ResultsDlg.Grid.Cells[5,I]:=FloatToStrF(HydObject.Data.Displacement,  ffFixed,8,NumberOfDecimals(HydObject.Data.Displacement));
           ResultsDlg.Grid.Cells[6,I]:=FloatToStrF(HydObject.Data.CenterOfBuoyancy.X,ffFixed,7,2);
           ResultsDlg.Grid.Cells[7,I]:=FloatToStrF(HydObject.Data.CenterOfBuoyancy.Z+Zmin,ffFixed,7,2);
-          ResultsDlg.Grid.Cells[8,I]:=FloatToStrF(Cb,                            ffFixed,7,4);
-          ResultsDlg.Grid.Cells[9,I]:=FloatToStrF(HydObject.Data.MidshipArea,    ffFixed,7,3);
-          ResultsDlg.Grid.Cells[10,I]:=FloatToStrF(Cm,                           ffFixed,7,4);
+          ResultsDlg.Grid.Cells[8,I]:=FloatToStrF(Cb,                           ffFixed,7,4);
+          ResultsDlg.Grid.Cells[9,I]:=FloatToStrF(HydObject.Data.MidshipArea,   ffFixed,7,3);
+          ResultsDlg.Grid.Cells[10,I]:=FloatToStrF(Cm,                          ffFixed,7,4);
           ResultsDlg.Grid.Cells[11,I]:=FloatToStrF(HydObject.Data.Waterplanearea,ffFixed,7,NumberOfDecimals(HydObject.Data.Waterplanearea));
           ResultsDlg.Grid.Cells[12,I]:=FloatToStrF(HydObject.Data.WaterplaneCoeff,ffFixed,7,4);
           ResultsDlg.Grid.Cells[13,I]:=FloatToStrF(HydObject.Data.WaterplaneCOG.X,ffFixed,7,3);
-          ResultsDlg.Grid.Cells[14,I]:=FloatToStrF(Cp,                           ffFixed,7,4);
-          ResultsDlg.Grid.Cells[15,I]:=FloatToStrF(HydObject.Data.WettedSurface, ffFixed,7,NumberOfDecimals(HydObject.Data.WettedSurface));
+          ResultsDlg.Grid.Cells[14,I]:=FloatToStrF(Cp,                          ffFixed,7,4);
+          ResultsDlg.Grid.Cells[15,I]:=FloatToStrF(HydObject.Data.WettedSurface,ffFixed,7,NumberOfDecimals(HydObject.Data.WettedSurface));
           ResultsDlg.Grid.Cells[16,I]:=FloatToStrF(HydObject.Data.KMtransverse+Zmin,ffFixed,7,3);
           ResultsDlg.Grid.Cells[17,I]:=FloatToStrF(HydObject.Data.KMlongitudinal+Zmin,ffFixed,7,NumberOfDecimals(HydObject.Data.KMlongitudinal));
           Inc(I);

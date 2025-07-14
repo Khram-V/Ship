@@ -58,7 +58,7 @@ begin
   for i:=0 to FSubdividedPoints.Count-1 do      // TODO SubdivideFreeStanding
   begin
     P:=FSubdividedPoints[i];
-    if P.VertexType =  svCorner then //(svRegular, svCrease, svDart, svCorner)
+    if P.VertexType =  svCorner then //(svRegular,svCrease,svDart,svCorner)
       FSpline.AddKnuckle(P.Coordinate)
     else
       FSpline.Add(P.Coordinate);
@@ -85,7 +85,7 @@ begin
   }
   for i:=0 to FSubdividedPoints.Count-1 do begin  // TODO SubdivideFreeStanding
     P:=FSubdividedPoints[i];
-    if P.VertexType =  svCorner then //(svRegular, svCrease, svDart, svCorner)
+    if P.VertexType =  svCorner then //(svRegular,svCrease,svDart,svCorner)
       FSpline.AddKnuckle(P.Coordinate)
     else
       FSpline.Add(P.Coordinate);
@@ -164,7 +164,7 @@ end;
 procedure TFreeSubdivisionControlCurve.Delete;
 var
   Index,I: integer;
-  P1, P2: TFreeSubdivisionPoint;
+  P1,P2: TFreeSubdivisionPoint;
   Edge: TFreeSubdivisionEdge;
 begin
   Index:=Surface.FSelectedControlCurves.IndexOf(self);
@@ -229,7 +229,7 @@ begin
           CP2:=FControlPoints[J];
           NewCurve.FControlPoints.Add(CP2);
           if J>0 then begin
-            AnEdge:=Surface.EdgeExists(CP1, CP2);
+            AnEdge:=Surface.EdgeExists(CP1,CP2);
             if AnEdge <> nil then AnEdge.FCurve:=NewCurve;
           end; CP1:=CP2;
         end; NewCurve.Selected:=Selected;
@@ -270,12 +270,12 @@ begin
   inherited Destroy;
 end;
 
-function TFreeSubdivisionControlCurve.DistanceToCursor(X, Y: integer;
+function TFreeSubdivisionControlCurve.DistanceToCursor(X,Y: integer;
   Viewport: TFreeViewport): integer;
 var
-  I, Tmp: integer;
-  Pt, P1, P2: TPoint;
-  V1, V2: T3DVector;
+  I,Tmp: integer;
+  Pt,P1,P2: TPoint;
+  V1,V2: T3DVector;
   Param: TFloatType;
 begin
   if (Viewport.ViewType = fvBodyPlan) and (not Surface.DrawMirror) then
@@ -292,7 +292,7 @@ begin
         V1.Y:=-V1.Y;
       for I:=1 to FSpline.Fragments do
       begin
-        V2:=FSpline.Value((I-1) / (FSpline.Fragments-1));
+        V2:=FSpline.Value((I-1)/(FSpline.Fragments-1));
         if V2.X < Surface.SplitSectionLocation then
           V2.Y:=-V2.Y;
         if ((V1.X < Surface.SplitSectionLocation) and (V2.X < Surface.SplitSectionLocation)) or
@@ -300,7 +300,7 @@ begin
         begin
           P1:=Viewport.Project(V1);
           P2:=Viewport.Project(V2);
-          Tmp:=Round(DistanceToLine(P1, P2, X, Y, Param));
+          Tmp:=Round(DistanceToLine(P1,P2,X,Y,Param));
           if Tmp < Result then
             Result:=Tmp;
         end;
@@ -310,7 +310,7 @@ begin
     end;
   end
   else
-    Result:=FSpline.DistanceToCursor(X, Y, Viewport);
+    Result:=FSpline.DistanceToCursor(X,Y,Viewport);
   if Surface.DrawMirror then
   begin
     for I:=1 to FSpline.NumberOfPoints do
@@ -335,7 +335,7 @@ end;
 procedure TFreeSubdivisionControlCurve.Draw(Viewport: TFreeViewport);
 var
   Sel: boolean;
-  P1, P2: TFreeSubdivisionControlPoint;
+  P1,P2: TFreeSubdivisionControlPoint;
   I,J,I1,I2,J1,Scale,Fragm,NParam: integer;
   Param: TFloatArray;
   Edge: TFreesubdivisionControlEdge;
@@ -343,10 +343,10 @@ var
   Output: TFreeIntersectionData;
   PArray1: array of TPoint;
   PArray2: array of TPoint;
-  P3D, P3D2,Normal: T3DVector;
-  C, T, C2, L: TFloatType;
-  iP1, iP2: TFreeSubdivisionPoint;
-  p02, p01: TPoint;
+  P3D,P3D2,Normal: T3DVector;
+  C,T,C2,L: TFloatType;
+  iP1,iP2: TFreeSubdivisionPoint;
+  p02,p01: TPoint;
 begin
   if not Surface.Built then exit;
   if not FBuilt then exit;
@@ -372,9 +372,9 @@ begin
 
     if Surface.DesiredSubdivisionLevel > 0 then
       if FSpline.ShowCurvature then
-        FSpline.Fragments:=round(T / (30.0 / Surface.DesiredSubdivisionLevel))
+        FSpline.Fragments:=round(T/(30.0/Surface.DesiredSubdivisionLevel))
       else
-        FSpline.Fragments:=round(T / (15.0 / Surface.DesiredSubdivisionLevel))
+        FSpline.Fragments:=round(T/(15.0/Surface.DesiredSubdivisionLevel))
     else FSpline.Fragments:=10;
     if FSpline.Fragments < 10 then FSpline.Fragments:=10;  //safety
 
@@ -387,9 +387,9 @@ begin
       begin
         P1:=FControlPoints[I-2];
         P2:=FControlPoints[I-1];
-        Edge:=Surface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
+        Edge:=Surface.EdgeExists(P1,P2) as TFreesubdivisionControlEdge;
         if Edge <> nil then
-          Edge.Draw(False, Viewport);
+          Edge.Draw(False,Viewport);
         if I = 2 then
           P1.Draw(Viewport);
         P2.Draw(Viewport);
@@ -406,49 +406,49 @@ begin
         p01:=ViewPort.Project(iP1.Coordinate);
         p02:=ViewPort.Project(iP2.Coordinate);
         ViewPort.Line(p01.X,p01.Y,p02.X,p02.Y);
-        {ViewPort.TextOut(p01.X,p01.Y, intToStr(iP1.SubdivisionLevel)+':'+intToStr(iP1.Id) );
-        ViewPort.TextOut(p02.X,p02.Y, intToStr(iP2.SubdivisionLevel)+':'+intToStr(iP2.Id) );}
+        {ViewPort.TextOut(p01.X,p01.Y,intToStr(iP1.SubdivisionLevel)+':'+intToStr(iP1.Id) );
+        ViewPort.TextOut(p02.X,p02.Y,intToStr(iP2.SubdivisionLevel)+':'+intToStr(iP2.Id) );}
       end;
     end;
 
 
     if (Viewport.ViewType = fvBodyPlan) and (not Surface.DrawMirror) then begin
-      Plane:=SetPlane(1.0, 0.0, 0.0, -Surface.SplitSectionLocation);
+      Plane:=SetPlane(1.0,0.0,0.0,-Surface.SplitSectionLocation);
       NParam:=2;
-      Setlength(Param, NParam);
+      Setlength(Param,NParam);
       Param[0]:=0.0;
       Param[1]:=1.0;
-      if FSpline.IntersectPlane(Plane, Output) then begin
-        Setlength(Param, NParam+Output.NumberOfIntersections);
+      if FSpline.IntersectPlane(Plane,Output) then begin
+        Setlength(Param,NParam+Output.NumberOfIntersections);
         for I:=1 to Output.NumberOfIntersections do begin
           Param[NParam]:=Output.Parameters[I-1];
           Inc(NParam);
         end;
         ArraySort( Param,NParam );
-//      SortFloatArray(Param, NParam);
+//      SortFloatArray(Param,NParam);
       end;
       for I:=2 to NParam do begin
         I1:=I-1;
         I2:=I-2;
-        P3D:=FSpline.Value(0.5 * (Param[I2]+Param[I1]));
+        P3D:=FSpline.Value(0.5*(Param[I2]+Param[I1]));
         if P3D.X < Surface.SplitSectionLocation then Scale:=-1
                                                 else scale:=1;
-        Fragm:=Round((Param[I1]-Param[I2]) * FSpline.Fragments);
+        Fragm:=Round((Param[I1]-Param[I2])*FSpline.Fragments);
         if Fragm < 10 then Fragm:=10;
         if FSpline.ShowCurvature then begin
-          SetLength(PArray1, Fragm);
-          SetLength(PArray2, Fragm);
+          SetLength(PArray1,Fragm);
+          SetLength(PArray2,Fragm);
           for J:=1 to Fragm do begin
             J1:=J-1;
-            T:=Param[I2]+(Param[I1]-Param[I2]) * (J1) / (Fragm-1);
-            C:=FSpline.Curvature(T, P3D, Normal);
-            C2:=C * 2 * FSpline.CurvatureScale;
-            P3D.Y:=P3D.Y * Scale;
-            Normal.Y:=Normal.Y * Scale;
+            T:=Param[I2]+(Param[I1]-Param[I2])*(J1)/(Fragm-1);
+            C:=FSpline.Curvature(T,P3D,Normal);
+            C2:=C*2*FSpline.CurvatureScale;
+            P3D.Y:=P3D.Y*Scale;
+            Normal.Y:=Normal.Y*Scale;
             PArray1[J1]:=Viewport.Project(P3D);
-            P3D2.X:=P3D.X-C2 * Normal.X;
-            P3D2.Y:=P3D.Y-C2 * Normal.Y;
-            P3D2.Z:=P3D.Z-C2 * Normal.Z;
+            P3D2.X:=P3D.X-C2*Normal.X;
+            P3D2.Y:=P3D.Y-C2*Normal.Y;
+            P3D2.Z:=P3D.Z-C2*Normal.Z;
             PArray2[J1]:=Viewport.Project(P3D2);
           end;
           Viewport.SetPenWidth(1);
@@ -457,20 +457,20 @@ begin
             if (J mod 4 = 0) or (J = 1) or (J = Fragm) then
             begin
               J1:=J-1;
-              Viewport.MoveTo(PArray1[J1].X, PArray1[J1].Y);
-              Viewport.LineTo(PArray2[J1].X, PArray2[J1].Y);
+              Viewport.MoveTo(PArray1[J1].X,PArray1[J1].Y);
+              Viewport.LineTo(PArray2[J1].X,PArray2[J1].Y);
             end;
           Viewport.Polyline(PArray2);
         end
         else
         begin
-          SetLength(PArray1, Fragm);
+          SetLength(PArray1,Fragm);
           for J:=1 to Fragm do
           begin
             J1:=J-1;
-            T:=Param[I2]+(Param[I1]-Param[I2]) * (J1) / (Fragm-1);
+            T:=Param[I2]+(Param[I1]-Param[I2])*(J1)/(Fragm-1);
             P3D:=FSpline.Value(T);
-            P3D.Y:=P3D.Y * Scale;
+            P3D.Y:=P3D.Y*Scale;
             PArray1[J1]:=Viewport.Project(P3D);
           end;
         end;
@@ -503,10 +503,10 @@ begin
 end;
 
 procedure TFreeSubdivisionControlCurve.InsertControlPoint(
-  P1, P2, New: TFreeSubdivisionControlPoint);
+  P1,P2,New: TFreeSubdivisionControlPoint);
 var
   I: integer;
-  I1, I2: integer;
+  I1,I2: integer;
 begin
   I:=2;
   while I <= FControlPoints.Count do
@@ -516,17 +516,17 @@ begin
     if ((FControlPoints[I2] = P1) and (FControlPoints[I1] = P2)) or
       ((FControlPoints[I1] = P1) and (FControlPoints[I2] = P2)) then
     begin
-      FControlPoints.Insert(I1, New);
+      FControlPoints.Insert(I1,New);
     end;
     Inc(I);
   end;
   Built:=false;
 end;
 
-procedure TFreeSubdivisionControlCurve.InsertEdgePoint(P1, P2, New: TFreeSubdivisionPoint);
+procedure TFreeSubdivisionControlCurve.InsertEdgePoint(P1,P2,New: TFreeSubdivisionPoint);
 var
   I: integer;
-  I1, I2: integer;
+  I1,I2: integer;
 begin
   I:=2;
   while I <= FSubdividedPoints.Count do
@@ -536,7 +536,7 @@ begin
     if ((FSubdividedPoints[I2] = P1) and (FSubdividedPoints[I1] = P2)) or
       ((FSubdividedPoints[I1] = P1) and (FSubdividedPoints[I2] = P2)) then
     begin
-      FSubdividedPoints.Insert(I1, New);
+      FSubdividedPoints.Insert(I1,New);
     end;
     Inc(I);
   end;
@@ -582,7 +582,7 @@ procedure TFreeSubdivisionControlCurve.Rebuild;
 var
   i,j,x:integer;
   CP: TFreeSubdivisionControlPoint;
-  Point, P1,P2,P3:TFreeSubdivisionPoint;
+  Point,P1,P2,P3:TFreeSubdivisionPoint;
   Edge1,Edge2: TFreeSubdivisionEdge;
 begin
   Spline.Clear;
@@ -610,7 +610,7 @@ begin
   Built:=True;
 end;
 
-procedure TFreeSubdivisionControlCurve.ReplaceVertexPoint(Old, New: TFreeSubdivisionPoint);
+procedure TFreeSubdivisionControlCurve.ReplaceVertexPoint(Old,New: TFreeSubdivisionPoint);
 var
   I: integer;
 begin
@@ -624,7 +624,7 @@ end;
 
 procedure TFreeSubdivisionControlCurve.SaveBinary(Destination: TFreeFileBuffer);
 var
-  I, Ind: integer;
+  I,Ind: integer;
   P: TFreeSubdivisionControlPoint;
 begin
   Destination.Add(NumberOfControlPoints);
@@ -638,7 +638,7 @@ begin
 end;
 
 procedure TFreeSubdivisionControlCurve.LastAveragePoint(
-  PrevPoint, Point, NextPoint:TFreeSubdivisionPoint );
+  PrevPoint,Point,NextPoint:TFreeSubdivisionPoint );
 var
   C:T3DVector;
 begin
@@ -668,7 +668,7 @@ begin
 end;
 
 procedure TFreeSubdivisionControlCurve.AveragePoint(
-  PrevPoint, Point, NextPoint:TFreeSubdivisionPoint );
+  PrevPoint,Point,NextPoint:TFreeSubdivisionPoint );
 var
   C:T3DVector;
 begin
@@ -678,16 +678,16 @@ begin
 
     if PrevPoint.Faces.Count = 0 then
     begin
-      C.X:=C.X+0.25 * PrevPoint.FCoordinate.X;
-      C.Y:=C.Y+0.25 * PrevPoint.FCoordinate.Y;
-      C.Z:=C.Z+0.25 * PrevPoint.FCoordinate.Z;
+      C.X:=C.X+0.25*PrevPoint.FCoordinate.X;
+      C.Y:=C.Y+0.25*PrevPoint.FCoordinate.Y;
+      C.Z:=C.Z+0.25*PrevPoint.FCoordinate.Z;
     end;
 
     if NextPoint.Faces.Count = 0 then
     begin
-      C.X:=C.X+0.25 * NextPoint.FCoordinate.X;
-      C.Y:=C.Y+0.25 * NextPoint.FCoordinate.Y;
-      C.Z:=C.Z+0.25 * NextPoint.FCoordinate.Z;
+      C.X:=C.X+0.25*NextPoint.FCoordinate.X;
+      C.Y:=C.Y+0.25*NextPoint.FCoordinate.Y;
+      C.Z:=C.Z+0.25*NextPoint.FCoordinate.Z;
     end;
   end
   else
@@ -695,17 +695,17 @@ begin
   begin
     //if Point.VertexType = svCrease then
     begin
-      C.X:=Point.FCoordinate.X * 0.50;
-      C.Y:=Point.FCoordinate.Y * 0.50;
-      C.Z:=Point.FCoordinate.Z * 0.50;
+      C.X:=Point.FCoordinate.X*0.50;
+      C.Y:=Point.FCoordinate.Y*0.50;
+      C.Z:=Point.FCoordinate.Z*0.50;
 
-      C.X:=C.X+0.25 * PrevPoint.FCoordinate.X;
-      C.Y:=C.Y+0.25 * PrevPoint.FCoordinate.Y;
-      C.Z:=C.Z+0.25 * PrevPoint.FCoordinate.Z;
+      C.X:=C.X+0.25*PrevPoint.FCoordinate.X;
+      C.Y:=C.Y+0.25*PrevPoint.FCoordinate.Y;
+      C.Z:=C.Z+0.25*PrevPoint.FCoordinate.Z;
 
-      C.X:=C.X+0.25 * NextPoint.FCoordinate.X;
-      C.Y:=C.Y+0.25 * NextPoint.FCoordinate.Y;
-      C.Z:=C.Z+0.25 * NextPoint.FCoordinate.Z;
+      C.X:=C.X+0.25*NextPoint.FCoordinate.X;
+      C.Y:=C.Y+0.25*NextPoint.FCoordinate.Y;
+      C.Z:=C.Z+0.25*NextPoint.FCoordinate.Z;
     end
   end
   else
@@ -722,12 +722,12 @@ var i:integer;
   tmpPoints: TFasterListTFreeSubdivisionPoint;
   E0,E1,E2: TFreeSubdivisionEdge;
 
-  function CreateCenterPoint(SP, EP: TFreeSubdivisionPoint): TFreeSubdivisionPoint;
+  function CreateCenterPoint(SP,EP: TFreeSubdivisionPoint): TFreeSubdivisionPoint;
   var Point: T3DVector;
   begin
-    Point.X:=0.5 * (SP.FCoordinate.X+EP.FCoordinate.X);
-    Point.Y:=0.5 * (SP.FCoordinate.Y+EP.FCoordinate.Y);
-    Point.Z:=0.5 * (SP.FCoordinate.Z+EP.FCoordinate.Z);
+    Point.X:=0.5*(SP.FCoordinate.X+EP.FCoordinate.X);
+    Point.Y:=0.5*(SP.FCoordinate.Y+EP.FCoordinate.Y);
+    Point.Z:=0.5*(SP.FCoordinate.Z+EP.FCoordinate.Z);
     Result:=TFreeSubdivisionPoint.Create(Surface);
     Result.FCoordinate:=Point;
   end;

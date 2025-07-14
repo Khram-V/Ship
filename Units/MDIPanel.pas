@@ -1,22 +1,22 @@
 unit MDIPanel;
 {$mode objfpc}{$H+}
 interface uses
-  Classes,   SysUtils,
+  Classes,  SysUtils,
   LResources,Graphics,
-  Menus,     ActnList,
-  Controls,  Forms,
-  StdCtrls,  ExtCtrls,
+  Menus,    ActnList,
+  Controls, Forms,
+  StdCtrls, ExtCtrls,
   Buttons;
 type
-  TWindowPositionState= ( wpsNone, wpsMoving, wpsResizing );
-  TWindowResizingSide = ( wrszsNW, wrszsN, wrszsNE,
-                          wrszsW,  wrszsZ, wrszsE,
-                          wrszsSW, wrszsS, wrszsSE );
+  TWindowPositionState= ( wpsNone,wpsMoving,wpsResizing );
+  TWindowResizingSide = ( wrszsNW,wrszsN,wrszsNE,
+                          wrszsW, wrszsZ,wrszsE,
+                          wrszsSW,wrszsS,wrszsSE );
 { TCaptionButton =     // Form title bar items
-    ( cbSystemMenu,    // system menu
-      cbMinimize,      // minimize button
-      cbMaximize,      // maximize button
-      cbRestore,       // restore button
+    ( cbSystemMenu,   // system menu
+      cbMinimize,     // minimize button
+      cbMaximize,     // maximize button
+      cbRestore,      // restore button
       cbClose );
   TCaptionButtons = set of TCaptionButton;
 }
@@ -40,7 +40,7 @@ TCustomMDIPanel = class( TCustomPanel )
     FOnCreate,FOnActivate,FOnShow,FOnDeactivate,FOnDestroy:TNotifyEvent;
     FOnShortcut: TShortCutEvent;
     FOnClose: TCloseEvent;
-    FNormalBounds: Trect; // bounds when not maximized, minimized or hidden
+    FNormalBounds: Trect; // bounds when not maximized,minimized or hidden
     FWindowState: TWindowState;
     FCornerSize: integer;
     FActive: boolean;
@@ -54,7 +54,7 @@ TCustomMDIPanel = class( TCustomPanel )
     procedure FActionCloseOnExecute( sender:TObject );
   private
     WindowPositionState: TWindowPositionState;
-    WindowCaptionMouseX, WindowCaptionMouseY: integer;
+    WindowCaptionMouseX,WindowCaptionMouseY: integer;
     procedure CreateCaptionPanel; //( aCaptionButtons:TCaptionButtons );
     procedure CreateClientPanel;
     procedure CreateSystemPopupMenu;
@@ -194,7 +194,7 @@ end;
 constructor TCustomMDIPanel.Create( AOwner: TComponent );
 begin
   GlobalNameSpace.BeginWrite;
-  CreateNew( AOwner ); // this calls BeginFormUpdate, which is ended in AfterConstruction
+  CreateNew( AOwner ); // this calls BeginFormUpdate,which is ended in AfterConstruction
   if (ClassType<>TCustomMDIPanel) and not (csDesigning in ComponentState) then begin
      Include( FFormState,fsCreating );
      ProcessResource; // load controls from the program resources to FClientControls
@@ -490,13 +490,13 @@ begin
 end;
 
 procedure TCustomMDIPanel.BorderMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: integer);
+  Shift: TShiftState; X,Y: integer);
 begin
   if (WindowPositionState=wpsResizing) then WindowPositionState:=wpsNone;
 end;
 
 procedure TCustomMDIPanel.CaptionPanelMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: integer);
+  Shift: TShiftState; X,Y: integer);
 var TL: TPoint;
 begin
   if (Button = mbLeft) and (Shift = [ssLeft]) then begin
@@ -521,7 +521,7 @@ begin
   end;
 end;
 procedure TCustomMDIPanel.CaptionPanelMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: integer);
+  Shift: TShiftState; X,Y: integer);
 begin
   if (WindowPositionState = wpsMoving) then begin
     WindowPositionState:=wpsNone;
@@ -652,7 +652,7 @@ begin
   then TCustomMDIPanel( Parent ).setActive( true );
 end;
 
-//procedure Register; begin RegisterComponents('MDIPanel', [TMDIPanel]); end;
+//procedure Register; begin RegisterComponents('MDIPanel',[TMDIPanel]); end;
 //{$I MDIPanelManager.inc}
 {%MainUnit MDIPanel.pas}
 
@@ -696,7 +696,7 @@ begin result:=nil;
 end;
 
 procedure WinPanelManager.Show( Cascad: Boolean  ); // const WN: array[0..3] of Integer=(3,1,0,2);
-var MW,MH, W,H, M,MCC, I,J,B : Integer;
+var MW,MH,W,H,M,MCC,I,J,B : Integer;
     WM: array[0..3] of Record x,y,w,h: Integer; end;
     panel  : TCustomMDIPanel;
     parent : TWinControl;
@@ -736,7 +736,7 @@ begin
        begin MW:=MW div 2; MH:=MH div 2; B:=(W+H) div 2; end;   // Tile пополам
     for I:=M to MCC-1 do begin panel:=MDIPanels[i];
       if Assigned( panel ) then panel.SetBounds( B+((I-M)*W) div J,
-                                                 B+((I-M)*H) div J, MW,MH );
+                                                 B+((I-M)*H) div J,MW,MH );
     end;
   end;
 end;

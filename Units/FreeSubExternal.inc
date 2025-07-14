@@ -16,7 +16,7 @@ procedure TFreeSubdivisionSurface.ImportObjFile( Strings: TStringList );
 var
   I,J,K,Index: integer; Str: AnsiString;
 // CFace: TFreeSubdivisionControlFace; CPoint: TFreeSubdivisionCOntrolPoint;
-  CPoints, FacePoints: TFasterListTFreeSubdivisionControlPoint;
+  CPoints,FacePoints: TFasterListTFreeSubdivisionControlPoint;
   C3d: T3DVector;
   Faces: TStringList;
   Vindex: array of AnsiString;
@@ -60,7 +60,7 @@ end;
 procedure TFreeSubdivisionSurface.ExportObjFile
         ( ExportControlNet: boolean; Strings: TStringList );
 var
-  I,J,K, Index: integer;
+  I,J,K,Index: integer;
   Tmp: TFasterListTFreeSubdivisionPoint;
   CFace: TFreeSubdivisionControlFace;
   Child: TFreeSubdivisionFace;
@@ -162,7 +162,7 @@ begin
   end;
 end;
 //
-// VRML (Virtual Reality Modeling Language, pronounced vermal or by its initials, 
+// VRML (Virtual Reality Modeling Language,pronounced vermal or by its initials,
 // originally—before 1995—known as the Virtual Reality Markup Language) 
 // is a standard file format for representing 3-dimensional (3D) interactive vector graphics,
 // designed particularly with the World Wide Web in mind. It has been superseded by X3D.[1]
@@ -188,34 +188,34 @@ end;
 // find nearest DXF color corresponding to a windows color
 function FindDXFColorIndex(Color: TColor): integer;
  const DXFLayerColors: array[1..255] of TColor =
-   ($0000FF, $00FFFF, $00FF00, $FFFF00, $FF0000, $FF00FF, $000000, $808080, $C0C0C0, $0000FF,
-    $7F7FFF, $0000A5, $5252A5, $00007F, $3F3F7F, $00004C, $26264C, $000026, $131326, $003FFF,
-    $7F9FFF, $0029A5, $5267A5, $001F7F, $3F4F7F, $00134C, $262F4C, $000926, $131726, $007FFF,
-    $7FBFFF, $0052A5, $527CA5, $003F7F, $3F5F7F, $00264C, $26394C, $001326, $131C26, $00BFFF,
-    $7FDFFF, $007CA5, $5291A5, $005F7F, $3F6F7F, $00394C, $26424C, $001C26, $132126, $00FFFF,
-    $7FFFFF, $00A5A5, $52A5A5, $007F7F, $3F7F7F, $004C4C, $264C4C, $002626, $132626, $00FFBF,
-    $7FFFDF, $00A57C, $52A591, $007F5F, $3F7F6F, $004C39, $264C42, $00261C, $132621, $00FF7F,
-    $7FFFBF, $00A552, $52A57C, $007F3F, $3F7F5F, $004C26, $264C39, $002613, $13261C, $00FF3F,
-    $7FFF9F, $00A529, $52A567, $007F1F, $3F7F4F, $004C13, $264C2F, $002609, $132617, $00FF00,
-    $7FFF7F, $00A500, $52A552, $007F00, $3F7F3F, $004C00, $264C26, $002600, $132613, $3FFF00,
-    $9FFF7F, $29A500, $67A552, $1F7F00, $4F7F3F, $134C00, $2F4C26, $092600, $172613, $7FFF00,
-    $BFFF7F, $52A500, $7CA552, $3F7F00, $5F7F3F, $264C00, $394C26, $132600, $1C2613, $BFFF00,
-    $DFFF7F, $7CA500, $91A552, $5F7F00, $6F7F3F, $394C00, $424C26, $1C2600, $212613, $FFFF00,
-    $FFFF7F, $A5A500, $A5A552, $7F7F00, $7F7F3F, $4C4C00, $4C4C26, $262600, $262613, $FFBF00,
-    $FFDF7F, $A57C00, $A59152, $7F5F00, $7F6F3F, $4C3900, $4C4226, $261C00, $262113, $FF7F00,
-    $FFBF7F, $A55200, $A57C52, $7F3F00, $7F5F3F, $4C2600, $4C3926, $261300, $261C13, $FF3F00,
-    $FF9F7F, $A52900, $A56752, $7F1F00, $7F4F3F, $4C1300, $4C2F26, $260900, $261713, $FF0000,
-    $FF7F7F, $A50000, $A55252, $7F0000, $7F3F3F, $4C0000, $4C2626, $260000, $261313, $FF003F,
-    $FF7F9F, $A50029, $A55267, $7F001F, $7F3F4F, $4C0013, $4C262F, $260009, $261317, $FF007F,
-    $FF7FBF, $A50052, $A5527C, $7F003F, $7F3F5F, $4C0026, $4C2639, $260013, $26131C, $FF00BF,
-    $FF7FDF, $A5007C, $A55291, $7F005F, $7F3F6F, $4C0039, $4C2642, $26001C, $261321, $FF00FF,
-    $FF7FFF, $A500A5, $A552A5, $7F007F, $7F3F7F, $4C004C, $4C264C, $260026, $261326, $BF00FF,
-    $DF7FFF, $7C00A5, $9152A5, $5F007F, $6F3F7F, $39004C, $42264C, $1C0026, $211326, $7F00FF,
-    $BF7FFF, $5200A5, $7C52A5, $3F007F, $5F3F7F, $26004C, $39264C, $130026, $1C1326, $3F00FF,
-    $9F7FFF, $2900A5, $6752A5, $1F007F, $4F3F7F, $13004C, $2F264C, $090026, $171326, $000000,
-    $2D2D2D, $5B5B5B, $898989, $B7B7B7, $B3B3B3);
+   ($0000FF,$00FFFF,$00FF00,$FFFF00,$FF0000,$FF00FF,$000000,$808080,$C0C0C0,$0000FF,
+    $7F7FFF,$0000A5,$5252A5,$00007F,$3F3F7F,$00004C,$26264C,$000026,$131326,$003FFF,
+    $7F9FFF,$0029A5,$5267A5,$001F7F,$3F4F7F,$00134C,$262F4C,$000926,$131726,$007FFF,
+    $7FBFFF,$0052A5,$527CA5,$003F7F,$3F5F7F,$00264C,$26394C,$001326,$131C26,$00BFFF,
+    $7FDFFF,$007CA5,$5291A5,$005F7F,$3F6F7F,$00394C,$26424C,$001C26,$132126,$00FFFF,
+    $7FFFFF,$00A5A5,$52A5A5,$007F7F,$3F7F7F,$004C4C,$264C4C,$002626,$132626,$00FFBF,
+    $7FFFDF,$00A57C,$52A591,$007F5F,$3F7F6F,$004C39,$264C42,$00261C,$132621,$00FF7F,
+    $7FFFBF,$00A552,$52A57C,$007F3F,$3F7F5F,$004C26,$264C39,$002613,$13261C,$00FF3F,
+    $7FFF9F,$00A529,$52A567,$007F1F,$3F7F4F,$004C13,$264C2F,$002609,$132617,$00FF00,
+    $7FFF7F,$00A500,$52A552,$007F00,$3F7F3F,$004C00,$264C26,$002600,$132613,$3FFF00,
+    $9FFF7F,$29A500,$67A552,$1F7F00,$4F7F3F,$134C00,$2F4C26,$092600,$172613,$7FFF00,
+    $BFFF7F,$52A500,$7CA552,$3F7F00,$5F7F3F,$264C00,$394C26,$132600,$1C2613,$BFFF00,
+    $DFFF7F,$7CA500,$91A552,$5F7F00,$6F7F3F,$394C00,$424C26,$1C2600,$212613,$FFFF00,
+    $FFFF7F,$A5A500,$A5A552,$7F7F00,$7F7F3F,$4C4C00,$4C4C26,$262600,$262613,$FFBF00,
+    $FFDF7F,$A57C00,$A59152,$7F5F00,$7F6F3F,$4C3900,$4C4226,$261C00,$262113,$FF7F00,
+    $FFBF7F,$A55200,$A57C52,$7F3F00,$7F5F3F,$4C2600,$4C3926,$261300,$261C13,$FF3F00,
+    $FF9F7F,$A52900,$A56752,$7F1F00,$7F4F3F,$4C1300,$4C2F26,$260900,$261713,$FF0000,
+    $FF7F7F,$A50000,$A55252,$7F0000,$7F3F3F,$4C0000,$4C2626,$260000,$261313,$FF003F,
+    $FF7F9F,$A50029,$A55267,$7F001F,$7F3F4F,$4C0013,$4C262F,$260009,$261317,$FF007F,
+    $FF7FBF,$A50052,$A5527C,$7F003F,$7F3F5F,$4C0026,$4C2639,$260013,$26131C,$FF00BF,
+    $FF7FDF,$A5007C,$A55291,$7F005F,$7F3F6F,$4C0039,$4C2642,$26001C,$261321,$FF00FF,
+    $FF7FFF,$A500A5,$A552A5,$7F007F,$7F3F7F,$4C004C,$4C264C,$260026,$261326,$BF00FF,
+    $DF7FFF,$7C00A5,$9152A5,$5F007F,$6F3F7F,$39004C,$42264C,$1C0026,$211326,$7F00FF,
+    $BF7FFF,$5200A5,$7C52A5,$3F007F,$5F3F7F,$26004C,$39264C,$130026,$1C1326,$3F00FF,
+    $9F7FFF,$2900A5,$6752A5,$1F007F,$4F3F7F,$13004C,$2F264C,$090026,$171326,$000000,
+    $2D2D2D,$5B5B5B,$898989,$B7B7B7,$B3B3B3);
 var
-  R,G,B, R1,G1,B1: byte; I: integer; Dist,Tmp: single;
+  R,G,B,R1,G1,B1: byte; I: integer; Dist,Tmp: single;
 begin
   Result:=1;
   R:=GetRValue(Color);
@@ -237,7 +237,7 @@ begin FSpline.Fragments:=FSpline.NumberOfPoints;
 end;
 procedure TFreeSubdivisionLayer.SaveToDXF(Strings: TStringList);
 var
-  NAssembled, I,J,K, Cols,Rows: integer; P: T3DVector;
+  NAssembled,I,J,K,Cols,Rows: integer; P: T3DVector;
   Layers: TFasterListTFreeSubdivisionLayer;
   Assembled: TFreeFaceArray;
   AssFace: TFreeFaceGrid;
@@ -249,7 +249,7 @@ begin
   begin
     Layers:=TFasterListTFreeSubdivisionLayer.Create;
     Layers.Add(self);
-    Surface.AssembleFacesToPatches(Layers, amRegular, Assembled, NAssembled);
+    Surface.AssembleFacesToPatches(Layers,amRegular,Assembled,NAssembled);
     if NAssembled > 0 then begin
       // assign all patches to new layers
       for I:=1 to NAssembled do begin
@@ -258,7 +258,7 @@ begin
           ((AssFace.NCols >= 1) and (AssFace.NRows > 1)) or
           ((AssFace.NCols = 1) and (AssFace.NRows = 1) and
           (AssFace.Faces[0][0].NumberOfPoints = 4)) then begin
-          Surface.ConvertToGrid(AssFace, Cols, Rows, Grid);
+          Surface.ConvertToGrid(AssFace,Cols,Rows,Grid);
           if (Cols > 0) and (Rows > 0) then begin
             DXFName:=DXFLayerName;
             Strings.Add('0'+EOL+'POLYLINE');
@@ -273,9 +273,9 @@ begin
                 P:=Grid[J-1][K-1].FCoordinate;
                 Strings.Add('0'+EOL+'VERTEX');
                 Strings.Add('8'+EOL+DXFName);
-                Strings.Add('10'+EOL+FloatToDec(P.X, 4));   ///***??? DXF-layer
-                Strings.Add('20'+EOL+FloatToDec(P.Z, 4));
-                Strings.Add('30'+EOL+FloatToDec(P.Y, 4));
+                Strings.Add('10'+EOL+FloatToDec(P.X,4));   ///***??? DXF-layer
+                Strings.Add('20'+EOL+FloatToDec(P.Z,4));
+                Strings.Add('30'+EOL+FloatToDec(P.Y,4));
                 Strings.Add('70'+EOL+'64');              // polygon mesh vertex
               end;
             end;
@@ -293,9 +293,9 @@ begin
                   P:=Grid[J-1][K-1].FCoordinate;
                   Strings.Add('0'+EOL+'VERTEX');
                   Strings.Add('8'+EOL+DXFName);
-                  Strings.Add('10'+EOL+FloatToDec(P.X, 4));
-                  Strings.Add('20'+EOL+FloatToDec(-P.Z, 4));
-                  Strings.Add('30'+EOL+FloatToDec(P.Y, 4));
+                  Strings.Add('10'+EOL+FloatToDec(P.X,4));
+                  Strings.Add('20'+EOL+FloatToDec(-P.Z,4));
+                  Strings.Add('30'+EOL+FloatToDec(P.Y,4));
                   Strings.Add('70'+EOL+'64');    // polygon mesh vertex
                 end;
               end;
@@ -325,7 +325,7 @@ end;
 //
 procedure TFreeSubdivisionControlFace.SaveToDXF(Strings: TStringList);
 var
-  I,J,K, Cols,Rows, ColorIndex: integer;   P: T3DVector;
+  I,J,K,Cols,Rows,ColorIndex: integer;   P: T3DVector;
   Child: TFreeSubdivisionFace;
   LayerName: AnsiString;
   Grid: TFreeSubdivisionPointGrid;
@@ -338,10 +338,10 @@ begin
     // create one polymesh for all childfaces
     FaceData.NCols:=1;
     FaceData.NRows:=1;
-    Setlength(FaceData.Faces, FaceData.NRows);
-    Setlength(FaceData.Faces[0], FaceData.NCols);
+    Setlength(FaceData.Faces,FaceData.NRows);
+    Setlength(FaceData.Faces[0],FaceData.NCols);
     FaceData.Faces[0][0]:=Self;
-    Surface.ConvertToGrid(FaceData, Cols, Rows, Grid);
+    Surface.ConvertToGrid(FaceData,Cols,Rows,Grid);
     if (Rows > 0) and (Cols > 0) then
     begin
       Strings.Add('0'+EOL+'POLYLINE');
@@ -459,7 +459,7 @@ end;
 procedure TFreeSubdivisionSurface.ImportFEFFile(Strings: TStringList; var LineNr: integer);
 var
   Str: AnsiString;
-  I,J,N,Np, Index: integer;
+  I,J,N,Np,Index: integer;
   Point,P1,P2: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
   Face: TFreeSubdivisionControlFace;
@@ -501,7 +501,7 @@ begin
   for I:=1 to N do begin
     Point:=TFreeSubdivisionControlPoint.Create(self);
     FControlPoints.Add(Point);
-    Point.LoadFromStream(LineNr, Strings);
+    Point.LoadFromStream(LineNr,Strings);
   end;
   Inc(LineNr); Str:=Strings[LineNr];                       // Read controlEdges
   N:=GetInteger( Str);                                     //  Edge:=nil;
@@ -550,11 +550,11 @@ end;
 //
 procedure TFreeSubdivisionSurface.ImportControlPointGrid
 ( Grid: TFreeSubdivisionControlPointGrid; 
-  Cols, Rows: integer;
+  Cols,Rows: integer;
   Layer: TFreesubdivisionLayer );
 var I,J: integer;
     P11,P12,P22,P21:TFreeSubdivisionControlPoint;
-    GridPoints, FacePoints: TFasterListTFreeSubdivisionControlPoint;
+    GridPoints,FacePoints: TFasterListTFreeSubdivisionControlPoint;
     Edge: TFreeSubdivisionEdge;
 begin
   FIsLoading:=true;
@@ -577,15 +577,15 @@ begin
   end;
 {// set crease edges
   for I:=2 to Cols do begin
-    Edge:=EdgeExists(Grid[0][I-2], Grid[0][I-1]);
+    Edge:=EdgeExists(Grid[0][I-2],Grid[0][I-1]);
     if Edge<>nil then Edge.Crease:=True;
-    Edge:=EdgeExists(Grid[Rows-1][I-2], Grid[Rows-1][I-1]);
+    Edge:=EdgeExists(Grid[Rows-1][I-2],Grid[Rows-1][I-1]);
     if Edge <> nil then Edge.Crease:=True;
   end;
   for I:=2 to Rows do begin
-    Edge:=EdgeExists(Grid[I-2][0], Grid[I-1][0]);
+    Edge:=EdgeExists(Grid[I-2][0],Grid[I-1][0]);
     if Edge <> nil then Edge.Crease:=True;
-    Edge:=EdgeExists(Grid[I-2][Cols-1], Grid[I-1][Cols-1]);
+    Edge:=EdgeExists(Grid[I-2][Cols-1],Grid[I-1][Cols-1]);
     if Edge <> nil then Edge.Crease:=True;
   end;
 }
@@ -603,16 +603,16 @@ end;
 //
 procedure TFreeSubdivisionSurface.ImportCoordGrid
 ( Points: TFreeCoordinateGrid;
-  Cols, Rows: integer;
+  Cols,Rows: integer;
   Layer: TFreesubdivisionLayer);
 var I,J: integer; Grid: TFreeSubdivisionControlPointGrid;
 begin
   FIsLoading:=true;
   Setlength( Grid,Rows );
-  for I:=0 to Rows-1 do begin Setlength(Grid[I], Cols);
+  for I:=0 to Rows-1 do begin Setlength(Grid[I],Cols);
     for J:=0 to Cols-1 do Grid[I][J]:=AddControlPoint(Points[I][J]);
   end;
-  ImportControlPointGrid(Grid, Cols, Rows,  Layer);
+  ImportControlPointGrid(Grid,Cols,Rows, Layer);
   FIsLoading:=false;
 end;
 

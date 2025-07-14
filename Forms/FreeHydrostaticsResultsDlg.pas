@@ -1,22 +1,22 @@
 unit FreeHydrostaticsResultsDlg;
 {$MODE Delphi}{$H+}
 interface uses LCLIntf,
-     SysUtils, Classes,
-     Graphics, Grids,
-     Controls, Forms,
-     Dialogs,  Buttons,
-     ExtCtrls, StdCtrls,
+     SysUtils,Classes,
+     Graphics,Grids,
+     Controls,Forms,
+     Dialogs, Buttons,
+     ExtCtrls,StdCtrls,
      Printers,PrintersDlgs,FreePrinter,FreeLanguageSupport;
 type                                         { TFreeHydrostaticsResultsDialog }
  TFreeHydrostaticsResultsDialog  = class(TForm)
-    Panel1, Panel2: TPanel;
+    Panel1,Panel2: TPanel;
     Grid: TStringGrid;
     Header: TMemo;
     Splitter1: TSplitter;
-    ButtonPrint, ButtonSave, ButtonClose: TSpeedButton;
+    ButtonPrint,ButtonSave,ButtonClose: TSpeedButton;
     PrintDialog: TPrintDialog;
     SaveDialog: TSaveDialog;
-    procedure GridDrawCell(Sender: TObject; ACol, ARow: Integer;Rect: TRect; State: TGridDrawState);
+    procedure GridDrawCell(Sender: TObject; ACol,ARow: Integer;Rect: TRect; State: TGridDrawState);
     procedure FormResize(Sender: TObject);
     procedure ButtonCloseClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
@@ -33,7 +33,7 @@ implementation
 
 {$R *.lfm}
 
-procedure TFreeHydrostaticsResultsDialog.GridDrawCell(Sender: TObject;ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+procedure TFreeHydrostaticsResultsDialog.GridDrawCell(Sender: TObject;ACol,ARow: Integer; Rect: TRect; State: TGridDrawState);
 var W    : Integer;
     Str  : AnsiString;
     Back : TColor;

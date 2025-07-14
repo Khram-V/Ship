@@ -50,7 +50,7 @@ type
     procedure SetCursor(Value: TCursor); override;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure setTileSize(aWidth, aHeight: integer);
+    procedure setTileSize(aWidth,aHeight: integer);
     procedure addTile(aPicture:TPicture; aCaption: AnsiString; aFileName:AnsiString);
     property FileName:AnsiString read FSelectedFileName;
     property FileList:TStringList read FFileList write FFileList;
@@ -96,8 +96,8 @@ constructor TTileDialog.Create( AOwner: TComponent );
    inherited Create( AOwner );
    FTileWidth:=400;
    FTileHeight:=300;
-   Width:=Screen.Width * 3 div 4;
-   Height:=Screen.Height * 3 div 4;
+   Width:=Screen.Width*3 div 4;
+   Height:=Screen.Height*3 div 4;
    ShowTranslatedValues( Self );
  end;
 

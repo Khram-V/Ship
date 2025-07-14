@@ -1,16 +1,16 @@
 unit FreeExpanedPlatesDlg;
 {$MODE Delphi}{$H+}
 interface uses
-  LCLIntf,   PrintersDlgs,
-  SysUtils,  Classes,
-  Graphics,  Controls,
-  Forms,     Dialogs,
-  ExtCtrls,  StdCtrls,
-  ActnList,  ComCtrls,
-  Printers,  Math,
-  CheckLst,  Spin,
-  FreeTypes, FreeShipUnit,
-  FreeGeometry, FreeStringUtils, FreeLanguageSupport;
+  LCLIntf,  PrintersDlgs,
+  SysUtils, Classes,
+  Graphics, Controls,
+  Forms,    Dialogs,
+  ExtCtrls, StdCtrls,
+  ActnList, ComCtrls,
+  Printers, Math,
+  CheckLst, Spin,
+  FreeTypes,FreeShipUnit,
+  FreeGeometry,FreeStringUtils,FreeLanguageSupport;
 type
   TFreeExpanedplatesDialog = class( TForm )
     ToolBar1: TToolBar;
@@ -43,7 +43,7 @@ type
     procedure ListBoxClick(Sender: TObject);
     procedure ListBoxClickCheck(Sender: TObject);
     procedure SpinEditFontSizeChange(Sender: TObject);
-    procedure ViewportRequestExtents(Sender: TObject; var Min, Max: T3DVector);
+    procedure ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
     procedure ViewportRedraw(Sender: TObject);
     procedure ViewportMouseMove(Sender: TObject; Shift: TShiftState; X,Y: integer);
     procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: integer);
@@ -82,7 +82,7 @@ type
     FFreeShip: TFreeShip;
     FInitialPosition: TPoint;
     FAllowPanOrZoom: boolean;
-    FXGridSpacing, FYGridSpacing: TFloatType;
+    FXGridSpacing,FYGridSpacing: TFloatType;
     FFontSize: integer;
     function FGetActivePatch: TFreeDevelopedPatch;
     procedure FSetActivePatch(Val: TFreeDevelopedPatch);
@@ -103,11 +103,11 @@ var I: TFloatType; Tmp: TFloatType;
 begin
   OveralSize := Abs(OveralSize);
   if OveralSize < 1e-6 then OveralSize := 1e-6;
-  I := Ln(OveralSize) / 2.30258;
-  Tmp := Power(10, round(I - 1));
-  while OveralSize / Tmp < 5 do Tmp := Tmp / 2;
-  while OveralSize / Tmp > 20 do Tmp := Tmp * 2;
-  if Tmp < OveralSize / 1000 then Tmp := OveralSize / 1000;
+  I := Ln(OveralSize)/2.30258;
+  Tmp := Power(10,round(I - 1));
+  while OveralSize/Tmp < 5 do Tmp := Tmp/2;
+  while OveralSize/Tmp > 20 do Tmp := Tmp*2;
+  if Tmp < OveralSize/1000 then Tmp := OveralSize/1000;
   Result := Tmp;
 end;
 function TFreeExpanedplatesDialog.FGetActivePatch: TFreeDevelopedPatch;
@@ -170,13 +170,13 @@ begin
   ListBox.Items.BeginUpdate;
   ListBox.Clear;
   for I:=1 to FPlates.Count do begin Patch:=FPlates[I-1];
-    Index:=ListBox.Items.AddObject(Patch.Name, Patch);
+    Index:=ListBox.Items.AddObject(Patch.Name,Patch);
     ListBox.Checked[index]:=Patch.Visible;
   end;
   Listbox.Items.EndUpdate;
 end;
 
-procedure TFreeExpanedplatesDialog.ViewportRequestExtents(Sender: TObject; var Min, Max: T3DVector);
+procedure TFreeExpanedplatesDialog.ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
 var FMin,FMax: T3DVector; I,N: integer; Patch: TFreeDevelopedPatch;
 begin
   if FPlates<>nil then begin N:=1;
@@ -215,31 +215,31 @@ begin
   for I:=1 to FPlates.Count do begin // Calculate the initial position fo each surface
     Patch:=Plates[I-1];
     Patch.Extents(Min,Max);
-    Clearance := 0.025 * Abs(Min-Max);
+    Clearance := 0.025*Abs(Min-Max);
     if I = 1 then begin
       P2D.X := -Min.X;
-      P2D.Y := -Max.Y - 0.5 * Clearance;
+      P2D.Y := -Max.Y - 0.5*Clearance;
       Patch.Translation := P2D;
       Patch.Extents(MinT,MaxT);
     end else begin
       P2D.X := -Min.X;
-      if odd(I) then P2D.Y:=MinT.Y-Max.Y-Clearance  // Odd(I) means portside plate, put at bottom
-                else P2D.Y:=MaxT.Y-Min.Y+Clearance; // even(I) is starboard plate, put at top
+      if odd(I) then P2D.Y:=MinT.Y-Max.Y-Clearance  // Odd(I) means portside plate,put at bottom
+                else P2D.Y:=MaxT.Y-Min.Y+Clearance; // even(I) is starboard plate,put at top
       Patch.Translation := P2D;
-      Patch.Extents(Min, Max);
-      MinMax(Min, MinT, MaxT);
-      MinMax(Max, MinT, MaxT);
+      Patch.Extents(Min,Max);
+      MinMax(Min,MinT,MaxT);
+      MinMax(Max,MinT,MaxT);
     end;
   end;                                                     // calculate extents
   for I := 1 to FPlates.Count do begin
     Patch := Plates[I - 1];
-    Patch.Extents(MinT, MaxT);
+    Patch.Extents(MinT,MaxT);
     if I = 1 then begin Min := MinT; Max := MaxT; end
              else begin MinMax(MinT,Min,Max); MinMax(MaxT,Min,Max); end;
   end;
   if Max.X - Min.X > Max.Y - Min.Y then Tmp := Max.X - Min.X
                                    else Tmp := Max.Y - Min.Y;
-  FXGridSpacing := GetGridSpacing(Tmp) / 2;
+  FXGridSpacing := GetGridSpacing(Tmp)/2;
   FYGridSpacing := FXGridSpacing;
   FloatSpinEdit2.Value := FXGridSpacing;
   FloatSpinEdit3.Value := FYGridSpacing;
@@ -254,11 +254,11 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.ViewportRedraw(Sender: TObject);
-var I, N: integer;
+var I,N: integer;
   Patch: TFreeDevelopedPatch;
   X,Y,Space: TFloatType;
   P: T3DVector;
-  Pt1, Pt2: TPoint;
+  Pt1,Pt2: TPoint;
   Suppress: boolean;
   Str: AnsiString;
 begin
@@ -268,26 +268,26 @@ begin
     Viewport.DrawingCanvas.Font.Size := FFontSize;      // End Skip translation
     Viewport.FontSize:=FFontSize;
     if ShowDimensions.Checked then begin Suppress := False;  // Draw grid lines
-      Space := 0.025 * Abs(Viewport.Min3D-Viewport.Max3D);
+      Space := 0.025*Abs(Viewport.Min3D-Viewport.Max3D);
       if FXGridSpacing=0 then N:=10000              // Calculate and draw XGrid
        else N:=round((2*Space+Viewport.Max3D.X-Viewport.Min3D.X)/FXGridSpacing);
       if N<500 then begin
-        Viewport.PenColor := RGB(225, 225, 225);
+        Viewport.PenColor := RGB(225,225,225);
         Viewport.Penwidth := 1;
         Viewport.PenStyle := psSolid;
-        I := Round((Viewport.Min3D.X) / FXGridSpacing) - 2;
-        X := I * FXGridSpacing;
+        I := Round((Viewport.Min3D.X)/FXGridSpacing) - 2;
+        X := I*FXGridSpacing;
         while X <= Viewport.Max3D.X do begin
           if (X>=Viewport.Min3D.X-0.01) and (X<=Viewport.Max3D.X+0.01) then begin
-            P := Vector(X, Viewport.Min3D.Y - Space, 0.0);
+            P := Vector(X,Viewport.Min3D.Y - Space,0.0);
             Pt1 := Viewport.Project(P);
-            Viewport.MoveTo(Pt1.X, Pt1.Y);
-            P := Vector(X, Viewport.Max3D.Y + Space, 0.0);
+            Viewport.MoveTo(Pt1.X,Pt1.Y);
+            P := Vector(X,Viewport.Max3D.Y + Space,0.0);
             Pt2 := Viewport.Project(P);
-            Viewport.LineTo(Pt2.X, Pt2.Y);
-            Str := ConvertDimension(X, FFreeship.ProjectSettings.ProjectUnits);
-            Viewport.TextOut(Pt1.X-Viewport.TextWidth(Str) div 2, Pt1.Y, Str);
-            Viewport.TextOut(Pt2.X-Viewport.TextWidth(Str) div 2, Pt2.Y-Viewport.TextHeight(Str),Str);
+            Viewport.LineTo(Pt2.X,Pt2.Y);
+            Str := ConvertDimension(X,FFreeship.ProjectSettings.ProjectUnits);
+            Viewport.TextOut(Pt1.X-Viewport.TextWidth(Str) div 2,Pt1.Y,Str);
+            Viewport.TextOut(Pt2.X-Viewport.TextWidth(Str) div 2,Pt2.Y-Viewport.TextHeight(Str),Str);
           end;
           X:=X+FXGridSpacing;
         end;
@@ -296,20 +296,20 @@ begin
         N:=round((2*Space+Viewport.Max3D.Y-Viewport.Min3D.Y)/FYGridSpacing)
       else N := 10000;
       if N < 500 then begin
-        Viewport.PenColor := RGB(225, 225, 225);
+        Viewport.PenColor := RGB(225,225,225);
         Viewport.Penwidth := 1;
         Viewport.PenStyle := psSolid;
-        I := Round((Viewport.Min3D.Y) / FYGridSpacing) - 2;
-        Y := I * FYGridSpacing;
+        I := Round((Viewport.Min3D.Y)/FYGridSpacing) - 2;
+        Y := I*FYGridSpacing;
         while Y <= Viewport.Max3D.Y do begin
           if (Y >= Viewport.Min3D.Y - 0.01) and (Y <= Viewport.Max3D.Y + 0.01) then begin
-            P := Vector(Viewport.Min3D.X - Space, Y, 0.0);
+            P := Vector(Viewport.Min3D.X - Space,Y,0.0);
             Pt1 := Viewport.Project(P);
-            Viewport.MoveTo(Pt1.X, Pt1.Y);
-            P := Vector(Viewport.Max3D.X + Space, Y, 0.0);
+            Viewport.MoveTo(Pt1.X,Pt1.Y);
+            P := Vector(Viewport.Max3D.X + Space,Y,0.0);
             Pt2 := Viewport.Project(P);
-            Viewport.LineTo(Pt2.X, Pt2.Y);
-            Str := ConvertDimension(Y, FFreeship.ProjectSettings.ProjectUnits);
+            Viewport.LineTo(Pt2.X,Pt2.Y);
+            Str := ConvertDimension(Y,FFreeship.ProjectSettings.ProjectUnits);
             Viewport.TextOut(Pt1.X,Pt1.Y-Viewport.TextHeight(Str) div 2,Str);
             Viewport.TextOut(Pt2.X-Viewport.TextWidth(Str) div 2,Pt2.Y-Viewport.TextHeight(Str) div 2,Str);
           end;
@@ -362,7 +362,7 @@ begin
         Viewport.Pan := P;
         FInitialPosition.X := X;
         FInitialPosition.Y := Y;
-      end; // Pan the window left, right, top or bottom
+      end; // Pan the window left,right,top or bottom
   end else begin
     Patch := ActivePatch;
     if (ssLeft in Shift) and (Patch <> nil) then
@@ -583,21 +583,21 @@ procedure TFreeExpanedplatesDialog.Edit1KeyPress(Sender: TObject; var Key: char)
     begin end;
 
 procedure TFreeExpanedplatesDialog.FloatSpinEdit2Change(Sender: TObject);
-var S, I: integer;
+var S,I: integer;
 begin
   FloatSpinEdit2.OnChange := nil;                    // detach to avoid looping
 //try
     FXGridSpacing := FloatSpinEdit2.Value;
                        // Increment will automatically change from 0.01 to 10.0
                        // We calculate in hundreds ints to simplify comparisons
-    I := round(FloatSpinEdit2.Increment * 100);
-    S := round(FXGridSpacing * 100);
+    I := round(FloatSpinEdit2.Increment*100);
+    S := round(FXGridSpacing*100);
     if (S < 1) then S := 1;
     if (S > 1000) then S := 1000;
     if (I > 1) and (S <= I) then I := I div 10;
-    if (I < 1000) and (S >= (I * 10)) then I := I * 10;
-    FloatSpinEdit2.Increment := 0.01 * I;
-    FXGridSpacing := 0.01 * S;
+    if (I < 1000) and (S >= (I*10)) then I := I*10;
+    FloatSpinEdit2.Increment := 0.01*I;
+    FXGridSpacing := 0.01*S;
     FloatSpinEdit2.Value := FXGridSpacing;
     Viewport.Refresh;
 //finally
@@ -606,21 +606,21 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.FloatSpinEdit3Change(Sender: TObject);
-var S, I: integer;
+var S,I: integer;
 begin
   FloatSpinEdit3.OnChange := nil;                    // detach to avoid looping
 //try
     FYGridSpacing := FloatSpinEdit3.Value;
                        // Increment will automatically change from 0.01 to 10.0
                        // We calculate in hundreds ints to simplify comparisons
-    I := round(FloatSpinEdit3.Increment * 100);
-    S := round(FYGridSpacing * 100);
+    I := round(FloatSpinEdit3.Increment*100);
+    S := round(FYGridSpacing*100);
     if (S < 1) then S := 1;
     if (S > 1000) then S := 1000;
     if (I > 1) and (S <= I) then I := I div 10;
-    if (I < 1000) and (S >= (I * 10)) then I := I * 10;
-    FloatSpinEdit3.Increment := 0.01 * I;
-    FYGridSpacing := 0.01 * S;
+    if (I < 1000) and (S >= (I*10)) then I := I*10;
+    FloatSpinEdit3.Increment := 0.01*I;
+    FYGridSpacing := 0.01*S;
     FloatSpinEdit3.Value := FYGridSpacing;
     Viewport.Refresh;
 //finally

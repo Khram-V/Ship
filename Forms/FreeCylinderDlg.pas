@@ -1,9 +1,9 @@
 unit FreeCylinderDlg;
 {$MODE Delphi}{$H+}
 interface uses
-  Controls, Forms,
-  StdCtrls, Buttons,
-  ExtCtrls, Spin,
+  Controls,Forms,
+  StdCtrls,Buttons,
+  ExtCtrls,Spin,
   FreeTypes,FreeLanguageSupport;
 type
   TFreeCylinderDialog = class(TForm)
@@ -51,7 +51,7 @@ implementation
 {$R *.lfm}
 
 function TFreeCylinderDialog.FGetStartPoint: T3DVector;
-begin Result:=Vector(StartPointX.Value, StartPointY.Value, StartPointZ.Value);
+begin Result:=Vector(StartPointX.Value,StartPointY.Value,StartPointZ.Value);
 end;
 procedure TFreeCylinderDialog.FSetStartPoint(val: T3DVector);
 begin StartPointX.Value:=Val.X;
@@ -59,7 +59,7 @@ begin StartPointX.Value:=Val.X;
       StartPointZ.Value:=Val.Z;
 end;
 function TFreeCylinderDialog.FGetEndPoint: T3DVector;
-   begin Result:=Vector(EndPointX.Value, EndPointY.Value, EndPointZ.Value);
+   begin Result:=Vector(EndPointX.Value,EndPointY.Value,EndPointZ.Value);
    end;
 procedure TFreeCylinderDialog.FSetEndPoint(val: T3DVector);
 begin EndPointX.Value:=Val.X;

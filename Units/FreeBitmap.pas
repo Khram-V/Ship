@@ -6,7 +6,7 @@ unit FreeBitmap;
 {$mode delphi}{$H+}
 interface
 uses
-  SysUtils, Graphics, FreeTypes;
+  SysUtils,Graphics,FreeTypes;
 type
   TFreeBitmap = class (TBitmap)
   private                                            //pData : pRGBTripleArray;

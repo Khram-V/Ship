@@ -1,13 +1,13 @@
 unit FreeShipUnit;
   {$mode objfpc}{$H+}
 interface uses
-  SysUtils, // this declaration must be at the start, before the FreeGeometry unit
-  Windows, LazFileUtils, LazUTF8, IniFiles,
-  Interfaces, Graphics, Controls, Forms,
-  Dialogs,    Classes,  ExtCtrls, ExtDlgs, ComCtrls,
-  FreeTypes, FreeFileBuffer, FreeGeometry, FasterList,
-  FreeVersionUnit, FreeControlPointFrm, FreeLanguageSupport,
-  FreeStringUtils, FreeMatrices;     // British imperial eg 1 long ton=2240 lbs
+  SysUtils,// this declaration must be at the start,before the FreeGeometry unit
+  Windows,LazFileUtils,LazUTF8,IniFiles,
+  Interfaces,Graphics,Controls,Forms,
+  Dialogs,   Classes, ExtCtrls,ExtDlgs,ComCtrls,
+  FreeTypes,FreeFileBuffer,FreeGeometry,FasterList,
+  FreeVersionUnit,FreeControlPointFrm,FreeLanguageSupport,
+  FreeStringUtils,FreeMatrices;     // British imperial eg 1 long ton=2240 lbs
 const
   FreeShipExtention='.ftm'; // Default extention for hull model files
   SelectDistance = 3;       // Max. distance in pixels between an item and the cursor in order to be selected
@@ -25,18 +25,18 @@ type
   TFreeShip = class;                                    // to be declared later
   TFreeIntersection = class;
   TFreeHydrostaticsData = record
-    ModelMin,ModelMax, // Min/max coordinates under given heelingangle and trim
-    WlMin,WlMax,       // Min/max coordinates of the waterline
-    SubMin,SubMax,     // Min/max extents of the submerged body
+    ModelMin,ModelMax,// Min/max coordinates under given heelingangle and trim
+    WlMin,WlMax,      // Min/max coordinates of the waterline
+    SubMin,SubMax,    // Min/max extents of the submerged body
     CenterOfBuoyancy: T3DVector; // Center of gravity of displaced volume
     WaterlinePlane: T3DPlane; // Depth of the lowest point of the hull beneath the waterplane
-//  AbsoluteDraft,            // The following properties are always calculated
-    Volume,                   // Displaced volume of the hull
-    Displacement,             // Displacement
+//  AbsoluteDraft,           // The following properties are always calculated
+    Volume,                  // Displaced volume of the hull
+    Displacement,            // Displacement
     LCBPerc,
     LengthWaterline,
     BeamWaterline,
-    BlockCoefficient,         // BlockCoefficient
+    BlockCoefficient,        // BlockCoefficient
     WettedSurface: TFloatType;
     Leak: T3DVector;   // Coordinate encountered where the ship is making water
     MidshipArea: TFloatType;              // Midship (aka Mainframe) properties
@@ -70,15 +70,15 @@ type
     Z_min_board: TFloatType;
     Y_c_half: TFloatType; // Y coordinate of waterplane area for left hull half
                                            // Results of resistance calculation
-{   Wt,T0,EtaR,Dp,Tb, Vs1,Vs2,Vs3,Vs4,Vs5, Rt1,Rt2,Rt3,Rt4,Rt5: TFloatType;
+{   Wt,T0,EtaR,Dp,Tb,Vs1,Vs2,Vs3,Vs4,Vs5,Rt1,Rt2,Rt3,Rt4,Rt5: TFloatType;
                                             // Results of propeller calculation
     Kt,Kq,Eta0,Jp,Dpr,n_nom,Nprop,Ndiag,Zp,Teta,P_D,Peng,EtaG,EtaS: TFloatType;
 }
   end;
 (*TFreeCrosscurvesData = record
     WaterlinePlane: T3DPlane;
-    AbsoluteDraft, // Depth of the lowest point of the hull beneath the waterplane
-    Volume,                   // The following properties are always calculated
+    AbsoluteDraft,// Depth of the lowest point of the hull beneath the waterplane
+    Volume,                  // The following properties are always calculated
     Displacement: TFloatType; // Displaced volume of the hull
     CenterOfBuoyancy: T3DVector; // Displacement
     KNSinPhi: TFloatType;        // Center of gravity of displaced volume
@@ -86,9 +86,9 @@ type
 *)
   {-----------------------------------------------------------------}
   {   TFreeUndoObject is an object class for undoing actions.       }
-  {   It's function is very basic, just before each modification    }
+  {   It's function is very basic,just before each modification    }
   {   the file is saved to a the undo object rather then to a file. }
-  {   When the undo is called, the previous state will be           }
+  {   When the undo is called,the previous state will be           }
   {   read from the undo object and restored                        }
   {-----------------------------------------------------------------}
   TFreeUndoObject = class
@@ -120,7 +120,7 @@ type
   end;
   {--------------------------------------------------------------------}
   {   Freeship can import a max. of three different background images  }
-  {   that may be coupled either to the bodyplan, profile or planview. }
+  {   that may be coupled either to the bodyplan,profile or planview. }
   {    These images can be used to trace the lines of an               }
   {   hullform and are stored within the FREE!ship file.               }
   {--------------------------------------------------------------------}
@@ -158,7 +158,7 @@ type
   end;
   {-------------------------------------------------------------------------}
   {   TFreeHydrostaticCalc is an object class for hydrostatic calculations. }
-  {   Each calculation has it's own draft, trim and angle of heel.          }
+  {   Each calculation has it's own draft,trim and angle of heel.          }
   {   Multiple calculations can be stored and then send to a report.        }
   {-------------------------------------------------------------------------}
   TFreeHydrostaticCalc = class
@@ -168,7 +168,7 @@ type
     FHeelingAngle: TFloatType;
     FTrim: TFloatType;
     FDraft: TFloatType;                                    // Calculation flags
-    FCalculated: boolean; // Determines how calculations are performed: short, extensive etc.
+    FCalculated: boolean; // Determines how calculations are performed: short,extensive etc.
     FData: TFreeHydrostaticsData;           // The following data is calculated
     FCalculations: TFreeHydrostaticsCalculate;
     FMidshipSection: TFreeIntersection;
@@ -202,7 +202,7 @@ type
     property Data: TFreeHydrostaticsData read FData;
     property Draft: TFloatType read FDraft write FSetDraft;
     property HeelingAngle: TFloatType read FHeelingAngle write FSetHeelingAngle;
-//  Determines how calculations are performed: short, extensive etc.
+//  Determines how calculations are performed: short,extensive etc.
     property MidshipLocation: TFloatType read FMidshipLocation;
     property Owner: TFreeShip read FOwner;
     property Trim: TFloatType read FTrim write FSetTrim;
@@ -212,7 +212,7 @@ type
   {--------------------------------------------------------------------------}
   {   TFreeIntersection is a list of curves calculated from the intersection }
   {   of a ship hull (represented by a subdivision surface) and a plane.     }
-  {   This plane can be a orthogonal plane (eg. stations, waterlines,        }
+  {   This plane can be a orthogonal plane (eg. stations,waterlines,       }
   {   buttocks) or a freely oriented 3D plane (sent)                         }
   {--------------------------------------------------------------------------}
   TFreeIntersection = class
@@ -223,7 +223,7 @@ type
     FPlane: T3DPlane;
     FBuilt: boolean;
     FShowCurvature: boolean;
-    FUseHydrostaticsSurfacesOnly: boolean; // used for lateral area, midship/mainframe and waterplane properties
+    FUseHydrostaticsSurfacesOnly: boolean; // used for lateral area,midship/mainframe and waterplane properties
     FSelected: boolean;
     function FGetColor: TColor;
     function FGetDistance: TFloatType;
@@ -239,12 +239,12 @@ type
     procedure Add(Item: TFreeSpline);
     procedure CalculateArea(Plane: T3DPlane; var Area: TFloatType; var COG: T3DVector; var MomentOfInertia: T2DCoordinate);
     procedure Clear;
-    procedure CreateStarboardPart; // Create the starboardhalf of the ship, for use in hydrostatic calculations
+    procedure CreateStarboardPart; // Create the starboardhalf of the ship,for use in hydrostatic calculations
     procedure Delete(Redraw: boolean);
     procedure DeleteItem(Item: TFreeSpline);
     procedure Draw(Viewport: TFreeViewport);
     procedure DrawAll;
-    procedure Extents(var Min, Max: T3DVector);
+    procedure Extents(var Min,Max: T3DVector);
     procedure LoadBinary(Source: TFreeFileBuffer);
     procedure Rebuild;
     procedure SaveToDXF(Strings: TStringList);
@@ -273,7 +273,7 @@ type
     procedure FSetSelected(AValue: boolean); override;
   public
     procedure Clear; override;
-    function DistanceToCursor(X, Y: integer; Viewport: TFreeViewport): integer; override;
+    function DistanceToCursor(X,Y: integer; Viewport: TFreeViewport): integer; override;
     procedure Delete;
     procedure Draw(Viewport: TFreeViewport); override;
     procedure LoadBinary(Source: TFreeFileBuffer); override;
@@ -323,13 +323,13 @@ type
     FModelView: TFreeModelView; // Show half or entire ship
     FShowControlNet,
     FShowFreeObjects,
-    FShowInteriorEdges,         // Show the surface edges
-    FShowStations,              // Show the calculated stations
-    FShowButtocks,              // Show the calculated Buttocks
-    FShowWaterlines,            // Show the calculated Waterlines
-    FShowDiagonals,             // Show the calculated Diagonals
-    FShowNormals,               // Show normals of selected surface patches
-    FShowGrid,                  // Show the grid of intersections in the plan,profile and bodyplan view
+    FShowInteriorEdges,        // Show the surface edges
+    FShowStations,             // Show the calculated stations
+    FShowButtocks,             // Show the calculated Buttocks
+    FShowWaterlines,           // Show the calculated Waterlines
+    FShowDiagonals,            // Show the calculated Diagonals
+    FShowNormals,              // Show normals of selected surface patches
+    FShowGrid,                 // Show the grid of intersections in the plan,profile and bodyplan view
 //  FShowBothSides              // show both sides
     FShowMarkers,
     FShowControlCurves,
@@ -341,7 +341,7 @@ type
     FShowHydrostMetacentricHeight,
     FShowHydrostLCF,
     FShowFlowlines: boolean;
-    FCurvatureScale,              // Scalefactor used to increase or decrease the size of the curvature plot
+    FCurvatureScale,             // Scalefactor used to increase or decrease the size of the curvature plot
     FCursorIncrement: TFloatType; // Distance added when the active controlpoint is moved withe the arrow keys
     procedure FSetCursorIncrement(val: TFloatType);
     procedure FSetCurvatureScale(Val: TFloatType);
@@ -467,7 +467,7 @@ type
     procedure Flowline_Add(Source: T2DCoordinate; View: TFreeviewType);
     procedure Geometry_AddCylinder;
     procedure Geometry_AddGridPanel;
-    function Hydrostatics_Calculate(Draft, AngleOfHeel, Trim: TFloatType): TFreeHydrostaticCalc; // Creates and calculates a hydrostatics calculation
+    function Hydrostatics_Calculate(Draft,AngleOfHeel,Trim: TFloatType): TFreeHydrostaticCalc; // Creates and calculates a hydrostatics calculation
 //  procedure Hydrostatics_Crosscurves; // Opens the dialog to calculate crosscurves
     procedure Hydrostatics_Dialog; // Opens the hydrostatics dialog and calculates hydrostatic data for a range of inputdata
     procedure ImportFrames;    // Loads a bodyplane and tries to fit a surface to it
@@ -475,7 +475,7 @@ type
     function Intersection_Add(IntType: TFreeIntersectionType; Distance: TFloatType): TFreeIntersection; // Add a new intersection at the specified location
     procedure Intersection_AddToList(Intersection: TFreeIntersection);    // Adds an intersection to the appropriate list
     procedure Intersection_Change(Intersection: TFreeIntersection; Distance: TFloatType);
-    procedure Intersection_Dialog; // Pops up the dialog in whcih to add or delete stations, buttocks and waterlines
+    procedure Intersection_Dialog; // Pops up the dialog in whcih to add or delete stations,buttocks and waterlines
 
     procedure Layer_AutoGroup;     // All connected patches surrounded by crease edges are grouped together into a new layer
     procedure Layer_Develop;       // Developes all developable layers
@@ -488,10 +488,10 @@ type
     procedure Model_Check(ShowResult: boolean);    // Checks the surface for inconsistent normal directions and leaks
     function Model_New: boolean;            // Start a Example Ship (with a predefined surface)
     procedure Model_LackenbyTransformation; // Affine hullform transformation according to Lackenby
-    procedure Model_Scale(ScaleVector: T3DVector; OverrideLock, AdjustMarkers: boolean); // Scale the entire model and all equivalent data such as stations etc.
+    procedure Model_Scale(ScaleVector: T3DVector; OverrideLock,AdjustMarkers: boolean); // Scale the entire model and all equivalent data such as stations etc.
     procedure Point_Collapse;          // Merge two selected edges by removing their common controlpoint.
     procedure Point_RemoveUnused;      // removes any unused points from the model
-    procedure Point_InsertPlane;       // Finds all intersection of VISIBLE edges and a 3D plane, and inserts a point on each of these edges
+    procedure Point_InsertPlane;       // Finds all intersection of VISIBLE edges and a 3D plane,and inserts a point on each of these edges
     procedure Point_IntersectLayer;    // Calculates the intersection points of two layers
     procedure Point_Lock;  // Locks all selected points
     procedure Point_Extrude; // Create new controlPoints by extruding selected points
@@ -541,18 +541,18 @@ type
     FHydrostaticLineWidth: integer;
     procedure FSetViewportColor( Val: TColor );
   public
-    EdgeColor,        // Color of normal edges
-    CreaseColor,      // color of crease edges
-    CreaseEdgeColor,  // color of crease control-edges
-    GridColor,        // Color of gridlines
-    GridFontColor,    // Color of font with gridlines
-    CreasePointColor, // Color of crease vertices
+    EdgeColor,       // Color of normal edges
+    CreaseColor,     // color of crease edges
+    CreaseEdgeColor, // color of crease control-edges
+    GridColor,       // Color of gridlines
+    GridFontColor,   // Color of font with gridlines
+    CreasePointColor,// Color of crease vertices
     RegularPointColor,
-    CornerPointColor, // Color of cornerpoints and points with at least 3 crease edges
+    CornerPointColor,// Color of cornerpoints and points with at least 3 crease edges
     DartPointColor,
-    SelectColor,      // Color of selected items
-    LayerColor,       // Default color for new layers
-    NormalColor,      // color of surface normals
+    SelectColor,     // Color of selected items
+    LayerColor,      // Default color for new layers
+    NormalColor,     // color of surface normals
     LeakPointColor,
     MarkerColor,
     CurvaturePlotColor,
@@ -565,22 +565,22 @@ type
     DiagonalColor,
     UnderWaterColor:TColor; // Default color used for shading underwaterpart of vessel
     UnderWaterColorAlpha: byte;
-    FbmEncoding, //encoding that is used to convert national strings from/to FBM files
+    FbmEncoding,//encoding that is used to convert national strings from/to FBM files
     Language:           AnsiString;
-    ConfigDirectory,    // Default directory where users FreeShip.ini file is stored
-    ManualsDirectory,   // Manuals directory
-    OpenDirectory,      // Default directory to open existing files
-    SaveDirectory,      // Default directory to save files
-    ImportDirectory,    // Default directory to import files
-    ExportDirectory,    // Default directory to export files
-    LanguagesDirectory, // Default directory where Language files stored.
-    LastDirectory,      // directory of last Open/Save
+    ConfigDirectory,   // Default directory where users FreeShip.ini file is stored
+    ManualsDirectory,  // Manuals directory
+    OpenDirectory,     // Default directory to open existing files
+    SaveDirectory,     // Default directory to save files
+    ImportDirectory,   // Default directory to import files
+    ExportDirectory,   // Default directory to export files
+    LanguagesDirectory,// Default directory where Language files stored.
+    LastDirectory,     // directory of last Open/Save
     LanguageFile: UnicodeString;
-    MaxUndoMemory,     // Max. amount of allowable undo memory in megabytes
+    MaxUndoMemory,    // Max. amount of allowable undo memory in megabytes
     FontSize,PointSize: integer;
-//  FInitDirectory,    // Default directory where freeship.exe started
+//  FInitDirectory,   // Default directory where freeship.exe started
 //  FUserDataDirectory,// Default directory where users FreeShip r/w data (projects etc) stored
-//  FUserAppDataDirectory, // Default directory where users FreeShip programs and r/o resource files stored
+//  FUserAppDataDirectory,// Default directory where users FreeShip programs and r/o resource files stored
 //  function FullName( const N: AnsiString ): AnsiString; // --
     function OnlyName( const S: AnsiString; DS:boolean=true ): AnsiString; // имя внутри/вне директории
     procedure Clear;
@@ -612,7 +612,7 @@ type
     FProjectWaterDensity,FProjectWaterTemper: TFloatType;
     FProjectSplitSectionLocation: TFloatType;
     FProjectName,FProjectDesigner,FProjectComment,FProjectFileCreatedBy: AnsiString;
-    FUseDefaultSplitSectionLocation, // If set to true, the midship/mainframe location is set to 0.5*project length, if false then value in FProjectMainframeLocation is used
+    FUseDefaultSplitSectionLocation,// If set to true,the midship/mainframe location is set to 0.5*project length,if false then value in FProjectMainframeLocation is used
     FProjectSimplifyIntersections,
     FProjectShadeUnderwaterShip,FSavePreview: boolean;
     FProjectUnits: TFreeUnitType;
@@ -815,9 +815,9 @@ type
   public
     MainForm: TForm;
     IsRebuildAsyncDisabled,
-    FilenameSet,    // Flag to determine if the filename already has been set
-    ModelIsLoaded,  // Flag to determine if the model is created new or loaded.
-    FileIsReadOnly, // The folowing private variables are for moving controlpoints with the mouse
+    FilenameSet,   // Flag to determine if the filename already has been set
+    ModelIsLoaded, // Flag to determine if the model is created new or loaded.
+    FileIsReadOnly,// The folowing private variables are for moving controlpoints with the mouse
     StopAskingForFileVersion: boolean;
     LinesplanFrame: TFrame;
     OnFileChanged          : TNotifyEvent;
@@ -831,7 +831,7 @@ type
     procedure DeleteViewport( Viewport: TFreeViewport ); //  Delete a viewport from the list of viewports connected to the model
     procedure DrawToViewport( Viewport: TFreeViewport );
     procedure ZoomFitAllViewports;
-    procedure Extents(var Min, Max: T3DVector); // calculate the bounding box coordinates of the model
+    procedure Extents(var Min,Max: T3DVector); // calculate the bounding box coordinates of the model
     procedure Draw;
     procedure Clear;
     procedure ClearUndo;
@@ -849,7 +849,7 @@ type
     procedure SaveProject( Destination: TFreeFileBuffer );
     procedure SavePart(Faces: TFasterListTFreeSubdivisionControlFace);
     procedure SelectPointsInFrame(Viewport: TfreeViewport; rect:TRect);
-    procedure SubmergedHullExtents(Wlplane: T3DPlane; var Min, Max: T3DVector);
+    procedure SubmergedHullExtents(Wlplane: T3DPlane; var Min,Max: T3DVector);
     procedure KeyDown(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure KeyUp(Sender: TObject; var Key: word; Shift: TShiftState);
     procedure DoSelectItems(const Viewport: TFreeViewport; const X,Y: integer;  const Button: TMouseButton;  const Shift: TShiftState; var ItemSelected: boolean);
@@ -936,15 +936,15 @@ type
   end;
   TColorIniFile = class( TIniFile )
   public
-    function ReadColor(const Section, Ident: AnsiString; Default: TColor): TColor; virtual;
-    procedure WriteColor(const Section, Ident: AnsiString; Value: TColor); virtual;
+    function ReadColor(const Section,Ident: AnsiString; Default: TColor): TColor; virtual;
+    procedure WriteColor(const Section,Ident: AnsiString; Value: TColor); virtual;
   end;
 
 procedure Register;
 var Ship: TFreeShip;
 
 implementation uses
-  Math, Main,
+  Math,Main,
   FreeHydrostaticsDlg,
   FreeIntersectionDlg,
   FreeNewModelDlg,

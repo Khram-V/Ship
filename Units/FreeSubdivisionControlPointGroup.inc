@@ -16,7 +16,7 @@ begin // a controlpoint group is visible if at least one of it's controlpoints i
 end;
 
 procedure TFreeSubdivisionControlPointGroup.FSetSelected(val: boolean);
-  var index, i: integer;
+  var index,i: integer;
 begin
   Index:=Surface.FSelectedControlPointGroups.IndexOf(self);
   if (Index >= 0) and Val then exit;
@@ -72,9 +72,9 @@ begin
       Centre.Y:=Centre.Y+P.Y;
       Centre.Z:=Centre.Z+P.Z;
   end;
-  Centre.X:=Centre.X / C;
-  Centre.Y:=Centre.Y / C;
-  Centre.Z:=Centre.Z / C;
+  Centre.X:=Centre.X/C;
+  Centre.Y:=Centre.Y/C;
+  Centre.Z:=Centre.Z/C;
   Result:=Centre;
 end;
 
@@ -82,7 +82,7 @@ procedure TFreeSubdivisionControlPointGroup.Draw(Viewport: TFreeViewport);
 var
   I: integer;
   MFL: TFloatType;
-  P, PA,PB: TPoint;
+  P,PA,PB: TPoint;
   Pz: TShadePoint;
   P3D: T3DVector;
 begin
@@ -94,9 +94,9 @@ begin
     P:=Viewport.Project( P3D );
     if FControlPoints.Count>0 then Viewport.FontColor:=FControlPoints[0].Color;
     ViewPort.PenColor:=Viewport.FontColor;
-    ViewPort.Ellipse(P.X-2, P.Y-2, P.X+2, P.Y+2);
-    ViewPort.Ellipse(P.X-4, P.Y-4, P.X+4, P.Y+4);
-    ViewPort.TextOut(P.X+2, P.Y+2, Names);
+    ViewPort.Ellipse(P.X-2,P.Y-2,P.X+2,P.Y+2);
+    ViewPort.Ellipse(P.X-4,P.Y-4,P.X+4,P.Y+4);
+    ViewPort.TextOut(P.X+2,P.Y+2,Names);
   end;
 end;
 (*

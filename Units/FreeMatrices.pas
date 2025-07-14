@@ -115,8 +115,8 @@ begin
 end;
 *)
 procedure TFreeMatrix.Fill(Value:TFreeMatrixType);
-var i,j, Size : Integer;
-    Row, Row0 : TFreeMatrixRow;
+var i,j,Size : Integer;
+    Row,Row0 : TFreeMatrixRow;
 begin
    Size:=1;
    for I:=0 to RowCount-1 do begin
@@ -132,7 +132,7 @@ begin
 end;
 
 function TFreeMatrix.Invert:TFreeMatrix;
-var I,J,K,L,N, IMax: integer;
+var I,J,K,L,N,IMax: integer;
     Factor  : extended;
     amax,h  : Double;
     State   : Boolean;

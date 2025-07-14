@@ -5,19 +5,19 @@ function TFreeSubdivisionFace.FGetArea: TFloatType;
 var
   I: integer;
 
-  function TriangleArea(P1, P2, P3: T3DVector): TFloatType;
-    var ax, ay, az: TFloatType;
+  function TriangleArea(P1,P2,P3: T3DVector): TFloatType;
+    var ax,ay,az: TFloatType;
   begin
     ax:=0.5*((P1.y-P2.y)*(P1.z+P2.z)+(P2.y-P3.y)*(P2.z+P3.z)+(P3.y-P1.y)*(P3.z+P1.z));
     ay:=0.5*((P1.z-P2.z)*(P1.x+P2.x)+(P2.z-P3.z)*(P2.x+P3.x)+(P3.z-P1.z)*(P3.x+P1.x));
     az:=0.5*((P1.x-P2.x)*(P1.y+P2.y)+(P2.x-P3.x)*(P2.y+P3.y)+(P3.x-P1.x)*(P3.y+P1.y));
-    Result:=Sqrt(ax * ax+ay * ay+az * az);
+    Result:=Sqrt(ax*ax+ay*ay+az*az);
   end; {TriangleArea}
 
 begin
   Result:=0.0;
   for I:=3 to NumberOfPoints do
-    Result:=Result+TriangleArea(Point[0].Coordinate, Point[I-2].Coordinate,
+    Result:=Result+TriangleArea(Point[0].Coordinate,Point[I-2].Coordinate,
       Point[I-1].Coordinate);
 end;{TFreeSubdivisionFace.FGetArea}
 
@@ -32,17 +32,17 @@ begin Result:=ZERO;
       Result.Y:=Result.Y+P.FCoordinate.Y;
       Result.Z:=Result.Z+P.FCoordinate.Z;
     end;
-    Result.X:=Result.X / FPoints.Count;
-    Result.Y:=Result.Y / FPoints.Count;
-    Result.Z:=Result.Z / FPoints.Count;
+    Result.X:=Result.X/FPoints.Count;
+    Result.Y:=Result.Y/FPoints.Count;
+    Result.Z:=Result.Z/FPoints.Count;
   end;
 end;
 
 function TFreeSubdivisionFace.FGetFaceNormal: T3DVector;
 var
   I: integer;
-  N, C, P: T3DVector;
-  P1, P2: TFreeSubdivisionPoint;
+  N,C,P: T3DVector;
+  P1,P2: TFreeSubdivisionPoint;
 begin
   Result:=ZERO; C:=ZERO;                         //calculate center of the face
   for I:=1 to NumberOfPoints do begin
@@ -51,9 +51,9 @@ begin
     C.Y:=C.Y+P.Y;
     C.Z:=C.Z+P.Z;
   end;
-  C.X:=C.X / NumberOfPoints;
-  C.Y:=C.Y / NumberOfPoints;
-  C.Z:=C.Z / NumberOfPoints;
+  C.X:=C.X/NumberOfPoints;
+  C.Y:=C.Y/NumberOfPoints;
+  C.Z:=C.Z/NumberOfPoints;
   // calculate normal
   P1:=Point[NumberOfPoints-1];
   for I:=1 to NumberOfPoints do begin P2:=Point[I-1];
@@ -89,9 +89,9 @@ begin
         Centre.Y:=Centre.Y+P.Y;
         Centre.Z:=Centre.Z+P.Z;
       end;
-      Centre.X:=Centre.X / FPoints.Count;
-      Centre.Y:=Centre.Y / FPoints.Count;
-      Centre.Z:=Centre.Z / FPoints.Count;
+      Centre.X:=Centre.X/FPoints.Count;
+      Centre.Y:=Centre.Y/FPoints.Count;
+      Centre.Z:=Centre.Z/FPoints.Count;
     end;
     Result:=TFreeSubdivisionPoint.Create(Surface);
     Result.FCoordinate:=Centre;
@@ -134,7 +134,7 @@ procedure TFreeSubdivisionFace.Delete;
 var
   I,Index: integer;
   Edge: TFreesubdivisionEdge;
-  P1, P2: TFreeSubdivisionPoint;
+  P1,P2: TFreeSubdivisionPoint;
 begin Unreference;
   Surface.Built:=False;
   Clear;
@@ -195,13 +195,13 @@ procedure TFreeSubdivisionFace.Subdivide(
     aControlDescendandEdges:TFasterListTFreeSubdivisionEdge; // Output. Here boundary edges will be added.
     aNewFaces: TFasterListTFreeSubdivisionFace); // Output. Here new faces will be added.
 var
-  P1,P2, P: TFreeSubdivisionPoint;
-  I, TmpIndex: integer;
+  P1,P2,P: TFreeSubdivisionPoint;
+  I,TmpIndex: integer;
   NewFace: TFreeSubdivisionFace;
-  IndexPE, IndexCE, Index0, Index1, Index2, Index3, J, X: integer;
+  IndexPE,IndexCE,Index0,Index1,Index2,Index3,J,X: integer;
   Pts: array[0..3] of TFreeSubdivisionPoint;
   PrevEdge,CurrEdge,Edge: TFreeSubdivisionEdge;
-  PrevEdgePoint, CurrEdgePoint, P2Point, NewLocation: TFreeSubdivisionPoint;
+  PrevEdgePoint,CurrEdgePoint,P2Point,NewLocation: TFreeSubdivisionPoint;
 
   procedure EdgeCheck
           ( P1,P2:TFreeSubdivisionPoint;
@@ -211,7 +211,7 @@ var
   begin // exit;
      NewEdge:=nil;
      if (P1<>nil) and (P2<>nil) then begin
-       // MM: we create regular edge that can inherit just some properties of Control Edge, like Curve
+       // MM: we create regular edge that can inherit just some properties of Control Edge,like Curve
        // It is sort of Control Edge child called Control Descendant Edge.
        // But there are no real ControlEdges in subdivided faces
        NewEdge:=aOwner.EdgeExists(P1,P2);
@@ -277,8 +277,7 @@ begin
       Pts[index3]:=aRefEdges.Objects[TmpIndex];    // PrevEdge.FNewLocation;    if Pts[Index3] = nil then Showmessage('Subdivision error. Point 3 not found');
       PrevEdgePoint:=Pts[index3];
 
-      // add the new face
-      NewFace:=TFreeSubdivisionFace.Create(aOwner);
+      NewFace:=TFreeSubdivisionFace.Create(aOwner);        // add the new face
       NewFace.SubdivisionLevel:=self.SubdivisionLevel+1;
       aNewFaces.Add(NewFace);
 
@@ -295,14 +294,14 @@ begin
       end;                                                                      // else Showmessage(format('Subdivision error. Pts[%d] is nil',[J]));
     end;
   end else if NumberOfPoints = 3 then begin
-    // Special case, quadrisect triangle by connecting all three edge points
+    // Special case,quadrisect triangle by connecting all three edge points
     // first process the three surrounding triangles
     for I:=1 to FPoints.Count do begin
       P2:=FPoints[I-1];
       IndexPE:=(I-2+FPoints.Count) mod FPoints.Count;
-      PrevEdge:=aOwner.EdgeExists(P2, FPoints[IndexPE]);
+      PrevEdge:=aOwner.EdgeExists(P2,FPoints[IndexPE]);
       IndexCE:=(I+FPoints.Count) mod FPoints.Count;
-      CurrEdge:=aOwner.EdgeExists(P2, FPoints[IndexCE]);
+      CurrEdge:=aOwner.EdgeExists(P2,FPoints[IndexCE]);
 
       Index0:=0;
       TmpIndex:=aRefEdges.IndexOf(PrevEdge);
@@ -318,11 +317,9 @@ begin
       NewFace:=TFreeSubdivisionFace.Create(aOwner);
       NewFace.SubdivisionLevel:=self.SubdivisionLevel+1;
       aNewFaces.Add(NewFace);
-      EdgeCheck( Pts[0],Pts[1],PrevEdge.Crease,
-        PrevEdge.FControlEdge or aIsControlFace, PrevEdge.FCurve );
-      EdgeCheck( Pts[1],Pts[2],CurrEdge.Crease,
-        CurrEdge.FControlEdge or aIsControlFace, CurrEdge.FCurve);
-      EdgeCheck(Pts[2], Pts[0], False, False, nil);
+      EdgeCheck( Pts[0],Pts[1],PrevEdge.Crease,PrevEdge.FControlEdge or aIsControlFace,PrevEdge.FCurve );
+      EdgeCheck( Pts[1],Pts[2],CurrEdge.Crease,CurrEdge.FControlEdge or aIsControlFace,CurrEdge.FCurve);
+      EdgeCheck( Pts[2],Pts[0],False,False,nil );
 
       NewFace.FPoints.Capacity:=3;
       for J:=0 to 2 do begin                       // Add new face to points
@@ -330,18 +327,14 @@ begin
         Pts[J].AddFace( NewFace );
       end;
     end;
-    // then process the center triangle
-    for I:=1 to FPoints.Count do
-    begin
+    for I:=1 to FPoints.Count do begin      // then process the center triangle
       P2:=FPoints[I-1];
       IndexPE:=(I-2+FPoints.Count) mod FPoints.Count;
-      PrevEdge:=aOwner.EdgeExists(P2, FPoints[IndexPE]);
+      PrevEdge:=aOwner.EdgeExists(P2,FPoints[IndexPE]);
       TmpIndex:=aRefEdges.IndexOf(PrevEdge);
       Pts[I-1]:=aRefEdges.Objects[TmpIndex];   // PrevEdge.FNewLocation;
     end;
-
-    // add the new face
-    NewFace:=TFreeSubdivisionFace.Create(aOwner);
+    NewFace:=TFreeSubdivisionFace.Create(aOwner);           // add the new face
     aNewFaces.Add(NewFace);
 
     EdgeCheck(Pts[0],Pts[1],False,False,nil);

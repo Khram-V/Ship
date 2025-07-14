@@ -27,9 +27,9 @@ Type
   operator = ( const A,B: T3DVector): boolean;
   operator - ( const A,B: T3DVector ): T3DVector;  // A-B
   operator + ( const A,B: T3DVector ): T3DVector;
-  operator * ( const A,B: T3DVector ): T3DVector;  // векторное пероизведение
-  operator * ( const D:TFloatType; const B:T3DVector ): T3DVector;  // D*B
-  operator / ( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/D
+  operator*( const A,B: T3DVector ): T3DVector;  // векторное пероизведение
+  operator*( const D:TFloatType; const B:T3DVector ): T3DVector;  // D*B
+  operator/( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/D
   operator - ( const A,B: T2DCoordinate ): T2DCoordinate; // A-B
 Type
   TRGBTriple=packed record rgbtBlue : BYTE;
@@ -41,7 +41,7 @@ Type
   T3DVectorArray       = array of T3DVector;
   TPointArray          = array of TPoint;
   TFreePrecisionType   =( fpLow,fpMedium,fpHigh,fpVeryHigh );                // Precision of the ship-model
-  TFreeIntersectionType=( fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal);// Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
+  TFreeIntersectionType=( fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal);// Different types of intersectionlines,stations,buttocks,waterlines and lines orientated in random planes
   TFreeModelView       =( mvPort,mvBoth );                                   // Show half the hull or the entire hull
   TFreeEditMode        =( emSelectItems,emAddPoint,emAddFlowLine );          // The program responds differnt to mouse actions depending on the editmode of the component
   TFreeHydrostaticCoeff=( fcProjectSettings,fcActualData );
@@ -107,7 +107,7 @@ Function AxisStep( D: double ): double;            // для разметки о
 procedure ArraySort( var FloatArray: TFloatArray; var N:integer );
 Procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
 ( XX: TFloatType;            // аргумент поиска
-  N: integer;                // наверное, длина массива
+  N: integer;                // наверное,длина массива
   X,Y: array of TFloatType;  // собственно аргумент и функция
   var YY: TFloatType         // результат
 );                           // и без проверок интервалов аргумента !!!
@@ -145,18 +145,18 @@ begin result.x:=(A.x-B.x);   // B:=( X:1.0; Y:2.0; Z:0.3 );
       result.z:=(A.z-B.z);
 end;
 
-operator / ( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/B
+operator/( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/B
 begin result.x:=A.x/D;
       result.y:=A.y/D;
       result.z:=A.z/D;
 end;
 
-operator * ( const D:TFloatType; const B:T3DVector): T3DVector; // scalar product
+operator*( const D:TFloatType; const B:T3DVector): T3DVector; // scalar product
 begin result.x:=D*B.x;
       result.y:=D*B.y;
       result.z:=D*B.z;
 end;
-operator * ( const A,B: T3DVector ): T3DVector;        // crossproduct
+operator*( const A,B: T3DVector ): T3DVector;        // crossproduct
 begin result.x:=(A.y*B.z)-(A.z*B.y);                  // векторное произведение
       result.y:=(A.z*B.x)-(A.x*B.z);
       result.z:=(A.x*B.y)-(A.y*B.x);
@@ -187,7 +187,7 @@ end;
 
 procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
 ( XX: TFloatType;             // аргумент поиска
-  N: integer;                 // наверное, длина массива
+  N: integer;                 // наверное,длина массива
   X,Y: array of TFloatType;   // собственно аргумент и функция
   var YY: TFloatType );       // результат
 var I:integer; B:boolean;     // и без проверок интервалов аргумента !!!
@@ -223,14 +223,14 @@ function FloatToDec(Value: TFloatType; Maxlength: integer): AnsiString;
 begin  //  fmt:=DefaultFormatSettings;
        //  fmt.DecimalSeparator:='.';
        //  fmt.ThousandSeparator:=',';
-  Result:=FloatToStrF( Value,ffFixed,MaxLength+2,Maxlength ); //, fmt);
+  Result:=FloatToStrF( Value,ffFixed,MaxLength+2,Maxlength ); //,fmt);
   MaxLength:=Length( Result );
   while Result[MaxLength]='0' do dec( MaxLength );
-  if Result[MaxLength] in ['.', ','] then Inc(MaxLength);
+  if Result[MaxLength] in ['.',','] then Inc(MaxLength);
   SetLength( Result,MaxLength );
 { while Result[Length(Result)]='0' do Delete(Result,Length(Result),1);
   if Length(Result)<MaxLength then Result:=Result+'0' else
-  if Result[Length(Result)] in ['.', ','] then Result:=Result+'0'; }
+  if Result[Length(Result)] in ['.',','] then Result:=Result+'0'; }
 end; {FloatToDec}
 
 Function GetFloat( var S: AnsiString ): TFloatType;
@@ -241,7 +241,7 @@ begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
       if I=0 then I:=J;                              // начало записи числа
       if S[J]='.' then begin LocalFormatSettings.DecimalSeparator:='.';
                              LocalFormatSettings.ThousandSeparator:=','; end else
-      if S[J]=',' then begin LocalFormatSettings.DecimalSeparator:=',';
+      if S[J]=', ' then begin LocalFormatSettings.DecimalSeparator:=',';
                              LocalFormatSettings.ThousandSeparator:='.'; end;
     end else if I>0 then begin K:=J; break; end;    // здесь к = новый пробел
   end;
@@ -298,7 +298,7 @@ end;
 {$else}
 procedure ArraySort( var FloatArray:TFloatArray; var N:integer ); var I:integer;
   procedure QuickSort(L,R:integer); var I,J:integer; Val: TFloatType;
-    procedure Swap(I, J: integer); var Tmp: TFloatType;
+    procedure Swap(I,J: integer); var Tmp: TFloatType;
     begin Tmp:=FloatArray[I]; FloatArray[I]:=FloatArray[J]; FloatArray[J]:=Tmp; end;
   begin I:=L; J:=R; Val:=FloatArray[(L+R) div 2];
     repeat while FloatArray[I]<Val do Inc(I);
@@ -321,19 +321,19 @@ end; {SortFloatArray}
 function FindWaterViscosity(Temper:TFloatType; Units:TFreeUnitType):TFloatType;
 const
 Temp: array of TFloatType =  //  t,grad C  [0..17]
-(0.0, 3.8, 5.0, 7.2,  10.0, 12.2, 15.0, 17.2, 20.0, 22.2,25.0,30.0,40, 50, 60,  70,  80,  90);
+(0.0,3.8,5.0,7.2, 10.0,12.2,15.0,17.2,20.0,22.2,25.0,30.0,40,50,60, 70, 80, 90);
 Visc: array of TFloatType =  //  Nu*1000
 (1.82,1.61,1.56,1.462,1.352,1.274,1.189,1.125,1.02,0.95,0.910,0.817,0.666,0.56,0.479,0.414,0.362,0.321);
 { t   0     1.0 2.0  3.0  4.0  5.0  6.0   7.0  8.0  9.0  10   11   12   13   14   ++  15   16   17   18   19   ++  20   21   22   23   24
  Ro<999>.841~.9~.941~.965~.973~.965~.909 ~.849~.782~.701~.606~.498~.377~.244~.099<998>.943~.775~.594~.406~.205<997>.994~.772~.540~.299~.047
  Nu=(1.75+0.014*s+t*(0.000645*t-0.0503))*1e      -6      ~~~ для соленой воды }
 begin Result:=1.02;
-    Interpolation( Temper, Length( Temp), Temp,Visc, Result );
+    Interpolation( Temper,Length( Temp),Temp,Visc,Result );
     if Units=fuImperial then Result:=Result/(Foot*Foot); // convert to imperial
 end;
 
-(*                         //...странная интерполяция, но тоже была в работе...
-procedure SFINEX1         // всё то же, но в ином порядке...
+(*                         //...странная интерполяция,но тоже была в работе...
+procedure SFINEX1         // всё то же,но в ином порядке...
 ( N: integer; X,Y: array of single; X0: single; var YY: single );
 var                     // Нелинейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
   N1,J1,J2,J3,I: integer; SFIN: single;
@@ -341,31 +341,31 @@ label exlabel;
 begin SFIN:=0; J1:=0; J2:=1; J3:=2; N1:=N-1;
   if N1 = 0 then begin SFIN:=Y[J1]; goto exlabel; end;
   if (X0 <= X[0]) and (N1 > 1) then begin
-    SFIN:=Y[J1]+(Y[J2]-Y[J1]) * (X0-X[J1]) / (X[J2]-X[J1]); goto exlabel;
+    SFIN:=Y[J1]+(Y[J2]-Y[J1])*(X0-X[J1])/(X[J2]-X[J1]); goto exlabel;
   end;
   if (X0 > X[N1]) then begin
-    SFIN:=Y[N1]+(Y[N1]-Y[N1-1]) * (X0-X[N1]) / (X[N1]-X[N1-1]); goto exlabel;
+    SFIN:=Y[N1]+(Y[N1]-Y[N1-1])*(X0-X[N1])/(X[N1]-X[N1-1]); goto exlabel;
   end;
   if (X0 <= X[J2]) and (N1 >= 2) then begin
-    SFIN:=(X0-X[J3]) / (X[J1]-X[J2]) * ((X0-X[J2]) / (X[J1]-X[J3]) *
-      Y[J1]-(X0-X[J1]) / (X[J2]-X[J3]) * Y[J2])+(X0-X[J1]) *
-      (X0-X[J2]) * Y[J3] / ((X[J3]-X[J1]) * (X[J3]-X[J2]));
+    SFIN:=(X0-X[J3])/(X[J1]-X[J2])*((X0-X[J2])/(X[J1]-X[J3]) *
+      Y[J1]-(X0-X[J1])/(X[J2]-X[J3])*Y[J2])+(X0-X[J1]) *
+      (X0-X[J2])*Y[J3]/((X[J3]-X[J1])*(X[J3]-X[J2]));
     goto exlabel;
   end;
-  if (X0 > X[N1-1]) then begin SFIN:=(X0-X[N1]) / (X[N1-2]-X[N1-1]) *
-      ((X0-X[N1-1]) / (X[N1-2]-X[N1]) * Y[N1-2]-(X0-X[N1-2]) *
-      Y[N1-1] / (X[N1-1]-X[N1]))+(X0-X[N1-2]) * (X0-X[N1-1]) /
-      (X[N1]-X[N1-2]) * Y[N1] / (X[N1]-X[N1-1]); goto exlabel;
+  if (X0 > X[N1-1]) then begin SFIN:=(X0-X[N1])/(X[N1-2]-X[N1-1]) *
+      ((X0-X[N1-1])/(X[N1-2]-X[N1])*Y[N1-2]-(X0-X[N1-2]) *
+      Y[N1-1]/(X[N1-1]-X[N1]))+(X0-X[N1-2])*(X0-X[N1-1]) /
+      (X[N1]-X[N1-2])*Y[N1]/(X[N1]-X[N1-1]); goto exlabel;
   end;
   N1:=N-2;
   for I:=1 to N1 do if (X0 > X[I-1]) and (X0 <= X[I]) then
-      SFIN:=0.5 * ((X0-X[I-1]) * (X0-X[I]) *
-        (Y[I-2] / ((X[I-2]-X[I-1]) * (X[I-2]-X[I])) +
-        Y[I+1] / ((X[I+1]-X[I-1]) * (X[I+1]-X[I]))) +
-        (X0-X[I]) * ((X0-X[I-2]) / (X[I-1]-X[I-2]) +
-        (X0-X[I+1]) / (X[I-1]-X[I+1])) * Y[I-1] /
-        (X[I-1]-X[I])+(X0-X[I-1]) * ((X0-X[I-2]) /
-        (X[I]-X[I-2])+(X0-X[I+1]) / (X[I]-X[I+1])) * Y[I] /
+      SFIN:=0.5*((X0-X[I-1])*(X0-X[I]) *
+        (Y[I-2]/((X[I-2]-X[I-1])*(X[I-2]-X[I])) +
+        Y[I+1]/((X[I+1]-X[I-1])*(X[I+1]-X[I]))) +
+        (X0-X[I])*((X0-X[I-2])/(X[I-1]-X[I-2]) +
+        (X0-X[I+1])/(X[I-1]-X[I+1]))*Y[I-1] /
+        (X[I-1]-X[I])+(X0-X[I-1])*((X0-X[I-2]) /
+        (X[I]-X[I-2])+(X0-X[I+1])/(X[I]-X[I+1]))*Y[I] /
         (X[I]-X[I-1]));
 exlabel: yy:=SFIN;
 end; *)

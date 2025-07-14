@@ -1,11 +1,11 @@
 unit Free2DDXFExportDlg;
 {$MODE Delphi}{$H+}
 interface uses
-  SysUtils, Forms,
-  Controls, Dialogs,
-  StdCtrls, Buttons,
-  ExtCtrls, Spin,
-  LazFileUtils, FreeLanguageSupport;
+  SysUtils,Forms,
+  Controls,Dialogs,
+  StdCtrls,Buttons,
+  ExtCtrls,Spin,
+  LazFileUtils,FreeLanguageSupport;
 type                                                     { TDXFExport2DDialog }
 
   TDXFExport2DDialog = class(TForm)
@@ -77,7 +77,7 @@ end;
 procedure TDXFExport2DDialog.SpeedButton1Click( Sender: TObject );
 var Tmp: AnsiString;
 begin
-  Tmp:=BrowseForFolder( 'Choose a directory where you want to save the dxf files to: ', ExportDirectory);
+  Tmp:=BrowseForFolder( 'Choose a directory where you want to save the dxf files to: ',ExportDirectory);
   if DirectoryExistsUTF8(Tmp) then self.ExportDirectory:=Tmp; { *Converted from DirectoryExists* }
 end;
 procedure TDXFExport2DDialog.BitBtn1Click(Sender: TObject);

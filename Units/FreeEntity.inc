@@ -36,11 +36,11 @@ end;
 
 destructor TFreeEntity.Destroy; begin inherited Destroy; end;
 
-procedure TFreeEntity.Extents(var Min, Max: T3DVector);
+procedure TFreeEntity.Extents(var Min,Max: T3DVector);
 begin
   if not Built then Rebuild;
-  MinMax(FMin, Min, Max);
-  MinMax(FMax, Min, Max);
+  MinMax(FMin,Min,Max);
+  MinMax(FMax,Min,Max);
 end;
 
 procedure TFreeEntity.Draw( Viewport: TFreeViewport ); begin end;

@@ -4,7 +4,7 @@ interface uses
      {$ifdef Windows}
       Windows,
      {$else}
-     LCLIntf, LCLType, //
+     LCLIntf,LCLType,//
      {$endif}
      classes,
      SysUtils,
@@ -151,11 +151,11 @@ begin
               IntToStr(K2)+ParameterDelimiter+                // Upper index of second sum
               IntToStr(M1)+ParameterDelimiter+                // Degree of first basis functions
               IntToStr(M2)+ParameterDelimiter+                // Degree of second basis functions
-              IntToStr(Prop[1])+ParameterDelimiter+           // 0=closed in first direction, 1=not closed
-              IntToStr(Prop[2])+ParameterDelimiter+           // 0=closed in second direction, 1=not closed
-              IntToStr(Prop[3])+ParameterDelimiter+           // 0=rational, 1=polynomial
-              IntToStr(Prop[4])+ParameterDelimiter+           // 0=nonperiodic in first direction , 1=periodic
-              IntToStr(Prop[5])+                              // 0=nonperiodic in second direction , 1=periodic
+              IntToStr(Prop[1])+ParameterDelimiter+           // 0=closed in first direction,1=not closed
+              IntToStr(Prop[2])+ParameterDelimiter+           // 0=closed in second direction,1=not closed
+              IntToStr(Prop[3])+ParameterDelimiter+           // 0=rational,1=polynomial
+              IntToStr(Prop[4])+ParameterDelimiter+           // 0=nonperiodic in first direction ,1=periodic
+              IntToStr(Prop[5])+                              // 0=nonperiodic in second direction ,1=periodic
               CreateKnotvector(K1,M1,Nurb.ColKnotVector)+     // knot sequence
               CreateKnotvector(K2,M2,Nurb.RowKnotVector)+     // second knot sequence
               CreateWeightVector(C);                          // weight sequence

@@ -1,12 +1,12 @@
 unit FreeSaveImageDlg;
 {$MODE Delphi}{$H+}
 interface uses
-     Classes,   SysUtils,
-     Controls,  Forms,
-     ExtCtrls,  Dialogs,
-     StdCtrls,  Buttons, FreeTypes;
+     Classes,  SysUtils,
+     Controls, Forms,
+     ExtCtrls, Dialogs,
+     StdCtrls, Buttons,FreeTypes;
 type TSaveImageDialog = class(TForm)
-     Edit1, Edit2, Edit3: TEdit;
+     Edit1,Edit2,Edit3: TEdit;
      Panel1,Panel2,Panel3: TPanel;
      Label1,Label2,Label3,Label4,_Label5,Label6,Label7: TLabel;
      SpeedButton1,BitBtn1,BitBtn2: TSpeedButton;

@@ -51,9 +51,9 @@ begin
   OpenDialog.Filter:=createDialogFilter( rsSTLFile,['stl'] );
   if OpenDialog.Execute then begin
     if not CheckIfChangedAndAskToSave() then begin FreeAndNil(OpenDialog); exit; end;
-//  CreateUndoObject( rsSTLfile, True);
+//  CreateUndoObject( rsSTLfile,True);
     FreeShip.Clear;
-    FileName:=ChangeFileExt( OpenDialog.FileName, '.stl' );
+    FileName:=ChangeFileExt( OpenDialog.FileName,'.stl' );
     AssignFile( FFile,FileName ); Reset( FFile );
     if IOResult = 0 then begin
       if not EOF(FFile) then begin
@@ -69,7 +69,7 @@ begin
       FreeShip.FileChanged:=True;
       FreeShip.RebuildModel;
       FreeShip.Redraw;
-    end else MessageDlg( UserString(97), mtError, [mbOK], 0);
+    end else MessageDlg( UserString(97),mtError,[mbOK],0);
   end;
   FreeAndNil(OpenDialog);
 end;{TFreeEdit.File_ImportSTL}
@@ -134,7 +134,7 @@ begin
 //    end;
     end
     else
-      MessageDlg( UserString(97), mtError, [mbOK], 0);
+      MessageDlg( UserString(97),mtError,[mbOK],0);
 end;
 
 procedure TFreeEdit.File_ImportSTLbin(FileName: AnsiString);
@@ -143,13 +143,13 @@ var
   STLheader: array[0..79] of char;
   STLfacets: uint32;
   STLrecord: packed record
-      normalX,   normalY,   normalZ: single;
-    vertex1_X, vertex1_Y, vertex1_Z: single;      // для Зумвальта, т.к.
-    vertex2_X, vertex2_Y, vertex2_Z: single;      // другого файла провреки
-    vertex3_X, vertex3_Y, vertex3_Z: single;      // тогда не находилось
+      normalX,  normalY,  normalZ: single;
+    vertex1_X,vertex1_Y,vertex1_Z: single;      // для Зумвальта,т.к.
+    vertex2_X,vertex2_Y,vertex2_Z: single;      // другого файла провреки
+    vertex3_X,vertex3_Y,vertex3_Z: single;      // тогда не находилось
     unused: uint16;
   end;
-  Str: AnsiString; SolidNr, FacetNr: Integer; r: longint; V: T3DVector;
+  Str: AnsiString; SolidNr,FacetNr: Integer; r: longint; V: T3DVector;
   Layer: TFreeSubdivisionLayer;
   FacePoints: TFasterListTFreeSubdivisionControlPoint;
   CtrPoint: TFreeSubdivisionControlPoint;
@@ -195,7 +195,7 @@ begin
         FileStream.Free;
         SubdivisionSurface.IsLoading:=false;
 //      end;
-    end else MessageDlg( UserString(97), mtError, [mbOK], 0);
+    end else MessageDlg( UserString(97),mtError,[mbOK],0);
 end;
 //
 // Virtual Modeling
@@ -236,22 +236,22 @@ end;
 //
 procedure TFreeEdit.ImportFrames;
 type
-  TMinMax = record MinZ, MaxZ: TFloatType; end;
+  TMinMax = record MinZ,MaxZ: TFloatType; end;
   // Assumptions:
   //    1. All stations have multiplicity of 1
   //    2. All stations are defined from bottom to top
 var
   OpenDialog: TOpenDialog;
-  I, J, K, Nr, Index, NoStations, NoPoints: integer;
+  I,J,K,Nr,Index,NoStations,NoPoints: integer;
   Frames: TFasterListTFreeSpline;
   FFile: TextFile;
-  Spline, NewSpline: TFreeSpline;
+  Spline,NewSpline: TFreeSpline;
   P: T3DVector;
-  ValidStation, IsFaceDeleted: boolean;
+  ValidStation,IsFaceDeleted: boolean;
   MinMaxData: array of TMinMax;
-  MinZ, MaxZ: TFloatType;
+  MinZ,MaxZ: TFloatType;
   ControlPoints: array of array of TFreeSubdivisionControlPoint;
-  P1, P2: TFreeSubdivisionControlPoint;
+  P1,P2: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
   Face: TFreeSubdivisionControlFace;
   Points: TFasterListTFreeSubdivisionControlPoint;
@@ -264,8 +264,8 @@ begin
   if OpenDialog.Execute then begin
     Frames:=TFasterListTFreeSpline.Create;
     case OpenDialog.FilterIndex of
-      1: begin      // 3D textfile containing stations, waterlines and buttocks
-        AssignFile(FFile, Opendialog.FileName);
+      1: begin      // 3D textfile containing stations,waterlines and buttocks
+        AssignFile(FFile,Opendialog.FileName);
 {$I-}
         Reset(FFile);
 {$I+}
@@ -279,7 +279,7 @@ begin
             ValidStation:=NoPoints>1;
             for J:=1 to Nopoints do begin
 //            try
-                Inc( Nr ); Read( FFile, P.X,P.Y,P.Z );
+                Inc( Nr ); Read( FFile,P.X,P.Y,P.Z );
                 if not EOLN(FFile) then Readln(FFile,K)
                                    else begin K:=0; Readln( FFile ); end;
 //            except
@@ -309,7 +309,7 @@ begin
         < TFreeSpline(Frames[I-1]).Point[0].X then Frames.Exchange(I-1,J-1);
                               // Determine the minimum and maximum Z values for
                            // each station and the overall min/max z-coordinate
-      Setlength(MinMaxData, Frames.Count);
+      Setlength(MinMaxData,Frames.Count);
       for I:=1 to Frames.Count do begin
         Spline:=Frames[I-1];
         MinMaxData[I-1].MinZ:=Spline.Point[0].Z;
@@ -332,7 +332,7 @@ begin
         if Spline.Point[0].Z > MinZ then begin
           P:=Spline.Point[0];
           P.Z:=MinZ;
-          Spline.Insert(0, P);
+          Spline.Insert(0,P);
           Spline.Knuckle[1]:=True;
         end;                                                  // extend upwards
         if Spline.Point[Spline.NumberOfPoints-1].Z < MaxZ then begin
@@ -345,13 +345,13 @@ begin
       NoPoints:=10; // resample all stations to a user defined number of points
       NoPoints:=StrToInt(InputBox('',Userstring(135)+':',IntToStr(NoPoints)));
       if NoPoints<5 then NoPoints:=5;
-      Setlength(ControlPoints, Frames.Count);
+      Setlength(ControlPoints,Frames.Count);
       for I:=1 to Frames.Count do begin
         Spline:=Frames[I-1];
         NewSpline:=TFreeSpline.Create(FreeShip.Surface);
         NewSpline.Capacity:=NoPoints;
         for J:=1 to NoPoints do begin
-          P:=Spline.Value((J-1) / (NoPoints-1));
+          P:=Spline.Value((J-1)/(NoPoints-1));
           NewSpline.Add(P);
         end;                                // correct for any present knuckles
         for J:=1 to Spline.NumberOfPoints do
@@ -365,7 +365,7 @@ begin
                                             // Delete the old station
         FreeAndNil(Spline);                 // and replace by the resampled one
         Frames[I-1]:=NewSpline; // Add the controlpoints to the subdivision surface
-        Setlength(ControlPoints[I-1], NewSpline.NumberOfPoints);
+        Setlength(ControlPoints[I-1],NewSpline.NumberOfPoints);
         for J:=1 to NewSpline.NumberOfPoints do
           ControlPoints[I-1][J-1] :=
             FreeShip.Surface.AddControlPoint(NewSpline.Point[J-1]);
@@ -379,7 +379,7 @@ begin
           Points.Add(ControlPoints[I-1][J-2]);
           Points.Add(ControlPoints[I-2][J-2]);
           Points.Add(ControlPoints[I-2][J-1]);
-          FreeShip.Surface.AddControlFace(Points, True);
+          FreeShip.Surface.AddControlFace(Points,True);
         end;
 
       Points.Clear;                        // Try to reconnect the contourline
@@ -398,13 +398,13 @@ begin
             break;
           end else Points.Add(ControlPoints[I-1][J-1]); // store to be deleted later
         if (P1 <> nil) and (P2 <> nil) then begin
-          Edge:=FreeShip.Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
+          Edge:=FreeShip.Surface.EdgeExists(P1,P2) as TFreeSubdivisionControlEdge;
           if Edge <> nil then Edge.Crease:=True
           else begin // Find out if P1 and P2 share the same controlface
             for J:=1 to P1.NumberOfFaces do
               if P2.IndexOfFace(P1.Face[J-1]) <> -1 then begin
                 Face:=P1.Face[J-1] as TFreeSubdivisionControlFace;
-                Edge:=Face.InsertEdge(P1, P2, IsFaceDeleted);
+                Edge:=Face.InsertEdge(P1,P2,IsFaceDeleted);
                 if Edge <> nil then
                   Edge.Crease:=True;
               end;
@@ -429,13 +429,13 @@ begin
             break;
           end;
         if (P1 <> nil) and (P2 <> nil) then begin
-          Edge:=FreeShip.Surface.EdgeExists(P1, P2) as TFreeSubdivisionControlEdge;
+          Edge:=FreeShip.Surface.EdgeExists(P1,P2) as TFreeSubdivisionControlEdge;
           if Edge <> nil then Edge.Crease:=True
           else begin        // Find out if P1 and P2 share the same controlface
             for J:=1 to P1.NumberOfFaces do
               if P2.IndexOfFace(P1.Face[J-1]) <> -1 then begin
                 Face:=P1.Face[J-1] as TFreeSubdivisionControlFace;
-                Edge:=Face.InsertEdge(P1, P2, IsFaceDeleted);
+                Edge:=Face.InsertEdge(P1,P2,IsFaceDeleted);
                 if Edge <> nil then Edge.Crease:=True;
               end;
             DelayedDestroyList.DestroyAll;
@@ -473,8 +473,8 @@ end;{TFreeEdit.ImportFrames}
 procedure TFreeShip.ImportChines
 ( Np: integer; Chines: TFasterListTFreeSpline );
 var
-  I, J: integer;
-  P, Min, Max: T3DVector;
+  I,J: integer;
+  P,Min,Max: T3DVector;
   Pts,Pts2,Tmp: TFasterListTFreeSubdivisionControlPoint;
   Points: array of array of TFreeSubdivisionControlPoint;
   Point: TFreeSubdivisionControlPoint;
@@ -495,47 +495,47 @@ begin
     // add special layer to close the hull at centerline
     vLayer:=Surface.AddNewLayer;
     vLayer.Name:=Userstring(187);
-    Setlength(Points, Np);
+    Setlength(Points,Np);
 
     // Prepare matrices
     Matrix:=TFreeMatrix.Create;
-    Matrix.SetSize(Np, Np);
+    Matrix.SetSize(Np,Np);
     Matrix.Fill(0.0);
-    Matrix.Value[0, 0]:=1.0;
+    Matrix.Value[0,0]:=1.0;
     for I:=2 to Np-1 do begin
-      Matrix.Value[I-1,I-2]:=1 / 6;
-      Matrix.Value[I-1,I-1]:=2 / 3;
-      Matrix.Value[I-1,I]:=1 / 6;
+      Matrix.Value[I-1,I-2]:=1/6;
+      Matrix.Value[I-1,I-1]:=2/3;
+      Matrix.Value[I-1,I]:=1/6;
     end;
-    Matrix.Value[Np-1, Np-1]:=1.0;                 // Invert matrix
+    Matrix.Value[Np-1,Np-1]:=1.0;                 // Invert matrix
     Inv:=Matrix.Invert;
     FreeAndNil(Matrix);
 
     OrgPts:=TFreeMatrix.Create;
     OrgPts.SetSize( 3,Np );
 
-    for I:=1 to Np do Setlength(Points[I-1], Chines.Count);
+    for I:=1 to Np do Setlength(Points[I-1],Chines.Count);
     for I:=1 to Chines.Count do begin
       Spline:=Chines[I-1];
       OrgPts.Fill(0.0);
       for J:=1 to Np do begin
-        P:=Spline.Value((J-1) / (Np-1));
-        OrgPts.Value[J-1, 0]:=P.X;
-        OrgPts.Value[J-1, 1]:=P.Y;
-        OrgPts.Value[J-1, 2]:=P.Z;
+        P:=Spline.Value((J-1)/(Np-1));
+        OrgPts.Value[J-1,0]:=P.X;
+        OrgPts.Value[J-1,1]:=P.Y;
+        OrgPts.Value[J-1,2]:=P.Z;
       end;
       // calculate new points
       NewPts:=Inv.Multiply(OrgPts);
       for J:=1 to Np do begin
-        P.X:=NewPts.Value[J-1, 0];
-        P.Y:=NewPts.Value[J-1, 1];
+        P.X:=NewPts.Value[J-1,0];
+        P.Y:=NewPts.Value[J-1,1];
         if P.Y < 0 then P.Y:=0;
-        P.Z:=NewPts.Value[J-1, 2];
+        P.Z:=NewPts.Value[J-1,2];
         if (I = 1) and (J = 1) then begin
           Min:=P;
           Max:=Min;
         end
-        else MinMax(P, Min, Max);
+        else MinMax(P,Min,Max);
         Points[J-1][I-1]:=Surface.AddControlPoint(P);
       end;
       FreeAndNil(NewPts);
@@ -565,12 +565,12 @@ begin
         Point:=Points[I-1][J-2];
         if Pts.IndexOf(Point) = -1 then Pts.Add(Point);
         if Pts.Count > 2 then
-          Surface.AddControlFace(Pts, True, Surface.Layer[J-2]);
+          Surface.AddControlFace(Pts,True,Surface.Layer[J-2]);
       end;
 
     for I:=2 to Np do
       for J:=1 to Chines.Count do begin
-        Edge:=Surface.EdgeExists(Points[I-2][J-1], Points[I-1][J-1])
+        Edge:=Surface.EdgeExists(Points[I-2][J-1],Points[I-1][J-1])
                 as TFreeSubdivisionControlEdge;
         if Edge <> nil then Edge.Crease:=True;
       end;
@@ -582,14 +582,14 @@ begin
       for I:=1 to Np do begin
         Curve.AddPoint(Points[I-1][J-1]);
         if I > 1 then begin
-          Edge:=Surface.EdgeExists(Points[I-2][J-1], Points[I-1][J-1]) as
+          Edge:=Surface.EdgeExists(Points[I-2][J-1],Points[I-1][J-1]) as
             TFreeSubdivisionControlEdge;
           if Edge <> nil then Edge.Curve:=Curve;
         end;
       end;
     end;
 
-    // Check for stem, keel and stern points to be closed
+    // Check for stem,keel and stern points to be closed
     Pts.Clear;
     // first stern
     for I:=Chines.Count downto 2 do Pts.Add(Points[Np-1][I-1]);
@@ -615,7 +615,7 @@ begin
       if Tmp.IndexOf(Pts2[I-2]) = -1 then Tmp.Add(Pts2[I-2]);
       if Tmp.IndexOf(Pts[ I-2]) = -1 then Tmp.Add(Pts[I-2]);
       if Tmp.IndexOf(Pts[ I-1]) = -1 then Tmp.Add(Pts[I-1]);
-      if Tmp.Count > 2 then Surface.AddControlFace(Tmp, False, vLayer);
+      if Tmp.Count > 2 then Surface.AddControlFace(Tmp,False,vLayer);
     end;
 
     // Now check if there are any edges on the bottom panel that are created by extruding the
@@ -637,7 +637,7 @@ begin
     }
     // set transom as knuckle
     for J:=2 to Chines.Count do begin
-      Edge:=Surface.EdgeExists(Points[Np-1][J-2], Points[Np-1][J-1]) as
+      Edge:=Surface.EdgeExists(Points[Np-1][J-2],Points[Np-1][J-1]) as
         TFreeSubdivisionControlEdge;
       if Edge <> nil then Edge.Crease:=True;
     end;
@@ -651,9 +651,9 @@ begin
     FreeAndNil( Pts2 );
     FreeAndNil( Pts  );
 //  finally
-    Extents(Min, Max);
+    Extents(Min,Max);
     //ProjectSettings.ProjectWaterDensity:=1.0;
-    ProjectSettings.ProjectBeam:=2 * Max.Y;
+    ProjectSettings.ProjectBeam:=2*Max.Y;
     ProjectSettings.ProjectLength:=Max.X-Min.X;
     ProjectSettings.ProjectDraft:=1.0;
     Built:=False;
@@ -672,7 +672,7 @@ end;
 procedure TFreeEdit.File_ImportSurface;
 var
   OpenDialog: TOpenDialog;
-  I, J, Nr, Cols, Rows: integer;
+  I,J,Nr,Cols,Rows: integer;
   Str: AnsiString;
   FFile: TextFile;
   Spline,NewSpline: TFreeSpline;
@@ -698,20 +698,20 @@ begin
     case OpenDialog.FilterIndex of
       1:
       begin // 3D textfile containing a number of curves to be interpolated
-        AssignFile(FFile, Opendialog.FileName);
+        AssignFile(FFile,Opendialog.FileName);
         {$I-}
         Reset(FFile);
         {$I+}
         if IOResult = 0 then begin Nr:=0;
-//          try            // first read unit information; 0=metric, 1=imperial
+//          try            // first read unit information; 0=metric,1=imperial
             readln( FFile,I );
             if I in [0,1] then UnitType:=TFreeUnitType(I)
                           else MessageDlg(Userstring(108),mtError,[mbOK],0);
             Spline:=TFreeSpline.Create(FreeShip.Surface);
             repeat
-              Readln(FFile, Str);
+              Readln(FFile,Str);
               repeat
-                I:=Pos(#9, Str);
+                I:=Pos(#9,Str);
                 if I <> 0 then str[I]:=#32;
               until I = 0;
               Inc(Nr);
@@ -732,7 +732,7 @@ begin
             if Spline.NumberOfPoints > 1 then Curves.Add(Spline)
                                          else FreeAndNil(Spline);
 //          except
-//            MessageDlg(Userstring(132)+#32+IntToStr(Nr), mtError, [mbOK], 0);
+//            MessageDlg(Userstring(132)+#32+IntToStr(Nr),mtError,[mbOK],0);
 //          end;
           CloseFile(FFile);
         end else ShowMessage(Userstring(132));
@@ -742,16 +742,16 @@ begin
     begin
       PrevCursor:=Screen.Cursor;
       FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-//    CreateUndoObject(Userstring(136), True);
+//    CreateUndoObject(Userstring(136),True);
       FreeShip.Clear;
       FreeShip.ProjectSettings.ProjectUnits:=UnitType;
       FreeShip.Filename:=Opendialog.FileName;
 //    try
         Cols:=Curves.Count;
-        Cols:=StrToInt(InputBox('', Userstring(137)+':', IntToStr(Cols)));
+        Cols:=StrToInt(InputBox('',Userstring(137)+':',IntToStr(Cols)));
         if Cols < 3 then Cols:=3;
         Rows:=10;
-        Rows:=StrToInt(InputBox('', Userstring(138)+':', IntToStr(Rows)));
+        Rows:=StrToInt(InputBox('',Userstring(138)+':',IntToStr(Rows)));
         if Rows < 3 then Rows:=3;
 
         // Build number of desired longitudinal curves
@@ -762,7 +762,7 @@ begin
           Newspline.Capacity:=Curves.Count;
           for J:=1 to Curves.Count do begin
             Spline:=Curves[J-1];
-            Newspline.Add(Spline.Value((I-1) / (Rows-1)));
+            Newspline.Add(Spline.Value((I-1)/(Rows-1)));
           end;
         end;
         for I:=1 to Curves.Count do begin
@@ -778,36 +778,36 @@ begin
 
         // build matrix for column interpolation
         Matrix:=TFreeMatrix.Create;
-        Matrix.SetSize(Cols, Cols);
+        Matrix.SetSize(Cols,Cols);
         Matrix.Fill(0.0);
         Matrix.Value[0,0]:=1.0;
         for I:=2 to Cols-1 do begin
-          Matrix.Value[I-1,I-2]:=1 / 6;
-          Matrix.Value[I-1,I-1]:=2 / 3;
-          Matrix.Value[I-1,I]:=1 / 6;
+          Matrix.Value[I-1,I-2]:=1/6;
+          Matrix.Value[I-1,I-1]:=2/3;
+          Matrix.Value[I-1,I]:=1/6;
         end;
-        Matrix.Value[Cols-1, Cols-1]:=1.0;
+        Matrix.Value[Cols-1,Cols-1]:=1.0;
         Colmatrix:=Matrix.Invert;
 
-        Matrix.SetSize(Rows, Rows);
+        Matrix.SetSize(Rows,Rows);
         Matrix.Fill(0.0);
-        Matrix.Value[0, 0]:=1.0;
+        Matrix.Value[0,0]:=1.0;
         for I:=2 to Rows-1 do begin
-          Matrix.Value[I-1,I-2]:=1 / 6;
-          Matrix.Value[I-1,I-1]:=2 / 3;
-          Matrix.Value[I-1,I]:=1 / 6;
+          Matrix.Value[I-1,I-2]:=1/6;
+          Matrix.Value[I-1,I-1]:=2/3;
+          Matrix.Value[I-1,I]:=1/6;
         end;
-        Matrix.Value[Rows-1, Rows-1]:=1.0;        // Invert matrix
+        Matrix.Value[Rows-1,Rows-1]:=1.0;        // Invert matrix
         Rowmatrix:=Matrix.Invert;
         FreeAndNil(Matrix);
         Setlength(Points,Rows);                   // build initial point grid
         for I:=1 to Rows do begin
-          setlength(Points[I-1], Cols);
+          setlength(Points[I-1],Cols);
           Spline:=LongCurves[I-1];
           OrgPts:=TFreeMatrix.Create;
           OrgPts.SetSize(3,Cols);
           for J:=1 to Cols do begin
-            P:=Spline.Value((J-1) / (Cols-1));
+            P:=Spline.Value((J-1)/(Cols-1));
             OrgPts.Value[J-1,0]:=P.X;
             OrgPts.Value[J-1,1]:=P.Y;
             OrgPts.Value[J-1,2]:=P.Z;
@@ -827,19 +827,19 @@ begin
                                                             // interpolate rows
         for I:=1 to Cols do begin
           OrgPts:=TFreeMatrix.Create;
-          OrgPts.SetSize(3, Rows);
+          OrgPts.SetSize(3,Rows);
           for J:=1 to Rows do begin
             P:=Points[J-1][I-1];
-            OrgPts.Value[J-1, 0]:=P.X;
-            OrgPts.Value[J-1, 1]:=P.Y;
-            OrgPts.Value[J-1, 2]:=P.Z;
+            OrgPts.Value[J-1,0]:=P.X;
+            OrgPts.Value[J-1,1]:=P.Y;
+            OrgPts.Value[J-1,2]:=P.Z;
           end;
           NewPts:=RowMatrix.Multiply(OrgPts);
           for J:=1 to Rows do begin
-            P.X:=NewPts.Value[J-1, 0];
-            P.Y:=NewPts.Value[J-1, 1];
+            P.X:=NewPts.Value[J-1,0];
+            P.Y:=NewPts.Value[J-1,1];
             if (OrgPts.Value[J-1,1] >= 0.0) and (P.Y < 0.0) then P.Y:=0.0;
-            P.Z:=NewPts.Value[J-1, 2];
+            P.Z:=NewPts.Value[J-1,2];
             Points[J-1][I-1]:=P;
           end;
           FreeAndNil(OrgPts);
@@ -853,9 +853,9 @@ begin
         end;
         FreeAndNil(LongCurves);
                                                        // import actual surface
-        Setlength(ControlPoints, Rows);
+        Setlength(ControlPoints,Rows);
         for I:=1 to Rows do begin
-          Setlength(ControlPoints[I-1], Cols);
+          Setlength(ControlPoints[I-1],Cols);
           for J:=1 to Cols do begin
             ControlPoints[I-1][J-1] :=
               TFreesubdivisionControlPoint.Create(FreeShip.Surface);
@@ -876,7 +876,7 @@ begin
             if Pts.IndexOf(P1) = -1 then Pts.Add(P1);
             P1:=ControlPoints[I-1][J-2];
             if Pts.IndexOf(P1) = -1 then Pts.Add(P1);
-            if Pts.Count > 2 then FreeShip.Surface.AddControlFace(Pts, True);
+            if Pts.Count > 2 then FreeShip.Surface.AddControlFace(Pts,True);
           end;
         FreeAndNil(Pts);
         FreeShip.FileChanged:=True;
@@ -914,9 +914,9 @@ begin
 
   Answer:=Freeship.Edit.File_SaveCheck;
   if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
-//  CreateUndoObject(Userstring(105), True);
+//  CreateUndoObject(Userstring(105),True);
     FreeShip.Clear;
-    assignFile(FFile, ChangeFileExt(Opendialog.FileName, '.xyz'));
+    assignFile(FFile,ChangeFileExt(Opendialog.FileName,'.xyz'));
 {$I-}
     Reset(FFile);
 {$I+}
@@ -924,17 +924,17 @@ begin
       //FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
 //    try
         LineNr:=1;
-        Readln(FFile, Str);
+        Readln(FFile,Str);
         // first 18 characters are description
-        Str:=Copy(Str, 1, 18);
+        Str:=Copy(Str,1,18);
         Str:=Trim(Str);
         FreeShip.ProjectSettings.FProjectName:=Str;
         Chines:=TFasterListTFreeSpline.Create;
         while not EOF(FFile) do
         begin
-          Readln(FFile, Str);
+          Readln(FFile,Str);
           Inc(LineNr);
-          if Pos('LINE', Str) = 1 then begin         // New chine skip one line
+          if Pos('LINE',Str) = 1 then begin         // New chine skip one line
             if not EOF(FFile) then begin
               Readln(FFile);
               Inc(LineNr);
@@ -943,9 +943,9 @@ begin
               Spline:=TFreeSpline.Create(FreeShip.Surface);
               Chines.Add(Spline);
               repeat
-                Readln(FFile, Str);
+                Readln(FFile,Str);
                 repeat
-                  I:=Pos(#9, Str);
+                  I:=Pos(#9,Str);
                   if I <> 0 then Str[I]:=#32;
                 until I = 0;
                 Inc(LineNr);
@@ -960,7 +960,7 @@ begin
             end;
           end;
         end;
-        FreeShip.ImportChines(8, Chines);
+        FreeShip.ImportChines(8,Chines);
         FreeAndNil(Chines);
 //    finally
         CloseFile(FFile);
@@ -968,7 +968,7 @@ begin
         FreeShip.ModelIsLoaded:=True;
         FreeShip.RebuildModel;
 //    end;
-    end else MessageDlg(Userstring(106), mtError, [mbOK], 0);
+    end else MessageDlg(Userstring(106),mtError,[mbOK],0);
   end;
   FreeAndNil(OpenDialog);
 end;
@@ -988,7 +988,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsTextFile, ['txt']);
+  OpenDialog.Filter:=createDialogFilter(rsTextFile,['txt']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then
   begin
@@ -996,7 +996,7 @@ begin
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
 //  CreateUndoObject('ImpChines',True);
     FreeShip.Clear;
-    assignFile(FFile, ChangeFileExt(Opendialog.FileName, '.txt'));
+    assignFile(FFile,ChangeFileExt(Opendialog.FileName,'.txt'));
 {$I-}
     Reset(FFile);
 {$I+}
@@ -1006,15 +1006,15 @@ begin
       Chines:=TFasterListTFreeSpline.Create;
 //    try
 //      try
-          readln( FFile,I ); // first read unit information; 0=metric, 1=imperial
-          if I in [0, 1]
+          readln( FFile,I ); // first read unit information; 0=metric,1=imperial
+          if I in [0,1]
             then FreeShip.ProjectSettings.ProjectUnits:=TFreeUnitType(I)
-            else MessageDlg(Userstring(108), mtError, [mbOK], 0);
+            else MessageDlg(Userstring(108),mtError,[mbOK],0);
           Spline:=TFreeSpline.Create(FreeShip.Surface);
           repeat
-            Readln(FFile, Str);
+            Readln(FFile,Str);
             repeat
-              i:=Pos(#9, Str);
+              i:=Pos(#9,Str);
               if I <> 0 then str[I]:=#32;
             until I = 0;
             Inc(LineNr);
@@ -1036,20 +1036,20 @@ begin
                                        else FreeAndNil( Spline );
 //        except
 //          MessageDlg('Error on line '+IntToStr(LineNr)+' in file ' +
-//            Opendialog.Filename, mtError, [mbOK], 0);
+//            Opendialog.Filename,mtError,[mbOK],0);
 //        end;
-        FreeShip.ImportChines(8, Chines);
+        FreeShip.ImportChines(8,Chines);
         FreeAndNil(Chines);
 //    finally
         CloseFile(FFile);
-        FreeShip.Filename:=ChangeFileExt(Opendialog.FileName, '.fbm');
+        FreeShip.Filename:=ChangeFileExt(Opendialog.FileName,'.fbm');
         if Assigned(FreeShip.OnUpdateGeometryInfo) then FreeShip.OnUpdateGeometryInfo(self);
         FreeShip.ModelIsLoaded:=True;
         FreeShip.RebuildModel;
 //    end;
     end
     else
-      MessageDlg(Userstring(106), mtError, [mbOK], 0);
+      MessageDlg(Userstring(106),mtError,[mbOK],0);
   end;
   FreeAndNil(OpenDialog);
 end;
@@ -1119,8 +1119,8 @@ begin
   if OpenDialog.Execute then begin
     Answer:=Freeship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or FreeShip.FileChanged then begin FreeAndNil( OpenDialog ); exit; end;
-//  CreateUndoObject(UserString(110), True);
-    File_ImportHull(OpenDialog.FileName, False);
+//  CreateUndoObject(UserString(110),True);
+    File_ImportHull(OpenDialog.FileName,False);
     FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
   end;
   FreeAndNil( OpenDialog );
@@ -1128,8 +1128,8 @@ end;
 
 procedure TFreeEdit.File_ImportHull(Filename: AnsiString; Quiet: boolean);
 var
-  I,J, NBulkHeads,NoChines : integer;
-  P, Min, Max: T3DVector;
+  I,J,NBulkHeads,NoChines : integer;
+  P,Min,Max: T3DVector;
   FFile: TextFile;
   Value: TFloatType;
   Points: array of array of T3DVector;
@@ -1139,28 +1139,28 @@ var
   Skip: boolean;
 begin
   FreeShip.Clear;
-  assignFile(FFile, ChangeFileExt(FileName, '.hul'));
+  assignFile(FFile,ChangeFileExt(FileName,'.hul'));
 {$I-}
   Reset(FFile);
 {$I+}
   if IOResult = 0 then begin
 //  try
-      Readln(FFile, NoChines);
+      Readln(FFile,NoChines);
       NBulkHeads:=5;
-      Setlength(Points, NBulkHeads);
+      Setlength(Points,NBulkHeads);
       for I:=1 to NBulkHeads do begin
-        Setlength(Points[I-1], NoChines);
+        Setlength(Points[I-1],NoChines);
         for J:=1 to NoChines do begin
-          Readln(FFile, P.Y);
-          Readln(FFile, P.Z);
-          Readln(FFile, P.X);                    // scale from inches to meters
-          P.X:=P.X * 0.0254;
-          P.Y:=P.Y * 0.0254;
-          P.Z:=P.Z * 0.0254;
+          Readln(FFile,P.Y);
+          Readln(FFile,P.Z);
+          Readln(FFile,P.X);                    // scale from inches to meters
+          P.X:=P.X*0.0254;
+          P.Y:=P.Y*0.0254;
+          P.Z:=P.Z*0.0254;
           if (I = 1) and (J = 1) then begin
             Min:=P;
             Max:=Min;
-          end else MinMax(P, Min, Max);
+          end else MinMax(P,Min,Max);
           Points[I-1][J-1]:=P;
         end;
       end;
@@ -1169,20 +1169,20 @@ begin
       else Skip:=MessageDlg(Userstring(111),mtConfirmation,[mbYes,mbNo],0)=mrNo;
       if not skip then begin
         NBulkHeads:=13;
-        Setlength(Points, NBulkHeads);
+        Setlength(Points,NBulkHeads);
         for I:=1 to NBulkHeads do begin
-          Setlength(Points[I-1], NoChines);
+          Setlength(Points[I-1],NoChines);
           for J:=1 to NoChines do begin
-            Readln(FFile, P.Y);
-            Readln(FFile, P.Z);
-            Readln(FFile, P.X);                  // scale from inches to meters
-            P.X:=P.X * 0.0254;
-            P.Y:=P.Y * 0.0254;
-            P.Z:=P.Z * 0.0254;
+            Readln(FFile,P.Y);
+            Readln(FFile,P.Z);
+            Readln(FFile,P.X);                  // scale from inches to meters
+            P.X:=P.X*0.0254;
+            P.Y:=P.Y*0.0254;
+            P.Z:=P.Z*0.0254;
             if (I = 1) and (J = 1) then begin
               Min:=P;
               Max:=Min;
-            end else MinMax(P, Min, Max);
+            end else MinMax(P,Min,Max);
             Points[I-1][J-1]:=P;
           end;
         end;
@@ -1207,7 +1207,7 @@ begin
       FreeAndNil(Chines);
       for I:=1 to 8 do begin                               // read stations
         Readln( FFile,Value );
-        Intersection_Add( fiStation, -Value * 0.024+Max.X );
+        Intersection_Add( fiStation,-Value*0.024+Max.X );
       end;
       for I:=1 to 9 do Readln(FFile);                      // Skip rig info
       Readln(FFile,Str);                                   // Read designer info
@@ -1218,12 +1218,12 @@ begin
       FreeShip.ProjectSettings.ProjectWaterDensity:=1.0;
       FreeShip.ProjectSettings.ProjectUnits:=fuImperial;
       FreeShip.ProjectSettings.ProjectDraft:=1.0;
-      FreeShip.FileName:=ChangeFileExt(FileName, '');
+      FreeShip.FileName:=ChangeFileExt(FileName,'');
       FreeShip.ModelIsLoaded:=True;
       FreeShip.RebuildModel;
       //FreeShip.Draw;
 //  end;
-  end else MessageDlg(Userstring(106), mtError, [mbOK], 0);
+  end else MessageDlg(Userstring(106),mtError,[mbOK],0);
 end;
 
 // Import a partfile and add it to the current geometry
@@ -1235,7 +1235,7 @@ var
   vUndo: TFreeUndoObject;
   PartUnits: TFreeUnitType;
   Changed,Crease: boolean;
-  I, J, N, Np, Ind1, Ind2, LayerID: integer;
+  I,J,N,Np,Ind1,Ind2,LayerID: integer;
   PartVersion: TFreeFileversion;
   Str: AnsiString;
   Scale: TFloatType;
@@ -1243,7 +1243,7 @@ var
   Edges: TFasterListTFreeSubdivisionControlEdge;
   Layers: TFasterListTFreeSubdivisionLayer;
   Edge: TFreeSubdivisionControlEdge;
-  P1, P2: TFreeSubdivisionControlPoint;
+  P1,P2: TFreeSubdivisionControlPoint;
   Curve: TFreeSubdivisionControlCurve;
   Layer: TFreeSubdivisionLayer;
   PrevCursor: TCursor;
@@ -1251,14 +1251,14 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsFREEShipGeometryPart, ['part']);
+  OpenDialog.Filter:=createDialogFilter(rsFREEShipGeometryPart,['part']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
     PartFile:=TFreeFileBuffer.Create;
 //  FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
     Changed:=False;
     vUndo:=CreateUndoObject( 'ImpPart',False );
-//  Partfile.LoadFromFile(ChangeFileExt(OpenDialog.FileName, '.part'));
+//  Partfile.LoadFromFile(ChangeFileExt(OpenDialog.FileName,'.part'));
     Partfile.LoadFromFile(OpenDialog.FileName);
     Partfile.LoadString( Str );
     if Str='FREE!ship partfile' then begin
@@ -1275,8 +1275,8 @@ begin
           Partfile.LoadInteger(I);
           PartUnits:=TFreeUnitType(I);
           if PartUnits <> FreeShip.ProjectSettings.ProjectUnits then begin
-            if PartUnits = fuMetric then Scale:=1/Foot // Part units=metric and projectunits=imperial, scale from meters to feet
-                                    else scale:=Foot; // Part units=imperial and projectunits=metric, scale from feet to meters
+            if PartUnits = fuMetric then Scale:=1/Foot // Part units=metric and projectunits=imperial,scale from meters to feet
+                                    else scale:=Foot; // Part units=imperial and projectunits=metric,scale from feet to meters
           end else Scale:=1.0;
           Partfile.LoadInteger(N);                     // Load number of layers
           Layers.Capacity:=N;
@@ -1306,7 +1306,7 @@ begin
             if (Ind1 <> -1) and (Ind2 <> -1) then begin
               P1:=Points[ind1];
               P2:=Points[ind2];
-              Edge:=FreeShip.Surface.AddControlEdge(P1, P2);
+              Edge:=FreeShip.Surface.AddControlEdge(P1,P2);
             end else Edge:=nil;
             Partfile.LoadBoolean(Crease);
             if Edge <> nil then Edge.Crease:=Crease;
@@ -1325,7 +1325,7 @@ begin
             end;
             Partfile.LoadInteger(Ind2);
             Layer:=Layers[ind2];
-            FreeShip.Surface.AddControlFace(FacePoints, False, Layer);
+            FreeShip.Surface.AddControlFace(FacePoints,False,Layer);
           end;
           for I:=1 to Edges.Count do begin
             Edge:=Edges[I-1];
@@ -1345,7 +1345,7 @@ begin
                 Curve.AddPoint(P2);
                 if J > 1 then begin
                   P1:=Curve.ControlPoint[J-2];
-                  Edge:=FreeShip.Surface.EdgeExists(P1, P2) as
+                  Edge:=FreeShip.Surface.EdgeExists(P1,P2) as
                         TFreeSubdivisionControlEdge;
                   if Edge <> nil then edge.Curve:=Curve;
                 end;
@@ -1381,9 +1381,9 @@ var
   OpenDialog: TOpenDialog;
   PrevCursor: TCursor;
   Strings: TStringList;
-  I,J,K,N, Cols,Rows,Index,EndIndex, NSections,NumSurfaces,SurfaceNo: integer;
+  I,J,K,N,Cols,Rows,Index,EndIndex,NSections,NumSurfaces,SurfaceNo: integer;
   Indices: array of integer;
-  Str, Tmp: AnsiString;
+  Str,Tmp: AnsiString;
   Abort: boolean;
   Points: TFreeCoordinateGrid;
   Value: TFloatType;
@@ -1396,18 +1396,18 @@ var
     end else begin
       Result:='';
       Abort:=True;
-      MessageDlg( UserString(115), mtError, [mbOK], 0);
+      MessageDlg( UserString(115),mtError,[mbOK],0);
     end;
   end;{NextLine}
 
   function Get_Integer(str: AnsiString): integer;
   var Index: integer; tmp:AnsiString;
   begin
-    Index:=Pos('=', Str);
+    Index:=Pos('=',Str);
     Result:=0;
     if Index <> 0 then begin
-      tmp:=Copy(Str, Index+1, Length(Str)-Index);
-      Val(tmp, Result, Index);
+      tmp:=Copy(Str,Index+1,Length(Str)-Index);
+      Val(tmp,Result,Index);
       if Index<>0 then begin
         ShowMessage(UserString(116)+#32+IntToStr(I)+' at row '+IntToStr(Index)+' value: "'+tmp+'"' );
         Abort:=True;
@@ -1417,10 +1417,10 @@ var
   function Get_Float( str: AnsiString ): TFloatType;
   var Index: integer; tmp: AnsiString;
   begin
-    Index:=Pos('=', Str);
+    Index:=Pos('=',Str);
     Result:=0;
     if Index <> 0 then begin
-      tmp:=Copy(Str, Index+1, Length(Str)-Index);
+      tmp:=Copy(Str,Index+1,Length(Str)-Index);
       Val(tmp,Result,Index);
       if Index <> 0 then begin
         ShowMessage(UserString(117)+#32+IntToStr(I)+' at row '+IntToStr(Index)+' value: "'+tmp+'"');
@@ -1432,10 +1432,10 @@ var
   function NextParameter(var input: AnsiString): AnsiString;
   var Index: integer;
   begin
-    Index:=pos(#32, Input);
+    Index:=pos(#32,Input);
     if Index <> 0 then begin
-      Result:=Copy(Input, 1, Index-1);
-      Delete(Input, 1, Index);
+      Result:=Copy(Input,1,Index-1);
+      Delete(Input,1,Index);
       Input:=Trim(Input);
     end else begin
       Result:='';
@@ -1443,12 +1443,12 @@ var
     end;
   end;{NextParameter}
 
-  procedure readSurface(Cols, Rows: integer; var Points: TFreeCoordinateGrid);
+  procedure readSurface(Cols,Rows: integer; var Points: TFreeCoordinateGrid);
   var J,K: integer;
     begin // Initialize points
-      Setlength(Points, Rows);
+      Setlength(Points,Rows);
       for J:=1 to Rows do begin
-        Setlength(Points[J-1], Cols);
+        Setlength(Points[J-1],Cols);
         for K:=1 to Cols do
           Points[J-1][K-1]:=ZERO;
       end;
@@ -1462,22 +1462,22 @@ var
             P.Z:=0;                                             // X coordinate
             Tmp:=NextParameter(Str);
             if not abort then begin
-              Val(Tmp, P.X, N);
+              Val(Tmp,P.X,N);
               if N <> 0 then begin
                 MessageDlg(UserString(119)+#32 +
                   IntToStr(I)+' at row '+IntToStr(Index)+' value: "'+Tmp+'"',
-                  mtError, [mbOK], 0);
+                  mtError,[mbOK],0);
                 Abort:=True;
               end;
             end;
             if not Abort then begin
               Tmp:=NextParameter(Str);
               if not abort then begin
-                Val(Tmp, P.Y, N);
+                Val(Tmp,P.Y,N);
                 if N <> 0 then begin
                   MessageDlg(UserString(119)+#32 +
                     IntToStr(I)+' at row '+IntToStr(Index)+' value: "'+Tmp+'"',
-                    mtError, [mbOK], 0);
+                    mtError,[mbOK],0);
                   Abort:=True;
                 end;
               end;
@@ -1485,11 +1485,11 @@ var
             if not Abort then begin                             // Z coordinate
               Tmp:=NextParameter(Str);
               if not abort then begin
-                Val(Tmp, P.Z, N);
+                Val(Tmp,P.Z,N);
                 if N <> 0 then begin
                   MessageDlg(UserString(119)+#32 +
                     IntToStr(I)+' at row '+IntToStr(Index)+' value: "'+Tmp+'"',
-                    mtError, [mbOK], 0);
+                    mtError,[mbOK],0);
                   Abort:=True;
                 end;
               end;
@@ -1522,14 +1522,14 @@ begin
       for I:=0 to strings.Count-1 do begin
         Str:=Strings[I].TrimLeft();
         if Str.StartsWith('[') and Str.EndsWith(']') then begin
-          Setlength(Indices, NSections+1);
+          Setlength(Indices,NSections+1);
           Indices[NSections]:=I;
           Inc(NSections);
         end;
       end;
 
       if NSections > 0 then begin
-//      CreateUndoObject(UserString(118), True);
+//      CreateUndoObject( UserString(118),True );
         FreeShip.Clear;
         FreeShip.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
         I:=1;
@@ -1548,38 +1548,38 @@ begin
               Str:=NextLine;
               Str:=Str.TrimLeft();
               if Str = '' then
-              else if (pos('Loa=', Str) = 1) then
+              else if (pos('Loa=',Str) = 1) then
                 FreeShip.ProjectSettings.ProjectLength:=Get_Float( Str )
-              else if (pos('Lwl=', Str) = 1) then
-              else if (pos('Ovh=', Str) = 1) then
-              else if (pos('BMax=', Str) = 1) then
+              else if (pos('Lwl=',Str) = 1) then
+              else if (pos('Ovh=',Str) = 1) then
+              else if (pos('BMax=',Str) = 1) then
                 FreeShip.ProjectSettings.ProjectBeam:=Get_Float( Str )
-              else if (pos('Bwl=', Str) = 1) then
-              else if (pos('BTransom=', Str) = 1) then
-              else if (pos('MaxVParameter=', Str) = 1) then
-              else if (pos('Tc=', Str) = 1) then
+              else if (pos('Bwl=',Str) = 1) then
+              else if (pos('BTransom=',Str) = 1) then
+              else if (pos('MaxVParameter=',Str) = 1) then
+              else if (pos('Tc=',Str) = 1) then
                 FreeShip.ProjectSettings.ProjectDraft:=Get_Float( Str )
-              else if (pos('Cp=', Str) = 1) then
-              else if (pos('Cm=', Str) = 1) then
-              else if (pos('LCB=', Str) = 1) then
-              else if (pos('Cwp=', Str) = 1) then
-              else if (pos('Lcf=', Str) = 1) then
-              else if (pos('FreeBow=', Str) = 1) then
-              else if (pos('FreeMid=', Str) = 1) then
-              else if (pos('FreeAft=', Str) = 1) then
-              else if (pos('BowCurve=', Str) = 1) then
-              else if (pos('ForeFoot=', Str) = 1) then
-              else if (pos('TransomAngle=', Str) = 1) then
-              else if (pos('FlareAngle=', Str) = 1) then
-              else if (pos('OrderU=', Str) = 1) then
-              else if (pos('OrderV=', Str) = 1) then
-              else if (pos('NumU=', Str) = 1) then Cols:=Get_Integer(Str)
-              else if (pos('NumV=', Str) = 1) then Rows:=Get_Integer(Str)
-              else if (pos('Name=', Str) = 1) then
-              else if (pos('$POLYCADVERSION', Str) = 1) then
-              else if (pos('=', Str) = 0) then begin dec(index);
+              else if (pos('Cp=',Str) = 1) then
+              else if (pos('Cm=',Str) = 1) then
+              else if (pos('LCB=',Str) = 1) then
+              else if (pos('Cwp=',Str) = 1) then
+              else if (pos('Lcf=',Str) = 1) then
+              else if (pos('FreeBow=',Str) = 1) then
+              else if (pos('FreeMid=',Str) = 1) then
+              else if (pos('FreeAft=',Str) = 1) then
+              else if (pos('BowCurve=',Str) = 1) then
+              else if (pos('ForeFoot=',Str) = 1) then
+              else if (pos('TransomAngle=',Str) = 1) then
+              else if (pos('FlareAngle=',Str) = 1) then
+              else if (pos('OrderU=',Str) = 1) then
+              else if (pos('OrderV=',Str) = 1) then
+              else if (pos('NumU=',Str) = 1) then Cols:=Get_Integer(Str)
+              else if (pos('NumV=',Str) = 1) then Rows:=Get_Integer(Str)
+              else if (pos('Name=',Str) = 1) then
+              else if (pos('$POLYCADVERSION',Str) = 1) then
+              else if (pos('=',Str) = 0) then begin dec(index);
                 if (Cols > 1) and (Rows > 1) then begin
-                  readSurface(Cols, Rows, Points);
+                  readSurface(Cols,Rows,Points);
                 end;
               end;
             end;
@@ -1594,48 +1594,48 @@ begin
               Str:=NextLine;
               Str:=Str.TrimLeft();
               if Str = '' then
-              else if (pos('BowShape=', Str) = 1) then
-              else if (pos('Lbp=', Str) = 1) then
+              else if (pos('BowShape=',Str) = 1) then
+              else if (pos('Lbp=',Str) = 1) then
                 FreeShip.ProjectSettings.ProjectLength:=Get_Float(Str)
-              else if (pos('Beam=', Str) = 1) then
+              else if (pos('Beam=',Str) = 1) then
                 FreeShip.ProjectSettings.ProjectBeam:=Get_Float(Str)
-              else if (pos('Depth=', Str) = 1) then
-              else if (pos('Draught=', Str) = 1) then
+              else if (pos('Depth=',Str) = 1) then
+              else if (pos('Draught=',Str) = 1) then
                 FreeShip.ProjectSettings.ProjectDraft:=Get_Float(Str)
-              else if (pos('ParallelDeckF=', Str) = 1) then
-              else if (pos('ParallelDeckA=', Str) = 1) then
-              else if (pos('FOSBow=', Str) = 1) then
-              else if (pos('FOSAft=', Str) = 1) then
-              else if (pos('BowRadiusAtDeck=', Str) = 1) then
-              else if (pos('BilgeRadius=', Str) = 1) then
-              else if (pos('TransomBehindAP=', Str) = 1) then
-              else if (pos('TransomImmersion=', Str) = 1) then
-              else if (pos('TransomBeam=', Str) = 1) then
-              else if (pos('TransomCurvature=', Str) = 1) then
-              else if (pos('BowCurvature=', Str) = 1) then
-              else if (pos('BulbRadius=', Str) = 1) then
-              else if (pos('ForeOverHang=', Str) = 1) then
-              else if (pos('BulbLength=', Str) = 1) then
-              else if (pos('ForeFootRadius=', Str) = 1) then
-              else if (pos('StemRadius=', Str) = 1) then
-              else if (pos('StRootHeight=', Str) = 1) then
-              else if (pos('StShaftHeight=', Str) = 1) then
-              else if (pos('StBossToRoot=', Str) = 1) then
-              else if (pos('StBossRadius=', Str) = 1) then
-              else if (pos('StBossStart=', Str) = 1) then
-              else if (pos('StFlatOfBottomStart=', Str) = 1) then
-              else if (pos('DrawBoundaries=', Str) = 1) then
-              else if (pos('DrawParameters=', Str) = 1) then
-              else if (pos('DesignDraught=', Str) = 1) then
-              else if (pos('OrderU=', Str) = 1) then
-              else if (pos('OrderV=', Str) = 1) then
-              else if (pos('NumU=', Str) = 1) then Cols:=Get_Integer(Str)
-              else if (pos('NumV=', Str) = 1) then Rows:=Get_Integer(Str)
-              else if (pos('Name=', Str) = 1) then
-              else if (pos('$POLYCADVERSION', Str) = 1) then
-              else if (pos('=', Str) = 0) then begin dec(index);
+              else if (pos('ParallelDeckF=',Str) = 1) then
+              else if (pos('ParallelDeckA=',Str) = 1) then
+              else if (pos('FOSBow=',Str) = 1) then
+              else if (pos('FOSAft=',Str) = 1) then
+              else if (pos('BowRadiusAtDeck=',Str) = 1) then
+              else if (pos('BilgeRadius=',Str) = 1) then
+              else if (pos('TransomBehindAP=',Str) = 1) then
+              else if (pos('TransomImmersion=',Str) = 1) then
+              else if (pos('TransomBeam=',Str) = 1) then
+              else if (pos('TransomCurvature=',Str) = 1) then
+              else if (pos('BowCurvature=',Str) = 1) then
+              else if (pos('BulbRadius=',Str) = 1) then
+              else if (pos('ForeOverHang=',Str) = 1) then
+              else if (pos('BulbLength=',Str) = 1) then
+              else if (pos('ForeFootRadius=',Str) = 1) then
+              else if (pos('StemRadius=',Str) = 1) then
+              else if (pos('StRootHeight=',Str) = 1) then
+              else if (pos('StShaftHeight=',Str) = 1) then
+              else if (pos('StBossToRoot=',Str) = 1) then
+              else if (pos('StBossRadius=',Str) = 1) then
+              else if (pos('StBossStart=',Str) = 1) then
+              else if (pos('StFlatOfBottomStart=',Str) = 1) then
+              else if (pos('DrawBoundaries=',Str) = 1) then
+              else if (pos('DrawParameters=',Str) = 1) then
+              else if (pos('DesignDraught=',Str) = 1) then
+              else if (pos('OrderU=',Str) = 1) then
+              else if (pos('OrderV=',Str) = 1) then
+              else if (pos('NumU=',Str) = 1) then Cols:=Get_Integer(Str)
+              else if (pos('NumV=',Str) = 1) then Rows:=Get_Integer(Str)
+              else if (pos('Name=',Str) = 1) then
+              else if (pos('$POLYCADVERSION',Str) = 1) then
+              else if (pos('=',Str) = 0) then begin dec(index);
                 if (Cols > 1) and (Rows > 1) then begin
-                  readSurface(Cols, Rows, Points);
+                  readSurface(Cols,Rows,Points);
                 end;
               end;
             end;
@@ -1647,20 +1647,20 @@ begin
               Str:=NextLine;
               Str:=Str.TrimLeft();
               if Str = '' then
-              else if (pos('KnotType=', Str) = 1) then
-              else if (pos('KnotU=', Str) = 1) then
-              else if (pos('KnotV=', Str) = 1) then
-              else if (pos('MinUParameter=', Str) = 1) then
-              else if (pos('MinVParameter=', Str) = 1) then
-              else if (pos('MaxUParameter=', Str) = 1) then
-              else if (pos('MaxVParameter=', Str) = 1) then
-              else if (pos('OrderU=', Str) = 1) then
-              else if (pos('OrderV=', Str) = 1) then
-              else if (pos('NumU=', Str) = 1) then Cols:=Get_Integer(Str)
-              else if (pos('NumV=', Str) = 1) then Rows:=Get_Integer(Str)
-              else if (pos('Name=', Str) = 1) then
-              else if (pos('$POLYCADVERSION', Str) = 1) then
-              else if (pos('=', Str) = 0) then begin dec(index);
+              else if (pos('KnotType=',Str) = 1) then
+              else if (pos('KnotU=',Str) = 1) then
+              else if (pos('KnotV=',Str) = 1) then
+              else if (pos('MinUParameter=',Str) = 1) then
+              else if (pos('MinVParameter=',Str) = 1) then
+              else if (pos('MaxUParameter=',Str) = 1) then
+              else if (pos('MaxVParameter=',Str) = 1) then
+              else if (pos('OrderU=',Str) = 1) then
+              else if (pos('OrderV=',Str) = 1) then
+              else if (pos('NumU=',Str) = 1) then Cols:=Get_Integer(Str)
+              else if (pos('NumV=',Str) = 1) then Rows:=Get_Integer(Str)
+              else if (pos('Name=',Str) = 1) then
+              else if (pos('$POLYCADVERSION',Str) = 1) then
+              else if (pos('=',Str) = 0) then begin dec(index);
                 if (Cols > 1) and (Rows > 1) then begin
                   readSurface( Cols,Rows,Points );
                 end;
@@ -1675,25 +1675,25 @@ begin
               Str:=NextLine;
               Str:=Str.TrimLeft();
               if Str = '' then
-              else if (pos('NumSurfaces=', Str) = 1) then NumSurfaces:=Get_Integer(Str)
-              else if (pos('KnotType=', Str) = 1) then
-              else if (pos('KnotU=', Str) = 1) then
-              else if (pos('KnotV=', Str) = 1) then
-              else if (pos('MinUParameter=', Str) = 1) then
-              else if (pos('MinVParameter=', Str) = 1) then
-              else if (pos('MaxUParameter=', Str) = 1) then
-              else if (pos('MaxVParameter=', Str) = 1) then
-              else if (pos('OrderU=', Str) = 1) then
-              else if (pos('OrderV=', Str) = 1) then
-              else if (pos('NumU=', Str) = 1) then Cols:=Get_Integer(Str)
-              else if (pos('NumV=', Str) = 1) then Rows:=Get_Integer(Str)
-              else if (pos('Name=', Str) = 1) then
-              else if (pos('$POLYCADVERSION', Str) = 1) then
-              else if (pos('=', Str) = 0) then begin
+              else if (pos('NumSurfaces=',Str) = 1) then NumSurfaces:=Get_Integer(Str)
+              else if (pos('KnotType=',Str) = 1) then
+              else if (pos('KnotU=',Str) = 1) then
+              else if (pos('KnotV=',Str) = 1) then
+              else if (pos('MinUParameter=',Str) = 1) then
+              else if (pos('MinVParameter=',Str) = 1) then
+              else if (pos('MaxUParameter=',Str) = 1) then
+              else if (pos('MaxVParameter=',Str) = 1) then
+              else if (pos('OrderU=',Str) = 1) then
+              else if (pos('OrderV=',Str) = 1) then
+              else if (pos('NumU=',Str) = 1) then Cols:=Get_Integer(Str)
+              else if (pos('NumV=',Str) = 1) then Rows:=Get_Integer(Str)
+              else if (pos('Name=',Str) = 1) then
+              else if (pos('$POLYCADVERSION',Str) = 1) then
+              else if (pos('=',Str) = 0) then begin
                 inc(SurfaceNo);
                 dec(index);
                 if (Cols > 1) and (Rows > 1) then begin
-                  readSurface(Cols, Rows, Points);
+                  readSurface(Cols,Rows,Points);
                 end;
               end;
             end;
@@ -1703,7 +1703,7 @@ begin
 
         if not Abort then begin     // Read contours;               ///**!**///
           for I:=1 to Strings.Count do
-            if Pos('[TContours]', Strings[I-1]) <> 0 then begin
+            if Pos('[TContours]',Strings[I-1]) <> 0 then begin
               Index:=I-1;
               Str:=NextLine;
               N:=Get_Integer(Str);
@@ -1714,10 +1714,10 @@ begin
                     Str:=Trim(Str);
                     Tmp:=NextParameter(Str);
                     if not abort then K:=StrToInt(Tmp)
-                    else K:=0;           // 1=station, 2=buttock, 3=waterline
-                    if not abort then begin Val(Str, Value, N);
+                    else K:=0;           // 1=station,2=buttock,3=waterline
+                    if not abort then begin Val(Str,Value,N);
                       if N <> 0 then begin
-                        MessageDlg( UserString(122), mtError, [mbOK], 0);
+                        MessageDlg( UserString(122),mtError,[mbOK],0);
                         Abort:=True;
                       end else
                         case K of
@@ -1734,12 +1734,12 @@ begin
             end;
                                                                     ///**!**///
           FreeShip.Precision:=fpMedium;
-          FreeShip.FileName:=ChangeFileExt(Opendialog.FileName, '');
+          FreeShip.FileName:=ChangeFileExt(Opendialog.FileName,'');
           FreeShip.ModelIsLoaded:=True;
           FreeShip.RebuildModel;
           FreeShip.FileChanged:=True;
-        end else MessageDlg(UserString(123), mtInformation, [mbOK], 0);
-      end else MessageDlg(UserString(124), mtInformation, [mbOK], 0);
+        end else MessageDlg(UserString(123),mtInformation,[mbOK],0);
+      end else MessageDlg(UserString(124),mtInformation,[mbOK],0);
 //    finally
       FreeAndNil( Strings );
       if Assigned( FreeShip.OnUpdateGeometryInfo ) then
@@ -1785,10 +1785,10 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(FreeShip);
   OpenDialog.InitialDir:=FreeShip.Preferences.ImportDirectory;
-  OpenDialog.Filter:=createDialogFilter(rsTextFile, ['txt']);
+  OpenDialog.Filter:=createDialogFilter(rsTextFile,['txt']);
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
-    assignFile(FFile, ChangeFileExt(Opendialog.FileName, '.txt'));
+    assignFile(FFile,ChangeFileExt(Opendialog.FileName,'.txt'));
 {$I-}
     Reset(FFile);
 {$I+}
@@ -1801,9 +1801,9 @@ begin
 //      try
           Marker:=TFreeMarker.Create(FreeShip.Surface);
           repeat
-            Readln( FFile, Str );
+            Readln( FFile,Str );
             repeat
-              i:=Pos(#9, Str);
+              i:=Pos(#9,Str);
               if I <> 0 then str[I]:=#32;
             until I = 0;
             Inc(LineNr);
@@ -1831,10 +1831,10 @@ begin
 //    end;
       if Markers.Count > 0 then begin
         if FreeShip.NumberofMarkers > 0 then begin
-          Answer:=MessageDlg(Userstring(145), mtConfirmation,
-            [mbYes, mbNo, mbCancel], 0);
+          Answer:=MessageDlg(Userstring(145),mtConfirmation,
+            [mbYes,mbNo,mbCancel],0);
           if Answer <> mrCancel then begin
-//          CreateUndoObject(Userstring(146), True);
+//          CreateUndoObject(Userstring(146),True);
             if Answer = mrYes then begin
               for I:=1 to FreeShip.NumberofMarkers do FreeShip.Marker[I-1].Destroy;
               FreeShip.FMarkers.Clear;
@@ -1847,7 +1847,7 @@ begin
             end;
           end;
         end else begin
-//        CreateUndoObject(Userstring(146), True);
+//        CreateUndoObject(Userstring(146),True);
           Import(Markers);
         end;
       end else ShowMessage(Userstring(147));

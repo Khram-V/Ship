@@ -9,7 +9,7 @@ interface uses
 //LazUTF8,
   LazFileUtils,
      {$ELSE}
-  FileUtil, //deprecated
+  FileUtil,//deprecated
      {$ENDIF}
 
     {$ENDIF}
@@ -268,8 +268,8 @@ end;
 
 procedure TVRML2Scene.LoadVrml2;
   var LineNr: integer;
-      I, Index, NObj: integer;
-      Str, word, ObjectName, ObjectType: AnsiString;
+      I,Index,NObj: integer;
+      Str,word,ObjectName,ObjectType: AnsiString;
       VRMLObject: TVRML2Object;
       token: TToken;
       ValidFile: boolean;
@@ -279,7 +279,7 @@ begin
     word:=Self.LoadId( token );
     if word.toUpper='DEF' then begin ObjectName:=Self.LoadId(token); word:=Self.LoadId(token); end;
     ObjectType:=word;
-    if word.ToUpper='GROUP' then VRMLObject:=TVRML2Group.Create(self, nil) else
+    if word.ToUpper='GROUP' then VRMLObject:=TVRML2Group.Create(self,nil) else
     if word.ToUpper = 'SHAPE' then VRMLObject:=TVRML2Shape.Create(self,nil) else
     if word.ToUpper = 'TRANSFORM' then VRMLObject:=TVRML2Transform.Create(self,nil) else
     if word.ToUpper <> '}' then Self.SkipObject;
@@ -353,16 +353,16 @@ function TVRML2Scene.LoadFloat(var token:TToken):Float;
 begin
      inc(FCurrentToken);
      token:=FTokens[FCurrentToken];
-//   if not Float.TryParse(token.FString, Result) then
-//   RaiseParserError(token, String.Format('Expected Decimal, found %s',[token.FString]));
+//   if not Float.TryParse(token.FString,Result) then
+//   RaiseParserError(token,String.Format('Expected Decimal,found %s',[token.FString]));
 end;
 
 function TVRML2Scene.LoadInteger(var token:TToken):Integer;
 begin
      inc(FCurrentToken);
      token:=FTokens[FCurrentToken];
-//   if not Integer.TryParse(token.FString, Result) then
-//   RaiseParserError(token, String.Format('Expected Integer, found %s',[token.FString]));
+//   if not Integer.TryParse(token.FString,Result) then
+//   RaiseParserError(token,String.Format('Expected Integer,found %s',[token.FString]));
 end;
 
 function TVRML2Scene.LoadBoolean(var token:TToken): boolean;
@@ -372,7 +372,7 @@ begin
 //   try
        Result:=Boolean.Parse(token.FString);
 //   except on Exception do
-//   RaiseParserError(token, String.Format('Expected Boolean, found %s',[token.FString]));
+//   RaiseParserError(token,String.Format('Expected Boolean,found %s',[token.FString]));
 //   end;
 end;
 
@@ -385,10 +385,10 @@ end;
       fR:=LoadFloat(token);
       fG:=LoadFloat(tokenG);
       fB:=LoadFloat(tokenB);
-      R:=round(255 * fR);
-      G:=round(255 * fG);
-      B:=round(255 * fB);
-      Result:=RGBToColor(R, G, B);
+      R:=round(255*fR);
+      G:=round(255*fG);
+      B:=round(255*fB);
+      Result:=RGBToColor(R,G,B);
     end;
 
     procedure TVRML2Scene.SkipObject;
@@ -408,7 +408,7 @@ end;
     var
       Strings: TStringList;
       LineNr: integer;
-      I,L, Index, NObj: integer;
+      I,L,Index,NObj: integer;
       Str: AnsiString;
       token:TToken;
       tokens: TFasterListTToken;
@@ -420,19 +420,19 @@ end;
       if FileExistsUTF8(Filename) { *Converted from FileExists* } then begin
         Clear;
         Strings:=TStringList.Create;
-        AssignFile(FFile, FileName);
+        AssignFile(FFile,FileName);
         Reset(FFile);
         ValidFile:=False;
         if not EOF(FFile) then begin
-          Readln(FFile, Str); // First line, must contain the string: "#VRML V1.0 ascii"
+          Readln(FFile,Str); // First line,must contain the string: "#VRML V1.0 ascii"
           Str:=Uppercase(Str);
-          if pos('#VRML V2.0 UTF8', Str) <> 0 then begin
+          if pos('#VRML V2.0 UTF8',Str) <> 0 then begin
             FFileType:=ftVRML2;
             ValidFile:=True;
           end;
         end;
         if not ValidFile then begin
-          MessageDlg('This_is_not_a_valid_VRML_2_0_file!', mtError, [mbOK], 0);
+          MessageDlg('This_is_not_a_valid_VRML_2_0_file!',mtError,[mbOK],0);
           CloseFile(FFile);
           FreeAndNil(Strings);
           exit;
@@ -440,28 +440,28 @@ end;
         if FTokens = nil then FTokens:=specialize TFasterList<TToken>.Create;
         L:=1;
         while not EOF(FFile) do begin
-          Readln(FFile, Str);
+          Readln(FFile,Str);
           I:=1;
           while I <= Length(Str) do begin
-            if Str[I] in [#9, #10, #13] then Str[I]:=#32
+            if Str[I] in [#9,#10,#13] then Str[I]:=#32
             else
             if Str[I] = '#' then begin                       // remove comments
-              Str:=copy(Str, 1, I-1);
+              Str:=copy(Str,1,I-1);
               break;
             end;
             Inc(I);
           end;
           {repeat
             // replace double spaces by only 1
-            I:=Pos('  ', Str);
+            I:=Pos('  ',Str);
             if I <> 0 then
             begin
-              System.Delete(Str, I, 1);
+              System.Delete(Str,I,1);
             end;
           until I = 0;}                   // remove leading and trailing spaces
           //Str:=Trim(Str);
           if Trim(Str) <> '' then begin
-            tokens:=Tokenize(Str, L);
+            tokens:=Tokenize(Str,L);
             for I:=0 to tokens.Count-1 do begin
               FTokens.Add(tokens[I]);
             end;
@@ -548,7 +548,7 @@ end;{FChildren.Add}
 
 constructor TVRML2Group.Create(Scene: TVRML2Scene; Parent: TVRML2object);
 begin
-  inherited Create(Scene, Parent);
+  inherited Create(Scene,Parent);
   FChildren:= TFasterListTVRML2Object.Create;
 end;{TVRML2Group.Create}
 
@@ -583,24 +583,24 @@ begin
     begin
       Self.FName:=word;
       word:=FScene.LoadId(token);
-//    Assert(token, '{');
+//    Assert(token,'{');
     end;
   word:=FScene.LoadId(token);
-//Assert(token, 'CHILDREN');
+//Assert(token,'CHILDREN');
   word:=FScene.LoadId(token);
-//Assert(token, '[');
+//Assert(token,'[');
   word:=FScene.LoadId(token);
   while word <> ']' do
   begin
     if word.ToUpper = 'SHAPE' then
     begin
-      child:=TVRML2Shape.Create(FScene, Self);
+      child:=TVRML2Shape.Create(FScene,Self);
       child.Load;
       FChildren.Add(child);
     end
     else if word.ToUpper = 'GROUP' then
     begin
-      child:=TVRML2Group.Create(FScene, Self);
+      child:=TVRML2Group.Create(FScene,Self);
       child.Load;
       FChildren.Add(child);
     end
@@ -619,16 +619,16 @@ begin
     else FScene.SkipObject;
     word:=FScene.LoadId(token);
   end;
-//Assert(token, ']');
+//Assert(token,']');
   word:=FScene.LoadId(token);
-//Assert(token, '}');
+//Assert(token,'}');
 end;{TVRML2Group.Load}
 
 
 // TVRML2Transform
 constructor TVRML2Transform.Create(Scene: TVRML2Scene; Parent: TVRML2object);
 begin
-  inherited Create(Scene, Parent);
+  inherited Create(Scene,Parent);
   Clear;
 end;{TVRML2Transform.Create}
 
@@ -662,7 +662,7 @@ begin
     begin
       Self.FName:=word;
       word:=FScene.LoadId(token);
-//    Assert(token, '{');
+//    Assert(token,'{');
     end;
   word:=FScene.LoadId(token);
   while word <> '}' do
@@ -718,7 +718,7 @@ begin
       begin
         if word.ToUpper = 'SHAPE' then
         begin
-          child:=TVRML2Shape.Create(FScene, Self);
+          child:=TVRML2Shape.Create(FScene,Self);
           child.Load;
           FChildren.Add(child);
         end
@@ -731,17 +731,17 @@ begin
         begin
           if word.ToUpper = 'SHAPE' then
           begin
-            child:=TVRML2Shape.Create(FScene, Self);
+            child:=TVRML2Shape.Create(FScene,Self);
             child.Load;
             FChildren.Add(child);
           end
           else FScene.SkipObject;
           word:=FScene.LoadId(token);
         end;
-//      Assert(token, ']');
+//      Assert(token,']');
       end;
     end
-//  else RaiseParserError(token, 'center|children|rotation|scale|scaleOrientation'
+//  else RaiseParserError(token,'center|children|rotation|scale|scaleOrientation'
 //       +'|translation|bboxCenter|bboxSize');
     ;
     word:=FScene.LoadId(token);
@@ -752,7 +752,7 @@ end;{TVRML2Transform.Load}
 
 constructor TVRML2Material.Create(Scene: TVRML2Scene; Parent:TVRML2Object);
 begin
-  inherited Create(Scene, Parent);
+  inherited Create(Scene,Parent);
   Clear;
 end;{TVRML2Material.Create}
 
@@ -787,7 +787,7 @@ begin
     end;
     Self.FType:=word;
     word:=FScene.LoadId(token);
-//    Assert(token, '{');
+//    Assert(token,'{');
   end;
   word:=FScene.LoadId(token);
   while word <> '}' do
@@ -799,7 +799,7 @@ begin
     if word.toUpper = 'AMBIENTINTENSITY' then FAmbientIntensity:=FScene.LoadFloat(token) else
     if word.toUpper = 'SHININESS' then FShininess:=FScene.LoadFloat(token) else
     if word.toUpper = 'TRANSPARENCY' then FTransparency:=FScene.LoadFloat(token);
-//  else RaiseParserError(token, 'ambientIntensity|diffuseColor|emissiveColor'
+//  else RaiseParserError(token,'ambientIntensity|diffuseColor|emissiveColor'
 //       +'|shininess|specularColor|transparency');
     word:=FScene.LoadId(token);
   end;
@@ -808,7 +808,7 @@ end;
 // TVRML2Appearance
 //
 constructor TVRML2Appearance.Create(Scene: TVRML2Scene; Parent:TVRML2Object);
-begin inherited Create(Scene, Parent); Clear;
+begin inherited Create(Scene,Parent); Clear;
 end;
 
 procedure TVRML2Appearance.Clear;
@@ -833,16 +833,16 @@ begin
         word:=FScene.LoadId(token);
       end;
       Self.FType:=word;
-      word:=FScene.LoadId(token);  // Assert(token, '{');
+      word:=FScene.LoadId(token);  // Assert(token,'{');
     end;
     word:=FScene.LoadId(token);
     while word <> '}' do begin
       if word.toUpper = 'MATERIAL' then begin
-        FMaterial:=TVRML2Material.Create(FScene, Self); FMaterial.Load;
+        FMaterial:=TVRML2Material.Create(FScene,Self); FMaterial.Load;
       end else
       if word.toUpper = 'TEXTURE' then FScene.SkipObject  else
       if word.toUpper = 'TEXTURETRANSFORM' then FScene.SkipObject;
-//    else RaiseSyntaxError(token, 'material|texture|textureTransform');
+//    else RaiseSyntaxError(token,'material|texture|textureTransform');
       word:=FScene.LoadId(token);
     end;
 end;
@@ -851,7 +851,7 @@ end;
 //
 constructor TVRML2Shape.Create(Scene: TVRML2Scene; Parent:TVRML2Object);
 begin
-  inherited Create(Scene, Parent);
+  inherited Create(Scene,Parent);
   Clear;
 end;
 
@@ -866,7 +866,7 @@ begin Clear; inherited Destroy; end;
 procedure TVRML2Shape.Load;
 var
   token: TToken;
-  word, ObjectName: AnsiString;
+  word,ObjectName: AnsiString;
   coord: T3DVector;
   VRMLObject: TVRML2Object;
 begin
@@ -878,24 +878,24 @@ begin
         word:=FScene.LoadId(token);
       end;
       Self.FType:=word;
-      word:=FScene.LoadId(token);   //      Assert(token, '{');
+      word:=FScene.LoadId(token);   //      Assert(token,'{');
     end;
   word:=FScene.LoadId(token);
   while word <> '}' do begin
     if word.ToUpper = 'APPEARANCE' then begin
-      FAppearance:=TVRML2Appearance.Create(FScene, Self);
+      FAppearance:=TVRML2Appearance.Create(FScene,Self);
       FAppearance.Load;
       //word:=FScene.LoadId(token);
     end
     else if word.ToUpper = 'GEOMETRY' then begin
       word:=FScene.LoadId(token);
       if word.ToUpper = 'INDEXEDFACESET' then begin
-        FGeometry:=TVRML2IndexedFaceSet.Create(FScene, Self);
+        FGeometry:=TVRML2IndexedFaceSet.Create(FScene,Self);
         FGeometry.Load;
       end
       else FScene.SkipObject;
     end;
-//  else RaiseParserError(token, 'appearance|geometry');
+//  else RaiseParserError(token,'appearance|geometry');
     word:=FScene.LoadId(token);
   end;
 end;
@@ -916,7 +916,7 @@ end;
 procedure TVRML2Coordinates.FSetCapacity(val: integer);
 begin
   FCapacity:=val;
-  Setlength(FCoordinates, FCapacity);
+  Setlength(FCoordinates,FCapacity);
   if FCapacity < FCount then FCount:=FCapacity;
 end;
 
@@ -938,7 +938,7 @@ procedure TVRML2Coordinates.Clear;
 begin Capacity:=0; FCount:=0; FFaceSets.Clear; end;
 
 constructor TVRML2Coordinates.Create(Scene: TVRML2Scene; Parent:TVRML2Object);
-begin inherited Create(Scene, Parent); FFaceSets:=TFasterListTVRML2IndexedFaceSet.Create;
+begin inherited Create(Scene,Parent); FFaceSets:=TFasterListTVRML2IndexedFaceSet.Create;
 end;
 
 destructor TVRML2Coordinates.Destroy;
@@ -946,12 +946,12 @@ begin FreeAndNil(FFaceSets); inherited Destroy; end;
 
 procedure TVRML2Coordinates.Load;
 var
-  token, tokenX, tokenY, tokenZ:TToken;
-  word, ObjectName: AnsiString;
+  token,tokenX,tokenY,tokenZ:TToken;
+  word,ObjectName: AnsiString;
   coord: T3DVector;
 {
   procedure detectPrecision(D:AnsiString);
-  var i:integer; dc, code:integer; ss:AnsiString;
+  var i:integer; dc,code:integer; ss:AnsiString;
   begin
     if D.IndexOf('e') < 0 then begin i:=D.IndexOf('.');
       if i > -1 then dc:=D.length-i-1;
@@ -966,13 +966,13 @@ var
 begin
     word:=FScene.LoadId(token);
     if word <> '{' then begin Self.FType:=word;
-        word:=FScene.LoadId( token );          // Assert(token, '{');
+        word:=FScene.LoadId( token );          // Assert(token,'{');
     end;
     SetLength(FCoordinates,10);
     word:=FScene.LoadId(token);
     while word <> '}' do begin
       if word.ToUpper = 'POINT' then begin
-        word:=FScene.LoadId(token);            // Assert(token, '[');
+        word:=FScene.LoadId(token);            // Assert(token,'[');
         while word <> ']' do begin
           coord.X:=FScene.LoadFloat(tokenX);   // detectPrecision(tokenX.FString);
           coord.Y:=FScene.LoadFloat(tokenY);   // detectPrecision(tokenY.FString);
@@ -981,18 +981,18 @@ begin
           word:=FScene.LoadId(token);
         end;
       end;
-//    else RaiseParserError(token, 'point');
+//    else RaiseParserError(token,'point');
       word:=FScene.LoadId(token);
-    end;                                       //  Assert(token, '}');
+    end;                                       //  Assert(token,'}');
 end;
 //
 // TVRML2IndexedFaceSet
 //
 constructor TVRML2IndexedFaceSet.Create(Scene: TVRML2Scene; Parent:TVRML2Object);
 begin
-  inherited Create(Scene, Parent);
+  inherited Create(Scene,Parent);
   FFaces:=specialize TFasterList<TIntArray>.Create;
-  FCoordinates:=TVRML2Coordinates.Create(Scene, Parent);
+  FCoordinates:=TVRML2Coordinates.Create(Scene,Parent);
   Clear;
 end;
 
@@ -1038,7 +1038,7 @@ end;
 
 procedure TVRML2IndexedFaceSet.Load;
   var token:TToken;
-      word, ObjectName: AnsiString;
+      word,ObjectName: AnsiString;
       VRMLObject: TVRMLObject;
       FaceCoords:TStringList;
       fc: ^TIntArray;
@@ -1053,7 +1053,7 @@ begin
     if word.ToUpper='NORMALPERVERTEX' then FNormalPerVertex:=FScene.LoadBoolean(token) else
     if word.ToUpper='SOLID' then FSolid:=FScene.LoadBoolean(token) else
     if word.ToUpper='CREASEANGLE' then FCreaseAngle:=FScene.LoadFloat(token) else
-    if word.ToUpper='COORD' then begin //FCoordinates:=TVRML2Coordinates.Create(FScene, Self);
+    if word.ToUpper='COORD' then begin //FCoordinates:=TVRML2Coordinates.Create(FScene,Self);
                                  FCoordinates.Load; end else
     if (word.ToUpper='COLOR')or(word.ToUpper='NORMAL')or(word.ToUpper='TEXCOORD') then FScene.SkipObject else
     if (word.ToUpper='COLORINDEX')or(word.ToUpper='NORMALINDEX')or(word.ToUpper='TEXCOORDINDEX') then FScene.SkipObject else
@@ -1063,9 +1063,9 @@ begin
       word:=FScene.LoadId(token);
       while word<>']' do begin
         while (word<>'-1') and (word<>']') do begin
-          if (word <> '-1') and (word <> ',') and (word <> ']') then FaceCoords.Add(word);
+          if (word <> '-1') and (word<>',') and (word<>']') then FaceCoords.Add(word);
           word:=FScene.LoadId(token); // comma or ]
-          if word = ',' then word:=FScene.LoadId(token); // number
+          if word=',' then word:=FScene.LoadId(token); // number
         end;
         if FaceCoords.Count>0 then begin new( fc );
            SetLength( fc^,FaceCoords.Count );
@@ -1088,7 +1088,7 @@ procedure TVRML2Scene.Import
   SubdivisionSurface: TFreeSubdivisionSurface );
  var
       VRMLScene: TVRML2Scene;
-      I,J,K,N,FS, Index: integer; V3Point: T3DVector;
+      I,J,K,N,FS,Index: integer; V3Point: T3DVector;
       IndexedFaceSets: TFasterListTVRML2IndexedFaceSet;
       CoordInfo: TVRML2Coordinates;
       FaceInfo: TVRML2IndexedFaceSet;

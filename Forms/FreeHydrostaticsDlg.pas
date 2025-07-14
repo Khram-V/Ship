@@ -1,9 +1,9 @@
 unit FreeHydrostaticsDlg;
 {$MODE Delphi}
 interface uses
-  LResources, LCLType, Classes, SysUtils,
-  PrintersDlgs, Printers, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, Buttons,
+  LResources,LCLType,Classes,SysUtils,
+  PrintersDlgs,Printers,Controls,Forms,
+  Dialogs,StdCtrls,ExtCtrls,Buttons,
   FreePrinter,FreeShipUnit,FreeLanguageSupport;
 type                                                { TFreeHydrostaticsDialog }
   TFreeHydrostaticsDialog = class(TForm)
@@ -59,7 +59,7 @@ begin  //SaveDialog.FileName:=Ship{(Sender as TFreeShip)}.FileName;
   SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'')+'.txt';
   I:=Edit.Lines.Count;
   S:=Edit.Lines.CommaText;                       // Place cursor at beginning
-  Edit.CaretPos:=TPoint(Point(0, 0));
+  Edit.CaretPos:=TPoint(Point(0,0));
   I:=Edit.Lines.Count;
   S:=Edit.Lines.CommaText;
   ShowTranslatedValues( Self );

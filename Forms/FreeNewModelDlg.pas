@@ -1,8 +1,8 @@
 unit FreeNewModelDlg;
 {$mode objfpc}{$H+}
 interface uses
-    Controls, Forms, StdCtrls, Buttons,
-    ExtCtrls, Spin, Classes, FreeLanguageSupport;
+    Controls,Forms,StdCtrls,Buttons,
+    ExtCtrls,Spin,Classes,FreeLanguageSupport;
 type
  TFreeNewModelDialog = class( TForm )                   { TFreeNewModelDialog }
     ShipBox,ComboBox1,ComboBox2: TComboBox;

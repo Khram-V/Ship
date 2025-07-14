@@ -1,14 +1,14 @@
 unit FreeControlPointFrm;
 {$MODE Delphi}{$H+}
 interface uses
-  SysUtils, Classes,
-  Graphics, Controls,
-  Forms,    Dialogs,
-  Math,     StdCtrls, StrUtils,
-  Buttons,  ExtCtrls,
+  SysUtils,Classes,
+  Graphics,Controls,
+  Forms,   Dialogs,
+  Math,    StdCtrls,StrUtils,
+  Buttons, ExtCtrls,
   FreeTypes,FreeGeometry,FreeStringUtils,FreeLanguageSupport;
 type
-{TEntryMethod = ( emNone, emTyping, emArrowKeys, emMouse, emPaste );
+{TEntryMethod = ( emNone,emTyping,emArrowKeys,emMouse,emPaste );
 TFormStyle=(fsNormal,fsMDIChild,fsMDIForm,fsStayOnTop,fsSplash,fsSystemStayOnTop);
 TFormBorderStyle=(bsNone,bsSingle,bsSizeable,bsDialog,bsToolWindow,bsSizeToolWin);
 }
@@ -297,7 +297,7 @@ begin Edit3.Text:=Change('@'+FloatToDec(-Ship.Visibility.CursorIncrement,4),2); 
 { parses input "Coord" and and returns the new value of a coordinate    }
 { if first character of input is (RelIdentifier - currently '@')        }
 {    then the input value is added to the old value "OldCoord".         }
-{ if the first character of the value is '-',                           }
+{ if the first character of the value is '-',                          }
 {    then the remainder is treated as a negative value                  }
 { if the remainding value contains ONE '-'                              }
 {    then the part after that '-' is considered as a fraction of a unit }
@@ -318,8 +318,8 @@ begin
   if LeftStr(myString,1)=RelIdentifier then begin        // get rid of the '@'
     myString:= MidStr(myString,2,255);
     if Pos(RelIdentifier,myString)>0 then myString:='0'; // make sure not to have another '@' (and a 0 doesn't hurt)
-  end else myOldValue:= 0;  // we have a new value now, so don't add the old one!
-  if LeftStr(myString, 1)='-' then begin                // get rid of the minus
+  end else myOldValue:= 0;  // we have a new value now,so don't add the old one!
+  if LeftStr(myString,1)='-' then begin                // get rid of the minus
     myFactor:=-1.0;
     myString:=MidStr(myString,2,255);
   end;
@@ -329,7 +329,7 @@ begin
       myWholeFeet:=StrToFloat(LeftStr(myString,myFracPos-1));
       myString:=MidStr(myString,myFracPos+1,255);
     end;
-    myFracPos:=Pos('-',myString); // is there a second "-", i.e. do we have also fractional inches?
+    myFracPos:=Pos('-',myString); // is there a second "-",i.e. do we have also fractional inches?
     if myFracPos>0 then begin
       if myFracPos>1 then begin   // check whether there is an whole inch value
         myWholeInch:=StrToFloat(LeftStr(myString,myFracPos-1));

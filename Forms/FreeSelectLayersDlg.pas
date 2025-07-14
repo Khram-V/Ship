@@ -4,7 +4,7 @@ interface uses
     {$IFDEF Windows}
      Windows,
     {$ELSE}
-     LCLIntf, LCLType,
+     LCLIntf,LCLType,
     {$ENDIF}
      SysUtils,
      Classes,
@@ -14,7 +14,7 @@ interface uses
      Dialogs,
      Buttons,
      ExtCtrls,
-     StdCtrls, CheckLst,
+     StdCtrls,CheckLst,
      FreeshipUnit,
      FreeGeometry,
      FreeLanguageSupport;

@@ -98,10 +98,10 @@ begin
   dY:=FCoordinate.Y-oP.Y;
   dZ:=FCoordinate.Z-oP.Z;
   for i:=0 to FAnchoredPoints.Count-1 do
-    FAnchoredPoints[i].MoveBy(Viewport,dX,dY,dZ, Self);
+    FAnchoredPoints[i].MoveBy(Viewport,dX,dY,dZ,Self);
   for i:=0 to FLinearConstrainedPoints.Count-1 do
     FLinearConstrainedPoints[i].SetCoordinate(ViewPort,
-      FLinearConstrainedPoints[i].Coordinate, Self);
+      FLinearConstrainedPoints[i].Coordinate,Self);
 
   // move all points of selected groups if there
   if Self = Surface.ActiveControlPoint then
@@ -112,14 +112,14 @@ begin
           gPoint:=Surface.SelectedControlPointGroup[i].ControlPoints[j];
           // do not move anchored points-they already moved
           if FAnchoredPoints.IndexOf( gPoint )<0 then
-            gPoint.MoveBy(Viewport, dX, dY, dZ, nil);
+            gPoint.MoveBy(Viewport,dX,dY,dZ,nil);
         end;
   FInSetCoordinate:=false;
 end;
 
 procedure TFreeSubdivisionControlPoint.Collapse0;
 var
-  I, J: integer;
+  I,J: integer;
   Face: TFreeSubdivisionControlFace;
   Edge1: TFreesubdivisionControlEdge;
   Edge2: TFreesubdivisionControlEdge;
@@ -128,7 +128,7 @@ var
   SortedPointLists: TFasterListTFreeSubdivisionFace; // using Face class as list of Points
   sPointList:TFreeSubdivisionFace;
   Checklist: TFasterListTFreeSubdivisionControlPoint;
-  P1, P2: TFreeSubdivisionControlPoint;
+  P1,P2: TFreeSubdivisionControlPoint;
   Crease: boolean;
   EdgeCollapse: boolean;
 begin
@@ -179,7 +179,7 @@ begin
       Face.Delete;
     end;
     if EdgeCollapse then begin
-      Edge1:=Surface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
+      Edge1:=Surface.EdgeExists(P1,P2) as TFreesubdivisionControlEdge;
       if Edge1 <> nil then begin
         Edge1.Crease:=Crease;// or (Edge1.NumberOfFaces=1);
       end;
@@ -198,7 +198,7 @@ begin
       for J:=1 to Face.FPoints.Count do begin
         P2:=face.FPoints[J-1] as TFreeSubdivisionControlPoint;
         if (P1 <> self) and (P2 <> self) then begin
-          Edge1:=Surface.EdgeExists(P1, P2) as TFreesubdivisionControlEdge;
+          Edge1:=Surface.EdgeExists(P1,P2) as TFreesubdivisionControlEdge;
           if Edge1 <> nil then
             if Edges.IndexOf(Edge1) = -1 then Edges.Add(Edge1);
         end;
@@ -213,7 +213,7 @@ begin
         sPointList:=SortedPointLists[i];
         Points:= sPointList.FPoints;
         if Points.Count > 2 then begin
-          Face:=Surface.AddControlFace(TFasterList(Points), False);
+          Face:=Surface.AddControlFace(TFasterList(Points),False);
           if Face <> nil then begin
             P1:=Face.FPoints[Face.FPoints.Count-1] as TFreeSubdivisionControlPoint;
             for j:=0 to Face.FPoints.Count-1 do begin
@@ -338,10 +338,10 @@ end;
 
 procedure TFreeSubdivisionControlPoint.Draw(Viewport: TFreeViewport);
 var
-  P, PA,PB: TPoint;
+  P,PA,PB: TPoint;
   Pz: TShadePoint;
   I: integer;
-  P3D, P3DA, P3DB, P3DA2, P3DB2 : T3DVector;
+  P3D,P3DA,P3DB,P3DA2,P3DB2 : T3DVector;
   MFL: TFloatType;
   B3D: T3DLine;
 begin
@@ -350,12 +350,12 @@ begin
     if Viewport.ViewType=fvBodyplan then
       if P3D.X <= Surface.SplitSectionLocation then P3D.Y:=-P3D.Y;
     P:=Viewport.Project(P3D);
-    Pz:=Viewport.ProjectToZBuffer(1.002 * ZBufferScaleFactor, P3D);
+    Pz:=Viewport.ProjectToZBuffer(1.002*ZBufferScaleFactor,P3D);
       // Check if the point lies within the viewport's drawingcanvas boundaries
     if  (Pz.X>=0) and (Pz.Y>=0)
     and (Pz.X<Viewport.ClientWidth)
     and (Pz.Y < Viewport.ClientHeight) then begin               // Compare to Z buffer to check visibility;
-      if Pz.Z+0.5>=Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X] then begin // yes, the point is visible
+      if Pz.Z+0.5>=Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X] then begin // yes,the point is visible
         Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X]:=Pz.Z;             // + Surface.ControlPointSize
         if Viewport.PenWidth<>1 then Viewport.PenWidth:=1;
         Viewport.PenColor:=Color;
@@ -376,14 +376,14 @@ begin
     if Selected then begin
     //FInitializeCanvas(Viewport,1,Color,Mode);
       for I:=1 to Surface.ControlPointSize do
-      Viewport.Rectangle(P.X-I, P.Y-I, P.X+I, P.Y+I);
+      Viewport.Rectangle(P.X-I,P.Y-I,P.X+I,P.Y+I);
       Viewport.Rectangle(P.X-Surface.ControlPointSize-2,
                          P.Y-Surface.ControlPointSize-2,
                          P.X+Surface.ControlPointSize+2,
                          P.Y+Surface.ControlPointSize+2);
     end else begin
       for I:=1 to Surface.ControlPointSize do
-        Viewport.Rectangle(P.X-I, P.Y-I, P.X+I, P.Y+I);
+        Viewport.Rectangle(P.X-I,P.Y-I,P.X+I,P.Y+I);
     end;
     if (FLinearConstraintPointA<>nil) and (FLinearConstraintPointB<>nil) then
     begin B3D:=Line3P(self.Coordinate,
@@ -417,7 +417,7 @@ begin
     {else
     begin  // temporary until Names completely implemented
       Viewport.FontColor:=Color;
-      ViewPort.TextOut(P.X+2, P.Y+2, IntToStr(FId));
+      ViewPort.TextOut(P.X+2,P.Y+2,IntToStr(FId));
     end;}
     //end;
   end;
@@ -431,61 +431,61 @@ procedure TFreeSubdivisionControlPoint.AdjustToLinearConstraint
 var P,PN: TPoint;
     I: integer;
     CA,CB : T3DVector;      // project point P on the ray through P1 and P2
-    function Project_PL_3D(P, P1, P2: T3DVector): T3DVector;
+    function Project_PL_3D(P,P1,P2: T3DVector): T3DVector;
     var
-      T, L: TFloatType; d1, d2: T3DVector;
+      T,L: TFloatType; d1,d2: T3DVector;
     begin
       d1.X:=P.X-P1.X;      d1.Y:=P.Y-P1.Y;      d1.Z:=P.Z-P1.Z;
       d2.X:=P2.X-P1.X;     d2.Y:=P2.Y-P1.Y;     d2.Z:=P2.Z-P1.Z;
       L:=Sqr(d2.X)+Sqr(d2.Y)+Sqr(d2.Z);
 
       if L > 1e-6 then begin
-        T:=((d1.X * d2.X)+(d1.Y * d2.Y)+(d1.Z * d2.Z)) / L;
-        Result.X:=P1.X+T * d2.X;
-        Result.Y:=P1.Y+T * d2.Y;
-        Result.Z:=P1.Z+T * d2.Z;
+        T:=((d1.X*d2.X)+(d1.Y*d2.Y)+(d1.Z*d2.Z))/L;
+        Result.X:=P1.X+T*d2.X;
+        Result.Y:=P1.Y+T*d2.Y;
+        Result.Z:=P1.Z+T*d2.Z;
       end else Result:=P;
     end;{Dist_PL_3D}
 
     // project point P on the ray through P1 and P2 by X
-    function Project_PL_3D_X(P, P1, P2: T3DVector): T3DVector;
+    function Project_PL_3D_X(P,P1,P2: T3DVector): T3DVector;
     var
-      Kz,Ky, dX,pX: TFloatType;
+      Kz,Ky,dX,pX: TFloatType;
     begin
       pX:=(P.X-P1.X);
       dX:=(P2.X-P1.X);
-      Kz:=(P2.Z-P1.Z) / dX;
-      Ky:=(P2.Y-P1.Y) / dX;
-      Result.Z:=P1.Z+Kz * pX;
-      Result.Y:=P1.Y+Ky * pX;
+      Kz:=(P2.Z-P1.Z)/dX;
+      Ky:=(P2.Y-P1.Y)/dX;
+      Result.Z:=P1.Z+Kz*pX;
+      Result.Y:=P1.Y+Ky*pX;
       Result.X:=P.X;
     end;{Dist_PL_3D}
 
     // project point P on the ray through P1 and P2 by Y
-    function Project_PL_3D_Y(P, P1, P2: T3DVector): T3DVector;
+    function Project_PL_3D_Y(P,P1,P2: T3DVector): T3DVector;
     var
-      Kz,Kx, dY,pY: TFloatType;
+      Kz,Kx,dY,pY: TFloatType;
     begin
       pY:=(P.Y-P1.Y);
       dY:=(P2.Y-P1.Y);
-      Kx:=(P2.X-P1.X) / dY;
-      Kz:=(P2.Z-P1.Z) / dY;
-      Result.X:=P1.X+Kx * pY;
-      Result.Z:=P1.Z+Kz * pY;
+      Kx:=(P2.X-P1.X)/dY;
+      Kz:=(P2.Z-P1.Z)/dY;
+      Result.X:=P1.X+Kx*pY;
+      Result.Z:=P1.Z+Kz*pY;
       Result.Y:=P.Y;
     end;{Dist_PL_3D}
 
     // project point P on the ray through P1 and P2 by Z
-    function Project_PL_3D_Z(P, P1, P2: T3DVector): T3DVector;
+    function Project_PL_3D_Z(P,P1,P2: T3DVector): T3DVector;
     var
-      Kx,Ky, dZ,pZ: TFloatType;
+      Kx,Ky,dZ,pZ: TFloatType;
     begin
       pZ:=(P.Z-P1.Z);
       dZ:=(P2.Z-P1.Z);
-      Kx:=(P2.X-P1.X) / dZ;
-      Ky:=(P2.Y-P1.Y) / dZ;
-      Result.X:=P1.X+Kx * pZ;
-      Result.Y:=P1.Y+Ky * pZ;
+      Kx:=(P2.X-P1.X)/dZ;
+      Ky:=(P2.Y-P1.Y)/dZ;
+      Result.X:=P1.X+Kx*pZ;
+      Result.Y:=P1.Y+Ky*pZ;
       Result.Z:=P.Z;
     end;{Dist_PL_3D}
 var OldCoordinate: T3DVector;
@@ -494,30 +494,30 @@ begin
   CA:=FLinearConstraintPointA.Coordinate;
   CB:=FLinearConstraintPointB.Coordinate;
   OldCoordinate:=FCoordinate;
-  FCoordinate:=ProjectPointOnline(OldCoordinate, CA, CB);
+  FCoordinate:=ProjectPointOnline(OldCoordinate,CA,CB);
 { // simplifying
   if Viewport = nil then
-     //FCoordinate:=Project_PL_3D(FCoordinate, CA, CB)
-     FCoordinate:=ProjectPointOnline(OldCoordinate, CA, CB)
+     //FCoordinate:=Project_PL_3D(FCoordinate,CA,CB)
+     FCoordinate:=ProjectPointOnline(OldCoordinate,CA,CB)
   else
-  //fvBodyplan, fvProfile, fvPlan, fvPerspective
+  //fvBodyplan,fvProfile,fvPlan,fvPerspective
   if Viewport.ViewType = fvProfile then
     if abs(CA.X-CB.X) > abs(CA.Z-CB.Z) then
-       FCoordinate:=Project_PL_3D_X(FCoordinate, CA, CB)
+       FCoordinate:=Project_PL_3D_X(FCoordinate,CA,CB)
     else
-       FCoordinate:=Project_PL_3D_Z(FCoordinate, CA, CB)
+       FCoordinate:=Project_PL_3D_Z(FCoordinate,CA,CB)
   else
   if Viewport.ViewType = fvBodyplan then
     if abs(CA.Y-CB.Y) > abs(CA.Z-CB.Z) then
-       FCoordinate:=Project_PL_3D_Y(FCoordinate, CA, CB)
+       FCoordinate:=Project_PL_3D_Y(FCoordinate,CA,CB)
     else
-       FCoordinate:=Project_PL_3D_Z(FCoordinate, CA, CB)
+       FCoordinate:=Project_PL_3D_Z(FCoordinate,CA,CB)
   else
   if Viewport.ViewType = fvPlan then
     if abs(CA.X-CB.X) > abs(CA.X-CB.Y) then
-       FCoordinate:=Project_PL_3D_X(FCoordinate, CA, CB)
+       FCoordinate:=Project_PL_3D_X(FCoordinate,CA,CB)
     else
-       FCoordinate:=Project_PL_3D_Y(FCoordinate, CA, CB);
+       FCoordinate:=Project_PL_3D_Y(FCoordinate,CA,CB);
 }
   if (OldCoordinate.X <> FCoordinate.X)
    or(OldCoordinate.Y <> FCoordinate.Y)
@@ -595,7 +595,7 @@ begin
   Strings.Add( Str );
 end;
 
-procedure TFreeSubdivisionControlPoint.SetLinearConstraint(pointA, pointB: TFreeSubdivisionControlPoint);
+procedure TFreeSubdivisionControlPoint.SetLinearConstraint(pointA,pointB: TFreeSubdivisionControlPoint);
 begin
   if (FLinearConstraintPointA = pointA) and (FLinearConstraintPointB = pointB) then exit;
   if FLinearConstraintPointA <> nil then

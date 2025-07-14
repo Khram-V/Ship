@@ -1,11 +1,11 @@
 unit FreeUndoHistoryDlg;
 {$MODE Delphi}{$H+}
 interface uses
-    Graphics, Forms,
-    Controls, Buttons,
-    StdCtrls, ExtCtrls,
-    FreeShipUnit, FreeVersionUnit, FreeTypes,
-    FreeGeometry, FreeLanguageSupport;
+    Graphics,Forms,
+    Controls,Buttons,
+    StdCtrls,ExtCtrls,
+    FreeShipUnit,FreeVersionUnit,FreeTypes,
+    FreeGeometry,FreeLanguageSupport;
 type
   TFreeUndoHistoryDialog = class(TForm)              { TFreeUndoHistoryDialog }
     FreeShip1: TFreeShip;

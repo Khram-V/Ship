@@ -1,5 +1,5 @@
 unit FreeVersionUnit;
-{$MODE Delphi}{$H+} // Unit to keep track of fileversions, bux fixes and release dates
+{$MODE Delphi}{$H+} // Unit to keep track of fileversions,bux fixes and release dates
 interface           // uses SysUtils;
 const
  ReleasedDate:string={$I %DATE%};
@@ -13,11 +13,11 @@ type TFreeFileVersion=( fv100,fv110,fv120,fv130,fv140,fv150,fv160,fv165,fv170,
                         fv230,fv240,fv250,fv261,fv270,fv280,fv290,fv295,fv296,
                         fv297,fv298,fv300,fv302,fv303,fv305,fv309,fv310,fv313,
                         fv314,fv317,fv327,fv332,fv335,fv421,
-                        {   ControlPointNames, ControlEdgeNames,
-                            ControlFaceNames, ControlCurveNames,
+                        {   ControlPointNames,ControlEdgeNames,
+                            ControlFaceNames,ControlCurveNames,
                             ControlPointLinearConstraints }
-                        fv430, // ControlPointGroups
-                        fv462, // Anchors
+                        fv430,// ControlPointGroups
+                        fv462,// Anchors
                         fv500  // UnderWaterColorAlpha
                       );
 const CurrentVersion=fv261;    //high( TFreeFileVersion );

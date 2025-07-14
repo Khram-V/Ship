@@ -226,9 +226,9 @@ begin
 end;
 
 procedure TFreeVisibility.DecreaseCurvatureScale;
-    begin CurvatureScale:=CurvatureScale / 1.1; end;
+    begin CurvatureScale:=CurvatureScale/1.1; end;
 procedure TFreeVisibility.IncreaseCurvatureScale;
-    begin CurvatureScale:=CurvatureScale * 1.1; end;
+    begin CurvatureScale:=CurvatureScale*1.1; end;
 
 procedure TFreeVisibility.LoadBinary(Source: TFreeFilebuffer);
 var

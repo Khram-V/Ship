@@ -1,11 +1,11 @@
 unit FreeHullFormWindow_Panel;
 {$mode objfpc}{$H+}
 interface uses SysUtils,
-     Classes,  Graphics,
-     Controls, Forms,
-     Dialogs,  Menus,
-     ActnList, LightDialog,
-     Printers, PrintersDlgs,
+     Classes, Graphics,
+     Controls,Forms,
+     Dialogs, Menus,
+     ActnList,LightDialog,
+     Printers,PrintersDlgs,
      FreeTypes,FreeGeometry,FreeShipUnit,MDIPanel,
      FreeLanguageSupport;
 type
@@ -62,9 +62,9 @@ type
    procedure ViewportKeyUp(Sender: TObject; var Key: Word;Shift: TShiftState);
    procedure ViewportKeyPress(Sender: TObject; var Key: Char);
    procedure FrameClick(Sender: TObject);
-   procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
+   procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X,Y: Integer);
    procedure ViewportMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
-   procedure ViewportMouseUp(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
+   procedure ViewportMouseUp(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X,Y: Integer);
    procedure ViewportMouseLeave(Sender: TObject);
    procedure SetLightExecute(Sender: TObject);
    procedure FormDestroy(Sender: TObject);
@@ -248,9 +248,9 @@ end;
 procedure TFreeHullWindow.FrameClick(Sender: TObject); begin end;
 procedure TFreeHullWindow.FormDestroy( Sender: TObject ); begin end;
 procedure TFreeHullWindow.FormKeyDown( Sender: TObject; var Key: Word; Shift: TShiftState );
-    begin ViewportKeyDown( Sender, Key, Shift ); end;
+    begin ViewportKeyDown( Sender,Key,Shift ); end;
 procedure TFreeHullWindow.FormKeyPress(Sender: TObject; var Key: char);
-    begin ViewportKeyPress( Sender, Key ); end;
+    begin ViewportKeyPress( Sender,Key ); end;
 procedure TFreeHullWindow.FormKeyUp
         ( Sender: TObject; var Key: Word; Shift: TShiftState);
     begin ViewportKeyUp( Sender,Key,Shift ); end;
@@ -391,7 +391,7 @@ begin
   end;
 end;
 
-procedure TFreeHullWindow.ViewportMouseMove(Sender: TObject;Shift: TShiftState; X, Y: Integer);
+procedure TFreeHullWindow.ViewportMouseMove(Sender: TObject;Shift: TShiftState; X,Y: Integer);
 var P    : TPoint;
     P2D  : T2DCoordinate;
     P3D  : T3DVector;
@@ -426,7 +426,7 @@ begin
          if Y>FInitialPosition.Y then begin Viewport.ZoomOut; end;
          FInitialPosition.X:=X;
          FInitialPosition.Y:=Y;
-      end;                         // Pan the window left, right, top or bottom
+      end;                         // Pan the window left,right,top or bottom
    end else if (Shift = [ssRight]) and (FAllowPanOrZoom) then begin
       if (abs(FInitialPosition.X-X)>4) or (abs(FInitialPosition.Y-Y)>4) then begin
          P.X:=Viewport.Pan.X+X-FInitialPosition.X;
@@ -440,13 +440,13 @@ begin
    if (Shift=[ssLeft,ssCtrl]) then begin                // Draw selection frame
       if (abs(FInitialPosition.X-X)>4) or (abs(FInitialPosition.Y-Y)>4) then begin
          Viewport.SelectionFrameRect:=Rect(FInitialPosition.X,FInitialPosition.Y,X,Y);
-      // Viewport.Rectangle( FInitialPosition.X,FInitialPosition.Y, X,Y );
+      // Viewport.Rectangle( FInitialPosition.X,FInitialPosition.Y,X,Y );
       end;
     end
   else if Assigned(FFreeShip) then FFreeShip.MouseMove( Viewport,Shift,X,Y );
 end;
 
-procedure TFreeHullWindow.ViewportMouseUp(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TFreeHullWindow.ViewportMouseUp(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 var P:TPoint;
 begin
    if Button=mbRight then begin

@@ -1,8 +1,8 @@
 unit FreeDeleteDlg;
 {$mode objfpc}{$H+}
 interface uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, Grids,
+  Classes,SysUtils,Forms,Controls,Graphics,Dialogs,ExtCtrls,Buttons,
+  StdCtrls,Grids,
   FreeShipUnit,
   FreeGeometry;
 type
@@ -45,7 +45,7 @@ begin
     ColWidths[3]:=ClientWidth-ColWidths[0]-ColWidths[1]-ColWidths[2]-2*GridLineWidth;
 end;
 
-procedure TFreeDeleteDialog.sgObjectsCheckboxToggled(sender: TObject; aCol, aRow: Integer;
+procedure TFreeDeleteDialog.sgObjectsCheckboxToggled(sender: TObject; aCol,aRow: Integer;
   aState: TCheckboxState);
 var index : integer; chk : boolean;
     Layer : TFreeSubdivisionLayer;
@@ -67,7 +67,7 @@ begin
 end;
 
 procedure TFreeDeleteDialog.sgObjectsGetCellHint
-( Sender: TObject; ACol, ARow: Integer; var HintText: AnsiString );
+( Sender: TObject; ACol,ARow: Integer; var HintText: AnsiString );
 begin if ARow=0 then HintText:=sgObjects.Columns[aCol].Title.Caption
                 else HintText:='';
 end;

@@ -15,8 +15,8 @@ function TFreeDevelopedPatch.FGetShowErrorEdges: boolean;
 begin Result:=ShowInteriorEdges and FShowErrorEdges; end;
 
 function TFreeDevelopedPatch.FGetMidPoint: T2DCoordinate;
-begin Result.X:=0.5 * (FMin2D.X+FMax2D.X);
-      Result.Y:=0.5 * (FMin2D.Y+FMax2D.Y);
+begin Result.X:=0.5*(FMin2D.X+FMax2D.X);
+      Result.Y:=0.5*(FMin2D.Y+FMax2D.Y);
 end;
 
 function TFreeDevelopedPatch.FGetMinError: extended;
@@ -42,7 +42,7 @@ var P: T2DCoordinate;
 begin
   P:=F2DCoordinates[index].Coordinate;
   Tmp:=Vector( P.X,P.Y );
-  Tmp:=MirrorPlane(Tmp, FMirrorplane);
+  Tmp:=MirrorPlane(Tmp,FMirrorplane);
   P.X:=Tmp.X;
   P.Y:=Tmp.Y;
   if (FMirrorOnScreen) and not (FMirror) then P.Y:=-P.Y;
@@ -107,7 +107,7 @@ begin
   FNoIterations:=Org.FNoIterations;
   FMirrorOnScreen:=Org.FMirrorOnScreen;
   if length(Org.F2DCoordinates) > 0 then begin
-    Setlength(F2DCoordinates, FPoints.Count);
+    Setlength(F2DCoordinates,FPoints.Count);
     for I:=1 to FPoints.Count do begin
       F2DCoordinates[I-1]:=Org.F2DCoordinates[I-1];
       if Mirror then
@@ -123,8 +123,8 @@ begin
       end;
     end;
   end;
-  Setlength(FEdgeErrors, Fedges.Count);
-  Move(Org.FEdgeErrors[0], FEdgeErrors[0], FEdges.Count * SizeOf(double));
+  Setlength(FEdgeErrors,Fedges.Count);
+  Move(Org.FEdgeErrors[0],FEdgeErrors[0],FEdges.Count*SizeOf(double));
   FMaxAreaError:=Org.FMaxAreaError;
   FTotalAreaError:=Org.FTotalAreaError;
 end;
@@ -142,8 +142,8 @@ begin
   FDoneList.Clear;
   FCorners.Clear;
   FBoundaryEdges.Clear;
-  Setlength(F2DCoordinates, 0);
-  Setlength(FEdgeErrors, 0);
+  Setlength(F2DCoordinates,0);
+  Setlength(FEdgeErrors,0);
   Rotation:=0.0;
   FMin2D.X:=0.0;
   FMin2D.Y:=0.0;
@@ -190,7 +190,7 @@ end;
 destructor TFreeDevelopedPatch.Destroy;
 begin
   Clear;
-  Fillchar(FMirrorplane, SizeOf(FMirrorplane), 0);
+  Fillchar(FMirrorplane,SizeOf(FMirrorplane),0);
   FMirror:=False;
   FreeAndNil(FPoints);
   FreeAndNil(FEdges);
@@ -209,7 +209,7 @@ function TFreeDevelopedPatch.DistanceToCursor
 var
   I,S,E,Dist: integer;
   Edge: TFreeSubdivisionEdge;
-  P1, P2: T3DVector;
+  P1,P2: T3DVector;
   Param: TFloattype;
 begin
   Result:=1000000;                      // check distance to all interior edges
@@ -221,13 +221,13 @@ begin
       P1:=Point[S];
       P2:=Point[E];
       Dist:=Round(DistanceToLine( Viewport.Project(P1),
-                                  Viewport.Project(P2), X,Y, Param) );
+                                  Viewport.Project(P2),X,Y,Param) );
       if dist < Result then Result:=Dist;
       if FMirror then begin
         P1:=MirrorPoint[S];
         P2:=MirrorPoint[E];
         Dist:=Round(DistanceToLine( Viewport.Project(P1),
-                                    Viewport.Project(P2), X,Y, Param) );
+                                    Viewport.Project(P2),X,Y,Param) );
         if dist<Result then Result:=Dist;
       end;
     end;
@@ -236,9 +236,9 @@ end;
 
 procedure TFreeDevelopedPatch.Draw(Viewport: TFreeViewport);
 var
-  I,J,K,S,E, Na, Nb, Index,Cap, r,g,b, PenWidthfactor: integer;
-  MinZ,MaxZ, s1,s2,s3: TFloatType;
-  P1,P2,P3, Min,Max: T3DVector;
+  I,J,K,S,E,Na,Nb,Index,Cap,r,g,b,PenWidthfactor: integer;
+  MinZ,MaxZ,s1,s2,s3: TFloatType;
+  P1,P2,P3,Min,Max: T3DVector;
   Face: TFreeSubdivisionFace;
   Edge: TFreeSubdivisionEdge;
   Point: TFreeSubdivisionPoint;
@@ -256,13 +256,13 @@ var
     P3D: T3DVector;
     Pts: array of TPoint;
   begin
-    //MM: for some reason number of fragments is not set for Dev Patch splines, so we set it here
+    //MM: for some reason number of fragments is not set for Dev Patch splines,so we set it here
     if Spline.Fragments = 0 then
-      Spline.Fragments:=round(sqrt(sqrt(Spline.NumberOfPoints)) * 100.0);
+      Spline.Fragments:=round(sqrt(sqrt(Spline.NumberOfPoints))*100.0);
 
-    Setlength(Pts, Spline.Fragments+1);
+    Setlength(Pts,Spline.Fragments+1);
     for I:=0 to Spline.Fragments do begin
-      P3D:=Spline.Value(I / Spline.Fragments);
+      P3D:=Spline.Value(I/Spline.Fragments);
       P2D.X:=P3D.X;
       P2D.Y:=P3D.Y;
       if (FMirrorOnScreen) and not (FMirror) then P2D.Y:=-P2D.Y;
@@ -274,10 +274,10 @@ var
     Viewport.Polyline(Pts);
   end;{DrawSpline}
 
-  procedure Swap(var P1, P2: T3DVector);
+  procedure Swap(var P1,P2: T3DVector);
   var Tmp: T3DVector; begin Tmp:=P1; P1:=P2; P2:=Tmp; end; {Swap}
 
-  procedure DrawDimension(P1, P2: T3DVector);
+  procedure DrawDimension(P1,P2: T3DVector);
   var
     Tmp: integer;
     P: T3DVector;
@@ -285,40 +285,40 @@ var
     Str: AnsiString;
   begin
     if P2.X <> P1.X then begin
-      if P2.X < P1.X then Swap(P1, P2);
-      Tmp:=Trunc(P1.X / XGrid)-1;
-      P.X:=Tmp * XGrid;
+      if P2.X < P1.X then Swap(P1,P2);
+      Tmp:=Trunc(P1.X/XGrid)-1;
+      P.X:=Tmp*XGrid;
       while P.X <= P2.X+XGrid do begin
         if (Abs(P.X-P1.X) < 1e-4) or (Abs(P.X-P2.X) < 1e-4) or
           ((P.X >= P1.X) and (P.X <= P2.X)) then begin
-          P.Y:=P1.Y+((P.X-P1.X) / (P2.X-P1.X)) * (P2.Y-P1.Y);
+          P.Y:=P1.Y+((P.X-P1.X)/(P2.X-P1.X))*(P2.Y-P1.Y);
           P.Z:=0.0;
           Pt:=Viewport.Project(P);
-          Str:=ConvertDimension(P.Y, Units);
-          Viewport.TextOut(Pt.X-Viewport.TextWidth(Str) div 2, Pt.Y, Str);
+          Str:=ConvertDimension(P.Y,Units);
+          Viewport.TextOut(Pt.X-Viewport.TextWidth(Str) div 2,Pt.Y,Str);
         end;
         P.X:=P.X+XGrid;
       end;
     end;
     if abs(P2.Y-P1.Y) <> 0.0 then begin
-      if P2.Y < P1.Y then Swap(P1, P2);
-      Tmp:=Trunc(P1.Y / YGrid)-1;
-      P.Y:=Tmp * YGrid;
+      if P2.Y < P1.Y then Swap(P1,P2);
+      Tmp:=Trunc(P1.Y/YGrid)-1;
+      P.Y:=Tmp*YGrid;
       while P.Y <= P2.Y+YGrid do begin
         if (Abs(P.Y-P1.Y) < 1e-4) or (Abs(P.Y-P2.Y) < 1e-4)
         or ((P.Y >= P1.Y) and (P.Y <= P2.Y)) then begin
-          P.X:=P1.X+((P.Y-P1.Y) / (P2.Y-P1.Y)) * (P2.X-P1.X);
+          P.X:=P1.X+((P.Y-P1.Y)/(P2.Y-P1.Y))*(P2.X-P1.X);
           P.Z:=0.0;
           Pt:=Viewport.Project(P);
-          Str:=ConvertDimension(P.X, Units);
-          Viewport.TextOut(Pt.X-Viewport.TextWidth(Str) div 2, Pt.Y, Str);
+          Str:=ConvertDimension(P.X,Units);
+          Viewport.TextOut(Pt.X-Viewport.TextWidth(Str) div 2,Pt.Y,Str);
         end;
         P.Y:=P.Y+YGrid;
       end;
     end;
   end;{DrawDimension}
 
-  procedure DrawTriangle(P1, P2, P3: T3DVector; Color: TColor);
+  procedure DrawTriangle(P1,P2,P3: T3DVector; Color: TColor);
   var
     Pts: array[0..2] of TPoint;
   begin
@@ -331,16 +331,16 @@ var
   end;{DrawTriangle}
 
 begin
-  r:=round(0.9 * GetRValue(Owner.Color));
-  g:=round(0.9 * GetGValue(Owner.Color));
-  b:=round(0.9 * GetBValue(Owner.Color));
-  EdgeColor:=RGB(r, g, b);
+  r:=round(0.9*GetRValue(Owner.Color));
+  g:=round(0.9*GetGValue(Owner.Color));
+  b:=round(0.9*GetBValue(Owner.Color));
+  EdgeColor:=RGB(r,g,b);
   if Viewport.Printing then PenWidthfactor:=Round(Viewport.PrintScaleFactor)
                        else PenwidthFactor:=1;
 
-  r:=round(1.1 * GetRValue(Owner.Color)); if r > 255 then r:=255;
-  g:=round(1.1 * GetGValue(Owner.Color)); if g > 255 then g:=255;
-  b:=round(1.1 * GetBValue(Owner.Color)); if b > 255 then b:=255;
+  r:=round(1.1*GetRValue(Owner.Color)); if r > 255 then r:=255;
+  g:=round(1.1*GetGValue(Owner.Color)); if g > 255 then g:=255;
+  b:=round(1.1*GetBValue(Owner.Color)); if b > 255 then b:=255;
 
   Viewport.DrawingCanvas.Font.Name:=FDimFontName;
   Viewport.DrawingCanvas.Font.Size:=FDimFontSize;
@@ -355,7 +355,7 @@ begin
   Viewport.PenStyle:=psSolid;
   Cap:=0;
   if (ShowSolid) or (ShowInteriorEdges) then begin
-    Viewport.BrushColor:=RGB(r, g, b);
+    Viewport.BrushColor:=RGB(r,g,b);
     if (not showSolid) then Viewport.BrushStyle:=bsClear;
 
     Wlplane:=Owner.Surface.WaterlinePlane;
@@ -363,7 +363,7 @@ begin
     for I:=1 to FDoneList.Count do begin Face:=FDoneList[I-1];
       if cap <> Face.NumberOfpoints then begin
         Cap:=Face.NumberOfpoints;
-        setlength(Pts, Cap);
+        setlength(Pts,Cap);
       end;
       if FShadeSubmerged then begin
         for J:=3 to Face.NumberOfpoints do begin
@@ -374,29 +374,29 @@ begin
           Index:=FPoints.IndexOf(Face.Point[J-1]);
           if Index <> -1 then P3:=self.Point[index]; // Check if clipping is required
           Point:=Face.Point[0];
-          s1:=WlPlane.a * Point.Coordinate.x +
-              WlPlane.b * Point.Coordinate.y +
-              WlPlane.c * Point.Coordinate.z + WlPlane.d;
+          s1:=WlPlane.a*Point.Coordinate.x +
+              WlPlane.b*Point.Coordinate.y +
+              WlPlane.c*Point.Coordinate.z + WlPlane.d;
           MinZ:=s1;
           MaxZ:=MinZ;
           Point:=Face.Point[J-2];
-          s2:=WlPlane.a * Point.Coordinate.x +
-              WlPlane.b * Point.Coordinate.y +
-              WlPlane.c * Point.Coordinate.z + WlPlane.d;
+          s2:=WlPlane.a*Point.Coordinate.x +
+              WlPlane.b*Point.Coordinate.y +
+              WlPlane.c*Point.Coordinate.z + WlPlane.d;
           if s2 < MinZ then MinZ:=s2 else
           if s2 > MaxZ then MaxZ:=s2;
           Point:=Face.Point[J-1];
-          s3:=WlPlane.a * Point.Coordinate.x+WlPlane.b * Point.Coordinate.y +
-            WlPlane.c * Point.Coordinate.z+WlPlane.d;
+          s3:=WlPlane.a*Point.Coordinate.x+WlPlane.b*Point.Coordinate.y +
+            WlPlane.c*Point.Coordinate.z+WlPlane.d;
           if s3 < MinZ then MinZ:=s3 else
           if s3 > MaxZ then MaxZ:=s3;
           if MaxZ <= 0.0 then begin                // entirely below the plane
-            DrawTriangle(P1, P2, P3, Owner.Surface.UnderWaterColor);
+            DrawTriangle(P1,P2,P3,Owner.Surface.UnderWaterColor);
           end else
           if MinZ >= 0.0 then begin                // entirely above the plane
-            DrawTriangle(P1, P2, P3, Owner.Color);
-          end else begin                       // pierces water, clip triangle
-            ClipTriangle(P1, P2, P3, s1, s2, s3, Na, Nb, Above, Below);
+            DrawTriangle(P1,P2,P3,Owner.Color);
+          end else begin                       // pierces water,clip triangle
+            ClipTriangle(P1,P2,P3,s1,s2,s3,Na,Nb,Above,Below);
             for K:=3 to Na do
               DrawTriangle(Above[0],Above[K-2],Above[K-1],Owner.Color);
             for K:=3 to Nb do
@@ -428,21 +428,21 @@ begin
   if not ShowInteriorEdges then begin                // Draw only boundaryedges
     Viewport.PenColor:=EdgeColor;
     Viewport.PenStyle:=psSolid;
-    Viewport.PenWidth:=1 * PenwidthFactor;
+    Viewport.PenWidth:=1*PenwidthFactor;
     for I:=1 to FBoundaryEdges.Count do begin
       Edge:=FBoundaryEdges[I-1];
       S:=FPoints.IndexOf(Edge.StartPoint);
       E:=FPoints.IndexOf(Edge.EndPoint);
       if (S <> -1) and (E <> -1) then begin
         Pt:=Viewport.Project(self.Point[S]);
-        Viewport.MoveTo(Pt.X, Pt.Y);
+        Viewport.MoveTo(Pt.X,Pt.Y);
         Pt:=Viewport.Project(self.Point[E]);
-        Viewport.LineTo(Pt.X, Pt.Y);
+        Viewport.LineTo(Pt.X,Pt.Y);
         if FMirror then begin
           Pt:=Viewport.Project(MirrorPoint[S]);
-          Viewport.MoveTo(Pt.X, Pt.Y);
+          Viewport.MoveTo(Pt.X,Pt.Y);
           Pt:=Viewport.Project(MirrorPoint[E]);
-          Viewport.LineTo(Pt.X, Pt.Y);
+          Viewport.LineTo(Pt.X,Pt.Y);
         end;
       end;
     end;
@@ -465,8 +465,8 @@ begin
         S:=FPoints.IndexOf(Edge.StartPoint);
         E:=FPoints.IndexOf(Edge.EndPoint);
         if (S <> -1) and (E <> -1) then begin
-          DrawDimension(self.Point[S], self.Point[E]);
-          if FMirror then DrawDimension(MirrorPoint[S], MirrorPoint[E]);
+          DrawDimension(self.Point[S],self.Point[E]);
+          if FMirror then DrawDimension(MirrorPoint[S],MirrorPoint[E]);
         end;
       end;
     end;
@@ -474,19 +474,19 @@ begin
       Point:=FCorners[I-1];
       S:=FPoints.IndexOf(Point);
       P1:=Self.Point[S];
-      Str:='('+ConvertDimension(P1.X, Units)+' / '+ConvertDimension(P1.Y, Units)+')';
+      Str:='('+ConvertDimension(P1.X,Units)+'/'+ConvertDimension(P1.Y,Units)+')';
       Pt:=Viewport.Project(P1);
-      Viewport.TextOut(Pt.X-Viewport.TextWidth(Str) div 2, Pt.Y, Str);
+      Viewport.TextOut(Pt.X-Viewport.TextWidth(Str) div 2,Pt.Y,Str);
       if FMirror then begin
         P1:=Self.MirrorPoint[S];
-        Str:='('+ConvertDimension(P1.X, Units)+' / '+ConvertDimension(P1.Y, Units)+')';
+        Str:='('+ConvertDimension(P1.X,Units)+'/'+ConvertDimension(P1.Y,Units)+')';
         Pt:=Viewport.Project(P1);
-        Viewport.TextOut(Pt.X-Viewport.TextWidth(Str) div 2, Pt.Y, Str);
+        Viewport.TextOut(Pt.X-Viewport.TextWidth(Str) div 2,Pt.Y,Str);
       end;
     end;
   end;                                                // show edges with errors
   if ShowErrorEdges then begin
-    Viewport.PenWidth:=2 * PenwidthFactor;
+    Viewport.PenWidth:=2*PenwidthFactor;
     for I:=1 to FEdges.Count do begin
       if abs(FEdgeErrors[I-1]) > 1e-4 then begin
         if FEdgeErrors[I-1] > 0 then Viewport.PenColor:=clRed
@@ -496,14 +496,14 @@ begin
         E:=FPoints.IndexOf(Edge.EndPoint);
         if (S <> -1) and (E <> -1) then begin
           Pt:=Viewport.Project(self.Point[S]);
-          Viewport.MoveTo(Pt.X, Pt.Y);
+          Viewport.MoveTo(Pt.X,Pt.Y);
           Pt:=Viewport.Project(self.Point[E]);
-          Viewport.LineTo(Pt.X, Pt.Y);
+          Viewport.LineTo(Pt.X,Pt.Y);
           if FMirror then begin
             Pt:=Viewport.Project(MirrorPoint[S]);
-            Viewport.MoveTo(Pt.X, Pt.Y);
+            Viewport.MoveTo(Pt.X,Pt.Y);
             Pt:=Viewport.Project(MirrorPoint[E]);
-            Viewport.LineTo(Pt.X, Pt.Y);
+            Viewport.LineTo(Pt.X,Pt.Y);
           end;
         end;
       end;
@@ -544,7 +544,7 @@ begin
   Viewport.FontColor:=clBlack;
 end;
 
-procedure TFreeDevelopedPatch.Extents(var Min, Max: T3DVector);
+procedure TFreeDevelopedPatch.Extents(var Min,Max: T3DVector);
 var I: integer; P: T3DVector;
 begin
   if FPoints.Count = 0 then begin
@@ -558,10 +558,10 @@ begin
   for I:=1 to FPoints.Count do begin
       P:=Point[I-1];
       if I=1 then begin Min:=P; Max:=Min; end;
-      MinMax( P, Min, Max );
+      MinMax( P,Min,Max );
       if FMirror then begin
         P:=MirrorPoint[I-1];
-        MinMax(P, Min, Max);
+        MinMax(P,Min,Max);
       end;
     end;
 end;
@@ -613,14 +613,14 @@ begin
           Inc( ArrayLength,10 ); Setlength( IntArray,ArrayLength );
         end;
         IntArray[NoPoints-1].Point:=Output;
-        Edge:=Owner.FOwner.EdgeExists(P1, P2);
+        Edge:=Owner.FOwner.EdgeExists(P1,P2);
         if Edge <> nil then IntArray[NoPoints-1].Knuckle:=Edge.Crease
                        else IntArray[NoPoints-1].Knuckle:=False;
       end else begin           // Does the edge lie entirely within the plane??
         if ((abs(side1) <= 1e-5) and (abs(Side2) <= 1e-5)) then begin end else
         if abs(Side2) < 1e-5 then begin Inc(NoPoints);
-          if NoPoints > ArrayLength then  begin Inc(ArrayLength, 10);
-            Setlength(IntArray, ArrayLength);
+          if NoPoints > ArrayLength then  begin Inc(ArrayLength,10);
+            Setlength(IntArray,ArrayLength);
           end;
           Index2:=FPoints.IndexOf(P2);
           IntArray[NoPoints-1].Point.X:=F2DCoordinates[Index2].Coordinate.X;
@@ -665,7 +665,7 @@ begin
       Copy:=TFreeSpline.Create(Owner.Surface);
       Copy.Assign(Spline);
       for J:=1 to Spline.NumberOfPoints do begin
-        Copy.Point[J-1]:=MirrorPlane(Spline.Point[J-1], FMirrorPlane);
+        Copy.Point[J-1]:=MirrorPlane(Spline.Point[J-1],FMirrorPlane);
       end;
       if abs(Plane.a) > 0.9999 then FStations.Add(Copy) else
       if abs(Plane.b) > 0.9999 then FButtocks.Add(Copy) else
@@ -682,8 +682,8 @@ begin
   Mid:=MidPoint;                    // translate to origin
   P2.X:=P.X-Mid.X;
   P2.Y:=P.Y-Mid.Y;                  // rotate around origin
-  P.x:=P2.x * FCos-P2.y * FSin;
-  P.y:=P2.x * FSin+P2.y * FCos;     // Translate back again
+  P.x:=P2.x*FCos-P2.y*FSin;
+  P.y:=P2.x*FSin+P2.y*FCos;     // Translate back again
   Result.X:=P.X+Mid.X+FTranslation.X;
   Result.Y:=P.Y+Mid.Y+FTranslation.Y;
   Result.Z:=0.0;
@@ -719,7 +719,7 @@ begin                                             // Extract edges as polylines
   Source := TFasterListTFreeSubdivisionEdge.Create;
   Source.AddList(FBoundaryEdges);
   Dest := TFasterListTFreeSubdivisionFace.Create;
-  Owner.Surface.IsolateEdges(Source, Dest);
+  Owner.Surface.IsolateEdges(Source,Dest);
   FreeAndNil(Source);
   First:=True;           // Calculate min.,max extents of boundary
   Strings.Add('');      // all measurements are referred to the min. coordinate
@@ -733,7 +733,7 @@ begin                                             // Extract edges as polylines
     if I>0 then Strings.Add('');
     Face:=Dest[I];
     for J:=0 to Face.Points.Count-1 do begin P:=Face.Points[J];
-      printEdgePoint(P, false);
+      printEdgePoint(P,false);
     end;
   end;
   if FMirror then begin                   // print mirror boundary coordinates
@@ -744,7 +744,7 @@ begin                                             // Extract edges as polylines
       Face := Dest[I];
       for J:=0 to Face.Points.Count-1 do begin
         P := Face.Points[J];
-        printEdgePoint(P, FMirror);
+        printEdgePoint(P,FMirror);
       end;
     end;
   end; FreeAndNil(Dest);
@@ -752,7 +752,7 @@ end;
 
 procedure TFreeDevelopedPatch.SaveToDXF( Strings: TStringList );
 var
-  I, J: integer;
+  I,J: integer;
   Col: integer;
   Index: integer;
   P: TFreeSubdivisionPoint;
@@ -765,7 +765,7 @@ var
 
   procedure ExportSpline(Spline: TFreeSpline; Layername: AnsiString);
   var
-    I, Col: integer;
+    I,Col: integer;
     P2D: T2DCoordinate;
     P3D: T3DVector;
   begin
@@ -775,15 +775,15 @@ var
     Strings.Add('62'+EOL+IntToStr(Col));        // color by layer
     Strings.Add('66'+EOL+'1');                  // vertices follow
     for I:=0 to Spline.Fragments do begin
-      P3D:=Spline.Value(I / Spline.Fragments);
+      P3D:=Spline.Value(I/Spline.Fragments);
       P2D.X:=P3D.X;
       P2D.Y:=P3D.Y;
       if (FMirrorOnScreen) and not (FMirror) then P2D.Y:=-P2D.Y;
       P3D:=ConvertTo3D(P2D);
       Strings.Add('0'+EOL+'VERTEX');
       Strings.Add('8'+EOL+Layername);
-      Strings.Add('10'+EOL+FloatToDec(P3D.X, 4));
-      Strings.Add('20'+EOL+FloatToDec(P3D.Y, 4));
+      Strings.Add('10'+EOL+FloatToDec(P3D.X,4));
+      Strings.Add('20'+EOL+FloatToDec(P3D.Y,4));
     end;
     Strings.Add('0'+EOL+'SEQEND');
   end;{ExportSpline}
@@ -792,7 +792,7 @@ begin
   Source:=TFasterListTFreeSubdivisionEdge.Create;
   Source.AddList(FBoundaryEdges);
   Dest:=TFasterListTFreeSubdivisionFace.Create; // use face as list of points
-  Owner.Surface.IsolateEdges(Source, Dest);
+  Owner.Surface.IsolateEdges(Source,Dest);
   FreeAndNil(Source);
   Col:=FindDXFColorIndex(Owner.Color);
   Layer:=Owner.Name;
@@ -809,8 +809,8 @@ begin
       P3D:=Point[Index];
       Strings.Add('0'+EOL+'VERTEX');
       Strings.Add('8'+EOL+Layer);
-      Strings.Add('10'+EOL+FloatToDec(P3D.X, 4));
-      Strings.Add('20'+EOL+FloatToDec(P3D.Y, 4));
+      Strings.Add('10'+EOL+FloatToDec(P3D.X,4));
+      Strings.Add('20'+EOL+FloatToDec(P3D.Y,4));
     end;
     Strings.Add('0'+EOL+'SEQEND');
     if FMirror then begin
@@ -824,40 +824,40 @@ begin
         P3D:=MirrorPoint[Index];
         Strings.Add('0'+EOL+'VERTEX');
         Strings.Add('8'+EOL+Layer);
-        Strings.Add('10'+EOL+FloatToDec(P3D.X, 4));
-        Strings.Add('20'+EOL+FloatToDec(P3D.Y, 4));
+        Strings.Add('10'+EOL+FloatToDec(P3D.X,4));
+        Strings.Add('20'+EOL+FloatToDec(P3D.Y,4));
       end;
       Strings.Add('0'+EOL+'SEQEND');
     end;
   end;
   if ShowStations then
     for I:=1 to FStations.Count do
-      ExportSpline(FStations[I-1], 'stations');
+      ExportSpline(FStations[I-1],'stations');
   if ShowButtocks then
     for I:=1 to FButtocks.Count do
-      ExportSpline(FButtocks[I-1], 'buttocks');
+      ExportSpline(FButtocks[I-1],'buttocks');
   if ShowWaterlines then
     for I:=1 to FWaterlines.Count do
-      ExportSpline(FWaterlines[I-1], 'waterlines');
+      ExportSpline(FWaterlines[I-1],'waterlines');
   if ShowDiagonals then
     for I:=1 to FDiagonals.Count do
-      ExportSpline(FDiagonals[I-1], 'diagonals');
+      ExportSpline(FDiagonals[I-1],'diagonals');
   FreeAndNil(Dest);
 end;
 
 procedure TFreeDevelopedPatch.Unroll(ControlFaces: TFasterListTFreeSubdivisionControlFace);
 type
-  TPolygonOrientation = (poCCW, poCW);
+  TPolygonOrientation = (poCCW,poCW);
 var
-  I, J, K, N, BestIndex, ErrorIndex: integer;
-  Error, Area, MaxError, SeedArea: extended;
-  OptArea, Dist, OptAngle: TFloatType;
-  Min, Max, Normal, P3D1, P3D2, P3D3: T3DVector;
+  I,J,K,N,BestIndex,ErrorIndex: integer;
+  Error,Area,MaxError,SeedArea: extended;
+  OptArea,Dist,OptAngle: TFloatType;
+  Min,Max,Normal,P3D1,P3D2,P3D3: T3DVector;
   Ctrlface: TFreeSubdivisionControlFace;
-  Child, Face: TFreeSubdivisionface;
+  Child,Face: TFreeSubdivisionface;
   Seedface: TFreeSubdivisionface;
   Edge: TFreeSubdivisionEdge;
-  P1, P2, P3: TFreeSubdivisionPoint;
+  P1,P2,P3: TFreeSubdivisionPoint;
   Processed: array of boolean;
   FFaces: TFasterListTFreeSubdivisionFace;
   SeedFaces: TFasterListTFreeSubdivisionFace;
@@ -876,74 +876,74 @@ var
   function Crossproduct( P1,P2,P3: T2DCoordinate ): TPolygonOrientation;
   var  Tmp: extended;
   begin Result:=poCCW;
-    Tmp:=(P2.X-P1.X) * (P3.Y-P2.Y)-(P2.Y-P1.Y) * (P3.X-P2.X);
+    Tmp:=(P2.X-P1.X)*(P3.Y-P2.Y)-(P2.Y-P1.Y)*(P3.X-P2.X);
     if Tmp >= 0.0 then Result:=poCCW else
     if Tmp < 0 then Result:=poCW;
   end;{Crossproduct}
 
   // Calculates the third point of a triangle when the length of its
   // three sides and two coordinates are known
-  function CalculateTriangle(a, b, c: extended; P1, P2: T2DCoordinate): T2DCoordinate;
-  var  Fie1, Fie2,Fie3, P: extended;
+  function CalculateTriangle(a,b,c: extended; P1,P2: T2DCoordinate): T2DCoordinate;
+  var  Fie1,Fie2,Fie3,P: extended;
   begin
     if abs(P2.X-P1.X) <= 1e-6 then begin
       if P2.X = P1.X then begin
-        if P2.Y > p1.Y then Fie1:=0.5 * Pi
-                       else Fie1:=-0.5 * Pi;
-      end else begin Fie1:=ArcTan((P2.Y-P1.Y) / (P2.X-P1.X)); end;
-    end else Fie1:=ArcTan((P2.Y-P1.Y) / (P2.X-P1.X));
+        if P2.Y > p1.Y then Fie1:=0.5*Pi
+                       else Fie1:=-0.5*Pi;
+      end else begin Fie1:=ArcTan((P2.Y-P1.Y)/(P2.X-P1.X)); end;
+    end else Fie1:=ArcTan((P2.Y-P1.Y)/(P2.X-P1.X));
     if (Fie1 < 0) and (P2.Y > P1.Y) then Fie1:=Fie1+Pi;
     if (Fie1 > 0) and (P2.Y < P1.Y) then Fie1:=Fie1+Pi;
-    if b * c <> 0 then P:=(b * b+c * c-a * a) / (2 * b * c)
-                  else p:=1 * Sign(b * b+c * c-a * a);
+    if b*c <> 0 then P:=(b*b+c*c-a*a)/(2*b*c)
+                  else p:=1*Sign(b*b+c*c-a*a);
     if p > 1 then p:=1 else
     if P < -1 then p:=-1;
-    if P = 0.0 then begin Fie2:=0.5 * Pi; end
-               else Fie2:=arcTan(Sqrt(1-p * p) / p);
+    if P = 0.0 then begin Fie2:=0.5*Pi; end
+               else Fie2:=arcTan(Sqrt(1-p*p)/p);
     if p < 0 then Fie2:=Pi-abs(Fie2);
     Fie3:=Fie1-Fie2;
-    Result.X:=b * Cos(Fie3)+P1.X;
-    Result.Y:=b * Sin(Fie3)+P1.Y;
+    Result.X:=b*Cos(Fie3)+P1.X;
+    Result.Y:=b*Sin(Fie3)+P1.Y;
   end; {CalculateTriangle}
 
-  function CalculateTriangle2(a, b, c: extended; P1, P2: T2DCoordinate): T2DCoordinate;
-  var Fie1, Fie2, Beta, Tmp: extended;
+  function CalculateTriangle2(a,b,c: extended; P1,P2: T2DCoordinate): T2DCoordinate;
+  var Fie1,Fie2,Beta,Tmp: extended;
   begin
     if abs(P2.X-P1.X) <= 1e-6 then begin
       if P2.X = P1.X then begin
-        if P2.Y > p1.Y then Fie1:=0.5 * Pi
-                       else Fie1:=-0.5 * Pi;
-      end else begin Fie1:=ArcTan((P2.Y-P1.Y) / (P2.X-P1.X)); end;
-    end else Fie1:=ArcTan((P2.Y-P1.Y) / (P2.X-P1.X));
+        if P2.Y > p1.Y then Fie1:=0.5*Pi
+                       else Fie1:=-0.5*Pi;
+      end else begin Fie1:=ArcTan((P2.Y-P1.Y)/(P2.X-P1.X)); end;
+    end else Fie1:=ArcTan((P2.Y-P1.Y)/(P2.X-P1.X));
     if (Fie1 < 0) and (P2.Y > P1.Y) then Fie1:=Fie1+Pi;
     if (Fie1 > 0) and (P2.Y < P1.Y) then Fie1:=Fie1+Pi;
-    if 2 * a * c = 0 then begin
+    if 2*a*c = 0 then begin
       if a = 0.0 then a:=1e-6;
       if c = 0.0 then c:=1e-6;
     end;
-    Tmp:=(a * a+c * c-b * b) / (2 * a * c);
+    Tmp:=(a*a+c*c-b*b)/(2*a*c);
     if tmp > 1 then begin tmp:=1; end else
     if tmp < -1 then begin tmp:=-1; end;
     Beta:=ArcCos(Tmp);
     Fie2:=Fie1+Beta;
-    Result.X:=c * Cos(Fie2)+P1.X;
-    Result.Y:=c * Sin(Fie2)+P1.Y;
+    Result.X:=c*Cos(Fie2)+P1.X;
+    Result.Y:=c*Sin(Fie2)+P1.Y;
   end;{CalculateTriangle}
 
   procedure Unroll2D(Face: TFreeSubdivisionFace; FirstFace: boolean; var Error: boolean);
-  var I,S,E, Index1,Index2,Index3: integer;
-    P1, P2, P3: TFreeSubdivisionPoint;
+  var I,S,E,Index1,Index2,Index3: integer;
+    P1,P2,P3: TFreeSubdivisionPoint;
     Indices: array of boolean;
 
-    procedure ProcessTriangle(P1, P2, P3: TFreeSubdivisionPoint; Ind1, Ind2, Ind3: integer);
-    var P1_2D, P2_2D, P3_2D: T2DCoordinate; a,b,c: extended;
+    procedure ProcessTriangle(P1,P2,P3: TFreeSubdivisionPoint; Ind1,Ind2,Ind3: integer);
+    var P1_2D,P2_2D,P3_2D: T2DCoordinate; a,b,c: extended;
     begin
       a:=Abs(P1.Coordinate-P2.Coordinate);
       b:=Abs(P2.Coordinate-P3.Coordinate);
       c:=Abs(P3.Coordinate-P1.Coordinate);
       if (not Processed[Ind1])
       and (not Processed[Ind2])
-      and (not Processed[Ind3]) then begin // first face, calculate P1,P2 and P3
+      and (not Processed[Ind3]) then begin // first face,calculate P1,P2 and P3
         P1_2D.X:=P1.Coordinate.X;
         P1_2D.Y:=P1.Coordinate.Y;
         P2_2D.X:=P1_2D.X;
@@ -960,13 +960,13 @@ var
       and (Processed[Ind2])
       and (not Processed[Ind3]) then begin          // calculate position of P3
         a:=Abs( P1_2D-P2_2D );
-      //P3_2D:=CalculateTriangle( b,c,a, P1_2D,P2_2D );
-        P3_2D:=CalculateTriangle2(a,b,c, P1_2D,P2_2D );
+      //P3_2D:=CalculateTriangle( b,c,a,P1_2D,P2_2D );
+        P3_2D:=CalculateTriangle2(a,b,c,P1_2D,P2_2D );
         if First then begin
-          Orientation:=Crossproduct(P1_2D, P2_2D, P3_2D);
+          Orientation:=Crossproduct(P1_2D,P2_2D,P3_2D);
           First:=False;
         end else begin
-          Winding:=Crossproduct(P1_2D, P2_2D, P3_2D);
+          Winding:=Crossproduct(P1_2D,P2_2D,P3_2D);
           if Winding <> Orientation then begin
             if not Error then begin Error:=True; end;
           end;
@@ -978,7 +978,7 @@ var
 
   begin
     Error:=False;
-    setlength(Indices, face.NumberOfpoints);
+    setlength(Indices,face.NumberOfpoints);
     for I:=1 to Face.NumberOfpoints do begin
       Index1:=FPoints.IndexOf(Face.Point[I-1]);
       Indices[I-1]:=Processed[Index1];
@@ -1010,14 +1010,14 @@ var
         Index2:=FPoints.IndexOf(P2);
         P3:=Face.Point[I-1];
         Index3:=FPoints.IndexOf(P3);
-        ProcessTriangle( P1,P2,P3, Index1,Index2,index3 );
+        ProcessTriangle( P1,P2,P3,Index1,Index2,index3 );
       end;
     end;
   end;{Unroll2D}
 
-  function TriangleArea(P1, P2, P3: T2DCoordinate): extended;
+  function TriangleArea(P1,P2,P3: T2DCoordinate): extended;
   const half: extended = 0.5;
-    var d12x, d12y, d23x, d23y, d31x, d31y: extended;
+    var d12x,d12y,d23x,d23y,d31x,d31y: extended;
   begin
     d12x:=(P1.x-P2.x);
     d12y:=(P1.y-P2.y);
@@ -1025,18 +1025,18 @@ var
     d23y:=(P2.y-P3.y);
     d31x:=(P3.x-P1.x);
     d31y:=(P3.y-P1.y);
-    Result:=half * (d12x * d12y+d23x * d23y+d31x * d31y);
+    Result:=half*(d12x*d12y+d23x*d23y+d31x*d31y);
   end;{TriangleArea}
 
   procedure ProcessFaces(Seedface: TFreeSubdivisionFace; var MaxError: extended;
   var ErrorIndex: integer);
   var
-    I, J, k, S, E, P, Index: integer;
+    I,J,k,S,E,P,Index: integer;
     ToDoList: TFasterListTFreeSubdivisionFace;
-    Face, Child: TFreeSubdivisionFace;
+    Face,Child: TFreeSubdivisionFace;
     Edge: TFreeSubdivisionEdge;
-    P1, P2: TFreeSubdivisionPoint;
-    L2D, L3D, Error, TotalError, _3DArea, _2DArea: extended;
+    P1,P2: TFreeSubdivisionPoint;
+    L2D,L3D,Error,TotalError,_3DArea,_2DArea: extended;
     Temp: boolean;
   begin
     MaxError:=0.0;
@@ -1045,9 +1045,9 @@ var
     FTotalAreaError:=0.0;
 
     ErrorIndex:=-1;
-    Setlength(F2DCoordinates, FPoints.Count);
-    Setlength(Processed, FPoints.Count);
-    Setlength(FEdgeErrors, FEdges.Count);
+    Setlength(F2DCoordinates,FPoints.Count);
+    Setlength(Processed,FPoints.Count);
+    Setlength(FEdgeErrors,FEdges.Count);
     for I:=1 to FEdges.Count do FEdgeErrors[I-1]:=0.0;
     for i:=1 to FPoints.Count do begin
       Processed[I-1]:=False;
@@ -1062,7 +1062,7 @@ var
 
     First:=True;
     while ToDoList.Count > 0 do begin
-      if SeedFace = nil then begin // Find a new seedface, this layer has multiple areas
+      if SeedFace = nil then begin // Find a new seedface,this layer has multiple areas
         SeedFace:=ToDoList[0];
       end;
       FDoneList.Add(SeedFace);
@@ -1071,12 +1071,12 @@ var
       I:=1;
       while I <= FDoneList.Count do begin
         Face:=FDoneList[I-1];
-        Unroll2D(Face, I = 1, Temp);
+        Unroll2D(Face,I = 1,Temp);
         if (temp) and (ErrorIndex = -1) then ErrorIndex:=I-1;
         P1:=Face.Point[Face.NumberOfPoints-1];
         for J:=1 to Face.NumberOfpoints do begin
           P2:=Face.Point[J-1];
-          Edge:=Owner.FOwner.EdgeExists(P1, P2);
+          Edge:=Owner.FOwner.EdgeExists(P1,P2);
           if Edge <> nil then begin
             for K:=1 to Edge.NumberOfFaces do begin
               Child:=Edge.Face[K-1];
@@ -1102,7 +1102,7 @@ var
         E:=FPoints.IndexOf(Face.Point[J-2]);
         P:=FPoints.IndexOf(Face.Point[J-1]);
         _2DArea:=_2DArea+TriangleArea(F2DCoordinates[S].Coordinate,
-          F2DCoordinates[E].Coordinate, F2DCoordinates[P].Coordinate);
+          F2DCoordinates[E].Coordinate,F2DCoordinates[P].Coordinate);
       end;
       Error:=_2DArea-_3DArea;
       FTotalAreaError:=FTotalAreaError+Error;
@@ -1130,7 +1130,7 @@ var
     MaxError:=MaxError+abs(FTotalAreaError);
   end;{ProcessFaces}
 
-begin                        // first assemble all points, edges and faces used
+begin                        // first assemble all points,edges and faces used
   FFaces:=TFasterListTFreeSubdivisionFace.Create;
   for K:=1 to ControlFaces.Count do begin
     Ctrlface:=ControlFaces[K-1];
@@ -1142,7 +1142,7 @@ begin                        // first assemble all points, edges and faces used
       for J:=1 to Child.NumberOfpoints do begin
         P2:=Child.Point[J-1];                                 // Add this point
         if FPoints.IndexOf(P2) = -1 then FPoints.Add(P2);     // add this edge
-        Edge:=Owner.Surface.EdgeExists(P1, P2);
+        Edge:=Owner.Surface.EdgeExists(P1,P2);
         if Edge <> nil then
         if FEdges.IndexOf(Edge) = -1 then FEdges.Add(Edge);
         P1:=P2;
@@ -1151,8 +1151,8 @@ begin                        // first assemble all points, edges and faces used
   end;
   FPoints.Capacity:=FPoints.Count;
   FEdges.Capacity:=FEdges.Count;
-              // Find the seed face, which is characterized by the face that it
-              // has one cornerpoint with (possibly) multiple faces, but only 1
+              // Find the seed face,which is characterized by the face that it
+              // has one cornerpoint with (possibly) multiple faces,but only 1
               // face is present in the list of faces to be unrolled.
   SeedFaces:=TFasterListTFreeSubdivisionFace.Create;
   SeedFace:=nil;
@@ -1194,7 +1194,7 @@ begin                        // first assemble all points, edges and faces used
       Child:=Seedfaces[J-1];
       Area:=Child.Area;
       if Area < seedArea then begin
-        Seedfaces.Exchange(I-1, J-1);
+        Seedfaces.Exchange(I-1,J-1);
         SeedArea:=Area;
       end;
     end;
@@ -1207,7 +1207,7 @@ begin                        // first assemble all points, edges and faces used
     // Keep trying to develop the faces until no error has occured and the max. error<1e-7 and the number of iterations<=25
     while I <= seedfaces.Count do begin
       Seedface:=Seedfaces[I-1];
-      ProcessFaces(Seedface, Error, ErrorIndex);
+      ProcessFaces(Seedface,Error,ErrorIndex);
       Inc(FNoIterations);
       if (ErrorIndex <> -1) and (Seedfaces.Count < 25) then begin
                          // Add faces where an error occured as new seedfaces,
@@ -1223,7 +1223,7 @@ begin                        // first assemble all points, edges and faces used
                                                 // Restore the best development
     if (BestIndex <> -1) and (BestIndex <> Seedfaces.Count-1) then begin
       Seedface:=Seedfaces[BestIndex];
-      ProcessFaces(Seedface, Error, ErrorIndex);
+      ProcessFaces(Seedface,Error,ErrorIndex);
     end;
                                                   // Assemble all boundaryedges
     FBoundaryEdges.Clear;
@@ -1251,14 +1251,14 @@ begin                        // first assemble all points, edges and faces used
     OptArea:=0;
     OptAngle:=0;
     for I:=0 to 180 do begin
-      Rotation:=I / 2;
-      Extents(Min, Max);
-      Area:=(Max.X-Min.X) * (Max.Y-Min.Y);
+      Rotation:=I/2;
+      Extents(Min,Max);
+      Area:=(Max.X-Min.X)*(Max.Y-Min.Y);
       if I = 0 then begin OptArea:=Area; OptAngle:=Rotation;  end;
       if Area<OptArea then begin OptArea:=Area; OptAngle:=Rotation; end;
     end;
     Rotation:=OptAngle;
-    Extents(Min, Max);
+    Extents(Min,Max);
     if Max.X-Min.X < Max.Y-Min.Y then Rotation:=Rotation-90;
     if Owner.Symmetric then begin // Now check if the surface has one of its sides on the centerplane
       FMirror:=False;
@@ -1275,21 +1275,21 @@ begin                        // first assemble all points, edges and faces used
       if TmpEdges.Count > 0 then begin
         if FMirror then begin
               // Now if all facenormals have a Y-coordinate of approx. 0.0 then
-              // this is probably a bottom panel, a deck or a transom
+              // this is probably a bottom panel,a deck or a transom
           for J:=1 to FDoneList.Count do begin Face:=FDonelist[J-1];
             Normal:=Face.FaceNormal;
             if abs(Normal.Y) > 1e-2 then begin
-              FMirror:=False;// Y-coordinate of Normal is too big, do not attach
+              FMirror:=False;// Y-coordinate of Normal is too big,do not attach
               Break;
             end;
           end;
 
           if FMirror then begin
             // Check if all points on the centerline are developed onto a 2Dline
-            // if so, then this line is used to mirror the other half of the layer
+            // if so,then this line is used to mirror the other half of the layer
             // so it forms 1 whole panel and there is no need to unfold it.
             SortedPointLists:=TFasterListTFreeSubdivisionFace.Create;
-            self.FOwner.Surface.IsolateEdges(TmpEdges, SortedPointLists);
+            self.FOwner.Surface.IsolateEdges(TmpEdges,SortedPointLists);
             FreeAndNil(TmpEdges);
                                                       // MM: logic is not clear
             for J:=SortedPointLists.Count downto 1 do begin
@@ -1300,7 +1300,7 @@ begin                        // first assemble all points, edges and faces used
               if sPointList.NumberOfpoints > 0 then begin
                 P1:=sPointList.Point[0];
                 P2:=sPointList.Point[ sPointList.NumberOfpoints-1 ];
-                if P1 = P2 then begin        // closed loop, pick another point
+                if P1 = P2 then begin        // closed loop,pick another point
                   J:=sPointList.NumberOfpoints;
                   while (J > 1) and (P1 = P2) do begin
                     P2:=sPointList.Point[J-1];
@@ -1322,7 +1322,7 @@ begin                        // first assemble all points, edges and faces used
                     P3D3.X:=F2DCoordinates[BestIndex].Coordinate.X;
                     P3D3.Y:=F2DCoordinates[BestIndex].Coordinate.Y;
                     P3D3.Z:=0.0;
-                    Dist:=DistancepointToLine(P3D1, P3D2, P3D3);
+                    Dist:=DistancepointToLine(P3D1,P3D2,P3D3);
                     if Dist > 1e-3 then begin FMirror:=False; break; end;
                   end;
                   if FMirror then begin
@@ -1337,7 +1337,7 @@ begin                        // first assemble all points, edges and faces used
                     P3D3:=P3D2;
                     P3D3.Z:=1.0;
                     FMirror:=True;
-                    FMirrorPlane:=PlanePPP(P3D1, P3D2, P3D3);
+                    FMirrorPlane:=PlanePPP(P3D1,P3D2,P3D3);
                       // calculate min/max coordinates in 2D of the mirror part
                     for J:=1 to FPoints.Count do begin
                       P3D2:=Vector( F2DCoordinates[J-1].Coordinate.X,

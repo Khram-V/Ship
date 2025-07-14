@@ -1,8 +1,8 @@
 {-----------------------------------------------------------------}
 {   TFreeUndoObject is an object class for undoing actions.       }
-{   It's function is very basic, just before each modification    }
+{   It's function is very basic,just before each modification    }
 {   the file is saved to a the undo object rather then to a file. }
-{   When the undo is called, the previous state                   }
+{   When the undo is called,the previous state                   }
 {   will be read from the undo object and restored                }
 {-----------------------------------------------------------------}
 // calculates the amount of bytes used for each undo object
@@ -26,7 +26,7 @@ begin                                      // Add the undo data to the undolist
     for I:=FOwner.FUndoObjects.Count downto Owner.FUndoPosition+1 do Owner.UndoObject[I-1].Delete;
     Owner.FUndoObjects.Add(self);
     Owner.FUndoPosition:=Owner.FUndoObjects.Count;
-    while (FOwner.UndoMemory / (1024*1024) > Owner.Preferences.MaxUndoMemory)
+    while (FOwner.UndoMemory/(1024*1024) > Owner.Preferences.MaxUndoMemory)
       and (Owner.FUndoObjects.Count > 2)
     do begin
       Obj:=TFreeUndoObject(FOwner.FUndoObjects[0]);

@@ -1,8 +1,8 @@
 program FreeShip;                                                 { FREE!ship }
 {$mode objfpc}{$H+}
-uses Controls, Forms, Dialogs,               // Windows, System,
-     SysUtils, Math, LazUTF8,                // this includes the LCL widgetset
-     DefaultTranslator, Interfaces,
+uses Controls,Forms,Dialogs,                  // Windows,System,
+     SysUtils,Math,LazUTF8,                  // this includes the LCL widgetset
+     DefaultTranslator,Interfaces,
      Main                in 'Main.pas',                              {MainForm}
      FreeTypes           in '../Units/FreeTypes.pas',
      FreeVersionUnit     in '../Units/FreeVersionUnit.pas',
@@ -15,7 +15,7 @@ procedure InitByParameters; var S: AnsiString; p: integer; begin
     if S='--help' then ParametersHelp:=True else
     if ( lowerCase( RightStr( S,4 ) )='.ftm' )
     or ( lowerCase( RightStr( S,4 ) )='.fbm' )
-    or ( lowerCase( RightStr( S,4 ) )='.fef' ) then sOpenFile:=S;      //? UTF8
+    or ( lowerCase( RightStr( S,4 ) )='.fef' ) then sOpenFile:=S;
   end;
 end;
 procedure PrintParametersHelp( Ans: Boolean ); var sHelp: AnsiString;
@@ -30,15 +30,15 @@ begin
     +#10+'Target OS:        ' + TARGET_OS
     +#10+'Free!Ship version: '+ FREESHIP_VERSION
         +' для ['+VersionString( low( TFreeFileVersion ) )+'..5.0]';
-  if Ans then ShowMessage( sHelp )                    // ResourceVersionInfo
-         else WriteLn( sHelp );                       // UTF8ToConsole( sHelp )
+  if Ans then ShowMessage( sHelp )
+         else WriteLn( sHelp );
 end;
 {$R *.res}
-begin      // SetConsoleOutputCP( CP_UTF8 ); SetConsoleCP( CP_UTF8 ); //==65001
+begin
   WestPoint;
   InitByParameters;
   PrintParametersHelp( false );
-  RequireDerivedFormResource:=True;                                      // new
+  RequireDerivedFormResource:=True;
   Application.Initialize;
   if ParametersHelp then begin PrintParametersHelp( True ); exit; end;
   Application.CreateForm( TMainForm,MainForm );
@@ -54,7 +54,7 @@ try
   Application.Run;
 except                 // Floating point operation - сбои и ошибки игнорируются
     on E: EMathError do;      // ( 'General floating-point exception caught!' )
-    on E: EAccessViolation do;    // -- не знаю.., может быть так будут не хуже
+    on E: EAccessViolation do;    // -- не знаю..,может быть так будут не хуже
 {   on E: EIntError  do Writeln( 'General integer exception!' );
     on E: EDivByZero do Writeln( 'Division by zero exception!' );
     on E: EOverflow  do Writeln( 'Overflow exception!' );

@@ -1,9 +1,9 @@
 unit FreeGridDlg;
 {$MODE Delphi}{$H+}
 interface uses
-  Controls,  Forms,
-  StdCtrls,  Buttons,
-  FreeTypes, ExtCtrls, Spin, FreeShipUnit,FreeLanguageSupport;
+  Controls, Forms,
+  StdCtrls, Buttons,
+  FreeTypes,ExtCtrls,Spin,FreeShipUnit,FreeLanguageSupport;
 type
   TFreeGridDialog = class( TForm )
     Plane: TComboBox;

@@ -8,10 +8,10 @@
 unit FreeLanguageSupport;
 {$mode objfpc}{$H+}
 interface uses
-     LCLType,  LazFileUtils,
-     SysUtils, Classes,
-     stdCtrls, typInfo,
-     extCtrls, iniFiles, FreeStringUtils;
+     LCLType, LazFileUtils,
+     SysUtils,Classes,
+     stdCtrls,typInfo,
+     extCtrls,iniFiles,FreeStringUtils;
 
 type TLanguageIniFile = class( TMemIniFile )               { TLanguageIniFile }
 public Name: AnsiString;
@@ -56,7 +56,7 @@ end;
   Only created forms are translated with ShowTranslatedValues. Call it in the
   onShow event of your main form whith names of all automatically created forms
   at the start-up of your application in the TC parameter.
-  In runtime, call it when you create dynamically a form. See demo for a sample
+  In runtime,call it when you create dynamically a form. See demo for a sample
 }
 procedure ShowTranslatedValues(Component:TComponent);
 var I,J,Index : Integer;
@@ -83,7 +83,7 @@ begin
          if comp is TCustomMemo then begin
             for J:=0 to TCustomMemo(comp).lines.count-1 do begin
                Str:=readString(Component.classname,Component.classname+'.'+comp.name+'.lines['+intToStr(J)+']','fsdef');
-               //in TMemo or TRichEdit, you may have to leave some lines empty
+               //in TMemo or TRichEdit,you may have to leave some lines empty
                if Str<>'fsdef' then TCustomMemo(comp).lines[J]:=Str;
             end;
          end else if comp is TRadioGroup then begin

@@ -1,9 +1,9 @@
 unit FreeEmptyModelChooserDlg;
 {$MODE Delphi}{$H+}
 interface uses
-    Controls, Forms,
-    StdCtrls, Buttons,
-    ExtCtrls, FreeGeometry, FreeLanguageSupport;
+    Controls,Forms,
+    StdCtrls,Buttons,
+    ExtCtrls,FreeGeometry,FreeLanguageSupport;
 type
  TFreeEmptyModelChooserDialog = class(TForm)
     Label1,LabelFileName: TLabel;

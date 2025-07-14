@@ -9,10 +9,10 @@ interface uses
   Spin;
 type
   TFreeRotateDialog = class( TForm )                      { TFreeRotateDialog }
-    FloatSpinEdit1, FloatSpinEdit2, FloatSpinEdit3: TFloatSpinEdit;
-    Label1, Label2, Label3, Label4, Label6, Label9: TLabel;
-    Panel1, Panel2, Panel3: TPanel;
-    OKButton, CancelButton: TSpeedButton;
+    FloatSpinEdit1,FloatSpinEdit2,FloatSpinEdit3: TFloatSpinEdit;
+    Label1,Label2,Label3,Label4,Label6,Label9: TLabel;
+    Panel1,Panel2,Panel3: TPanel;
+    OKButton,CancelButton: TSpeedButton;
     procedure OKButtonClick(Sender: TObject);
     procedure CancelButtonClick(Sender: TObject);
   private                                              { Private declarations }

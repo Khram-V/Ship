@@ -10,11 +10,11 @@ resourcestring rsTextFile = 'Text file';
 //             rsPointMove = 'point move';
 
 function Len(s: AnsiString): PtrInt;
-function Pos(const SearchForText, SearchInText: AnsiString): PtrInt;             //inline;
+function Pos(const SearchForText,SearchInText: AnsiString): PtrInt;             //inline;
 function Copy(const s:AnsiString; StartCharIndex,CharCount:PtrInt): AnsiString;  //inline;
-procedure Delete(var s: AnsiString; StartCharIndex, CharCount: PtrInt);          //inline;
+procedure Delete(var s: AnsiString; StartCharIndex,CharCount: PtrInt);          //inline;
 procedure Insert(const source:AnsiString;var s:AnsiString;StartCharIndex:PtrInt);//inline;
-Function ReplaceText(const AText, AFromText, AToText: AnsiString): AnsiString;   // inline;
+Function ReplaceText(const AText,AFromText,AToText: AnsiString): AnsiString;   // inline;
 function UpperCase(const s: AnsiString): AnsiString;
 function LowerCase(const s: AnsiString): AnsiString;
 //Procedure WriteLn( const Str: AnsiString ); overload;

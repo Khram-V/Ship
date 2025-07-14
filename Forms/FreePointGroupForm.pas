@@ -1,9 +1,9 @@
 unit FreePointGroupForm;
 {$mode objfpc}{$H+}
 interface uses
-  Controls, Forms,
-  StdCtrls, Buttons, SysUtils,
-  CheckLst, Menus, FreeShipUnit, FreeGeometry;
+  Controls,Forms,
+  StdCtrls,Buttons,SysUtils,
+  CheckLst,Menus,FreeShipUnit,FreeGeometry;
 type
   TFreePointGroupForm = class( TForm )
     BitBtnOk,BitBtnCancel: TBitBtn;
@@ -89,7 +89,7 @@ begin                                                         // Sorted = True
   G.Names:=ChangeGroupName.Text;
   CheckListBoxGroups.Items[CheckListBoxGroups.ItemIndex]:=ChangeGroupName.Text;
   ChangeGroupName.Visible:=false;
-  EditNewGroupName.Visible:=true;                 // Не срабатывает, странно ??
+  EditNewGroupName.Visible:=true;                 // Не срабатывает,странно ??
 end;
 (*
 object ChangeGroupName: TEdit

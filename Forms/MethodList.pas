@@ -1,7 +1,7 @@
 unit MethodList;                              // simple not sorted generic list
 {$mode objfpc}{$H+}
 interface                          // TItemType can be procedure of object type
-type generic TMethodList<TItemType>=class  // double pointer, like TNotifyEvent
+type generic TMethodList<TItemType>=class  // double pointer,like TNotifyEvent
 private
   FCount,FCapacity: integer;                 // длина и зарезервированный объём
   FList: array of TItemType;                 // собственно сам список элементов

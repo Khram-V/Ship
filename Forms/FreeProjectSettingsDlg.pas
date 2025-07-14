@@ -2,10 +2,10 @@ unit FreeProjectSettingsDlg;
 {$MODE Delphi}{$H+}
 interface uses
   Graphics,
-  Controls,  Forms,
-  Dialogs,   ExtCtrls,
-  StdCtrls,  Buttons,
-  ComCtrls,  Spin,
+  Controls, Forms,
+  Dialogs,  ExtCtrls,
+  StdCtrls, Buttons,
+  ComCtrls, Spin,
   FreeTypes,FreeGeometry,FreeShipUnit,FreeLanguageSupport;
 type                                             { TFREEProjectSettingsDialog }
   TFREEProjectSettingsDialog = class( TForm )
@@ -24,7 +24,7 @@ type                                             { TFREEProjectSettingsDialog }
     Label9{Длина},Label10{Ширина},Label11{Осадка},
     lbWaterDensity,Label2,Label12,Label13,Label14,Label17,
     Label18,Label19,Label20,Label21,Label22,Label23,Label24,Label25,
-    Label26,Label3, Label4,Label6,Label8,Label5:          TLabel;
+    Label26,Label3,Label4,Label6,Label8,Label5:          TLabel;
     Panel,Panel1,Panel2,Panel3,Panel4,Panel5,Panel6,
     Panel7,Panel8,Panel9,Panel10,Panel11,Panel12,Panel13: TPanel;
     Edit2,Edit3,Edit4,Edit5,Edit6,Edit8,
@@ -85,7 +85,7 @@ implementation
 
 function TFREEProjectSettingsDialog.FGetConversionFactor: double;
 begin
-  if Unitbox.ItemIndex = 1 then Result:=1 / 0.3048
+  if Unitbox.ItemIndex = 1 then Result:=1/0.3048
                            else Result:=1.0;
 end;
 
@@ -160,7 +160,7 @@ begin
   checkbox11.Checked:=True;
   checkbox12.Checked:=True;
   YWindAreaMax:=0.0;
-  XWindAreaMax:=0.5 * Length;
+  XWindAreaMax:=0.5*Length;
   FSetUnitCaptions;
   ShowTranslatedValues(Self); ShowModal;
   Result:=Modalresult = mrOk;

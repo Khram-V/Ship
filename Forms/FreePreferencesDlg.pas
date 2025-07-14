@@ -1,12 +1,12 @@
 unit FreePreferencesDlg;
 {$MODE Delphi}{$H+}
 interface uses
-  LCLIntf, LCLType,
+  LCLIntf,LCLType,
   SysUtils,Variants,
-  Classes, Graphics,
+  Classes,Graphics,
   Controls,Forms,
-  Dialogs, StdCtrls,
-  Buttons, ExtCtrls,
+  Dialogs,StdCtrls,
+  Buttons,ExtCtrls,
   ComCtrls,Spin,
   Menus,FreeShipUnit;
 type                                                 { TFreePreferencesDialog }
@@ -82,7 +82,7 @@ begin                                                                           
   Panel2.Color:=FFreeship.Preferences.LayerColor;                               //    2    2    94  'New surfaces'
   Panel19.Color:=FFreeship.Preferences.NormalColor;                             //   18    19   122 'Surface normals'
   Panel5.Color:=FFreeship.Preferences.UnderWaterColor;                          //    3    5    150 'Submerged surfaces'
-  seSubmergedSurfaceOpacity.Value:=FFreeship.Preferences.UnderWaterColorAlpha * 100 div 255; // 178 'Submerged surface opacity, %'
+  seSubmergedSurfaceOpacity.Value:=FFreeship.Preferences.UnderWaterColorAlpha*100 div 255; // 178 'Submerged surface opacity,%'
   Panel24.Color:=FFreeship.Preferences.ControlCurveColor;                       //   23    24   220 'Control curves'
   Panel6.Color:=FFreeship.Preferences.EdgeColor;                                //    4    6    248 'Regular control edges'
   Panel7.Color:=FFreeship.Preferences.CreaseEdgeColor;                          //    5    17   276 'Crease edges (control)'
@@ -156,7 +156,7 @@ begin
 end;
 
 procedure TFreePreferencesDialog.ResetColorsButtonClick(Sender: TObject);
-    begin if MessageDlg( rs_Save, mtWarning, [mbYes, mbNo], 0) = mrYes
+    begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0) = mrYes
           then begin FFreeship.Preferences.ResetColors; Updatedata; end;
     end;
 procedure TFreePreferencesDialog.FormResize(Sender: TObject); var sz:TRect;
@@ -174,11 +174,11 @@ procedure TFreePreferencesDialog.PageControl1Change(Sender: TObject);
 procedure TFreePreferencesDialog.FormActivate(Sender: TObject); var sz:TRect;
     begin sz:=getPreferredSize; end;
 function TFreePreferencesDialog.getPreferredSize:TRect;
-var TxH, HdrHeight, BrdWidth, TbT, PgT, PnT, PGIB: integer; ScreenPoint: TPoint;
+var TxH,HdrHeight,BrdWidth,TbT,PgT,PnT,PGIB: integer; ScreenPoint: TPoint;
 begin
   Invalidate;
   Application.ProcessMessages;
-  ScreenPoint:=ButtonPanel.ClientToScreen(Point(0, 0));
+  ScreenPoint:=ButtonPanel.ClientToScreen(Point(0,0));
   HdrHeight:=ScreenPoint.Y-self.Top;
   BrdWidth:=ScreenPoint.X-self.Left;
   HdrHeight:=HdrHeight-BrdWidth;
@@ -192,17 +192,17 @@ begin
     self.AdjustSize;
     Application.ProcessMessages;
 }
-  TbT:=TabSheet2.ClientToParent(Point(0, 0), self).Y;
-  PgT:=PageControl1.ClientToParent(Point(0, 0), self).Y;
-  PnT:=Panel1.ClientToParent(Point(0, 0), self).Y;
+  TbT:=TabSheet2.ClientToParent(Point(0,0),self).Y;
+  PgT:=PageControl1.ClientToParent(Point(0,0),self).Y;
+  PnT:=Panel1.ClientToParent(Point(0,0),self).Y;
 //TbH:=PgT-PnT-Panel1.BorderWidth-Panel1.BorderSpacing.InnerBorder;
-  PGIB :={EditImportDir}Panel42.Height * 10+TabSheet2.ChildSizing.VerticalSpacing * 9;
-//PGIB:=PanelGlobalImportDir.Height * 10+TabSheet2.ChildSizing.VerticalSpacing * 9;
-  TxH:=PGIB+TabSheet2.ChildSizing.TopBottomSpacing * 2+//TbH +
-    Panel1.BorderWidth * 2+Panel1.BorderSpacing.InnerBorder * 2 +
-    ButtonPanel.Height+HdrHeight+BrdWidth * 2;
+  PGIB :={EditImportDir}Panel42.Height*10+TabSheet2.ChildSizing.VerticalSpacing*9;
+//PGIB:=PanelGlobalImportDir.Height*10+TabSheet2.ChildSizing.VerticalSpacing*9;
+  TxH:=PGIB+TabSheet2.ChildSizing.TopBottomSpacing*2+//TbH +
+    Panel1.BorderWidth*2+Panel1.BorderSpacing.InnerBorder*2 +
+    ButtonPanel.Height+HdrHeight+BrdWidth*2;
   {if self.Constraints.MinHeight < TxH then self.Constraints.MinHeight:=TxH;}
-  result:=Rect(0,0, Width, BitBtnResetDirs.Top+BitBtnResetDirs.Height+16);
+  result:=Rect(0,0,Width,BitBtnResetDirs.Top+BitBtnResetDirs.Height+16);
 end;
 
 
@@ -210,7 +210,7 @@ procedure TFreePreferencesDialog.SpinEdit1Change(Sender: TObject);
     begin FConfigChanged:=True; end;
 procedure TFreePreferencesDialog.seSubmergedSurfaceOpacityChange(Sender: TObject);
     begin FConfigChanged:=True;
-      FFreeship.Preferences.UnderWaterColorAlpha:=(seSubmergedSurfaceOpacity.Value * 255) div 100;
+      FFreeship.Preferences.UnderWaterColorAlpha:=(seSubmergedSurfaceOpacity.Value*255) div 100;
     end;
 procedure TFreePreferencesDialog.ResetDirsButtonClick(Sender: TObject);
     begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0 ) = mrYes
@@ -249,21 +249,21 @@ end;
 procedure TFreePreferencesDialog.ComboBoxEncodingFillItems; // для *.fbm фалов
 begin                                                      // или совместимость
   with ComboBoxEncoding.Items do begin                    // к старым версиям
-    AddObject('UTF-8 (Unicode Transformation Format, 8-bit) — стандарт кодирования Unicode(65001)',TObject(string('utf8')));
+    AddObject('UTF-8 (Unicode Transformation Format,8-bit) — стандарт кодирования Unicode(65001)',TObject(string('utf8')));
     AddObject('CP866 Русский DOS and Windows console',TObject(string('cp866')));
-    AddObject('CP950 中文 (漢語/汉语) Traditional Chinese(Taiwan; Hong Kong SAR, PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
+    AddObject('CP950 中文 (漢語/汉语) Traditional Chinese(Taiwan; Hong Kong SAR,PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
     AddObject('CP1251 Русский (Windows)',TObject(string('cp1251')));
     AddObject('CP1252 Latin; Western European',TObject(string('cp1252')));
-    AddObject('CP1255 עִבְרִית Hebrew', TObject(string('cp1255')));
+    AddObject('CP1255 עִבְרִית Hebrew',TObject(string('cp1255')));
     AddObject('CP1258 Việt ngữ (越語) Vietnam',TObject(string('cp1258')));
 (*  AddObject('ISO_8859_1-Central Europe',TObject(string('iso88591')));
     AddObject('ISO_8859_15-Western European languages',TObject(string('iso885915')));
-    AddObject('ISO_8859_2-Eastern Europe', TObject(string('iso88592')));
-    AddObject('CP1250- Central Europe', TObject(string('cp1250')));
-    AddObject('CP1253- Greek',  TObject(string('cp1253')));
+    AddObject('ISO_8859_2-Eastern Europe',TObject(string('iso88592')));
+    AddObject('CP1250- Central Europe',TObject(string('cp1250')));
+    AddObject('CP1253- Greek', TObject(string('cp1253')));
     AddObject('CP1254- Turkish',TObject(string('cp1254')));
-    AddObject('CP1256- Arabic', TObject(string('cp1256')));
-    AddObject('CP1257- Baltic', TObject(string('cp1257')));
+    AddObject('CP1256- Arabic',TObject(string('cp1256')));
+    AddObject('CP1257- Baltic',TObject(string('cp1257')));
     AddObject( 'CP437- DOS Central Europe',TObject(string('cp437')));
     AddObject( 'CP850- DOS Western Europe',TObject(string('cp850')));
     AddObject( 'CP852- DOS Central Europe',TObject(string('cp852')));

@@ -1,7 +1,7 @@
 {---------------------------------------------------------------------}
 {                                       TFreeBackgroundImageData      }
 {   Freeship can import a max. of three different background images   }
-{    that may be coupled either to the bodyplan, profile or planview. }
+{    that may be coupled either to the bodyplan,profile or planview. }
 {   These images can be used to trace the lines of an                 }
 {   hullform and are stored within the FREE!ship file.                }
 {---------------------------------------------------------------------}
@@ -82,7 +82,7 @@ begin
     if  (FOwner.Viewport[I-1] <> Viewport)
     and (FOwner.Viewport[I-1].ViewType = AssignedView)
     then FOwner.Viewport[I-1].BackgroundImage.AssignData
-       ( FImageData, AssignedView, FOrigin, FScale, FTransparent,
+       ( FImageData,AssignedView,FOrigin,FScale,FTransparent,
          FTransparentColor,FBlendingValue,FQuality,Ftolerance,False );
   FOwner.FileChanged:=True;
 end;
@@ -93,7 +93,7 @@ begin
   for I:=1 to FOwner.NumberOfViewports do
     if FOwner.Viewport[I-1].Viewtype = AssignedView
     then FOwner.Viewport[I-1].BackgroundImage.AssignData
-       ( FImageData, AssignedView, FOrigin, FScale, FTransparent,
+       ( FImageData,AssignedView,FOrigin,FScale,FTransparent,
          FTransparentColor,FBlendingValue,FQuality,FTolerance,False);
 end;
 

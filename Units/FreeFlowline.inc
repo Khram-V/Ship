@@ -124,7 +124,7 @@ begin
     if (Viewport.ViewType=fvBodyplan) and (FreeShip.Visibility.ModelView<>mvBoth)
     and (P3D.X < FreeShip.ProjectSettings.ProjectSplitSectionLocation) then P3D.Y:=-P3D.Y;
     Pt:=Viewport.Project(P3D);
-    Size:=Round(Sqrt(Viewport.Zoom) * (FreeShip.Preferences.PointSize+1));
+    Size:=Round(Sqrt(Viewport.Zoom)*(FreeShip.Preferences.PointSize+1));
     if size < 1 then size:=1;
     Viewport.BrushStyle:=bsClear;
     if Viewport.Printing then Size:=round(Size*Viewport.PrintResolution/150);
@@ -257,13 +257,13 @@ var
   function CalculateFlowDirection(Point: TFreeSubdivisionPoint): T3DVector;
     var V: T3DVector;
   begin V:=Vector(-1); Result:=CalculateFlowDirection2( V,Point ); end;
-  function FindInitialTriangle(StartPoint, EndPoint: T3DVector; var Int,Dir:T3DVector): integer;
+  function FindInitialTriangle(StartPoint,EndPoint: T3DVector; var Int,Dir:T3DVector): integer;
   var
     I: Integer;
     Triangle: TTriangle;
-    S1, S2, s, t: TFloatType;
-    P, u,v,w, P0,P1,P2: T3DVector;
-    Distance, b0, b1, b2, UdotV, UdotU, VdotV, WdotU, WdotV: Double;
+    S1,S2,s,t: TFloatType;
+    P,u,v,w,P0,P1,P2: T3DVector;
+    Distance,b0,b1,b2,UdotV,UdotU,VdotV,WdotU,WdotV: Double;
   begin
     Result:=-1;
     Distance:=1e8;
@@ -271,10 +271,10 @@ var
     Dir:=Zero;
     for I:=1 to NTriangles do begin
       Triangle:=Triangles[I-1];
-      S1:=Triangle.Plane.a * StartPoint.x+Triangle.Plane.b *
-            StartPoint.y+Triangle.Plane.c * StartPoint.z+Triangle.Plane.d;
-      S2:=Triangle.Plane.a * EndPoint.x+Triangle.Plane.b * EndPoint.y +
-            Triangle.Plane.c * EndPoint.z+Triangle.Plane.d;
+      S1:=Triangle.Plane.a*StartPoint.x+Triangle.Plane.b *
+            StartPoint.y+Triangle.Plane.c*StartPoint.z+Triangle.Plane.d;
+      S2:=Triangle.Plane.a*EndPoint.x+Triangle.Plane.b*EndPoint.y +
+            Triangle.Plane.c*EndPoint.z+Triangle.Plane.d;
       if ((S1<0) and (S2>0))
       or ((S1>0) and (S2<0)) then begin               // possible intersection
         if S1=S2 then T:=0.5
@@ -282,7 +282,7 @@ var
         P.X:=StartPoint.X+T*(EndPoint.X-StartPoint.X);
         P.Y:=StartPoint.Y+T*(EndPoint.Y-StartPoint.Y);
         P.Z:=StartPoint.Z+T*(EndPoint.Z-StartPoint.Z);
-        if PointInTriangle(P, PointData[Triangle.P1].Coord,
+        if PointInTriangle(P,PointData[Triangle.P1].Coord,
            PointData[Triangle.P2].Coord,PointData[Triangle.P3].Coord) then begin
            T:=Abs( StartPoint-P );
            if T<Distance then begin
@@ -308,8 +308,8 @@ var
       VdotV:=Dotproduct(V,V);
       WdotU:=Dotproduct(W,U);
       WdotV:=Dotproduct(W,V);
-      s:=(UdotV * WdotV-VdotV * WdotU) / (UdotV * UdotV-UdotU * VdotV);
-      t:=(UdotV * WdotU-UdotU * WdotV) / (UdotV * UdotV-UdotU * VdotV);
+      s:=(UdotV*WdotV-VdotV*WdotU)/(UdotV*UdotV-UdotU*VdotV);
+      t:=(UdotV*WdotU-UdotU*WdotV)/(UdotV*UdotV-UdotU*VdotV);
       b0:=1-s-t;
       b1:=s;
       b2:=t;
@@ -319,9 +319,9 @@ var
         P0:=PointData[Triangle.P1].FlowDir;
         P1:=PointData[Triangle.P2].FlowDir;
         P2:=PointData[Triangle.P3].FlowDir;
-        Dir.X:=b0 * P0.X+b1 * P1.X+b2 * P2.X;
-        Dir.Y:=b0 * P0.Y+b1 * P1.Y+b2 * P2.Y;
-        Dir.Z:=b0 * P0.Z+b1 * P1.Z+b2 * P2.Z;
+        Dir.X:=b0*P0.X+b1*P1.X+b2*P2.X;
+        Dir.Y:=b0*P0.Y+b1*P1.Y+b2*P2.Y;
+        Dir.Z:=b0*P0.Z+b1*P1.Z+b2*P2.Z;
 //      if FMethodNew then begin Dir:=Normalize(Vector(-1,0.1,-0.1)); end;
       end; // else Result:=Result-1+1;
     end;
@@ -330,8 +330,8 @@ var
   function ProcessTriangle(var Triangle:TTriangle; var SkipInd1,SkipInd2: integer;
     var Intersection,Direction:T3DVector; var NextTriangle:integer ): boolean;
   var
-    P1, P2, Dir1, Dir2, Int: T3DVector;
-    I, Ind1, Ind2: Integer;
+    P1,P2,Dir1,Dir2,Int: T3DVector;
+    I,Ind1,Ind2: Integer;
     Distance: TFloatType;
     Param: double;
     function NextTriangleIndex( P1,P2,CurrIndex: integer): integer;
@@ -353,12 +353,12 @@ var
     NextTriangle:=Triangle.Index;
     Triangle.Processed:=True;
     P1:=ProjectPointOnPlane( Intersection,Triangle.Plane );
-    P1.X:=P1.X+0.0005 * Direction.X;
-    P1.Y:=P1.Y+0.0005 * Direction.Y;
-    P1.Z:=P1.Z+0.0005 * Direction.Z;
+    P1.X:=P1.X+0.0005*Direction.X;
+    P1.Y:=P1.Y+0.0005*Direction.Y;
+    P1.Z:=P1.Z+0.0005*Direction.Z;
     if not PointInTriangle( P1,PointData[Triangle.P1].Coord,
-      PointData[Triangle.P2].Coord, PointData[Triangle.P3].Coord )
-    then P1:=ProjectPointOnPlane(Intersection, Triangle.Plane);
+      PointData[Triangle.P2].Coord,PointData[Triangle.P3].Coord )
+    then P1:=ProjectPointOnPlane(Intersection,Triangle.Plane);
     P1:=ProjectPointOnPlane( P1,Triangle.Plane );
     Distance:=50;
     P2.X:=P1.X+Distance*Direction.X;
@@ -507,14 +507,14 @@ begin                   // clear any present data
           Endpoint.X:=FFlowline.Point[FFlowline.NumberOfPoints-2].X
                    +( FFlowline.Point[FFlowline.NumberOfPoints-1].X
                      -FFlowline.Point[FFlowline.NumberOfPoints-2].X )
-                  * ( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
-                  / ( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
+                 *( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
+                 /( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
                      -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
           Endpoint.Y:=FFlowline.Point[FFlowline.NumberOfPoints-2].Y
                    +( FFlowline.Point[FFlowline.NumberOfPoints-1].Y
                      -FFlowline.Point[FFlowline.NumberOfPoints-2].Y )
-                  * ( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
-                  / ( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
+                 *( WlHeight-FFlowline.Point[FFlowline.NumberOfPoints-2].Z)
+                 /( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
                      -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
           EndPoint.Z:=wlHeight;
           FFlowline.Point[FFlowline.NumberOfPoints-1]:=EndPoint;

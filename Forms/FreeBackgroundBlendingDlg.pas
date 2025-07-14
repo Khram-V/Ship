@@ -1,12 +1,12 @@
 unit FreeBackgroundBlendingDlg;
 {$MODE Delphi}{$H+}
 interface uses
-  SysUtils,  Controls,
-  Forms,     StdCtrls,
-  Buttons,   ExtCtrls, ComCtrls, FreeGeometry, FreeLanguageSupport;
+  SysUtils, Controls,
+  Forms,    StdCtrls,
+  Buttons,  ExtCtrls,ComCtrls,FreeGeometry,FreeLanguageSupport;
 type
   TFreeBackgroundBlendDialog = class(TForm)
-    Label1, _Label2: TLabel;
+    Label1,_Label2: TLabel;
     Panel2,Panel1,Panel3,Panel4: TPanel;
     BitBtn1,BitBtn2: TSpeedButton;
     TrackBar1: TTrackBar;
@@ -44,7 +44,7 @@ begin ModalResult:=mrCancel; end;
 procedure TFreeBackgroundBlendDialog.TrackBar1Change(Sender: TObject);
 begin
   FViewport.BackgroundImage.Alpha:=Trackbar1.Position;
-  _Label2.Caption:=IntToStr(Round(100 * (Trackbar1.Position) / Trackbar1.Max))+'%';
+  _Label2.Caption:=IntToStr(Round(100*(Trackbar1.Position)/Trackbar1.Max))+'%';
 end;
 
 end.

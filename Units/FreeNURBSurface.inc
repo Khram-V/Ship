@@ -1,16 +1,16 @@
 {---------------------}
 {  TFreeNURBSurface   }
 {---------------------}
-procedure TFreeNURBSurface.SetCapacity(Col, Row: integer);
+procedure TFreeNURBSurface.SetCapacity(Col,Row: integer);
 var I: integer;
 begin
-  Setlength(FControlPoints, Row);
-  for I:=1 to Row do begin Setlength(FControlPoints[I-1], Col); end;
+  Setlength(FControlPoints,Row);
+  for I:=1 to Row do begin Setlength(FControlPoints[I-1],Col); end;
   FColCapacity:=Col;
   FRowCapacity:=Row;
 end;
 
-function TFreeNURBSurface.FGetpoint(Col, Row: integer): T3DVector;
+function TFreeNURBSurface.FGetpoint(Col,Row: integer): T3DVector;
    begin Result:=FControlPoints[Row][Col]; end;
 
 procedure TFreeNURBSurface.FSetColDegree(Val: integer);
@@ -31,10 +31,10 @@ begin
   if FColDegree > ColCount-1 then FColDegree:=ColCount-1;
   L:=ColCount+FColDegree+1;
   Setlength( FColKnots,L );
-  No:=(ColCount+FColDegree+1)-2 * FColDegree;
+  No:=(ColCount+FColDegree+1)-2*FColDegree;
   for I:=1 to FColDegree do FColKnots[I-1]:=0.0;
   for I:=1 to No do begin
-    FColKnots[I+FColDegree-1]:=((I-1) / (No-1));
+    FColKnots[I+FColDegree-1]:=((I-1)/(No-1));
     if FColKnots[I-1] < 0.0 then FColKnots[I-1]:=0.0 else
     if FColKnots[I-1] > 1.0 then FColKnots[I-1]:=1.0;
   end;
@@ -47,10 +47,10 @@ begin
   if FRowDegree > RowCount-1 then FRowDegree:=RowCount-1;
   L:=RowCount+FRowDegree+1;
   Setlength( FRowKnots,L );
-  No:=(RowCount+FRowDegree+1)-2 * FRowDegree;
+  No:=(RowCount+FRowDegree+1)-2*FRowDegree;
   for I:=1 to FRowDegree do FRowKnots[I-1]:=0.0;
   for I:=1 to No do begin
-    FRowKnots[I+FRowDegree-1]:=((I-1) / (No-1));
+    FRowKnots[I+FRowDegree-1]:=((I-1)/(No-1));
     if FRowKnots[I-1] < 0.0 then FRowKnots[I-1]:=0.0 else
     if FRowKnots[I-1] > 1.0 then FRowKnots[I-1]:=1.0;
   end;
@@ -81,32 +81,32 @@ begin
   end;
 end;
 
-procedure TFreeNURBSurface.FSetPoint(Col, Row: integer; Val: T3DVector);
+procedure TFreeNURBSurface.FSetPoint(Col,Row: integer; Val: T3DVector);
 begin
-  if (Col > ColCapacity) and (Row > RowCapacity) then SetCapacity(Col, Row)
-    else if Col > ColCapacity then SetCapacity(Col, RowCapacity)
-      else if Row > RowCapacity then SetCapacity(ColCapacity, Row);
+  if (Col > ColCapacity) and (Row > RowCapacity) then SetCapacity(Col,Row)
+    else if Col > ColCapacity then SetCapacity(Col,RowCapacity)
+      else if Row > RowCapacity then SetCapacity(ColCapacity,Row);
   FControlPoints[Row][Col]:=Val;
   Built:=False;
 end;
 
 procedure TFreeNURBSurface.FSetColCapacity(Val: integer);
-    begin if Val <> FColCapacity then SetCapacity(Val, FRowCapacity); end;
+    begin if Val <> FColCapacity then SetCapacity(Val,FRowCapacity); end;
 
 procedure TFreeNURBSurface.FSetRowCapacity(Val: integer);
-    begin if Val <> FRowCapacity then SetCapacity(FColCapacity, Val); end;
+    begin if Val <> FRowCapacity then SetCapacity(FColCapacity,Val); end;
 
 procedure TFreeNURBSurface.Clear;
 begin
   Built:=False;
   inherited Clear;
-  SetCapacity(0, 0);
+  SetCapacity(0,0);
   ColCount:=0;
   RowCount:=0;
   FColDegree:=3;
   FRowDegree:=3;
-  Setlength(FColKnots, 0);
-  Setlength(FRowKnots, 0);
+  Setlength(FColKnots,0);
+  Setlength(FRowKnots,0);
 end;
 
 procedure TFreeNURBSurface.DeleteColumn(Col: integer);
@@ -131,7 +131,7 @@ end;
 
 procedure TFreeNURBSurface.InsertColKnot(U: TFloatType);
 var
-  Index,L, I,J,k,N,X,J1,X1,I1: integer;
+  Index,L,I,J,k,N,X,J1,X1,I1: integer;
   NewPoints: TFreeCoordinateGrid;
   Alpha: array of double;
 begin
@@ -148,20 +148,20 @@ begin
     N:=Colcount;
     ;
     k:=FColdegree+1;
-    Setlength(Alpha, N+1);
-    Setlength(Newpoints, RowCount);
+    Setlength(Alpha,N+1);
+    Setlength(Newpoints,RowCount);
     L:=I-k+1;
     if L < 0 then L:=0;
     for J:=0 to N do begin
       if J <= L then alpha[J]:=1.0 else
       if (L+1 <= J) and (J <= I) then begin
         if FColknots[j+k-1]-FColknots[J]=0 then alpha[J]:=0
-        else alpha[J]:=(U-FColknots[J]) / (FColknots[j+k-1]-FColknots[J]);
+        else alpha[J]:=(U-FColknots[J])/(FColknots[j+k-1]-FColknots[J]);
       end else alpha[J]:=0;
     end;
     for J:=1 to RowCount do begin
       J1:=J-1;
-      Setlength(Newpoints[J-1], N+1);
+      Setlength(Newpoints[J-1],N+1);
       for X:=0 to N do begin
         X1:=X-1;
         if Alpha[X] = 0.0 then NewPoints[J1][X]:=FControlpoints[J1][X1] else
@@ -180,8 +180,8 @@ begin
     end;
     // create new knotvector
     X:=length(FColknots);
-    Setlength(FColknots, X+1);
-    Move(FColknots[index], FColknots[index+1], (X-Index) * SizeOf(TFloatType));
+    Setlength(FColknots,X+1);
+    Move(FColknots[index],FColknots[index+1],(X-Index)*SizeOf(TFloatType));
     FColknots[index+1]:=U;
     FColCapacity:=Colcount;
     Inc(Colcount);
@@ -191,8 +191,8 @@ end;
 procedure TFreeNURBSurface.InsertRowKnot(V: TFloatType);
 var
   Index: integer;
-  I, J, k, N, X: integer;
-  J1, X1: integer;
+  I,J,k,N,X: integer;
+  J1,X1: integer;
   NewPoints: TFreeCoordinateGrid;
   Alpha: array of double;
 begin
@@ -207,14 +207,14 @@ begin
     I:=index;
     N:=Rowcount;
     k:=FRowdegree+1;
-    Setlength(Alpha, N+1);
-    Setlength(Newpoints, RowCount+1);
+    Setlength(Alpha,N+1);
+    Setlength(Newpoints,RowCount+1);
     for J:=0 to N do begin
-      Setlength(Newpoints[J], Colcount);
+      Setlength(Newpoints[J],Colcount);
       if J <= I-k+1 then alpha[J]:=1.0 else
       if (I-k+2 <= J) and (J <= I) then begin
         if FRowknots[j+k-1]-FRowknots[J]=0 then alpha[J]:=0
-        else alpha[J]:=(V-FRowknots[J]) / (FRowknots[j+k-1]-FRowknots[J]);
+        else alpha[J]:=(V-FRowknots[J])/(FRowknots[j+k-1]-FRowknots[J]);
       end else alpha[J]:=0;
     end;
 
@@ -222,9 +222,9 @@ begin
       for X:=0 to N do begin X1:=X-1;
         if Alpha[X] = 0.0 then NewPoints[X][J1]:=FControlpoints[X1][J1] else
         if Alpha[X] = 1.0 then NewPoints[X][J1]:=FControlpoints[X][J1] else begin
-          NewPoints[X][J1].X:=(1-Alpha[X]) * FControlpoints[X1][J1].X+alpha[X] * FControlpoints[X][J1].X;
-          NewPoints[X][J1].Y:=(1-Alpha[X]) * FControlpoints[X1][J1].Y+alpha[X] * FControlpoints[X][J1].Y;
-          NewPoints[X][J1].Z:=(1-Alpha[X]) * FControlpoints[X1][J1].Z+alpha[X] * FControlpoints[X][J1].Z;
+          NewPoints[X][J1].X:=(1-Alpha[X])*FControlpoints[X1][J1].X+alpha[X]*FControlpoints[X][J1].X;
+          NewPoints[X][J1].Y:=(1-Alpha[X])*FControlpoints[X1][J1].Y+alpha[X]*FControlpoints[X][J1].Y;
+          NewPoints[X][J1].Z:=(1-Alpha[X])*FControlpoints[X1][J1].Z+alpha[X]*FControlpoints[X][J1].Z;
         end;
       end;
     end;                 // Replace the current controlpoints with the new ones
@@ -235,8 +235,8 @@ begin
     end;
     // create the new new knotvector
     X:=length(FRowknots);
-    Setlength(FRowknots, X+1);
-    Move(FRowknots[index], FRowknots[index+1], (X-Index) * SizeOf(TFloatType));
+    Setlength(FRowknots,X+1);
+    Move(FRowknots[index],FRowknots[index+1],(X-Index)*SizeOf(TFloatType));
     FRowknots[index+1]:=V;
     Inc(Rowcount);
     FRowCapacity:=Rowcount;
@@ -245,8 +245,8 @@ end;
 
 procedure TFreeNURBSurface.NormalizeKnotVectors;
 var
-  I, N: integer;
-  Min, Max, New: TFloatType;
+  I,N: integer;
+  Min,Max,New: TFloatType;
 begin
   N:=length(FRowknots);
   if N > 0 then begin
@@ -254,7 +254,7 @@ begin
     Max:=FRowknots[N-1];
     if Min <> Max then
     for I:=1 to N do begin
-      New:=(FRowknots[I-1]-Min) / (Max-Min);
+      New:=(FRowknots[I-1]-Min)/(Max-Min);
       if New > 1.0 then New:=1.0;
       FRowknots[I-1]:=New;
     end;

@@ -22,7 +22,7 @@ interface type generic TFasterList<TItemType> = class
                                  //deletes all instances of the aList from Self
     procedure DeleteList( const aList: TFasterList );
     procedure Insert( Index: integer; Item: TItemType );
-    procedure Exchange( Index1, Index2: integer );
+    procedure Exchange( Index1,Index2: integer );
     procedure Add(Item: TItemType);
     procedure AddObject(Item: TItemType; UserObject: Pointer);   //TODO: specialize UserObject
     function IndexOf(Item: TItemType): integer;        // normal TList function

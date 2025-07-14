@@ -3,7 +3,7 @@ unit VRMLUnit;
 
 interface
 uses
-  LazFileUtils, Math,
+  LazFileUtils,Math,
   Classes,
   SysUtils,
   Dialogs,
@@ -11,7 +11,7 @@ uses
 
 type
   TIntArray = array of integer;
-  TVRMLFileType = (ftVRML1, ftVRML2);
+  TVRMLFileType = (ftVRML1,ftVRML2);
   TVRMLList = class;
   TVRMLCoordinate3 = class;
   TVRMLIndexedFaceSet = class;
@@ -179,7 +179,7 @@ begin
     while Line<Current.Count do begin OutPut:=TStringList.Create;
       LoadNextObject( Current,Line,NObj,ObjName,Output );
       if NObj>1 then ToDo.Add(Output)
-                else Dest.AddObject(ObjName, Output);
+                else Dest.AddObject(ObjName,Output);
     end; Inc(I);
   end; FreeAndNil(ToDo);
 end;
@@ -218,7 +218,7 @@ var
   Words: TStringList;
   ObjectName: AnsiString;
   VRMLObject: TVRMLObject;
-  Index, NObj: integer;
+  Index,NObj: integer;
 begin
   Words:=TStringList.Create;
   while LineNr < Strings.Count do begin
@@ -287,12 +287,12 @@ end;
 procedure TVRMLCoordinate3.Load(var LineNr: integer; Strings: TStringList);
 var
   Data: AnsiString;
-  Index,S,F,I,L, Flag: integer; Ch: char;
+  Index,S,F,I,L,Flag: integer; Ch: char;
   Points: TStringList;
   P: T3DVector;
 begin
   Data:=Strings.Text;                            // writeln( 'Coord3: '+Data );
-  Index:=Pos('POINT', Data);
+  Index:=Pos('POINT',Data);
   if Index <> 0 then begin S:=-1; F:=-1; L:=Length(Data); I:=Index+1;
     while I <= L do begin Ch:=Data[I];
       if (Ch='[') and (S=-1) then S:=I;
@@ -335,7 +335,7 @@ var
   Tmp: array of integer;
 begin
   Data:=Strings.Text;                               // writeln( 'Face['+inttostr(LineNr)+']: '+Data );
-  Index:=Pos('COORDINDEX', Data);
+  Index:=Pos('COORDINDEX',Data);
   if Index <> 0 then begin S:=-1; F:=-1; L:=Length(Data); I:=Index+1;
     while I<=L do begin Ch:=Data[I];
       if (Ch='[') and (S=-1) then S:=I;
@@ -416,7 +416,7 @@ begin Result:=nil;
 end;
 procedure TVRMLList.LoadVrml1( Strings: TStringList );
 var
-  LineNr,Index, NObj: integer; ObjectName: AnsiString;
+  LineNr,Index,NObj: integer; ObjectName: AnsiString;
   VRMLObject: TVRMLObject;
   Words: TStringList;
   ValidFile: boolean;
@@ -436,7 +436,7 @@ end;
 (*
 procedure TVRMLList.LoadVrml1( Strings: TStringList );
 var
-  LineNr,Index, NObj: integer; ObjectName: AnsiString; fi:boolean;
+  LineNr,Index,NObj: integer; ObjectName: AnsiString; fi:boolean;
   VRMLObject: TVRMLObject;
   Words: TStringList;
   ValidFile: boolean;

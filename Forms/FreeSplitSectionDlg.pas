@@ -4,7 +4,7 @@ interface uses
   Classes,SysUtils,Forms,Controls,Dialogs,ComCtrls,ExtCtrls,Buttons,Spin,Types,
   FreeTypes,FreeShipUnit;
 type
-  TEditMode = (emProgrammatic, emMouse, emKeyboard);
+  TEditMode = (emProgrammatic,emMouse,emKeyboard);
   TFreeSplitSectionDialogChangeEvent = procedure ( Sender: TObject; aValue: TFloatType ) of object;
   TFreeSplitSectionDialog = class(TForm)            { TFreeSplitSectionDialog }
     BitBtn1: TBitBtn;
@@ -19,7 +19,7 @@ type
     procedure fseSplitSectionLocationChange(Sender: TObject);
     procedure fseSplitSectionLocationEditingDone(Sender: TObject);
     procedure fseSplitSectionLocationKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure fseSplitSectionLocationMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure fseSplitSectionLocationMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
     procedure fseSplitSectionLocationMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
@@ -74,10 +74,10 @@ begin
   fseSplitSectionLocation.Value:=AValue;
   tbSplitSectionLocation.Position:=round(AValue*1000);
   if assigned(OnSplitSectionLocationChange) then
-     OnSplitSectionLocationChange( Self, FSplitSectionLocation );
+     OnSplitSectionLocationChange( Self,FSplitSectionLocation );
 end;
 
-// Lendth of ship, location of widest place, location of spaciest place
+// Lendth of ship,location of widest place,location of spaciest place
 procedure TFreeSplitSectionDialog.SetDimensions;
 begin
   tbSplitSectionLocation.Min:=round(Ship.Surface.Min.X*1000);

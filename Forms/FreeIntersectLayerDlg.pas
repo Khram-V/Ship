@@ -1,10 +1,10 @@
 unit FreeIntersectLayerDlg;
 {$MODE Delphi}{$H+}
 interface uses
-  SysUtils,  Classes,
-  Controls,  Forms,
-  Buttons,   StdCtrls,
-  ExtCtrls,  Freegeometry,
+  SysUtils, Classes,
+  Controls, Forms,
+  Buttons,  StdCtrls,
+  ExtCtrls, Freegeometry,
   FreeShipUnit,FreeLanguageSupport;
 type                                              { TFreeIntersectLayerDialog }
   TFreeIntersectLayerDialog = class(TForm)

@@ -2,7 +2,7 @@
 {---------------------------------------------------------}
 {                                    TFreeProjectSettings }
 {   Container class for project settings for each project }
-{    such as mainparticulars, waterdensity etc.           }
+{    such as mainparticulars,waterdensity etc.           }
 {---------------------------------------------------------}
 procedure TFreeProjectSettings.FSetFreeHydrostaticCoefficients
           ( val: TFreeHydrostaticCoeff );
@@ -137,19 +137,19 @@ begin
   if Val <> FProjectUnits then begin
     FProjectUnits:=val;
     if FProjectUnits = fuImperial then begin // Scale from metric to imperial units
-      UnitConversionFactor:=1 / 0.3048;
+      UnitConversionFactor:=1/0.3048;
       WeightFactor:=WeightConversionFactor;
-      ThicknessFactor:=1 / 25.4;
+      ThicknessFactor:=1/25.4;
     end else begin                           // scale from imperial to metric units
       UnitConversionFactor:=0.3048;
-      WeightFactor:=1 / WeightConversionFactor;
+      WeightFactor:=1/WeightConversionFactor;
       ThicknessFactor:=25.4;
     end;
-    FProjectWaterDensity:=FProjectWaterDensity * WeightFactor;
+    FProjectWaterDensity:=FProjectWaterDensity*WeightFactor;
     for I:=1 to FreeShip.Surface.NumberOfLayers do begin
       Layer:=FreeShip.Surface.Layer[I-1];
-      Layer.MaterialDensity:=Layer.MaterialDensity * WeightFactor;
-      Layer.Thickness:=Layer.Thickness * ThicknessFactor;
+      Layer.MaterialDensity:=Layer.MaterialDensity*WeightFactor;
+      Layer.Thickness:=Layer.Thickness*ThicknessFactor;
     end;
     ScaleVector.X:=UnitConversionFactor;
     ScaleVector.Y:=UnitConversionFactor;
@@ -170,7 +170,7 @@ begin
   FProjectWaterDensity:=1.025;     // 1025 kg/m3 for seawater
   FProjectWaterTemper:=15.;
   FProjectAppendageCoefficient:=1.0;
-// Default 1.0, typical values for ships to cpmpensate for appendices and shellplate = 1.0005;
+// Default 1.0,typical values for ships to cpmpensate for appendices and shellplate = 1.0005;
 // FMainparticularsHasBeenset:=False;
   FProjectShadeUnderwaterShip:=True;
 // Shades the underwaterpart of the hull in a different color
@@ -192,13 +192,13 @@ begin
   FTrim:=0.0;
   // crosscurves settings
   FNoDisplacements:=0;
-  Setlength(FDisplacements, FNoDisplacements);
+  Setlength(FDisplacements,FNoDisplacements);
   FMinimumDisplacement:=0.0;
   FMaximumDisplacement:=1.0;
   FDisplIncrement:=0.1;
   FUseDisplIncrements:=True;
   FNoAngles:=19;
-  SetLength( FAngles, FNoAngles );
+  SetLength( FAngles,FNoAngles );
   FAngles[0]:=0.0;
   FAngles[1]:=2.0;
   FAngles[2]:=5.0;
@@ -219,7 +219,7 @@ begin
   FAngles[17]:=140.0;
   FAngles[18]:=150.0;
   FNoStabTrims:=1;
-  SetLength(FStabTrims, FNoStabTrims);
+  SetLength(FStabTrims,FNoStabTrims);
   FStabTrims[0]:=0.0;
   FFreeTrim:=True;
   FVCG:=1.0;
@@ -250,7 +250,7 @@ begin
   Dialog.Coefficient:=ProjectAppendageCoefficient;
   Dialog.cbShadeUnderwater.Checked:=ProjectShadeUnderwaterShip;
   Dialog.Panel4.Color:=ProjectUnderWaterColor;
-  Dialog.seUnderwaterOpacity.Value:=ProjectUnderWaterColorAlpha * 100 div 255;
+  Dialog.seUnderwaterOpacity.Value:=ProjectUnderWaterColorAlpha*100 div 255;
   Dialog.MainFrame:=ProjectSplitSectionLocation;
   Dialog.CheckBox2.Checked:=UseDefaultSplitSectionLocation;
   Dialog.CheckBox3.Checked:=DisableModelCheck;
@@ -283,7 +283,7 @@ begin
     ProjectAppendageCoefficient:=Dialog.Coefficient;
     ProjectShadeUnderwaterShip:=Dialog.cbShadeUnderwater.Checked;
     ProjectUnderWaterColor:=Dialog.Panel4.Color;
-    ProjectUnderWaterColorAlpha:=Dialog.seUnderwaterOpacity.Value * 255 div 100;
+    ProjectUnderWaterColorAlpha:=Dialog.seUnderwaterOpacity.Value*255 div 100;
     ProjectSplitSectionLocation:=Dialog.MainFrame;
     UseDefaultSplitSectionLocation:=Dialog.CheckBox2.Checked;
     DisableModelCheck:=Dialog.CheckBox3.Checked;
@@ -355,17 +355,17 @@ begin
       Source.LoadTFloatType(FDraftStep);
       Source.LoadTFloatType(FTrim);                     // Crosscurves settings
       Source.LoadInteger(FNoDisplacements);
-      Setlength(FDisplacements, FNoDisplacements);
+      Setlength(FDisplacements,FNoDisplacements);
       for I:=0 to FNoDisplacements-1 do Source.LoadTFloatType(FDisplacements[I]);
       Source.LoadTFloatType(FMinimumDisplacement);
       Source.LoadTFloatType(FMaximumDisplacement);
       Source.LoadTFloatType(FDisplIncrement);
       Source.LoadBoolean(FUseDisplIncrements);
       Source.LoadInteger(FNoAngles);
-      Setlength(FAngles, FNoAngles);
+      Setlength(FAngles,FNoAngles);
       for I:=0 to FNoAngles-1 do Source.LoadTFloatType(FAngles[I]);
       Source.LoadInteger(FNoStabTrims);
-      Setlength(FStabTrims, FNoStabTrims);
+      Setlength(FStabTrims,FNoStabTrims);
       for I:=0 to FNoStabTrims-1 do Source.LoadTFloatType(FStabTrims[I]);
       Source.LoadBoolean(FFreeTrim);
       Source.LoadTFloatType(FVCG);
@@ -436,5 +436,5 @@ begin
 end;
 
 //writeln( 'ready: C=$'+HexStr( FProjectUnderWaterColor,8 )
-//            + ', A=$'+HexStr( FProjectUnderWaterColorAlpha,8 ) );
+//            + ',A=$'+HexStr( FProjectUnderWaterColorAlpha,8 ) );
 

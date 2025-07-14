@@ -23,7 +23,7 @@ begin Result:=FFaces.Count; end;
 
 procedure TFreeSubdivisionEdge.FSetCrease(Val: boolean);
 var
-  I, N, FN: integer;
+  I,N,FN: integer;
   Edge: TFreeSubdivisionEdge;
 begin
   if NumberOfFaces <= 1 then Val:=True;  // Boundary and freestanding edges must ALWAYS be crease edges
@@ -67,7 +67,7 @@ function TFreeSubdivisionEdge.FGetPreviousEdge: TFreeSubdivisionEdge;
 var
   P: TFreeSubdivisionPoint;
   Edge: TFreeSubdivisionEdge;
-  I, J, Index: integer;
+  I,J,Index: integer;
   Sharesface: boolean;
 begin
   P:=Startpoint;
@@ -96,7 +96,7 @@ function TFreeSubdivisionEdge.FGetNextEdge: TFreeSubdivisionEdge;
 var
   P: TFreeSubdivisionPoint;
   Edge: TFreeSubdivisionEdge;
-  I, J, Index: integer;
+  I,J,Index: integer;
   Sharesface: boolean;
 begin
   P:=Endpoint;
@@ -140,18 +140,18 @@ end;
 function TFreeSubdivisionEdge.CalculateEdgeCenterPoint: TFreeSubdivisionPoint;
 var
   Point: T3DVector;
-  SP, EP: TFreeSubdivisionPoint;
+  SP,EP: TFreeSubdivisionPoint;
 begin
   SP:=FStartpoint;
   EP:=FEndpoint;
-  Point.X:=0.5 * (SP.FCoordinate.X+EP.FCoordinate.X);
-  Point.Y:=0.5 * (SP.FCoordinate.Y+EP.FCoordinate.Y);
-  Point.Z:=0.5 * (SP.FCoordinate.Z+EP.FCoordinate.Z);
+  Point.X:=0.5*(SP.FCoordinate.X+EP.FCoordinate.X);
+  Point.Y:=0.5*(SP.FCoordinate.Y+EP.FCoordinate.Y);
+  Point.Z:=0.5*(SP.FCoordinate.Z+EP.FCoordinate.Z);
   Result:=TFreeSubdivisionPoint.Create(FStartPoint.Surface);
   Result.FCoordinate:=Point;
   if FCrease then Result.FVertexType:=svCrease;
   if FCurve <> nil then begin
-    FCurve.InsertEdgePoint(FStartPoint, FEndPoint, Result);
+    FCurve.InsertEdgePoint(FStartPoint,FEndPoint,Result);
   end;
 end;
 
@@ -223,7 +223,7 @@ begin
     i:=FCurve.ControlPoints.Indexof(FEndPoint as TFreesubdivisionControlPoint);
     if i>-1 then
     if aPoint<>nil
-       then FCurve.ReplaceVertexPoint(FEndPoint, aPoint)
+       then FCurve.ReplaceVertexPoint(FEndPoint,aPoint)
        else FCurve.DeletePoint(FStartPoint as TFreesubdivisionControlPoint);
     FCurve.Built:=false;
   end;
@@ -313,11 +313,11 @@ begin if self=nil then exit;  //Unreference;
   inherited Destroy;
 end;
 
-function TFreeSubdivisionEdge.DistanceToCursor(X, Y: integer;
+function TFreeSubdivisionEdge.DistanceToCursor(X,Y: integer;
   var P: T3DVector; Viewport: TFreeViewport): integer;
 var
-  Pt, Pt1, Pt2: TPoint;
-  P1, P2, M: T3DVector;
+  Pt,Pt1,Pt2: TPoint;
+  P1,P2,M: T3DVector;
   Param: TFloatType;
   Tmp: integer;
 begin
@@ -333,28 +333,28 @@ begin
     then begin
       if P2.X-P1.X <> 0
       then M:=Interpolate(P1,P2,(Surface.SplitSectionLocation-P1.X)/(P2.X-P1.X))
-      else M:=MidPoint(P1, P2);
+      else M:=MidPoint(P1,P2);
       if P1.X <= Surface.SplitSectionLocation then begin     // P2 lies on port
         Pt1:=Viewport.Project(P2);
         Pt2:=Viewport.Project(M);
-        Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
+        Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
         if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P2,M,Param); end;
         P1.Y:=-P1.Y;                                    // P1 lies on starboard
         M.Y:=-M.Y;
         Pt1:=Viewport.Project(P1);
         Pt2:=Viewport.Project(M);
-        Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
+        Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
         if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P1,M,Param);  end;
       end else begin                                         // P1 lies on port
         Pt1:=Viewport.Project(P1);
         Pt2:=Viewport.Project(M);
-        Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
+        Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
         if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P1,M,Param); end;
         P2.Y:=-P2.Y;                                    // P2 lies on starboard
         M.Y:=-M.Y;
         Pt1:=Viewport.Project(P2);
         Pt2:=Viewport.Project(M);
-        Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
+        Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
         if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P2,M,Param); end;
       end;
     end else begin
@@ -362,16 +362,16 @@ begin
       if P2.X <= Surface.SplitSectionLocation then P2.Y:=-P2.Y;
       Pt1:=Viewport.Project(P1);
       Pt2:=Viewport.Project(P2);
-      Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
-      if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P1, P2, Param); end;
+      Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
+      if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P1,P2,Param); end;
     end;
   end else begin
     Pt.X:=X;
     Pt.Y:=Y;
     Pt1:=Viewport.Project(StartPoint.Coordinate);
     Pt2:=Viewport.Project(EndPoint.Coordinate);
-    Result:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
-    P:=Interpolate(StartPoint.Coordinate, EndPoint.Coordinate, Param);
+    Result:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
+    P:=Interpolate(StartPoint.Coordinate,EndPoint.Coordinate,Param);
   end;
 end;
 
@@ -386,51 +386,51 @@ begin
      or ((P1.X > Surface.SplitSectionLocation)
     and (P2.X < Surface.SplitSectionLocation)) then begin
       if abs(P2.X-P1.X) > 1e-6
-        then M:=Interpolate(P1, P2, (Surface.SplitSectionLocation-P1.X) / (P2.X-P1.X))
-        else M:=MidPoint(P1, P2);
+        then M:=Interpolate(P1,P2,(Surface.SplitSectionLocation-P1.X)/(P2.X-P1.X))
+        else M:=MidPoint(P1,P2);
       if P1.X <= Surface.SplitSectionLocation then begin     // P2 lies on port
         Pt1:=Viewport.Project(P2);
         Pt2:=Viewport.Project(M);
-        Viewport.MoveTo(Pt1.X, Pt1.Y);
-        Viewport.LineTo(Pt2.X, Pt2.Y);                  // P1 lies on starboard
+        Viewport.MoveTo(Pt1.X,Pt1.Y);
+        Viewport.LineTo(Pt2.X,Pt2.Y);                  // P1 lies on starboard
         P1.Y:=-P1.Y;
         M.Y:=-M.Y;
         Pt1:=Viewport.Project(P1);
         Pt2:=Viewport.Project(M);
-        Viewport.MoveTo(Pt1.X, Pt1.Y);
-        Viewport.LineTo(Pt2.X, Pt2.Y);
+        Viewport.MoveTo(Pt1.X,Pt1.Y);
+        Viewport.LineTo(Pt2.X,Pt2.Y);
       end else begin                                        // P1 lies on port
         Pt1:=Viewport.Project(P1);
         Pt2:=Viewport.Project(M);
-        Viewport.MoveTo(Pt1.X, Pt1.Y);
-        Viewport.LineTo(Pt2.X, Pt2.Y);                  // P2 lies on starboard
+        Viewport.MoveTo(Pt1.X,Pt1.Y);
+        Viewport.LineTo(Pt2.X,Pt2.Y);                  // P2 lies on starboard
         P2.Y:=-P2.Y;
         M.Y:=-M.Y;
         Pt1:=Viewport.Project(P2);
         Pt2:=Viewport.Project(M);
-        Viewport.MoveTo(Pt1.X, Pt1.Y);
-        Viewport.LineTo(Pt2.X, Pt2.Y);
+        Viewport.MoveTo(Pt1.X,Pt1.Y);
+        Viewport.LineTo(Pt2.X,Pt2.Y);
       end;
     end else begin
       if P1.X <= Surface.SplitSectionLocation then P1.Y:=-P1.Y;
       if P2.X <= Surface.SplitSectionLocation then P2.Y:=-P2.Y;
       Pt1:=Viewport.Project(P1);
       Pt2:=Viewport.Project(P2);
-      Viewport.MoveTo(Pt1.X, Pt1.Y);
-      Viewport.LineTo(Pt2.X, Pt2.Y);
+      Viewport.MoveTo(Pt1.X,Pt1.Y);
+      Viewport.LineTo(Pt2.X,Pt2.Y);
     end;
   end else begin
     Pt1:=Viewport.Project(P1);
     Pt2:=Viewport.Project(P2);
-    Viewport.MoveTo(Pt1.X, Pt1.Y);
-    Viewport.LineTo(Pt2.X, Pt2.Y);
+    Viewport.MoveTo(Pt1.X,Pt1.Y);
+    Viewport.LineTo(Pt2.X,Pt2.Y);
     if DrawMirror then begin
       P1.Y:=-P1.Y;
       P2.Y:=-P2.Y;
       Pt1:=Viewport.Project(P1);
       Pt2:=Viewport.Project(P2);
-      Viewport.MoveTo(Pt1.X, Pt1.Y);
-      Viewport.LineTo(Pt2.X, Pt2.Y);
+      Viewport.MoveTo(Pt1.X,Pt1.Y);
+      Viewport.LineTo(Pt2.X,Pt2.Y);
     end;
   end;
 end;

@@ -1,10 +1,10 @@
 unit FreeMirrorPlaneDlg;
 {$MODE Delphi}{$H+}
 interface uses
-     SysUtils,     Controls,
-     Forms,        Buttons,
-     ExtCtrls,     StdCtrls,
-     FreeTypes,    Spin;
+     SysUtils,    Controls,
+     Forms,       Buttons,
+     ExtCtrls,    StdCtrls,
+     FreeTypes,   Spin;
 
 type
  TFreeMirrorPlaneDialog  = class(TForm)

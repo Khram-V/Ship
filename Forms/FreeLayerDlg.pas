@@ -1,10 +1,10 @@
 unit FreeLayerDlg;
 {$MODE Delphi}{$H+}        // {$mode objfpc}{$H+}
 interface uses
-    SysUtils, Controls,
-    StdCtrls, ExtCtrls,
-    Forms,    CheckLst,
-    Dialogs,  ComCtrls, Spin, FreeTypes,FreeShipUnit,FreeGeometry;
+    SysUtils,Controls,
+    StdCtrls,ExtCtrls,
+    Forms,   CheckLst,
+    Dialogs, ComCtrls,Spin,FreeTypes,FreeShipUnit,FreeGeometry;
 type
   TFreeLayerDialog  = class( TForm )
     ToolBar1: TToolBar;
@@ -147,7 +147,7 @@ procedure TFreeLayerDialog.LayerBoxClick(Sender: TObject);
 var Index: integer;
 begin
   index:=Layerbox.ItemIndex;
-  LayerBoxItemClick(Sender, Index);
+  LayerBoxItemClick(Sender,Index);
 end;
 
 procedure TFreeLayerDialog.cbControlNetVisibleClick(Sender: TObject);
@@ -220,7 +220,7 @@ begin
 
   _Label10.Caption:=FloatToDec(Prop.SurfaceArea,3)+#32+AreaStr(FFreeship.ProjectSettings.ProjectUnits);
   _Label11.Caption:=FloatToDec(Prop.Weight,3)+#32+WeightStr(FFreeship.ProjectSettings.ProjectUnits);
-  _Label12.Caption:=Makelength(Prop.SurfaceCenterOfGravity.X,2,7)+','+
+  _Label12.Caption:=Makelength(Prop.SurfaceCenterOfGravity.X,2,7)+', '+
                   Makelength(Prop.SurfaceCenterOfGravity.Y,2,7)+', '+
                   Makelength(Prop.SurfaceCenterOfGravity.Z,2,7)+#32+LengthStr(FFreeship.ProjectSettings.ProjectUnits);
   AlphaBar.Position:=round( ( 255-Layer.AlphaBlend )*100/255 );
@@ -284,7 +284,7 @@ var N:         Integer;
     NewLayer:  TFreeSubdivisionLayer;
     LayVis:    Boolean;
 begin
-// create the new layer, set the colour, set the file to "changed", create undo objcect:
+// create the new layer,set the colour,set the file to "changed",create undo objcect:
    NewLayer:=FFreeShip.Edit.Layer_New;
 // now update the dialog box. The new layer is the active layer (not the selected layer)
    if FFreeShip.ActiveLayer<>NewLayer then FFreeShip.ActiveLayer:=NewLayer;
@@ -302,8 +302,8 @@ begin Modalresult:=mrOK; end;
 procedure TFreeLayerDialog.ToolButton3Click(Sender: TObject);
 var noFeedback: Boolean;
 begin
-// delete the emtpy layers, set a new active layer:
-   noFeedback:=False; // if quiet, then no undo object, no feedback about number of deleted layers
+// delete the emtpy layers,set a new active layer:
+   noFeedback:=False; // if quiet,then no undo object,no feedback about number of deleted layers
    FFreeShip.Edit.Layer_DeleteEmpty(noFeedback);
 // now update the dialog box: clear it and build it new
    FFillBox;
@@ -436,7 +436,7 @@ procedure TFreeLayerDialog.AlphaBarChange(Sender: TObject);
 var val:byte;
 begin
    if FProgrammaticalChange then exit;
-   Val:=round(255-Alphabar.Position * 255 / 100);
+   Val:=round(255-Alphabar.Position*255/100);
    if SelectedLayer<>nil then if SelectedLayer.AlphaBlend<>val then begin
       SelectedLayer.AlphaBlend:=val;
    //_label1.Caption:=FloatToDec(100*(255-SelectedLayer.AlphaBlend)/255,1)+'%';

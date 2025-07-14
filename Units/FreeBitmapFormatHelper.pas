@@ -3,12 +3,12 @@ unit FreeBitmapFormatHelper;
 //{$mode objfpc}{$H+}
 
 interface
-uses SysUtils, FreeTypes, Graphics, GraphType;
+uses SysUtils,FreeTypes,Graphics,GraphType;
 type
 TBitMapDataFormat = (
-                                                //bmdf_BPP1, // Black and White
- bmdf_BPP16_R5G6B5, // 16-bit
- bmdf_BPP16_B5G6R5, // 16-bit
+                                                //bmdf_BPP1,// Black and White
+ bmdf_BPP16_R5G6B5,// 16-bit
+ bmdf_BPP16_B5G6R5,// 16-bit
  // Formats in RGB order
  bmdf_BPP24_R8G8B8,
  bmdf_BPP32_R8G8B8,
@@ -52,7 +52,7 @@ TFreeBitmapFormatHelper = class
     procedure TRGBTriple_to_BPP32_A8R8G8B8(C:TRGBTriple; var p:TARGB);
     procedure TRGBTriple_to_BPP32_R8G8B8A8(C:TRGBTriple; var p:TRGBA);
     // Formats in Windows pixels order: BGR
-    procedure TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple; var p:TBGR); // yes, it is opposite in WIndows, RGB is BGR :)
+    procedure TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple; var p:TBGR); // yes,it is opposite in WIndows,RGB is BGR :)
     procedure TRGBTriple_to_BPP32_B8G8R8(C:TRGBTriple; var p:TBGRA);
     procedure TRGBTriple_to_BPP32_B8G8R8A8(C:TRGBTriple; var p:TBGRA);
     // Qt Standard format (see lcl/interfaces/qt/qtproc.pp)
@@ -66,7 +66,7 @@ TFreeBitmapFormatHelper = class
     function TRGBTriple_to_BPP32_A8R8G8B8(C:TRGBTriple):TARGB;
     function TRGBTriple_to_BPP32_R8G8B8A8(C:TRGBTriple):TRGBA;
      // Formats in Windows pixels order: BGR
-    function TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple):TBGR; // yes, it is opposite in WIndows, RGB is BGR :)
+    function TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple):TBGR; // yes,it is opposite in WIndows,RGB is BGR :)
     function TRGBTriple_to_BPP32_B8G8R8A8(C:TRGBTriple):TBGRA;
 }
     // 16-bits formats
@@ -78,7 +78,7 @@ TFreeBitmapFormatHelper = class
     function BPP32_A8R8G8B8_to_TRGBTriple(C:TARGB):TRGBTriple;
     function BPP32_R8G8B8A8_to_TRGBTriple(C:TRGBA):TRGBTriple;
     // Formats in Windows pixels order: BGR
-    function BPP24_B8G8R8_to_TRGBTriple(C:TBGR):TRGBTriple; // yes, it is opposite in WIndows, RGB is BGR :)
+    function BPP24_B8G8R8_to_TRGBTriple(C:TBGR):TRGBTriple; // yes,it is opposite in WIndows,RGB is BGR :)
     function BPP32_B8G8R8_to_TRGBTriple(C:TBGRA):TRGBTriple;
     function BPP32_B8G8R8A8_to_TRGBTriple(C:TBGRA):TRGBTriple;
 
@@ -108,10 +108,10 @@ TFreeBitmapFormatHelper = class
     function ToTRGBTriple(p:pointer):TRGBTriple;
     procedure FromTRGBTriple(c:TRGBTriple; p:pointer);
     property BytesPerPixel : integer read FBytesPerPixel;
-    procedure GetPixel(const BM:TBitmap; X,Y: integer; out R, G, B, A: byte);
-    procedure GetPixelInLine(pLineStart:pByte; X: integer; out R, G, B, A: byte);
-    procedure SetPixel(const BM:TBitmap; X,Y: integer; R, G, B, A: byte);
-    procedure SetPixelInLine(pLineStart:pByte; X: integer; R, G, B, A: byte);
+    procedure GetPixel(const BM:TBitmap; X,Y: integer; out R,G,B,A: byte);
+    procedure GetPixelInLine(pLineStart:pByte; X: integer; out R,G,B,A: byte);
+    procedure SetPixel(const BM:TBitmap; X,Y: integer; R,G,B,A: byte);
+    procedure SetPixelInLine(pLineStart:pByte; X: integer; R,G,B,A: byte);
     function AsString:AnsiString;
 end;
 
@@ -240,7 +240,7 @@ begin
       and (BlueShift=0)
       and (AlphaPrec=0)
       and (AlphaShift=0)
-      //and (MaskBitsPerPixel=0) // Ignore mask, we do not need it for our purposes
+      //and (MaskBitsPerPixel=0) // Ignore mask,we do not need it for our purposes
     then FBitMapDataFormat:=bmdf_BPP32_B8G8R8 else                        // 32
     if (Format = ricfRGBA) and (PaletteColorCount = 0)
       and (Depth = 32) // used bits per pixel
@@ -339,35 +339,35 @@ begin
   end;
 end;
 
-procedure TFreeBitmapFormatHelper.SetPixel(const BM:TBitmap; X,Y: integer; R, G, B, A: byte);
-var pRow, pPixel : pointer;
+procedure TFreeBitmapFormatHelper.SetPixel(const BM:TBitmap; X,Y: integer; R,G,B,A: byte);
+var pRow,pPixel : pointer;
 begin
   pRow:=BM.RawImage.GetLineStart(Y);
-  pPixel:=pRow+Self.BytesPerPixel * X;
-  FSetPixelProc(pPixel, R, G, B, A);
+  pPixel:=pRow+Self.BytesPerPixel*X;
+  FSetPixelProc(pPixel,R,G,B,A);
 end;
 
-procedure TFreeBitmapFormatHelper.SetPixelInLine(pLineStart:pByte; X: integer; R, G, B, A: byte);
+procedure TFreeBitmapFormatHelper.SetPixelInLine(pLineStart:pByte; X: integer; R,G,B,A: byte);
 var pPixel : pointer;
 begin
-  pPixel:=pLineStart+Self.BytesPerPixel * X;
-  FSetPixelProc(pPixel, R, G, B, A);
+  pPixel:=pLineStart+Self.BytesPerPixel*X;
+  FSetPixelProc(pPixel,R,G,B,A);
 end;
 
 
-procedure TFreeBitmapFormatHelper.GetPixel(const BM:TBitmap; X,Y: integer; out R, G, B, A: byte);
-var pRow, pPixel : pointer;
+procedure TFreeBitmapFormatHelper.GetPixel(const BM:TBitmap; X,Y: integer; out R,G,B,A: byte);
+var pRow,pPixel : pointer;
 begin
   pRow:=BM.RawImage.GetLineStart(Y);
-  pPixel:=pRow+Self.BytesPerPixel * X;
-  FGetPixelProc(pPixel, R, G, B, A);
+  pPixel:=pRow+Self.BytesPerPixel*X;
+  FGetPixelProc(pPixel,R,G,B,A);
 end;
 
-procedure TFreeBitmapFormatHelper.GetPixelInLine(pLineStart:pByte; X: integer; out R, G, B, A: byte);
+procedure TFreeBitmapFormatHelper.GetPixelInLine(pLineStart:pByte; X: integer; out R,G,B,A: byte);
 var pPixel : pointer;
 begin
-  pPixel:=pLineStart+Self.BytesPerPixel * X;
-  FGetPixelProc(pPixel, R, G, B, A);
+  pPixel:=pLineStart+Self.BytesPerPixel*X;
+  FGetPixelProc(pPixel,R,G,B,A);
 end;
 
 function TFreeBitmapFormatHelper.ToTRGBTriple(p:pointer):TRGBTriple;
@@ -404,12 +404,12 @@ end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP16_R5G6B5(C:TRGBTriple; var p:TColor);
 begin
-  p:=RGBToColor(C.rgbtRed, C.rgbtGreen, C.rgbtBlue);
+  p:=RGBToColor(C.rgbtRed,C.rgbtGreen,C.rgbtBlue);
 end;
 
 procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP16_B5G6R5(C:TRGBTriple; var p:TColor);
 begin
-  p:=RGBToColor(C.rgbtBlue, C.rgbtGreen, C.rgbtRed);
+  p:=RGBToColor(C.rgbtBlue,C.rgbtGreen,C.rgbtRed);
 end;
 
 // Formats in RGB order
@@ -445,7 +445,7 @@ begin
 end;
 
 // Formats in Windows pixels order: BGR
-procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple; var p:TBGR); // yes, it is opposite in WIndows, RGB is BGR :)
+procedure TFreeBitmapFormatHelper.TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple; var p:TBGR); // yes,it is opposite in WIndows,RGB is BGR :)
 begin
   p.bgrBlue :=C.rgbtBlue;
   p.bgrGreen:=C.rgbtGreen;
@@ -480,7 +480,7 @@ end;
 {
 function TFreeBitmapFormatHelper.TRGBTriple_to_BPP16_R5G6B5(C:TRGBTriple):TColor;
 begin
-  result:=RGBToColor(C.rgbtRed, C.rgbtGreen, C.rgbtBlue);
+  result:=RGBToColor(C.rgbtRed,C.rgbtGreen,C.rgbtBlue);
 end;
  // Formats in RGB order
 function TFreeBitmapFormatHelper.TRGBTriple_to_BPP24_R8G8B8(C:TRGBTriple):TRGB;
@@ -514,7 +514,7 @@ begin
   result.rgbaAlpha:= 0;
 end;
  // Formats in Windows pixels order: BGR
-function TFreeBitmapFormatHelper.TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple):TBGR; // yes, it is opposite in WIndows, RGB is BGR :)
+function TFreeBitmapFormatHelper.TRGBTriple_to_BPP24_B8G8R8(C:TRGBTriple):TBGR; // yes,it is opposite in WIndows,RGB is BGR :)
 begin
   result.bgrBlue :=C.rgbtBlue;
   result.bgrGreen:=C.rgbtGreen;
@@ -573,7 +573,7 @@ begin
 end;
 
 // Formats in Windows pixels order: BGR
-function TFreeBitmapFormatHelper.BPP24_B8G8R8_to_TRGBTriple(C:TBGR):TRGBTriple; // yes, it is opposite in WIndows, RGB is BGR :)
+function TFreeBitmapFormatHelper.BPP24_B8G8R8_to_TRGBTriple(C:TBGR):TRGBTriple; // yes,it is opposite in WIndows,RGB is BGR :)
 begin
   result.rgbtBlue:=C.bgrBlue;
   result.rgbtGreen:= C.bgrGreen;
@@ -648,7 +648,7 @@ end;
 
 // Formats in Windows pixels order: BGR
 procedure TFreeBitmapFormatHelper.GetPixel_BPP24_B8G8R8(P:Pointer; out R,G,B,A: byte);
-// yes, it is opposite in WIndows, RGB is BGR :)
+// yes,it is opposite in WIndows,RGB is BGR :)
 begin
   B:= TBGR(P^).bgrBlue;
   G:= TBGR(P^).bgrGreen;
@@ -677,12 +677,12 @@ end;
 
 procedure TFreeBitmapFormatHelper.SetPixel_BPP16_R5G6B5(P:Pointer; R,G,B,A: byte);
 begin
-  TColor(P^):=RGBToColor(R, G, B);
+  TColor(P^):=RGBToColor(R,G,B);
 end;
 
 procedure TFreeBitmapFormatHelper.SetPixel_BPP16_B5G6R5(P:Pointer; R,G,B,A: byte);
 begin
-  TColor(P^):=RGBToColor(B, G, R);
+  TColor(P^):=RGBToColor(B,G,R);
 end;
 
 // Formats in RGB order
@@ -719,7 +719,7 @@ end;
 
 // Formats in Windows pixels order: BGR
 procedure TFreeBitmapFormatHelper.SetPixel_BPP24_B8G8R8(P:Pointer; R,G,B,A: byte);
-// yes, it is opposite in WIndows, RGB is BGR :)
+// yes,it is opposite in WIndows,RGB is BGR :)
 begin
   PBGR(P).bgrBlue:=B;
   PBGR(P).bgrGreen:=G;

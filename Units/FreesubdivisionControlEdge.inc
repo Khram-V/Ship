@@ -14,7 +14,7 @@ begin Result:=Surface.FControlEdges.IndexOf(self); end;
 
 function TFreesubdivisionControlEdge.FGetIsBoundaryEdge: boolean;
 var
-  I, N: integer; Face: TFreeSubdivisionFace;
+  I,N: integer; Face: TFreeSubdivisionFace;
 begin
   N:=0;
   for I:=0 to NumberOfFaces-1 do begin Face:=FFaces[I];
@@ -76,21 +76,21 @@ end;
 
 procedure TFreesubdivisionControlEdge.Collapse;
 var
-  Face1, Face2: TFreeSubdivisionControlFace;
+  Face1,Face2: TFreeSubdivisionControlFace;
   NewFace: TFreeSubdivisionControlFace;
   Edge: TFreeSubdivisionEdge;
-  Ind1, Ind2: integer;
-  Ind3, Ind4: integer;
-  P1, P2: TFreeSubdivisionPoint;
-  SP, EP: TFreeSubdivisionControlPoint;
-  I, J, Ln: integer;
+  Ind1,Ind2: integer;
+  Ind3,Ind4: integer;
+  P1,P2: TFreeSubdivisionPoint;
+  SP,EP: TFreeSubdivisionControlPoint;
+  I,J,Ln: integer;
   Layer: TFreeSubdivisionLayer;
   NewPoints: TFasterListTFreeSubdivisionControlPoint;
   CL1,CL2: array of TFreeSubdivisionControlPoint;
   OldEdgeCreases: TFasterListTFreeSubdivisionEdge;
   ptr: Pointer;
 
-  procedure Swap( var Ind1, Ind2: integer ); var Tmp: integer;
+  procedure Swap( var Ind1,Ind2: integer ); var Tmp: integer;
       begin Tmp:=Ind1; Ind1:=Ind2; Ind2:=Tmp; end;
 
 begin
@@ -113,7 +113,7 @@ begin
             Edge:=Face1.Point[i].Edge[j];
             ptr:=nil;
             if Edge.Crease then ptr:=pointer(1);
-            OldEdgeCreases.AddObject(Edge, ptr);
+            OldEdgeCreases.AddObject(Edge,ptr);
           end;
 
         // Check faces for consistent ordering of the points (same normal direction)
@@ -125,8 +125,8 @@ begin
             ((P2 = FStartPoint) and (P1 = FEndpoint)) then begin
             Ind1:=Face2.IndexOfPoint(P2);
             Ind2:=(Ind1+1) mod Face2.NumberOfPoints; // select the next index
-            if Face2.Point[ind2] = P1 then begin // Direction is OK, do nothing
-            end else begin                // direction is not ok, invert points
+            if Face2.Point[ind2] = P1 then begin // Direction is OK,do nothing
+            end else begin                // direction is not ok,invert points
               Face2.FlipNormal;
             end;
             break;
@@ -146,22 +146,22 @@ begin
 
         if (Ind1 = 0) and (Ind2 = Face1.NumberOfpoints-1)
         and (Ind3 = 0) and (Ind4 = Face2.NumberOfpoints-1) then begin
-          Swap(Ind1, Ind2);
-          Swap(Ind3, Ind4);
+          Swap(Ind1,Ind2);
+          Swap(Ind3,Ind4);
         end;
         if (Ind1 = 0) and (Ind2 = Face1.NumberOfpoints-1) then begin
-          Swap(Ind1, Ind2);
+          Swap(Ind1,Ind2);
         end;
         if (Ind3 = 0) and (Ind4 = Face2.NumberOfpoints-1) then begin
-          Swap(Ind3, Ind4);
+          Swap(Ind3,Ind4);
         end;
 
         NewPoints:=TFasterListTFreeSubdivisionControlPoint.Create;
 
         //make "cycled" list 1
         Ln:=Face1.Points.Count+1;
-        //Move(Face1.Points.FList, CL1, Ln-1);
-        SetLength(CL1, Ln);
+        //Move(Face1.Points.FList,CL1,Ln-1);
+        SetLength(CL1,Ln);
         for i:=0 to Face1.Points.Count-1 do CL1[i]:=Face1.Point[i];
         CL1[Ln-1]:=Face1.Point[0];
         {19,6,17,7,19}
@@ -182,7 +182,7 @@ begin
 
         //make "cycled" list 2
         Ln:=Face2.Points.Count+1;
-        SetLength(CL2, Ln);
+        SetLength(CL2,Ln);
         for i:=0 to Face2.Points.Count-1 do CL2[i]:=Face2.Point[i];
         CL2[Ln-1]:=Face2.Point[0];
         {5,28,6,19,5}
@@ -206,7 +206,7 @@ begin
   //    logger.Debug('NewPoints');
   //    for i:=0 to NewPoints.Count-1 do logger.Debug(format(' %d',[NewPoints[i].Id]));
 
-        NewFace:=Surface.AddControlFace(NewPoints, False, Layer);
+        NewFace:=Surface.AddControlFace(NewPoints,False,Layer);
   //    NewFace.PrintDebug;
 
         // connect the new face to a layer
@@ -318,11 +318,11 @@ begin
   if Surface<>nil then Surface.UnreferenceControlEdge(Self);
 end;
 
-function TFreesubdivisionControlEdge.DistanceToCursor(X, Y: integer;
+function TFreesubdivisionControlEdge.DistanceToCursor(X,Y: integer;
   var P: T3DVector; Viewport: TFreeViewport): integer;
 var
-  Pt, Pt1, Pt2: TPoint;
-  P1, P2, M: T3DVector;
+  Pt,Pt1,Pt2: TPoint;
+  P1,P2,M: T3DVector;
   Param: TFloatType;
   Tmp: integer;
 begin                    // Check if cursor position lies within the boundaries
@@ -339,24 +339,24 @@ begin                    // Check if cursor position lies within the boundaries
       if P1.X <= Surface.SplitSectionLocation then begin     // P2 lies on port
         Pt1:=Viewport.Project(P2);
         Pt2:=Viewport.Project(M);
-        Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
+        Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
         if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P2,M,Param); end;
         P1.Y:= -P1.Y;                                  // P1 lies on starboard
         M.Y:=-M.Y;
         Pt1:=Viewport.Project(P1);
         Pt2:=Viewport.Project(M);
-        Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
+        Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
         if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P1,M,Param); end;
       end else begin                                         // P1 lies on port
         Pt1:=Viewport.Project(P1);
         Pt2:=Viewport.Project(M);
-        Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
+        Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
         if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P1,M,Param); end;
         P2.Y:=-P2.Y;                                  // P2 lies on starboard
         M.Y:=-M.Y;
         Pt1:=Viewport.Project(P2);
         Pt2:=Viewport.Project(M);
-        Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
+        Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
         if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P2,M,Param); end;
       end;
     end else begin
@@ -364,7 +364,7 @@ begin                    // Check if cursor position lies within the boundaries
       if P2.X <= Surface.SplitSectionLocation then P2.Y:=-P2.Y;
       Pt1:=Viewport.Project(P1);
       Pt2:=Viewport.Project(P2);
-      Tmp:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
+      Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
       if Tmp < Result then begin Result:=Tmp; P:=Interpolate(P1,P2,Param); end;
     end;
   end else begin
@@ -372,8 +372,8 @@ begin                    // Check if cursor position lies within the boundaries
     Pt.Y:=Y;
     Pt1:=Viewport.Project(StartPoint.Coordinate);
     Pt2:=Viewport.Project(EndPoint.Coordinate);
-    Result:=Round(DistanceToLine(Pt1, Pt2, X, Y, Param));
-    P:=Interpolate(StartPoint.Coordinate, EndPoint.Coordinate, Param);
+    Result:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
+    P:=Interpolate(StartPoint.Coordinate,EndPoint.Coordinate,Param);
   end;
 end;{TFreesubdivisionControlEdge.DistanceToCursor}
 
@@ -386,7 +386,7 @@ begin
     P1:=StartPoint.FCoordinate;
     P2:=EndPoint.FCoordinate;
     if Viewport.ViewportMode <> vmWireframe then begin
-      Viewport.DrawLineToZBuffer( P1,P2, GetRValue(Color),
+      Viewport.DrawLineToZBuffer( P1,P2,GetRValue(Color),
                                          GetGValue(Color),
                                          GetBValue(Color) );
     end else begin
@@ -397,45 +397,45 @@ begin
         if ((P1.X < Surface.SplitSectionLocation) and (P2.X > Surface.SplitSectionLocation)) or
           ((P1.X > Surface.SplitSectionLocation) and (P2.X < Surface.SplitSectionLocation)) then
         begin
-          if P2.X-P1.X <> 0 then M:=Interpolate(P1, P2, (Surface.SplitSectionLocation-P1.X) / (P2.X-P1.X))
-                              else M:=MidPoint(P1, P2);
+          if P2.X-P1.X <> 0 then M:=Interpolate(P1,P2,(Surface.SplitSectionLocation-P1.X)/(P2.X-P1.X))
+                              else M:=MidPoint(P1,P2);
           if P1.X <= Surface.SplitSectionLocation then begin // P2 lies on port
             Pt1:=Viewport.Project(P2);
             Pt2:=Viewport.Project(M);
-            Viewport.MoveTo(Pt1.X, Pt1.Y);
-            Viewport.LineTo(Pt2.X, Pt2.Y);              // P1 lies on starboard
+            Viewport.MoveTo(Pt1.X,Pt1.Y);
+            Viewport.LineTo(Pt2.X,Pt2.Y);              // P1 lies on starboard
             P1.Y:=-P1.Y;
             M.Y:=-M.Y;
             Pt1:=Viewport.Project(P1);
             Pt2:=Viewport.Project(M);
-            Viewport.MoveTo(Pt1.X, Pt1.Y);
-            Viewport.LineTo(Pt2.X, Pt2.Y);
+            Viewport.MoveTo(Pt1.X,Pt1.Y);
+            Viewport.LineTo(Pt2.X,Pt2.Y);
           end else begin                                     // P1 lies on port
             Pt1:=Viewport.Project(P1);
             Pt2:=Viewport.Project(M);
-            Viewport.MoveTo(Pt1.X, Pt1.Y);
-            Viewport.LineTo(Pt2.X, Pt2.Y);
+            Viewport.MoveTo(Pt1.X,Pt1.Y);
+            Viewport.LineTo(Pt2.X,Pt2.Y);
             // P2 lies on starboard
             P2.Y:=-P2.Y;
             M.Y:=-M.Y;
             Pt1:=Viewport.Project(P2);
             Pt2:=Viewport.Project(M);
-            Viewport.MoveTo(Pt1.X, Pt1.Y);
-            Viewport.LineTo(Pt2.X, Pt2.Y);
+            Viewport.MoveTo(Pt1.X,Pt1.Y);
+            Viewport.LineTo(Pt2.X,Pt2.Y);
           end;
         end else begin
           if P1.X <= Surface.SplitSectionLocation then P1.Y:=-P1.Y;
           if P2.X <= Surface.SplitSectionLocation then P2.Y:=-P2.Y;
           Pt1:=Viewport.Project(P1);
           Pt2:=Viewport.Project(P2);
-          Viewport.MoveTo(Pt1.X, Pt1.Y);
-          Viewport.LineTo(Pt2.X, Pt2.Y);
+          Viewport.MoveTo(Pt1.X,Pt1.Y);
+          Viewport.LineTo(Pt2.X,Pt2.Y);
         end;
       end else begin
         Pt1:=Viewport.Project(P1);
         Pt2:=Viewport.Project(P2);
-        Viewport.MoveTo(Pt1.X, Pt1.Y);
-        Viewport.LineTo(Pt2.X, Pt2.Y);
+        Viewport.MoveTo(Pt1.X,Pt1.Y);
+        Viewport.LineTo(Pt2.X,Pt2.Y);
       end;
     end;
   end;
@@ -457,7 +457,7 @@ begin
   Result.FCoordinate:=P;
   if FCurve <> nil then begin       // insert the new point in the controlcurve
     FCurve.InsertControlPoint(TFreeSubdivisionControlPoint(
-      FStartPoint), TFreeSubdivisionControlPoint(FEndPoint), Result);
+      FStartPoint),TFreeSubdivisionControlPoint(FEndPoint),Result);
   end;
   Surface.FControlPoints.Add(Result);
   for I:=1 to NumberOfFaces do begin
@@ -465,15 +465,15 @@ begin
     I1:=Face.FPoints.IndexOf(FStartPoint);
     I2:=Face.FPoints.IndexOf(FEndPoint);
     if (I1 <> -1) and (I2 <> -1) then begin
-      if (I2 = I1+1) then Face.FPoints.Insert(I2, Result) else
-      if (I1 = I2+1) then Face.FPoints.Insert(I1, Result) else
+      if (I2 = I1+1) then Face.FPoints.Insert(I2,Result) else
+      if (I1 = I2+1) then Face.FPoints.Insert(I1,Result) else
       if (I1=0) and (I2=Face.FPoints.Count-1) then Face.FPoints.Insert( 0,Result ) else
       if (I2 = 0) and (I1 = Face.FPoints.Count-1) then Face.FPoints.Insert( 0,Result );
       Result.AddFace(Face);
     end;
   end;
   FEndpoint.UnreferenceEdge(self);
-  Edge:=Surface.AddControlEdge(Result, FEndPoint as TFreeSubdivisionControlPoint);
+  Edge:=Surface.AddControlEdge(Result,FEndPoint as TFreeSubdivisionControlPoint);
   Edge.FCrease:=FCrease;
   Edge.FCurve:=FCurve;
   if FCrease then Result.FVertexType:=svCrease;
@@ -601,7 +601,7 @@ procedure TFreesubdivisionControlEdge.Trace;
 var
   P: TFreeSubdivisionControlPoint;
   Edge: TFreeSubdivisionControlEdge;
-  I, J, Index: integer;
+  I,J,Index: integer;
   Sharesface: boolean;
   //    Point   : TFreeSubdivisionControlPoint;
   //    Entity  : TFreeSubdivisionBase;

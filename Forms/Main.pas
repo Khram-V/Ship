@@ -2,19 +2,19 @@ unit Main;
 //{$mode objfpc}{$H+}
   {$MODE Delphi}{$H+}
 interface uses Interfaces,
-     SysUtils,     // = exception ...
-     Classes,      // constructor Create
-     LCLIntf,      // openDocument
-     LazFileUtils, // дата и время файла
-     Graphics, Controls,
-     Forms,    Dialogs,
-     ExtCtrls, ActnList,
-     StdCtrls, ComCtrls,
-     Menus,    StdActns, Spin,
+     SysUtils,    // = exception ...
+     Classes,     // constructor Create
+     LCLIntf,     // openDocument
+     LazFileUtils,// дата и время файла
+     Graphics,Controls,
+     Forms,   Dialogs,
+     ExtCtrls,ActnList,
+     StdCtrls,ComCtrls,
+     Menus,   StdActns,Spin,
      FreeTypes,FreeGeometry,
      FreeShipUnit,FreeVersionUnit,
      FreeAboutDlg,FreehullFormWindow_panel,
-     FreeLayerVisibilityDlg,FreeLanguageSupport, // FreeSelectedDlg,
+     FreeLayerVisibilityDlg,FreeLanguageSupport,// FreeSelectedDlg,
      FreeSplitSectionDlg,MDIPanel,FreeLinesPlanFrame;
 type
   TMainForm = class( TForm )
@@ -22,70 +22,70 @@ type
      MainMenu1: TMainMenu;
      HintBar: TStatusBar;
      MainClientPanel,PanelMain,StatusBar,StatusPanel5: TPanel;
-     ToolBarCurves,     ToolBarFaces,
-     ToolBarFile,       ToolBarEdit,
-     ToolBarEdges,      ToolBarPoints,
-     ToolBarVisibility, ToolBarLayers : TToolBar;
+     ToolBarCurves,    ToolBarFaces,
+     ToolBarFile,      ToolBarEdit,
+     ToolBarEdges,     ToolBarPoints,
+     ToolBarVisibility,ToolBarLayers : TToolBar;
      ActionList1      : TActionList;
 //   FActionListHull  : TActionList;
-     AboutAction, NewModel,
+     AboutAction,NewModel,
      LayerVisibilityDialog,
-     SplitSectionDialog,            ShowFreeObjects,
-     PointExtrude,                  PointsCoincide,
-     AddGridPanel,                  ActionCheckUpdates,
-     AddFlowLine,                   SelectAllControlPoints,
-     PointAnchor,                   PointAlighnPermanently,
-     AddPointToGroup,               SelectLeakPoints,
-     LoadFile,                      NewWindow,
-     TileWindow,                    CascadeWindow,
-     BothSides,                     FileSaveas,
-     LayerAutoGroup,                NewLayer,
-     Delete,                        ExitProgram,
-     ShowControlNet,                ShowInteriorEdges,
-     EdgeCollapse,                  NewEdge,
-     DesignHydrostatics,            EdgeCrease,
-     DeselectAll,                   PointCollapse,
-     ActiveLayerColor,              DeleteEmptyLayers,
-     LayerDialog,                   SelectionDialog,
-     ShowStations,                  ShowButtocks,
-     ShowWaterlines,                NewFace,
-     IntersectionDialog,            EdgeExtrude,
-     EdgeSplit,                     ExportFEF,
-     EditProjectSettings,           CheckModel,
+     SplitSectionDialog,           ShowFreeObjects,
+     PointExtrude,                 PointsCoincide,
+     AddGridPanel,                 ActionCheckUpdates,
+     AddFlowLine,                  SelectAllControlPoints,
+     PointAnchor,                  PointAlighnPermanently,
+     AddPointToGroup,              SelectLeakPoints,
+     LoadFile,                     NewWindow,
+     TileWindow,                   CascadeWindow,
+     BothSides,                    FileSaveas,
+     LayerAutoGroup,               NewLayer,
+     Delete,                       ExitProgram,
+     ShowControlNet,               ShowInteriorEdges,
+     EdgeCollapse,                 NewEdge,
+     DesignHydrostatics,           EdgeCrease,
+     DeselectAll,                  PointCollapse,
+     ActiveLayerColor,             DeleteEmptyLayers,
+     LayerDialog,                  SelectionDialog,
+     ShowStations,                 ShowButtocks,
+     ShowWaterlines,               NewFace,
+     IntersectionDialog,           EdgeExtrude,
+     EdgeSplit,                    ExportFEF,
+     EditProjectSettings,          CheckModel,
      ShowNormals,ImportVRML,ImportSTL,ImportOBJ,ImportFEF,
      ResistanceDelft,ResistanceKaper:                       TAction;
-     WindowAct,                     Cascade1,
-     Tile1,                         NewWindow1,
-     N1,                            Showbothsides1,
-     AuroraHullVsl,                 Tools1,
-     miSelectionDialog,             miShowLayerVisibilityDialog,
-     miSetSplitSection,             miShowFreeObjects,
-     miPointExtrude,                MenuItem2,
-     MenuItem1,                     CheckUpdates,
-     miAddGridPanel,                SelectAllControlPoints1,
-     MenuItemPointAnchor,           HelpContents,
-     HelpAbout,                     AddControlPointToGroup,
-     MenuItemPointAlignPermanently, Visibility1,
-     ShowControlNet1,               ShowInteriorEdges1,
-     Save1,                         Layer1,
-     Autogroup1,                    New1,
-     SelectLeakPoints1,             File1,
-     Open,                          ExitProgram1,
-     Edit1,                         Point1,
-     Edge1,                         Face1,
-     Collapse1,                     Delete1,
-     New2,                          ImportOff1,
-     Crease1,                       Selection1,
-     Clearselection1,               PointCollapse1,
-     Activelayercolor1,             Deleteempty1,
-     Deleteempty2,                  New3,
-     Stations1,                     Buttocks1,
-     Waterlines1,                   New4,
-     Extrude1,                      Help1,
-     Split1,                        ExportFEFfile1,
-     Project1,                      Projectsettings1,
+     WindowAct,                    Cascade1,
+     Tile1,                        NewWindow1,
+     N1,                           Showbothsides1,
+     AuroraHullVsl,                Tools1,
+     miSelectionDialog,            miShowLayerVisibilityDialog,
+     miSetSplitSection,            miShowFreeObjects,
+     miPointExtrude,               MenuItem2,
+     MenuItem1,                    CheckUpdates,
+     miAddGridPanel,               SelectAllControlPoints1,
+     MenuItemPointAnchor,          HelpContents,
+     HelpAbout,                    AddControlPointToGroup,
+     MenuItemPointAlignPermanently,Visibility1,
+     ShowControlNet1,              ShowInteriorEdges1,
+     Save1,                        Layer1,
+     Autogroup1,                   New1,
+     SelectLeakPoints1,            File1,
+     Open,                         ExitProgram1,
+     Edit1,                        Point1,
+     Edge1,                        Face1,
+     Collapse1,                    Delete1,
+     New2,                         ImportOff1,
+     Crease1,                      Selection1,
+     Clearselection1,              PointCollapse1,
+     Activelayercolor1,            Deleteempty1,
+     Deleteempty2,                 New3,
+     Stations1,                    Buttocks1,
+     Waterlines1,                  New4,
+     Extrude1,                     Help1,
+     Split1,                       ExportFEFfile1,
+     Project1,                     Projectsettings1,
                                     Analyzesurface1,
-     Calculations,                  Hydrostatics1,
+     Calculations,                 Hydrostatics1,
      VRML1,MenuItemOBJ,MenuItemSTL,Normals1,Export1,Import1: TMenuItem;
 
      LayerBox,cbPrecision: TComboBox;
@@ -99,14 +99,14 @@ type
      MenuImages          : TImageList;
 
      ToolButtonSelect,ToolButtonRedo,ToolButtonUndo,ToolButtonDelete,
-     ToolButton1,  ToolButton2,  ToolButton5,  ToolButton6,  ToolButton8,
-     ToolButton9,  ToolButton10, ToolButton13, ToolButton16, ToolButton17,
-     ToolButton18, ToolButton21, ToolButton22, ToolButton23, ToolButton24,
-     ToolButton26, ToolButton27, ToolButton29, ToolButton30, ToolButton31,
-     ToolButton32, ToolButton33, ToolButton34, ToolButton35, ToolButton36,
-     ToolButton37, ToolButton39, ToolButton40, ToolButton41, ToolButton42,
-     ToolButton43, ToolButton44, ToolButton45, ToolButton46, ToolButton47,
-     ToolButton48, tbShowFreeObjects:                        TToolButton;
+     ToolButton1, ToolButton2, ToolButton5, ToolButton6, ToolButton8,
+     ToolButton9, ToolButton10,ToolButton13,ToolButton16,ToolButton17,
+     ToolButton18,ToolButton21,ToolButton22,ToolButton23,ToolButton24,
+     ToolButton26,ToolButton27,ToolButton29,ToolButton30,ToolButton31,
+     ToolButton32,ToolButton33,ToolButton34,ToolButton35,ToolButton36,
+     ToolButton37,ToolButton39,ToolButton40,ToolButton41,ToolButton42,
+     ToolButton43,ToolButton44,ToolButton45,ToolButton46,ToolButton47,
+     ToolButton48,tbShowFreeObjects:                        TToolButton;
 
     StatusPanel2  : TPanel;
     ColorDialog   : TColorDialog;
@@ -508,7 +508,7 @@ begin
      and (Sender=FreeShip.ActiveControlPoint)
      and (not FreeShip.ActiveControlPoint.Selected)
    then begin
-   // The active controlpoint was deselected, probably internally by the subdivision surface.
+   // The active controlpoint was deselected,probably internally by the subdivision surface.
    // Set the FreeShip.ActiveControlPoint to nil (which also closes the controlpoint window)
       FreeShip.ActiveControlPoint:=nil;
    end;
@@ -783,7 +783,7 @@ begin
     if assigned( jpg ) then begin
        pic:=TPicture.Create;
        pic.Bitmap.Assign( jpg );
-       dlg.AddTile( pic,sTime+' - '+vFileName, vFileName );
+       dlg.AddTile( pic,sTime+' - '+vFileName,vFileName );
     end;
     Application.ProcessMessages;
   end;
@@ -1114,7 +1114,7 @@ procedure TMainForm.FormCreate( Sender: TObject );
 begin
 //{$ifndef Windows}
    if self.Align=alTop then self.Top:=0;
-//{$endif}                                        // Removed from LFM, moved here
+//{$endif}                                        // Removed from LFM,moved here
    FreeShip:=TFreeShip.Create( self );
    FreeShip.MainForm:=self;
    FreeShip.FileChanged:=true;
