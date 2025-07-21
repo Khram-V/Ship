@@ -142,26 +142,6 @@ begin  //  to enabled/disabled according to the current state and selected items
    NewFace.Enabled:=FreeShip.NumberOfSelectedControlPoints>2;
    EdgeSplit.Enabled:=FreeShip.NumberOfSelectedControlEdges>0;
 end;
-procedure TMainForm.LoadFileExecute( Sender: TObject );
-var HullformWindow:TFreeHullWindow; I:Integer;
-begin
-   OpenDialog.InitialDir:=ExtractFilePath(Application.ExeName);
-   if OpenDialog.Execute then begin
-      if MDIChildCount=0 then begin
-         for i:=0 to 3 do begin                            // open a new window
-            HullformWindow:=TFreeHullWindow.Create(self); // Connect viewport to freeship component
-            HullformWindow.FreeShip:=FreeShip;
-            HullformWindow.Viewport.ViewType:=TFreeViewType(I);
-            HullformWindow.SetCaption;
-         end;
-         Tile;
-      end;
-      FreeShip.Filename:=OpenDialog.Filename;
-      FreeShip.LoadFromFile;
-      SetCaption;
-      UpdateMenu;
-   end;
-end;
 procedure TMainForm.ExitProgramExecute( Sender: TObject );
     begin UpdateMenu; Close; end;
 procedure TMainForm.FormShow( Sender: TObject );
@@ -223,18 +203,14 @@ begin
                                            else FreeShip.Visibility.ModelView:=mvBoth;
    UpdateMenu;
 end;
-
 procedure TMainForm.FreeShipFileChanged(Sender: TObject);
     begin SetCaption; end;
 procedure TMainForm.PrecisionBoxChange(Sender: TObject);
     begin FreeShip.Precision:=TFreePrecisionType(PrecisionBox.ItemIndex);
           UpdateMenu;
     end;
-procedure TMainForm.SaveFileExecute(Sender: TObject);
-    begin FreeShip.SaveToFile; UpdateMenu; end;
 procedure TMainForm.LayerAutoGroupExecute(Sender: TObject);
     begin FreeShip.Edit.Layer_AutoGroup; UpdateMenu; end;
-
 procedure TMainForm.FreeShipChangeLayerData(Sender: TObject);
 var I : Integer;
 begin                              // Fill the layerbox with the current layers
@@ -335,5 +311,7 @@ begin if Freeship.FileChanged
       then CanClose:=mrYes=MessageDlg('The model has been changed.'+EOL
            + 'Are you sure you want to quit?',mtWarning,[mbYes,mbNo],0 );
 end;
+
+{$I Main_File.inc}
 
 end.

@@ -45,13 +45,13 @@ constructor TFasterList.Create;
 begin Inherited Create; FList:=nil; FCount:=0;
                         FData:=nil; FCapacity:=0; FSorted:=False; end;
 procedure TFasterList.Clear;
-    begin FCount:=0; FSorted:=False; FUseUserData:=False; end;
+   begin FCount:=0; FSorted:=False; FUseUserData:=False; end;
 destructor TFasterList.Destroy;
-     begin Clear;
-        if FCapacity>0 then begin SetLength( FList,0 );
-            if FUseUserData then SetLength( FData,0 );
-        end; inherited Destroy;
-     end;
+   begin Clear;
+     if FCapacity>0 then begin SetLength( FList,0 );
+        if FUseUserData then SetLength( FData,0 );
+     end; inherited Destroy;
+   end;
 procedure TFasterList.Assign( List:TFasterList );
 begin
    FUseUserdata:=List.FUseUserData;
@@ -272,19 +272,12 @@ end;
 
 procedure TFasterList.Sort;
    procedure QuickSort(L,R:Integer);
-   var I, J : Integer;
-       Val  : Cardinal;
+   var I,J : Integer;
+       Val : Cardinal;
        Procedure Swap(I,J:Integer);
        var Tmp : Pointer;
-       begin
-          Tmp:=FList[I];
-          FList[I]:=FList[J];
-          FList[J]:=Tmp;
-          if FUseUserdata then begin
-            Tmp:=FData[I];
-            FData[I]:=FData[J];
-            FData[J]:=Tmp;
-          end;
+       begin                         Tmp:=FList[I]; FList[I]:=FList[J]; FList[J]:=Tmp;
+          if FUseUserdata then begin Tmp:=FData[I]; FData[I]:=FData[J]; FData[J]:=Tmp; end;
        end;
    begin
       I:=L;
@@ -307,8 +300,7 @@ begin
 end;
 
 function TFasterList.SortedIndexOf(Item: Pointer): Integer;
-var MemAddr : Cardinal;
-    MidVal  : Cardinal;
+var MemAddr,MidVal: Cardinal;
     L,H,Mid : Integer;
 begin
    Result:=-1;
