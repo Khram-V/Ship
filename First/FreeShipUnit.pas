@@ -1,8 +1,8 @@
 unit FreeShipUnit;
 interface uses
      SysUtils, // this declaration must be at the start, before the FreeGeometry unit
-     Math, Types,  Graphics,
-     Forms,  Controls,
+     Math, Graphics,    // Types,
+     Forms, Controls,
      Windows,Dialogs,
      Classes,FasterList,FreeTypes,FreeGeometry;
 
@@ -27,11 +27,11 @@ type
 {------------------------------------------------------------------------}
 TFreeIntersection = class
    private
-      FOwner            : TFreeShip;
-      FItems            : TFasterList;
-      FIntersectionType : TFreeIntersectionType;
-      FPlane            : T3DPlane;
-      FBuild            : Boolean;
+      FOwner           : TFreeShip;
+      FItems           : TFasterList;
+      FIntersectionType: TFreeIntersectionType;
+      FPlane           : T3DPlane;
+      FBuild           : Boolean;
       function    FGetColor:TColor; virtual;
       function    FGetPlane:T3DPlane; virtual;
       function    FGetCount:Integer;
@@ -81,26 +81,27 @@ TFreeVisibility = class(TPersistent)
       procedure FSetShowWaterlines(Val:Boolean);
    public
       constructor Create(Owner:TFreeShip);
-      procedure   Clear;
-      procedure   LoadFromStream(Var LineNr:Integer;Strings:TStringList);
-      procedure   SaveToStream(Strings:TStringList);
-      property    Owner: TFreeShip read FOwner write FOwner;
+      procedure Clear;
+      procedure LoadFromStream(Var LineNr:Integer;Strings:TStringList);
+      procedure SaveToStream(Strings:TStringList);
+      property  Owner: TFreeShip read FOwner write FOwner;
    published
-      property    ModelView        : TFreeModelView read FModelView write FSetModelView;
-      property    ShowButtocks     : boolean read FShowButtocks write FSetShowButtocks;
-      property    ShowControlNet   : boolean read FShowControlNet write FSetShowControlNet;
-      property    ShowInteriorEdges: boolean read FShowInteriorEdges write FSetShowInteriorEdges;
-      property    ShowStations     : boolean read FShowStations write FSetShowStations;
-      property    ShowWaterlines   : boolean read FShowWaterlines write FSetShowWaterlines;
+      property  ModelView        : TFreeModelView read FModelView write FSetModelView;
+      property  ShowButtocks     : boolean read FShowButtocks write FSetShowButtocks;
+      property  ShowControlNet   : boolean read FShowControlNet write FSetShowControlNet;
+      property  ShowInteriorEdges: boolean read FShowInteriorEdges write FSetShowInteriorEdges;
+      property  ShowStations     : boolean read FShowStations write FSetShowStations;
+      property  ShowWaterlines   : boolean read FShowWaterlines write FSetShowWaterlines;
 end;
 {---------------------------------------------------------}
 {                                     TFreeEdit           }
 { Container class for all editing commandsns for the hull }
 {---------------------------------------------------------}
 TFreeEdit = class
-   private FOwner: TFreeShip;
+// private FOwner: TFreeShip;
    public
-      constructor Create(Owner:TFreeShip);       // Edit commands applicable to layers
+      Owner: TFreeShip;
+      constructor Create( Ship:TFreeShip );      // Edit commands applicable to layers
       procedure Edge_Collapse;                   // Remove an edge by replacing the two connected faces by one controlface
       procedure Edge_Connect;                    // Create a new edge by connection two controlpoints belonging to the same controlface
       procedure Edge_Crease;                     // Switch selected edges between normal or crease edges (knuckle lines)
@@ -112,7 +113,7 @@ TFreeEdit = class
       procedure Point_Collapse;                  // Merge two selected edges by removing their common controlpoint.
       procedure Selection_Clear;                 // Deselect all selected items at once
       procedure Selection_Delete;                // Delete all selected items
-      property  Owner             : TFreeShip read FOwner write FOwner;
+//    property  Owner: TFreeShip read FOwner write FOwner;
 end;
 {--------------------------------------------------------------------------------}
 { TFreeShip is the actual component used for modelling and representing the ship }
@@ -242,9 +243,9 @@ end;
 function TFreeIntersection.FGetColor:TColor;
 begin
    Case IntersectionType of
-      fiStation   : Result:=StationColor;
-      fiButtock   : Result:=ButtockColor;
-      fiWaterline : Result:=WaterlineColor;
+      fiStation  : Result:=StationColor;
+      fiButtock  : Result:=ButtockColor;
+      fiWaterline: Result:=WaterlineColor;
       else Result:=clWhite;
    end;
 end;
@@ -336,18 +337,13 @@ begin
 end;
 
 destructor TFreeIntersection.Destroy;
-begin
-   Clear;
-   FItems.Destroy;
-   Inherited Destroy;
-end;
+begin Clear; FItems.Destroy; Inherited Destroy; end;
 
 procedure TFreeIntersection.Draw(Viewport:TFreeViewport;Mode:TPenMode);
-var I,J   : Integer;
+var I,J,R,G,B: Integer;
     Spline: TFreeSpline;
-    P,P2  : T3DVector;
-    Pts   : array of TPoint;
-    R,G,B:Integer;
+    P,P2: T3DVector;
+    Pts: array of TPoint;
 begin
    if not Viewport.Shade then begin
       if not Build then Rebuild;
@@ -492,8 +488,8 @@ end;
 {-----------------------------------------------------------}
 {   Container class for all editing commandsns for the hull }
 {-----------------------------------------------------------}
-constructor TFreeEdit.Create(Owner:TFreeShip);
-      begin inherited Create; FOwner:=Owner; end;
+constructor TFreeEdit.Create( Ship: TFreeShip );
+      begin inherited Create; Owner:=Ship; end;
 
 // Remove an edge by replacing the two connected faces by one controlface
 procedure TFreeEdit.Edge_Collapse;
@@ -568,9 +564,11 @@ begin
       F:=Owner.Surface.NumberOfControlFaces;
       E:=Owner.Surface.NumberOfControlEdges;
       P:=Owner.Surface.NumberOfControlPoints; // Assemble all points in a temp. list
-      for I:=1 to Owner.Surface.NumberOfSelectedControlPoints do Tmp.Add(Owner.Surface.SelectedControlPoint[I-1]);
+      for I:=1 to Owner.Surface.NumberOfSelectedControlPoints
+        do Tmp.Add(Owner.Surface.SelectedControlPoint[I-1]);
       // Deselect the controlpoints
-      for I:=Owner.Surface.NumberOfSelectedControlPoints downto 1 do Owner.Surface.SelectedControlPoint[I-1].Selected:=False;
+      for I:=Owner.Surface.NumberOfSelectedControlPoints
+        downto 1 do Owner.Surface.SelectedControlPoint[I-1].Selected:=False;
       // Add the new face
       Face:=Owner.Surface.AddControlFace(Tmp,Owner.ActiveLayer);
       if Face<>nil then begin
@@ -580,8 +578,8 @@ begin
          Owner.Redraw;
       end;                               // Initialize then new edges and faces
       Tmp.Destroy;
-   end else MessageDlg('You need to select at least 3 controlpoints'+EOL+
-                       'in order to create a new controlface',mtInformation,[mbOk],0);
+   end else ShowMessage('You need to select at least 3 controlpoints'+EOL+
+                        'in order to create a new controlface');
 end;
 
 // All connected patches surrounded by crease edges are grouped together into a new layer
@@ -628,9 +626,7 @@ begin
          Layer:=Owner.Layer[I-1];
          if Layer.Visible then begin
             ToDoList.Capacity:=ToDoList.Count+Layer.Count;
-            for J:=1 to Layer.Count do begin
-               ToDoList.Add(Layer.Items[J-1]);
-            end;
+            for J:=1 to Layer.Count do ToDoList.Add(Layer.Items[J-1]);
          end;
       end;
    end;
@@ -683,15 +679,14 @@ begin
 end;
 
 function TFreeEdit.Layer_New:TFreeSubdivisionLayer;
-begin
-   Result:=Owner.Surface.AddNewLayer;
-   Owner.FileChanged:=True;
-end;
+   begin Result:=Owner.Surface.AddNewLayer;
+         Owner.FileChanged:=True;
+   end;
 
 // Merge two selected edges by removing their common controlpoint.
 procedure TFreeEdit.Point_Collapse;
-var I,N  : Integer;
-    Point : TFreeSubdivisionControlPoint;
+var I,N: Integer;
+    Point: TFreeSubdivisionControlPoint;
 begin N:=0;
    For I:=Owner.NumberOfSelectedControlPoints downto 1 do begin
       Point:=Owner.SelectedControlPoint[I-1];
@@ -706,16 +701,12 @@ begin N:=0;
       Owner.FileChanged:=True;
    end;
 end;
-
-// Deselect all selected items at once
-procedure TFreeEdit.Selection_Clear;
-begin
-   Owner.Surface.Clearselection;
-   Owner.Redraw;
-end;
-
+procedure TFreeEdit.Selection_Clear;     // Deselect all selected items at once
+    begin Owner.Surface.Clearselection;
+          Owner.Redraw;
+    end;
 procedure TFreeEdit.Selection_Delete;
-var N : Integer;
+var N: Integer;
 begin
    N:=Owner.NumberOfSelectedControlPoints+
       Owner.NumberOfSelectedControlEdges+
@@ -730,7 +721,6 @@ begin
       end;
    end;
 end;
-
 {-----------------------------------------}
 { TFreeShip is the actual component used  }
 { for modelling and representing the ship }
@@ -750,26 +740,19 @@ function TFreeShip.FGetSelectedControlPoint(Index:Integer):TFreeSubdivisionContr
 function TFreeShip.FGetSelectedControlFace(Index:Integer):TFreeSubdivisionControlFace;
    begin Result:=Surface.SelectedControlFace[index]; end;
 function TFreeShip.FGetStation(Index:Integer):TFreeIntersection;
-begin if (Index>=0) and (INdex<Fstations.Count) then Result:=FStations[index];
-//                  else raise exception.Create('Invalid station-index');
-end;
+   begin Result:=FStations[Inter(0,Index,Fstations.Count)]; end;
 function TFreeShip.FGetButtock(Index:Integer):TFreeIntersection;
-begin if (Index>=0) and (INdex<FButtocks.Count) then Result:=FButtocks[index];
-//                  else raise exception.Create('Invalid Buttock-index');
-end;
+   begin Result:=FButtocks[Inter(0,Index,FButtocks.Count)]; end;
 function TFreeShip.FGetWaterline(Index:Integer):TFreeIntersection;
-begin if (Index>=0) and (INdex<FWaterlines.Count) then Result:=FWaterlines[index];
-//                  else raise exception.Create('Invalid Waterline-index');
-end;
+   begin Result:=FWaterlines[Inter(0,Index,FWaterlines.Count)]; end;
 function TFreeShip.FGetActiveLayer:TFreeSubdivisionlayer;
    begin Result:=Surface.ActiveLayer; end;
 function TFreeShip.FGetBuild:Boolean;
    begin Result:=Surface.Build; end;
 function TFreeShip.FGetFilename:string;
-begin
-   if FFilename='' then FFilename:='New model';
-   Result:=ChangeFileExt(FFilename,FreeShipExtention);
-end;
+   begin if FFilename='' then FFilename:='New model';
+         Result:=ChangeFileExt(FFilename,FreeShipExtention);
+   end;
 function TFreeShip.FGetLayer(Index:Integer):TFreeSubdivisionLayer;
    begin Result:=Surface.Layer[index]; end;
 function TFreeShip.FGetNumberOfStations:Integer;
@@ -781,9 +764,7 @@ function TFreeShip.FGetNumberOfButtocks:Integer;
 function TFreeShip.FGetNumberOfLayers:Integer;
    begin Result:=Surface.NumberOfLayers; end;
 function TFreeShip.FGetViewport(Index:Integer):TFreeViewport;
-begin if (Index>=0) and (Index<NumberOfViewports) then Result:=FViewports[index];
-//                 else Raise Exception.Create('Invalid viewport index!');
-end;
+begin Result:=FViewPorts[Inter(0,Index,NumberOfViewports)]; end;
 procedure TFreeShip.FSetActiveControlPoint(Val:TFreeSubdivisionControlPoint);
     begin if Val<>FActiveControlPoint then begin
           FActiveControlPoint:=Val; // FMovingControlPoint;
@@ -811,13 +792,11 @@ procedure TFreeShip.FSetFileChanged(Val:Boolean);
             if assigned(FOnFileChanged) then FOnFileChanged(self);
           end;
     end;
-procedure TFreeShip.FSetFileName(Val:string); var Tmp:string;
-begin
-    if val='' then val:='New model';
-    Tmp:=ChangeFileExt(Val,FreeShipExtention);
-    if FFilename<>val then begin FFilename:=Val; end;
-end;
-
+procedure TFreeShip.FSetFileName(Val:string); //var Tmp:string;
+    begin if val='' then val:='New model';
+          Val:=ChangeFileExt( Val,FreeShipExtention );
+          if FFilename<>val then FFilename:=Val;
+    end;
 procedure TFreeShip.FSetFileVersion(Val:TFreeVersion);
 begin if val<>FFileVersion then begin FFileVersion:=Val; FileChanged:=true; end;
 end;
@@ -946,12 +925,12 @@ begin
 end;
 
 procedure TFreeShip.MouseDown(Viewport:TFreeViewport;Button:TMouseButton;Shift:TShiftState;X,Y:Integer;var ItemSelected:Boolean);
-var I,J,Tmp : Integer;
-    P3D     : T3DVector;
-    Point   : TFreeSubdivisionControlPoint;
-    Edge    : TFreeSubdivisionControlEdge;
-    Face    : TFreeSubdivisionControlFace;
-    Entity  : TFreeSubdivisionBase;
+var I,J,Tmp: Integer;
+    P3D   : T3DVector;
+    Point : TFreeSubdivisionControlPoint;
+    Edge  : TFreeSubdivisionControlEdge;
+    Face  : TFreeSubdivisionControlFace;
+    Entity: TFreeSubdivisionBase;
 begin
    ItemSelected:=False;
    if Button=mbLeft then begin
@@ -1019,14 +998,17 @@ begin
    end else if Button=mbRight then begin EditMode:=emSelectItems; end;
 end;
 
-procedure TFreeShip.MouseMove(Viewport:TFreeViewport; Shift: TShiftState; X,Y: Integer);
+procedure TFreeShip.MouseMove
+( Viewport: TFreeViewport;
+  Shift: TShiftState;
+  X,Y: Integer );
 var P2D  : T2DCoordinate;
     P    : T3DVector;
     Pt   : TPoint;
     Point: TFreeSubdivisionControlPoint;
 begin
    Case EditMode of
-      emSelectItems:
+     emSelectItems:
       if (ActiveControlPoint<>nil)
       and (FCurrentlyMoving)
       and (ssLeft in shift)

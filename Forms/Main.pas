@@ -978,9 +978,9 @@ function TMainForm.Load_and_Scale( FileName: AnsiString ): Boolean;
 begin Result:=false;
   if FileExists( Filename ) then begin
      FOpenHullWindows;
-     Application.ProcessMessages;
+  // Application.ProcessMessages;
      Freeship.Edit.ProgressBar:=ProgressBarMain;
-     Freeship.Surface.OnFaceRebuilt:=Freeship.Edit.OnFaceRebuilt;
+  // Freeship.Surface.OnFaceRebuilt:=Freeship.Edit.OnFaceRebuilt;
      Freeship.Edit.File_Load( Filename );
      Result:=true;
   end;

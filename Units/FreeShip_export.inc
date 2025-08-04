@@ -290,10 +290,10 @@ begin
 end;
 
 procedure TFreeSpline.SaveToDXF
-( Strings: TStringList;
-  Layername: AnsiString;
-  SendMirror: boolean );
-var I,J,Ind,NParams: Integer; P: T3DVector; Params: TFloatArray;
+( Strings: TStringList; Layername: AnsiString; SendMirror: boolean );
+var I,J,Ind,NParams: Integer;
+    P: T3DVector;
+    Params: TFloatArray;
 begin
   Ind:=FindDXFColorIndex( Color );
   NParams:=0;

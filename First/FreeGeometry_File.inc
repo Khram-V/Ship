@@ -107,7 +107,7 @@ begin
       FLayer:=Owner.Layer[0]; // Reference to an invalid layer. Assign to owners default layer
    end;
    if FLayer<>nil then FLayer.AddControlFace(self);
-//                else Raise Exception.Create('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadFromStream!');
+// else Raise Exception.Create('Invalid layer reference in procedure TFreeSubdivisionControlFace.LoadFromStream!');
    P1:=FPoints[NumberOfPoints-1];
    for I:=1 to NumberOfPoints do begin
       P2:=FPoints[I-1];
@@ -132,13 +132,14 @@ end;
 //
 //        TFreeSubdivisionSurface
 //
-procedure TFreeSubdivisionSurface.LoadFromStream(var LineNr:Integer;Strings:TStringList);
-var Str    : string;
-    I,N     : Integer;
-    Point   : TFreeSubdivisionControlPoint;
-    Edge    : TFreeSubdivisionControlEdge;
-    Face    : TFreeSubdivisionControlFace;
-    Layer   : TFreeSubdivisionLayer;
+procedure TFreeSubdivisionSurface.LoadFromStream
+  ( var LineNr:Integer; Strings:TStringList );
+var Str  : string;
+    I,N  : Integer;
+    Point: TFreeSubdivisionControlPoint;
+    Edge : TFreeSubdivisionControlEdge;
+    Face : TFreeSubdivisionControlFace;
+    Layer: TFreeSubdivisionLayer;
 begin                                                   // First read layerdata
    Inc(LineNr);
    Str:=Strings[LineNr];
@@ -151,27 +152,23 @@ begin                                                   // First read layerdata
          Layer:=AddNewLayer;
          Layer.LoadFromStream(LineNr,Strings);
       end;
-   end else begin     // No layers in the file, so keep the current default one
-   end;
-   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   // Read index of active layer
-   Inc(LineNr);
+   end; // else begin end; // No layers in the file, so keep the current default one
+
+   if assigned( FOnChangeLayerData ) then FOnChangeLayerData( self );
+   Inc(LineNr);                                   // Read index of active layer
    Str:=Strings[LineNr];
    N:=GetInteger(Str);
    ActiveLayer:=self.Layer[N];
    if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
-
    Inc(LineNr);
    Str:=Strings[LineNr];
-   // Read controlpoints
-   N:=GetInteger(Str);
+   N:=GetInteger(Str);                                    // Read controlpoints
    for I:=1 to N do begin
       Point:=TFreeSubdivisionControlPoint.Create(self);
       FControlPoints.Add(Point);
       Point.LoadFromStream(LineNr,Strings);
    end;
-   // Read controlEdges
-   Inc(LineNr);
+   Inc(LineNr);                                            // Read controlEdges
    Str:=Strings[LineNr];
    N:=GetInteger(Str);
    for I:=1 to N do begin
@@ -180,8 +177,7 @@ begin                                                   // First read layerdata
       FControlEdges.Add(Edge);
       Edge.LoadFromStream(LineNr,Strings);
    end;
-   // Read controlFaces
-   Inc(LineNr);
+   Inc(LineNr);                                            // Read controlFaces
    Str:=Strings[LineNr];
    N:=GetInteger(Str);
    for I:=1 to N do begin
@@ -191,8 +187,8 @@ begin                                                   // First read layerdata
    end;
    Build:=False;
    FInitialized:=True;
-   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
+   if assigned(FOnChangeLayerData) then FOnChangeLayerData( self );
+   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer( self,self.Layer[0] );
 end;
 procedure TFreeSubdivisionSurface.SaveToStream(Strings:TStringlist);
 var I: Integer;

@@ -54,14 +54,14 @@ procedure TFreeShip.LoadProject( Source: TFreeFileBuffer );  //  «Free!Ship»
 var
   PrevCursor: TCursor;
   I,N,PointN: Integer;
-  Str,PointName: AnsiString;
+  Str {,PointName}: AnsiString;
   Intersection: TFreeIntersection;
   Data: TFreeBackgroundImageData;
   vFlowline: TFreeFlowline;
   vMarker: TFreeMarker;
   // PreviewImg : TJPegImage;
   // CF0:TFreeSubdivisionControlFace;
-const WN: array[0..3] of Integer=( 3,1,0,2 );
+  // const WN: array[0..3] of Integer=( 3,1,0,2 );
 begin    // Remember the filename because it will be erased by the clear method
   Str:=FFilename;
   Clear;
@@ -151,10 +151,9 @@ begin    // Remember the filename because it will be erased by the clear method
 //                          0113=This file was created with a later version of FREE!ship!
 //                          0188=and cannot be opened with this version
     end else
-        MessageDlg( Userstring(189),mtError,[mbOK],0 ); //'Not a FREE!ship file!'
+        ShowMessage( Userstring(189) ); //'Not a FREE!ship file!'
     Surface.UnderWaterColor:=ProjectSettings.ProjectUnderWaterColor;
     Surface.ShadeUnderWater:=ProjectSettings.ProjectShadeUnderwaterShip;
-
     FileChanged:=False;
     ModelIsLoaded:=True;
 //  except
@@ -459,10 +458,9 @@ begin if Val<>FFileChanged then begin
       FFileChanged:=Val;
       if assigned( OnFileChanged ) then OnFileChanged( self ); end;
 end;
-procedure TFreeShip.FSetFileName( Val: AnsiString );
-var Tmp: AnsiString;
+procedure TFreeShip.FSetFileName( Val: AnsiString ); //var Tmp: AnsiString;
 begin if val='' then val:='Example Ship';
-      Tmp:=ChangeFileExt( Val,FreeShipExtention );
+      Val:=ChangeFileExt( Val,FreeShipExtention );
       if FFilename<>val then FFilename:=Val;
 end;
 procedure TFreeShip.FSetFileVersion( Val: TFreeFileVersion );
@@ -1390,9 +1388,9 @@ begin                                   // B := Destination is TFreeTextBuffer;
   Destination.Add( FileVersion );
   Destination.Add( Ord( Precision ) );
   Visibility.SaveBinary( Destination );
-  ProjectSettings.SaveBinary( Destination ); // Save actual subdivision-surface data.
-  Surface.SaveBinary(Destination);           // Save stations
-  Destination.Add(NumberOfStations);
+  ProjectSettings.SaveBinary( Destination );
+  Surface.SaveBinary(Destination);      // Save actual subdivision-surface data.
+  Destination.Add(NumberOfStations);                           // Save stations
   for I:=1 to NumberOfStations do Station[I-1].SaveBinary(Destination); // Save Buttocks
   Destination.Add(NumberOfButtocks);
   for I:=1 to NumberOfButtocks do Buttock[I-1].SaveBinary(Destination); // Save Waterlines
@@ -1401,7 +1399,7 @@ begin                                   // B := Destination is TFreeTextBuffer;
   if FileVersion >= fv180 then begin                          // Save Diagonals
     Destination.Add(NumberOfDiagonals);
     for I:=1 to NumberOfDiagonals do Diagonal[I-1].SaveBinary(Destination);
-    if FileVersion >= fv191 then begin                           // Save markers
+    if FileVersion >= fv191 then begin                        // Save markers
       Destination.Add(NumberOfMarkers);
       for I:=1 to NumberOfMarkers do Marker[I-1].SaveBinary(Destination);
       if FileVersion >= fv210 then begin

@@ -50,9 +50,7 @@ Type
 //TFreeHydrostaticsCalculateGravity = set of TFreeHydrostaticsCalculation;
 //TFreeHydrostaticsMode=(fhSingleCalculation,fhMultipleCalculations); // Used when creating hydrostatic reports
   TFreeDelftSeriesResistanceData=record
-                                    StartSpeed,
-                                    EndSpeed,
-                                    StepSpeed,
+                                    StartSpeed,EndSpeed,StepSpeed,
                                     Bwl,
                                     Cp,
                                     Displacement,
@@ -62,8 +60,7 @@ Type
                                     KeelArea,
                                     LCB,
                                     Lwl,
-                                    RudderChordLength,
-                                    RudderArea,
+                                    RudderChordLength,RudderArea,
                                     Viscosity,
                                     WettedSurface,
                                     WlArea            : TFloatType;
@@ -71,9 +68,7 @@ Type
                                     Extract           : Boolean;
                                  end;
   TFreeKAPERResistanceData     = record
-                                    Draft,
-                                    Lwl,
-                                    Bwl,
+                                    Draft,Lwl,Bwl,
                                     Cp,
                                     Displacement,
                                     LCB,
@@ -234,7 +229,7 @@ begin  //  fmt:=DefaultFormatSettings;
 end; {FloatToDec}
 
 Function GetFloat( var S: AnsiString ): TFloatType;
-  var LocalFormatSettings: TFormatSettings; I,J,K: Integer; R:extended;
+  var LocalFormatSettings: TFormatSettings; I,J,K: Integer; // R:extended;
 begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
   for J:=1 to Length( S ) do begin
     if S[J]>' ' then begin K:=J+1;                   // обход значимого символа

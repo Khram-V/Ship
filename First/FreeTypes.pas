@@ -33,8 +33,8 @@ const ZERO: T3DVector=( X:0.0;Y:0.0;Z:0.0 );
   CurrentVersion=fv100; // Current(latest) version of the FREE!ship application
   ReleasedDate='April 26, 2005';             // Releasedate of the last version
 
-  operator <>( const A,B: T3DVector): boolean;
-  operator = ( const A,B: T3DVector): boolean;
+  operator <>( const A,B: T3DVector ): boolean;
+  operator = ( const A,B: T3DVector ): boolean;
   operator - ( const A,B: T3DVector ): T3DVector;  // A-B
   operator + ( const A,B: T3DVector ): T3DVector;
   operator * ( const A,B: T3DVector ): T3DVector;  // векторное пероизведение
@@ -51,6 +51,7 @@ Function FloatToDec( Value: TFloatType; Maxlength: integer ): AnsiString;
                  // of specified decimals All trailing zeros will be removed
 Function FloatTypeToStr( Value: TFloatType ): AnsiString;
 Function Angles( V: T3DVector; Rad: TFloatType=Radian ): T3DVector;   // => [°]
+Function Inter( const a,b,c: Integer ): Integer; overload;
 Procedure WestPoint;            // ... или сброс всех запятых с заменой точками
 Function BlankOff( S: AnsiString ): AnsiString;
 
@@ -73,6 +74,9 @@ begin R:=Abs( V );
          Result.y:=arccos( V.y/R )*Rad;
          Result.z:=arccos( V.z/R )*Rad; end;
 end;
+Function Inter( const a,b,c: Integer ): Integer;
+begin if b<=a then Result:=a else if b>=c then Result:=c-1 else Result:=b; end;
+
 operator = ( const A,B: T3DVector ): boolean;
 begin result:=(A.x=B.x) and (A.y=A.y) and (A.z=B.z); end;
 
@@ -139,7 +143,7 @@ function FloatToDec(Value: TFloatType; Maxlength: integer): AnsiString;
      SetLength( Result,MaxLength );
   end;
 Function GetFloat( var S: AnsiString ): TFloatType;
-  var LocalFormatSettings: TFormatSettings; I,J,K: Integer; R:extended;
+  var LocalFormatSettings: TFormatSettings; I,J,K: Integer; // R:extended;
 begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
   for J:=1 to Length( S ) do begin
     if S[J]>' ' then begin K:=J+1;                   // обход значимого символа

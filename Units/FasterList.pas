@@ -19,8 +19,6 @@ interface type generic TFasterList<TItemType> = class
     procedure Clear; virtual;
     procedure Delete( Index: integer );
     procedure DeleteItem(Item:TItemType);   //deletes all instances of the item
-                                 //deletes all instances of the aList from Self
-    procedure DeleteList( const aList: TFasterList );
     procedure Insert( Index: integer; Item: TItemType );
     procedure Exchange( Index1,Index2: integer );
     procedure Add(Item: TItemType);
@@ -91,9 +89,6 @@ end;
 procedure TFasterList.DeleteItem( Item: TItemType ); var I: integer;
     begin repeat I:=IndexOf( Item ); if I>=0 then Delete( I ); until I=-1;
     end;
-procedure TFasterList.DeleteList( const aList: TFasterList ); var I: integer;
-    begin for I:=0 to aList.Count-1 do DeleteItem( aList[I] );
-    end;
 procedure TFasterList.Exchange( Index1,Index2: integer );
   var vItem: TItemType; vData:Pointer;
 begin
@@ -136,7 +131,10 @@ begin
   FData[Index]:=UserObject;
 end;
 end.
-{
+{                                //deletes all instances of the aList from Self
+procedure TFasterList.DeleteList( const aList: TFasterList ); var I: integer;
+    begin for I:=0 to aList.Count-1 do DeleteItem( aList[I] );
+    end;
 function FGetMemory: integer;   // property Memory: integer read FGetMemory;
 procedure FGrow;
 function TFasterList.FGetMemory: integer;

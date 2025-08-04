@@ -33,29 +33,28 @@ TFreeFileBuffer = class
   public
     Encoding: String;
     procedure Add( IntegerValue: integer);     overload; virtual;
-//  procedure Add( Color: TColor; Alfa:byte ); overload; virtual;
     procedure Add( Text: AnsiString);          overload; virtual;
     procedure Add( BooleanValue: boolean);     overload; virtual;
     procedure Add( FloatValue: TFloatType);    overload; virtual;
-    procedure Add( words: TStrings);           overload; virtual;
-    procedure Add( Version: TFreeFileVersion); overload; virtual;
     procedure Add( Coordinate: T3DVector);     overload; virtual;
     procedure Add( Plane: T3DPlane);           overload; virtual;
-    procedure Add(Data: TFreeDelftSeriesResistanceData); overload; virtual;
-    procedure Add(Data: TFreeKAPERResistanceData); overload; virtual;
+    procedure Add( Version: TFreeFileVersion); overload; virtual;
     procedure Add(JPegImage: TJPEGImage); overload; virtual;
+    procedure Add(Data: TFreeDelftSeriesResistanceData); overload; virtual; /// только
+    procedure Add(Data: TFreeKAPERResistanceData); overload; virtual;       /// здесь
     procedure LoadInteger(var Output: integer); virtual;
     procedure LoadString(var Output: AnsiString); virtual;
     procedure LoadTStrings(var Output: TStrings); virtual;
     procedure LoadTFreeFileVersion(var Output: TFreeFileVersion); virtual;
     procedure LoadBoolean(var Output: boolean); virtual;
-//  procedure LoadTColor( var Output: TColor {var Alfa: Byte} ); virtual;
     procedure LoadTFloatType(var Output: TFloatType); virtual;
     procedure LoadT3DVector(var Output: T3DVector); virtual;
     procedure LoadT3DPlane(var Output: T3DPlane); virtual;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); virtual;
     procedure LoadTFreeKAPERResistanceData(var Data: TFreeKAPERResistanceData); virtual;
     procedure LoadTFreeDelftSeriesResistanceData(var Data: TFreeDelftSeriesResistanceData); virtual;
+//  procedure Add( Color: TColor; Alfa:byte ); overload; virtual;
+//  procedure Add( words: TStrings);           overload; virtual;
 //  procedure Add2(BooleanValue:Boolean);      overload; virtual;
 //  procedure Add(WordValue:word);             overload; virtual;
 //  procedure Add(NameData: TNameData);        overload; virtual;
@@ -67,6 +66,7 @@ TFreeFileBuffer = class
 //  procedure LoadTAnchorData(var AnchorData: TAnchorData); virtual;
 //  procedure LoadTLinearConstraintData(var LCData: TLinearConstraintData); virtual;
 // ?procedure Load(var Dest;Size:Integer); overload;virtual;
+//  procedure LoadTColor( var Output: TColor {var Alfa: Byte} ); virtual;
     constructor Create;
     procedure Clear; virtual;
     procedure LoadFromFile(Filename: AnsiString); virtual;
@@ -95,11 +95,9 @@ TFreeFileBuffer = class
     destructor Destroy; override;
     procedure Clear; override;
     procedure Add(IntegerValue: integer); override; overload;
-//  procedure Add( Color:TColor; Alfa:byte ); overload; overload;
     procedure Add(Text: Ansistring); override; overload;
     procedure Add(BooleanValue: boolean); override; overload;
     procedure Add(FloatValue: TFloatType); override; overload;
-    procedure Add(words: TStrings); override; overload;
     procedure Add(PVersion: TFreeFileVersion); override; overload;
     procedure Add(Coordinate: T3DVector); override; overload;
     procedure Add(Plane: T3DPlane); override; overload;
@@ -108,7 +106,6 @@ TFreeFileBuffer = class
     procedure LoadString(var Output: Ansistring); override;
     procedure LoadTFreeFileVersion(var Output: TFreeFileVersion); override;
     procedure LoadBoolean(var Output: boolean); override;
-//  procedure LoadTColor( var Output: TColor {var Alfa: Byte} ); override;
     procedure LoadTFloatType(var Output: TFloatType); override;
     procedure LoadTStrings(var Output: TStrings); override;
     procedure LoadT3DVector(var Output: T3DVector); override;
@@ -120,9 +117,12 @@ TFreeFileBuffer = class
     function GetPosition:integer; override;
     property Capacity: integer read FGetCapacity write FSetCapacity;
     property Position: integer read GetPosition;
+//  procedure Add( Color:TColor; Alfa:byte ); overload; overload;
+//  procedure Add(words: TStrings); override; overload;
 //  procedure Add(NameData: TNameData); override; overload;
 //  procedure Add(LCData: TLinearConstraintData); override; overload;
 //  procedure Add(const source;Size:Integer);     override;
+//  procedure LoadTColor( var Output: TColor {var Alfa: Byte} ); override;
 //  procedure LoadTNameData(var Output: TNameData); override;
 //  procedure LoadTLinearConstraintData(var Output: TLinearConstraintData); override;
   end;
@@ -277,18 +277,6 @@ begin
   Move(Plane,FData[FCount],Size);
   Inc(FCount,Size);
 end;
-{
-// MM: This may be not endiness safe. Will replace it typed
-procedure TFreeFileBuffer.Add(const source;Size:Integer);
-var S: PChar;
-    I: Integer;
-begin
-   S:=PChar(@Source);
-   if Count+Size+20>Capacity then Capacity:=Count+Size+20;
-   for I:=0 to size-1 do begin FData[FCount]:=Byte(S[I]); Inc(FCount); end;
-end;
-}
-
 procedure TFreeFileBuffer.Add(JPegImage: TJPEGImage);
 var
   Stream: TMemoryStream;
@@ -324,7 +312,7 @@ begin
   FreeAndNil(Stream);
 end;
 
-/// !!!-на случай восстановления
+/// !!!-на случай восстановления ~~~ c множеством перезагружаемых вызовов
 
 procedure TFreeFileBuffer.LoadTFreeDelftSeriesResistanceData(var Data: TFreeDelftSeriesResistanceData);
   var bp: integer;
@@ -444,6 +432,16 @@ begin Size:=4; Output:=0;              //if FPosition+Size >= FCount then exit;
   Inc( FPosition,Size );
 end;
 {
+// MM: This may be not endiness safe. Will replace it typed
+procedure TFreeFileBuffer.Add(const source;Size:Integer);
+var S: PChar;
+    I: Integer;
+begin
+   S:=PChar(@Source);
+   if Count+Size+20>Capacity then Capacity:=Count+Size+20;
+   for I:=0 to size-1 do begin FData[FCount]:=Byte(S[I]); Inc(FCount); end;
+end;
+~~~
 procedure TFreeFileBuffer.LoadTColor( var Output: TColor ); Var Size: integer;
 begin Size:=4; Output:=0;              //if FPosition+Size >= FCount then exit;
   Move( FData[FPosition],Output,Size );
@@ -567,11 +565,11 @@ begin Size:=SizeOf( FloatValue );
   Move( FloatValue,FData[FCount],Size );
   Inc( FCount,Size );
 end;
-
+(*
 procedure TFreeFileBuffer.Add( words: TStrings ); Var I: Integer;
     begin Add( words.Count ); for i:=0 to words.Count-1 do Add( words[i] );
     end;
-
+*)
 {-----------------------------------------------------------------------------}
 {                                           TFreeTextBuffer                   }
 {                                           Text file used to store file info }
@@ -605,15 +603,21 @@ procedure TFreeTextBuffer.Add( FloatValue: TFloatType ); var S: AnsiString;
 begin S:=FloatTypeToStr( FloatValue ); FLines.Add(S); Inc(FPosition); end;
 
 procedure TFreeTextBuffer.Add( IntegerValue: integer );
-    begin FLines.Add( I2S( IntegerValue ) ); Inc( FPosition ); end;
-{
+    begin FLines.Add( I2S( IntegerValue ) ); Inc( FPosition );
+    end;
+procedure TFreeTextBuffer.Add( PVersion: TFreeFileVersion ); var S: AnsiString;
+    begin FVersion:=PVersion;
+      S:=VersionString( PVersion );
+      FLines.Add( S );
+      Inc( FPosition );
+    end;
+(*
 procedure TFreeTextBuffer.Add( Color: TColor; Alfa:byte );
   var C: Cardinal; S: AnsiString;
 begin
   C := Cardinal( Color and $FFFFFF ) + ( Cardinal( 255-Alfa ) shl 24 );
   S:=UIntToStr( C ); FLines.Add( S ); Inc( FPosition );
 end;
-}
 procedure TFreeTextBuffer.Add( Words: TStrings );
   var I: integer; S: AnsiString;
 begin S:='';
@@ -622,14 +626,7 @@ begin S:='';
       FLines.Add(S);
       Inc( FPosition );
 end;
-
-procedure TFreeTextBuffer.Add( PVersion: TFreeFileVersion ); var S: AnsiString;
-begin FVersion:=PVersion;
-      S:=VersionString( PVersion );
-      FLines.Add( S );
-      Inc( FPosition );
-end;
-(*
+ *
 procedure TFreeTextBuffer.Add( NameData: TNameData );
 var S: AnsiString;
 begin

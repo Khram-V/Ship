@@ -3083,15 +3083,14 @@ begin
 end;
 }
 procedure TFreeSubdivisionSurface.SaveBinary(Destination: TFreeFileBuffer);
-var
-  I: integer;
+var I: integer;
 begin                                                   // First save layerdata
-  Destination.Add(NumberOfLayers);
-  for I:=1 to NumberOfLayers do Layer[I-1].SaveBinary(Destination);
-  Destination.Add(ActiveLayer.LayerIndex);        // Save index of active layer
+  Destination.Add( NumberOfLayers );
+  for I:=1 to NumberOfLayers do Layer[I-1].SaveBinary( Destination );
+  Destination.Add( ActiveLayer.LayerIndex );      // Save index of active layer
            // first sort controlpoints for faster acces of function (Indexof())
 //FControlPoints.Sort;
-  Destination.Add(NumberOfControlPoints);
+  Destination.Add( NumberOfControlPoints );
   for I:=1 to NumberOfControlPoints do ControlPoint[I-1].SaveBinary(Destination);
   Destination.Add(NumberOfControlEdges);
   for I:=1 to NumberOfControlEdges do ControlEdge[I-1].SaveBinary(Destination);

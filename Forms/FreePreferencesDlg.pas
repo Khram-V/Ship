@@ -177,7 +177,7 @@ function TFreePreferencesDialog.getPreferredSize:TRect;
 var TxH,HdrHeight,BrdWidth,TbT,PgT,PnT,PGIB: integer; ScreenPoint: TPoint;
 begin
   Invalidate;
-  Application.ProcessMessages;
+//Application.ProcessMessages;
   ScreenPoint:=ButtonPanel.ClientToScreen(Point(0,0));
   HdrHeight:=ScreenPoint.Y-self.Top;
   BrdWidth:=ScreenPoint.X-self.Left;

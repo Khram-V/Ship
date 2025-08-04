@@ -1057,15 +1057,16 @@ begin
     //for some reason in GTK2 ProgressBar does not refresh unless Label is refreshed. weird.
     Main.MainForm.LabelProgress.Caption:=format('%d/%d',[current,total]);
     Main.MainForm.LabelProgress.Refresh;
-    Application.ProcessMessages;
+    //Application.ProcessMessages;
     end;
 end;
 
 function TFreeEdit.getPreviewImage(aFileName: AnsiString): TJPegImage;
-var TempFreeShip: TFreeShip; vp: TFreeViewPort;  //  thumbNail: TBitmap;
-    Source: TFreeFileBuffer; ext: AnsiString; pvWidth,pvHeight: integer;
+const pvWidth=600; pvHeight=400;
+var TempFreeShip: TFreeShip; vp: TFreeViewPort;  // thumbNail: TBitmap;
+    Source: TFreeFileBuffer; ext: AnsiString;    // pvWidth,pvHeight: integer;
 begin
-  if not FileExists( aFileName ) then exit; pvWidth:=600; pvHeight:=400;
+  if not FileExists( aFileName ) then exit;      // pvWidth:=600; pvHeight:=400;
   Result:=TJPegImage.Create;
   TempFreeShip:=TFreeShip.Create(nil);
   TempFreeShip.Clear;
@@ -1080,6 +1081,7 @@ begin
   // TempFreeShip.Preferences.OpenDirectory:=ExtractFilePath(aFileName);
      TempFreeShip.Filename:=aFileName;
      TempFreeShip.LoadProject( Source );// Now read the information from memory
+     FreeAndNil( Source );
      TempFreeShip.Surface.DesiredSubdivisionLevel:=0; // no need to build it in preview in very details
 //   TempFreeShip.Visibility.ShowInteriorEdges:=True;
      if not TempFreeShip.Visibility.ShowControlNet
@@ -1102,11 +1104,12 @@ begin
           Width:=pvWidth;
           Height:=pvHeight;
      end;
-  // vp.DestinationWidth :=pvWidth;                // shadow does not work here
-  // vp.DestinationHeight:=pvHeight;
-  // vp.ZBuffer.Initialize;
-  // vp.AlphaBuffer.Initialize( vp );
-     Result.PixelFormat:=pf24bit;
+//   vp.DestinationWidth :=pvWidth;                // shadow does not work here
+//   vp.DestinationHeight:=pvHeight;
+//   vp.ZBuffer.Initialize;
+//   vp.AlphaBuffer.Initialize( vp );
+//   Result.PixelFormat:=pf32bit;
+//   Result.PixelFormat:=pf24bit;
      Result.SetSize( pvWidth,pvHeight );
      Result.Canvas.AntialiasingMode:=amOn;
      vp.DrawingCanvas:=Result.Canvas;
@@ -1146,7 +1149,7 @@ begin
   if Ext='.ftm' then Source:=TFreeTextBuffer.Create else begin
                WriteLN( 'Unsupported model: '+Ext); halt;
   end;
-//FreeShip.Surface.Clearselection;           // Make sure no items are selected
+  FreeShip.Surface.Clearselection;           // Make sure no items are selected
   FreeShip.Edit.Selection_Clear;
   FreeShip.FSelectedFlowlines.Clear;
   FreeShip.FSelectedMarkers.Clear;
@@ -1155,12 +1158,13 @@ begin
   Source.LoadFromFile( FileName );
   FreeShip.Filename:=FileName;
   FreeShip.LoadProject( Source );
+  FreeAndNil( Source );
 //if FileExists( FreeShip.Filename ) then
   FreeShip.FileIsReadOnly:=( FileGetAttr( FileName ) and faReadOnly )<>0;
   FreeShip.FilenameSet:=True;
   FreeShip.StopAskingForFileVersion:=False;
   FreeShip.ModelIsLoaded:=True;
-  Application.ProcessMessages;
+//  Application.ProcessMessages;
   with FreeShip do begin
     ZoomFitAllViewports;
     Surface.Rebuild;
@@ -1172,7 +1176,6 @@ begin
     TFreeLinesplanframe( FreeShip.LinesplanFrame ).FreeShip:=FreeShip;
 //with TFreeLinesplanframe( FreeShip.LinesplanFrame ) do begin
 //     Viewport.ZoomExtents; UpdateMenu; end;
-  FreeAndNil( Source );
   if FreeShip.ModelIsLoaded then AddToRecentFiles( FileName );
   Undo_Clear;
   FreeShip.FileChanged:=False;
@@ -1220,10 +1223,12 @@ begin Result:=false;
   if Ext='.fbm' then Destination:=TFreeFileBuffer.Create
                 else Destination:=TFreeTextBuffer.Create;
   Destination.Encoding:=FreeShip.Preferences.FbmEncoding;
+///***
   FreeShip.SaveProject( Destination );
   result:=Destination.SaveToFile( FreeShip.Filename );
-  FreeShip.FileChanged:=false;
   FreeAndNil( Destination );
+///***
+  FreeShip.FileChanged:=false;
   FreeShip.Preferences.LastDirectory:=ExtractFilePath( FreeShip.FileName );
   AddToRecentFiles( FreeShip.FileName );
 end;

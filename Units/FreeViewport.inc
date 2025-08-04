@@ -674,18 +674,16 @@ end;
 function TFreeViewport.ProjectBackTo2D(P: TPoint): T2DCoordinate;
 var
   P2D: T2DCoordinate;
-  P1,P2,P3D: T3DVector;
+ {P1,} P2,P3D: T3DVector;
   Dist: TFloatType;
-begin
-  // convert from screencoordinate to 2D world coordinate
+begin                // convert from screencoordinate to 2D world coordinate
   P2D.X:=(P.X-FPan.X-FScreencenter.X)/(FZoom*FScale);
   P2D.Y:=(P.Y-FPan.Y-FScreencenter.Y)/-(FZoom*FScale);
-  // convert from screencoordinate to 2D world coordinate
-  P3D.X:=FMin3D.X;
-  Dist:=Cameralocation.X-P3D.X;
-  P3D.Y:=P2D.X*dist/Cameralocation.X;
-  P3D.Z:=P2D.Y*Dist/Cameralocation.X;
-  P1:=RotatedPointBack(P3D);
+//  P3D.X:=FMin3D.X; // convert from screencoordinate to 2D world coordinate
+//  Dist:=Cameralocation.X-P3D.X;
+//  P3D.Y:=P2D.X*dist/Cameralocation.X;
+//  P3D.Z:=P2D.Y*Dist/Cameralocation.X;
+//  P1:=RotatedPointBack(P3D);
   P3D.X:=FMax3D.X;
   Dist:=Cameralocation.X-P3D.X;
   P3D.Y:=P2D.X*dist/Cameralocation.X;

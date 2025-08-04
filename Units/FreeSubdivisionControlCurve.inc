@@ -828,7 +828,7 @@ begin
       tmpPoints.Add(CP);
     end;
     tmpPoints.Add(P2);
-    FSubdividedPoints.Assign(tmpPoints);
+    FSubdividedPoints.Assign( tmpPoints );
     tmpPoints.Free;
 
 {   for i:=1 to FSubdividedPoints.Count-2 do begin

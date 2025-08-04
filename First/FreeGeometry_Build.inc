@@ -38,10 +38,8 @@ begin
 end;
 
 procedure TFreeSubdivisionSurface.SubDivide;
-{ type TQuadData = record
-          P:array[1..4] of TFreeSubdivisionPoint;
-          Crease1,Crease2:Boolean;
-       end; }
+   { type TQuadData=record P: array[1..4] of TFreeSubdivisionPoint;
+                           Crease1,Crease2:Boolean; end; }
 var I,J,Number: Integer;
     CtrlFace  : TFreeSubdivisionControlFace;
     Edge      : TFreeSubdivisionEdge;
@@ -115,13 +113,9 @@ begin
    EdgePoints.Destroy;
    FacePoints.Destroy;    // perform averaging procedure to smooth the new mesh
    Setlength(TmpPoints,FPoints.Count);
-   for I:=1 to FPoints.Count do begin
-      Point:=FPoints[I-1];
-      TmpPoints[I-1]:=Point.Averaging;
-   end;
-   for I:=1 to FPoints.Count do begin
-      Point:=FPoints[I-1];
-      Point.FCoordinate:=TmpPoints[I-1];
-   end;
+   for I:=1 to FPoints.Count do begin Point:=FPoints[I-1];
+                                      TmpPoints[I-1]:=Point.Averaging; end;
+   for I:=1 to FPoints.Count do begin Point:=FPoints[I-1];
+                                      Point.FCoordinate:=TmpPoints[I-1]; end;
 end;
 
