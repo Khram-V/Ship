@@ -187,7 +187,8 @@ begin
        Frm.Repaint;
 //     Pic:=TBitmap.Create;
 //     Pic.PixelFormat:=pf15bit;
-       Pic:=Frm.ViewPort.GetDrawingBuffer;
+//     Pic:=Frm.ViewPort.GetDrawingBuffer;
+       Pic:=Frm.ViewPort.DrawingBuffer;
        if Pic <> nil then begin
           Result:=TJPEGImage.Create;
           Result.Assign( Pic );

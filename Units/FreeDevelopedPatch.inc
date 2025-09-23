@@ -31,7 +31,7 @@ end;
 function TFreeDevelopedPatch.FGetPoint(index: integer): T3DVector;
 var P: T2DCoordinate;
 begin
-  P:=F2DCoordinates[index].Coordinate;
+  P:=F2DCoordinates[index];
   if (FMirrorOnScreen) and not (FMirror) then P.Y:=-P.Y;
   Result:=ConvertTo3D(P);
 end;
@@ -40,7 +40,7 @@ function TFreeDevelopedPatch.FGetMirrorPoint(index: integer): T3DVector;
 var P: T2DCoordinate;
   Tmp: T3DVector;
 begin
-  P:=F2DCoordinates[index].Coordinate;
+  P:=F2DCoordinates[index];
   Tmp:=Vector( P.X,P.Y );
   Tmp:=MirrorPlane(Tmp,FMirrorplane);
   P.X:=Tmp.X;
@@ -111,15 +111,15 @@ begin
     for I:=1 to FPoints.Count do begin
       F2DCoordinates[I-1]:=Org.F2DCoordinates[I-1];
       if Mirror then
-        F2DCoordinates[I-1].Coordinate.Y:=-F2DCoordinates[I-1].Coordinate.Y;
+        F2DCoordinates[I-1].Y:=-F2DCoordinates[I-1].Y;
       if I = 1 then begin
-        FMin2D:=F2DCoordinates[I-1].Coordinate;
+        FMin2D:=F2DCoordinates[I-1];
         FMax2D:=FMin2D;
       end else begin
-        if F2DCoordinates[I-1].Coordinate.X < FMin2D.X then FMin2D.X:=F2DCoordinates[I-1].Coordinate.X;
-        if F2DCoordinates[I-1].Coordinate.Y < FMin2D.Y then FMin2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
-        if F2DCoordinates[I-1].Coordinate.X > FMax2D.X then FMax2D.X:=F2DCoordinates[I-1].Coordinate.X;
-        if F2DCoordinates[I-1].Coordinate.Y > FMax2D.Y then FMax2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
+        if F2DCoordinates[I-1].X < FMin2D.X then FMin2D.X:=F2DCoordinates[I-1].X;
+        if F2DCoordinates[I-1].Y < FMin2D.Y then FMin2D.Y:=F2DCoordinates[I-1].Y;
+        if F2DCoordinates[I-1].X > FMax2D.X then FMax2D.X:=F2DCoordinates[I-1].X;
+        if F2DCoordinates[I-1].Y > FMax2D.Y then FMax2D.Y:=F2DCoordinates[I-1].Y;
       end;
     end;
   end;
@@ -603,10 +603,10 @@ begin
         Parameter:=-side1/(side2-side1);   // of edge  add the edge to the list
         Index1:=FPoints.IndexOf(P1);
         Index2:=FPoints.IndexOf(P2);
-        Output.X:=F2DCoordinates[Index1].Coordinate.X + Parameter
-         *(F2DCoordinates[Index2].Coordinate.X-F2DCoordinates[Index1].Coordinate.X);
-        Output.Y:=F2DCoordinates[Index1].Coordinate.Y + Parameter
-         *(F2DCoordinates[Index2].Coordinate.Y-F2DCoordinates[Index1].Coordinate.Y);
+        Output.X:=F2DCoordinates[Index1].X + Parameter
+         *(F2DCoordinates[Index2].X-F2DCoordinates[Index1].X);
+        Output.Y:=F2DCoordinates[Index1].Y + Parameter
+         *(F2DCoordinates[Index2].Y-F2DCoordinates[Index1].Y);
         Output.Z:=0.0;
         Inc( NoPoints );
         if NoPoints>ArrayLength then begin
@@ -623,8 +623,8 @@ begin
             Setlength(IntArray,ArrayLength);
           end;
           Index2:=FPoints.IndexOf(P2);
-          IntArray[NoPoints-1].Point.X:=F2DCoordinates[Index2].Coordinate.X;
-          IntArray[NoPoints-1].Point.Y:=F2DCoordinates[Index2].Coordinate.Y;
+          IntArray[NoPoints-1].Point.X:=F2DCoordinates[Index2].X;
+          IntArray[NoPoints-1].Point.Y:=F2DCoordinates[Index2].Y;
           IntArray[NoPoints-1].Point.Z:=0.0;
           IntArray[NoPoints-1].Knuckle:=P2.VertexType <> svRegular;
         end;
@@ -949,13 +949,13 @@ var
         P2_2D.X:=P1_2D.X;
         P2_2D.Y:=P1_2D.Y+a;
         Processed[Ind1]:=True;
-        F2DCoordinates[Ind1].Coordinate:=P1_2D;
+        F2DCoordinates[Ind1]:=P1_2D;
         Processed[Ind2]:=True;
-        F2DCoordinates[Ind2].Coordinate:=P2_2D;
+        F2DCoordinates[Ind2]:=P2_2D;
       end;
-      P1_2D:=F2DCoordinates[Ind1].Coordinate;
-      P2_2D:=F2DCoordinates[Ind2].Coordinate;
-      P3_2D:=F2DCoordinates[Ind3].Coordinate;
+      P1_2D:=F2DCoordinates[Ind1];
+      P2_2D:=F2DCoordinates[Ind2];
+      P3_2D:=F2DCoordinates[Ind3];
       if (Processed[Ind1])
       and (Processed[Ind2])
       and (not Processed[Ind3]) then begin          // calculate position of P3
@@ -971,7 +971,7 @@ var
             if not Error then begin Error:=True; end;
           end;
         end;
-        F2DCoordinates[Ind3].Coordinate:=P3_2D;
+        F2DCoordinates[Ind3]:=P3_2D;
         Processed[ind3]:=True;
       end;
     end;
@@ -1036,7 +1036,8 @@ var
     Face,Child: TFreeSubdivisionFace;
     Edge: TFreeSubdivisionEdge;
     P1,P2: TFreeSubdivisionPoint;
-    L2D,L3D,Error,TotalError,_3DArea,_2DArea: extended;
+//  L2D,L3D,
+    Error,TotalError,_3DArea,_2DArea: extended;
     Temp: boolean;
   begin
     MaxError:=0.0;
@@ -1051,8 +1052,8 @@ var
     for I:=1 to FEdges.Count do FEdgeErrors[I-1]:=0.0;
     for i:=1 to FPoints.Count do begin
       Processed[I-1]:=False;
-      F2DCoordinates[I-1].Coordinate.X:=0.0;
-      F2DCoordinates[I-1].Coordinate.Y:=0.0;
+      F2DCoordinates[I-1].X:=0.0;
+      F2DCoordinates[I-1].Y:=0.0;
     end;
     ToDoList:=TFasterListTFreeSubdivisionFace.Create;       // Assemble all faces to be developed in a list
     ToDoList.AddList(FFaces);
@@ -1101,8 +1102,8 @@ var
       for J:=3 to Face.NumberOfpoints do begin
         E:=FPoints.IndexOf(Face.Point[J-2]);
         P:=FPoints.IndexOf(Face.Point[J-1]);
-        _2DArea:=_2DArea+TriangleArea(F2DCoordinates[S].Coordinate,
-          F2DCoordinates[E].Coordinate,F2DCoordinates[P].Coordinate);
+        _2DArea:=_2DArea+TriangleArea(F2DCoordinates[S],
+                                      F2DCoordinates[E],F2DCoordinates[P]);
       end;
       Error:=_2DArea-_3DArea;
       FTotalAreaError:=FTotalAreaError+Error;
@@ -1116,12 +1117,8 @@ var
       S:=FPoints.IndexOf(Edge.StartPoint);
       E:=FPoints.IndexOf(Edge.EndPoint);
       if (S <> -1) and (E <> -1) then begin          // original distance in 3D
-        L3D:=sqr(Edge.Endpoint.Coordinate.X-Edge.Startpoint.Coordinate.X) +
-          sqr(Edge.Endpoint.Coordinate.Y-Edge.Startpoint.Coordinate.Y) +
-          sqr(Edge.Endpoint.Coordinate.Z-Edge.Startpoint.Coordinate.Z);
-        L2D:=sqr(F2DCoordinates[E].Coordinate.X-F2DCoordinates[S].Coordinate.X) +
-          sqr(F2DCoordinates[E].Coordinate.Y-F2DCoordinates[S].Coordinate.Y);
-        Error:=Sqrt(L2D)-Sqrt(L3D);
+        Error:=Abs( Edge.Startpoint.Coordinate-Edge.Endpoint.Coordinate )
+             - Abs( F2DCoordinates[E]-F2DCoordinates[S] );
         TotalError:=TotalError+abs(Error);
         if abs(Error) > MaxError then MaxError:=abs(Error);
         FEdgeErrors[I-1]:=Error;
@@ -1238,13 +1235,13 @@ begin                        // first assemble all points,edges and faces used
                                          // calculate min/max coordinates in 2D
     for I:=1 to FPoints.Count do begin
       if I = 1 then begin
-        FMin2D:=F2DCoordinates[I-1].Coordinate;
+        FMin2D:=F2DCoordinates[I-1];
         FMax2D:=FMin2D;
       end else begin
-        if F2DCoordinates[I-1].Coordinate.X<FMin2D.X then FMin2D.X:=F2DCoordinates[I-1].Coordinate.X;
-        if F2DCoordinates[I-1].Coordinate.Y<FMin2D.Y then FMin2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
-        if F2DCoordinates[I-1].Coordinate.X>FMax2D.X then FMax2D.X:=F2DCoordinates[I-1].Coordinate.X;
-        if F2DCoordinates[I-1].Coordinate.Y>FMax2D.Y then FMax2D.Y:=F2DCoordinates[I-1].Coordinate.Y;
+        if F2DCoordinates[I-1].X<FMin2D.X then FMin2D.X:=F2DCoordinates[I-1].X;
+        if F2DCoordinates[I-1].Y<FMin2D.Y then FMin2D.Y:=F2DCoordinates[I-1].Y;
+        if F2DCoordinates[I-1].X>FMax2D.X then FMax2D.X:=F2DCoordinates[I-1].X;
+        if F2DCoordinates[I-1].Y>FMax2D.Y then FMax2D.Y:=F2DCoordinates[I-1].Y;
       end;
     end;                   // finally find optimal rotation angle such that the
                            // area of the bounding box is minimal
@@ -1260,8 +1257,8 @@ begin                        // first assemble all points,edges and faces used
     Rotation:=OptAngle;
     Extents(Min,Max);
     if Max.X-Min.X < Max.Y-Min.Y then Rotation:=Rotation-90;
-    if Owner.Symmetric then begin // Now check if the surface has one of its sides on the centerplane
-      FMirror:=False;
+    if Owner.Symmetric then begin           // Now check if the surface has one
+      FMirror:=False;                       // of its sides on the centerplane
       TmpEdges:=TFasterListTFreeSubdivisionEdge.Create;
       for J:=1 to FEdges.Count do begin
         Edge:=FEdges[J-1];
@@ -1283,7 +1280,6 @@ begin                        // first assemble all points,edges and faces used
               Break;
             end;
           end;
-
           if FMirror then begin
             // Check if all points on the centerline are developed onto a 2Dline
             // if so,then this line is used to mirror the other half of the layer
@@ -1294,7 +1290,7 @@ begin                        // first assemble all points,edges and faces used
                                                       // MM: logic is not clear
             for J:=SortedPointLists.Count downto 1 do begin
               sPointList:=SortedPointLists[J-1];
-              if J>1 then FreeAndNil( sPointList ); // MM: ??
+              if J>1 then FreeAndNil( sPointList );   // MM: ??
             end;
             if sPointList <> nil then
               if sPointList.NumberOfpoints > 0 then begin
@@ -1309,30 +1305,30 @@ begin                        // first assemble all points,edges and faces used
                 end;
                 if P1 <> P2 then begin
                   BestIndex:=FPoints.IndexOf(P1);
-                  P3D1.X:=F2DCoordinates[BestIndex].Coordinate.X;
-                  P3D1.Y:=F2DCoordinates[BestIndex].Coordinate.Y;
+                  P3D1.X:=F2DCoordinates[BestIndex].X;
+                  P3D1.Y:=F2DCoordinates[BestIndex].Y;
                   P3D1.Z:=0.0;
                   BestIndex:=FPoints.IndexOf(P2);
-                  P3D2.X:=F2DCoordinates[BestIndex].Coordinate.X;
-                  P3D2.Y:=F2DCoordinates[BestIndex].Coordinate.Y;
+                  P3D2.X:=F2DCoordinates[BestIndex].X;
+                  P3D2.Y:=F2DCoordinates[BestIndex].Y;
                   P3D2.Z:=0.0;
                   for J:=2 to 1 do begin
                     if J=1 then P3:=Edge.StartPoint else P3:=Edge.EndPoint;
                     BestIndex:=FPoints.IndexOf(P3);
-                    P3D3.X:=F2DCoordinates[BestIndex].Coordinate.X;
-                    P3D3.Y:=F2DCoordinates[BestIndex].Coordinate.Y;
+                    P3D3.X:=F2DCoordinates[BestIndex].X;
+                    P3D3.Y:=F2DCoordinates[BestIndex].Y;
                     P3D3.Z:=0.0;
                     Dist:=DistancepointToLine(P3D1,P3D2,P3D3);
                     if Dist > 1e-3 then begin FMirror:=False; break; end;
                   end;
                   if FMirror then begin
                     J:=FPoints.IndexOf(P1);
-                    P3D1.X:=F2DCoordinates[J].Coordinate.X;
-                    P3D1.Y:=F2DCoordinates[J].Coordinate.Y;
+                    P3D1.X:=F2DCoordinates[J].X;
+                    P3D1.Y:=F2DCoordinates[J].Y;
                     P3D1.Z:=0.0;
                     J:=FPoints.IndexOf(P2);
-                    P3D2.X:=F2DCoordinates[J].Coordinate.X;
-                    P3D2.Y:=F2DCoordinates[J].Coordinate.Y;
+                    P3D2.X:=F2DCoordinates[J].X;
+                    P3D2.Y:=F2DCoordinates[J].Y;
                     P3D2.Z:=0.0;
                     P3D3:=P3D2;
                     P3D3.Z:=1.0;
@@ -1340,8 +1336,8 @@ begin                        // first assemble all points,edges and faces used
                     FMirrorPlane:=PlanePPP(P3D1,P3D2,P3D3);
                       // calculate min/max coordinates in 2D of the mirror part
                     for J:=1 to FPoints.Count do begin
-                      P3D2:=Vector( F2DCoordinates[J-1].Coordinate.X,
-                                    F2DCoordinates[J-1].Coordinate.Y );
+                      P3D2:=Vector( F2DCoordinates[J-1].X,
+                                    F2DCoordinates[J-1].Y );
                       P3D1:=MirrorPlane( P3D2,FMirrorplane );
                       if P3D1.X < FMin2D.X then FMin2D.X:=P3D1.X else
                       if P3D1.X > FMax2D.X then FMax2D.X:=P3D1.X;

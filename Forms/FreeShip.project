@@ -18,7 +18,7 @@ procedure InitByParameters; var S: AnsiString; p: integer; begin
     or ( lowerCase( RightStr( S,4 ) )='.fef' ) then sOpenFile:=S;
   end;
 end;
-procedure PrintParametersHelp( Ans: Boolean ); var sHelp: AnsiString;
+procedure Help( Ans: Boolean ); var sHelp: AnsiString;
 begin
   sHelp:='Usage: Free!Ship [parameter] [model]'   // #226+#149+#169 + #10 = '╩'
     +#10+'Where parameter is: --help = this screen'
@@ -37,10 +37,10 @@ end;
 begin
   WestPoint;
   InitByParameters;
-  PrintParametersHelp( false );
+  Help( false );
   RequireDerivedFormResource:=True;
   Application.Initialize;
-  if ParametersHelp then begin PrintParametersHelp( True ); exit; end;
+  if ParametersHelp then begin Help( True ); exit; end;
   Application.CreateForm( TMainForm,MainForm );
 //Application.CreateForm( TFreeCrosscurvesDialog,FreeCrosscurvesDialog );
   LoadLanguage( Mainform.Freeship.Preferences.Language,

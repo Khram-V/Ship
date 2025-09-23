@@ -82,13 +82,12 @@ begin
     for I:=0 to FChildren.Count-1 do
     if assigned(FChildren[I]) then
       begin FChildren[I].Free; FChildren[I]:=nil; end;
-    {while FChildren.Count > 0 do
-      begin
-      i:=FChildren.Count-1;
-      ch:=FChildren[i];
-      FChildren.Delete(i);
-      ch.Free;
-      end;}
+    { while FChildren.Count > 0 do begin
+        i:=FChildren.Count-1;
+        ch:=FChildren[i];
+        FChildren.Delete(i);
+        ch.Free;
+      end; }
     FChildren.Clear;
   end;
 
@@ -108,7 +107,7 @@ begin
       end; FEdges.Delete(i);
     end;   FEdges.Clear;
   end;
-end;{TFreeSubdivisionControlFace.ClearChildren}
+end;
 
 constructor TFreeSubdivisionControlFace.Create(Owner: TFreeSubdivisionSurface);
 begin
@@ -117,7 +116,7 @@ begin
   FEdges:=TFasterListTFreeSubdivisionEdge.Create;  // is this for speed only?
   FControlDescendantEdges:=TFasterListTFreeSubdivisionEdge.Create;
   inherited Create(Owner);
-end;{TFreeSubdivisionControlFace.Create}
+end;
 
 function TFreeSubdivisionControlFace.DistanceToCursor(X,Y: integer;
   var P: T3DVector; Viewport: TFreeViewport): integer;
@@ -238,11 +237,6 @@ begin
       ray:=ViewPort.ProjectBackAsLine(Pt);
       intsn:=RayIntersectTriangle(ray,p1,p2,p3,IntersectionCoord);
       if intsn > 0 then begin
-        {ViewPort.FDebugIntersection:=IntersectionCoord;
-        Viewport.FDebugT1:=p1;
-        Viewport.FDebugT2:=p2;
-        Viewport.FDebugT3:=p3;
-        Viewport.FDebugCamera:=RelativeCameraLocation;}
         Proximity:=Abs(RelativeCameraLocation-IntersectionCoord);
         result:=true;
         exit;
@@ -254,20 +248,14 @@ begin
         ray:=ViewPort.ProjectBackAsLine(Pt);
         intsn:=RayIntersectTriangle(ray,p1,p2,p3,IntersectionCoord);
         if intsn > 0 then  begin
-          {ViewPort.FDebugIntersection:=IntersectionCoord;
-          Viewport.FDebugT1:=p1;
-          Viewport.FDebugT2:=p2;
-          Viewport.FDebugT3:=p3;
-          Viewport.FDebugCamera:=RelativeCameraLocation;}
           Proximity:=Abs(RelativeCameraLocation-IntersectionCoord);
           result:=true;
           exit;
         end;
       end;
-
     end;
   end;
-end;{TFreeSubdivisionControlFace.DistanceToCursor}
+end;
 
 procedure TFreeSubdivisionControlFace.Delete;
 var
@@ -276,9 +264,8 @@ var
   P1,P2: TFreeSubdivisionPoint;
 begin
   Selected:=False;                                    // delete from selection;
-                                                      // delete children?
   for i:=0 to FChildren.Count-1 do FChildren[i].Delete; FChildren.Clear;
-  Unreference;
+  Unreference;                                             // delete children?
   if Layer<>nil then Layer.DeleteControlFace(self);        // remove from layer
   Index:=Surface.FControlFaces.IndexOf(Self);              // Layer:=nil;
   if Index <> -1 then begin
@@ -318,13 +305,12 @@ begin
   for i:=0 to FEdges.Count-1 do FEdges[i].UnreferenceFace(Self);
   if FPoints<>nil then
   for i:=0 to FPoints.Count-1 do FPoints[i].UnreferenceFace(Self);
-  if Surface <> nil then Surface.UnreferenceControlFace(self);
+  if Surface<>nil then Surface.UnreferenceControlFace(self);
   inherited;
   InUnreference:=false;
 end;
 
 destructor TFreeSubdivisionControlFace.Destroy;
-var i:integer;
 begin
   FreeAndNil(FEdges);
   FreeAndNil(FControlDescendantEdges);
@@ -342,11 +328,10 @@ var  I,J: integer; IsFaceFound:boolean;
 begin
   result:=true;
   for I:=0 to FChildren.Count-1 do begin ChildFace:=FChildren[I];
-      if not ChildFace.CheckIntegrity then begin result:=false; end;
+      if not ChildFace.CheckIntegrity then result:=false;
   end;
   for I:=0 to FPoints.Count-1 do begin Point:=FPoints[i];
-    if not Point.CheckIntegrity then begin result:=false;
-    end;
+    if not Point.CheckIntegrity then result:=false;
   end;
   for I:=0 to FEdges.Count-1 do begin Edge:=FEdges[I];
     if Edge = nil then begin result:=false; continue; end;
@@ -916,7 +901,7 @@ begin                                                 // Read controlpoint data
     end;
     P1:=P2;
   end;
-end;{TFreeSubdivisionControlFace.LoadBinary}
+end;
 
 procedure TFreeSubdivisionControlFace.LoadFromStream(
   var LineNr: integer; Strings: TStringList);
@@ -953,10 +938,10 @@ begin
     P2:=Point[I-1];
     Edge:=Surface.EdgeExists( P1,P2 ) as TFreeSubdivisionControlEdge;
     if Edge <> nil then Edge.FFaces.Add( Self );
-                     //  else MessageDlg(rs_Could_not_find_edge {UserString[201]}+'!',mtError,[mbOK],0);
+               //  else MessageDlg(rs_Could_not_find_edge {UserString[201]}+'!',mtError,[mbOK],0);
     P1:=P2;
   end;
-end; {TFreeSubdivisionControlFace.LoadFromStream}
+end;
 
 procedure TFreeSubdivisionControlFace.RemoveReferences;
 var P1,P2: TFreeSubdivisionPoint; I: integer; Edge: TFreeSubdivisionEdge;
@@ -969,7 +954,7 @@ begin
     if Edge <> nil then Edge.UnreferenceFace(self);
     P1:=p2;
   end;
-end; {TFreeSubdivisionControlFace.RemoveReferences}
+end;
 
 procedure TFreeSubdivisionControlFace.SaveBinary(Destination: TFreeFileBuffer);
 var

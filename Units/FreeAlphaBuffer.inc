@@ -59,13 +59,8 @@ var Y,X: integer;
       end;
     end;
   var
-    Data: TAlphaBlendData;  //Row : pRGBTripleArray;
-    pRow,pPixel: pointer;
-    Pixel: TRGBTriple;
-    Clr: TColor;
-    I: byte;
-    R,G,B: byte;
-    dR,dG,dB,dA: smallint;
+    Data: TAlphaBlendData;
+    I,R,G,B: byte;
   begin
     if PixData.Number>1 then ZSort; // сортировка по Z
     FViewport.GetPixel( X,Y,R,G,B );

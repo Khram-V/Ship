@@ -5,7 +5,6 @@ Interface Uses      // System,
     SysUtils,
     Graphics,
     Math;
-//     System;
 
 Const Radian=57.295779513082320876798154814105;              // 180/π = °\rad
       PixelCountMax=32768; // used for faster pixel acces when shading to viewport
@@ -23,21 +22,15 @@ Type
   TFreeUnitType=(fuMetric,fuImperial); // Switch between metric and imperial units
 
 
-  operator <>( const A,B: T3DVector): boolean;
-  operator = ( const A,B: T3DVector): boolean;
-  operator - ( const A,B: T3DVector ): T3DVector;  // A-B
+  operator <>( const A,B: T3DVector ): boolean;
+  operator = ( const A,B: T3DVector ): boolean;
+  operator - ( const A,B: T3DVector ): T3DVector;    // A-B
   operator + ( const A,B: T3DVector ): T3DVector;
-  operator*( const A,B: T3DVector ): T3DVector;  // векторное пероизведение
-  operator*( const D:TFloatType; const B:T3DVector ): T3DVector;  // D*B
-  operator/( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/D
-  operator - ( const A,B: T2DCoordinate ): T2DCoordinate; // A-B
+  operator * ( const A,B: T3DVector ): T3DVector;    // векторное пероизведение
+  operator * ( const D:TFloatType; const B:T3DVector ): T3DVector;  // D*B
+  operator / ( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/D
+  operator - ( const A,B: T2DCoordinate ): T2DCoordinate;           // A-B
 Type
-  TRGBTriple=packed record rgbtBlue : BYTE;
-                           rgbtGreen: BYTE;
-                           rgbtRed  : BYTE; end;
-
-  pRGBTripleArray      = ^TRGBTripleArray;
-  TRGBTripleArray      = array[0..PixelCountMax-1] of TRGBTriple;
   T3DVectorArray       = array of T3DVector;
   TPointArray          = array of TPoint;
   TFreePrecisionType   =( fpLow,fpMedium,fpHigh,fpVeryHigh );                // Precision of the ship-model

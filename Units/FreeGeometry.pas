@@ -1,29 +1,20 @@
 unit FreeGeometry;
 {$MODE Delphi} {$H+}
 interface uses
-  LCLIntf, LazUTF8,
+  LCLIntf,
   Classes, Messages,
-  SysUtils,StrUtils,               // StdCtrls <- ScrollBar
+  SysUtils,StrUtils,                                 // StdCtrls <- ScrollBar
   Graphics,Math,
   Controls,Forms,
   Dialogs, ExtDlgs,
   ExtCtrls,Printers,
   FasterList,MethodList,
-  FreeTypes,FreeVersionUnit,FreeFileBuffer,FreeBitmapFormatHelper,
+  FreeTypes,FreeVersionUnit,FreeFileBuffer,          // FreeBitmapFormatHelper,
   FreeLanguageSupport;
 
-const // Cursors
-{  crCOLORPICKER_32 = 1;          crCOLORPICKER_48 = 2;
-   crROTATE_32 = 3;               crROTATE_48 = 4;
-   crSETLINE_32 = 5;              crSETLINE_48 = 6;
-   crSETORIGIN_32 = 7;            crSETORIGIN_48 = 8;
-   crSETPOINT_32 = 9;             crSETPOINT_48 = 10;
-   crSETSCALE_32 = 11;            crSETSCALE_48 = 12;
-   crSETSPLINE_32 = 13;           crSETSPLINE_48 = 14;
-   crSMALLCROSS_32 = 15;          crSMALLCROSS_48 = 16;
-}
-// Currently using 32x32 cursors
-   crRotate   = 1; // Rotation cursor
+const BytesPerPixel = 3;
+const                   // Currently using 32x32 cursors
+   crRotate   = 1;      // Rotation cursor
    crPan      = crSize; // Pan cursor
    crSetOrigin= 3; // Cursor used when setting the origin of a background image
    crSetScale = 4; // Cursor used when setting the scale of a background image
@@ -31,7 +22,9 @@ const // Cursors
    crSetPoint = 6;
    crSetLine  = 7;
    crSetSpline= 8;
-// Cursor used when setting the transparent color of a background image
+// crSmallCross=X
+// crColorPicker
+//        Cursor used when setting the transparent color of a background image
 
 const                                                          //Foot = 0.3048;
   Lbs = 0.44642857;
@@ -42,6 +35,7 @@ const                                                          //Foot = 0.3048;
   ZBufferScaleFactor=1.004; // Offset for hidden-line drawing when drawing ontop of shaded triangles
   Zoomfactor = 1.02;
 type
+  TBGR  = packed record Blue,Green,Red: byte; end;
   TShadePoint = record                         // Used for drawing to the Z-buffer
     X,Y: integer; Z: TFloatType;
     R,G,B: integer;
@@ -64,7 +58,7 @@ type
   end;
 
 type
-  TFreeNamedObject = class;
+//TFreeNamedObject = class;
   TFreeSubdivisionBase = class;
   TFreeSubdivisionSurface = class;
   TFreesubdivisionPoint = class;
@@ -91,16 +85,13 @@ type
     Edge  1---2  Point (StartPoint,EndPoint)
     Edge  1---+  Face
     Face  1---2+ Point
-  }
-  {----------------------------------------------------------------------}
-  {                                           FasterList specializations }
-  {----------------------------------------------------------------------}
-  TFasterListTFreeNamedObject      = TFasterList<TFreeNamedObject>;
+  /----------------------------}
+  { FasterList specializations }
+  {----------------------------}
   TFasterListTFreeSpline           = TFasterList<TFreeSpline>;
   TFasterListTFreeSubdivisionPoint = TFasterList<TFreeSubdivisionPoint>;
   TFasterListTFreeSubdivisionEdge  = TFasterList<TFreeSubdivisionEdge>;
   TFasterListTFreeSubdivisionFace  = TFasterList<TFreeSubdivisionFace>;
-//TFasterListTFreeSubdivisionCurve = TFasterList<TFreeSubdivisionCurve>;
   TFasterListTFasterListTFreeSubdivisionPoint=TFasterList<TFasterListTFreeSubdivisionPoint>;
 
   TFasterListTFreeSubdivisionControlPoint = TFasterList<TFreeSubdivisionControlPoint>;
@@ -111,10 +102,9 @@ type
 
   TFasterListTFreeSubdivisionLayer = TFasterList<TFreeSubdivisionLayer>;
   TFasterListTFreeDevelopedPatch = TFasterList<TFreeDevelopedPatch>;
-  {---------------------------------------------------------------------------}
+
   TFreeFaceGrid = record
-    Faces: array of array of
-    TFreeSubdivisionControlFace;
+    Faces: array of array of TFreeSubdivisionControlFace;
     NCols,NRows: integer
   end;
   TFreeFaceArray = array of TFreeFaceGrid;
@@ -122,7 +112,6 @@ type
   TFreeSubdivisionControlPointArray = array of TFreeSubdivisionControlPoint;
   TFreeSubdivisionPointGrid = array of array of TFreeSubdivisionPoint;
   TFreeSubdivisionControlPointGrid = array of array of TFreeSubdivisionControlPoint;
-  TFreeZBufferRow = TFloatArray;
   TFreeCoordinateArray = array of T3DVector;
   TFreeCoordinateGrid = array of array of T3DVector;
 
@@ -132,12 +121,9 @@ type
     Parameters: TFloatArray;
   end;
 
-  TUnrolledPoint=record // points with extra information,used for unrolling plates
-    Coordinate: T2DCoordinate;
-  end;
+      // Event from TFreeviewport,which is raised when the viewport initializes
+      // and needs the bounding box of the min/max coordinates of the 3D model
   TOnRequestExtentsEvent = procedure( Sender: TObject; var Min,Max: T3DVector ) of object;
-     // Event from TFreeviewport,which is raised when the viewport initializes
-     // and needs the bounding box of the min/max coordinates of the 3D model
   TChangeActiveLayerEvent = procedure(Sender: TObject; Layer: TFreeSubdivisionLayer) of object;
                          // Event raised when the active lyers has been changed
   TAlphaBlendData = record
@@ -179,7 +165,7 @@ type
   TFreeZBuffer = class
   private
     FViewport: TFreeViewport;
-    FBuffer: array of TFreeZBufferRow;
+    FBuffer: array of TFloatArray; // TFreeZBufferRow;
     FWidth,FHeight: integer;
   public
     procedure Initialize;
@@ -273,8 +259,7 @@ type
     FPrintScaleFactor: TFloatType;    // Scale factor to adapt penwith depending on printsize and printresolution
     FZoom: TFloatType;
     FViewportMode: TFreeViewportmode; // Switch between wireframe mode or differentypes of shading
-    FDrawingBuffer: TBitmap;          // Drawingbuffer to prevent flickering. Everything is drawn on this bitmap,and then copied to the screen
-    FBitmapFormatHelper: TFreeBitmapFormatHelper;
+//  FBitmapFormatHelper: TFreeBitmapFormatHelper;
 
     FScreencenter,FPan,FPreviousPosition,FBackgroundOrigin: TPoint;
     FBackgroundScale: TFloatType;
@@ -338,10 +323,11 @@ type
     procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: integer); override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: integer;  MousePos: TPoint): boolean; override;
   public
-    DrawingCanvas: TCanvas;      // read FDrawingCanvas write FDrawingCanvas;
-    CameraLocation,             // read FCameraLocation write FCameraLocation;
-    SceneMidPoint: T3DVector;    // read FMidPoint write FMidPoint;
-    DoubleBuffer: boolean; // Double buffering prevents flickering when redrawing the viewport
+    DrawingBuffer: TBitmap; // Drawingbuffer to prevent flickering. Everything is drawn on this bitmap,and then copied to the screen
+    DrawingCanvas: TCanvas; // read FDrawingCanvas write FDrawingCanvas;
+    CameraLocation,         // read FCameraLocation write FCameraLocation;
+    SceneMidPoint: T3DVector; // read FMidPoint write FMidPoint;
+    DoubleBuffer: boolean;    // Double buffering prevents flickering when redrawing the viewport
     OnMouseDown: TMouseEvent;        // read FOnMouseDown write FOnMouseDown;
     OnMouseUp: TMouseEvent;          // read FOnMouseUp write FOnMouseUp;
     OnMouseMove: TMouseMoveEvent;    // read FOnMouseMove write FOnMouseMove;
@@ -376,7 +362,7 @@ type
     procedure Pie(EllipseX1,EllipseY1,EllipseX2,EllipseY2,StartX,StartY,EndX,EndY: integer); virtual;
     procedure Polyline(const Points: array of TPoint); virtual;
     procedure Polygon(const Points: array of TPoint); virtual;
-    function GetDrawingBuffer:TBitmap;
+//  function GetDrawingBuffer:TBitmap;
     procedure SaveAsBitmap( Filename: AnsiString; const ShowDialog: boolean = True); virtual;
     procedure SetFocus; override;
     procedure SetPenWidth(Width: integer); virtual;
@@ -489,7 +475,7 @@ type
     FXGrid: TFloatType;
     FYGrid: TFloatType;
     FCos,FSin: TFloatType;
-    F2DCoordinates: array of TUnrolledPoint;
+    F2DCoordinates: array of T2DCoordinate; //TUnrolledPoint;
     FEdgeErrors: array of double;    // Visibility options
     FVisible: boolean;
     FShowSolid: boolean;             // Fills the surface with the layer color
@@ -712,11 +698,11 @@ type
     property RowKnotVector: TFloatArray read FRowknots;
   end;
 
-  {----------------------------------------------------------------}
-  {                                           TFreeSubdivisionBase }
-  { TFreeSubdivisionBase is the base class                         }
-  { for all subdivision points,edges and faces                    }
-  {----------------------------------------------------------------}
+  {--------------------------------------------}
+  {                       TFreeSubdivisionBase }
+  { TFreeSubdivisionBase is the base class     }
+  { for all subdivision points,edges and faces }
+  {--------------------------------------------}
   TFreeSubdivisionBase = class(TFreeNamedObject)
   private
     InUnreference:boolean;
@@ -726,12 +712,12 @@ type
     constructor Create(Owner: TFreeSubdivisionSurface); override;
   end;
 
-  {-------------------------------------------------------------------------}
-  {                                           TFreeSubdivisionControlCurve  }
-  { Controlcurves are curves that can be added to the controlnet an         }
-  { are subdivide with the surface. The resulting curve therefore lies      }
-  { on the surface,and can be used in the fairing process                  }
-  {-------------------------------------------------------------------------}
+  {-----------------------------------------------------------------}
+  {                                    TFreeSubdivisionControlCurve }
+  { Controlcurves are curves that can be added to the controlnet an }
+  { are subdivide with the surface. The resulting curve therefore   }
+  { lies on the surface,and can be used in the fairing process      }
+  {-----------------------------------------------------------------}
   TFreeSubdivisionControlCurve = class(TFreeSubdivisionBase)
   private
     FVisible: boolean;
@@ -788,7 +774,7 @@ type
   {                                  TFreeSubdivisionLayer }
   { TFreeSubdivisionLayer is a layer-type class            }
   { All individual controlfaces can be assigned to a layer.}
-  { Properties such as color,visibility etc. are common   }
+  { Properties such as color,visibility etc. are common    }
   { for all controlfaces belonging the the same layer      }
   {--------------------------------------------------------}
   TFreeSubdivisionLayer = class            // color,visibility,symmetric,
@@ -891,7 +877,7 @@ type
     function FGetRegularPoint: boolean;
     function FGetLimitPoint: T3DVector;
     procedure FSetCoordinate(Val: T3DVector);virtual;
-//    procedure PrintDebug; override;
+//  procedure PrintDebug; override;
     procedure SetVertexType(AValue: TFreeVertexType);
   public
     procedure AddEdge(Edge: TFreeSubdivisionEdge);
@@ -967,7 +953,7 @@ type
     procedure SetLinearConstraint(pointA,pointB: TFreeSubdivisionControlPoint);
     procedure SetAnchorPoint(pointA: TFreeSubdivisionControlPoint);
     procedure SetIsAnchorHard(val: boolean);
-//    procedure PrintDebug; override;
+//  procedure PrintDebug; override;
     procedure Unreference; override;
     property Color: TColor read FGetColor;
     property IsLeak: boolean read FGetIsLeak;

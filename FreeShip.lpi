@@ -318,14 +318,6 @@
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Units/FreeBitmap.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeBitmapFormatHelper.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="Units/FreeStringUtils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>

@@ -211,7 +211,6 @@ begin
 end;
 
 constructor TFreeViewport.Create( AOwner: TComponent );
-var curRes:AnsiString;
 begin
   inherited Create( AOwner );
   BevelOuter:=bvNone;
@@ -237,7 +236,7 @@ begin
   DoubleBuffer:=True;
   FBackgroundImage:=TFreeBackgroundImage.Create( Self );
   // Inherited create(AOwner);
-  FDrawingBuffer:=TBitmap.Create;
+  DrawingBuffer:=TBitmap.Create;
   // FDrawingBuffer.PixelFormat:=pf24bit; // Use 24 bit for faster pixel-access when shading
   // We cannot use incompatible format in X11. It will cause desynchronization of RawImage with Canvas,
   // so Canvas operations will cause to "forget" previous RawImage changes.
@@ -245,32 +244,34 @@ begin
   // NO. It does not work. Currently all works via Canvas.Pixels[x,y]. Quite good.
   // NO2. It does work. Currently Canvas.Pixels[x,y] causes severe memory leak SetPixel creates Pen each call.
   // TFreeBitmapFormatHelper works Quite good though requires native 24/32-bit formats RGB or BGR.
-  FDrawingBuffer.Width:=10;
-  FDrawingBuffer.Height:=10;
+  DrawingBuffer.Width:=10;
+  DrawingBuffer.Height:=10;
   // Canvas.Pen.Color:=clBlack;
   // Canvas.Brush.Color:=clWhite;
-  // FDrawingBuffer.Canvas.FillRect( 0,0,10,10 ); // to init handles
-  FBitmapFormatHelper:=TFreeBitmapFormatHelper.Create( FDrawingBuffer );
+  // DrawingBuffer.Canvas.FillRect( 0,0,10,10 ); // to init handles
+//FBitmapFormatHelper:=TFreeBitmapFormatHelper.Create( DrawingBuffer );
   DrawingCanvas:=Canvas;
+
   FZBuffer:=TFreeZBuffer.Create;
   FZBuffer.FViewport:=self;
   FAlphaBuffer:=TFreeAlphaBuffer.Create;
   FAlphaBuffer.FViewport:=Self;
+
   FLight.Position.X:=50;
   FLight.Position.Y:=20;
   FLight.Position.Z:=50;
   FLight.Ambient   :=64;
   FLight.Intensity:=192;
   FViewportmode:=vmWireFrame;                // Load cursors from resource file
-  if Forms.Screen.PixelsPerInch>=144 then curRes:='48' else curRes:='32';
-  Screen.Cursors[crRotate]   :=LoadCursor(hInstance,pchar('ROTATE_'+curRes));
-  Screen.Cursors[crSetOrigin]:=LoadCursor(hInstance,pchar('SETORIGIN_'+curRes));
-  Screen.Cursors[crSetScale] :=LoadCursor(hInstance,pchar('SETSCALE_'+curRes));
-  Screen.Cursors[crTranspCol]:=LoadCursor(hInstance,pchar('COLORPICKER_'+curRes));
-  Screen.Cursors[crSetPoint] :=LoadCursor(hInstance,pchar('SETPOINT_'+curRes));
-  Screen.Cursors[crSetLine]  :=LoadCursor(hInstance,pchar('SETLINE_'+curRes));
-  Screen.Cursors[crSetSpline]:=LoadCursor(hInstance,pchar('SETSPLINE_'+curRes));
-//Screen.Cursors[crPan]      :=LoadCursor(hInstance,'PANVIEWPORT');
+
+  Screen.Cursors[crRotate]   :=LoadCursor( hInstance,'ROTATE'      );
+  Screen.Cursors[crSetOrigin]:=LoadCursor( hInstance,'SETORIGIN'   );
+  Screen.Cursors[crSetScale] :=LoadCursor( hInstance,'SETSCALE'    );
+  Screen.Cursors[crTranspCol]:=LoadCursor( hInstance,'COLORPICKER' );
+  Screen.Cursors[crSetPoint] :=LoadCursor( hInstance,'SETPOINT'    );
+  Screen.Cursors[crSetLine]  :=LoadCursor( hInstance,'SETLINE'     );
+  Screen.Cursors[crSetSpline]:=LoadCursor( hInstance,'SETSPLINE'   );
+//Screen.Cursors[crPan]      :=LoadCursor( hInstance,'PANVIEWPORT' );
   FontName:='Consolas';      //'Times New Roman'; // 'Courier';
   FontSize:=8;
   FontColor:=clNavy;         //clOlive; //clWhite;
@@ -293,29 +294,47 @@ end;
 destructor TFreeViewport.Destroy;
 begin
   DetachEventHandlers;
-  if Assigned(FDrawingBuffer) then FreeAndNil(FDrawingBuffer);
-  FDrawingBuffer:=nil;
+  if Assigned(DrawingBuffer) then FreeAndNil(DrawingBuffer);
+                                             DrawingBuffer:=nil;
   if Assigned(FZBuffer) then FreeAndNil(FZBuffer);
                                         FZBuffer:=nil;
   if Assigned(FAlphaBuffer) then FreeAndNil(FAlphaBuffer);
                                             FAlphaBuffer:=nil;
   if Assigned(FBackgroundImage) then FreeAndNil(FBackgroundImage);
                                                 FBackgroundImage:=nil;
-  if Assigned(FBitmapFormatHelper) then FreeAndNil(FBitmapFormatHelper);
+//if Assigned(FBitmapFormatHelper) then FreeAndNil(FBitmapFormatHelper);
   inherited Destroy;
 end;
 procedure TFreeViewport.BeginUpdate;
 begin
   if not FUpdating then
-  begin FDrawingBuffer.BeginUpdate(False); FUpdating:=True; end;
+  begin DrawingBuffer.BeginUpdate(False); FUpdating:=True; end;
 end;
 procedure TFreeViewport.EndUpdate;
-begin if FUpdating then begin FDrawingBuffer.EndUpdate; FUpdating:=False; end;
+begin if FUpdating then begin DrawingBuffer.EndUpdate; FUpdating:=False; end;
 end;
+{
 procedure TFreeViewport.GetPixel( X,Y: integer; out R,G,B: byte ); var A: byte;
-    begin FBitmapFormatHelper.GetPixel( FDrawingBuffer,X,Y,R,G,B,A ); end;
+    begin FBitmapFormatHelper.GetPixel( DrawingBuffer,X,Y,R,G,B,A ); end;
 procedure TFreeViewport.SetPixel( X,Y: integer; R,G,B: byte );
-    begin FBitmapFormatHelper.SetPixel( FDrawingBuffer,X,Y,R,G,B,255 ); end;
+    begin FBitmapFormatHelper.SetPixel( DrawingBuffer,X,Y,R,G,B,255 ); end;
+}
+procedure TFreeViewport.SetPixel( X,Y: integer; R,G,B: byte );
+var pPixel:^TBGR;
+begin
+  pPixel:=pointer( DrawingBuffer.RawImage.GetLineStart( Y ) )+BytesPerPixel*X;
+  pPixel^.Blue:=B;
+  pPixel^.Green:=G;
+  pPixel^.Red:=R;
+end;
+procedure TFreeViewport.GetPixel( X,Y: integer; out R,G,B: byte );
+var pPixel:^TBGR;
+begin
+  pPixel:=pointer( DrawingBuffer.RawImage.GetLineStart( Y ) )+BytesPerPixel*X;
+  B:=pPixel^.Blue;
+  G:=pPixel^.Green;
+  R:=pPixel^.Red;
+end;
 
 procedure TFreeViewport.DrawLineToZBuffer(Point1,Point2: T3DVector; R,G,B: byte);
 var
@@ -713,7 +732,8 @@ begin
   Result.Z:=Cameralocation.X*P3D.X/Dist;
 end;
 
-// Projects a 3D point with a certain z-buffer offset to the screen,used for drawing lines on top of shaded surfaces
+// Projects a 3D point with a certain z-buffer offset to the screen,
+//                 used for drawing lines on top of shaded surfaces
 function TFreeViewport.ProjectToZBuffer(Scale: TFloatType; P: T3DVector): TShadePoint;
 var
   P3D: T3DVector;
@@ -728,32 +748,6 @@ begin
   Result.Y:=FPan.Y+FScreencenter.Y-Round(FZoom*FScale*P2D.Y);
   Result.Z:=Cameralocation.X*Scale*P3D.X/Dist;
 end;
-
-{
-// Projects 2d screen point coordinate to 3d coordinate on plane that goes through
-// Midpoint coordinate and is orthogonal to ray through camera and the Midpoint
-// Used in getting cursor coords in perspective view
-function TFreeViewport.ProjectPointBackToZeroPlane(X,Y: integer;
-  Viewport: TFreeViewport): T3DVector;
-var
-  Px,Pt,Pt1,Pt2,Pt3: TPoint;
-  P0,PC,P1,P2,P3,XP,RelativeCameraLocation,S: T3DVector;
-  MidPlane: T3DPlane;
-begin
-  Result:=ZERO;
-  Pt.X:=X;
-  Pt.Y:=Y;
-  RelativeCameraLocation:=RotatedPointBack(FCameraLocation);
-  MidPlane:=PlanePointNormal(RelativeCameraLocation,FMidpoint);
-
-  //ProjectPointOnPlane(P,MidPlane);
-  ray:=ViewPort.ProjectBackAsLine(Pt);
-
-  intsn:=RayIntersectTriangle(ray,p1,p2,p3,IntersectionCoord);
-
-  PlanePointNormal(P,Normal: T3DVector): T3DPlane;
-end;
-}
 
 function TFreeViewport.RotatedPoint(P: T3DVector): T3DVector;
 begin
@@ -833,20 +827,20 @@ begin
         FDestinationHeight:=ClientHeight;
       end;
       if (DoubleBuffer) or (ViewportMode <> vmWireframe) then begin
-        if FDrawingBuffer.Width <> FDestinationWidth then
-           FDrawingBuffer.Width:=FDestinationWidth;
-        if FDrawingBuffer.Height <> FDestinationHeight then
-           FDrawingBuffer.Height:=FDestinationHeight;
-        DrawingCanvas:=FDrawingBuffer.Canvas;
-      end
-      else DrawingCanvas:=OldCanvas;                              // Reset Pen
+        if DrawingBuffer.Width <> FDestinationWidth then
+           DrawingBuffer.Width:=FDestinationWidth;
+        if DrawingBuffer.Height <> FDestinationHeight then
+           DrawingBuffer.Height:=FDestinationHeight;
+        DrawingCanvas:=DrawingBuffer.Canvas;
+      end else DrawingCanvas:=OldCanvas;                           // Reset Pen
+
       DrawingCanvas.Pen.Color:=Color;
       DrawingCanvas.Pen.Cosmetic:=true;
       DrawingCanvas.Pen.EndCap:=pecRound;
       DrawingCanvas.Pen.JoinStyle:=pjsRound;
       DrawingCanvas.Pen.Mode:=pmCopy;
       DrawingCanvas.Pen.Style:=psSolid;
-      DrawingCanvas.Pen.Width:=1;                 // Reset Brush. Clear buffer
+      DrawingCanvas.Pen.Width:=1;                  // Reset Brush. Clear buffer
       DrawingCanvas.Brush.Color:=Color;
       DrawingCanvas.Brush.Style:=bsSolid;
       DrawingCanvas.FillRect(-1,-1,FDestinationWidth+2,FDestinationHeight+2);
@@ -855,7 +849,7 @@ begin
 
       if ViewportMode <> vmWireframe then begin        // Turn clipping back on
         ZBuffer.Initialize;
-        AlphaBuffer.Initialize(Self);
+        AlphaBuffer.Initialize( Self );
         // this prevents black background to appear at large pans and zooms
         SetPixel( 0,0,GetRValue(Color),GetGValue(Color),GetBValue(Color) );
         SetPixel( FDestinationWidth-1,FDestinationHeight-1,
@@ -867,10 +861,11 @@ begin
       if (DoubleBuffer) or (ViewportMode<>vmWireframe) then begin
         // Copy buffer to screen
         // Bitblt(OldCanvas.Handle,0,0,FDestinationWidth,FDestinationHeight,FDrawingBuffer.Canvas.Handle,0,0,SRCCOPY);
-        OldCanvas.Draw( 0,0,FDrawingBuffer );
+        OldCanvas.Draw( 0,0,DrawingBuffer );
         DrawingCanvas:=OldCanvas;
       end;
-    end;  if FSelectionFrameActive then DrawSelectionFrame;
+    end;
+    if FSelectionFrameActive then DrawSelectionFrame;
   end;
 end;
 
@@ -896,8 +891,8 @@ procedure TFreeViewport.Polyline(const Points: array of TPoint);
     begin DrawingCanvas.Polyline(points); end;
 procedure TFreeViewport.Polygon(const Points: array of TPoint);
     begin DrawingCanvas.Polygon(points); end;
-function TFreeViewport.GetDrawingBuffer:TBitmap;
-   begin result:=FDrawingBuffer; end;
+//function TFreeViewport.GetDrawingBuffer:TBitmap;
+//   begin result:=FDrawingBuffer; end;
 procedure TFreeViewport.SaveAsBitmap
   ( Filename: AnsiString;
     const ShowDialog:boolean=true );
