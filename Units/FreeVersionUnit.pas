@@ -1,16 +1,16 @@
 unit FreeVersionUnit;
 {$MODE Delphi}{$H+} // Unit to keep track of fileversions,bux fixes and release dates
 interface           // uses SysUtils;
-const
- ReleasedDate:string={$I %DATE%};
- COMPILE_TIME:string={$I %TIME%};
- TARGET_CPU:string={$I %FPCTARGETCPU%};
- TARGET_OS:string={$I %FPCTARGETOS%};
- FPCVERSION:string={$I %FPCVERSION%};
+//const
+// ReleasedDate:string={$I %DATE%};
+// COMPILE_TIME:string={$I %TIME%};
+// TARGET_CPU:string={$I %FPCTARGETCPU%};
+// TARGET_OS:string={$I %FPCTARGETOS%};
+// FPCVERSION:string={$I %FPCVERSION%};
 
 type TFreeFileVersion=( fv100,fv110,fv120,fv130,fv140,fv150,fv160,fv165,fv170,
                         fv180,fv190,fv191,fv195,fv198,fv200,fv201,fv210,fv220,
-                        fv230,fv240,fv250,fv261,fv270,fv280,fv290,fv295,fv296,
+                        fv230,fv240,fv250,fv260,fv270,fv280,fv290,fv295,fv296,
                         fv297,fv298,fv300,fv302,fv303,fv305,fv309,fv310,fv313,
                         fv314,fv317,fv327,fv332,fv335,fv421,
                         {   ControlPointNames,ControlEdgeNames,
@@ -20,12 +20,12 @@ type TFreeFileVersion=( fv100,fv110,fv120,fv130,fv140,fv150,fv160,fv165,fv170,
                         fv462,// Anchors
                         fv500  // UnderWaterColorAlpha
                       );
-const CurrentVersion=fv261;    //high( TFreeFileVersion );
+const CurrentVersion=fv260;    //high( TFreeFileVersion );
                       // Current (latest) version of the FREE!ship project.
                       // All new created models are initialized to this version
 var
 //FREESHIP_MAJOR_VERSION: string ='5.0';    // Major version
-  FREESHIP_VERSION : string = '2.6.1.3';    // Current full version
+  FREESHIP_VERSION : string='2.6.1.3';    // Current full version
 
 function VersionString( Version:TFreeFileVersion): String;
 function VersionBinary( Version: String ):TFreeFileVersion;
@@ -41,7 +41,7 @@ function VersionString(Version:TFreeFileVersion):String; begin
     fv195  : Result:='1.95'; fv198  : Result:='1.98'; fv200  : Result:='2.0';
     fv201  : Result:='2.01'; fv210  : Result:='2.1';  fv220  : Result:='2.2';
     fv230  : Result:='2.3';  fv240  : Result:='2.4';  fv250  : Result:='2.5'
-     else    Result:='2.6'; // = fv261 -- для совместимости лучше не трогать...
+     else    Result:='2.6'; //=fv261 -- для совместимости лучше не трогать...
   end
 end;
 function VersionBinary( Version:String ):TFreeFileVersion; begin
@@ -66,7 +66,7 @@ function VersionBinary( Version:String ):TFreeFileVersion; begin
   if Version='2.3'   then Result:=fv230 else
   if Version='2.4'   then Result:=fv240 else
   if Version='2.5'   then Result:=fv250 else
-  if Version='2.6'   then Result:=fv261 else // !!!
+  if Version='2.6'   then Result:=fv260 else // !!!
   if Version='2.7+'  then Result:=fv270 else
   if Version='2.8+'  then Result:=fv280 else
   if Version='2.94+' then Result:=fv290 else

@@ -1,511 +1,271 @@
 object FreeLayerDialog: TFreeLayerDialog
-  Left = 614
-  Height = 507
-  Top = 245
-  Width = 800
+  Left = 378
+  Height = 375
+  Top = 94
+  Width = 616
   BorderIcons = []
-  Caption = 'Настройка проекта по графическим слоям.'
-  ClientHeight = 507
-  ClientWidth = 800
+  BorderStyle = bsDialog
+  Caption = 'Layer properties.'
+  ClientHeight = 375
+  ClientWidth = 616
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
   Position = poOwnerFormCenter
-  LCLVersion = '3.8.0.0'
+  LCLVersion = '4.2.0.0'
   object Panel1: TPanel
     Left = 0
-    Height = 483
+    Height = 351
     Top = 24
-    Width = 800
+    Width = 616
     Align = alClient
-    BevelOuter = bvNone
+    BevelOuter = bvLowered
     BorderWidth = 6
-    ClientHeight = 483
-    ClientWidth = 800
+    ClientHeight = 351
+    ClientWidth = 616
+    ParentBackground = False
     TabOrder = 0
     object Panel2: TPanel
-      Left = 474
-      Height = 471
-      Top = 6
-      Width = 320
+      Left = 356
+      Height = 337
+      Top = 7
+      Width = 253
       Align = alRight
-      AutoSize = True
-      BevelOuter = bvNone
-      ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ChildSizing.ControlsPerLine = 1
-      ClientHeight = 471
-      ClientWidth = 320
+      BevelOuter = bvLowered
+      ClientHeight = 337
+      ClientWidth = 253
+      ParentBackground = False
       TabOrder = 0
-      object Panel4: TPanel
-        Left = 0
-        Height = 72
-        Top = 0
-        Width = 320
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 10
-        ChildSizing.HorizontalSpacing = 6
-        ChildSizing.VerticalSpacing = 2
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 2
-        ClientHeight = 72
-        ClientWidth = 320
+      object Label1: TLabel
+        Left = 8
+        Height = 13
+        Top = 14
+        Width = 28
+        Caption = 'Name'
+      end
+      object Label2: TLabel
+        Left = 8
+        Height = 13
+        Top = 38
+        Width = 24
+        Caption = 'Color'
+      end
+      object Label3: TLabel
+        Left = 8
+        Height = 13
+        Top = 170
+        Width = 72
+        Caption = 'Specific weight'
+      end
+      object _Label4: TLabel
+        Left = 230
+        Height = 13
+        Top = 170
+        Width = 6
+        Caption = '[]'
+      end
+      object Label5: TLabel
+        Left = 8
+        Height = 13
+        Top = 192
+        Width = 49
+        Caption = 'Thickness'
+      end
+      object _Label6: TLabel
+        Left = 230
+        Height = 13
+        Top = 192
+        Width = 6
+        Caption = '[]'
+      end
+      object Label4: TLabel
+        Left = 7
+        Height = 13
+        Top = 56
+        Width = 65
+        Caption = 'Transparency'
+      end
+      object _Label1: TLabel
+        Left = 216
+        Height = 11
+        Top = 56
+        Width = 27
+        Caption = '100.0%'
+        Font.CharSet = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -9
+        Font.Name = 'Small Fonts'
+        ParentFont = False
+      end
+      object Edit1: TEdit
+        Left = 90
+        Height = 21
+        Top = 6
+        Width = 153
         TabOrder = 0
-        object Label1: TLabel
-          Left = 10
-          Height = 23
-          Top = 0
-          Width = 79
-          Caption = 'Имя'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object Edit1: TEdit
-          Left = 95
-          Height = 23
-          Top = 0
-          Width = 150
-          TabOrder = 0
-          OnChange = Edit1Change
-        end
-        object Label2: TLabel
-          Left = 10
-          Height = 20
-          Top = 25
-          Width = 79
-          Caption = 'Цвет'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object Panel5: TPanel
-          Left = 95
-          Height = 20
-          Top = 25
-          Width = 150
-          AutoSize = True
-          BevelOuter = bvNone
-          ClientHeight = 20
-          ClientWidth = 150
-          TabOrder = 1
-          object Panel3: TPanel
-            Left = 0
-            Height = 20
-            Top = 0
-            Width = 40
-            Align = alLeft
-            BevelOuter = bvLowered
-            Constraints.MinHeight = 20
-            TabOrder = 0
-            OnClick = Panel3Click
-          end
-        end
-        object Label4: TLabel
-          Left = 10
-          Height = 25
-          Top = 47
-          Width = 79
-          Caption = 'Прозрачность'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object AlphaBar: TTrackBar
-          Left = 95
-          Height = 25
-          Top = 47
-          Width = 150
-          Max = 100
-          OnChange = AlphaBarChange
-          Position = 0
-          ScalePos = trRight
-          Constraints.MinWidth = 150
-          TabOrder = 2
-        end
+        OnChange = Edit1Change
       end
-      object Panel6: TPanel
-        Left = 0
-        Height = 145
-        Top = 72
-        Width = 320
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 10
-        ChildSizing.VerticalSpacing = 2
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 1
-        ClientHeight = 145
-        ClientWidth = 320
+      object Panel3: TPanel
+        Left = 90
+        Height = 18
+        Top = 31
+        Width = 30
+        BevelOuter = bvLowered
+        ParentBackground = False
         TabOrder = 1
-        object CheckBox3: TCheckBox
-          Left = 10
-          Height = 19
-          Top = 0
-          Width = 297
-          Caption = 'Включать в гидростатику и расчеты остойчивости'
-          TabOrder = 0
-          OnClick = CheckBox3Click
-        end
-        object CheckBox5: TCheckBox
-          Left = 10
-          Height = 19
-          Top = 21
-          Width = 297
-          Caption = 'С симметричным дополнением по другому борту'
-          TabOrder = 1
-          OnClick = CheckBox5Click
-        end
-        object CheckBox2: TCheckBox
-          Left = 10
-          Height = 19
-          Top = 42
-          Width = 297
-          Caption = 'К теоретическим контурам в базовых плоскостях'
-          TabOrder = 2
-          OnClick = CheckBox2Click
-        end
-        object CheckBox1: TCheckBox
-          Left = 10
-          Height = 19
-          Top = 63
-          Width = 297
-          Caption = 'Назначение к развертывающимся поверхностям'
-          TabOrder = 3
-          OnClick = CheckBox1Click
-        end
-        object CheckBox4: TCheckBox
-          Left = 10
-          Height = 19
-          Top = 84
-          Width = 297
-          Caption = 'Включать в блок теоретических чертежей'
-          TabOrder = 4
-          OnClick = CheckBox4Click
-        end
-        object CheckBox6: TCheckBox
-          Left = 10
-          Height = 19
-          Top = 105
-          Width = 297
-          Caption = 'Устанавливаются масса и центр тяжести корпуса'
-          TabOrder = 5
-          OnClick = CheckBox3Click
-        end
-        object cbControlNetVisible: TCheckBox
-          Left = 10
-          Height = 19
-          Top = 126
-          Width = 297
-          Caption = 'Видимость проектных узлов и контрольной сети'
-          TabOrder = 6
-          OnClick = cbControlNetVisibleClick
-        end
+        OnClick = Panel3Click
       end
-      object Panel7: TPanel
-        Left = 0
-        Height = 93
-        Top = 217
-        Width = 320
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 10
-        ChildSizing.TopBottomSpacing = 10
-        ChildSizing.HorizontalSpacing = 6
-        ChildSizing.VerticalSpacing = 2
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 3
-        ClientHeight = 93
-        ClientWidth = 320
-        TabOrder = 2
-        object Label3: TLabel
-          Left = 10
-          Height = 23
-          Top = 10
-          Width = 169
-          Caption = 'Плотность материала корпуса'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object Edit2: TFloatSpinEdit
-          Left = 185
-          Height = 23
-          Top = 10
-          Width = 80
-          Alignment = taRightJustify
-          AutoSize = False
-          Constraints.MinWidth = 80
-          DecimalPlaces = 3
-          MaxValue = 100000
-          OnExit = Edit2Exit
-          OnKeyPress = Edit2KeyPress
-          TabOrder = 0
-        end
-        object _Label4: TLabel
-          Left = 271
-          Height = 23
-          Top = 10
-          Width = 31
-          Caption = '[т/м³]'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object Label5: TLabel
-          Left = 10
-          Height = 23
-          Top = 35
-          Width = 169
-          Caption = 'Толщина бортовой обшивки'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object Edit3: TFloatSpinEdit
-          Left = 185
-          Height = 23
-          Top = 35
-          Width = 80
-          Alignment = taRightJustify
-          AutoSize = False
-          MaxValue = 10000
-          OnExit = Edit3Exit
-          OnKeyPress = Edit3KeyPress
-          TabOrder = 1
-        end
-        object _Label6: TLabel
-          Left = 271
-          Height = 23
-          Top = 35
-          Width = 31
-          Caption = '[мм]'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object Label6_: TLabel
-          Left = 10
-          Height = 23
-          Top = 60
-          Width = 169
-          Caption = 'Контрольная масса корабля'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object WeightBox: TFloatSpinEdit
-          Left = 185
-          Height = 23
-          Top = 60
-          Width = 80
-          Alignment = taRightJustify
-          DecimalPlaces = 3
-          MaxValue = 500000
-          TabOrder = 2
-        end
-        object Label6_0: TLabel
-          Left = 271
-          Height = 23
-          Top = 60
-          Width = 31
-          Caption = '[т]'
-          Layout = tlCenter
-          ParentColor = False
-        end
+      object CheckBox1: TCheckBox
+        Left = 6
+        Height = 17
+        Top = 128
+        Width = 78
+        Caption = 'Developable'
+        TabOrder = 5
+        OnClick = CheckBox1Click
       end
-      object Panel8: TPanel
-        Left = 0
-        Height = 19
-        Top = 320
-        Width = 320
-        BorderSpacing.Top = 10
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 10
-        ChildSizing.TopBottomSpacing = 2
-        ChildSizing.HorizontalSpacing = 6
-        ChildSizing.VerticalSpacing = 2
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 2
-        ClientHeight = 19
-        ClientWidth = 320
-        TabOrder = 3
-        object Label6_1: TLabel
-          Left = 10
-          Height = 15
-          Top = 2
-          Width = 156
-          Caption = 'Координаты центра тяжести  :'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object Label6_1_: TLabel
-          Left = 172
-          Height = 15
-          Top = 2
-          Width = 17
-          Caption = '[м]'
-          Layout = tlCenter
-          ParentColor = False
-        end
-      end
-      object Panel9: TPanel
-        Left = 0
-        Height = 23
-        Top = 339
-        Width = 320
-        BevelOuter = bvNone
-        ChildSizing.LeftRightSpacing = 10
-        ChildSizing.HorizontalSpacing = 6
-        ChildSizing.VerticalSpacing = 2
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 6
-        ClientHeight = 23
-        ClientWidth = 320
+      object CheckBox2: TCheckBox
+        Left = 6
+        Height = 17
+        Top = 110
+        Width = 108
+        Caption = 'Intersection curves'
         TabOrder = 4
-        object Label6_2: TLabel
-          Left = 10
-          Height = 23
-          Top = 0
-          Width = 10
-          Caption = 'X:'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object XgBox: TFloatSpinEdit
-          Left = 26
-          Height = 23
-          Top = 0
-          Width = 80
-          Alignment = taRightJustify
-          Constraints.MinWidth = 80
-          DecimalPlaces = 3
-          MaxValue = 550
-          TabOrder = 0
-        end
-        object Label6_3: TLabel
-          Left = 112
-          Height = 23
-          Top = 0
-          Width = 10
-          Caption = 'Y:'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object YgBox: TFloatSpinEdit
-          Left = 128
-          Height = 23
-          Top = 0
-          Width = 80
-          Alignment = taRightJustify
-          Constraints.MinWidth = 80
-          DecimalPlaces = 3
-          TabOrder = 1
-        end
-        object Label6_4: TLabel
-          Left = 214
-          Height = 23
-          Top = 0
-          Width = 10
-          Caption = 'Z:'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object ZgBox: TFloatSpinEdit
-          Left = 230
-          Height = 23
-          Top = 0
-          Width = 80
-          Alignment = taRightJustify
-          Constraints.MinWidth = 80
-          DecimalPlaces = 3
-          MaxValue = 35
-          TabOrder = 2
-        end
+        OnClick = CheckBox2Click
+      end
+      object CheckBox3: TCheckBox
+        Left = 6
+        Height = 17
+        Top = 74
+        Width = 111
+        Caption = 'Use for hydrostatics'
+        TabOrder = 2
+        OnClick = CheckBox3Click
+      end
+      object Edit2: TEdit
+        Left = 168
+        Height = 19
+        Top = 164
+        Width = 56
+        AutoSize = False
+        TabOrder = 7
+        OnExit = Edit2Exit
+        OnKeyPress = Edit2KeyPress
+      end
+      object Edit3: TEdit
+        Left = 168
+        Height = 19
+        Top = 186
+        Width = 56
+        AutoSize = False
+        TabOrder = 8
+        OnExit = Edit3Exit
+        OnKeyPress = Edit3KeyPress
       end
       object GroupBox1: TGroupBox
-        Left = 0
-        Height = 97
-        Top = 372
-        Width = 320
-        BorderSpacing.Top = 10
-        Caption = 'Информация по расчётам обшивки корпуса'
-        ChildSizing.LeftRightSpacing = 10
-        ChildSizing.TopBottomSpacing = 8
-        ChildSizing.HorizontalSpacing = 6
-        ChildSizing.VerticalSpacing = 8
-        ChildSizing.Layout = cclTopToBottomThenLeftToRight
-        ChildSizing.ControlsPerLine = 3
-        ClientHeight = 77
-        ClientWidth = 316
-        TabOrder = 5
+        Left = 16
+        Height = 104
+        Top = 224
+        Width = 230
+        Caption = 'Surface properties. '
+        ClientHeight = 86
+        ClientWidth = 226
+        ParentBackground = False
+        TabOrder = 9
         object Label7: TLabel
-          Left = 10
-          Height = 15
-          Top = 8
-          Width = 81
-          Alignment = taRightJustify
-          Caption = 'Площадь'
-          Layout = tlCenter
-          ParentColor = False
+          Left = 8
+          Height = 13
+          Top = 16
+          Width = 22
+          Caption = 'Area'
         end
         object Label8: TLabel
-          Left = 10
-          Height = 15
-          Top = 31
-          Width = 81
-          Alignment = taRightJustify
-          Caption = 'Масса'
-          Layout = tlCenter
-          ParentColor = False
+          Left = 8
+          Height = 13
+          Top = 34
+          Width = 34
+          Caption = 'Weight'
         end
         object Label9: TLabel
-          Left = 10
-          Height = 15
-          Top = 54
-          Width = 81
-          Alignment = taRightJustify
-          Caption = 'Центр тяжести'
-          Layout = tlCenter
-          ParentColor = False
+          Left = 8
+          Height = 13
+          Top = 52
+          Width = 77
+          Caption = 'Center of gravity'
         end
         object _Label10: TLabel
-          Left = 97
-          Height = 15
-          Top = 8
-          Width = 10
+          Left = 98
+          Height = 13
+          Top = 16
+          Width = 6
           Caption = '--'
-          Layout = tlCenter
-          ParentColor = False
         end
         object _Label11: TLabel
-          Left = 97
-          Height = 15
-          Top = 31
-          Width = 10
+          Left = 98
+          Height = 13
+          Top = 34
+          Width = 6
           Caption = '--'
-          Layout = tlCenter
-          ParentColor = False
         end
         object _Label12: TLabel
-          Left = 97
-          Height = 15
-          Top = 54
-          Width = 10
+          Left = 98
+          Height = 13
+          Top = 52
+          Width = 6
           Caption = '--'
-          Layout = tlCenter
-          ParentColor = False
         end
+      end
+      object CheckBox4: TCheckBox
+        Left = 6
+        Height = 17
+        Top = 146
+        Width = 100
+        Caption = 'Show in linesplan'
+        TabOrder = 6
+        OnClick = CheckBox4Click
+      end
+      object CheckBox5: TCheckBox
+        Left = 6
+        Height = 17
+        Top = 92
+        Width = 66
+        Caption = 'Symmetric'
+        TabOrder = 3
+        OnClick = CheckBox5Click
+      end
+      object AlphaBar: TScrollBar
+        Left = 90
+        Height = 13
+        Top = 54
+        Width = 121
+        LargeChange = 5
+        Max = 255
+        PageSize = 0
+        TabOrder = 10
+        OnChange = AlphaBarChange
       end
     end
     object LayerBox: TCheckListBox
-      Left = 6
-      Height = 471
-      Top = 6
-      Width = 468
+      Left = 7
+      Height = 337
+      Top = 7
+      Width = 349
       Align = alClient
       ItemHeight = 0
       TabOrder = 1
       OnClick = LayerBoxClick
-      OnClickCheck = LayerBoxClickCheck
       OnDblClick = LayerBoxDblClick
-      OnItemClick = LayerBoxItemClick
-      OnSelectionChange = LayerBoxSelectionChange
     end
   end
   object ToolBar1: TToolBar
     Left = 0
     Height = 24
     Top = 0
-    Width = 800
+    Width = 616
     AutoSize = True
-    Color = clForm
+    Caption = 'ToolBar1'
+    Color = clBtnFace
     Images = MenuImages
     Indent = 5
     ParentColor = False
@@ -514,15 +274,16 @@ object FreeLayerDialog: TFreeLayerDialog
     TabOrder = 1
     object ToolButton20: TToolButton
       Left = 5
-      Hint = 'Создание нового чистого графического слоя.'
+      Hint = 'Create a new empty layer.'
       Top = 2
       ImageIndex = 1
       OnClick = ToolButton20Click
     end
     object ToolButton3: TToolButton
       Left = 28
-      Hint = 'Удаление всех пустых слоёв.'
+      Hint = 'Remove all empty layers from the model.'
       Top = 2
+      Caption = 'ToolButton3'
       ImageIndex = 2
       OnClick = ToolButton3Click
     end
@@ -530,20 +291,23 @@ object FreeLayerDialog: TFreeLayerDialog
       Left = 51
       Height = 22
       Top = 2
+      Caption = '_ToolButton2'
       ImageIndex = 1
       Style = tbsSeparator
     end
     object MoveUp: TToolButton
       Left = 59
-      Hint = 'Переместить слой по спискау вверх.'
+      Hint = 'Move the layer up in the list.'
       Top = 2
+      Caption = 'Up'
       ImageIndex = 3
       OnClick = MoveUpClick
     end
     object MoveDown: TToolButton
       Left = 82
-      Hint = 'Опустить слой по текущему списку.'
+      Hint = 'Move the layer down in the list.'
       Top = 2
+      Caption = 'Down'
       ImageIndex = 4
       OnClick = MoveDownClick
     end
@@ -551,20 +315,22 @@ object FreeLayerDialog: TFreeLayerDialog
       Left = 105
       Height = 22
       Top = 2
+      Caption = '_ToolButton4'
       ImageIndex = 1
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
       Left = 113
-      Hint = 'Закрыть окно с графическими слоями.'
+      Hint = 'Close this window.'
       Top = 2
+      Caption = 'Done'
       ImageIndex = 0
       OnClick = ToolButton1Click
     end
   end
   object MenuImages: TImageList
-    Left = 56
-    Top = 40
+    Left = 32
+    Top = 48
     Bitmap = {
       4C7A0500000010000000100000007B0200000000000078DAED973F481B511CC7
       DFD04229290EC2752E84402B058982847628144A0787A6C3E122C13A28643284
@@ -613,7 +379,7 @@ object FreeLayerDialog: TFreeLayerDialog
       'ColorS=F0FBFF'
       'ColorT=A4A0A0'
     )
-    Left = 48
-    Top = 120
+    Left = 24
+    Top = 80
   end
 end

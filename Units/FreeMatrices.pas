@@ -1,9 +1,9 @@
 unit FreeMatrices;
-{$mode objfpc}{$H+}
-interface uses Classes,SysUtils,FreeTypes;
-const Singulier=True;
-      Regulier=false;
-      MatrixError = 1e-5;
+//{$mode objfpc}{$H+}
+interface uses Classes,SysUtils;//,FreeTypes;
+//const Singulier=True;
+//      Regulier=false;
+//      MatrixError = 1e-5;
 type
 TFreeMatrix = class( TObject )
 private
@@ -12,12 +12,12 @@ private
    procedure CreateIdentity;
    procedure Assign(Matrix: TFreeMatrix);
 public
-   Value: Array of Array of TFloatType;
+   Value: Array of Array of single;
    constructor Create;
    destructor Destroy; override;
    procedure SetSize(Cols,Rows:Integer);
    procedure Add(Matrix: TFreeMatrix);
-   procedure Fill( V: TFloatType );
+   procedure Fill( V: single );
    procedure Clear;
    function  Invert: TFreeMatrix;
    function  Multiply( Matrix: TFreeMatrix ): TFreeMatrix;
@@ -45,7 +45,7 @@ begin if RowCount>0 then                                    // сначала в
       if Rows>0 then for I:=0 to Rows-1 do Setlength( Value[I],Cols );
       Fill( 0.0 );                                    // set all values to zero
 end;
-procedure TFreeMatrix.Fill( V: TFloatType ); var I,J: Integer;
+procedure TFreeMatrix.Fill( V: single ); var I,J: Integer;
     begin for I:=0 to RowCount-1 do
           for J:=0 to ColCount-1 do Value[I][J]:=V;
     end;
@@ -61,18 +61,18 @@ procedure TFreeMatrix.Add( Matrix: TFreeMatrix ); var I,J: integer;
 function TFreeMatrix.Invert:TFreeMatrix;
 var I,J,K,L,N,IMax: integer;
     Factor,Det: extended;
-    amax,h: Double;
-    State: Boolean;
-    Inverted,Back: TFreeMatrix;
+    Amax,H: Double;
+//  State: Boolean;
+    Inverted{,Back}:TFreeMatrix;// матрица будет с переустановленными столбцами
 begin
    Result:=nil;
 // if Square then begin
 //    if ColCount=RowCount then begin
-         Back:=Copy;
+//       Back:=Copy;
          Inverted:=TFreeMatrix.Create;
          Inverted.SetSize(ColCount,RowCount);
          Inverted.CreateIdentity;
-         State:=Regulier;
+//       State:=Regulier;
          N:=ColCount;
          I:=0;
          Det:=1.0;
@@ -85,8 +85,8 @@ begin
                IMax:=K;
                AMax:=abs(Value[K-1,I-1]);
             end;
-            if AMax<MatrixError then State:=Singulier;
-            if State=Regulier then begin
+//          if AMax<MatrixError then State:=Singulier;
+//          if State=Regulier then begin
                if I<>Imax then begin Det:=-Det;       // Swap rows if necessary
                   for L:=I to N do begin
                      H:=Value[I-1,L-1];
@@ -100,7 +100,7 @@ begin
                   end;
                end;                                       // Sweep column clear
                if I<>N then
-               for K:=I+1 to N do if abs(Value[K-1,I-1])>MatrixError then begin
+               for K:=I+1 to N do {if abs(Value[K-1,I-1])>MatrixError then } begin
                    Factor:=Value[k-1,I-1]/Value[I-1,I-1];
                    if Factor<>0 then begin
                       for L:=I to N do Value[K-1,L-1]-=Factor*Value[I-1,L-1];
@@ -109,15 +109,16 @@ begin
                end;
                if I<>1 then
                for K:=I-1 downto 1 do
-               if abs(Value[K-1,I-1])>MatrixError then begin
+//             if abs(Value[K-1,I-1])>MatrixError then
+               begin
                   Factor:=Value[K-1,I-1]/Value[I-1,I-1];
                   if Factor<>0 then begin
                      for L:=I to N do Value[K-1,L-1]-=Factor*Value[I-1,L-1];
                      for L:=1 to N do Inverted.Value[K-1,L-1]-=Factor*Inverted.Value[I-1,L-1];
                   end;
                end;
-            end;
-         until (I=N) or (State=Singulier);
+//          end;
+         until (I=N); // or (State=Singulier);
 //       if abs(Value[N-1,N-1])<MatrixError then State:=Singulier;
 //       if State=Regulier then begin
             for I:=1 to N do begin
@@ -129,25 +130,19 @@ begin
             Result:=Inverted;
 //       end else begin Inverted.Destroy; //WriteLn('Matrix could not be solved.');
 //       end;
-         Assign(Back);
-         Back.Destroy;
+//       Assign(Back);
+//       Back.Destroy;
 //     end; // else WriteLn('Matrix size must match to be solved');
 //   end; // else WriteLn('Matrix must be square to invert');
 end;
 
-function TFreeMatrix.Multiply(Matrix:TFreeMatrix):TFreeMatrix;
-var i,j,k : integer;
-begin
-  if ColCount=Matrix.RowCount then begin
+function TFreeMatrix.Multiply(Matrix:TFreeMatrix):TFreeMatrix; Var I,J,K:integer;
+begin         //if ColCount<>Matrix.RowCount then WriteLn('Matrix size do not match in multiply');
      Result:=TFreeMatrix.Create;
      Result.SetSize(Matrix.ColCount,RowCount);
-     for I:=0 to Result.RowCount-1 do begin
-       for J:=0 to Result.ColCount-1 do begin
-          for K:=0 to ColCount-1 do
-          Result.Value[I,J]+=Value[I,K]*Matrix.Value[K,J];
-       end;
-     end;
-  end; // else WriteLn('Matrix size do not match in multiply');
+     for I:=0 to Result.RowCount-1 do
+     for J:=0 to Result.ColCount-1 do
+     for K:=0 to ColCount-1 do Result.Value[I,J]+=Value[I,K]*Matrix.Value[K,J];
 end;
 
 end.

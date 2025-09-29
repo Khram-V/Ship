@@ -1,68 +1,63 @@
+
 unit FreeIGESUnit;
-{$MODE Delphi}{$H+}
-interface uses
-     {$ifdef Windows}
-      Windows,
-     {$else}
-     LCLIntf,LCLType,//
-     {$endif}
-     classes,
+{$MODE Delphi}
+interface uses Windows,
+     Classes,
      SysUtils,
      DateUtils,
      Forms,
      Dialogs,
      Graphics,
-     FreeTypes,
-     FreeGeometry;
+     FreeTypes,FreeGeometry;
 
 const ParameterDelimiter = ',';
       RecordDelimiter    = ';';
       LastColumn         = 72;
-      LastParameterColumn= 64;
+      LastParameterColumn= 64;          
 
-type
-  TFreeIgesString = string[80];
-  TFreeIGESList   = class
-     private
-        FStartSection     : TStringList;
-        FGlobalSection    : TStringList;
-        FDirectorySection : TStringList;
-        FParameterSection : TStringList;
-        FTerminateSection : TStringList;
-        FNumberOfSurfaces : Integer;
-        FIGESunits        : TFreeUnitType;
-        FMaxCoordinate    : TFloatType;
-        FSystemID         : TFreeIgesString;
-        FFileCreatedBy    : TFreeIgesString;
-        FFileName         : AnsiString;
-        procedure FProcessParameterData(Str:AnsiString;ParamData:TStringList);
-     public
-        procedure Add_Entity_128(NURB:TFreeNURBSurface;ColorIndex:Integer);
-        function  Add_Entity_314(Color:TColor):Integer;
-        procedure Clear;
-        constructor Create;
-        destructor Destroy; override;
-        procedure SaveToFile( Filename:AnsiString );
-        property FileCreatedBy : TFreeIgesString read FFileCreatedBy write FFileCreatedBy;
-        property FileName      : AnsiString read FFileName write FFileName;
-        property IGESUnits     : TFreeUnitType read FIGESunits write FIGESunits;
-        property SystemID      : TFreeIgesString read FSystemID write FSystemID;
-  end;
+type TFreeIgesString = string[80];
+     TFreeIGESList = class
+        private
+           FStartSection    : TStringList;
+           FGlobalSection   : TStringList;
+           FDirectorySection: TStringList;
+           FParameterSection: TStringList;
+           FTerminateSection: TStringList;
+           FNumberOfSurfaces: Integer;
+           FIGESunits       : TFreeUnitType;
+           FMaxCoordinate   : TFloatType;
+           FSystemID        : TFreeIgesString;
+           FFileCreatedBy   : TFreeIgesString;
+           FFileName        : String;
+           procedure FProcessParameterData(Str:AnsiString;ParamData:TStringList);
+        public
+           procedure Add_Entity_128(NURB:TFreeNURBSurface;ColorIndex:Integer);
+           function  Add_Entity_314(Color:TColor):Integer;
+           procedure Clear;
+           constructor Create;
+           destructor Destroy; override;
+           procedure SaveToFile(Filename:String);
+           property FileCreatedBy  : TFreeIgesString read FFileCreatedBy write FFileCreatedBy;
+           property FileName       : String read FFileName write FFileName;
+           property IGESUnits      : TFreeUnitType read FIGESunits write FIGESunits;
+           property SystemID       : TFreeIgesString read FSystemID write FSystemID;
+     end;
 
 implementation
 
-function ConvertString( Input:AnsiString ):AnsiString;
-begin if Input='' then Result:=''
-                  else Result:=IntToStr(Length(Input))+'H'+Input;
-end;{ConvertString}
+function ConvertString(Input:AnsiString):AnsiString;
+begin
+   if Input='' then Result:=''
+               else Result:=IntToStr(Length(Input))+'H'+Input;
+end;
 
-function CheckString(Str:AnsiString;MaxLength:integer;SectionCharacter:Char;index:Integer):AnsiString;
+function CheckString(Str:AnsiString;MaxLength:integer;SectionCharacter:Char;index:Integer):string;
 const Spaces ='                                                                                ';
 var L,C:Integer;
 begin
    L:=Length(Str);
-   if L>Maxlength then Str:=Copy(Str,1,MaxLength)
-   else if L<Maxlength then begin
+   if L>Maxlength then Str:=Copy(Str,1,MaxLength) else
+   if L<Maxlength then begin
       C:=Maxlength-L;
       Str:=Str+Copy(Spaces,1,C);
    end;
@@ -70,19 +65,21 @@ begin
    L:=Length(Result)+Length(IntToStr(Index));
    C:=80-L;
    Result:=Result+Copy(Spaces,1,C)+IntToStr(Index);
-end; {CheckString}
+end;
 
-function IndexStr(Index,MaxLength:Integer):AnsiString;
-begin Result:=IntToStr(Index);
-      while length(Result)<MaxLength do Result:=#32+result;
-end;{IndexStr}
+function IndexStr(Index,MaxLength:Integer):String;
+begin
+   Result:=IntToStr(Index);
+   while length(Result)<MaxLength do Result:=#32+result;
+end;
 
-// Takes one string containing all the parameter data and splits it up into
+// Takes one string conatining all the parameter data and splits it up into
 // lines of 64 characters
 procedure TFreeIGESList.FProcessParameterData(Str:AnsiString;ParamData:TStringList);
 var LastCol : Integer;
     Tmp     : AnsiString;
-begin                                   // split up into lines of 64 characters
+begin
+   // split up into lines of 64 characters
    if Length(Str)>0 then if Str[Length(Str)]<>RecordDelimiter then Str:=Str+RecordDelimiter;
    while length(Str)>LastParameterColumn do begin
       Tmp:=Copy(Str,1,LastParameterColumn);
@@ -101,28 +98,26 @@ begin                                   // split up into lines of 64 characters
       Str:=Str+IndexStr(FDirectorySection.Count+1,7)+'P'+IndexStr(FParameterSection.Count+ParamData.Count+1,7);
       ParamData.Add(Str);
    end;
-end; {TFreeIGESList.FProcessParameterData}
+end;
 
 procedure TFreeIGESList.Add_Entity_128(NURB:TFreeNURBSurface;ColorIndex:Integer);
 var K1,K2,M1,M2,I,J,C: Integer;
-    Param         : TStringList;
-    PROP          : array[1..10] of integer;
-    EntityStr     : AnsiString;
-    P             : T3DVector;
-    U0,U1,V0,V1   : TFloatType;
-
-    function CreateKnotvector( N,Degree:Integer; knots:TFloatArray ): AnsiString;
-    var I:Integer; Tmp:single;
+    Param: TStringList;
+    PROP: array[1..10] of integer;
+    EntityStr: AnsiString;
+    P: T3DVector;
+    function CreateKnotvector(N,Degree:Integer;knots:TFloatArray) :AnsiString;
+    var I:Integer;
+        Tmp:single;
     begin
        Result:='';
        for I:=1 to Length(Knots) do begin
          Tmp:=Knots[I-1];
          if Tmp<0 then Tmp:=0;
          if Tmp>1 then Tmp:=1;
-         Result:=Result+ParameterDelimiter+FloatToDec(Tmp,6);
+         Result:=Result+ParameterDelimiter+Truncate(Tmp,6);
        end;
-    end;{CreateKnotvector}
-
+    end;
     function CreateWeightVector(N:Integer):AnsiString;
     var I:Integer;
     begin
@@ -132,7 +127,7 @@ var K1,K2,M1,M2,I,J,C: Integer;
 
 begin
    inc(FNumberOfSurfaces);
-   Param:=TStringList.Create;                        // Create parametersection
+   Param:=TStringList.Create;                       // Create parametersection
    K1:=Nurb.ColCount-1;
    K2:=Nurb.Rowcount-1;
    M1:=Nurb.ColDegree;
@@ -143,67 +138,60 @@ begin
    Prop[4]:=0; // not periodic in u-dir
    Prop[5]:=0; // not periodic in v-dir
    C:=(1+K1)*(1+K2); // number of weights
-   U0:=0.0; U1:=1.0; // Start and end first parameter values
-   V0:=0.0; V1:=1.0; // Start and end second parameter values
+   EntityStr:=IntToStr(128)+ParameterDelimiter+
+              IntToStr(K1)+ParameterDelimiter+
+              IntToStr(K2)+ParameterDelimiter+
+              IntToStr(M1)+ParameterDelimiter+
+              IntToStr(M2)+ParameterDelimiter+
+              IntToStr(Prop[1])+ParameterDelimiter+
+              IntToStr(Prop[2])+ParameterDelimiter+
+              IntToStr(Prop[3])+ParameterDelimiter+
+              IntToStr(Prop[4])+ParameterDelimiter+
+              IntToStr(Prop[5])+
+              CreateKnotvector(K1,M1,Nurb.ColKnotVector)+
+              CreateKnotvector(K2,M2,Nurb.RowKnotVector)+
+              CreateWeightVector(C);
 
-   EntityStr:=IntToStr(128)+ParameterDelimiter+               // Rational B-Spline Surface (Type 128)
-              IntToStr(K1)+ParameterDelimiter+                // Upper index of first sum
-              IntToStr(K2)+ParameterDelimiter+                // Upper index of second sum
-              IntToStr(M1)+ParameterDelimiter+                // Degree of first basis functions
-              IntToStr(M2)+ParameterDelimiter+                // Degree of second basis functions
-              IntToStr(Prop[1])+ParameterDelimiter+           // 0=closed in first direction,1=not closed
-              IntToStr(Prop[2])+ParameterDelimiter+           // 0=closed in second direction,1=not closed
-              IntToStr(Prop[3])+ParameterDelimiter+           // 0=rational,1=polynomial
-              IntToStr(Prop[4])+ParameterDelimiter+           // 0=nonperiodic in first direction ,1=periodic
-              IntToStr(Prop[5])+                              // 0=nonperiodic in second direction ,1=periodic
-              CreateKnotvector(K1,M1,Nurb.ColKnotVector)+     // knot sequence
-              CreateKnotvector(K2,M2,Nurb.RowKnotVector)+     // second knot sequence
-              CreateWeightVector(C);                          // weight sequence
-
-   for I:=1 to Nurb.Rowcount do begin
-      for J:=1 to Nurb.ColCount do begin
+   for I:=1 to Nurb.Rowcount do
+   begin
+      for J:=1 to Nurb.ColCount do
+      begin
          P:=Nurb.Point[J-1,I-1];
          if abs(P.X)>FMaxCoordinate then FMaxCoordinate:=abs(P.X);
          if abs(P.Y)>FMaxCoordinate then FMaxCoordinate:=abs(P.Y);
          if abs(P.Z)>FMaxCoordinate then FMaxCoordinate:=abs(P.Z);
-         EntityStr:=EntityStr+ParameterDelimiter+FloatToDec(P.X,5)+ParameterDelimiter+
-                                                 FloatToDec(P.Y,5)+ParameterDelimiter+
-                                                 FloatToDec(P.Z,5);
+         EntityStr:=EntityStr+ParameterDelimiter+Truncate(P.X,5)+ParameterDelimiter+
+                                                 Truncate(P.Y,5)+ParameterDelimiter+
+                                                 Truncate(P.Z,5);
       end;
    end;
-   EntityStr:=EntityStr     +ParameterDelimiter+
-              FloatToDec(U0,6)+ParameterDelimiter+    // Start first parameter value
-              FloatToDec(U1,6)+ParameterDelimiter+    // End first parameter value
-              FloatToDec(V0,6)+ParameterDelimiter+    // Start second parameter value
-              FloatToDec(V1,6);                       // End second parameter value
-
-
-   FProcessParameterData(EntityStr,Param);            // First line
-   EntityStr:=IndexStr(128,8)+                        // entity nr
+   FProcessParameterData(EntityStr,Param);
+   // First line
+   EntityStr:=IndexStr(128,8)+         // entity nr
               IndexStr(FParameterSection.Count+1,8)+  // pointer to parametersection start
-              IndexStr(0,8)+                          // structure
-              IndexStr(1,8)+                          // line font pattern
-              IndexStr(0,8)+                          // level
-              IndexStr(0,8)+                          // view
-              IndexStr(0,8)+                          // Transformation matrix
-              IndexStr(0,8)+                          // Label display associativity
-              '00000000';                             // Visible,independent,geometry,topdown
+              IndexStr(0,8)+           // structure
+              IndexStr(1,8)+           // line font pattern
+              IndexStr(0,8)+           // level
+              IndexStr(0,8)+           // view
+              IndexStr(0,8)+           // Transformation matrix
+              IndexStr(0,8)+           // Label display associativity
+              '00000000';              // Visible,independent,geometry,topdown
    EntityStr:=CheckString(EntityStr,LastColumn,'D',FDirectorySection.Count+1);
    FDirectorySection.Add(EntityStr);
    // Second line
-   EntityStr:=IndexStr(128,8)+                        // entity nr
-              IndexStr(0,8)+                          // Lineweight
-              IndexStr(ColorIndex,8)+                 // color
-              IndexStr(Param.Count,8)+                // number of lines in parameter section
-              IndexStr(0,8)+                          // form number
-              IndexStr(0,8)+                          // reserved for future use
-              IndexStr(0,8)+                          // reserved for future use
-              '        '+                             // entity label
-              IndexStr(0,8);                          // Entity subscript number
+   EntityStr:=IndexStr(128,8)+         // entity nr
+              IndexStr(0,8)+           // Lineweight
+              IndexStr(ColorIndex,8)+  // color
+              IndexStr(Param.Count,8)+ // number of lines in parameter section
+              IndexStr(0,8)+           // form number
+              IndexStr(0,8)+           // reserved for future use
+              IndexStr(0,8)+           // reserved for future use
+              '        '+              // entity label
+              IndexStr(0,8);           // Entity subscript number
    EntityStr:=CheckString(EntityStr,LastColumn,'D',FDirectorySection.Count+1);
    FDirectorySection.Add(EntityStr);
    FParametersection.AddStrings(Param);
-   FreeAndNil(Param);
+   Param.Destroy;
 end;{TFreeIGESList.Add_Entity_128}
 
 function TFreeIGESList.Add_Entity_314(Color:TColor):Integer;
@@ -211,16 +199,19 @@ var R,G,B         : Integer;
     Param         : TStringList;
     EntityStr     : AnsiString;
 begin
-   Param:=TStringList.Create;                        // Create parametersection
+   Param:=TStringList.Create;
+   // Create parametersection
    R:=GetRValue(Color);
    G:=GetGValue(Color);
    B:=GetBValue(Color);
+
    EntityStr:=IntToStr(314)+ParameterDelimiter+
-              FloatToDec(100*R/255,3)+ParameterDelimiter+
-              FloatToDec(100*G/255,3)+ParameterDelimiter+
-              FloatToDec(100*B/255,3)+ParameterDelimiter+
+              Truncate(100*R/255,3)+ParameterDelimiter+
+              Truncate(100*G/255,3)+ParameterDelimiter+
+              Truncate(100*B/255,3)+ParameterDelimiter+
               ConvertString('');
-   FProcessParameterData(EntityStr,Param);            // First line
+   FProcessParameterData(EntityStr,Param);
+   // First line
    EntityStr:=IndexStr(314,8)+                        // entity nr
               IndexStr(FParameterSection.Count+1,8)+  // pointer to parametersection start
               IndexStr(0,8)+                          // structure
@@ -232,7 +223,8 @@ begin
               '00000000';                             // Visible,independent,geometry,topdown
    EntityStr:=CheckString(EntityStr,LastColumn,'D',FDirectorySection.Count+1);
    FDirectorySection.Add(EntityStr);
-   Result:=-FDirectorySection.Count;                  // Second line
+   Result:=-FDirectorySection.Count;
+   // Second line
    EntityStr:=IndexStr(314,8)+                        // entity nr
               IndexStr(0,8)+                          // Lineweight
               IndexStr(0,8)+                          // color
@@ -245,7 +237,7 @@ begin
    EntityStr:=CheckString(EntityStr,LastColumn,'D',FDirectorySection.Count+1);
    FDirectorySection.Add(EntityStr);
    FParametersection.AddStrings(Param);
-   FreeAndNil(Param);
+   Param.Destroy;
 end;{TFreeIGESList.Add_Entity_314}
 
 procedure TFreeIGESList.Clear;
@@ -265,65 +257,77 @@ end;{TFreeIGESList.Clear}
 constructor TFreeIGESList.Create;
 begin
    Inherited Create;
-   WestPoint;
    FStartSection:=TStringList.Create;
    FGlobalSection:=TStringList.Create;
    FDirectorySection:=TStringList.Create;
    FParameterSection:=TStringList.Create;
    FTerminateSection:=TStringList.Create;
    Clear;
-end;
+end;{TFreeIGESList.Create}
 
 destructor TFreeIGESList.Destroy;
-begin Clear;
-   FreeAndNil(FStartSection);
-   FreeAndNil(FGlobalSection);
-   FreeAndNil(FDirectorySection);
-   FreeAndNil(FParameterSection);
-   FreeAndNil(FTerminateSection);
-   inherited Destroy;
-end;
+begin
+   Clear;
+   FStartSection.Destroy;
+   FGlobalSection.Destroy;
+   FDirectorySection.Destroy;
+   FParameterSection.Destroy;
+   FTerminateSection.Destroy;
+end;{TFreeIGESList.Destroy}
 
-procedure TFreeIGESList.SaveToFile(Filename:AnsiString);
-var Str,Tmp: AnsiString;     // TimeStr,
+procedure TFreeIGESList.SaveToFile(Filename:String);
+var Str     : AnsiString;
+    TimeStr : string;
+    Tmp     : AnsiString;
     Strings : TStringList;
-    Index,LastCol : Integer;
-(* function CreateTimeStamp:AnsiString;
-    var Time: TDateTime;
+    Index   : Integer;
+    LastCol : Integer;
+
+    function CreateTimeStamp:string;
+    var Time    : TDateTime;
     begin
        Time:=now;
-       Result:=IntToStr(YearOf(Time));          // year
-       Tmp:=IntToStr(MonthOf(Time));            // month
+       // year
+       Result:=IntToStr(YearOf(Time));
+       // month
+       Tmp:=IntToStr(MonthOf(Time));
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       Tmp:=IntToStr(DayOf(Time));              // day
+       // day
+       Tmp:=IntToStr(DayOf(Time));
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       Result:=Result+'.';                      // separator
-       Tmp:=IntToStr(HourOf(Time));             // Hours
+       // separator
+       Result:=Result+'.';
+       // Hours
+       Tmp:=IntToStr(HourOf(Time));
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       Tmp:=IntToStr(MinuteOf(Time));           // minutes
+       // minutes
+       Tmp:=IntToStr(MinuteOf(Time));
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       Tmp:=IntToStr(SecondOf(Time));           // seconds
+       // seconds
+       Tmp:=IntToStr(SecondOf(Time));
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
        Result:=IntToStr(length(Result))+'H'+Result;
-    end;{CreateTimeStamp} *)
+
+    end;{CreateTimeStamp}
+
 begin
-// DefaultFormatSettings.DecimalSeparator:='.';   // Create time string
-// TimeStr:=CreateTimeStamp;       // Create the start section
+   // Create time string
+   TimeStr:=CreateTimeStamp;
+   // Create the start section
    FStartSection.Clear;
-   FStartSection.Add(CheckString('IGES (Free!Ship)',LastColumn,'S',1));
+   FStartSection.Add(CheckString('FREE!ship IGES file. (www.freeship.org)',LastColumn,'S',1));
    // Create the global section
    Str:=ConvertString(ParameterDelimiter)+ParameterDelimiter+
         ConvertString(RecordDelimiter)+ParameterDelimiter+
-//      'Free!Ship'+ParameterDelimiter+                    // ProductNameSender
-//      ConvertString(ChangeFileExt(ExtractFilename(Application.ExeName),''))+ParameterDelimiter+                    // ProductNameSender
-//      ConvertString(FFilename)+ParameterDelimiter+                                                                 // Original filenameh
-//      ConvertString(SystemID)+ParameterDelimiter+                                                                  // Preprocessor
-//      ConvertString(SystemID)+ParameterDelimiter+                                                                  // Preprocessor version
+        ConvertString(ChangeFileExt(ExtractFilename(Application.ExeName),''))+ParameterDelimiter+                    // ProductNameSender
+        ConvertString(FFilename)+ParameterDelimiter+                                                                 // Original filenameh
+        ConvertString(SystemID)+ParameterDelimiter+                                                                  // Preprocessor
+        ConvertString(SystemID)+ParameterDelimiter+                                                                  // Preprocessor version
         IntToStr(32)+ParameterDelimiter+                                                                             // Integer bits
         IntToStr(38)+ParameterDelimiter+                                                                             // Single precision
         IntToStr(6)+ParameterDelimiter+                                                                              // Single sign. bits
@@ -335,23 +339,31 @@ begin
                            else Str:=Str+IntToStr(6)+ParameterDelimiter+ConvertString('Meters')+ParameterDelimiter;
    Str:=Str+IntToStr(1)+ParameterDelimiter+                                                                          // Lineweight graduations
         FloatToStrF(1.0,ffFixed,7,4)+ParameterDelimiter+                                                             // max lineweight
-//      TimeString+ParameterDelimiter+                                                                               // Time
+        TimeStr+ParameterDelimiter+                                                                                  // Time
         FloatToStrF(0.01,ffFixed,7,6)+ParameterDelimiter+                                                            // Minimum resolution
         FloatToStrF(FMaxCoordinate,ffFixed,7,6)+ParameterDelimiter+                                                  // Maximum coordinate
-//      ConvertString(FileCreatedBy)+ParameterDelimiter+                                                             // Author
-//      ''+ParameterDelimiter+                                                                                       // Author organisation
+        ConvertString(FileCreatedBy)+ParameterDelimiter+                                                             // Author
+        ''+ParameterDelimiter+                                                                                       // Author organisation
         IntToStr(9)+ParameterDelimiter+                                                                              // IGES version 5.1
         IntToStr(1)+ParameterDelimiter+                                                                              // draftingstandard=NONE
-        TimeString+RecordDelimiter;   // split up into lines of max. 72 characters
+        TimeStr+RecordDelimiter;
+
+   // split up into lines of max. 72 characters
    Index:=1;
-   while length(Str)>LastColumn do begin
+   while length(Str)>LastColumn do
+   begin
+      //
       Tmp:=Copy(Str,1,LastColumn);
       LastCol:=LastColumn;
-      while (Tmp<>'') and (Tmp[LastCol]<>ParameterDelimiter) do begin
-         if pos(ParameterDelimiter,Tmp)=0 then begin // This must be a stringvalue which spans multiple lines
+      while (Tmp<>'') and (Tmp[LastCol]<>ParameterDelimiter) do
+      begin
+         if pos(ParameterDelimiter,Tmp)=0 then
+         begin
+            // This must be a stringvalue which spans multiple lines
             Tmp:=Uppercase(Tmp);
             break;
-         end else begin
+         end else
+         begin
             Delete(Tmp,LastCol,1);
             Dec(LastCol);
          end;
@@ -361,16 +373,20 @@ begin
       Inc(Index);
       Delete(Str,1,LastCol);
    end;
-   if Str<>'' then begin
+   if Str<>'' then
+   begin
       Tmp:=CheckString(Str,LastColumn,'G',Index);
       FGlobalSection.Add(Tmp);
-   end;                                         // create the terminate section
+   end;
+
+   // create the terminate section
    Str:='S'+IndexStr(FStartsection.Count,7)+
         'G'+IndexStr(FGlobalsection.Count,7)+
         'D'+IndexStr(FDirectorysection.Count,7)+
         'P'+IndexStr(FParametersection.Count,7);
    Str:=CheckString(Str,LastColumn,'T',1);
    FTerminateSection.Add(Str);
+
    Strings:=TStringList.Create;
    Strings.AddStrings(FStartSection);
    Strings.AddStrings(FGlobalSection);
@@ -378,7 +394,8 @@ begin
    Strings.AddStrings(FParameterSection);
    Strings.AddStrings(FTerminateSection);
    Strings.SaveToFile(ChangeFileExt(Filename,'.igs'));
-   FreeAndNil(Strings);
-end;
+   Strings.Destroy;
+end;{TFreeIGESList.SaveToFile}
+
 
 end.

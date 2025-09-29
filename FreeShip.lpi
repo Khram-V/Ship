@@ -2,9 +2,9 @@
 <CONFIG>
   <ProjectOptions>
     <Version Value="12"/>
+    <PathDelim Value="\"/>
     <General>
       <Flags>
-        <SaveClosedFiles Value="False"/>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
@@ -15,592 +15,280 @@
       </Flags>
       <SessionStorage Value="None"/>
       <AutoCreateForms Value="False"/>
-      <Title Value="Free!Ship"/>
+      <Title Value="FreeShip"/>
       <UseAppBundle Value="False"/>
       <ResourceType Value="res"/>
-      <XPManifest>
-        <LongPathAware Value="True"/>
-        <TextName Value="FreeShip"/>
-        <TextDesc Value="For ship development"/>
-      </XPManifest>
+      <Icon Value="0"/>
     </General>
-    <i18n>
-      <EnableI18N LFM="False"/>
-      <OutDir Value="locale"/>
-    </i18n>
-    <VersionInfo>
-      <MajorVersionNr Value="2"/>
-      <MinorVersionNr Value="6"/>
-      <RevisionNr Value="1"/>
-      <Language Value="0419"/>
-      <Attributes pvaSpecialBuild="True"/>
-      <StringTable LegalCopyright="GPLv2+" OriginalFilename="FreeShip" ProductName="FREE!ship"/>
-    </VersionInfo>
     <BuildModes>
-      <Item Name="default" Default="True"/>
-      <Item Name="Release">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="FreeShip"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="Units;Forms;$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Units;Forms"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <Parsing>
-            <SyntaxOptions>
-              <SyntaxMode Value="fpc"/>
-            </SyntaxOptions>
-          </Parsing>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-            <SmallerCode Value="True"/>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
-              <UseValgrind Value="True"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <LinkerOptions Value="-vd"/>
-            </Options>
-          </Linking>
-          <Other>
-            <Verbosity>
-              <ShowWarn Value="False"/>
-              <ShowNotes Value="False"/>
-              <ShowHints Value="False"/>
-              <ShowLineNum Value="True"/>
-              <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
-              <ShowHintsForSenderNotUsed Value="True"/>
-            </Verbosity>
-            <WriteFPCLogo Value="False"/>
-            <ConfigFile>
-              <StopAfterErrCount Value="12"/>
-            </ConfigFile>
-            <CompilerMessages>
-              <IgnoredMessages idx6058="True"/>
-            </CompilerMessages>
-            <ExecuteBefore>
-              <Command Value="$(ProjPath)"/>
-              <CompileReasons Compile="False" Build="False" Run="False"/>
-            </ExecuteBefore>
-            <ExecuteAfter>
-              <ScanForFPCMsgs Value="True"/>
-              <ScanForMakeMsgs Value="True"/>
-              <CompileReasons Compile="False" Build="False" Run="False"/>
-            </ExecuteAfter>
-          </Other>
-        </CompilerOptions>
-      </Item>
+      <Item Name="Default" Default="True"/>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>
+      <UseFileFilters Value="True"/>
     </PublishOptions>
     <RunParams>
       <FormatVersion Value="2"/>
+      <Modes>
+        <Mode Name="default"/>
+      </Modes>
     </RunParams>
     <RequiredPackages>
       <Item>
         <PackageName Value="LCL"/>
       </Item>
-      <Item>
-        <PackageName Value="Printer4Lazarus"/>
-      </Item>
     </RequiredPackages>
     <Units>
       <Unit>
-        <Filename Value="Forms/FreeShip.project"/>
+        <Filename Value="FreeShip.project"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="Units/FreeLanguageSupport.pas"/>
+        <Filename Value="Units\FreeLanguageSupport.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/Main.pas"/>
+        <Filename Value="Forms\Main.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeHullFormWindow_panel.pas"/>
+        <Filename Value="Forms\FreeHullformWindow.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeHullWindow"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UnitName Value="FreeHullFormWindow_Panel"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeLayerDlg.pas"/>
+        <Filename Value="Forms\FreeLayerDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeLayerDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeNewModelDlg.pas"/>
+        <Filename Value="Forms\FreeNewModelDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeNewModelDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Units/FreeVersionUnit.pas"/>
+        <Filename Value="Forms\FreeSplashWndw.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FreeSplashWindow"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreeVersionUnit.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeIntersectionDlg.pas"/>
+        <Filename Value="Forms\FreeIntersectionDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeIntersectionDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeExtrudeDlg.pas"/>
+        <Filename Value="Forms\FreeExtrudeDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeExtrudeDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeControlPointFrm.pas"/>
+        <Filename Value="Forms\FreeControlPointFrm.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeControlPointForm"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeProjectSettingsDlg.pas"/>
+        <Filename Value="Forms\FreeProjectSettingsDlg.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FREEProjectSettingsDialog"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeRotateDlg.pas"/>
+        <Filename Value="Forms\FreeRotateDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeRotateDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreePreferencesDlg.pas"/>
+        <Filename Value="Forms\FreePreferencesDlg.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreePreferencesDialog"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeExpanedPlatesDlg.pas"/>
+        <Filename Value="Forms\FreeExpanedPlatesDlg.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeExpanedplatesDialog"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeSaveImageDlg.pas"/>
+        <Filename Value="Forms\FreeLinesplanFrme.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="SaveImageDialog"/>
+        <ComponentName Value="FreeLinesplanFrame"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
+        <ResourceBaseClass Value="Frame"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeInsertPlaneDlg.pas"/>
+        <Filename Value="Forms\FreeLinesplanFrm.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Forms\FreeInsertPlaneDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeInsertPlaneDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeMirrorPlaneDlg.pas"/>
+        <Filename Value="Forms\FreeMirrorPlaneDlg.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeMirrorPlaneDialog"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeSelectLayersDlg.pas"/>
+        <Filename Value="Forms\FreeSelectLayersDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeSelectLayersDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeLackenbyDlg.pas"/>
+        <Filename Value="Units\VRMLUnit.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeLackenbyDialog"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Forms\FreeLackenbyDlg.pas"/>
+        <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Units/FreeIGESUnit.pas"/>
+        <Filename Value="Units\FreeIGESUnit.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeIntersectLayerDlg.pas"/>
+        <Filename Value="Forms\FreeIntersectLayerDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeIntersectLayerDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeUndoHistoryDlg.pas"/>
+        <Filename Value="Forms\FreeUndoHistoryDlg.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeUndoHistoryDialog"/>
         <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeHydrostaticsResultsDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeHydrostaticsResultsDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeEmptyModelChooserDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeEmptyModelChooserDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeGridDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeGridDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/Free2DDXFExportDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="DXFExport2DDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FasterList.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeHydrostaticsDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeHydrostaticsDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeShipUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeTypes.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeFileBuffer.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeAboutDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeAboutDlg"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeStringUtils.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeBackgroundBlendingDlg.pas"/>
+        <Filename Value="Forms\FreeBackgroundBlendingDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="FreeBackgroundBlendDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/TileDialog.pas"/>
+        <Filename Value="Forms\FreeCylinderDlg.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="TileDialog"/>
+        <HasResources Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Forms\Free2DDXFExportDlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreeNumInput.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreeShipUnit.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FasterList.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreeGeometry.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreeMatrices.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreeTypes.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreeShipU_IO.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreeFileBuffer.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreePreferences.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\FreeProjectSettings.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\Russian.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Forms\FreeSplitSectionDlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Forms\FreeHydrostaticsDlg.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FreeHydrostaticsDialog"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/LightDialog.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="LightDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeGeometry.pas"/>
+        <Filename Value="Units\FreeShipU_HS.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreePointGroupForm.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreePointGroupForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeBackgroundToleranceDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeBackgroundToleranceDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/MDIPanel.pas"/>
+        <Filename Value="Units\FreeShipU_EX.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms/FreeSplitSectionDlg.pas"/>
+        <Filename Value="Units\FreeGeometry_Functions.inc"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeSplitSectionDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeLayerVisibilityDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeLayerVisibilityDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeDeleteDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeDeleteDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubdivisionControlPointGroup.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeViewport.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubdivisionLayer.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubdivisionPoint.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubdivisionControlPoint.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubdivisionEdge.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreesubdivisionControlEdge.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubdivisionFace.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubdivisionControlFace.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubdivisionSurface.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeEdit.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeShip.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeProjectSettings.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeAlphaBuffer.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeBackgroundImage.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeBackgroundImageData.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeDevelopedPatch.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeEntity.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeFlowline.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeHydrostaticCalc.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeIntersection.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeMarker.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeNURBSurface.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreePreferences.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSpline.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubdivisionControlCurve.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeUndoObject.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeVisibility.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/VRMLUnit.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeHydrostaticsFrm.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeHydrostaticsForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeGeometry_Functions.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/VRML2Unit.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeCylinderDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeCylinderDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/Cursors.rc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreePrinter.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeMatrices.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/MethodList.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeShip_export.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeShip_import.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/FreeSubExternal.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeLinesplanForm.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeLinesplanForm"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeLinesplanFrame.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeLinesplanFrame"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Frame"/>
-        <UnitName Value="FreeLinesPlanFrame"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/Russian.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units/HistoryExamples.inc"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Forms/FreeKeelWizardDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="FreeKeelWizardDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
+    <PathDelim Value="\"/>
     <Target>
-      <Filename Value="../FreeShip"/>
+      <Filename Value="..\FreeShip"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="Units;Forms;$(ProjOutDir)"/>
       <OtherUnitFiles Value="Units;Forms"/>
-      <UnitOutputDirectory Value="../Work/Obj/$(TargetCPU)-$(TargetOS)"/>
+      <UnitOutputDirectory Value="..\Work\Obj\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <SyntaxMode Value="fpc"/>
+        <SyntaxMode Value="Delphi"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
       <Optimizations>
-        <OptimizationLevel Value="2"/>
+        <OptimizationLevel Value="3"/>
       </Optimizations>
       <SmallerCode Value="True"/>
     </CodeGeneration>
@@ -608,13 +296,10 @@
       <Debugging>
         <GenerateDebugInfo Value="False"/>
         <RunWithoutDebug Value="True"/>
-        <UseLineInfoUnit Value="False"/>
+        <DebugInfoType Value="dsDwarf3"/>
         <StripSymbols Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>
-      <Options>
-        <LinkerOptions Value="-vd"/>
-      </Options>
     </Linking>
     <Other>
       <Verbosity>
@@ -624,14 +309,17 @@
       </Verbosity>
       <WriteFPCLogo Value="False"/>
       <ConfigFile>
-        <StopAfterErrCount Value="12"/>
+        <StopAfterErrCount Value="24"/>
       </ConfigFile>
+      <CompilerMessages>
+        <IgnoredMessages idx2042="True"/>
+      </CompilerMessages>
+      <CompilerPath Value="C:\(Act)\Compile\LazaRus\fpc\3.2.2\bin\i386-win32\fpc.exe"/>
       <ExecuteBefore>
-        <Command Value="$(ProjPath)"/>
         <CompileReasons Compile="False" Build="False" Run="False"/>
       </ExecuteBefore>
       <ExecuteAfter>
-        <Command Value="C:/(Act)/Utility/WTools/upx32.exe --best $TargetFile()"/>
+        <Command Value="UPX.cmd $TargetFile()"/>
         <CompileReasons Compile="False" Build="False" Run="False"/>
       </ExecuteAfter>
     </Other>

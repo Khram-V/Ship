@@ -1,332 +1,257 @@
 object FreeCylinderDialog: TFreeCylinderDialog
-  Left = 86
-  Height = 162
-  Top = 136
-  Width = 473
+  Left = 387
+  Top = 141
   BorderStyle = bsDialog
-  Caption = 'Построение цилиндра\трубы\мачты.'
-  ClientHeight = 162
-  ClientWidth = 473
-  LCLVersion = '3.8.0.0'
+  Caption = 'Add a cylinder.'
+  ClientHeight = 157
+  ClientWidth = 274
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = True
+  PixelsPerInch = 96
+  TextHeight = 13
   object Panel2: TPanel
     Left = 0
-    Height = 138
-    Top = 24
-    Width = 473
+    Top = 22
+    Width = 274
+    Height = 122
     Align = alClient
-    BevelOuter = bvNone
-    ChildSizing.Layout = cclLeftToRightThenTopToBottom
-    ChildSizing.ControlsPerLine = 1
-    ClientHeight = 138
-    ClientWidth = 473
+    BevelOuter = bvLowered
     TabOrder = 0
-    object Panel3: TPanel
-      Left = 0
-      Height = 68
-      Top = 0
-      Width = 632
-      BevelOuter = bvNone
-      ChildSizing.LeftRightSpacing = 10
-      ChildSizing.TopBottomSpacing = 10
-      ChildSizing.HorizontalSpacing = 6
-      ChildSizing.VerticalSpacing = 2
-      ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ChildSizing.ControlsPerLine = 6
-      ClientHeight = 68
-      ClientWidth = 632
-      TabOrder = 0
-      object Label1: TLabel
-        Left = 10
-        Height = 23
-        Top = 10
-        Width = 178
-        Caption = 'Координаты начала\степса\корня'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object StartPointX: TFloatSpinEdit
-        Left = 194
-        Height = 23
-        Top = 10
-        Width = 80
-        Alignment = taRightJustify
-        Constraints.MinWidth = 80
-        DecimalPlaces = 3
-        Increment = 0.1
-        TabOrder = 0
-      end
-      object StartPointY: TFloatSpinEdit
-        Left = 280
-        Height = 23
-        Top = 10
-        Width = 80
-        Alignment = taRightJustify
-        Constraints.MinWidth = 80
-        DecimalPlaces = 3
-        Increment = 0.1
-        TabOrder = 1
-      end
-      object StartPointZ: TFloatSpinEdit
-        Left = 366
-        Height = 23
-        Top = 10
-        Width = 80
-        Alignment = taRightJustify
-        Constraints.MinWidth = 80
-        DecimalPlaces = 3
-        Increment = 0.1
-        TabOrder = 2
-      end
-      object _Label3: TLabel
-        Left = 452
-        Height = 23
-        Top = 10
-        Width = 17
-        Caption = '[м]'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object CloseStartDisk: TCheckBox
-        Left = 475
-        Height = 23
-        Top = 10
-        Width = 147
-        Caption = 'Диск в корневом торце'
-        TabOrder = 3
-      end
-      object Label2: TLabel
-        Left = 10
-        Height = 23
-        Top = 35
-        Width = 178
-        Caption = 'Концевые, топовые координаты'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object EndPointX: TFloatSpinEdit
-        Left = 194
-        Height = 23
-        Top = 35
-        Width = 80
-        Alignment = taRightJustify
-        DecimalPlaces = 3
-        Increment = 0.1
-        TabOrder = 4
-      end
-      object EndPointY: TFloatSpinEdit
-        Left = 280
-        Height = 23
-        Top = 35
-        Width = 80
-        Alignment = taRightJustify
-        DecimalPlaces = 3
-        Increment = 0.1
-        TabOrder = 5
-      end
-      object EndPointZ: TFloatSpinEdit
-        Left = 366
-        Height = 23
-        Top = 35
-        Width = 80
-        Alignment = taRightJustify
-        DecimalPlaces = 3
-        Increment = 0.1
-        TabOrder = 6
-      end
-      object _Label6: TLabel
-        Left = 452
-        Height = 23
-        Top = 35
-        Width = 17
-        Caption = '[м]'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object CloseEndDisk: TCheckBox
-        Left = 475
-        Height = 23
-        Top = 35
-        Width = 147
-        Caption = 'Топовый диск'
-        TabOrder = 7
-      end
+    object _Label3: TLabel
+      Left = 254
+      Top = 22
+      Width = 14
+      Height = 13
+      Caption = '[m]'
     end
-    object Panel4: TPanel
-      Left = 0
-      Height = 68
-      Top = 68
-      Width = 632
-      BevelOuter = bvNone
-      ChildSizing.LeftRightSpacing = 10
-      ChildSizing.TopBottomSpacing = 10
-      ChildSizing.HorizontalSpacing = 6
-      ChildSizing.VerticalSpacing = 2
-      ChildSizing.Layout = cclTopToBottomThenLeftToRight
-      ChildSizing.ControlsPerLine = 2
-      ClientHeight = 68
-      ClientWidth = 632
+    object _Label6: TLabel
+      Left = 254
+      Top = 48
+      Width = 14
+      Height = 13
+      Caption = '[m]'
+    end
+    object _Label9: TLabel
+      Left = 138
+      Top = 72
+      Width = 14
+      Height = 13
+      Caption = '[m]'
+    end
+    object Label1: TLabel
+      Left = 5
+      Top = 22
+      Width = 45
+      Height = 13
+      Caption = 'Startpoint'
+    end
+    object Label2: TLabel
+      Left = 5
+      Top = 48
+      Width = 42
+      Height = 13
+      Caption = 'Endpoint'
+    end
+    object Label4: TLabel
+      Left = 5
+      Top = 74
+      Width = 33
+      Height = 13
+      Caption = 'Radius'
+    end
+    object Label3: TLabel
+      Left = 5
+      Top = 100
+      Width = 48
+      Height = 13
+      Caption = 'No. points'
+    end
+    object Input1: TFreeNumInput
+      Left = 76
+      Top = 14
+      Width = 55
+      Height = 21
+      Alignment = taRightJustify
+      Decimals = 3
+      Digits = 12
+      OutOfRangeMessage = False
+      TabOnEnterKey = False
+      Validate = False
+      TabOrder = 0
+    end
+    object Input2: TFreeNumInput
+      Left = 136
+      Top = 14
+      Width = 55
+      Height = 21
+      Alignment = taRightJustify
+      Decimals = 3
+      Digits = 12
+      OutOfRangeMessage = False
+      TabOnEnterKey = False
+      Validate = False
       TabOrder = 1
-      object Label4: TLabel
-        Left = 10
-        Height = 23
-        Top = 10
-        Width = 199
-        Caption = 'Радиус цилиндра'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object Label3: TLabel
-        Left = 10
-        Height = 23
-        Top = 35
-        Width = 199
-        Caption = 'Количество оконтуривающих точек'
-        Layout = tlCenter
-        ParentColor = False
-      end
-      object Radius: TFloatSpinEdit
-        Left = 215
-        Height = 23
-        Top = 10
-        Width = 80
-        Alignment = taRightJustify
-        Constraints.MinWidth = 80
-        DecimalPlaces = 3
-        Increment = 0.1
-        MinValue = 0.001
-        TabOrder = 0
-        Value = 0.001
-      end
-      object NoOfPoints: TSpinEdit
-        Left = 215
-        Height = 23
-        Top = 35
-        Width = 80
-        Alignment = taRightJustify
-        MaxValue = 60
-        MinValue = 4
-        TabOrder = 1
-        Value = 4
-      end
-      object _Label9: TLabel
-        Left = 301
-        Height = 23
-        Top = 10
-        Width = 17
-        Caption = '[м]'
-        Layout = tlCenter
-        ParentColor = False
-      end
+    end
+    object Input3: TFreeNumInput
+      Left = 196
+      Top = 14
+      Width = 55
+      Height = 21
+      Alignment = taRightJustify
+      Decimals = 3
+      Digits = 12
+      OutOfRangeMessage = False
+      TabOnEnterKey = False
+      Validate = False
+      TabOrder = 2
+    end
+    object Input4: TFreeNumInput
+      Left = 76
+      Top = 40
+      Width = 55
+      Height = 21
+      Alignment = taRightJustify
+      Decimals = 3
+      Digits = 12
+      OutOfRangeMessage = False
+      TabOnEnterKey = False
+      Validate = False
+      TabOrder = 3
+    end
+    object Input5: TFreeNumInput
+      Left = 136
+      Top = 40
+      Width = 55
+      Height = 21
+      Alignment = taRightJustify
+      Decimals = 3
+      Digits = 12
+      OutOfRangeMessage = False
+      TabOnEnterKey = False
+      Validate = False
+      TabOrder = 4
+    end
+    object Input6: TFreeNumInput
+      Left = 196
+      Top = 40
+      Width = 55
+      Height = 21
+      Alignment = taRightJustify
+      Decimals = 3
+      Digits = 12
+      OutOfRangeMessage = False
+      TabOnEnterKey = False
+      Validate = False
+      TabOrder = 5
+    end
+    object Input7: TFreeNumInput
+      Left = 76
+      Top = 66
+      Width = 55
+      Height = 21
+      Alignment = taRightJustify
+      Decimals = 3
+      Digits = 12
+      OutOfRangeMessage = False
+      TabOnEnterKey = False
+      Validate = False
+      TabOrder = 6
+    end
+    object Input8: TFreeNumInput
+      Left = 76
+      Top = 92
+      Width = 55
+      Height = 21
+      Alignment = taRightJustify
+      Decimals = 0
+      Digits = 12
+      Max = 50
+      Min = 4
+      DataType = dtInteger
+      OutOfRangeMessage = False
+      TabOnEnterKey = False
+      Value = 4
+      Validate = True
+      TabOrder = 7
     end
   end
   object Panel1: TPanel
     Left = 0
-    Height = 24
     Top = 0
-    Width = 473
+    Width = 274
+    Height = 22
     Align = alTop
-    AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 24
-    ClientWidth = 473
     TabOrder = 1
     object BitBtn1: TSpeedButton
-      Left = 309
-      Height = 20
-      Top = 2
-      Width = 80
-      Align = alRight
-      AutoSize = True
-      BorderSpacing.Around = 2
-      Constraints.MinWidth = 80
-      Caption = '&Есть!'
+      Left = 136
+      Top = 1
+      Width = 65
+      Height = 19
+      Caption = 'OK'
       Flat = True
       Glyph.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        00000000000000000000000000000EA628FF0EA628FF00000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        00000000000000000000000000000EA628FF0EA628FF00000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        00000000000000000000000000000EA628FF0EA628FF0EA628FF000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000000000000000000000EA628FF0EA628FF0EA628FF0EA628FF000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        000000000000000000000EA628FF0EA628FF0EA628FF0EA628FF000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0000
-        0000000000000000000000000000000000000000000000000000000000000000
-        00000EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0000
-        0000000000000000000000000000000000000000000000000000000000000000
-        00000EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA628FF0EA6
-        28FF000000000000000000000000000000000000000000000000000000000000
-        00000EA628FF0EA628FF0EA628FF00000000000000000EA628FF0EA628FF0EA6
-        28FF000000000000000000000000000000000000000000000000000000000000
-        000000000000000000000000000000000000000000000EA628FF0EA628FF0EA6
-        28FF0EA628FF0000000000000000000000000000000000000000000000000000
-        00000000000000000000000000000000000000000000000000000EA628FF0EA6
-        28FF0EA628FF0EA628FF00000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000EA6
-        28FF0EA628FF0EA628FF00000000000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000EA6
-        28FF0EA628FF0EA628FF0EA628FF000000000000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        00000EA628FF0EA628FF0EA628FF0EA628FF0000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000EA628FF0EA628FF0EA628FF0000000000000000000000000000
-        0000000000000000000000000000000000000000000000000000000000000000
-        0000000000000EA628FF0EA628FF0EA628FF0000000000000000
+        DE010000424DDE01000000000000760000002800000024000000120000000100
+        0400000000006801000000000000000000001000000000000000000000000000
+        80000080000000808000800000008000800080800000C0C0C000808080000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+        3333333333333333333333330000333333333333333333333333F33333333333
+        00003333344333333333333333388F3333333333000033334224333333333333
+        338338F3333333330000333422224333333333333833338F3333333300003342
+        222224333333333383333338F3333333000034222A22224333333338F338F333
+        8F33333300003222A3A2224333333338F3838F338F33333300003A2A333A2224
+        33333338F83338F338F33333000033A33333A222433333338333338F338F3333
+        0000333333333A222433333333333338F338F33300003333333333A222433333
+        333333338F338F33000033333333333A222433333333333338F338F300003333
+        33333333A222433333333333338F338F00003333333333333A22433333333333
+        3338F38F000033333333333333A223333333333333338F830000333333333333
+        333A333333333333333338330000333333333333333333333333333333333333
+        0000
       }
+      NumGlyphs = 2
       OnClick = BitBtn1Click
     end
     object BitBtn2: TSpeedButton
-      Left = 391
-      Height = 20
-      Top = 2
-      Width = 80
-      Align = alRight
-      AutoSize = True
-      BorderSpacing.Around = 2
-      Constraints.MinWidth = 80
-      Caption = '&Сброс'
+      Left = 202
+      Top = 1
+      Width = 65
+      Height = 19
+      Caption = 'Cancel'
       Flat = True
       Glyph.Data = {
-        36040000424D3604000000000000360000002800000010000000100000000100
-        2000000000000004000064000000640000000000000000000000000000000000
-        000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF2110C0FF00000000000000000000000000000000000000000000
-        00002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000000000000000000000002110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF00000000000000002110
-        C0FF2110C0FF2110C0FF2110C0FF000000000000000000000000000000000000
-        00002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF000000002110C0FF2110
-        C0FF2110C0FF2110C0FF00000000000000000000000000000000000000002110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF00000000000000000000000000000000000000002110C0FF2110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF000000000000000000000000000000002110C0FF2110C0FF2110
-        C0FF2110C0FF2110C0FF000000002110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF0000000000000000000000002110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF00000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF00000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF0000000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000
-        00000000000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF000000000000
-        00000000000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF00000000000000000000
-        000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF000000002110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000000000000000000000000000
-        0000000000002110C0FF2110C0FF2110C0FF2110C0FF00000000000000002110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF00000000000000000000
-        00002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF2110C0FF2110C0FF2110C0FF0000000000000000000000000000
-        000000000000000000002110C0FF2110C0FF2110C0FF2110C0FF2110C0FF2110
-        C0FF2110C0FF2110C0FF00000000000000000000000000000000
+        DE010000424DDE01000000000000760000002800000024000000120000000100
+        0400000000006801000000000000000000001000000000000000000000000000
+        80000080000000808000800000008000800080800000C0C0C000808080000000
+        FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00333333333333
+        333333333333333333333333000033338833333333333333333F333333333333
+        0000333911833333983333333388F333333F3333000033391118333911833333
+        38F38F333F88F33300003339111183911118333338F338F3F8338F3300003333
+        911118111118333338F3338F833338F3000033333911111111833333338F3338
+        3333F8330000333333911111183333333338F333333F83330000333333311111
+        8333333333338F3333383333000033333339111183333333333338F333833333
+        00003333339111118333333333333833338F3333000033333911181118333333
+        33338333338F333300003333911183911183333333383338F338F33300003333
+        9118333911183333338F33838F338F33000033333913333391113333338FF833
+        38F338F300003333333333333919333333388333338FFF830000333333333333
+        3333333333333333333888330000333333333333333333333333333333333333
+        0000
       }
+      NumGlyphs = 2
       OnClick = BitBtn2Click
     end
+  end
+  object Panel3: TPanel
+    Left = 0
+    Top = 144
+    Width = 274
+    Height = 13
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 2
   end
 end

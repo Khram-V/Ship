@@ -13,7 +13,7 @@ interface uses
      stdCtrls,typInfo,
      extCtrls,iniFiles,FreeStringUtils;
 
-type TLanguageIniFile = class( TMemIniFile )               { TLanguageIniFile }
+type TLanguageIniFile=class( TMemIniFile )               { TLanguageIniFile }
 public Name: AnsiString;
   constructor Create( const AName:AnsiString; const AFileName:AnsiString );
 end;

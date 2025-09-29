@@ -4,37 +4,37 @@ interface uses
   Classes,SysUtils,Forms,Controls,Dialogs,ComCtrls,ExtCtrls,Buttons,Spin,Types,
   FreeTypes,FreeShipUnit;
 type
-  TEditMode = (emProgrammatic,emMouse,emKeyboard);
-  TFreeSplitSectionDialogChangeEvent = procedure ( Sender: TObject; aValue: TFloatType ) of object;
-  TFreeSplitSectionDialog = class(TForm)            { TFreeSplitSectionDialog }
+  TEditMode=(emProgrammatic,emMouse,emKeyboard);
+  TFreeSplitSectionDialogChangeEvent=procedure ( Sender: TObject; aValue: TFloatType ) of object;
+  TFreeSplitSectionDialog=class(TForm)            { TFreeSplitSectionDialog }
     BitBtn1: TBitBtn;
-    fseSplitSectionLocation: TFloatSpinEdit;
+    fseMiF: TFloatSpinEdit;
     Panel1: TPanel;
     SpeedButton1: TSpeedButton;
     SpeedButton3: TSpeedButton;
     TopPanel: TPanel;
-    tbSplitSectionLocation: TTrackBar;
+    tbMiF: TTrackBar;
     procedure BitBtn1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure fseSplitSectionLocationChange(Sender: TObject);
-    procedure fseSplitSectionLocationEditingDone(Sender: TObject);
-    procedure fseSplitSectionLocationKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure fseSplitSectionLocationMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
-    procedure fseSplitSectionLocationMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure fseMiFChange(Sender: TObject);
+    procedure fseMiFEditingDone(Sender: TObject);
+    procedure fseMiFKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure fseMiFMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+    procedure fseMiFMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
-    procedure tbSplitSectionLocationChange(Sender: TObject);
+    procedure tbMiFChange(Sender: TObject);
   private
     FEditMode:TEditMode;
-    FSplitSectionLocation:TFloatType;
-    FOnSplitSectionLocationChange: TFreeSplitSectionDialogChangeEvent;
-    procedure SetSplitSectionLocation(AValue: TFloatType);
+    FMiF:TFloatType;
+    FOnMiFChange: TFreeSplitSectionDialogChangeEvent;
+    procedure SetMiF(AValue: TFloatType);
   public
     procedure SetDimensions;
-    property SplitSectionLocation:TFloatType read FSplitSectionLocation write SetSplitSectionLocation;
-    property OnSplitSectionLocationChange: TFreeSplitSectionDialogChangeEvent
-             read FOnSplitSectionLocationChange
-             write FOnSplitSectionLocationChange;
+    property MiF:TFloatType read FMiF write SetMiF;
+    property OnMiFChange: TFreeSplitSectionDialogChangeEvent
+             read FOnMiFChange
+             write FOnMiFChange;
   end;
 
 var
@@ -43,63 +43,63 @@ var
 implementation                                      { TFreeSplitSectionDialog }
 {$R *.lfm}
 
-procedure TFreeSplitSectionDialog.fseSplitSectionLocationMouseDown
+procedure TFreeSplitSectionDialog.fseMiFMouseDown
     ( Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin FEditMode:=emMouse; end;
 
-procedure TFreeSplitSectionDialog.fseSplitSectionLocationMouseWheel
+procedure TFreeSplitSectionDialog.fseMiFMouseWheel
 ( Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
   var Handled: Boolean );
 begin FEditMode:=emMouse; end;
 
 procedure TFreeSplitSectionDialog.SpeedButton1Click(Sender: TObject);
 begin                                                               // 'Medium'
-  with Ship.Surface do SetSplitSectionLocation( (Min.X+Max.X)*0.5 );
+  with Ship.Surface do SetMiF( (Min.X+Max.X)*0.5 );
 end;
 
 procedure TFreeSplitSectionDialog.SpeedButton3Click(Sender: TObject);
 begin                                                    // 'From hydrostatics'
-  SetSplitSectionLocation( Ship.DesignHydrostatics.Data.CenterOfBuoyancy.X );
+//##  SetMiF( Ship.DesignHydrostatics.Data.CenterOfBuoyancy.X );
 end;
 
-procedure TFreeSplitSectionDialog.tbSplitSectionLocationChange(Sender: TObject);
+procedure TFreeSplitSectionDialog.tbMiFChange(Sender: TObject);
 begin
-    SetSplitSectionLocation( 0.001*tbSplitSectionLocation.Position );
+    SetMiF( 0.001*tbMiF.Position );
 end;
 
-procedure TFreeSplitSectionDialog.SetSplitSectionLocation( AValue: TFloatType );
+procedure TFreeSplitSectionDialog.SetMiF( AValue: TFloatType );
 begin
-  if FSplitSectionLocation=AValue then Exit;
-  FSplitSectionLocation:=AValue;                  // FEditMode:=emProgrammatic;
-  fseSplitSectionLocation.Value:=AValue;
-  tbSplitSectionLocation.Position:=round(AValue*1000);
-  if assigned(OnSplitSectionLocationChange) then
-     OnSplitSectionLocationChange( Self,FSplitSectionLocation );
+  if FMiF=AValue then Exit;
+  FMiF:=AValue;                  // FEditMode:=emProgrammatic;
+  fseMiF.Value:=AValue;
+  tbMiF.Position:=round(AValue*1000);
+  if assigned(OnMiFChange) then
+     OnMiFChange( Self,FMiF );
 end;
 
 // Lendth of ship,location of widest place,location of spaciest place
 procedure TFreeSplitSectionDialog.SetDimensions;
 begin
-  tbSplitSectionLocation.Min:=round(Ship.Surface.Min.X*1000);
-  tbSplitSectionLocation.Max:=round(Ship.Surface.Max.X*1000+1);
-  fseSplitSectionLocation.MinValue:=Ship.Surface.Min.X;
-  fseSplitSectionLocation.MaxValue:=Ship.Surface.Max.X;
+  tbMiF.Min:=round(Ship.Surface.Min.X*1000);
+  tbMiF.Max:=round(Ship.Surface.Max.X*1000+1);
+  fseMiF.MinValue:=Ship.Surface.Min.X;
+  fseMiF.MaxValue:=Ship.Surface.Max.X;
 end;
 
-procedure TFreeSplitSectionDialog.fseSplitSectionLocationKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState );
+procedure TFreeSplitSectionDialog.fseMiFKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState );
 begin FEditMode:=emKeyboard; end;
 
-procedure TFreeSplitSectionDialog.fseSplitSectionLocationEditingDone(Sender: TObject);
+procedure TFreeSplitSectionDialog.fseMiFEditingDone(Sender: TObject);
 begin
-//if abs(fseSplitSectionLocation.Value-FSplitSectionLocation) < 1e-5 then exit;
+//if abs(fseMiF.Value-FMiF) < 1e-5 then exit;
   FEditMode:=emKeyboard;
-  SetSplitSectionLocation( fseSplitSectionLocation.Value );
+  SetMiF( fseMiF.Value );
 end;
 
-procedure TFreeSplitSectionDialog.fseSplitSectionLocationChange(Sender: TObject);
+procedure TFreeSplitSectionDialog.fseMiFChange(Sender: TObject);
 begin
 //if FEditMode in [emMouse] then
-  SetSplitSectionLocation( fseSplitSectionLocation.Value );
+  SetMiF( fseMiF.Value );
 end;
 
 procedure TFreeSplitSectionDialog.BitBtn1Click(Sender: TObject);

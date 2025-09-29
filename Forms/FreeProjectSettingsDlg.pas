@@ -8,7 +8,7 @@ interface uses
   ComCtrls, Spin,
   FreeTypes,FreeGeometry,FreeShipUnit,FreeLanguageSupport;
 type                                             { TFREEProjectSettingsDialog }
-  TFREEProjectSettingsDialog = class( TForm )
+  TFREEProjectSettingsDialog=class( TForm )
     ColorDialog:                              TColorDialog;
     ComboBox1,Unitbox,PrecisionBox:           TComboBox;
     cbSavePreviewImage,cbShadeUnderwater,cbSimplifyIntersections,
@@ -50,7 +50,7 @@ type                                             { TFREEProjectSettingsDialog }
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
-  private   { Private declarations }
+  private
     ConversionFactor: double;
     function FGetConversionFactor: double;
     function FGetBeam: double;         procedure FSetBeam(Val: double);
@@ -63,7 +63,7 @@ type                                             { TFREEProjectSettingsDialog }
     function FGetYWindAreaMax: double; procedure FSetYWindAreaMax(Val: double);
     function FGetXWindAreaMax: double; procedure FSetXWindAreaMax(Val: double);
     procedure FSetUnitCaptions;
-  public    { Public declarations }
+  public
     function Execute: boolean;
     property Beam: double        read FGetBeam write FSetBeam;
     property Coefficient: double read FGetCoefficient write FSetCoefficient;
@@ -71,7 +71,7 @@ type                                             { TFREEProjectSettingsDialog }
     property Temper: double      read FGetTemper write FSetTemper;
     property Draft: double       read FGetDraft write FSetDraft;
     property Length: double      read FGetLength write FSetLength;
-    property Mainframe: double   read FGetMainframe write FSetMainframe;
+    property MidleFrame: double  read FGetMainframe write FSetMainframe;
     property YWindAreaMax:double read FGetYWindAreaMax write FSetYWindAreaMax;
     property XWindAreaMax:double read FGetXWindAreaMax write FSetXWindAreaMax;
   end;
@@ -85,7 +85,7 @@ implementation
 
 function TFREEProjectSettingsDialog.FGetConversionFactor: double;
 begin
-  if Unitbox.ItemIndex = 1 then Result:=1/0.3048
+  if Unitbox.ItemIndex=1 then Result:=1/0.3048
                            else Result:=1.0;
 end;
 
@@ -114,7 +114,7 @@ procedure TFREEProjectSettingsDialog.FSetDraft(Val: double);
 
 procedure TFREEProjectSettingsDialog.FSetLength(Val: double);
 begin Edit2.Value:=Val;
-  if Checkbox2.Checked then MainFrame:=0.5*Length;
+  if Checkbox2.Checked then MidleFrame:=0.5*Length;
   if Checkbox12.Checked then XWindAreaMax:=0.5*Length;
 end;
 
@@ -139,7 +139,7 @@ procedure TFREEProjectSettingsDialog.FSetXWindAreaMax(Val: double);
 procedure TFREEProjectSettingsDialog.FSetUnitCaptions;
 var Str: AnsiString; Min,Max: T3DVector;
 begin
-  if UnitBox.ItemIndex = 1 then Str:=LengthStr( fuImperial )
+  if UnitBox.ItemIndex=1 then Str:=LengthStr( fuImperial )
                            else Str:=Lengthstr( fuMetric );
   Ship.Extents( Min,Max );
   Label9.Caption :=Str+'   ↔  { '+FloattoDec(ConversionFactor*(Max.X-Min.X),2  )+' }';
@@ -148,7 +148,7 @@ begin
   Label14.Caption:=Str;
   Label21.Caption:=Str;
   Label23.Caption:=Str;
-  if UnitBox.ItemIndex = 1 then Str:=DensityStr( fuImperial )
+  if UnitBox.ItemIndex=1 then Str:=DensityStr( fuImperial )
                            else Str:=DensityStr( fuMetric );
   lbWaterDensity.Caption:=Str;
 end;
@@ -163,7 +163,7 @@ begin
   XWindAreaMax:=0.5*Length;
   FSetUnitCaptions;
   ShowTranslatedValues(Self); ShowModal;
-  Result:=Modalresult = mrOk;
+  Result:=Modalresult=mrOk;
 end;
 
 procedure TFREEProjectSettingsDialog.Edit2EditingDone(Sender: TObject);
@@ -188,7 +188,7 @@ begin
    Length:=Length/ConversionFactor;
    Beam:=Beam/Conversionfactor;
    Draft:=Draft/Conversionfactor;
-   Mainframe:=MainFrame/ConversionFactor;
+   MidleFrame:=MidleFrame/ConversionFactor;
    YWindAreaMax:=YWindAreaMax/ConversionFactor;
    XWindAreaMax:=XWindAreaMax/ConversionFactor;
    if (Unitbox.ItemIndex=0) and (Conversionfactor>1) then Density:=Density/WeightConversionFactor;
@@ -197,13 +197,13 @@ begin
    Length:=Length*ConversionFactor;
    Beam:=Beam*Conversionfactor;
    Draft:=Draft*Conversionfactor;
-   if not checkbox2.Checked then Mainframe:=MainFrame*ConversionFactor;
+   if not checkbox2.Checked then MidleFrame:=MidleFrame*ConversionFactor;
    if not checkbox11.Checked then YWindAreaMax:=YWindAreaMax*ConversionFactor;
    if not checkbox12.Checked then XWindAreaMax:=XWindAreaMax*ConversionFactor;
    FSetUnitCaptions;
 end;
 procedure TFREEProjectSettingsDialog.SplitSectionLocationEditingDone(Sender: TObject);
-    begin MainFrame:=MainFrame; end;
+    begin MidleFrame:=MidleFrame; end;
 procedure TFREEProjectSettingsDialog.Edit26EditingDone(Sender: TObject);
     begin YWindAreaMax:=YWindAreaMax; end;
 procedure TFREEProjectSettingsDialog.Edit27EditingDone(Sender: TObject);

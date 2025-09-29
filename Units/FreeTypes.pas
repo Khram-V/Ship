@@ -1,80 +1,49 @@
 unit FreeTypes;
-{$mode objfpc}{$H+} // {$mode Delphi}{$H+}
-Interface Uses      // System,
-     Classes,
-    SysUtils,
-    Graphics,
-    Math;
-
-Const Radian=57.295779513082320876798154814105;              // 180/π = °\rad
-      PixelCountMax=32768; // used for faster pixel acces when shading to viewport
-//    DirectorySeparator='\';
-      Foot = 0.3048;
+{$mode objfpc}{$H+}
+Interface Uses SysUtils,Math;
+Const
+  Radian=57.295779513082320876798154814105;                // 180/π = °\rad
+  PixelCountMax=32768; // used for faster pixel acces when shading to viewport
+  Foot = 0.3048;       // All new models are initialized to this version
+  EOL  = #13#10;
 
 Type
+  TFreeVersion = (fv100);
   TFloatType   = single;        // All floatingpoint variables are of this type
   TFloatArray  = array of TFloatType;
   T2DCoordinate= record X,Y    :TFloatType; end; // 2D coordinate type
   T3DVector    = record X,Y,Z  :TFloatType; end; // 3D coordinate type
   T3DLine      = record A,B    :T3DVector;  end; // 3D line type
-  T3DPlane     = record a,b,c,d:TFloatType; end;
-                                     // Description 3D plane: a*x+b*y+c*z-d=0.0
-  TFreeUnitType=(fuMetric,fuImperial); // Switch between metric and imperial units
+  T3DPlane     = record a,b,c,d:TFloatType; end; // 3D plane: a*x+b*y+c*z-d=0.0
+  T3DVectorArray = array of T3DVector;
+  TFreePrecisionType=( fpLow,fpMedium,fpHigh,fpVeryHigh ); // Precision of the ship-model
+  TFreeIntersectionType=( fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal);// Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
+  TFreeModelView =( mvPort,mvBoth ); // Show half the hull or the entire hull
+  TFreeEditMode  =( emSelectItems ); //,emAddPoint,emAddFlowLine ); // The program responds differnt to mouse actions depending on the editmode of the component
 
+  TFreeDelftSeriesResistanceData=record // явно лишнее, выбросить не получается
+       StartSpeed,EndSpeed,StepSpeed, Bwl,Cp,Displacement,Draft,DraftTotal,
+       KeelChordLength,KeelArea, LCB,Lwl, RudderChordLength,RudderArea,
+       Viscosity,WettedSurface,WlArea: TFloatType;
+       EstimateWetSurf,Extract: Boolean; end;
+  TFreeKAPERResistanceData = record
+       Draft,Lwl,Bwl,Cp,Displacement,LCB,WettedSurface,At_Ax,
+       EntranceAngle: TFloatType;
+       Extract: Boolean;
+  end;
+
+const ZERO: T3DVector=( X:0.0;Y:0.0;Z:0.0 );
 
   operator <>( const A,B: T3DVector ): boolean;
   operator = ( const A,B: T3DVector ): boolean;
-  operator - ( const A,B: T3DVector ): T3DVector;    // A-B
+  operator - ( const A,B: T3DVector ): T3DVector;  // A-B
   operator + ( const A,B: T3DVector ): T3DVector;
-  operator * ( const A,B: T3DVector ): T3DVector;    // векторное пероизведение
+//operator % ( const A,B: T3DVector ): TFloatType; // скалярное пероизведение
+  operator * ( const A,B: T3DVector ): T3DVector;  // векторное пероизведение
   operator * ( const D:TFloatType; const B:T3DVector ): T3DVector;  // D*B
   operator / ( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/D
-  operator - ( const A,B: T2DCoordinate ): T2DCoordinate;           // A-B
-Type
-  T3DVectorArray       = array of T3DVector;
-  TPointArray          = array of TPoint;
-  TFreePrecisionType   =( fpLow,fpMedium,fpHigh,fpVeryHigh );                // Precision of the ship-model
-  TFreeIntersectionType=( fiFree,fiStation,fiButtock,fiWaterline,fiDiagonal);// Different types of intersectionlines,stations,buttocks,waterlines and lines orientated in random planes
-  TFreeModelView       =( mvPort,mvBoth );                                   // Show half the hull or the entire hull
-  TFreeEditMode        =( emSelectItems,emAddPoint,emAddFlowLine );          // The program responds differnt to mouse actions depending on the editmode of the component
-  TFreeHydrostaticCoeff=( fcProjectSettings,fcActualData );
-  TFreeHydrostaticsCalculation=(hcAll,hcVolume,hcMidship,hcWaterline,hcSAC,hcLateralArea,hcBulbSection);
-  TFreeHydrostaticsCalculate = set of TFreeHydrostaticsCalculation;   // Set with all calculations to be performed
-//TFreeHydrostaticsCalculateGravity = set of TFreeHydrostaticsCalculation;
-//TFreeHydrostaticsMode=(fhSingleCalculation,fhMultipleCalculations); // Used when creating hydrostatic reports
-  TFreeDelftSeriesResistanceData=record
-                                    StartSpeed,EndSpeed,StepSpeed,
-                                    Bwl,
-                                    Cp,
-                                    Displacement,
-                                    Draft,
-                                    DraftTotal,
-                                    KeelChordLength,
-                                    KeelArea,
-                                    LCB,
-                                    Lwl,
-                                    RudderChordLength,RudderArea,
-                                    Viscosity,
-                                    WettedSurface,
-                                    WlArea            : TFloatType;
-                                    EstimateWetSurf,
-                                    Extract           : Boolean;
-                                 end;
-  TFreeKAPERResistanceData     = record
-                                    Draft,Lwl,Bwl,
-                                    Cp,
-                                    Displacement,
-                                    LCB,
-                                    WettedSurface,
-                                    At_Ax,
-                                    EntranceAngle     : TFloatType;
-                                    Extract           : Boolean;
-                                 end;
-Const ZERO: T3DVector=( X:0.0;Y:0.0;Z:0.0 );
-       EOL           = #13#10;
+  operator - ( const A,B: T2DCoordinate ): T2DCoordinate; // A-B
 
-Function I2S( Value: Integer ): String;
-//Function F2S( Value: TFloatType ): TFloatType;
 function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
 Function GetFloat( var S: AnsiString): TFloatType;
 Function GetInteger( var S:AnsiString ): Integer;
@@ -84,6 +53,7 @@ Function FloatToDec( Value: TFloatType; Maxlength: integer ): AnsiString;
                  // of specified decimals All trailing zeros will be removed
 Function FloatTypeToStr( Value: TFloatType ): AnsiString;
 Function Angles( V: T3DVector; Rad: TFloatType=Radian ): T3DVector;   // => [°]
+Function Inter( const a,b,c: Integer ): Integer; overload;
 Procedure WestPoint;            // ... или сброс всех запятых с заменой точками
 Function BlankOff( S: AnsiString ): AnsiString;
 
@@ -91,17 +61,14 @@ function Abs( const P: T2DCoordinate ): extended; overload;
 function Sqr( const V: T3DVector ): extended; overload;
 function Abs( const V: T3DVector ): extended; overload;
 Function AxisStep( D: double ): double;            // для разметки осевых линий
+procedure ArraySort( var FloatArray:TFloatArray; var N:integer );
 
-procedure ArraySort( var FloatArray: TFloatArray; var N:integer );
-Procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
-( XX: TFloatType;            // аргумент поиска
-  N: integer;                // наверное,длина массива
-  X,Y: array of TFloatType;  // собственно аргумент и функция
-  var YY: TFloatType         // результат
-);                           // и без проверок интервалов аргумента !!!
-function FindWaterViscosity(Temper:TFloatType; Units:TFreeUnitType):TFloatType;
-function TimeString: String;
-
+Function I2S( Value: Integer ): String;
+{function createDialogFilter( FilterName: AnsiString;
+                             extensions: array of AnsiString;
+                             NeedsAll: boolean=True ): AnsiString;}
+function VersionString( Version:TFreeVersion ):String; // Version 1.00
+Function TimeString: String;
 Implementation
 function Vector( X: TFloatType; Y: TFloatType=0.0; Z: TFloatType=0.0 ): T3DVector;
    begin Result.X:=X;
@@ -115,6 +82,9 @@ begin R:=Abs( V );
          Result.y:=arccos( V.y/R )*Rad;
          Result.z:=arccos( V.z/R )*Rad; end;
 end;
+Function Inter( const a,b,c: Integer ): Integer;
+begin if b<=a then Result:=a else if b>=c then Result:=c-1 else Result:=b; end;
+
 operator = ( const A,B: T3DVector ): boolean;
 begin result:=(A.x=B.x) and (A.y=A.y) and (A.z=B.z); end;
 
@@ -126,30 +96,29 @@ begin result.x:=(A.x+B.x);
       result.y:=(A.y+B.y);
       result.z:=(A.z+B.z);
 end;
-
 operator - ( const A,B: T3DVector ): T3DVector;   // A-B
 begin result.x:=(A.x-B.x);   // B:=( X:1.0; Y:2.0; Z:0.3 );
       result.y:=(A.y-B.y);
       result.z:=(A.z-B.z);
 end;
-
-operator/( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/B
+operator / ( const A:T3DVector; const D:TFloatType ): T3DVector;  // A/B
 begin result.x:=A.x/D;
       result.y:=A.y/D;
       result.z:=A.z/D;
 end;
-
-operator*( const D:TFloatType; const B:T3DVector): T3DVector; // scalar product
+operator * ( const D:TFloatType; const B:T3DVector):T3DVector;// scalar product
 begin result.x:=D*B.x;
       result.y:=D*B.y;
       result.z:=D*B.z;
 end;
-operator*( const A,B: T3DVector ): T3DVector;        // crossproduct
+//operator % ( const A,B: T3DVector ): TFloatType;   // скалярное пероизведение
+//   begin result:=A.x*B.x + A.y*B.y + A.z*B.z; end;
+
+operator * ( const A,B: T3DVector ): T3DVector;        // crossproduct
 begin result.x:=(A.y*B.z)-(A.z*B.y);                  // векторное произведение
       result.y:=(A.z*B.x)-(A.x*B.z);
       result.z:=(A.x*B.y)-(A.y*B.x);
 end;
-
 operator - ( const A,B: T2DCoordinate ): T2DCoordinate; // A-B
    begin result.x:=(A.x-B.x);
          result.y:=(A.y-B.y);
@@ -160,7 +129,6 @@ function Sqr( const V: T3DVector ): extended;
    begin Result:=sqr( V.X )+sqr( V.Y )+sqr( V.Z ); end;
 function Abs( const V: T3DVector ): extended;
    begin Result:=sqrt( sqr( V.X )+sqr( V.Y )+sqr( V.Z ) ); end;
-
 Function AxisStep( D: double ): double;            // для разметки осевых линий
  const M_LN10=2.30258509299404568402;
  var iPart: double;
@@ -172,55 +140,19 @@ begin D:=log10( D );
       if D>=1.5 then D:=0.5 else D:=0.2;
       Result:=power( 10.0,iPart )*D;
 end;
-
-procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
-( XX: TFloatType;             // аргумент поиска
-  N: integer;                 // наверное,длина массива
-  X,Y: array of TFloatType;   // собственно аргумент и функция
-  var YY: TFloatType );       // результат
-var I:integer; B:boolean;     // и без проверок интервалов аргумента !!!
-begin
-//if XX<=Xs[0] then YY:=Y[0]+(XX-X[0])*(Y[1]-Y[0])/(X[1]-X[0]) else
-//if XX>=Xs[N-1] then YY:=Y[N-2]+(XX-X[N-2])*(Y[N-2]-Y[N-1])/(X[N-2]-X[N-1]) else
-  B:=XX<=X[0];
-  for I:=0 to N-1 do if B or (XX>=X[I]) or (I=N-2) then
-    begin YY:=Y[I]+((XX-X[I]))*(Y[I+1]-Y[I])/(X[I+1]-X[I]); break; end;
-end;
-
-Function I2S( Value: Integer ): String;
-begin if abs( Value )>=$4000 then Result:='$'+IntToHex( Value,4 )
-                             else Result:=IntToStr( Value );
-end;
-{
-Function Length( Str: AnsiString ): Integer; overload; // ??? reintroduce; override; virtual;
-   begin Result:=UTF8Length( Str ); end;
-Function F2S( Value: TFloatType ): TFloatType; var W: extended;
-   begin if abs( Value )<1e-5 then Result:=0 // else Result:=Round( Value,6 );
-//                            else Result:=Int( 0.5+Value*1e6 )/1e6;
-         else begin W:=Value; W:=Int( 0.5+W*1e6 ); Result:=W/1e6; end;
-   end;
-}
 function FloatTypeToStr( Value: TFloatType ): AnsiString; var W: extended;
    begin if abs( Value )<1e-5 then Value:=0.0
             else begin W:=Value; W:=Int( 0.5+W*1e6 ); Value:=W/1e6; end;
      Result:=FloatToDec(Value,6); // или FloatToStrF(F2S(Value),ffGeneral,6,1);
    end;
-
 function FloatToDec(Value: TFloatType; Maxlength: integer): AnsiString;
-       //var fmt:TFormatSettings;
-begin  //  fmt:=DefaultFormatSettings;
-       //  fmt.DecimalSeparator:='.';
-       //  fmt.ThousandSeparator:=',';
-  Result:=FloatToStrF( Value,ffFixed,MaxLength+2,Maxlength ); //,fmt);
-  MaxLength:=Length( Result );
-  while Result[MaxLength]='0' do dec( MaxLength );
-  if Result[MaxLength] in ['.',','] then Inc(MaxLength);
-  SetLength( Result,MaxLength );
-{ while Result[Length(Result)]='0' do Delete(Result,Length(Result),1);
-  if Length(Result)<MaxLength then Result:=Result+'0' else
-  if Result[Length(Result)] in ['.',','] then Result:=Result+'0'; }
-end; {FloatToDec}
-
+   begin
+     Result:=FloatToStrF( Value,ffFixed,MaxLength+2,Maxlength ); //, fmt);
+     MaxLength:=Length( Result );
+     while Result[MaxLength]='0' do dec( MaxLength );
+     if Result[MaxLength] in ['.', ','] then Inc(MaxLength);
+     SetLength( Result,MaxLength );
+  end;
 Function GetFloat( var S: AnsiString ): TFloatType;
   var LocalFormatSettings: TFormatSettings; I,J,K: Integer; // R:extended;
 begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
@@ -229,7 +161,7 @@ begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
       if I=0 then I:=J;                              // начало записи числа
       if S[J]='.' then begin LocalFormatSettings.DecimalSeparator:='.';
                              LocalFormatSettings.ThousandSeparator:=','; end else
-      if S[J]=', ' then begin LocalFormatSettings.DecimalSeparator:=',';
+      if S[J]=',' then begin LocalFormatSettings.DecimalSeparator:=',';
                              LocalFormatSettings.ThousandSeparator:='.'; end;
     end else if I>0 then begin K:=J; break; end;    // здесь к = новый пробел
   end;
@@ -269,8 +201,11 @@ begin J:=1; K:=1; L:=Length( S );       // вычистка лишних про�
     SetLength( S,J-1 );
     Result:=S;
 end;
-Function TimeString: String;
-   begin Result:=FormatDateTime( 'YYYY-MM-DD_hh:nn',Now ); end;
+
+Function I2S( Value: Integer ): String;
+begin if abs( Value )>=$4000 then Result:='$'+IntToHex( Value,4 )
+                             else Result:=IntToStr( Value );
+end;
 
 {$if 0}
 procedure ArraySort( var FloatArray: TFloatArray; var N: Integer );
@@ -304,58 +239,32 @@ begin                                              // begin procedure ArraySort
   end else Inc(I);
 end; {SortFloatArray}
 {$endif}
-//      function to find the corresponding water viscosity based on the density
 
-function FindWaterViscosity(Temper:TFloatType; Units:TFreeUnitType):TFloatType;
-const
-Temp: array of TFloatType =  //  t,grad C  [0..17]
-(0.0,3.8,5.0,7.2, 10.0,12.2,15.0,17.2,20.0,22.2,25.0,30.0,40,50,60, 70, 80, 90);
-Visc: array of TFloatType =  //  Nu*1000
-(1.82,1.61,1.56,1.462,1.352,1.274,1.189,1.125,1.02,0.95,0.910,0.817,0.666,0.56,0.479,0.414,0.362,0.321);
-{ t   0     1.0 2.0  3.0  4.0  5.0  6.0   7.0  8.0  9.0  10   11   12   13   14   ++  15   16   17   18   19   ++  20   21   22   23   24
- Ro<999>.841~.9~.941~.965~.973~.965~.909 ~.849~.782~.701~.606~.498~.377~.244~.099<998>.943~.775~.594~.406~.205<997>.994~.772~.540~.299~.047
- Nu=(1.75+0.014*s+t*(0.000645*t-0.0503))*1e      -6      ~~~ для соленой воды }
-begin Result:=1.02;
-    Interpolation( Temper,Length( Temp),Temp,Visc,Result );
-    if Units=fuImperial then Result:=Result/(Foot*Foot); // convert to imperial
+(*
+function createDialogFilter( FilterName: AnsiString;
+                             extensions: array of AnsiString;
+                             NeedsAll: boolean=True ): AnsiString;
+var I: integer; ext,fltr: AnsiString;
+{ function makeGTKfilter( ext:AnsiString ):AnsiString; var I:integer;
+  begin Result:='';
+  for i:=1 to length(ext) do Result+='['+uppercase(ext[i])+lowercase(ext[i])+']';
+  end; }
+begin
+  ext:=''; fltr:=''; Result:=FilterName+' (';
+  for i:=0 to length( extensions )-1 do begin
+    ext += '*.'+extensions[i]+';';
+    fltr += '*.'+extensions[i]+';';
+  end;
+  ext:=LeftStr( ext,length(ext)-1 );
+  fltr:=LeftStr( fltr,length(fltr)-1 );
+  Result += ext+')|'+fltr;
+  if NeedsAll then Result += '|All files (*.*)|*.*';
 end;
+*)
+function VersionString(Version:TFreeVersion): String;
+   begin Result:='1.00'; end;
+Function TimeString: String;
+   begin Result:=FormatDateTime( 'YYYY-MM-DD_hh:nn',Now ); end;
 
-(*                         //...странная интерполяция,но тоже была в работе...
-procedure SFINEX1         // всё то же,но в ином порядке...
-( N: integer; X,Y: array of single; X0: single; var YY: single );
-var                     // Нелинейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
-  N1,J1,J2,J3,I: integer; SFIN: single;
-label exlabel;
-begin SFIN:=0; J1:=0; J2:=1; J3:=2; N1:=N-1;
-  if N1 = 0 then begin SFIN:=Y[J1]; goto exlabel; end;
-  if (X0 <= X[0]) and (N1 > 1) then begin
-    SFIN:=Y[J1]+(Y[J2]-Y[J1])*(X0-X[J1])/(X[J2]-X[J1]); goto exlabel;
-  end;
-  if (X0 > X[N1]) then begin
-    SFIN:=Y[N1]+(Y[N1]-Y[N1-1])*(X0-X[N1])/(X[N1]-X[N1-1]); goto exlabel;
-  end;
-  if (X0 <= X[J2]) and (N1 >= 2) then begin
-    SFIN:=(X0-X[J3])/(X[J1]-X[J2])*((X0-X[J2])/(X[J1]-X[J3]) *
-      Y[J1]-(X0-X[J1])/(X[J2]-X[J3])*Y[J2])+(X0-X[J1]) *
-      (X0-X[J2])*Y[J3]/((X[J3]-X[J1])*(X[J3]-X[J2]));
-    goto exlabel;
-  end;
-  if (X0 > X[N1-1]) then begin SFIN:=(X0-X[N1])/(X[N1-2]-X[N1-1]) *
-      ((X0-X[N1-1])/(X[N1-2]-X[N1])*Y[N1-2]-(X0-X[N1-2]) *
-      Y[N1-1]/(X[N1-1]-X[N1]))+(X0-X[N1-2])*(X0-X[N1-1]) /
-      (X[N1]-X[N1-2])*Y[N1]/(X[N1]-X[N1-1]); goto exlabel;
-  end;
-  N1:=N-2;
-  for I:=1 to N1 do if (X0 > X[I-1]) and (X0 <= X[I]) then
-      SFIN:=0.5*((X0-X[I-1])*(X0-X[I]) *
-        (Y[I-2]/((X[I-2]-X[I-1])*(X[I-2]-X[I])) +
-        Y[I+1]/((X[I+1]-X[I-1])*(X[I+1]-X[I]))) +
-        (X0-X[I])*((X0-X[I-2])/(X[I-1]-X[I-2]) +
-        (X0-X[I+1])/(X[I-1]-X[I+1]))*Y[I-1] /
-        (X[I-1]-X[I])+(X0-X[I-1])*((X0-X[I-2]) /
-        (X[I]-X[I-2])+(X0-X[I+1])/(X[I]-X[I+1]))*Y[I] /
-        (X[I]-X[I-1]));
-exlabel: yy:=SFIN;
-end; *)
 end.
 

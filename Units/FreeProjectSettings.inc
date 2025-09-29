@@ -1,9 +1,9 @@
 
-{---------------------------------------------------------}
-{                                    TFreeProjectSettings }
-{   Container class for project settings for each project }
-{    such as mainparticulars,waterdensity etc.           }
-{---------------------------------------------------------}
+{
+  TFreeProjectSettings
+   Container class for project settings for each project
+    such as mainparticulars,waterdensity etc.
+}
 procedure TFreeProjectSettings.FSetFreeHydrostaticCoefficients
           ( val: TFreeHydrostaticCoeff );
 var I: integer;
@@ -18,39 +18,28 @@ end;
 
 procedure TFreeProjectSettings.FSetEnableModelAutoMove(Val: boolean);
 begin
-  if val <> FEnableModelAutoMove then begin
+  if val<>FEnableModelAutoMove then begin
     FEnableModelAutoMove:=Val; FreeShip.FileChanged:=True;
   end;
 end;
 procedure TFreeProjectSettings.FSetDisableModelCheck(Val: boolean);
 begin
-  if val <> FDisableModelCheck then begin
+  if val<>FDisableModelCheck then begin
     FDisableModelCheck:=Val; FreeShip.FileChanged:=True;
   end;
 end;
-(*
-procedure TFreeProjectSettings.FSetEnableBonjeanSAC(Val: boolean);
+function TFreeProjectSettings.FGetMidleFrame: TFloatType;
 begin
-  if val <> FEnableBonjeanSAC then begin
-    FEnableBonjeanSAC:=Val;
-    FreeShip.FileChanged:=True;
-  end;
-end;
-*)
-function TFreeProjectSettings.FGetProjectSplitSectionLocation: TFloatType;
-begin
-  if UseDefaultSplitSectionLocation
+  if FUseMidleFrame
      then Result:=(FreeShip.Surface.Max.X+FreeShip.Surface.Min.X)/2
-     else Result:=FProjectSplitSectionLocation;
+     else Result:=FMidleFrame;
 end;
-
 procedure TFreeProjectSettings.FSetProjectAppendageCoefficient(Val: TFloatType);
 begin
   if abs(Val-FProjectAppendageCoefficient) > 1e-6 then begin
     FProjectAppendageCoefficient:=Val; FreeShip.FileChanged:=True;
   end;
 end;
-
 procedure TFreeProjectSettings.FSetProjectBeam( Val: TFloatType );
 begin
   if Val<0.001 then Val:=1; FProjectBeam:=Val; FreeShip.FileChanged:=True;
@@ -66,10 +55,9 @@ begin
   if Val<0.001 then Val:=1; FProjectLength:=Val; FreeShip.FileChanged:=True;
 end;
 
-procedure TFreeProjectSettings.FSetProjectSplitSectionLocation(val: TFloatType);
+procedure TFreeProjectSettings.FSetMidleFrame(Mid: TFloatType);
 begin
-  if Val<>FProjectSplitSectionLocation then begin
-     FProjectSplitSectionLocation:=val; FreeShip.FileChanged:=True;
+  if Mid<>FMidleFrame then begin FMidleFrame:=Mid; FreeShip.FileChanged:=True;
   end;
 end;
 
@@ -83,11 +71,11 @@ begin if abs( Val-FProjectWaterTemper )>1e-6 then
       begin FProjectWaterTemper:=Val; FreeShip.FileChanged:=True; end;
 end;
 procedure TFreeProjectSettings.FSetSavePreview(val: boolean);
-begin if val <> FSavePreview then
+begin if val<>FSavePreview then
       begin FSavePreview:=Val; FreeShip.FileChanged:=True; end;
 end;
 procedure TFreeProjectSettings.FSetStartDraft(Val: TFloatType);
-begin if Val <> FStartDraft then
+begin if Val<>FStartDraft then
       begin FStartdraft:=Val; FreeShip.FileChanged:=True; end;
 end;
 procedure TFreeProjectSettings.FSetTrim(Val: TFloatType);
@@ -101,20 +89,20 @@ procedure TFreeProjectSettings.FSetDraftStep(Val: TFloatType);
 begin if Val<>FDraftStep then
       begin FDraftStep:=Val; FreeShip.FileChanged:=True; end;
 end;
-procedure TFreeProjectSettings.FSetUseDefaultSplitSectionLocation(Val: boolean);
-begin if val<>FUseDefaultSplitSectionLocation then
-      begin FUseDefaultSplitSectionLocation:=Val; FreeShip.FileChanged:=True; end;
+procedure TFreeProjectSettings.FSetUseMidleFrame(Mid: boolean);
+begin if Mid<>FUseMidleFrame then
+      begin FUseMidleFrame:=Mid; FreeShip.FileChanged:=True; end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectShadeUnderwaterShip(Val: boolean);
-begin if val <> FProjectShadeUnderwaterShip then
+begin if val<>FProjectShadeUnderwaterShip then
       begin FProjectShadeUnderwaterShip:=Val; FreeShip.FileChanged:=True; end;
 end;
 
 procedure TFreeProjectSettings.FSetProjectSimplifyIntersections(val: boolean);
 var I: integer;
 begin
-  if val <> FProjectSimplifyIntersections then begin
+  if val<>FProjectSimplifyIntersections then begin
     FProjectSimplifyIntersections:=val;
     for I:=1 to FreeShip.NumberofStations do FreeShip.Station[I-1].Built:=False;
     for I:=1 to FreeShip.NumberofButtocks do FreeShip.Buttock[I-1].Built:=False;
@@ -134,9 +122,9 @@ var
   I: integer;
   Layer: TFreeSubdivisionLayer;
 begin
-  if Val <> FProjectUnits then begin
+  if Val<>FProjectUnits then begin
     FProjectUnits:=val;
-    if FProjectUnits = fuImperial then begin // Scale from metric to imperial units
+    if FProjectUnits=fuImperial then begin // Scale from metric to imperial units
       UnitConversionFactor:=1/0.3048;
       WeightFactor:=WeightConversionFactor;
       ThicknessFactor:=1/25.4;
@@ -170,15 +158,15 @@ begin
   FProjectWaterDensity:=1.025;     // 1025 kg/m3 for seawater
   FProjectWaterTemper:=15.;
   FProjectAppendageCoefficient:=1.0;
-// Default 1.0,typical values for ships to cpmpensate for appendices and shellplate = 1.0005;
+// Default 1.0,typical values for ships to cpmpensate for appendices and shellplate=1.0005;
 // FMainparticularsHasBeenset:=False;
   FProjectShadeUnderwaterShip:=True;
 // Shades the underwaterpart of the hull in a different color
   ProjectUnderWaterColor:=FreeShip.Preferences.UnderWaterColor;
   ProjectUnderWaterColorAlpha:=FreeShip.Preferences.UnderWaterColorAlpha;
   FProjectUnits:=TFreeUnitType( 0 ); // Default is metric units
-  FUseDefaultSplitSectionLocation:=True;
-  FProjectSplitSectionLocation:=0.0;
+  FUseMidleFrame:=True;
+  FMidleFrame:=0.0;
   FEnableModelAutoMove:=False;
   FDisableModelCheck:=True;
 //FEnableBonjeanSAC:=False;
@@ -251,12 +239,11 @@ begin
   Dialog.cbShadeUnderwater.Checked:=ProjectShadeUnderwaterShip;
   Dialog.Panel4.Color:=ProjectUnderWaterColor;
   Dialog.seUnderwaterOpacity.Value:=ProjectUnderWaterColorAlpha*100 div 255;
-  Dialog.MainFrame:=ProjectSplitSectionLocation;
-  Dialog.CheckBox2.Checked:=UseDefaultSplitSectionLocation;
+  Dialog.MidleFrame:=MidleFrame;
+  Dialog.CheckBox2.Checked:=UseMidleFrame;
   Dialog.CheckBox3.Checked:=DisableModelCheck;
   Dialog.cbSavePreviewImage.Checked:=SavePreview;
   Dialog.CheckBox13.Checked:=EnableModelAutoMove;
-//Dialog.CheckBox14.Checked:=EnableBonjeanSAC;
   Dialog.ComboBox1.ItemIndex:=Ord(ProjectCoefficients);
   Dialog.CheckBox5.Checked:=FreeShip.Visibility.FShowHydrostDisplacement;
   Dialog.CheckBox6.Checked:=FreeShip.Visibility.FShowHydrostSectionalAreas;
@@ -284,8 +271,8 @@ begin
     ProjectShadeUnderwaterShip:=Dialog.cbShadeUnderwater.Checked;
     ProjectUnderWaterColor:=Dialog.Panel4.Color;
     ProjectUnderWaterColorAlpha:=Dialog.seUnderwaterOpacity.Value*255 div 100;
-    ProjectSplitSectionLocation:=Dialog.MainFrame;
-    UseDefaultSplitSectionLocation:=Dialog.CheckBox2.Checked;
+    MidleFrame:=Dialog.MidleFrame;
+    UseMidleFrame:=Dialog.CheckBox2.Checked;
     DisableModelCheck:=Dialog.CheckBox3.Checked;
     EnableModelAutoMove:=Dialog.CheckBox13.Checked;
 //  EnableBonjeanSAC:=Dialog.CheckBox14.Checked;
@@ -326,9 +313,9 @@ begin
          ProjectUnderWaterColor:=ProjectUnderWaterColor and $FFFFFF;
   Source.LoadInteger(I);
   FProjectUnits:=TFreeUnitType(I);
-  Source.LoadBoolean(FUseDefaultSplitSectionLocation);
-  Source.LoadTFloatType(FProjectSplitSectionLocation);
-  if FreeShip.FileVersion >= fv165 then Source.LoadBoolean( FDisableModelCheck );
+  Source.LoadBoolean(FUseMidleFrame);
+  Source.LoadTFloatType(FMidleFrame);
+  if FreeShip.FileVersion >= fv165 then Source.LoadBoolean(FDisableModelCheck);
   Source.LoadString( FProjectComment );
   Source.LoadString( FProjectFileCreatedBy );
   FSavePreview:=false;
@@ -343,7 +330,7 @@ begin
     if FSavePreview then begin
       Jpg:=TJPEGImage.Create;
       Source.LoadTJPEGImage( Jpg );
-      if Image <> nil then Image.Assign(Jpg);
+      if Image<>nil then Image.Assign(Jpg);
       FreeAndNil(Jpg);
     end;
     if FreeShip.FileVersion >= fv230 then
@@ -396,8 +383,8 @@ begin
                   or (TColor(255-ProjectUnderWaterColorAlpha) shl 24) );
     Destination.Add( Ord(FProjectUnits) );
     if FreeShip.FileVersion>=fv160 then begin
-       Destination.Add(FUseDefaultSplitSectionLocation);
-       Destination.Add(FProjectSplitSectionLocation);
+       Destination.Add(FUseMidleFrame);
+       Destination.Add(FMidleFrame);
        if FreeShip.FileVersion>=fv165 then Destination.Add( DisableModelCheck );
     end;
     Destination.Add( BlankOff(FProjectComment) );
@@ -434,7 +421,27 @@ begin
     end;
   end;
 end;
-
+(*
+function TFreeProjectSettings.FGetProjectMainframeLocation:TFloatType;
+begin
+   if UseDefaultMainframeLocation then Result:=FProjectLength/2
+                                  else Result:=FProjectMainframeLocation;
+end;
+procedure TFreeProjectSettings.FSetProjectMainframeLocation(val:TFloatType);
+begin
+   if Val<>FProjectMainframeLocation then begin
+      FProjectMainframeLocation:=val;
+      Ship.FileChanged:=True;
+   end;
+end;
+procedure TFreeProjectSettings.FSetUseDefaultMainframeLocation(Val:Boolean);
+begin
+   if val<>FUseDefaultMainframeLocation then begin
+      FUseDefaultMainframeLocation:=Val;
+      Ship.FileChanged:=True;
+   end;
+end;
+*)
 //writeln( 'ready: C=$'+HexStr( FProjectUnderWaterColor,8 )
 //            + ',A=$'+HexStr( FProjectUnderWaterColorAlpha,8 ) );
 

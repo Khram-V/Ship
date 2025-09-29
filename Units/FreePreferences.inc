@@ -3,9 +3,9 @@
 {   Container class for all program settings                   }
 {--------------------------------------------------------------}
 
-const iniFileName = 'FreeShip.ini';
-const G = 'Graphic';
-const D = 'Directories';
+const iniFileName='FreeShip.ini';
+const G='Graphic';
+const D='Directories';
 
 procedure TFreePreferences.FSetViewportColor( Val: TColor );
 var I: integer;
@@ -16,9 +16,9 @@ end;
 procedure TFreePreferences.Clear;
 begin
   ResetColors;           PointSize:=2;
-  ResetDirectories;      LastDirectory:='';
-  Language:='Russian';   LanguageFile:='';
-  FbmEncoding:='cp1251'; MaxUndoMemory:=64;              // Max 20Mb undomemory
+  ResetDirectories;      LastDirectory:='Ships\';
+  Language:='Russian';   LanguageFile:='Russian.ini';
+  FbmEncoding:='cp1251'; MaxUndoMemory:=128;              // Max 20Mb undomemory
 end;
 constructor TFreePreferences.Create(Owner: TFreeShip);
   begin inherited Create; FOwner:=Owner; Clear; end;
@@ -27,7 +27,7 @@ procedure TFreePreferences.Edit;
 var Dialog: TFreePreferencesDialog;
     Dir,Lang: AnsiString;
     I: integer;
-//const DS = DirectorySeparator;
+//const DS=DirectorySeparator;
   procedure Browse( Dir: AnsiString );
   var SearchRec: TSearchRec;
     procedure Add( FileName:AnsiString );
@@ -42,10 +42,10 @@ var Dialog: TFreePreferencesDialog;
     end; {Add}
   begin
     if Dir[Length(Dir)]<>'\' then Dir:=Dir+'\';
-    if FindFirstUTF8(Dir+'*.ini',faAnyfile,SearchRec) = 0 then begin
+    if FindFirstUTF8(Dir+'*.ini',faAnyfile,SearchRec)=0 then begin
       if Uppercase(ExtractFileExt(SearchRec.Name))='.INI' then Add(Searchrec.Name);
-      while FindNextUTF8(SearchRec) = 0 do
-        if (SearchRec.Name <> '.') and (SearchRec.Name <> '..') then
+      while FindNextUTF8(SearchRec)=0 do
+        if (SearchRec.Name<>'.') and (SearchRec.Name<>'..') then
         if Uppercase(ExtractFileExt(SearchRec.Name))='.INI' then Add(Searchrec.Name);
       FindCloseUTF8(SearchRec);
     end;
@@ -53,7 +53,7 @@ var Dialog: TFreePreferencesDialog;
 begin
   Dialog:=TFreePreferencesDialog.Create(Owner);
   ShowTranslatedValues( Dialog );
-  Dir:=LanguagesDirectory; // ConfigDirectory = установлена активная директория
+  Dir:=LanguagesDirectory; // ConfigDirectory=установлена активная директория
   Dialog.ComboBox1.Items.Clear;
   Dialog.ComboBox1.Items.Add( 'Russian' ); Browse( Dir );
   Dialog.ComboBox1.ItemIndex:=0;
@@ -106,7 +106,7 @@ begin
         for I:=1 to Application.ComponentCount do
         if Application.Components[I-1] is TCustomForm
            then ShowTranslatedValues( Application.Components[I-1] );
-        with MainForm as TMainForm do
+        with Application.MainForm as TMainForm do
          for I:=1 to MDIChildCount do
           if MDIChildren[I-1] is TFreeLinesplanForm
            then ShowTranslatedValues( TFreeLinesplanForm(MDIChildren[I-1]).LinesplanFrame )
@@ -145,10 +145,10 @@ end;
 procedure TFreePreferences.LoadFromIni;
 var I,T,L,W,H,S: Integer; params: TColorIniFile; RecentFileNames: TStringList;
 begin
-  if not FileExistsUTF8( iniFileName ) then begin
-    if Mainform <> nil then begin
-       MainForm.WindowState:=wsNormal;
-       MainForm.SetBounds( 0,0,Screen.WorkAreaWidth,Screen.WorkAreaHeight );
+  if not FileExistsUTF8( iniFileName ) then begin        // и так на весь экран
+    if Application.Mainform<>nil then begin
+       Application.MainForm.WindowState:=wsNormal;
+       Application.MainForm.SetBounds( 0,0,Screen.WorkAreaWidth,Screen.WorkAreaHeight );
     end;
     SetDefaults; exit;
   end;
@@ -203,22 +203,24 @@ begin
     Owner.Edit.RecentFiles.Add( RecentFileNames.ValueFromIndex[I] );
   FreeAndNil( RecentFileNames );
   if assigned( Owner.OnUpdateRecentFileList ) then Owner.OnUpdateRecentFileList( self );
+
   T:=params.ReadInteger( 'Window','Top',0 );
   L:=params.ReadInteger( 'Window','Left',0 );
   H:=params.ReadInteger( 'Window','Height',Screen.WorkAreaHeight);
   W:=params.ReadInteger( 'Window','Width',Screen.WorkAreaWidth);
   S:=params.ReadInteger( 'Window','State',integer( wsNormal ) );
-  if MainForm<>nil then begin
-    if L > Screen.Width then L:=0;
-    if T > Screen.Height then T:=0;
-    if W > Screen.Width then W:=Screen.WorkAreaWidth;
-    if H > Screen.Height then H:=Screen.WorkAreaHeight;
-    case TWindowState( S ) of
-      wsNormal: MainForm.SetBounds( L,T,W,H );
-      wsMinimized: begin MainForm.WindowState:=wsNormal;
-                         MainForm.SetBounds( L,T,W,H ); end;
-      wsMaximized: MainForm.WindowState:=wsMaximized;
-    end;
+  if Application.Mainform<>nil then begin
+     if L>Screen.Width then L:=0;
+     if T>Screen.Height then T:=0;
+   //if W > Screen.Width then W:=Screen.WorkAreaWidth;
+   //if H > Screen.Height then H:=Screen.WorkAreaHeight;
+     { TWindowState=(wsNormal=0,wsMinimized=1,wsMaximized=2,wsFullScreen=3); }
+     case TWindowState( S ) of
+        wsNormal   : Application.MainForm.SetBounds( L,T,W,H );
+        wsMinimized: begin Application.MainForm.WindowState:=wsNormal;
+                           Application.MainForm.SetBounds(L,T,W,H); end;
+        wsMaximized: Application.MainForm.WindowState:=wsMaximized;
+     end;
   end;
   Language:=params.ReadString( 'General','Language',Language );
   LanguageFile:=LanguagesDirectory+Language+'.ini';                           // ~ConfigDirectory
@@ -316,12 +318,13 @@ begin
   params.WriteString( D,'ImportDirectory',  OnlyName( ImportDirectory ));
   params.WriteString( D,'ExportDirectory',  OnlyName( ExportDirectory ));
   params.WriteString( D,'LastDirectory',    OnlyName( LastDirectory   ));
-  if MainForm<>nil then begin
-    params.WriteInteger( 'Window','Top',MainForm.Top);
-    params.WriteInteger( 'Window','Left',MainForm.Left);
-    params.WriteInteger( 'Window','Height',MainForm.Height);
-    params.WriteInteger( 'Window','Width',MainForm.Width);
-    params.WriteInteger( 'Window','State',integer(MainForm.WindowState));
+  if Application.MainForm<>nil then
+  With Application.MainForm do begin
+    params.WriteInteger( 'Window','Top',Top);
+    params.WriteInteger( 'Window','Left',Left);
+    params.WriteInteger( 'Window','Height',Height);
+    params.WriteInteger( 'Window','Width',Width);
+    params.WriteInteger( 'Window','State',integer( WindowState));
   end;
   params.WriteInteger( G,'PointSize',           PointSize);
   params.WriteInteger( G,'FontSize',            FontSize);

@@ -1,13 +1,13 @@
 unit FreeStringUtils;
 {$mode delphi}{$H+}
 interface uses SysUtils,LazUTF8;
-resourcestring rsTextFile = 'Text file';
-               rsJPEGFiles = 'JPEG files';
-               rsImageFiles = 'Image files';
-               rsBitmapFiles = 'Bitmap files';
-               rsAngle = 'Angle';                     //UTF8 degree sign   °αβγ
-               rsAngles = 'Angles';
-//             rsPointMove = 'point move';
+resourcestring rsTextFile='Text file';
+               rsJPEGFiles='JPEG files';
+               rsImageFiles='Image files';
+               rsBitmapFiles='Bitmap files';
+               rsAngle='Angle';                     //UTF8 degree sign   °αβγ
+               rsAngles='Angles';
+//             rsPointMove='point move';
 
 function Len(s: AnsiString): PtrInt;
 function Pos(const SearchForText,SearchInText: AnsiString): PtrInt;             //inline;

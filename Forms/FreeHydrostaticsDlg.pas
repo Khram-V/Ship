@@ -1,23 +1,18 @@
 unit FreeHydrostaticsDlg;
-{$MODE Delphi}
 interface uses
-  LResources,LCLType,Classes,SysUtils,
-  PrintersDlgs,Printers,Controls,Forms,
-  Dialogs,StdCtrls,ExtCtrls,Buttons,
-  FreePrinter,FreeShipUnit,FreeLanguageSupport;
+  Classes,   SysUtils,
+  Forms,     Dialogs,
+  StdCtrls,  ExtCtrls,
+  Buttons,   FreeShipUnit, FreeLanguageSupport;
 type                                                { TFreeHydrostaticsDialog }
-  TFreeHydrostaticsDialog = class(TForm)
+  TFreeHydrostaticsDialog=class(TForm)
     Edit: TMemo;
     Panel1,Panel22: TPanel;
-    ButtonClose,ButtonSave,ButtonPrint: TSpeedButton;
-    PrintDialog: TPrintDialog;
+    ButtonClose,ButtonSave: TSpeedButton;
     SaveDialog: TSaveDialog;
     procedure ButtonCloseClick(Sender: TObject);
-    procedure ButtonPrintClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-  private { Private declarations }
-  public  { Public declarations }
   end;
 
 var FreeHydrostaticsDialog: TFreeHydrostaticsDialog;
@@ -27,8 +22,29 @@ implementation
 {$R *.lfm}
 
 procedure TFreeHydrostaticsDialog.ButtonCloseClick( Sender: TObject );
-begin Close; end;
+    begin Close; end;
+procedure TFreeHydrostaticsDialog.ButtonSaveClick(Sender: TObject);
+begin
+  if SaveDialog.Execute then
+    case SaveDialog.FilterIndex of                       // save as plain text
+      1: Edit.Lines.SaveToFile( ChangeFileExt( SaveDialog.FileName,'.txt') );
+    end;
+end;
+procedure TFreeHydrostaticsDialog.FormShow( Sender: TObject );
+var I: integer; S: AnsiString;
+begin
+  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'')+'.txt';
+  I:=Edit.Lines.Count;
+  S:=Edit.Lines.CommaText;                       // Place cursor at beginning
+  Edit.CaretPos:=TPoint(Point(0,0));
+  I:=Edit.Lines.Count;
+  S:=Edit.Lines.CommaText;
+  ShowTranslatedValues( Self );
+end;
 
+end.
+
+(*
 procedure TFreeHydrostaticsDialog.ButtonPrintClick( Sender: TObject );
 var PrintText: TextFile; Str: ansistring; I: integer;
 begin
@@ -44,25 +60,60 @@ begin
   end;
 end;
 
-procedure TFreeHydrostaticsDialog.ButtonSaveClick(Sender: TObject);
-begin
-  if SaveDialog.Execute then
-    case SaveDialog.FilterIndex of
-      1: Edit.Lines.SaveToFile(ChangeFileExt( SaveDialog.FileName,'.txt') ); // save as plain text
-    end;
-end;
-procedure TFreeHydrostaticsDialog.FormShow( Sender: TObject );
-var
-  I: integer;
-  S: AnsiString;
-begin  //SaveDialog.FileName:=Ship{(Sender as TFreeShip)}.FileName;
-  SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'')+'.txt';
-  I:=Edit.Lines.Count;
-  S:=Edit.Lines.CommaText;                       // Place cursor at beginning
-  Edit.CaretPos:=TPoint(Point(0,0));
-  I:=Edit.Lines.Count;
-  S:=Edit.Lines.CommaText;
-  ShowTranslatedValues( Self );
-end;
+object ButtonPrint: TSpeedButton
+  Left = 84
+  Height = 30
+  Top = 2
+  Width = 80
+  Align = alLeft
+  AutoSize = True
+  BorderSpacing.Around = 2
+  Constraints.MinWidth = 80
+  Caption = 'Рас&печатать'
+  Glyph.Data = {
+    36040000424D3604000000000000360000002800000010000000100000000100
+    2000000000000004000064000000640000000000000000000000000000000000
+    0000000000007F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F52
+    12FF7F5212FF7F5212FF7F5212FF000000000000000000000000000000000000
+    0000000000007F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F52
+    12FF7F5212FF7F5212FF7F5212FF000000000000000000000000000000000000
+    0000000000007F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F52
+    12FF7F5212FF7F5212FF7F5212FF0000000000000000000000007F5212FF7F52
+    12FF7F5211FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F52
+    12FF7F5212FF7F5212FF7F5212FF7F5211FF7F5212FF7F5212FF7F5212FF7E52
+    13FF7C5317FF7B5319FF7B5319FF7B5319FF7B5319FF7B5319FF7B5319FF7B53
+    19FF7B5319FF7B5319FF7B5319FF7C5317FF7E5213FF7F5212FF805210FF6C58
+    31FF326C91FF396A86FF3E687DFF3E687EFF3E687EFF3E687EFF3E687EFF3E68
+    7EFF3E687EFF3E687DFF396A86FF326C91FF6D5830FF805210FF81510FFF655B
+    3DFF1675BFFF556057FF755522FF745625FF745625FF745625FF745625FF7456
+    25FF745625FF755522FF546059FF1675BFFF665B3CFF81510FFF81510FFF655B
+    3CFF1775BDFF4C6366FF675A39FF665A3BFF665A3BFF665A3BFF665A3BFF665A
+    3BFF665A3BFF675A39FF4B6367FF1775BDFF665A3BFF81510FFF81510FFF655B
+    3CFF1576C0FF1376C3FF1576C0FF1576C0FF1576C0FF1576C0FF1576C0FF1576
+    C0FF1576C0FF1576C0FF1376C3FF1576C0FF665A3BFF81510FFF81510FFF685A
+    38FF2072AFFF1B74B6FF1B74B6FF1B74B6FF1B74B6FF1B74B6FF1B74B6FF1B74
+    B6FF1B74B6FF1B74B6FF1B74B6FF2072AEFF685A37FF81510FFF7F5212FF7B53
+    18FF70572BFF6F572DFF6F572CFF6F572CFF6F572CFF6F572CFF6F572CFF6F57
+    2CFF6F572CFF6F572CFF6F572DFF70572BFF7B5318FF7F5212FF7F5212FF7F52
+    12FF805210FF805210FF805210FF805210FF805210FF805210FF805210FF8052
+    10FF805210FF805210FF805210FF805210FF7F5212FF7F5212FF7F5212FF7F52
+    12FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F52
+    12FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF000000000000
+    0000000000007F5212FF7F5212FF000000000000000000000000000000000000
+    0000000000007F5212FF7F5212FF000000000000000000000000000000000000
+    0000000000007F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F52
+    12FF7F5212FF7F5212FF7F5212FF000000000000000000000000000000000000
+    0000000000007F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F5212FF7F52
+    12FF7F5212FF7F5212FF7F5212FF000000000000000000000000
+  }
+  Margin = 4
+  OnClick = ButtonPrintClick
+end
 
-end.
+object PrintDialog: TPrintDialog
+  Options = [poPageNums, poDisablePrintToFile]
+  Left = 172
+  Top = 4
+end
+
+*)

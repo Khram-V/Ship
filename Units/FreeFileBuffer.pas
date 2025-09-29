@@ -8,18 +8,18 @@ interface uses
   FreeTypes,
   LConvEncoding,
   FreeVersionUnit;
-const FileBufferBlockSize = 32768;                         //=2^15 <= 4096=2^12
+const FileBufferBlockSize=32768;                         //=2^15 <= 4096=2^12
                         // used for reading and writing files using TFilebuffer
 
 type
-//  TNameData = record N:integer; Name:AnsiString; end;
-//  TLinearConstraintData = record N,LinearConstraintPointA,LinearConstraintPointB:integer; end;
-//  TAnchorData = record N,AnchorPoint:integer; IsAnchorHard:boolean; end;
+//  TNameData=record N:integer; Name:AnsiString; end;
+//  TLinearConstraintData=record N,LinearConstraintPointA,LinearConstraintPointB:integer; end;
+//  TAnchorData=record N,AnchorPoint:integer; IsAnchorHard:boolean; end;
 {---------------------------------------}
 {                    TFreeFileBuffer    }
 { Binary stream used to store file info }
 {---------------------------------------}
-TFreeFileBuffer = class
+TFreeFileBuffer=class
   private
     FCapacity: integer; // Amount of bytes allocated
     FCount: integer;    // The amount of bytes actually used
@@ -83,7 +83,7 @@ TFreeFileBuffer = class
   {                                           TFreeTextBuffer }
   { Text file used to store file info                         }
   {-----------------------------------------------------------}
-  TFreeTextBuffer = class( TFreeFileBuffer )
+  TFreeTextBuffer=class( TFreeFileBuffer )
   private
     FLines: TStringList;
     FPosition: integer;    // this is our position
@@ -159,10 +159,7 @@ function TFreeFileBuffer.GetPosition:integer;
    begin Result:=FPosition; end;
 
 procedure TFreeFileBuffer.LoadFromFile( Filename: AnsiString );
-var
-  DataLeft: integer;
-  Tmp: integer;
-  Size: integer;
+var DataLeft,Tmp,Size: integer;
 begin
   FFileName:=Filename;
   AssignFile( FFile,Filename );
@@ -215,7 +212,7 @@ procedure TFreeFileBuffer.Add( IntegerValue:Integer ); var Size:integer;
 begin Size:=SizeOf( Integer );
    if Count+Size>Capacity then Capacity:=Count+Size;
       Move( IntegerValue,FData[FCount],Size ); Inc( FCount,Size );
-  end;                            // NtoLE( IntegerValue ) = Indian swap bytes
+  end;                            // NtoLE( IntegerValue )=Indian swap bytes
 {
 procedure TFreeFileBuffer.Add( Color: TColor; Alfa:byte );
   var C: Cardinal; Size: Integer;
@@ -223,7 +220,7 @@ begin Size:=4; // SizeOf( Integer );
   C := ( Color and $FFFFFF ) or ( Cardinal( 255-Alfa ) shl 24 );
   if Count+Size > Capacity then Capacity:=Count+Size;
   Move( C,FData[FCount],Size );
-  Inc( FCount,Size );              // NtoLE( IntegerValue ) = Indian swap bytes
+  Inc( FCount,Size );              // NtoLE( IntegerValue )=Indian swap bytes
 end;
                     // Destination.Add( (ProjectUnderWaterColor and $FFFFFF )
                    //  or (TColor( 255-ProjectUnderWaterColorAlpha ) shl 24) );
@@ -362,7 +359,7 @@ end;
 ////////// Add
 
 procedure TFreeFileBuffer.Add( Data: TFreeDelftSeriesResistanceData );
-var Size: integer = sizeof( Data ); bp: integer;
+var Size: integer=sizeof( Data ); bp: integer;
 begin
   bp:=FCount;
   if Count+Size>Capacity then Capacity:=Count+Size;
@@ -391,7 +388,7 @@ begin
 end;
 
 procedure TFreeFileBuffer.Add(Data: TFreeKAPERResistanceData);
-var Size: integer = sizeof( Data ); bp: integer;
+var Size: integer=sizeof( Data ); bp: integer;
 begin
   bp:=FCount;
   if Count+Size>Capacity then Capacity:=Count+Size;
@@ -419,7 +416,7 @@ begin Output:='';
   for I:=1 to Size do begin
      Ch:=char( FData[FPosition] ); Inc( FPosition );
      Output:=Output+Ch;
-  end;
+  end;                                                 //  EnCoding:='cp1251';
   if Encoding<>'utf8' then Output:=ConvertEncoding( Output,Encoding,'utf8' );
 //   begin S:=Output; Output:=ConvertEncoding( S,Encoding,'utf8' ); end;
 end;
@@ -542,7 +539,7 @@ begin                                 // convert text from UTF8 to Windows ANSI
   if Encoding<>'utf8' then Text:=ConvertEncoding( Text,'utf8',Encoding );
   Size:=Length( Text );
   Add( Size );
-  if Size = 0 then exit;
+  if Size=0 then exit;
   if Count+Size>Capacity then Capacity:=Count+Size;
   Move( Text[1],FData[FCount],Size );
   Inc(FCount,Size);

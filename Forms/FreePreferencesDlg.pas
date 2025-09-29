@@ -10,7 +10,7 @@ interface uses
   ComCtrls,Spin,
   Menus,FreeShipUnit;
 type                                                 { TFreePreferencesDialog }
-  TFreePreferencesDialog = class(TForm)
+  TFreePreferencesDialog=class(TForm)
     EditExportDir,EditImportDir,EditLanguagesDir,
     EditManualsDir,EditOpenDir,EditSaveDir:                         TEdit;
 //  EditExecDir,EditGlobalImportDir,EditGlobalOpenDir,EditTempDir:  TEdit;
@@ -67,7 +67,7 @@ type                                                 { TFreePreferencesDialog }
 var
   FreePreferencesDialog: TFreePreferencesDialog;
 
-const rs_Save = 'Are you sure you want to reset the preferences?'
+const rs_Save='Are you sure you want to reset the preferences?'
                 +#13#10+'The current settings will be lost.';
 
 implementation
@@ -102,14 +102,14 @@ begin                                                                           
   Panel25.Color:=FFreeship.Preferences.HydrostaticsFontColor;                   //   24    25   346 'Hydrostatics font color'
   Panel26.Color:=FFreeship.Preferences.ZebraStripeColor;                        //   25    26   374 'Zebra stripes color'
 { object ColorDialog: TColorDialog
-    Color = clBlack
-    CustomColors.Strings = (
+    Color=clBlack
+    CustomColors.Strings=(
       'ColorA=000000' 'ColorB=000080' 'ColorC=008000' 'ColorD=008080'
       'ColorE=800000' 'ColorF=800080' 'ColorG=808000' 'ColorH=808080'
       'ColorI=C0C0C0' 'ColorJ=0000FF' 'ColorK=00FF00' 'ColorL=00FFFF'
       'ColorM=FF0000' 'ColorN=FF00FF' 'ColorO=FFFF00' 'ColorP=FFFFFF'
       'ColorQ=C0DCC0' 'ColorR=C08000' 'ColorS=F0FBFF' 'ColorT=A4A0A0' <-F0CAA6'
-    ) Left = 240
+    ) Left=240
   end
 }
   SpinEdit1.Value:=FFreeship.Preferences.PointSize;
@@ -139,24 +139,24 @@ begin
   Updatedata;
   FConfigChanged:=False;
   Showmodal;
-  Result:=ModalResult = mrOk;
+  Result:=ModalResult=mrOk;
 end;
 
 procedure TFreePreferencesDialog.ColorPanelClick(Sender: TObject);
 var Panel: TPanel;
 begin
-  if (Sender.ClassType <> TPanel) then exit;
+  if (Sender.ClassType<>TPanel) then exit;
   Panel:=TPanel(Sender);
   ColorDialog.Color:=Panel.Color;
   if ColorDialog.Execute then
-  if ColorDialog.Color <> Panel.Color then begin
+  if ColorDialog.Color<>Panel.Color then begin
     Panel.Color:=ColorDialog.Color;
     FConfigChanged:=true;
   end;
 end;
 
 procedure TFreePreferencesDialog.ResetColorsButtonClick(Sender: TObject);
-    begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0) = mrYes
+    begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0)=mrYes
           then begin FFreeship.Preferences.ResetColors; Updatedata; end;
     end;
 procedure TFreePreferencesDialog.FormResize(Sender: TObject); var sz:TRect;
@@ -213,7 +213,7 @@ procedure TFreePreferencesDialog.seSubmergedSurfaceOpacityChange(Sender: TObject
       FFreeship.Preferences.UnderWaterColorAlpha:=(seSubmergedSurfaceOpacity.Value*255) div 100;
     end;
 procedure TFreePreferencesDialog.ResetDirsButtonClick(Sender: TObject);
-    begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0 ) = mrYes
+    begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0 )=mrYes
           then begin FFreeship.Preferences.ResetDirectories; end;
     end;
 procedure TFreePreferencesDialog.SpeedButtonLanguagesDirClick(Sender: TObject);
