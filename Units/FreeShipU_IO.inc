@@ -144,17 +144,11 @@ begin
   if Str='.ftm' then Source:=TFreeTextBuffer.Create else
   if Str='.fef' then Strings:=TStringList.Create else
        begin WriteLN( '...нет ftm,fbm или fef' ); exit; end;
-//  Ship.Surface.Clearselection;               // Make sure no items are selected
-//  Ship.Edit.Selection_Clear;
-//  Ship.FSelectedFlowlines.Clear;
-//  Ship.FSelectedMarkers.Clear;
-//# Ship.ModelIsLoaded:=False;
-//# Ship.FileIsReadOnly:=True;
   Ship.Clear;
   Ship.Filename:=FileName;
   if Strings<>nil then begin
     Strings.LoadFromFile( Filename );
-    LineNr:=-1;  // Read general information and mainparticulars
+    LineNr:=-1;                 // Read general information and mainparticulars
     inc(LineNr); Ship.ProjectSettings.FProjectName:=Strings[LineNr];
     inc(LineNr); Ship.ProjectSettings.FProjectDesigner:=Strings[LineNr];
     inc(LineNr); Ship.ProjectSettings.FProjectFileCreatedBy:=Strings[LineNr];

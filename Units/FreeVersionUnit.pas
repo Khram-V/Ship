@@ -16,8 +16,8 @@ type TFreeFileVersion=( fv100,fv110,fv120,fv130,fv140,fv150,fv160,fv165,fv170,
                         {   ControlPointNames,ControlEdgeNames,
                             ControlFaceNames,ControlCurveNames,
                             ControlPointLinearConstraints }
-                        fv430,// ControlPointGroups
-                        fv462,// Anchors
+                        fv430, // ControlPointGroups
+                        fv462, // Anchors
                         fv500  // UnderWaterColorAlpha
                       );
 const CurrentVersion=fv260;    //high( TFreeFileVersion );
@@ -25,7 +25,7 @@ const CurrentVersion=fv260;    //high( TFreeFileVersion );
                       // All new created models are initialized to this version
 var
 //FREESHIP_MAJOR_VERSION: string ='5.0';    // Major version
-  FREESHIP_VERSION : string='2.6.1.3';    // Current full version
+  FREESHIP_VERSION : string='2.6';          // Current full version ++
 
 function VersionString( Version:TFreeFileVersion): String;
 function VersionBinary( Version: String ):TFreeFileVersion;

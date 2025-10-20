@@ -69,7 +69,7 @@ begin
    _label9.Caption:=Str;
    Showmodal;
    Result:=ModalResult=mrOk;
-end;{TFreeExtrudeDialog.Execute}
+end;
 
 procedure TFreeExtrudeDialog.Edit1KeyPress(Sender: TObject; var Key: Char);
 begin

@@ -473,21 +473,15 @@ var P       : TPoint;
     Diff    : T2DCoordinate;
     Patch   : TFreeDevelopedPatch;
 begin
-   if FAllowPanOrZoom then
-   begin
-      if ssLeft in Shift then
-      begin
-         // Zoom in or zoom out
-         if abs(FInitialPosition.Y-Y)>4 then
-         begin
+   if FAllowPanOrZoom then begin
+      if ssLeft in Shift then begin                      // Zoom in or zoom out
+         if abs(FInitialPosition.Y-Y)>4 then begin
             if Y<FInitialPosition.Y then Viewport.ZoomIn else
                if Y>FInitialPosition.Y then Viewport.ZoomOut;
             FInitialPosition.X:=X;
             FInitialPosition.Y:=Y;
          end;
-      end else if ssRight in Shift then
-      begin
-         // Pan the window left, right, top or bottom
+      end else if ssRight in Shift then begin // Pan the window left, right, top or bottom
          if (abs(FInitialPosition.X-X)>4) or (abs(FInitialPosition.Y-Y)>4)  then
          begin
             P.X:=Viewport.Pan.X+X-FInitialPosition.X;
@@ -497,14 +491,11 @@ begin
             FInitialPosition.Y:=Y;
          end;
       end;
-   end else
-   begin
+   end else begin
       Patch:=ActivePatch;
-      if (ssLeft in Shift) and (Patch<>nil) then
-      begin
-         // Translate the selected patch
-         if (abs(FInitialPosition.X-X)>0) or (abs(FInitialPosition.Y-Y)>0)  then
-         begin
+      if (ssLeft in Shift) and (Patch<>nil) then begin // Translate the selected patch
+         if (abs(FInitialPosition.X-X)>0) or (abs(FInitialPosition.Y-Y)>0)
+         then begin
             P.X:=X;
             P.Y:=Y;
             P1:=Viewport.ProjectBackTo2D(FInitialPosition);
@@ -518,7 +509,7 @@ begin
          end;
       end;
    end;
-end;{TFreeExpanedplatesDialog.ViewportMouseMove}
+end;
 
 procedure TFreeExpanedplatesDialog.ViewportMouseDown(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var Active: TFreeDevelopedPatch;

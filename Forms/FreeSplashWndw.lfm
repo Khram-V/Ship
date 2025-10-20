@@ -3,7 +3,7 @@ object FreeSplashWindow: TFreeSplashWindow
   Height = 160
   Top = 945
   Width = 460
-  Caption = 'Числовая модель корпуса'
+  Caption = 'Числовая модель корпуса корабля'
   ClientHeight = 160
   ClientWidth = 400
   Position = poScreenCenter
@@ -16,7 +16,7 @@ object FreeSplashWindow: TFreeSplashWindow
     Width = 400
     Align = alTop
     BorderSpacing.Left = 20
-    Caption = 'Free!Ship'
+    Caption = 'Free!Ship-2.6'
     Font.Color = clTeal
     Font.Height = -20
     Font.Name = 'Times'

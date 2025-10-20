@@ -1,5 +1,4 @@
 
-
 unit FreeBackgroundBlendingDlg;
 {$MODE Delphi}
 interface uses

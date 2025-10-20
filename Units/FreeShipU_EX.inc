@@ -1,6 +1,6 @@
 {
   1 = © Aurora.Vsl-штормовой вычислительный эксперимент
-  2=WaveFront.Obj
+  2 = WaveFront.Obj
   3 - Standard triangle.Stl
   4 - dxf - три варианта
   5 - iges
@@ -789,7 +789,7 @@ begin
       SaveDialog.Destroy;
    end;
    Frames.Destroy;
-end;{TFreeEdit.File_ExportArchimedes}
+end;
 
 // export the coordinates of all controlpoints to a textfile
 procedure TFreeEdit.File_ExportCoordinates;
@@ -1798,6 +1798,50 @@ begin
 //    end;
    end;
    Dialog.Destroy;
+end;
+
+{
+  © Import the files are always UTF8
+}
+procedure TFreeEdit.File_ImportObj;
+var
+  OpenDialog: TOpenDialog; Answer: Word;
+  PrevCursor: TCursor;
+  Strings: TStringList;
+begin
+   OpenDialog:=TOpenDialog.Create( Ship );
+   OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory; //+ConfigDirectory
+// OpenDialog.Filter:=createDialogFilter( 'OBJ file',['obj'] );
+   OpenDialog.Filter:='WaveFront OBJ (*.obj)|*.obj';
+   Opendialog.Options:=[ofHideReadOnly];
+   if OpenDialog.Execute then begin
+      Answer:=Ship.Edit.File_SaveCheck;
+      if (Answer=mrCancel) or Ship.FileChanged
+         then begin OpenDialog.Destroy; exit; end;
+      CreateUndoObject('OBJ file',True);
+      PrevCursor:=Screen.Cursor;
+      Screen.Cursor:=crHourglass;
+      Ship.Clear;
+//      assignFile(FFile,ChangeFileExt(Opendialog.FileName,'.xyz'));
+//      {$I-}Reset(FFile);{$I+}
+ //     if IOResult=0 then begin
+  //       Ship.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
+   //  Ship.Clear;
+
+      Strings:=TStringList.Create;
+      Strings.LoadFromFile( ChangeFileExt( OpenDialog.FileName,'.obj' ) );
+      Ship.Surface.ImportObjFile( Strings );
+
+//      Ship.ModelIsLoaded:=True;
+      Ship.FileName:=ChangeFileExt( Opendialog.FileName,'' );
+      Ship.RebuildModel;
+      Ship.FileChanged:=True;
+      Ship.Redraw;
+      FreeAndNil(Strings);
+      if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
+      Screen.Cursor:=PrevCursor;
+  end;
+  FreeAndNil( OpenDialog );
 end;
 
 procedure TFreeEdit.File_ExportObj;

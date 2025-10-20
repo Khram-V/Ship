@@ -24,8 +24,8 @@ object DXFExport2DDialog: TDXFExport2DDialog
     BevelOuter = bvLowered
     TabOrder = 0
     object Label3: TLabel
-      Left = 220
-      Top = 70
+      Left = 316
+      Top = 64
       Width = 32
       Height = 13
       Caption = '[pixels]'
@@ -71,32 +71,32 @@ object DXFExport2DDialog: TDXFExport2DDialog
       Height = 13
       Caption = 'Export units'
     end
-    object Edit1: TFreeNumInput
-      Left = 142
-      Top = 60
-      Width = 75
+    object Edit1: TFloatSpinEdit
+      Left = 232
       Height = 21
+      Top = 60
+      Width = 80
       Alignment = taRightJustify
-      Decimals = 5
-      Digits = 12
-      OutOfRangeMessage = False
-      TabOnEnterKey = False
+      Constraints.MinWidth = 64
+      DecimalPlaces = 3
       Value = 0.1
-      Validate = False
+      Increment = 0.1
+      MaxValue = 100
+      MinValue = -100
       TabOrder = 2
     end
     object Edit3: TEdit
-      Left = 90
+      Left = 120
       Top = 8
-      Width = 253
+      Width = 232
       Height = 21
       Color = clBtnFace
       ReadOnly = True
       TabOrder = 0
-      Text = 'Edit3'
+      Text = 'Name'
     end
     object ComboBox1: TComboBox
-      Left = 142
+      Left = 232
       Top = 34
       Width = 145
       Height = 21

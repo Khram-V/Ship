@@ -1,22 +1,48 @@
 object FreeHullWindow: TFreeHullWindow
-  Left = 584
-  Height = 281
-  Top = 108
-  Width = 430
-  Caption = 'FreeHullWindow'
-  ClientHeight = 281
-  ClientWidth = 430
+  Left = 1489
+  Height = 562
+  Top = 604
+  Width = 860
+  ClientHeight = 562
+  ClientWidth = 860
   Color = clBtnFace
+  DesignTimePPI = 192
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -22
   Font.Name = 'MS Sans Serif'
-  FormStyle = fsMDIChild
   Position = poDefault
+  ShowHint = True
   LCLVersion = '4.2.0.0'
   Visible = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
+  object ScrollBar1: TScrollBar
+    Left = 0
+    Height = 8
+    Top = 546
+    Width = 860
+    Align = alBottom
+    LargeChange = 5
+    Max = 180
+    Min = -180
+    PageSize = 0
+    Position = 20
+    TabOrder = 0
+  end
+  object ScrollBar2: TScrollBar
+    Left = 844
+    Height = 546
+    Top = 0
+    Width = 8
+    Align = alRight
+    Kind = sbVertical
+    Max = 180
+    Min = -180
+    PageSize = 0
+    Position = 20
+    TabOrder = 1
+  end
   object Viewport: TFreeViewport
     Left = 0
     Top = 0
@@ -25,20 +51,16 @@ object FreeHullWindow: TFreeHullWindow
     Cursor = crCross
     Angle = -30
     Align = alClient
+    Margin = 1
     BackgroundImage.Alpha = 255
     BackgroundImage.Tolerance = 5
     BackgroundImage.Transparent = False
     BackgroundImage.TransparentColor = clBlack
     BackgroundImage.Visible = True
-    BevelInner = bvLowered
-    BevelOuter = bvLowered
-    BorderStyle = bsSingle
     CameraType = ftStandard
     Color = 10461087
-    DoubleBuffer = True
     Elevation = 20
     HorScrollbar = ScrollBar1
-    Margin = 1
     PopupMenu = PopupMenu
     VertScrollbar = ScrollBar2
     ViewType = fvPerspective
@@ -55,38 +77,12 @@ object FreeHullWindow: TFreeHullWindow
     OnRequestBackgroundImage = ViewportRequestBackgroundImage
     OnRequestExtents = ViewportRequestExtents
   end
-  object ScrollBar1: TScrollBar
-    Left = 0
-    Height = 8
-    Top = 269
-    Width = 430
-    Align = alBottom
-    LargeChange = 5
-    Max = 180
-    Min = -180
-    PageSize = 0
-    Position = 20
-    TabOrder = 0
-  end
-  object ScrollBar2: TScrollBar
-    Left = 418
-    Height = 269
-    Top = 0
-    Width = 8
-    Align = alRight
-    Kind = sbVertical
-    Max = 180
-    Min = -180
-    PageSize = 0
-    Position = 20
-    TabOrder = 1
-  end
   object PopupMenu: TPopupMenu
     Images = Images
     AutoPopup = False
     OnPopup = PopupMenuPopup
-    Left = 50
-    Top = 16
+    Left = 100
+    Top = 32
     object Deselectall1: TMenuItem
       Action = DeselectAll
     end
@@ -179,7 +175,7 @@ object FreeHullWindow: TFreeHullWindow
       object ransparentcolor1: TMenuItem
         Action = BackgroundTransparentColor
       end
-      object olerance1: TMenuItem
+      object Tolerance1: TMenuItem
         Action = BackgroundTolerance
       end
       object Blending1: TMenuItem
@@ -192,8 +188,8 @@ object FreeHullWindow: TFreeHullWindow
   end
   object ActionList1: TActionList
     Images = Images
-    Left = 16
-    Top = 16
+    Left = 32
+    Top = 32
     object StandardLens: TAction
       Category = 'Camera'
       Caption = 'Standard lens 50mm.'
@@ -351,8 +347,8 @@ object FreeHullWindow: TFreeHullWindow
     end
   end
   object Images: TImageList
-    Left = 82
-    Top = 18
+    Left = 164
+    Top = 36
     Bitmap = {
       4C7A0A0000001000000010000000ED0800000000000078DAED5A6B5055D715BE
       0996A94CA73A62AD040A63CAC36A080815D488A0444022F29408F800798829E1

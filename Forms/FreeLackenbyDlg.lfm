@@ -2,7 +2,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
   Left = 189
   Top = 71
   BorderStyle = bsSingle
-  Caption = 'Lackenby hullform transformation.'
+  Caption = 'Трансформация корпуса по Lackenby'
   ClientHeight = 511
   ClientWidth = 746
   Color = clBtnFace
@@ -53,7 +53,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       BackgroundImage.Visible = True
       BorderStyle = bsSingle
       CameraType = ftStandard
-      DoubleBuffer = True
       ViewType = fvBodyplan
       ViewportMode = vmWireFrame
       OnRedraw = ViewportRedraw
@@ -72,329 +71,260 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
         Top = 32
         Width = 64
         Height = 13
-        Caption = 'Displacement'
+        Caption = 'Водоизмещение'
       end
       object Label2: TLabel
-        Left = 183
+        Left = 190
         Top = 2
         Width = 42
         Height = 13
-        Caption = 'Current'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
+        Caption = 'Исходное'
         ParentFont = False
       end
       object Label3: TLabel
-        Left = 242
+        Left = 249
         Top = 2
         Width = 44
         Height = 13
-        Caption = 'Desired'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
+        Caption = 'Плановое'
+        ParentFont = False
+      end
+      object Label8: TLabel
+        Left = 308
+        Top = 2
+        Width = 60
+        Height = 13
+        Caption = 'Различие'
         ParentFont = False
       end
       object Label4: TLabel
-        Left = 359
+        Left = 380
         Top = 30
         Width = 32
         Height = 13
-        Caption = 'Label4'
       end
       object Label5: TLabel
         Left = 4
         Top = 60
         Width = 79
         Height = 13
-        Caption = 'Block coefficient'
+        Caption = 'Коэффициент общей полноты'
       end
       object Label7: TLabel
         Left = 4
         Top = 88
         Width = 94
         Height = 13
-        Caption = 'Prismatic coefficient'
+        Caption = 'Коэффициент продольной полноты'
       end
       object Label6: TLabel
         Left = 4
         Top = 116
         Width = 121
         Height = 13
-        Caption = 'Long. center of buoyancy'
-      end
-      object Label8: TLabel
-        Left = 301
-        Top = 2
-        Width = 60
-        Height = 13
-        Caption = 'Difference'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
-        ParentFont = False
+        Caption = 'Абсцисса центра величины'
       end
       object Label9: TLabel
-        Left = 359
+        Left = 380
         Top = 114
         Width = 32
         Height = 13
-        Caption = 'Label9'
       end
       object Label10: TLabel
         Left = 4
         Top = 144
         Width = 119
         Height = 13
-        Caption = 'Maximum no. of iterations'
+        Caption = 'Максимальное число итераций'
       end
       object Label11: TLabel
         Left = 4
         Top = 200
         Width = 106
         Height = 13
-        Caption = 'Prismatic coeff. aftship'
+        Caption = 'Продольная полнота по корме'
       end
       object _Label12: TLabel
-        Left = 183
+        Left = 190
         Top = 198
         Width = 44
         Height = 13
-        Caption = '_Label12'
       end
       object Label13: TLabel
         Left = 4
         Top = 228
         Width = 112
         Height = 13
-        Caption = 'Prismatic coeff. foreship'
+        Caption = 'Продольная полнота по носу'
       end
       object _Label14: TLabel
-        Left = 183
+        Left = 190
         Top = 226
         Width = 38
         Height = 13
-        Caption = 'Label12'
       end
       object Label15: TLabel
         Left = 4
         Top = 256
         Width = 109
         Height = 13
-        Caption = 'Maximum displacement'
+        Caption = 'Максимум водоизмещения'
       end
       object _Label16: TLabel
-        Left = 183
+        Left = 190
         Top = 254
-        Width = 38
+        Width = 32
         Height = 13
-        Caption = 'Label12'
       end
-      object Edit1: TFreeNumInput
-        Left = 183
+      object Edit1: TFloatSpinEdit
+        Left = 190
         Top = 22
-        Width = 55
+        Width = 64
         Height = 21
         Alignment = taRightJustify
-        Decimals = 3
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        Enabled = False
-        ReadOnly = True
-        TabOrder = 0
+          DecimalPlaces = 3
+          Enabled = False
+          ReadOnly = True
+          TabOrder = 0
       end
-      object Input1: TFreeNumInput
-        Left = 242
+      object Input1: TFloatSpinEdit
+        Left = 249
         Top = 22
-        Width = 55
+        Width = 64
         Height = 21
         Alignment = taRightJustify
-        Decimals = 3
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        OnAfterSetValue = Input1AfterSetValue
-        TabOrder = 1
+          DecimalPlaces = 3
+          Increment = 0.1
+          OnEditingDone = Input1AfterSetValue
+          TabOrder = 1
       end
-      object Edit2: TFreeNumInput
-        Left = 183
-        Top = 50
-        Width = 55
-        Height = 21
-        Alignment = taRightJustify
-        Decimals = 4
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        Enabled = False
-        ReadOnly = True
-        TabOrder = 2
-      end
-      object Input2: TFreeNumInput
-        Left = 242
-        Top = 50
-        Width = 55
-        Height = 21
-        Alignment = taRightJustify
-        Decimals = 4
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        OnAfterSetValue = Input2AfterSetValue
-        TabOrder = 3
-      end
-      object Edit3: TFreeNumInput
-        Left = 183
-        Top = 78
-        Width = 55
-        Height = 21
-        Alignment = taRightJustify
-        Decimals = 4
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        Enabled = False
-        ReadOnly = True
-        TabOrder = 4
-      end
-      object Input3: TFreeNumInput
-        Left = 242
-        Top = 78
-        Width = 55
-        Height = 21
-        Alignment = taRightJustify
-        Decimals = 4
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        OnAfterSetValue = Input3AfterSetValue
-        TabOrder = 5
-      end
-      object Diff1: TFreeNumInput
-        Left = 301
+      object Diff1: TFloatSpinEdit
+        Left = 308
         Top = 22
-        Width = 55
+        Width = 64
         Height = 21
         Alignment = taRightJustify
-        Decimals = 3
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        Enabled = False
-        ReadOnly = True
+          DecimalPlaces = 3
+          Enabled = False
+          ReadOnly = True
+          TabOrder = 2
         TabOrder = 6
       end
-      object Diff2: TFreeNumInput
-        Left = 301
+      object Edit2: TFloatSpinEdit
+        Left = 190
         Top = 50
-        Width = 55
+        Width = 64
         Height = 21
         Alignment = taRightJustify
-        Decimals = 4
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        Enabled = False
-        ReadOnly = True
+          DecimalPlaces = 4
+          Enabled = False
+          ReadOnly = True
+        TabOrder = 2
+      end
+      object Input2: TFloatSpinEdit
+        Left = 249
+        Top = 50
+        Width = 64
+        Height = 21
+        Alignment = taRightJustify
+          DecimalPlaces = 4
+          Increment = 0.01
+          OnEditingDone = Input2AfterSetValue
+        TabOrder = 3
+      end
+      object Diff2: TFloatSpinEdit
+        Left = 308
+        Top = 50
+        Width = 64
+        Height = 21
+        Alignment = taRightJustify
+          DecimalPlaces = 4
+          Enabled = False
+          ReadOnly = True
         TabOrder = 7
       end
-      object Diff3: TFreeNumInput
-        Left = 301
+      object Edit3: TFloatSpinEdit
+        Left = 190
         Top = 78
-        Width = 55
+        Width = 64
         Height = 21
         Alignment = taRightJustify
-        Decimals = 4
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        Enabled = False
-        ReadOnly = True
+          DecimalPlaces = 4
+          Enabled = False
+          ReadOnly = True
+        TabOrder = 4
+      end
+      object Input3: TFloatSpinEdit
+        Left = 249
+        Top = 78
+        Width = 64
+        Height = 21
+        Alignment = taRightJustify
+          DecimalPlaces = 4
+          Increment = 0.01
+          OnEditingDone = Input3AfterSetValue
+        TabOrder = 5
+      end
+      object Diff3: TFloatSpinEdit
+        Left = 308
+        Top = 78
+        Width = 64
+        Height = 21
+        Alignment = taRightJustify
+          DecimalPlaces = 4
+          Enabled = False
+          ReadOnly = True
         TabOrder = 8
       end
-      object Edit4: TFreeNumInput
-        Left = 183
+      object Edit4: TFloatSpinEdit
+        Left = 190
         Top = 106
-        Width = 55
+        Width = 64
         Height = 21
         Alignment = taRightJustify
-        Decimals = 3
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        Enabled = False
-        ReadOnly = True
+          DecimalPlaces = 3
+          Enabled = False
+          ReadOnly = True
         TabOrder = 9
       end
-      object Input4: TFreeNumInput
-        Left = 242
+      object Input4: TFloatSpinEdit
+        Left = 249
         Top = 106
-        Width = 55
+        Width = 64
         Height = 21
         Alignment = taRightJustify
-        Decimals = 3
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
+          DecimalPlaces = 3
+          Increment = 0.1
         TabOrder = 10
       end
-      object Diff4: TFreeNumInput
-        Left = 301
+      object Diff4: TFloatSpinEdit
+        Left = 308
         Top = 106
-        Width = 55
+        Width = 64
         Height = 21
         Alignment = taRightJustify
-        Decimals = 3
-        Digits = 12
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Validate = False
-        Enabled = False
-        ReadOnly = True
+          DecimalPlaces = 3
+          Enabled = False
+          ReadOnly = True
         TabOrder = 11
       end
-      object IterationBox: TFreeNumInput
-        Left = 183
+      object IterationBox: TSpinEdit
+        Left = 190
         Top = 134
         Width = 55
         Height = 21
         Alignment = taRightJustify
-        Decimals = 0
-        Digits = 12
-        Max = 50
-        DataType = dtInteger
-        OutOfRangeMessage = False
-        TabOnEnterKey = False
-        Value = 15
-        Validate = True
+        MaxValue = 50
         TabOrder = 12
+        Value = 15
       end
       object CheckBox1: TCheckBox
         Left = 3
         Top = 172
-        Width = 192
+        Width = 200
         Height = 17
         Alignment = taLeftJustify
-        Caption = 'Redraw after each iteration'
+        Caption = 'Прорисовка каждой итерации          '
         Checked = True
         State = cbChecked
         TabOrder = 13
@@ -416,8 +346,8 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       Top = 1
       Width = 75
       Height = 19
-      Hint = 'Start the hullform transformation.'
-      Caption = 'Transform'
+      Hint = 'Начать преобразование обводов корпуса'
+      Caption = '&Исполнить'
       Flat = True
       Glyph.Data = {
         F6000000424DF600000000000000760000002800000010000000100000000100
@@ -438,7 +368,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       Top = 1
       Width = 70
       Height = 19
-      Caption = 'OK'
+      Caption = '&Есть!'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -466,7 +396,7 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       Top = 1
       Width = 70
       Height = 19
-      Caption = 'Cancel'
+      Caption = '&Отмена'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -497,7 +427,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
     Height = 206
     Align = alClient
     BevelOuter = bvNone
-    Caption = 'Panel4'
     TabOrder = 2
     object Splitter1: TSplitter
       Left = 163
@@ -529,7 +458,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       BackgroundImage.Visible = True
       BorderStyle = bsSingle
       CameraType = ftStandard
-      DoubleBuffer = True
       Elevation = 90
       ViewType = fvPlan
       ViewportMode = vmWireFrame

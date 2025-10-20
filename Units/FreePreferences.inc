@@ -107,10 +107,10 @@ begin
         if Application.Components[I-1] is TCustomForm
            then ShowTranslatedValues( Application.Components[I-1] );
         with Application.MainForm as TMainForm do
-         for I:=1 to MDIChildCount do
-          if MDIChildren[I-1] is TFreeLinesplanForm
-           then ShowTranslatedValues( TFreeLinesplanForm(MDIChildren[I-1]).LinesplanFrame )
-           else ShowTranslatedValues( MDIChildren[I-1] );
+         for I:=1 to Ship.NumberofViewports do
+          if TCustomForm( Ship.ViewPort[I-1] ) is TFreeLinesplanForm
+           then ShowTranslatedValues( TFreeLinesplanForm(Ship.ViewPort[I-1]).LinesplanFrame )
+           else ShowTranslatedValues( Ship.ViewPort[I-1] );
       end; // else FLanguage:=Lang;
     end;
     FbmEncoding:=string( Dialog.ComboBoxEncoding.Items.Objects[Dialog.ComboBoxEncoding.ItemIndex] );
@@ -248,7 +248,7 @@ procedure TFreePreferences.ResetDirectories;
 begin
 //ConfigDirectory:=ExtractFileDir( ParamStr( 0 ) );
   ConfigDirectory:=ExtractFilePath( Application.ExeName );
-  SetCurrentDir( ConfigDirectory );
+  SetCurrentDirUTF8( ConfigDirectory );
   LanguagesDirectory:='Languages\';
   ManualsDirectory  :='Manuals\';
   OpenDirectory     :='Ships\';

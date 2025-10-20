@@ -25,39 +25,34 @@ uses
      ExtCtrls,
      FasterList,
      FreeGeometry, StdCtrls;
-
-type TFreeIntersectLayerDialog = class(TForm)
-                                       Panel1: TPanel;
-                                       BitBtn1: TSpeedButton;
-                                       BitBtn2: TSpeedButton;
-                                       Panel2: TPanel;
-                                       Panel3: TPanel;
-                                       Label1: TLabel;
-                                       Label2: TLabel;
-                                       ComboBox1: TComboBox;
-                                       ComboBox2: TComboBox;
-                                       procedure BitBtn1Click(Sender: TObject);
-                                       procedure BitBtn2Click(Sender: TObject);
-                                       procedure ComboBox1Change(Sender: TObject);
-                                     private { Private declarations }
-                                        function FGetLayer1:TFreeSubdivisionLayer;
-                                        function FGetLayer2:TFreeSubdivisionLayer;
-                                        procedure UpdateBox2;
-                                     public { Public declarations }
-                                       function Execute(Layers:TFasterList):Boolean;
-                                       property Layer1   : TFreeSubdivisionLayer read FGetLayer1;
-                                       property Layer2   : TFreeSubdivisionLayer read FGetLayer2;
-                                  end;
+type 
+TFreeIntersectLayerDialog = class(TForm)
+    Panel1: TPanel;
+    BitBtn1: TSpeedButton;
+    BitBtn2: TSpeedButton;
+    Panel2: TPanel;
+    Panel3: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
+    ComboBox1: TComboBox;
+    ComboBox2: TComboBox;
+    procedure BitBtn1Click(Sender: TObject);
+    procedure BitBtn2Click(Sender: TObject);
+    procedure ComboBox1Change(Sender: TObject);
+  private { Private declarations }
+     function FGetLayer1:TFreeSubdivisionLayer;
+     function FGetLayer2:TFreeSubdivisionLayer;
+     procedure UpdateBox2;
+  public { Public declarations }
+    function Execute(Layers:TFasterList):Boolean;
+    property Layer1: TFreeSubdivisionLayer read FGetLayer1;
+    property Layer2: TFreeSubdivisionLayer read FGetLayer2;
+end;
 
 var FreeIntersectLayerDialog: TFreeIntersectLayerDialog;
 
 implementation
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-{$ELSE}
   {$R *.lfm}
-{$ENDIF}
 
 function TFreeIntersectLayerDialog.FGetLayer1:TFreeSubdivisionLayer;
 begin

@@ -1,16 +1,11 @@
 unit FreeLackenbyDlg;
 interface uses
-     SysUtils,
-     Classes,
-     Graphics,
-     Controls,
-     Forms,
-     Dialogs,
-     StdCtrls,
-     Buttons,
-     ExtCtrls,
-     CheckLst,
-     FasterList,FreeNumInput,FreeGeometry,FreeshipUnit,FreeTypes;
+     SysUtils,     Classes,
+     Graphics,     Controls,
+     Forms,        Dialogs,
+     StdCtrls,     Buttons,
+     ExtCtrls,     CheckLst,     Spin,
+     FasterList,FreeGeometry,FreeshipUnit,FreeTypes;
 
 const NStations     = 40;
       MaxLCBError   = 5e-5;
@@ -40,7 +35,8 @@ TFreeLackenbyDialog = class(TForm)
     Label1,Label2,Label3,Label4,Label5,Label6,Label7,Label8,Label9,
     Label10,Label11,_Label12,Label13,_Label14,Label15,_Label16: TLabel;
     Edit1,Input1,Edit2,Input2,Edit3,Input3,Edit4,Input4,
-    Diff1,Diff2,Diff3,Diff4,IterationBox: TFreeNumInput;
+    Diff1,Diff2,Diff3,Diff4: TFloatSpinEdit;
+    IterationBox: TSpinEdit;
     procedure OKButtonClick(Sender: TObject);
     procedure CancelButtonClick(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
@@ -76,8 +72,7 @@ var FreeLackenbyDialog:TFreeLackenbyDialog;
 
 implementation
 
-uses FreeLanguageSupport,
-     math;
+uses FreeLanguageSupport,Math;
 
 {$R *.LFM}
 
@@ -85,10 +80,9 @@ procedure TFreeLackenbyDialog.FCalulateHydrostaticProperties(Wlplane:T3DPlane;Ma
 var I,N           : Integer;
     Station       : TFreeIntersection;
     SimpsonData   : array of TSimpsonData;
-    Area,Prod     : TFloatType;
+    Area,Prod,Dist,fie,Y: TFloatType;
     COG           : T3DVector;
     Mom           : T2DCoordinate;
-    Dist,fie,Y    : TFloatType;
 begin
    N:=Stations.Count;
    Setlength(SimpsonData,N);
@@ -152,7 +146,7 @@ begin
    Input2.Value:=Edit2.Value;
    Input3.Value:=Edit3.Value;
    Input4.Value:=Edit4.Value;
-   Input1.Decimals:=Edit1.Decimals;
+   Input1.DecimalPlaces:=Edit1.DecimalPlaces;
 end;
 
 procedure TFreeLackenbyDialog.FUpdateDifferences;
@@ -169,8 +163,8 @@ begin
    Diff4.Value:=Input4.Value-Edit4.Value;
    if abs(Diff4.Value)>1e-3 then Diff4.Font.Color:=clred
                             else Diff4.Font.Color:=clGreen;
-   Diff1.Decimals:=NumberOfdecimals(Diff1.Value);
-end;{TFreeLackenbyDialog.FUpdateDifferences}
+   Diff1.DecimalPlaces:=NumberOfdecimals(Diff1.Value);
+end;
 
 procedure TFreeLackenbyDialog.FUpdateData;
 var AftProperties,ForeProperties,TotalProp: TBodyProp; MaxDispl: TFloatType;
@@ -191,7 +185,7 @@ begin
    end;
    with FFreeship.ProjectSettings do
       Edit1.Value:=VolumeToDisplacement(Totalprop.Displacement,ProjectWaterDensity,ProjectAppendageCoefficient,ProjectUnits);
-   Edit1.Decimals:=NumberOfDecimals(Edit1.Value);
+   Edit1.DecimalPlaces:=NumberOfDecimals(Edit1.Value);
    Edit2.Value:=Totalprop.Displacement/((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
    Edit3.Value:=Totalprop.Cp;
    Edit4.Value:=TotalProp.LCB;
@@ -201,7 +195,7 @@ begin
    _Label14.Caption:=': '+FloatToStrF(ForeProperties.Cp,ffFixed,7,4);
    MaxDispl:=VolumeToDisplacement(Totalprop.Length*FMainArea,FFreeship.ProjectSettings.ProjectWaterDensity,FFreeship.ProjectSettings.ProjectAppendageCoefficient,FFreeship.ProjectSettings.ProjectUnits);
    _Label16.Caption:=': '+FloatToStrF(MaxDispl,ffFixed,7,NumberOfDecimals(MaxDispl))+#32+WeightStr(FFreeship.ProjectSettings.ProjectUnits);
-end;{TFreeLackenbyDialog.FUpdateData}
+end;
 
 procedure TFreeLackenbyDialog.FExtractStations(Dest:TFasterList);
 var I,J,K   : Integer;
@@ -258,7 +252,7 @@ begin
       Dest.Add(Spline);
    end;
    Waterline.Destroy;
-end;{TFreeLackenbyDialog.FExtractWaterline}
+end;
 
 procedure TFreeLackenbyDialog.Transform(NewDispl:TFloatType;MaxIterations:Integer;UpdateWindows:Boolean;var Succeeded:Boolean);
 var Point         : TFreeSubdivisionControlPoint;
@@ -481,7 +475,7 @@ begin
       LockedPoints.Destroy;
       if Modified then FModified:=True;
 // end;
-end;{TFreeLackenbyDialog.Transform}
+end;
 
 function TFreeLackenbyDialog.Execute(Freeship:TFreeship;var Modified:boolean):Boolean;
 var I,Index       : Integer;
@@ -622,8 +616,11 @@ var NewDispl  : TFloatType;
     Succeeded : Boolean;
 begin
    if Input1.Value>0 then begin
-      NewDispl:=DisplacementToVolume(Input1.Value,FFreeship.ProjectSettings.ProjectWaterDensity,FFreeship.ProjectSettings.ProjectAppendageCoefficient,FFreeship.ProjectSettings.ProjectUnits);
-      Transform(NewDispl,IterationBox.AsInteger,Checkbox1.Checked,Succeeded);
+      NewDispl:=DisplacementToVolume
+      ( Input1.Value,FFreeship.ProjectSettings.ProjectWaterDensity,
+                     FFreeship.ProjectSettings.ProjectAppendageCoefficient,
+                     FFreeship.ProjectSettings.ProjectUnits );
+      Transform(NewDispl,IterationBox.Value,Checkbox1.Checked,Succeeded);
       if Succeeded then begin
          FExtractStations(FNewStations);
          FExtractWaterline(FNewWaterline);

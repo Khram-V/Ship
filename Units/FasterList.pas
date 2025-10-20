@@ -70,11 +70,11 @@ begin if FCapacity<=NewCapacity then
    end;
 end;
 procedure TFasterList.Delete( Index: Integer );
-begin
-   Dec(FCount);
+begin Dec(FCount);
    if Index<FCount then begin
       Move(FList[Index+1],FList[Index],(FCount-Index)*SizeOf(Pointer));
-      if FUseUserData then Move(FData[Index+1],FData[Index],(FCount-Index)*SizeOf(Pointer));
+      if FUseUserData then
+         Move(FData[Index+1],FData[Index],(FCount-Index)*SizeOf(Pointer));
    end;
 end;
 procedure TFasterList.Assign( List:TFasterList );

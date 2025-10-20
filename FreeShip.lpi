@@ -103,7 +103,9 @@
       <Unit>
         <Filename Value="Forms\FreeControlPointFrm.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FreeControlPointForm"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Forms\FreeProjectSettingsDlg.pas"/>
@@ -125,7 +127,9 @@
       <Unit>
         <Filename Value="Forms\FreeExpanedPlatesDlg.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FreeExpanedplatesDialog"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Forms\FreeLinesplanFrme.pas"/>
@@ -149,7 +153,9 @@
       <Unit>
         <Filename Value="Forms\FreeMirrorPlaneDlg.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FreeMirrorPlaneDialog"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Forms\FreeSelectLayersDlg.pas"/>
@@ -191,18 +197,9 @@
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="Forms\FreeCylinderDlg.pas"/>
-        <IsPartOfProject Value="True"/>
-        <HasResources Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="Forms\Free2DDXFExportDlg.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Units\FreeNumInput.pas"/>
-        <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Units\FreeShipUnit.pas"/>
@@ -268,6 +265,14 @@
         <Filename Value="Units\FreeGeometry_Functions.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="Units\FreeStringUtils.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Units\Main_Wins.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -314,7 +319,7 @@
       <CompilerMessages>
         <IgnoredMessages idx2042="True"/>
       </CompilerMessages>
-      <CompilerPath Value="C:\(Act)\Compile\LazaRus\fpc\3.2.2\bin\i386-win32\fpc.exe"/>
+      <CompilerPath Value="C:\(Act)\Compile\Pascal\fpc\3.2.2\bin\i386-win32\fpc.exe"/>
       <ExecuteBefore>
         <CompileReasons Compile="False" Build="False" Run="False"/>
       </ExecuteBefore>

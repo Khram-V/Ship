@@ -1,17 +1,18 @@
 object MainForm: TMainForm
-  Left = 272
-  Height = 610
-  Top = 104
-  Width = 1227
-  ClientHeight = 610
-  ClientWidth = 1227
+  Left = 0
+  Height = 989
+  Top = 0
+  Width = 1920
+  FormStyle = fsNormal
+  ClientHeight = 989
+  ClientWidth = 1920
   Color = 6908265
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  FormStyle = fsMDIForm
   Menu = MainMenu1
   Position = poDefault
+  ShowHint = True
   LCLVersion = '4.2.0.0'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
@@ -20,18 +21,16 @@ object MainForm: TMainForm
   object StatusBar: TPanel
     Left = 0
     Height = 18
-    Top = 592
-    Width = 1227
+    Top = 962
+    Width = 1920
     Align = alBottom
     BevelOuter = bvLowered
     ClientHeight = 18
-    ClientWidth = 1227
+    ClientWidth = 1920
     Color = clWindow
-    Font.CharSet = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
     Font.Name = 'Times'
-    Font.Style = [fsBold]
     ParentBackground = False
     ParentColor = False
     ParentFont = False
@@ -43,7 +42,7 @@ object MainForm: TMainForm
       Width = 200
       Align = alLeft
       BevelOuter = bvLowered
-      Caption = 'Undo memory : 0 kb.'
+      Caption = 'Память отката: 0 kb.'
       ParentBackground = False
       TabOrder = 0
     end
@@ -54,7 +53,7 @@ object MainForm: TMainForm
       Width = 200
       Align = alLeft
       BevelOuter = bvLowered
-      Caption = 'distance : '
+      Caption = 'Шаг приращений : 0.1'
       ParentBackground = False
       TabOrder = 1
       OnClick = Panel3Click
@@ -63,12 +62,25 @@ object MainForm: TMainForm
       Left = 401
       Height = 16
       Top = 1
-      Width = 300
+      Width = 320
       Align = alLeft
       BevelOuter = bvLowered
       ParentBackground = False
       TabOrder = 2
       OnClick = Panel3Click
+    end
+    object HintBar: TStatusBar
+      Left = 444
+      Height = 16
+      Top = 1
+      Width = 1600
+      Align = alLeft
+      AutoHint = True
+      Panels = <>
+      ParentShowHint = False
+      SimpleText = ' ...'
+      ShowHint = True
+      TabOrder = 3
     end
   end
   object ToolBar: TToolBar
@@ -84,7 +96,7 @@ object MainForm: TMainForm
     Images = MenuImages
     Indent = 2
     ParentColor = False
-    ParentShowHint = False
+    ParentShowHint = True
     ShowHint = True
     TabOrder = 1
     object ToolButton20: TToolButton
@@ -111,33 +123,31 @@ object MainForm: TMainForm
       Left = 102
       Height = 22
       Top = 1
-      Caption = 'ToolButton4'
       ImageIndex = 2
       Style = tbsSeparator
     end
     object PrecisionBox: TComboBox
       Left = 110
       Height = 21
-      Hint = 'Change the precision of the model.'
+      Hint = 'Частота сетки сплайновых аппроксимаций'
       Top = 1
       Width = 75
       ItemHeight = 13
-      ItemIndex = 0
+      ItemIndex = 1
       Items.Strings = (
-        'Low'
-        'Medium'
-        'High'
-        'Highest'
+        'Редкая'
+        'Средняя'
+        'Частая'
+        'Густая'
       )
       TabOrder = 1
-      Text = 'Low'
+      Text = 'Средняя'
       OnChange = PrecisionBoxChange
     end
     object ToolButton7: TToolButton
       Left = 185
       Height = 22
       Top = 1
-      Caption = 'ToolButton7'
       ImageIndex = 7
       Style = tbsSeparator
     end
@@ -226,7 +236,6 @@ object MainForm: TMainForm
       Left = 25
       Height = 22
       Top = 1
-      Caption = 'ToolButton12'
       ImageIndex = 5
       Style = tbsSeparator
       Wrap = True
@@ -254,7 +263,7 @@ object MainForm: TMainForm
     object LayerBox: TComboBox
       Left = 584
       Height = 21
-      Hint = 'Assign selected faces to a new layer or change the currently active layer.'
+      Hint = 'Изменить активный, или собрать всё выделенное в ином слое'
       Top = 1
       Width = 145
       ItemHeight = 13
@@ -265,7 +274,7 @@ object MainForm: TMainForm
     object Panel1: TPanel
       Left = 729
       Height = 22
-      Hint = 'Change the color of the active layer.'
+      Hint = 'Изменить цвет активного слоя'
       Top = 1
       Width = 23
       BevelOuter = bvLowered
@@ -277,7 +286,6 @@ object MainForm: TMainForm
       Left = 775
       Height = 22
       Top = 1
-      Caption = 'ToolButton11'
       ImageIndex = 7
       Style = tbsSeparator
     end
@@ -290,7 +298,6 @@ object MainForm: TMainForm
       Left = 806
       Height = 22
       Top = 1
-      Caption = 'ToolButton14'
       ImageIndex = 10
       Style = tbsSeparator
     end
@@ -333,7 +340,6 @@ object MainForm: TMainForm
       Left = 975
       Height = 22
       Top = 1
-      Caption = 'ToolButton19'
       ImageIndex = 12
       Style = tbsSeparator
     end
@@ -366,7 +372,6 @@ object MainForm: TMainForm
       Left = 1098
       Height = 22
       Top = 1
-      Caption = 'ToolButton25'
       ImageIndex = 19
       Style = tbsSeparator
     end
@@ -379,7 +384,6 @@ object MainForm: TMainForm
       Left = 1129
       Height = 22
       Top = 1
-      Caption = 'ToolButton39'
       ImageIndex = 15
       Style = tbsSeparator
     end
@@ -397,7 +401,6 @@ object MainForm: TMainForm
       Left = 1183
       Height = 22
       Top = 1
-      Caption = 'ToolButton28'
       ImageIndex = 15
       Style = tbsSeparator
     end
@@ -415,192 +418,226 @@ object MainForm: TMainForm
     end
     object LoadFile: TAction
       Category = 'File'
-      Caption = 'Open...'
-      Hint = 'Open a new file.'
+      Caption = 'Открыть...'
+      Hint = 'Считать числовую модель'
       ImageIndex = 0
       OnExecute = LoadFileExecute
     end
     object ExitProgram: TAction
       Category = 'File'
-      Caption = 'Exit'
-      Hint = 'Quit FreeShip'
+      Caption = 'Выход'
+      Hint = 'Завершить FreeShip'
       ImageIndex = 1
       OnExecute = ExitProgramExecute
     end
     object ImportCarene: TAction
       Category = 'Import'
-      Caption = 'Carene XYZ file...'
+      Caption = 'Carene.XYZ...'
+      Hint = 'Считывания яхтенного формата.'
       ImageIndex = 35
       OnExecute = ImportCareneExecute
     end
     object ExportDXF2DPolylines: TAction
       Category = 'Export'
-      Caption = 'DXF 2D Polylines...'
-      Hint = 'Export all lines as 2D polylines.'
+      Caption = 'Листы DXF проекций...'
+      Hint = 'Сохранение контуров раздельными листами.dxf'
       ImageIndex = 27
       OnExecute = ExportDXF2DPolylinesExecute
     end
+    object ExportDXF3DPolylines: TAction
+      Category = 'Export'
+      Caption = 'Контуры в пространстве.DXF'
+      Hint = 'Пространственные контуры AutoCad'
+      ImageIndex = 27
+      OnExecute = ExportDXF3DPolylinesExecute
+    end
+    object ExportDXFFaces: TAction
+      Category = 'Export'
+      Caption = 'Модель.DXF с обшивкой'
+      Hint = 'Сохранение модели в AutoCad.dxf'
+      ImageIndex = 27
+      OnExecute = ExportDXFFacesExecute
+    end
     object ExportCoordinates: TAction
       Category = 'Export'
-      Caption = 'Coordinates...'
+      Caption = 'Координаты.txt'
+      Hint = 'Сохраняются ординаты штевней и шпангоутов.'
       OnExecute = ExportCoordinatesExecute
     end
     object ShowControlNet: TAction
       Category = 'Visibility'
-      Caption = 'Control net'
-      Hint = 'Show control net.'
+      Caption = 'Опорные узлы '
+      Hint = 'Опорные узлы и рёбра к редактированию'
       ImageIndex = 2
       OnExecute = ShowControlNetExecute
     end
     object ShowInteriorEdges: TAction
       Category = 'Visibility'
-      Caption = 'Interior edges'
-      Hint = 'Show interior edges.'
+      Caption = 'Внутренние ребра'
+      Hint = 'Интерполирующие контуры по обшивке'
       ImageIndex = 3
       OnExecute = ShowInteriorEdgesExecute
     end
     object NewWindow: TAction
       Category = 'Window'
-      Caption = 'New window'
+      Caption = 'Лист новой проекции'
+      Hint = 'Создаётся аксонометрической проекции'
       ImageIndex = 33
       OnExecute = NewWindowExecute
     end
     object TileWindow: TAction
       Category = 'Window'
-      Caption = 'Tile'
+      Caption = 'Раскладка листов'
+      Hint = 'Смежная раскладка чертёжных проеций'
       ImageIndex = 32
       OnExecute = TileWindowExecute
     end
     object CascadeWindow: TAction
       Category = 'Window'
-      Caption = 'Cascade'
+      Caption = 'Листы с перекрытием'
+      Hint = 'Листы чертёжных проекций накладываются поверх друг друга'
       ImageIndex = 34
       OnExecute = CascadeWindowExecute
     end
     object BothSides: TAction
       Category = 'Visibility'
-      Caption = 'Show both sides'
-      Hint = 'Show both sides of the model'
+      Caption = 'Вид обоих бортов'
+      Hint = 'Изображается только левый борт или весь корпус.'
       ImageIndex = 4
       OnExecute = BothSidesExecute
     end
     object FileSaveas: TAction
       Category = 'File'
-      Caption = 'Save as...'
-      Hint = 'Prompt for filename and save file.'
+      Caption = 'Сохранить как...'
+      Hint = 'Запись с новым импенем, типом(fef,ftm,fbm) и местоположением файла'
       ImageIndex = 39
       OnExecute = FileSaveasExecute
     end
+    object Showcurvature: TAction
+      Category = 'Visibility'
+      Caption = 'Кривизна контуров'
+      Hint = 'Отметка кривизны контуров по теоретическим чертежам'
+      ImageIndex = 38
+      OnExecute = ShowcurvatureExecute
+    end
+    object IncreaseCurvatureScale: TAction
+      Category = 'Visibility'
+      Caption = 'Шире метки кривизны'
+      Hint = 'Увеличение ширины отметок кривизны контуров'
+      ShortCut = 121
+      OnExecute = IncreaseCurvatureScaleExecute
+    end
     object DecreaseCurvatureScale: TAction
       Category = 'Visibility'
-      Caption = 'Decr. curvature scale'
-      Hint = 'Decrease the scale of the curvature plots'
+      Caption = 'Уже отметки кривизны'
+      Hint = 'Заужение отметок контурных прорисовок кривизны'
       ShortCut = 120
       OnExecute = DecreaseCurvatureScaleExecute
     end
     object LayerAutoGroup: TAction
       Category = 'Layer'
-      Caption = 'Auto group'
-      Hint = 'Automatic grouping of connected controlfaces into a new layer.'
+      Caption = 'Автоматическая группировка'
+      Hint = 'Автоматическая сборка сопряженных граней в новом слое'
       ImageIndex = 6
       OnExecute = LayerAutoGroupExecute
     end
     object NewLayer: TAction
       Category = 'Layer'
-      Caption = 'New'
-      Hint = 'Add a new empty layer to the model.'
+      Caption = 'Новый слой'
+      Hint = 'Создание пустого слоя взаимно связных элементв корпуса'
       ImageIndex = 7
       OnExecute = NewLayerExecute
     end
     object Delete: TAction
       Category = 'Edit'
-      Caption = 'Delete'
-      Hint = 'Delete all selected items.'
+      Caption = 'Удалить выбранное'
+      Hint = 'Удаление всех отмеченных объектов'
       ImageIndex = 8
       ShortCut = 16472
       OnExecute = DeleteExecute
     end
     object EdgeCollapse: TAction
       Category = 'Edge'
-      Caption = 'Collapse'
-      Hint = 'Remove an edge by merging the two connected faces into one new face.'
+      Caption = 'Связывание'
+      Hint = 'Убрать ребро со связываением смежных граней в единую поверхность'
       ImageIndex = 9
       OnExecute = EdgeCollapseExecute
     end
     object NewEdge: TAction
       Category = 'Edge'
-      Caption = 'Insert'
-      Hint = 'Split a face by inserting a new edge between to selected points.'
+      Caption = 'Рассечение'
+      Hint = 'Разрыв грани по новому ребру между двумя узлами'
       ImageIndex = 10
       OnExecute = NewEdgeExecute
     end
     object EdgeCrease: TAction
       Category = 'Edge'
-      Caption = 'Crease'
-      Hint = 'Switch selected edges between normal or crease edges (knuckle lines).'
+      Caption = 'Слом по ребру'
+      Hint = 'Установка слома гладкой поверхности по выбранному ребру'
       ImageIndex = 11
       OnExecute = EdgeCreaseExecute
     end
     object DeselectAll: TAction
       Category = 'Edit'
-      Caption = 'Deselect all'
+      Caption = 'Отмена выбора'
+      Hint = 'Отмена активности для всех выбранных элементов.'
       OnExecute = DeselectAllExecute
     end
     object PointCollapse: TAction
       Category = 'Point'
-      Caption = 'Collapse'
-      Hint = 'Merge two selected edges by removing their common controlpoint.'
+      Caption = 'Сброс углового узла'
+      Hint = 'Объединить два крайних ребра со сбросом общих узлов'
       ImageIndex = 12
       OnExecute = PointCollapseExecute
     end
     object ActiveLayerColor: TAction
       Category = 'Layer'
-      Caption = 'Active layer color'
-      Hint = 'Change the color of the currently active layer.'
+      Caption = 'Цвет активного слоя'
+      Hint = 'Изменить цвет активного слоя'
       ImageIndex = 25
       OnExecute = ActiveLayerColorExecute
     end
     object DeleteEmptyLayers: TAction
       Category = 'Layer'
-      Caption = 'Delete empty'
-      Hint = 'Delete empty layers from the model.'
+      Caption = 'Удалить пустые слои'
+      Hint = 'Удалить пустые слои из числовой модели'
       ImageIndex = 29
       OnExecute = DeleteEmptyLayersExecute
     end
     object LayerDialog: TAction
       Category = 'Layer'
-      Caption = 'Dialog'
-      Hint = 'Show the window with layer properties.'
+      Caption = 'Свойства графических слоёв'
+      Hint = 'Интерактивное управление свойствами графических слоёв'
       ImageIndex = 24
       ShortCut = 16460
       OnExecute = LayerDialogExecute
     end
     object NewModel: TAction
       Category = 'File'
-      Caption = 'New...'
-      Hint = 'Start a new model.'
+      Caption = 'Новая модель...'
+      Hint = 'Создать корпус по аналитической модели'
       ImageIndex = 13
       ShortCut = 16462
       OnExecute = NewModelExecute
     end
     object ShowStations: TAction
       Category = 'Visibility'
-      Caption = 'Stations'
-      Hint = 'Toggle stations visibility on or off.'
+      Caption = 'Шпангоуты'
+      Hint = 'Прорисовка контуров шпангоутов (поперечные сечения)'
       ImageIndex = 15
       OnExecute = ShowStationsExecute
     end
     object ShowButtocks: TAction
       Category = 'Visibility'
-      Caption = 'Buttocks'
-      Hint = 'Toggle buttocks visibility on or off.'
+      Caption = 'Батоксы'
+      Hint = 'Изображение батоксов (продольных вертикальных плоскостей)'
       ImageIndex = 16
       OnExecute = ShowButtocksExecute
     end
     object ShowWaterlines: TAction
       Category = 'Visibility'
-      Caption = 'Waterlines'
-      Hint = 'Toggle waterlines visibility on or off.'
+      Caption = 'Ватерлинии'
+      Hint = 'Теоретические контуры по гравитационным уровням воды'
       ImageIndex = 17
       OnExecute = ShowWaterlinesExecute
     end
@@ -613,15 +650,15 @@ object MainForm: TMainForm
     end
     object NewFace: TAction
       Category = 'Face'
-      Caption = 'New'
-      Hint = 'Create a new controlface from selected controlpoints.'
+      Caption = 'Новая грань'
+      Hint = 'Создание поверхности по выбранным контрольным узлам'
       ImageIndex = 18
       OnExecute = NewFaceExecute
     end
     object IntersectionDialog: TAction
       Category = 'Edit'
-      Caption = 'Intersections...'
-      Hint = 'Show the window to add stations, buttocks, waterlines and diagonals.'
+      Caption = 'Теоретические контуры...'
+      Hint = 'Установка линий теоретического чертежа: шпангоуты, ватерлинии, батоксы и рыбины'
       ImageIndex = 14
       OnExecute = IntersectionDialogExecute
     end
@@ -634,137 +671,164 @@ object MainForm: TMainForm
     end
     object EdgeExtrude: TAction
       Category = 'Edge'
-      Caption = 'Extrude...'
-      Hint = 'Create new controlfaces by extruding selected boundary edges.'
+      Caption = 'Вынос граничных рёбер'
+      Hint = 'Создание новой грани путём выноса выбранных граничных рёбер'
       ImageIndex = 19
       OnExecute = EdgeExtrudeExecute
     end
     object EdgeSplit: TAction
       Category = 'Edge'
-      Caption = 'Split'
+      Caption = 'Разделение ребра пополам'
       Hint = 'Create new controlpoints by splitting an controledge into two.'
       ImageIndex = 20
       OnExecute = EdgeSplitExecute
     end
     object EditProjectSettings: TAction
       Category = 'Project'
-      Caption = 'Project settings'
+      Caption = 'Установки по проекту'
+      Hint = 'Настройка размерностей и описание цифровой модели корабля'
       OnExecute = EditProjectSettingsExecute
     end
     object CheckModel: TAction
       Category = 'Tools'
-      Caption = 'Check model'
-      Hint = 'Check the model for errors and inconsitencies.'
+      Caption = 'Контроль модели'
+      Hint = 'Поиск ошибок в построении и несовместимостей в элементах корпуса'
       OnExecute = CheckModelExecute
     end
     object ShowNormals: TAction
       Category = 'Visibility'
-      Caption = 'Normals'
-      Hint = 'Show normals of selected controlfaces.'
+      Caption = 'Векторы нормалей'
+      Hint = 'Изображение векторов ориентации нормалей на выбранных поверхностях'
       ImageIndex = 21
       OnExecute = ShowNormalsExecute
     end
     object ImportVRML: TAction
       Category = 'Import'
-      Caption = 'VRML...'
-      Hint = 'Import a VRML 1.0 file.'
+      Caption = 'Virtual Reality (VRML)'
+      Hint = 'Импорт модели из Virtual Reality Modeling Language.'
       OnExecute = ImportVRMLExecute
     end
     object RemoveNegative: TAction
       Category = 'Tools'
-      Caption = 'Remove negative'
-      Hint = 'Removes all faces on the starbaordside of the hull.'
+      Caption = 'Убрать отрицательные ординаты'
+      Hint = 'Удалить или вернуть на ДП все отрицательные ординаты'
       OnExecute = RemoveNegativeExecute
     end
     object RotateModel: TAction
       Category = 'Transform'
-      Caption = 'Rotate...'
-      Hint = 'Rotate selected items.'
+      Caption = 'Вращение...'
+      Hint = 'Пространственный поворот в главных осях корпуса'
       OnExecute = RotateModelExecute
     end
     object ScaleModel: TAction
       Category = 'Transform'
-      Caption = 'Scale...'
-      Hint = 'Scale selected items.'
+      Caption = 'Перемасштабирование...'
+      Hint = 'Линейное (афинное) преобразование пространственных координат.'
       OnExecute = ScaleModelExecute
+    end
+    object MoveModel: TAction
+      Category = 'Transform'
+      Caption = 'Cмещение...'
+      Hint = 'Пространственное смещение координат модели'
+      OnExecute = MoveModelExecute
+    end
+    object MirrorFace: TAction
+      Category = 'Transform'
+      Caption = 'Зеркальная копия'
+      Hint = 'Зеркальное отображние корпуса в главных осях координат.'
+      OnExecute = MirrorFaceExecute
+    end
+    object TransformLackenby: TAction
+      Category = 'Transform'
+      Caption = 'Деформация Lackenby'
+      Hint = 'Трансформация корпуса по главным размерениям и коэффициентам полноты.'
+      OnExecute = TransformLackenbyExecute
     end
     object ShowGrid: TAction
       Category = 'Visibility'
-      Caption = 'Grid'
-      Hint = 'Show grid of intersections in plan, profile and bodyplan view.'
+      Caption = 'Сетка теоретических плоскостей'
+      Hint = 'Разметка плоскостей шпангоутов, ватерлинний, батоксов и рыбин'
       ImageIndex = 22
       OnExecute = ShowGridExecute
     end
     object Undo: TAction
       Category = 'Edit'
-      Caption = 'Undo'
-      Hint = 'Undo the last modification.'
+      Caption = 'Отмена'
+      Hint = 'Отмена последних действий'
       ShortCut = 16474
       OnExecute = UndoExecute
     end
+    object Redo: TAction
+      Category = 'Edit'
+      Caption = 'Возврат'
+      Hint = 'Восстановление результатов отменённых действий'
+      ShortCut = 16466
+      OnExecute = RedoExecute
+    end
+    object ClearUndo: TAction
+      Category = 'Edit'
+      Caption = 'Сброс всех отмен'
+      Hint = 'Очистка памяти и шагов по отмене выполненных действий.'
+      OnExecute = ClearUndoExecute
+    end
+    object ShowUndoHistory: TAction
+      Category = 'Edit'
+      Caption = 'Контроль выполненных действий'
+      Hint = 'Работа со списком выполненных команд для выборолчного восстановления'
+      OnExecute = ShowUndoHistoryExecute
+    end
+    object ImportOBJ: TAction
+      Category = 'Import'
+      Caption = 'Wavefront (OBJ)'
+      Hint = 'Wavefront Technologies for Advanced Visualizer animation.'
+      OnExecute = ImportOBJExecute
+    end
     object ExportObj: TAction
       Category = 'Export'
-      Caption = 'Wavefront file (Obj)...'
+      Caption = 'Wavefront (Obj)'
+      Hint = 'Wavefront Technologies Advanced Visualizer.'
       OnExecute = ExportObjExecute
     end
     object InvertFace: TAction
       Category = 'Face'
-      Caption = 'Invert'
-      Hint = 'Flip the normal direction of the selected controlfaces.'
+      Caption = 'Обращение нормалей'
+      Hint = 'Обратная ориентация нормалей на поверхностях'
       ImageIndex = 23
       OnExecute = InvertFaceExecute
     end
     object Preferences: TAction
       Category = 'Project'
-      Caption = 'Preferences'
+      Caption = 'Настройки'
+      Hint = 'Настройки параметров программного комплекса Free!Ship.'
       OnExecute = PreferencesExecute
     end
     object ImportBodyplan: TAction
       Category = 'Import'
-      Caption = 'Bodyplan...'
-      Hint = 'Import a bodyplan and fit a surface.'
+      Caption = 'Ординаты корпуса...'
+      Hint = 'Считывание ординат и оконечностей корпуса (.txt).'
       OnExecute = ImportBodyplanExecute
-    end
-    object ExportDXF3DPolylines: TAction
-      Category = 'Export'
-      Caption = 'DXF 3D Polylines...'
-      Hint = 'Export all lines as 3D polylines.'
-      ImageIndex = 27
-      OnExecute = ExportDXF3DPolylinesExecute
-    end
-    object ExportDXFFaces: TAction
-      Category = 'Export'
-      Caption = 'DXF 3D mesh...'
-      Hint = 'Export all faces to a 3D DXF file.'
-      ImageIndex = 27
-      OnExecute = ExportDXFFacesExecute
     end
     object ImportHullFile: TAction
       Category = 'Import'
-      Caption = 'Carlson .hul file...'
+      Caption = 'Carlson Hulls...'
+      Hint = 'Импорт файлов созданных в Carlson Hulls...'
       ImageIndex = 28
       OnExecute = ImportHullFileExecute
     end
     object ExportOffsets: TAction
-      Category = 'Export'
-      Caption = 'Offsets...'
+      Caption = 'Ординаты в T7-смещениях...'
+      Hint = 'Ординаты теоретического чертежа и контрольные контуры'
       OnExecute = ExportOffsetsExecute
-    end
-    object MoveModel: TAction
-      Category = 'Transform'
-      Caption = 'Move...'
-      Hint = 'Move the entire model.'
-      OnExecute = MoveModelExecute
     end
     object AddPoint: TAction
       Category = 'Point'
-      Caption = 'Add'
-      Hint = 'Add a new controlpoint to the model.'
+      Caption = 'Добавить точку'
+      Hint = 'Добавляется одна свободная точка в прострнстве.'
       OnExecute = AddPointExecute
     end
     object DevelopLayers: TAction
-      Category = 'Tools'
-      Caption = 'Develop plates'
+      Caption = 'Развёртки обшивки'
+      Hint = 'Плоские фигуры для раскроя листов обшивки.'
       OnExecute = DevelopLayersExecute
     end
     object ExportArchimedes: TAction
@@ -776,188 +840,158 @@ object MainForm: TMainForm
     end
     object ShowLinesplan: TAction
       Category = 'Project'
-      Caption = 'Linesplan'
+      Caption = 'Теоретические чертёжи'
+      Hint = 'Формирование листа с традиционным теоретическим чертежом.'
       ImageIndex = 31
       OnExecute = ShowLinesplanExecute
     end
     object ShowDiagonals: TAction
       Category = 'Visibility'
-      Caption = 'Diagonals'
-      Hint = 'Toggle diagonals visibility on or off.'
+      Caption = 'Рыбины'
+      Hint = 'Включение рыбин в прорисовку чертежей корпуса корабля.'
       ImageIndex = 30
       OnExecute = ShowDiagonalsExecute
     end
     object ShowMarkers: TAction
       Category = 'Visibility'
-      Caption = 'Markers'
-      Hint = 'Show markers.'
+      Caption = 'Независимые маркеры'
+      Hint = 'Показать все маркеры.'
       ImageIndex = 36
       OnExecute = ShowMarkersExecute
     end
     object DeleteMarkers: TAction
       Category = 'Tools'
-      Caption = 'Delete all markers'
-      Hint = 'Delete all markers from the model.'
+      Caption = 'Удалить все маркеры'
+      Hint = 'Вычистка всех маркеролв из цифровой модели корабля.'
       ImageIndex = 37
       OnExecute = DeleteMarkersExecute
     end
     object ImportSurface: TAction
       Category = 'Import'
-      Caption = 'Surface...'
+      Caption = 'Поверхность...'
+      Hint = 'Считывание продольных пространственных контуров для формирования гладкой обшивки'
       OnExecute = ImportSurfaceExecute
-    end
-    object Showcurvature: TAction
-      Category = 'Visibility'
-      Caption = 'Curvature'
-      Hint = 'Show curvature plot of intersectionlines.'
-      ImageIndex = 38
-      OnExecute = ShowcurvatureExecute
-    end
-    object IncreaseCurvatureScale: TAction
-      Category = 'Visibility'
-      Caption = 'Incr. curvature scale'
-      Hint = 'Increase the scale of the curvature plots'
-      ShortCut = 121
-      OnExecute = IncreaseCurvatureScaleExecute
     end
     object FileSave: TAction
       Category = 'File'
-      Caption = 'Save'
-      Hint = 'Save file without prompting for the filename.'
+      Caption = 'Сохранить'
+      Hint = 'Сохранить модель как есть.'
       ImageIndex = 5
       ShortCut = 16467
       OnExecute = FileSaveExecute
     end
     object ImportChines: TAction
       Category = 'Import'
-      Caption = 'Chines...'
+      Caption = 'Линии сломов Chines...'
+      Hint = 'Импорт cкуловых контуров Chines (линий слома борта).'
       OnExecute = ImportChinesExecute
     end
     object ShowControlCurves: TAction
       Category = 'Visibility'
-      Caption = 'Control curves'
-      Hint = 'Show control curves.'
+      Caption = 'Контрольные контуры'
+      Hint = 'Изображение опорных контуров (control curves).'
       ImageIndex = 40
       OnExecute = ShowControlCurvesExecute
     end
     object NewCurve: TAction
       Category = 'Curve'
-      Caption = 'New'
-      Hint = 'Add a new curve to selected edges.'
+      Caption = 'Новая кривая линия'
+      Hint = 'Построить новый контур по выбранным рёбрам'
       ImageIndex = 41
       OnExecute = NewCurveExecute
     end
     object InsertPlane: TAction
       Category = 'Point'
-      Caption = 'Insert plane...'
-      Hint = 'Insert multiple new points on a 3D oriented plane.'
+      Caption = 'Расстановка узлов по плоскости'
+      Hint = 'Вставка узлов на рёбрах в пересечение базовой плоскости.'
       ImageIndex = 42
       OnExecute = InsertPlaneExecute
     end
     object PointsLock: TAction
       Category = 'Point'
-      Caption = 'Lock points'
-      Hint = 'Lock all selected controlpoints.'
+      Caption = 'Блокирование узлов'
+      Hint = 'Фиксация положения нескольких опорных узлов.'
       ImageIndex = 44
       OnExecute = PointsLockExecute
     end
     object PointsUnlock: TAction
       Category = 'Point'
-      Caption = 'Unlock points'
-      Hint = 'Unlock all selected controlpoints.'
+      Caption = 'Освбождение захваченных точек'
+      Hint = 'Разблокировка местоположения захваченных опорных точек.'
       ImageIndex = 43
       OnExecute = PointsUnlockExecute
     end
     object PointsUnlockAll: TAction
       Category = 'Point'
-      Caption = 'Unlock all points'
-      Hint = 'Unlock all locked controlpoints.'
+      Caption = 'Разблокирование всех опорных точек'
+      Hint = 'Разблокирование сразу всех ранее захваченных опорных точек.'
       ImageIndex = 45
       OnExecute = PointsUnlockAllExecute
     end
     object ImportMarkers: TAction
       Category = 'Tools'
-      Caption = 'Import'
+      Caption = 'Импорт маркеров'
+      Hint = 'Считывание контрольных маркеров для построения орбводов корпуса'
       ImageIndex = 46
       OnExecute = ImportMarkersExecute
     end
     object PointAlign: TAction
       Category = 'Point'
-      Caption = 'Align'
-      Hint = 'Project selected points on a straight line through the first and last selected point.'
+      Caption = 'Выравнивание вдоль линии'
+      Hint = 'Выстраивание всех выбранных точек на прямую линию, проходящую между крайними узлами.'
       ImageIndex = 48
       OnExecute = PointAlignExecute
     end
-    object MirrorFace: TAction
-      Category = 'Transform'
-      Caption = 'Mirror...'
-      OnExecute = MirrorFaceExecute
-    end
-    object TransformLackenby: TAction
-      Category = 'Transform'
-      Caption = 'Lackenby...'
-      OnExecute = TransformLackenbyExecute
-    end
     object ExportIGES: TAction
       Category = 'Export'
-      Caption = 'IGES'
+      Caption = 'экспорт в IGES'
+      Hint = 'Initial Graphics Exchange Specification (IGES)'
+      ImageIndex = 60
       OnExecute = ExportIGESExecute
     end
     object ExportPart: TAction
       Category = 'Export'
-      Caption = 'Part...'
+      Caption = 'Часть корпуса (.Part)...'
+      Hint = 'Сохранение выбранного фрагмента корпуса'
       OnExecute = ExportPartExecute
     end
     object ImportPart: TAction
       Category = 'Import'
-      Caption = 'Part...'
+      Caption = 'Часть корпуса (.Part)...'
+      Hint = 'Считывание ранее приготовленного фрагмента корпуса'
       OnExecute = ImportPartExecute
     end
     object LayerIntersection: TAction
       Category = 'Point'
-      Caption = 'Intersect layers...'
-      Hint = 'Find the intersection of two layers.'
+      Caption = 'Пересечение слоёв...'
+      Hint = 'Поиск и устоновка опорных точек на линии пересечения поверхностей'
       ImageIndex = 51
       OnExecute = LayerIntersectionExecute
     end
-    object Redo: TAction
-      Category = 'Edit'
-      Caption = 'Redo'
-      Hint = 'Undo the previous modification.'
-      ShortCut = 16466
-      OnExecute = RedoExecute
-    end
-    object ClearUndo: TAction
-      Category = 'Edit'
-      Caption = 'Clear'
-      OnExecute = ClearUndoExecute
-    end
-    object ShowUndoHistory: TAction
-      Category = 'Edit'
-      Caption = 'Browse...'
-      OnExecute = ShowUndoHistoryExecute
-    end
     object ImportPolyCad: TAction
       Category = 'Import'
-      Caption = 'PolyCad'
+      Caption = 'PolyCad.geo '
+      Hint = 'B-Spline поверхности (ShipLines,YachtLines) из PolyCAD Маркуса Боул'
       ImageIndex = 53
       OnExecute = ImportPolyCadExecute
     end
     object RemoveUnusedPoints: TAction
       Category = 'Tools'
-      Caption = 'Remove unused points'
+      Caption = 'Вычистка лишних точек'
+      Hint = 'Сброс всех точек, не включеных в структуру слоёв цифровой модели.'
       OnExecute = RemoveUnusedPointsExecute
     end
     object ExportGHS: TAction
       Category = 'Export'
       Caption = 'GHS...'
+      Hint = 'Запись шпангоутов в GHS формате для типовых расчётов гидростатики (Creative Systems, Inc.)'
       ImageIndex = 54
       OnExecute = ExportGHSExecute
     end
     object ShowFlowlines: TAction
       Category = 'Visibility'
-      Caption = 'Flowlines'
-      Hint = 'Show flowlines around the hull.'
+      Caption = 'Потоковые линии...'
+      Hint = 'Прорисовка потоковых контуров для обтекания корпуса частицами воды.'
       ImageIndex = 55
       OnExecute = ShowFlowlinesExecute
     end
@@ -968,20 +1002,18 @@ object MainForm: TMainForm
       ImageIndex = 63
       OnExecute = MidleFrameDialogExecute
     end
-    object AddCylinder: TAction
-      Category = 'Geometry'
-      Caption = 'Add cylinder...'
-      OnExecute = AddCylinderExecute
-    end
     object SelectAll: TAction
       Category = 'Selection'
-      Caption = 'Select all'
+      Caption = 'Выбрать всё сразу'
+      Hint = 'Выбор для корректировки сразу всех графических объектов.'
+      ImageIndex = 58
       ShortCut = 16449
       OnExecute = SelectAllExecute
     end
     object ExportSTL: TAction
       Category = 'Export'
       Caption = 'STL...'
+      Hint = 'Запись треугольников Stereolithography (STL)'
       OnExecute = ExportSTLExecute
     end
   end
@@ -1501,11 +1533,12 @@ object MainForm: TMainForm
     Left = 84
     Top = 78
     object File1: TMenuItem
-      Caption = 'File'
+      Caption = 'Файл'
+      Hint = 'Блок операций с моделями и настройки'
       object New3: TMenuItem
         Action = NewModel
       end
-      object Mediumtelelens130mm1: TMenuItem
+      object FindFile: TMenuItem
         Action = LoadFile
       end
       object Save2: TMenuItem
@@ -1515,7 +1548,7 @@ object MainForm: TMainForm
         Action = FileSaveas
       end
       object Import1: TMenuItem
-        Caption = 'Import'
+        Caption = 'Импорт'
         object Part2: TMenuItem
           Action = ImportPart
         end
@@ -1531,6 +1564,9 @@ object MainForm: TMainForm
         object Carenefile1: TMenuItem
           Action = ImportCarene
         end
+        object ImportObj1: TMenuItem
+          Action = ImportObj
+        end
         object VRML1: TMenuItem
           Action = ImportVRML
         end
@@ -1542,7 +1578,7 @@ object MainForm: TMainForm
         end
       end
       object Export1: TMenuItem
-        Caption = 'Export'
+        Caption = 'Экспорт'
         object Part1: TMenuItem
           Action = ExportPart
         end
@@ -1596,7 +1632,7 @@ object MainForm: TMainForm
         Caption = '-'
       end
       object Recentfiles: TMenuItem
-        Caption = 'Recent files'
+        Caption = 'Предыдущие модели'
       end
     end
     object Project1: TMenuItem
@@ -1609,11 +1645,12 @@ object MainForm: TMainForm
       end
     end
     object Edit1: TMenuItem
-      Caption = 'Edit'
+      Caption = 'Редактирование'
+      Hint = 'Контроль операций текущего редактирования'
       object Undo1: TMenuItem
         Action = Undo
       end
-      object Archimedes1: TMenuItem
+      object Redo1: TMenuItem
         Action = Redo
       end
       object Delete1: TMenuItem
@@ -1623,7 +1660,7 @@ object MainForm: TMainForm
         Caption = '-'
       end
       object Undohistory1: TMenuItem
-        Caption = 'Undo history'
+        Caption = 'Возврат изменений'
         object Clear1: TMenuItem
           Action = ClearUndo
         end
@@ -1633,7 +1670,8 @@ object MainForm: TMainForm
       end
     end
     object Point1: TMenuItem
-      Caption = 'Point'
+      Caption = 'Узел'
+      Hint = 'Подборка операций с опорными узлами.'
       object Add1: TMenuItem
         Action = AddPoint
       end
@@ -1646,7 +1684,7 @@ object MainForm: TMainForm
       object InsertPlane1: TMenuItem
         Action = InsertPlane
       end
-      object Saveas1: TMenuItem
+      object LayerIntersection1: TMenuItem
         Action = LayerIntersection
       end
       object PointsLock1: TMenuItem
@@ -1660,7 +1698,8 @@ object MainForm: TMainForm
       end
     end
     object Edge1: TMenuItem
-      Caption = 'Edge'
+      Caption = 'Ребро'
+      Hint = 'Операции с рёбрами и граничными кромками.'
       object Extrude1: TMenuItem
         Action = EdgeExtrude
       end
@@ -1678,13 +1717,15 @@ object MainForm: TMainForm
       end
     end
     object Curve1: TMenuItem
-      Caption = 'Curve'
+      Caption = 'Кривые'
+      Hint = 'Работа со сборками контурных кривых'
       object AddCurve1: TMenuItem
         Action = NewCurve
       end
     end
     object Face1: TMenuItem
-      Caption = 'Face'
+      Caption = 'Грань'
+      Hint = 'Создание и контроль ориентации граней.'
       object New4: TMenuItem
         Action = NewFace
       end
@@ -1693,7 +1734,8 @@ object MainForm: TMainForm
       end
     end
     object Layer1: TMenuItem
-      Caption = 'Layer'
+      Caption = 'Слой'
+      Hint = 'Послойная обработка блоков цифровой модели.'
       object Activelayercolor1: TMenuItem
         Action = ActiveLayerColor
       end
@@ -1711,7 +1753,8 @@ object MainForm: TMainForm
       end
     end
     object Visibility1: TMenuItem
-      Caption = 'Visibility'
+      Caption = 'Видимость'
+      Hint = 'Настройка графического отображения цифровой модели корабля.'
       object ShowControlNet1: TMenuItem
         Action = ShowControlNet
       end
@@ -1762,7 +1805,8 @@ object MainForm: TMainForm
       end
     end
     object Selection1: TMenuItem
-      Caption = 'Selection'
+      Caption = 'Выбор'
+      Hint = 'Выбор объектов и опорных точек для особой обработки.'
       object Selectall1: TMenuItem
         Action = SelectAll
       end
@@ -1770,8 +1814,9 @@ object MainForm: TMainForm
         Action = DeselectAll
       end
     end
-    object ools1: TMenuItem
-      Caption = 'Tools'
+    object Tools1: TMenuItem
+      Caption = 'Средства'
+      Hint = 'Специальные инструменты для преобразования цифровой модели корпуса.'
       object Analyzesurface1: TMenuItem
         Action = CheckModel
       end
@@ -1785,7 +1830,8 @@ object MainForm: TMainForm
         Action = DevelopLayers
       end
       object Markers2: TMenuItem
-        Caption = 'Markers'
+        Caption = 'Маркеры'
+        Hint = 'Независимые маркеры для отработки корабельных обводов и др.'
         object Import2: TMenuItem
           Action = ImportMarkers
         end
@@ -1793,12 +1839,10 @@ object MainForm: TMainForm
           Action = DeleteMarkers
         end
       end
-      object AddCylinder1: TMenuItem
-        Action = AddCylinder
-      end
     end
     object ransform1: TMenuItem
-      Caption = 'Transform'
+      Caption = 'Трансформация'
+      Hint = 'Геометрическое перестроение размерений или положения корпуса...'
       object Scale3D1: TMenuItem
         Action = ScaleModel
       end
@@ -1826,7 +1870,8 @@ object MainForm: TMainForm
       end
     end
     object Window1: TMenuItem
-      Caption = 'Window'
+      Caption = 'Кульман'
+      Hint = 'Добавление или обновление расположения чертёжных проекций по окнам Free!Ship.'
       object NewWindow1: TMenuItem
         Action = NewWindow
       end
@@ -1841,7 +1886,8 @@ object MainForm: TMainForm
       end
     end
     object About1: TMenuItem
-      Caption = 'About'
+      Caption = 'Справка'
+      Hint = 'Информация об авторах и версии сборки'
       OnClick = About1Click
     end
   end

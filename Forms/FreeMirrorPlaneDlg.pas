@@ -3,41 +3,37 @@ unit FreeMirrorPlaneDlg;
 
 interface
 
-uses Windows,
-     Messages,
-     SysUtils,
+uses SysUtils,
      Variants,
-     Classes,
-     Graphics,
      Controls,
      Forms,
-     Dialogs,
      Buttons,
      ExtCtrls,
      StdCtrls,
      FreeGeometry,
-     FreeNumInput,FreeTypes;
+     Spin,
+     FreeTypes;
 
 type TFreeMirrorPlaneDialog  = class(TForm)
-                                 GroupBox1: TGroupBox;
-                                 RadioButton1: TRadioButton;
-                                 RadioButton2: TRadioButton;
-                                 RadioButton3: TRadioButton;
-                                 Edit1: TFreeNumInput;
-                                 Label1: TLabel;
-                                 CheckBox1: TCheckBox;
-                                 Panel1: TPanel;
-                                 Panel3: TPanel;
-                                 BitBtn1: TSpeedButton;
-                                 BitBtn2: TSpeedButton;
-                                 procedure BitBtn1Click(Sender: TObject);
-                                 procedure BitBtn2Click(Sender: TObject);
-                              private   { Private declarations }
-                                 function FGetPlane:T3DPlane;
-                              public    { Public declarations }
-                                 function Execute:Boolean;
-                                 property Plane : T3DPlane read FGetPlane;
-                           end;
+     GroupBox1: TGroupBox;
+     RadioButton1: TRadioButton;
+     RadioButton2: TRadioButton;
+     RadioButton3: TRadioButton;
+     Edit1: TFloatSpinEdit; // TFreeNumInput;
+     Label1: TLabel;
+     CheckBox1: TCheckBox;
+     Panel1: TPanel;
+     Panel3: TPanel;
+     BitBtn1: TSpeedButton;
+     BitBtn2: TSpeedButton;
+     procedure BitBtn1Click(Sender: TObject);
+     procedure BitBtn2Click(Sender: TObject);
+  private
+     function FGetPlane:T3DPlane;
+  public
+     function Execute:Boolean;
+     property Plane : T3DPlane read FGetPlane;
+end;
 
 var FreeMirrorPlaneDialog: TFreeMirrorPlaneDialog;
 

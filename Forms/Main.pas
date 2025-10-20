@@ -1,10 +1,6 @@
-
-//{$DEFINE MEMCHECK}
-
 unit Main;
-interface uses // Windows,Messages, Math,
+interface uses  Windows,
      SysUtils,
-     Variants,
      Classes,
      Graphics,
      Controls,
@@ -15,36 +11,18 @@ interface uses // Windows,Messages, Math,
      ActnList,
      StdCtrls,
      ComCtrls,
-     LazFileUtils,
+     LazFileUtils,FasterList,
      FreeSplitSectionDlg,FreeGeometry,FreeShipUnit,FreeHullformWindow,FreeTypes;
 
-type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit}
+type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit} //TCustomForm
     ActionList1: TActionList;
     MenuImages : TImageList;
     MainMenu1  : TMainMenu;
+    HintBar    : TStatusBar;
     LayerBox,PrecisionBox: TComboBox;
     ToolBar    : TToolBar;
+    ColorDialog: TColorDialog;
     StatusBar,Panel1,Panel2,Panel3,Panel4: TPanel;
-    Visibility1: TMenuItem;
-    Window1    : TMenuItem;
-    IntersectionDialog: TAction;   Intersections1    : TMenuItem;
-    ShowHydrostatics: TAction;
-    DesignHydrostatics: TAction;   Hydrostatics1     : TMenuItem;
- // HydrostaticsDialog: TAction;   Hydrostatics2     : TMenuItem;
-    SplitSectionDialog: TAction;   miSetSplitSection : TMenuItem;
-    CascadeWindow     : TAction;   Cascade1          : TMenuItem;
-    TileWindow        : TAction;   Tile1             : TMenuItem;
-    NewWindow         : TAction;   NewWindow1        : TMenuItem;
-    LoadFile          : TAction;   File1             : TMenuItem;
-    ExitProgram       : TAction;   ExitProgram1      : TMenuItem;
-    ShowControlNet    : TAction;   ShowControlNet1   : TMenuItem;
-    ShowInteriorEdges : TAction;   ShowInteriorEdges1: TMenuItem;
-    BothSides         : TAction;   Showbothsides1    : TMenuItem;
-    FileSaveas        : TAction;   Save1             : TMenuItem;
-    LayerAutoGroup    : TAction;   Layer1            : TMenuItem;
-    NewLayer          : TAction;   New1              : TMenuItem;
-    Autogroup1: TMenuItem;
-    Delete: TAction;
     ToolButton1,ToolButton2,ToolButton3,ToolButton4,ToolButton5,ToolButton6,
     ToolButton7,ToolButton8,ToolButton9,ToolButton10,ToolButton11,ToolButton12,
     ToolButton13,ToolButton14,ToolButton15,ToolButton16,ToolButton17,ToolButton18,
@@ -53,81 +31,86 @@ type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit}
     ToolButton31,ToolButton32,ToolButton33,ToolButton34,ToolButton35,ToolButton36,
     ToolButton37,ToolButton38,ToolButton39,ToolButton40,ToolButton41,ToolButton42,
     ToolButton43,ToolButton44,ToolButton45,ToolButton46,ToolButton47,ToolButton48,
-                                        ShowBuildCurve,tbMiddleFrame: TToolButton;
-    Mediumtelelens130mm1: TMenuItem;
-    Edit1: TMenuItem;
-    Point1: TMenuItem;
-    Edge1: TMenuItem;
-    Face1: TMenuItem;
-    EdgeCollapse: TAction;
-    Collapse1: TMenuItem;
-    Delete1: TMenuItem;
-    NewEdge: TAction;
-    New2: TMenuItem;
-    EdgeCrease: TAction;          Crease1: TMenuItem;
-    DeselectAll: TAction;         Selection1: TMenuItem;
-    Clearselection1: TMenuItem;
-    PointCollapse: TAction;       PointCollapse1: TMenuItem;
-    ColorDialog: TColorDialog;
-    ActiveLayerColor: TAction;     Activelayercolor1: TMenuItem;
-    DeleteEmptyLayers: TAction;    Deleteempty1: TMenuItem;
-    LayerDialog: TAction;          Deleteempty2: TMenuItem;
-    NewModel: TAction;             New3: TMenuItem;
-    ShowStations: TAction;         Stations1: TMenuItem;
-    ShowButtocks: TAction;         ShowWaterlines: TAction;
-    Buttocks1: TMenuItem;          Waterlines1: TMenuItem;
-    NewFace: TAction;              New4: TMenuItem;
-    EdgeExtrude: TAction;          Extrude1: TMenuItem;
-    About1: TMenuItem;
-    EdgeSplit: TAction;            Split1: TMenuItem;
-    EditProjectSettings: TAction;  Project1: TMenuItem;
-    Projectsettings1: TMenuItem;
-    CheckModel: TAction;
-    ools1: TMenuItem;
-    Analyzesurface1: TMenuItem;
-    ShowNormals: TAction;
-    Calculations1: TMenuItem;
-    Normals1: TMenuItem;
-    ImportVRML: TAction;
-    Export1: TMenuItem;
-    VRML1: TMenuItem;
-    Import1: TMenuItem;
-    RemoveNegative: TAction;      Removenegative1: TMenuItem;
-    RotateModel: TAction;         Rotatemodel1: TMenuItem;
-    ScaleModel: TAction;          Scale3D1: TMenuItem;
-    ShowGrid: TAction;
-    Analyzesurface2: TMenuItem;
-    Undo: TAction;                Undo1: TMenuItem;
-    ExportObj: TAction;           WavefrontfileObj1: TMenuItem;
-    InvertFace: TAction;          Invert1: TMenuItem;
-    Preferences: TAction;         Preferences1: TMenuItem;
-    ImportBodyplan: TAction;
-    ExportDXF3DPolylines: TAction; ExportDXFPolylines1: TMenuItem;
-    ExportDXFFaces: TAction;       DXF3Dfaces1: TMenuItem;
-    ImportHullFile: TAction;       Carlssonhulfile1: TMenuItem;
-    ExportOffsets: TAction;
-    Offsets1: TMenuItem;
-    MoveModel: TAction;
-    Deselectall2: TMenuItem;
-    AddPoint: TAction;             Add1: TMenuItem;
-    DevelopLayers: TAction;        Developplates1: TMenuItem;
-    ExportArchimedes: TAction;     ArchimedesMB1: TMenuItem;
-    ShowLinesplan: TAction;        Linesplan1: TMenuItem;
-    ShowDiagonals: TAction;        Diagonals1: TMenuItem;
-    Recentfiles: TMenuItem;
-    ImportCarene: TAction;         Carenefile1: TMenuItem;
-    ShowMarkers: TAction;          Markers1: TMenuItem;
-    DeleteMarkers: TAction;        Deletemarkers1: TMenuItem;
-    ImportSurface: TAction;        Surface1: TMenuItem;
-    Showcurvature: TAction;
-    IncreaseCurvatureScale: TAction;
-    DecreaseCurvatureScale: TAction;
-    Decrcurvaturescale1: TMenuItem;
-    Incrcurvaturescale1: TMenuItem;
-    FileSave: TAction;             Save2: TMenuItem;
-    Curvature1: TMenuItem;
+                                      ShowBuildCurve,tbMiddleFrame: TToolButton;
+    IntersectionDialog: TAction; Intersections1   : TMenuItem;
+    ShowHydrostatics  : TAction; Hydrostatics1    : TMenuItem;
+    DesignHydrostatics: TAction; Calculations1    : TMenuItem;
+ // HydrostaticsDialog: TAction; Hydrostatics2    : TMenuItem;
+    SplitSectionDialog: TAction; miSetSplitSection: TMenuItem;
+    CascadeWindow     : TAction; Cascade1         : TMenuItem;
+    TileWindow        : TAction; Tile1            : TMenuItem;
+    NewWindow         : TAction; NewWindow1       : TMenuItem;
+    LoadFile          : TAction; File1            : TMenuItem;
+    ExitProgram       : TAction; ExitProgram1     : TMenuItem;
+    ShowControlNet    : TAction; ShowControlNet1  : TMenuItem;
+    ShowInteriorEdges : TAction; ShowInteriorEdges1: TMenuItem;
+    BothSides         : TAction; Showbothsides1   : TMenuItem;
+    FileSaveas        : TAction; Save1            : TMenuItem;
+    LayerAutoGroup    : TAction; Layer1           : TMenuItem;
+    NewLayer          : TAction; New1             : TMenuItem;
+                                Visibility1: TMenuItem;
+                                Window1: TMenuItem;
+                                Autogroup1: TMenuItem;
+                                FindFile: TMenuItem;
+                                Edit1: TMenuItem;
+                                Point1: TMenuItem;
+    NewEdge: TAction;           Edge1: TMenuItem;
+                                Face1: TMenuItem;
+    EdgeCollapse: TAction;      Collapse1: TMenuItem;
+    Delete: TAction;            Delete1: TMenuItem;
+                                New2: TMenuItem;
+    EdgeCrease: TAction;        Crease1: TMenuItem;
+    DeselectAll: TAction;       Selection1: TMenuItem;
+                                Clearselection1: TMenuItem;
+    PointCollapse: TAction;     PointCollapse1: TMenuItem;
+    ActiveLayerColor: TAction;  Activelayercolor1: TMenuItem;
+    DeleteEmptyLayers: TAction; Deleteempty1: TMenuItem;
+    LayerDialog: TAction;       Deleteempty2: TMenuItem;
+    NewModel: TAction;          New3: TMenuItem;
+    ShowStations: TAction;      Stations1: TMenuItem;
+    ShowButtocks: TAction;      ShowWaterlines: TAction;
+    Buttocks1: TMenuItem;       Waterlines1: TMenuItem;
+    NewFace: TAction;           New4: TMenuItem;
+    EdgeExtrude: TAction;       Extrude1: TMenuItem;
+                                About1: TMenuItem;
+    EdgeSplit: TAction;         Split1: TMenuItem;
+    EditProjectSettings: TAction; Project1: TMenuItem;
+                                Projectsettings1: TMenuItem;
+    CheckModel: TAction;        Tools1: TMenuItem;
+                                Analyzesurface1: TMenuItem;
+    ShowNormals: TAction;       Normals1: TMenuItem;
+    ImportVRML: TAction;        VRML1: TMenuItem;
+                                Export1: TMenuItem;
+                                Import1: TMenuItem;
+    RemoveNegative: TAction;    Removenegative1: TMenuItem;
+    RotateModel: TAction;       Rotatemodel1: TMenuItem;
+    ScaleModel: TAction;        Scale3D1: TMenuItem;
+    ShowGrid: TAction;          Analyzesurface2: TMenuItem;
+    ImportObj: TAction;         ImportObj1: TMenuItem;
+    ExportObj: TAction;         WavefrontfileObj1: TMenuItem;
+    InvertFace: TAction;        Invert1: TMenuItem;
+    Preferences: TAction;       Preferences1: TMenuItem;
+    ExportDXF3DPolylines:TAction; ExportDXFPolylines1: TMenuItem;
+    ExportDXFFaces: TAction;    DXF3Dfaces1: TMenuItem;
+    ImportHullFile: TAction;    Carlssonhulfile1: TMenuItem;
+    ExportOffsets: TAction;     Offsets1: TMenuItem;
+    MoveModel: TAction;         Deselectall2: TMenuItem;
+    AddPoint: TAction;          Add1: TMenuItem;
+    DevelopLayers: TAction;     Developplates1: TMenuItem;
+    ExportArchimedes: TAction;  ArchimedesMB1: TMenuItem;
+    ShowLinesplan: TAction;     Linesplan1: TMenuItem;
+    ShowDiagonals: TAction;     Diagonals1: TMenuItem;
+                                Recentfiles: TMenuItem;
+    ImportCarene: TAction;      Carenefile1: TMenuItem;
+    ShowMarkers: TAction;       Markers1: TMenuItem;
+    DeleteMarkers: TAction;     Deletemarkers1: TMenuItem;
+    ImportSurface: TAction;     Surface1: TMenuItem;
+    Showcurvature: TAction;     Curvature1: TMenuItem;
+    IncreaseCurvatureScale: TAction; Incrcurvaturescale1: TMenuItem;
+    DecreaseCurvatureScale: TAction; Decrcurvaturescale1: TMenuItem;
+    FileSave: TAction;          Save2: TMenuItem;
     ImportChines: TAction;      Chines1: TMenuItem;
-    Curve1: TMenuItem;
+    ImportBodyplan: TAction;    Curve1: TMenuItem;
     ShowControlCurves: TAction; Controlcurves1: TMenuItem;
     NewCurve: TAction;          AddCurve1: TMenuItem;
     ExportCoordinates: TAction; Coordinates1: TMenuItem;
@@ -135,34 +118,33 @@ type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit}
     PointsLock: TAction;        PointsLock1: TMenuItem;
     PointsUnlock: TAction;      Unlockpoints1: TMenuItem;
     PointsUnlockAll: TAction;   Unlockallpoints1: TMenuItem;
-    ClearUndo: TAction;         Clear1: TMenuItem;
     ImportMarkers: TAction;     Import2: TMenuItem;
-    Markers2: TMenuItem;
+                                Markers2: TMenuItem;
     PointAlign: TAction;
-    Projectline1: TMenuItem;
-    MirrorFace: TAction;
-    ransform1: TMenuItem;
-    MirrorFace1: TMenuItem;
+                                Projectline1: TMenuItem;
+    MirrorFace: TAction;        MirrorFace1: TMenuItem;
+                                ransform1: TMenuItem;
     ExportDXF2DPolylines: TAction; DXF2DPolylines1: TMenuItem;
-    TransformLackenby: TAction;    Lackenby1: TMenuItem;
-    ExportIGES: TAction;    IGES1: TMenuItem;
-    ExportPart: TAction;    Part1: TMenuItem;
-    ImportPart: TAction;    Part2: TMenuItem;
-    LayerIntersection: TAction;
-    Saveas1: TMenuItem;
-    Redo: TAction;
-    Archimedes1: TMenuItem;
-    Undohistory1: TMenuItem;
-    ShowUndoHistory: TAction;     Show1:    TMenuItem;
-    ImportPolyCad: TAction;       PolyCad1: TMenuItem;
-    RemoveUnusedPoints: TAction;  Removeunusedpoints1: TMenuItem;
-    ExportGHS:    TAction;    GHS1:         TMenuItem;
-    ShowFlowlines:TAction;    Flowlines1:   TMenuItem;
-    AddCylinder:  TAction;    AddCylinder1: TMenuItem;
-    SelectAll:    TAction;    Selectall1:   TMenuItem;
-    ExportSTL:    TAction;    STL1:         TMenuItem;
-                      N1,N2,N3,N4,N5,N6,N7: TMenuItem;
-
+    TransformLackenby: TAction; Lackenby1: TMenuItem;
+    ExportIGES: TAction;        IGES1: TMenuItem;
+    ExportPart: TAction;        Part1: TMenuItem;
+    ImportPart: TAction;        Part2: TMenuItem;
+    LayerIntersection: TAction; LayerIntersection1: TMenuItem;
+    Undo: TAction;              Undo1: TMenuItem;
+    Redo: TAction;              Redo1: TMenuItem;
+    ClearUndo: TAction;         Clear1: TMenuItem;
+    ShowUndoHistory: TAction;   Undohistory1: TMenuItem;
+                                Show1:    TMenuItem;
+    ImportPolyCad: TAction;     PolyCad1: TMenuItem;
+    RemoveUnusedPoints: TAction; Removeunusedpoints1: TMenuItem;
+    ExportGHS:    TAction;      GHS1:         TMenuItem;
+    ShowFlowlines:TAction;      Flowlines1:   TMenuItem;
+    SelectAll:    TAction;      Selectall1:   TMenuItem;
+    ExportSTL:    TAction;      STL1:         TMenuItem;
+                        N1,N2,N3,N4,N5,N6,N7: TMenuItem;
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure LoadFileExecute(Sender: TObject);
     procedure MidleFrameDialogExecute(Sender: TObject);
@@ -181,7 +163,6 @@ type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit}
     procedure PrecisionBoxChange(Sender: TObject);
     procedure FileSaveasExecute(Sender: TObject);
     procedure LayerAutoGroupExecute(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure NewLayerExecute(Sender: TObject);
     procedure DeleteExecute(Sender: TObject);
     procedure EdgeCollapseExecute(Sender: TObject);
@@ -195,11 +176,9 @@ type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit}
     procedure DeleteEmptyLayersExecute(Sender: TObject);
     procedure LayerDialogExecute(Sender: TObject);
     procedure NewModelExecute(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure ShowStationsExecute(Sender: TObject);
     procedure ShowButtocksExecute(Sender: TObject);
     procedure ShowWaterlinesExecute(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure NewFaceExecute(Sender: TObject);
     procedure EdgeExtrudeExecute(Sender: TObject);
     procedure About1Click(Sender: TObject);
@@ -215,6 +194,7 @@ type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit}
     procedure UndoExecute(Sender: TObject);
     procedure FreeShipUpdateUndoData(Sender: TObject);
     procedure ExportAuroraHullVslExecute(Sender: TObject);
+    procedure ImportObjExecute(Sender: TObject);
     procedure ExportObjExecute(Sender: TObject);
     procedure InvertFaceExecute(Sender: TObject);
     procedure PreferencesExecute(Sender: TObject);
@@ -265,7 +245,6 @@ type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit}
     procedure RemoveUnusedPointsExecute(Sender: TObject);
     procedure ExportGHSExecute(Sender: TObject);
     procedure ShowFlowlinesExecute(Sender: TObject);
-    procedure AddCylinderExecute(Sender: TObject);
     procedure SelectAllExecute(Sender: TObject);
     procedure ExportSTLExecute(Sender: TObject);
   private
@@ -277,6 +256,12 @@ type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit}
     procedure FOnSelectItem(Sender:TObject);
     procedure FOpenHullWindows;   // Creates 4 different views on the hullform
   public
+    Windows: TFasterList;        // Список активных окон
+    procedure AddWindow( Win: TFreeHullWindow );
+    procedure DelWindow( Win: TFreeHullWindow );
+    procedure NewOneWindow;
+    procedure TileView;
+    procedure CascadeView;
     procedure SetCaption;
     procedure UpdateMenu;
 end;
@@ -287,31 +272,10 @@ implementation uses FreeSplashWndw,
                     FreeLinesplanFrm,
                     FreeLanguageSupport;
 {$R *.lfm}
-
-procedure TMainForm.FormCreate( Sender: TObject );
-begin
-//{$ifndef Windows}
-    if self.Align=alTop then self.Top:=0;
-//{$endif}                                        // Removed from LFM,moved here
-   Ship:=TFreeShip.Create( self );
-   With Ship do begin        // FreeShipUnit оригинал воссоздания новых моделей
-      MainForm:=self;
-      FileChanged:=true;
-      Filename:='Example Ship';
-      OnChangeCursorIncrement:=FreeShipChangeCursorIncrement;
-      OnFileChanged          :=FreeShipFileChanged;
-      OnUpdateGeometryInfo   :=FreeShipUpdateGeometryInfo;
-      OnUpdateRecentFileList :=FreeShipUpdateRecentFileList;
-      OnUpdateUndoData       :=FreeShipUpdateUndoData;
-      Precision:=fpLow;
-   // FAllToolbarsControlsWidth:=0;
-   // Ship:=Freeship;
-   // ModelInitallyLoaded:=false;
-   end;
-end;
+{$include ..\Units\Main_Wins.inc}
 
 procedure TMainForm.FOnselectItem(Sender:TObject);
-var Face1,Face2 : TFreeSubdivisionControlFace;
+var Face1,Face2: TFreeSubdivisionControlFace;
     Diff: Boolean;
     I: Integer;
 begin
@@ -337,39 +301,6 @@ begin
    UpdateMenu;
 end;
 
-// Creates 4 different views on the hullform
-procedure TMainForm.FOpenHullWindows;
-const B: array of integer=[3,0,2,1];
-const S: array [0..3,0..3] of single
-  = ( ( 0.7,0.5,  1,  1 )         // 3 = 1
-    , ( 0.7,  0,  1,0.5 )         // 0 = 3
-    , (   0,0.5,0.7,  1 )         // 2 = 2
-    , (   0,  0,0.7,0.5 ) );      // 1 = 0
-var HullformWindow: TFreeHullWindow; I,PreferredWidth,PreferredHeight: Integer;
-    R: TRect;
-begin
-//  GetPreferredSize( PreferredWidth,PreferredHeight );
-    PreferredWidth:=ClientWidth-16; //BorderWidth*6;
-    PreferredHeight:=ClientHeight-80;
-    if MDIChildCount=0 then begin
-      for I:=0 to 3 do begin                           // open a new window
-         HullformWindow:=TFreeHullWindow.Create(self); // Connect viewport to freeship component
-         HullformWindow.FreeShip:=Ship;
-         HullformWindow.Viewport.ViewType:=TFreeViewType( B[I] );
-         R.Left  :=Round( S[I][0]*PreferredWidth  );
-         R.Top   :=Round( S[I][1]*PreferredHeight );
-         R.Right :=Round( S[I][2]*PreferredWidth  );
-         R.Bottom:=Round( S[I][3]*PreferredHeight );
-         HullformWindow.SetBounds( R.Left,R.Top,R.Right-R.Left,R.Bottom-R.Top );
-//       HullformWindow.ChildSizing.LeftRightSpacing:=0;
-//       HullformWindow.BorderWidth:=1;
-         ShowTranslatedValues( HullformWindow );
-         HullformWindow.SetCaption;
-      end;
-   end;// else Tile;
-   SetCaption;
-end;
-
 procedure TMainForm.SetCaption;
 begin
    if Ship.FileChanged then Caption:='FREE!ship    : '+Ship.Filename+' ('+Userstring(280)+')'
@@ -383,7 +314,7 @@ begin With Ship do begin
    For I:=1 to NumberOfLayers do if Layer[I-1].Count>0 then inc(NLayers); // File menu
    FileSaveas.Enabled:=(Surface.NumberOfControlPoints>0) or (FileChanged) or (FilenameSet);
    FileSave.Enabled:=(FileSaveas.Enabled) and (FilenameSet);
-// ImportMichletWaves1.Enabled:=(MDIChildCount>0) and (Surface.NumberOfControlFaces>1);
+// ImportMichletWaves1.Enabled:=(NumberOfViewports>0) and (Surface.NumberOfControlFaces>1);
 // ExportFEF.Enabled:=Surface.NumberOfControlPoints>0;
    ExportObj.Enabled:=Surface.NumberOfControlFaces>0;
    ExportSTL.Enabled:=Surface.NumberOfControlFaces>0;
@@ -405,7 +336,7 @@ begin With Ship do begin
    RecentFiles.Enabled:=RecentFiles.Count>0;
    ExportCoordinates.Enabled:=Surface.NumberOfControlPoints>0;
    ExportPart.Enabled:=(Surface.NumberOfControlFaces>0);
-   ImportPart.Enabled:=(Surface.NumberOfControlFaces>0) and (MDIChildCount>0);
+   ImportPart.Enabled:=(Surface.NumberOfControlFaces>0) and (NumberOfViewports>0);
    // Show controledges and controlpoints
    ShowControlNet.Enabled:=Surface.NumberOfControlPoints>0;
    ShowControlNet.Checked:=Visibility.ShowControlNet;
@@ -420,8 +351,8 @@ begin With Ship do begin
                    NumberOfSelectedControlFaces+NumberOfSelectedControlCurves+
                    NumberOfSelectedFlowLines+NumberOfselectedMarkers>0;
    // Window menu actions
-   TileWindow.Enabled:=MDIChildCount>0;
-   CascadeWindow.Enabled:=MDIChildCount>0;
+   TileWindow.Enabled:=NumberOfViewports>0;
+   CascadeWindow.Enabled:=NumberOfViewports>0;
    // Precision
    PrecisionBox.ItemIndex:=Ord(Precision);
    // Layers
@@ -434,14 +365,14 @@ begin With Ship do begin
       DevelopLayers.Enabled:=True;
       break;
    end;
-// KeelRudderWizard.Enabled:=MDIChildCount>0;
+// KeelRudderWizard.Enabled:=NumberOfViewports>0;
    DeleteMarkers.Enabled:=NumberofMarkers>0;
 // Calculations
    DesignHydrostatics.Enabled:=Surface.NumberOfControlFaces>0;
 // Hydrostaticsdialog.Enabled:=Surface.NumberOfControlFaces>0;
 // CrossCurves.Enabled:=Surface.NumberOfControlFaces>0;
 // edit commands
-   AddPoint.Enabled:=(MDIChildCount>0) and (Visibility.ShowControlNet);
+   AddPoint.Enabled:=(NumberOfViewports>0) and (Visibility.ShowControlNet);
    Insertplane.Enabled:=(Surface.NumberOfControlEdges>0) and (Visibility.ShowControlNet);
    LayerIntersection.Enabled:=NLayers>1;
    EdgeCollapse.Enabled:=NumberOfSelectedControlEdges>0;
@@ -516,6 +447,8 @@ begin With Ship do begin
    PointsUnlockAll.Enabled:=NumberOfLockedPoints>0;
    PointAlign.Enabled:=NumberOfSelectedControlPoints>2;
    TransformLackenby.Enabled:=Surface.NumberOfControlFaces>0;
+   if Assigned( OnUpdateGeometryInfo )
+           then OnUpdateGeometryInfo( Ship);
 end; end;
 
 procedure TMainForm.LoadFileExecute( Sender: TObject );
@@ -537,7 +470,7 @@ begin With Ship do begin                                // Initialize some data
    Clear;
    if ParamCount>0 then NF:=ParamStr( 1 ) else
    if Edit.RecentFiles.Count>0 then NF:=Edit.RecentFiles[0];
-   if NF<>'' then Edit.File_Load( NF );
+   if FileExistsUTF8( NF ) then Edit.File_Load( NF );
    FOpenHullWindows;
    SetCaption;
    UpdateMenu;
@@ -553,23 +486,7 @@ begin
    UpdateMenu;
 end;
 procedure TMainForm.NewWindowExecute(Sender: TObject);
-var HullformWindow: TFreeHullWindow;  // Connect viewport to freeship component
-begin   HullformWindow:=TFreeHullWindow.Create( self );    // open a new window
-   With HullformWindow do begin
-        FreeShip:=Ship;
-        Viewport.ViewType:=fvPerspective;
-        SetCaption;
-   end; UpdateMenu;
-end;
-procedure TMainForm.CascadeWindowExecute( Sender: TObject );
-    begin Cascade; end;
-procedure TMainForm.TileWindowExecute( Sender: TObject );
-    begin if MDIChildCount=0 then FOpenHullWindows else Tile; end;
-procedure TMainForm.BothSidesExecute( Sender: TObject );
-    begin if Ship.Visibility.ModelView=mvBoth
-             then Ship.Visibility.ModelView:=mvPort
-             else Ship.Visibility.ModelView:=mvBoth; UpdateMenu;
-    end;
+    begin NewOneWindow; end;
 procedure TMainForm.FreeShipFileChanged(Sender: TObject);
     begin SetCaption; end;
 procedure TMainForm.PrecisionBoxChange(Sender: TObject);
@@ -633,12 +550,6 @@ begin
          Panel1.Color:=Layer.Color;
       end;
    end;
-end;
-procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin Ship.Preferences.Save;
-      Ship.OnChangeActiveLayer:=nil;
-      Ship.OnChangeLayerData:=nil;
-      Ship.OnSelectItem:=nil;
 end;
 procedure TMainForm.NewLayerExecute(Sender: TObject);
     begin Ship.Edit.Layer_New; UpdateMenu; end;
@@ -709,14 +620,6 @@ begin
    Ship.Visibility.ShowWaterlines:=not Ship.Visibility.ShowWaterlines;
    UpdateMenu;
 end;
-//procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-//begin if Ship.FileChanged then CanClose:=Ship.Edit.File_SaveCheck=mrYes; end;
-procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-var Answer:word;
-begin if Ship.FileChanged then begin
-        Answer:=MessageDlg(Userstring(103)+EOL+Userstring(282)+'?',mtWarning,[mbYes,mbNo],0);
-        CanClose:=Answer=mrYes;
-end; end;
 procedure TMainForm.NewFaceExecute(Sender: TObject);
     begin Ship.Edit.Face_New; UpdateMenu; end;
 
@@ -779,8 +682,14 @@ begin
 end;
 procedure TMainForm.ExportAuroraHullVslExecute(Sender: TObject);
     begin Ship.Edit.File_Export_Aurora_Experiments; UpdateMenu; end;
+
+procedure TMainForm.ImportOBJExecute(Sender: TObject);
+    begin Ship.Edit.File_ImportOBJ;
+          FOpenHullWindows; SetCaption; UpdateMenu;
+end;
 procedure TMainForm.ExportObjExecute(Sender: TObject);
     begin Ship.Edit.File_ExportObj; UpdateMenu; end;
+
 procedure TMainForm.InvertFaceExecute(Sender: TObject);
     begin Ship.Edit.Face_Flip; UpdateMenu; end;
 procedure TMainForm.PreferencesExecute(Sender: TObject);
@@ -821,10 +730,11 @@ begin
 //##if not Ship.ProjectSettings.MainparticularsHasBeenset then begin
 //##       ShowMessage(Userstring(96)); exit; end;
    AlreadyOpen:=False;
-   for I:=1 to MDIChildCount do
-   if MDIChildren[I-1] is TFreeLinesplanForm then begin
+   for I:=1 to Ship.NumberOfViewports do
+   if TCustomForm( Ship.Viewport[I-1] ) is TFreeLinesplanForm then
+   begin
       AlreadyOpen:=True;
-      MDIChildren[I-1].BringToFront;
+      Ship.ViewPort[I-1].BringToFront;
       break;
    end;
    if not AlreadyOpen then begin
@@ -886,12 +796,11 @@ procedure TMainForm.DecreaseCurvatureScaleExecute(Sender: TObject);
 procedure TMainForm.FileSaveExecute(Sender: TObject);
     begin Ship.Edit.File_Save; UpdateMenu; end;
 procedure TMainForm.ImportChinesExecute(Sender: TObject);
-begin
-   Ship.Edit.File_ImportChines;
-   FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
-end;
+    begin Ship.Edit.File_ImportChines;
+          FOpenHullWindows;
+          SetCaption;
+          UpdateMenu;
+    end;
 procedure TMainForm.ShowControlCurvesExecute(Sender: TObject);
 begin
    Ship.Visibility.ShowControlCurves:=not Ship.Visibility.ShowControlCurves;
@@ -925,19 +834,67 @@ begin
       if I=0 then Ship.Visibility.CursorIncrement:=Value;
    end;
 end;
+
 procedure TMainForm.PointAlignExecute(Sender: TObject);
     begin Ship.Edit.Point_ProjectStraightLine; UpdateMenu; end;
 procedure TMainForm.MirrorFaceExecute(Sender: TObject);
     begin Ship.Edit.Face_MirrorPlane; UpdateMenu; end;
 procedure TMainForm.ExportDXF2DPolylinesExecute(Sender: TObject);
     begin Ship.Edit.File_ExportDXF_2DPolylines; UpdateMenu; end;
-procedure TMainForm.FreeShipUpdateGeometryInfo(Sender: TObject);
-begin Panel4.Caption :=
-      IntToStr(Ship.Surface.NumberOfControlFaces)+#32+Userstring(286)+', '+
-      IntToStr(Ship.Surface.NumberOfControlEdges)+#32+Userstring(287)+', '+
-      IntToStr(Ship.Surface.NumberOfControlPoints)+#32+Userstring(288)+', '+
-      IntToStr(Ship.Surface.NumberOfControlCurves)+#32+Userstring(289);
+(*
+SpinEditFontSize: TSpinEdit;                !!! нет единого управления шрифтами
+procedure SpinEditFontSizeChange(Sender: TObject);
+procedure TMainForm.SpinEditFontSizeChange( Sender: TObject );
+var w: integer;  vp:TFreeViewport;
+begin
+  Ship.Preferences.FontSize:=SpinEditFontSize.value;
+//if SpinEditFontSize.value<10 then SpinEditFontSize.Constraints.MinWidth:=16+24+2
+//                             else SpinEditFontSize.Constraints.MinWidth:=16+16+24+2;
+  SpinEditFontSize.Width:=SpinEditFontSize.Constraints.MinWidth;
+  with Application.MainForm as TMainForm do
+  for w:=0 to MDIChildCount-1 do begin
+    vp:=TCustomForm( ViewPort[w] ) as TFreeHullWindow).ViewPort;
+     //    vp:=TFreeHullWindow(PanelManager.MDIPanels[w]).Viewport;
+    vp.invalidate;
+  end;
 end;
+object SpinEditFontSize: TSpinEdit
+  Left = 108
+  Height = 21
+  Hint = 'Высота букв в надписях на чертежах'
+  Top = 1
+  Width = 40
+  Constraints.MinWidth = 40
+  MaxValue = 20
+  MinValue = 3
+  ParentFont = False
+  TabOrder = 0
+  Value = 8
+  OnChange = SpinEditFontSizeChange
+end
+*)
+
+procedure TMainForm.FreeShipUpdateGeometryInfo(Sender: TObject);
+Var Str: String;
+begin with Ship.Surface do begin
+  Str:=UserString(288);                                          // Узлы Points
+  if NumberOfControlPoints>NumberofSelectedControlPoints then Str:=Str+' '+IntToStr( NumberOfControlPoints );
+  if NumberofSelectedControlPoints>0 then Str:=Str+'\'+IntToStr( NumberOfSelectedControlPoints );
+  Str:=Str+',  '+UserString(287);                                // Рёбра Edges
+  if NumberOfControlEdges>NumberofSelectedControlEdges then Str:=Str+' '+IntToStr( NumberOfControlEdges );
+  if NumberofSelectedControlEdges>0 then Str:=Str+'\'+IntToStr( NumberOfSelectedControlEdges );
+  if NumberOfControlFaces>0 then begin
+    Str:=Str+',  '+UserString(286);                              // Грани Faces
+    if NumberOfControlFaces>NumberofSelectedControlFaces then Str:=Str+' '+IntToStr( NumberOfControlFaces );
+    if NumberofSelectedControlFaces>0 then Str:=Str+'\'+IntToStr( NumberOfSelectedControlFaces );
+  end;
+  if NumberOfControlCurves>0 then begin
+    Str:=Str+',  '+UserString(289);                           // Контуры Curves
+    if NumberOfControlCurves>NumberofSelectedControlEdges then Str:=Str+' '+IntToStr( NumberOfControlCurves );
+    if NumberofSelectedControlCurves>0 then Str:=Str+'\'+IntToStr( NumberOfSelectedControlCurves );
+  end;
+  Panel4.Caption:=Str;
+end end;
 procedure TMainForm.TransformLackenbyExecute(Sender: TObject);
     begin Ship.Edit.Model_LackenbyTransformation; UpdateMenu; end;
 procedure TMainForm.ExportIGESExecute(Sender: TObject);
@@ -965,8 +922,6 @@ begin
    Ship.Visibility.ShowFlowlines:=not Ship.Visibility.ShowFlowlines;
    updatemenu;
 end;
-procedure TMainForm.AddCylinderExecute(Sender: TObject);
-    begin Ship.Edit.Geometry_AddCylinder; UpdateMenu; end;
 procedure TMainForm.SelectAllExecute(Sender: TObject);
     begin Ship.Edit.Selection_SelectAll; UpdateMenu; end;
 procedure TMainForm.ExportSTLExecute(Sender: TObject);

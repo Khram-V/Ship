@@ -14,57 +14,50 @@ interface uses
      ExtCtrls,
      StdCtrls,
      FreeGeometry,FreeTypes;
-
-type TFreeInsertPlaneDialog  = class(TForm)
-                                 GroupBox1: TGroupBox;
-                                 RadioButton1: TRadioButton;
-                                 RadioButton2: TRadioButton;
-                                 RadioButton3: TRadioButton;
-                                 Edit1: TEdit;
-                                 Label1: TLabel;
-                                 Label2: TLabel;
-                                 Label4: TLabel;
-                                 Label5: TLabel;
-                                 Label3: TLabel;
-                                 CheckBox1: TCheckBox;
-                                 Panel1: TPanel;
-                                 Panel3: TPanel;
+type 
+TFreeInsertPlaneDialog  = class(TForm)
+    GroupBox1: TGroupBox;
+    RadioButton1: TRadioButton;
+    RadioButton2: TRadioButton;
+    RadioButton3: TRadioButton;
+    Edit1: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label3: TLabel;
+    CheckBox1: TCheckBox;
+    Panel1: TPanel;
+    Panel3: TPanel;
     BitBtn1: TSpeedButton;
     BitBtn2: TSpeedButton;
-                                 procedure RadioButton1Click(Sender: TObject);
-                                 procedure RadioButton2Click(Sender: TObject);
-                                 procedure RadioButton3Click(Sender: TObject);
-                                 procedure Edit1KeyPress(Sender: TObject; var Key: Char);
+    procedure RadioButton1Click(Sender: TObject);
+    procedure RadioButton2Click(Sender: TObject);
+    procedure RadioButton3Click(Sender: TObject);
+    procedure Edit1KeyPress(Sender: TObject; var Key: Char);
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
-                              private   { Private declarations }
-                                 FMin  : T3DVector;
-                                 FMax  : T3DVector;
-                                 function FGetCreateControlcurve:Boolean;
-                                 function FGetPlane:T3DPlane;
-                                 procedure FUpdate;
-                              public    { Public declarations }
-                                 function Execute:Boolean;
-                                 property CreateControlcurve : Boolean read FGetCreateControlcurve;
-                                 property Max               : T3DVector read FMax write FMax;
-                                 property Min               : T3DVector read FMin write FMin;
-                                 property Plane             : T3DPlane read FGetPlane;
-                           end;
+  private   { Private declarations }
+    FMin  : T3DVector;
+    FMax  : T3DVector;
+    function FGetCreateControlcurve:Boolean;
+    function FGetPlane:T3DPlane;
+    procedure FUpdate;
+  public    { Public declarations }
+    function Execute:Boolean;
+    property CreateControlcurve : Boolean read FGetCreateControlcurve;
+    property Max               : T3DVector read FMax write FMax;
+    property Min               : T3DVector read FMin write FMin;
+    property Plane             : T3DPlane read FGetPlane;
+end;
 
 var FreeInsertPlaneDialog: TFreeInsertPlaneDialog;
 
 implementation
-
-{$IFnDEF FPC}
-  {$R *.dfm}
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 function TFreeInsertPlaneDialog.FGetCreateControlcurve:Boolean;
-begin
-   Result:=Checkbox1.Checked;
-end;{TFreeInsertPlaneDialog.FGetCreateControlcurve}
+   begin Result:=Checkbox1.Checked; end;
 
 function TFreeInsertPlaneDialog.FGetPlane:T3DPlane;
 begin
@@ -73,7 +66,7 @@ begin
    if RadioButton2.Checked then Result.c:=1.0;
    if RadioButton3.Checked then Result.b:=1.0;
    Result.d:=-StrToFloat(Edit1.Text);
-end;{TFreeInsertPlaneDialog.FGetPlane}
+end;
 
 procedure TFreeInsertPlaneDialog.FUpdate;
 begin
@@ -85,44 +78,28 @@ begin
       if RadioButton2.Checked then Label4.Caption:=FloatToStrF(Max.Z+1e-4,ffFixed,7,4) else
          if RadioButton3.Checked then Label4.Caption:=FloatToStrF(Max.Y+1e-4,ffFixed,7,4) else
             Label4.Caption:='';
-end;{TFreeInsertPlaneDialog.FUpdate}
+end;
 
 function TFreeInsertPlaneDialog.Execute:Boolean;
 begin
    FUpdate;
    ShowModal;
    Result:=ModalResult=mrOK;
-end;{TFreeInsertPlaneDialog.Execute}
+end;
 
 procedure TFreeInsertPlaneDialog.RadioButton1Click(Sender: TObject);
-begin
-   FUpdate;
-end;{TFreeInsertPlaneDialog.RadioButton1Click}
-
+    begin FUpdate; end;
 procedure TFreeInsertPlaneDialog.RadioButton2Click(Sender: TObject);
-begin
-   FUpdate;
-end;{TFreeInsertPlaneDialog.RadioButton2Click}
-
+    begin FUpdate; end;
 procedure TFreeInsertPlaneDialog.RadioButton3Click(Sender: TObject);
-begin
-   FUpdate;
-end;{TFreeInsertPlaneDialog.RadioButton3Click}
-
+    begin FUpdate; end;
 procedure TFreeInsertPlaneDialog.Edit1KeyPress(Sender: TObject; var Key: Char);
-begin
-   // only valid numerical values
+begin // only valid numerical values
    if (Key in [#8,'1'..'9','0','-',#13]) or (Key=Decimalseparator) then else key:=#0;
-end;{TFreeInsertPlaneDialog.Edit1KeyPress}
-
+end;
 procedure TFreeInsertPlaneDialog.BitBtn1Click(Sender: TObject);
-begin
-   Modalresult:=mrOK;
-end;{TFreeInsertPlaneDialog.BitBtn1Click}
-
+    begin Modalresult:=mrOK; end;
 procedure TFreeInsertPlaneDialog.BitBtn2Click(Sender: TObject);
-begin
-   Modalresult:=mrCancel;
-end;{TFreeInsertPlaneDialog.BitBtn2Click}
+    begin Modalresult:=mrCancel; end;
 
 end.

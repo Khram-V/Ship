@@ -127,7 +127,6 @@ object FreeUndoHistoryDialog: TFreeUndoHistoryDialog
       BevelOuter = bvLowered
       BorderStyle = bsSingle
       CameraType = ftStandard
-      DoubleBuffer = True
       Elevation = 20.000000000000000000
       ViewType = fvPerspective
       ViewportMode = vmWireFrame

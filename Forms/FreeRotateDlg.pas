@@ -12,48 +12,44 @@ interface uses
      ExtCtrls;
 
 type TFreeRotateDialog = class(TForm)
-                              Panel2: TPanel;
-                              Label3: TLabel;
-                              Label6: TLabel;
-                              Label9: TLabel;
-                              Edit1: TEdit;
-                              Edit2: TEdit;
-                              Edit3: TEdit;
-                              Panel1: TPanel;
-                              OKButton: TSpeedButton;
-                              CancelButton: TSpeedButton;
-                              Panel3: TPanel;
-                              Label1: TLabel;
-                              Label2: TLabel;
-                              Label4: TLabel;
-                              procedure Edit1KeyPress(Sender: TObject; var Key: Char);
-                              procedure Edit1Exit(Sender: TObject);
-                              procedure Edit1KeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
-                              procedure Edit2Exit(Sender: TObject);
-                              procedure Edit3Exit(Sender: TObject);
-                              procedure OKButtonClick(Sender: TObject);
-                              procedure CancelButtonClick(Sender: TObject);
-                           private   { Private declarations }
-                              function FGetXValue:extended;
-                              procedure FSetXValue(val:extended);
-                              function FGetYValue:extended;
-                              procedure FSetYValue(val:extended);
-                              function FGetZValue:extended;
-                              procedure FSetZValue(val:extended);
-                           public    { Public declarations }
-                              function Execute(Caption,Units:String):Boolean;
-                              property XValue:Extended read FGetXValue write FSetXValue;
-                              property YValue:Extended read FGetYValue write FSetYValue;
-                              property ZValue:Extended read FGetZValue write FSetZValue;
-                        end;
+     Panel2: TPanel;
+     Label3: TLabel;
+     Label6: TLabel;
+     Label9: TLabel;
+     Edit1: TEdit;
+     Edit2: TEdit;
+     Edit3: TEdit;
+     Panel1: TPanel;
+     OKButton: TSpeedButton;
+     CancelButton: TSpeedButton;
+     Panel3: TPanel;
+     Label1: TLabel;
+     Label2: TLabel;
+     Label4: TLabel;
+     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
+     procedure Edit1Exit(Sender: TObject);
+     procedure Edit1KeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);
+     procedure Edit2Exit(Sender: TObject);
+     procedure Edit3Exit(Sender: TObject);
+     procedure OKButtonClick(Sender: TObject);
+     procedure CancelButtonClick(Sender: TObject);
+  private   { Private declarations }
+     function FGetXValue:extended;
+     procedure FSetXValue(val:extended);
+     function FGetYValue:extended;
+     procedure FSetYValue(val:extended);
+     function FGetZValue:extended;
+     procedure FSetZValue(val:extended);
+  public    { Public declarations }
+     function Execute(Caption,Units:String):Boolean;
+     property XValue:Extended read FGetXValue write FSetXValue;
+     property YValue:Extended read FGetYValue write FSetYValue;
+     property ZValue:Extended read FGetZValue write FSetZValue;
+end;
 
 var FreeRotateDialog:TFreeRotateDialog;
 implementation
-{$IFnDEF FPC}
-  {$R *.dfm}
-{$ELSE}
-  {$R *.lfm}
-{$ENDIF}
+{$R *.lfm}
 
 function TFreeRotateDialog.FGetXValue:extended;
 begin

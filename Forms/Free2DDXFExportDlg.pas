@@ -5,49 +5,47 @@ interface
 
 uses Windows,
      SysUtils,
-     Classes,
-     Graphics,
      Controls,
      Forms,
      Dialogs,
      StdCtrls,
      Buttons,
      ExtCtrls,
-     shlobj,
-     FreeNumInput;
+     Shlobj,
+     Spin;
 
 type TDXFExport2DDialog = class(TForm)
-                              Panel2: TPanel;
-                              Label3: TLabel;
-                              Edit1: TFreeNumInput;
-                              Panel1: TPanel;
-                              Panel3: TPanel;
-                              Label1: TLabel;
-                              Label7: TLabel;
-                              Edit3: TEdit;
-                              SpeedButton1: TSpeedButton;
-                              SaveDialog: TSaveDialog;
-                              BitBtn1: TSpeedButton;
-                              BitBtn2: TSpeedButton;
-                              Label4: TLabel;
-                              ComboBox1: TComboBox;
-                              CheckBox1: TCheckBox;
-                              procedure SpeedButton1Click(Sender: TObject);
-                              procedure BitBtn1Click(Sender: TObject);
-                              procedure BitBtn2Click(Sender: TObject);
-                              procedure ComboBox1Change(Sender: TObject);
-                           private
-                              function FGetExportDirectory:string;
-                              procedure FSetExportDirectory(val:string);
-                              function FGetSegmentLength:double;
-                              procedure FSetSegmentLength(val:double);
-                              procedure FSetUnits;
-                           public
-                              function BrowseForFolder(Const browseTitle: PAnsiChar;initialFolder: String = ''): String;
-                              function Execute:Boolean;
-                              property ExportDirectory   : string read FGetExportDirectory write FSetExportDirectory;
-                              property SegmentLength     : double read FGetSegmentLength write FSetSegmentLength;
-                        end;
+     Panel2: TPanel;
+     Label3: TLabel;
+     Edit1: TFloatSpinEdit; // TFreeNumInput;
+     Panel1: TPanel;
+     Panel3: TPanel;
+     Label1: TLabel;
+     Label7: TLabel;
+     Edit3: TEdit;
+     SpeedButton1: TSpeedButton;
+     SaveDialog: TSaveDialog;
+     BitBtn1: TSpeedButton;
+     BitBtn2: TSpeedButton;
+     Label4: TLabel;
+     ComboBox1: TComboBox;
+     CheckBox1: TCheckBox;
+     procedure SpeedButton1Click(Sender: TObject);
+     procedure BitBtn1Click(Sender: TObject);
+     procedure BitBtn2Click(Sender: TObject);
+     procedure ComboBox1Change(Sender: TObject);
+  private
+     function FGetExportDirectory:string;
+     procedure FSetExportDirectory(val:string);
+     function FGetSegmentLength:double;
+     procedure FSetSegmentLength(val:double);
+     procedure FSetUnits;
+  public
+     function BrowseForFolder(Const browseTitle: PAnsiChar;initialFolder: String = ''): String;
+     function Execute:Boolean;
+     property ExportDirectory   : string read FGetExportDirectory write FSetExportDirectory;
+     property SegmentLength     : double read FGetSegmentLength write FSetSegmentLength;
+end;
 
 var DXFExport2DDialog:TDXFExport2DDialog;
 
@@ -66,15 +64,15 @@ begin
    result := 0;
 end;{BrowseForFolderCallBack}
 
-///////////////////////////////////////////////////////////////////
-// This function allows the user to browse for a folder
-// Arguments:-
-//    browseTitle : The title to display on the browse dialog.
-//  initialFolder : Optional argument. Use to specify the folder
-//                  initially selected when the dialog opens.
-// Returns: The empty string if no folder was selected (i.e. if the
-//          user clicked cancel), otherwise the full folder path.
-///////////////////////////////////////////////////////////////////
+(*
+   This function allows the user to browse for a folder
+   Arguments:-
+      browseTitle : The title to display on the browse dialog.
+    initialFolder : Optional argument. Use to specify the folder
+                    initially selected when the dialog opens.
+   Returns: The empty string if no folder was selected (i.e. if the
+            user clicked cancel), otherwise the full folder path.
+*)
 function TDXFExport2DDialog.BrowseForFolder(Const browseTitle: PAnsiChar;initialFolder: String=''): String;
 var browse_info   : TBrowseInfo;
     folder        : array[0..MAX_PATH] of char;
@@ -89,13 +87,10 @@ begin
    browse_info.hwndOwner := Application.Handle;
    if initialFolder<>'' then browse_info.lpfn := BrowseForFolderCallBack;
    find_context := SHBrowseForFolder(browse_info);
-   if Assigned(find_context) then
-   begin
-      if SHGetPathFromIDList(find_context,folder) then
-      begin
+   if Assigned(find_context) then begin
+      if SHGetPathFromIDList(find_context,folder) then begin
          result:='';
-         for I:=1 to length(Folder) do
-         begin
+         for I:=1 to length(Folder) do begin
             if Folder[I-1]=#0 then break else Result:=result+Folder[I-1];
          end;
       end else result := '';

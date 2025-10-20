@@ -27,8 +27,7 @@ type                                             { TFREEProjectSettingsDialog }
     Label26,Label3,Label4,Label6,Label8,Label5:          TLabel;
     Panel,Panel1,Panel2,Panel3,Panel4,Panel5,Panel6,
     Panel7,Panel8,Panel9,Panel10,Panel11,Panel12,Panel13: TPanel;
-    Edit2,Edit3,Edit4,Edit5,Edit6,Edit8,
-    Edit25,Edit26,Edit27:         TFloatSpinEdit;
+    Edit2,Edit3,Edit4,Edit5,Edit6,Edit8,Edit25,Edit26,Edit27: TFloatSpinEdit;
     BitBtn1,BitBtn2:                TSpeedButton;
     PageControl1:                   TPageControl;
     seUnderwaterOpacity:               TSpinEdit;
