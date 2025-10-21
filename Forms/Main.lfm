@@ -217,6 +217,20 @@ object MainForm: TMainForm
       Top = 1
       Action = ShowHydrostatics
     end
+object SpinEditFontSize: TSpinEdit
+  Left = 418
+  Height = 21
+  Hint = 'Высота букв в надписях на чертежах'
+  Top = 1
+  Width = 36
+  Constraints.MinWidth = 36
+  MaxValue = 20
+  MinValue = 3
+  ParentFont = False
+  TabOrder = 0
+  Value = 8
+  OnChange = SpinEditFontSizeChange
+end
     object ToolButton30: TToolButton
       Left = 423
       Top = 1

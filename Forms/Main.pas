@@ -10,11 +10,11 @@ interface uses  Windows,
      ExtCtrls,
      ActnList,
      StdCtrls,
-     ComCtrls,
+     ComCtrls,Spin,
      LazFileUtils,FasterList,
      FreeSplitSectionDlg,FreeGeometry,FreeShipUnit,FreeHullformWindow,FreeTypes;
 
-type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit} //TCustomForm
+type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     ActionList1: TActionList;
     MenuImages : TImageList;
     MainMenu1  : TMainMenu;
@@ -22,6 +22,7 @@ type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit} //TCustom
     LayerBox,PrecisionBox: TComboBox;
     ToolBar    : TToolBar;
     ColorDialog: TColorDialog;
+    SpinEditFontSize: TSpinEdit;          //!!! нет единого управления шрифтами
     StatusBar,Panel1,Panel2,Panel3,Panel4: TPanel;
     ToolButton1,ToolButton2,ToolButton3,ToolButton4,ToolButton5,ToolButton6,
     ToolButton7,ToolButton8,ToolButton9,ToolButton10,ToolButton11,ToolButton12,
@@ -150,6 +151,7 @@ type TMainForm = class(TForm) {FreeShip: TFreeShip; -> Ship: ShipUnit} //TCustom
     procedure MidleFrameDialogExecute(Sender: TObject);
     procedure IntersectionDialogExecute(Sender: TObject);
     procedure DesignHydrostaticsExecute(Sender: TObject);
+    procedure SpinEditFontSizeChange(Sender: TObject);
 //  procedure HydrostaticsDialogExecute(Sender: TObject);
     procedure ShowHydrostaticsExecute(Sender: TObject);
     procedure ExitProgramExecute(Sender: TObject);
@@ -731,8 +733,7 @@ begin
 //##       ShowMessage(Userstring(96)); exit; end;
    AlreadyOpen:=False;
    for I:=1 to Ship.NumberOfViewports do
-   if TCustomForm( Ship.Viewport[I-1] ) is TFreeLinesplanForm then
-   begin
+   if TCustomForm( Ship.Viewport[I-1] ) is TFreeLinesplanForm then begin
       AlreadyOpen:=True;
       Ship.ViewPort[I-1].BringToFront;
       break;
@@ -834,45 +835,25 @@ begin
       if I=0 then Ship.Visibility.CursorIncrement:=Value;
    end;
 end;
-
 procedure TMainForm.PointAlignExecute(Sender: TObject);
     begin Ship.Edit.Point_ProjectStraightLine; UpdateMenu; end;
 procedure TMainForm.MirrorFaceExecute(Sender: TObject);
     begin Ship.Edit.Face_MirrorPlane; UpdateMenu; end;
 procedure TMainForm.ExportDXF2DPolylinesExecute(Sender: TObject);
     begin Ship.Edit.File_ExportDXF_2DPolylines; UpdateMenu; end;
-(*
-SpinEditFontSize: TSpinEdit;                !!! нет единого управления шрифтами
-procedure SpinEditFontSizeChange(Sender: TObject);
 procedure TMainForm.SpinEditFontSizeChange( Sender: TObject );
-var w: integer;  vp:TFreeViewport;
+var I: integer;                              // нет единого управления шрифтами
 begin
   Ship.Preferences.FontSize:=SpinEditFontSize.value;
 //if SpinEditFontSize.value<10 then SpinEditFontSize.Constraints.MinWidth:=16+24+2
 //                             else SpinEditFontSize.Constraints.MinWidth:=16+16+24+2;
   SpinEditFontSize.Width:=SpinEditFontSize.Constraints.MinWidth;
-  with Application.MainForm as TMainForm do
-  for w:=0 to MDIChildCount-1 do begin
-    vp:=TCustomForm( ViewPort[w] ) as TFreeHullWindow).ViewPort;
-     //    vp:=TFreeHullWindow(PanelManager.MDIPanels[w]).Viewport;
-    vp.invalidate;
-  end;
+  for I:=0 to Ship.NumberofViewPorts-1 do Ship.ViewPort[I].InValidate;
+
+//--with Application.MainForm as TMainForm do \только по теоретическим чертежам
+//  for I:=0 to Windows.Count-1 do
+//     TFreeHullWindow( Windows[I] ).ViewPort.Invalidate;
 end;
-object SpinEditFontSize: TSpinEdit
-  Left = 108
-  Height = 21
-  Hint = 'Высота букв в надписях на чертежах'
-  Top = 1
-  Width = 40
-  Constraints.MinWidth = 40
-  MaxValue = 20
-  MinValue = 3
-  ParentFont = False
-  TabOrder = 0
-  Value = 8
-  OnChange = SpinEditFontSizeChange
-end
-*)
 
 procedure TMainForm.FreeShipUpdateGeometryInfo(Sender: TObject);
 Var Str: String;

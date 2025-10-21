@@ -4,6 +4,7 @@ object FreeSplashWindow: TFreeSplashWindow
   Top = 945
   Width = 460
   Caption = 'Числовая модель корпуса корабля'
+  FormStyle = fsSystemStayOnTop
   ClientHeight = 160
   ClientWidth = 400
   Position = poScreenCenter

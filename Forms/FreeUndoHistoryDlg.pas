@@ -62,6 +62,8 @@ begin
    Freeship1.AddViewport(Viewport);
    UndoBox.ItemIndex:=Freeship.UndoPosition-1;
    Viewport.Color:=Freeship.Preferences.ViewportColor;
+       Freeship1.LoadProject(Undo.Undodata);
+       Viewport.ZoomExtents;
    ShowModal;
    Result:=ModalResult=mrOK;
 end;

@@ -51,7 +51,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       BackgroundImage.Transparent = False
       BackgroundImage.TransparentColor = clBlack
       BackgroundImage.Visible = True
-      BorderStyle = bsSingle
       CameraType = ftStandard
       ViewType = fvBodyplan
       ViewportMode = vmWireFrame
@@ -456,7 +455,6 @@ object FreeLackenbyDialog: TFreeLackenbyDialog
       BackgroundImage.Transparent = False
       BackgroundImage.TransparentColor = clBlack
       BackgroundImage.Visible = True
-      BorderStyle = bsSingle
       CameraType = ftStandard
       Elevation = 90
       ViewType = fvPlan

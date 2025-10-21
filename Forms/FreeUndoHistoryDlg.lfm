@@ -118,18 +118,16 @@ object FreeUndoHistoryDialog: TFreeUndoHistoryDialog
       Top = 9
       Width = 405
       Height = 372
-      Angle = 20.000000000000000000
+      Angle = 20
       Align = alClient
       BackgroundImage.Alpha = 255
       BackgroundImage.Transparent = False
       BackgroundImage.TransparentColor = clBlack
       BackgroundImage.Visible = True
-      BevelOuter = bvLowered
-      BorderStyle = bsSingle
       CameraType = ftStandard
-      Elevation = 20.000000000000000000
+      Elevation = 20
       ViewType = fvPerspective
-      ViewportMode = vmWireFrame
+      ViewportMode = vmShade
       OnRedraw = ViewportRedraw
       OnRequestExtents = ViewportRequestExtents
     end

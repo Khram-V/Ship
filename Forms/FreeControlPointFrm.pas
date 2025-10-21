@@ -123,7 +123,7 @@ begin
             Val:=ConvertCoordinate(Edit1.Text, P.X);
             if abs(P.X-Val)>1e-5 then begin
                if not saved then begin
-                  TFreeShip(FreeShip).Edit.CreateUndoObject(Userstring(210),True);
+                  TFreeShip(FreeShip).Edit.CreateUndoObject(' X ',True);   // Userstring(210)
                   saved := true;
                end;
                P.X:=Val;
@@ -177,7 +177,7 @@ begin
             Val:=ConvertCoordinate(Edit2.Text, P.Y);
             if abs(P.Y-Val)>1e-5 then begin
                if not saved then begin
-                  TFreeShip(FreeShip).Edit.CreateUndoObject(Userstring(211),True);
+                  TFreeShip(FreeShip).Edit.CreateUndoObject(' Y ',True); //  Userstring(211)
                   saved := true;
                end;
                P.Y:=Val;
@@ -232,7 +232,7 @@ begin
             Val:=ConvertCoordinate(Edit3.Text, P.Z);
             if abs(P.Z-Val)>1e-5 then begin
                if not saved then begin
-                  TFreeShip(FreeShip).Edit.CreateUndoObject(Userstring(212),True);
+                  TFreeShip(FreeShip).Edit.CreateUndoObject(' Z ',True); //  Userstring(212)
                   saved := true;
                end;
                P.Z:=Val;

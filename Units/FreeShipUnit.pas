@@ -5540,13 +5540,14 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
       Pt:=Viewport.Project(P);
       Viewport.FontName:='Arial';
       Viewport.FontColor:=Preferences.HydrostaticsFontColor;
-      size:=Round(Sqrt(Viewport.Zoom)*7);
-      if size<2 then size:=2;
-      Viewport.FontSize:=size;
+//--  size:=Round(Sqrt(Viewport.Zoom)*7);
+      size:=Round( Preferences.FontSize*Sqrt( Viewport.Zoom )*0.875 );
+      if size<3 then size:=3;
+      Viewport.FontSize:=Size;
+//++Viewport.FontSize:=Preferences.FontSize;
       Size:=Round(Sqrt(Viewport.Zoom)*(Preferences.PointSize+1));
       if size<1 then size:=1;
       Viewport.BrushStyle:=bsClear;
-//    if Viewport.Printing then Size:=round(Size*Viewport.PrintResolution/150);
       Viewport.PenColor:=clDkGray;//Black;
       Viewport.BrushColor:=clWhite;
       Viewport.BrushStyle:=bsSolid;
@@ -5567,21 +5568,22 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
         I,J,N,Height,Width: integer;
         Position: TFloatType;
         Pt1,Pt2: TPoint;
-        Str: string;
         Pts: array of TPoint;
+        Str: string;
 
-        procedure SetFontHeight(DesiredHeight:TFloatType);
-        var Height: TFloatType; CurrentHeight: integer;
+        procedure SetFontHeight( DesiredHeight:TFloatType );
+         var Height: TFloatType; CurrentHeight: integer;
         begin                  // Sets the fontheight to a height in modelspace
+(*##*)     DesiredHeight:=Preferences.FontSize*DesiredHeight/8.0;
            Height:=DesiredHeight*Viewport.Scale*Viewport.Zoom;
-           Viewport.Canvas.Font.Size:=8;
+           Viewport.Canvas.Font.Size:=Preferences.FontSize+1; //:=8;
            CurrentHeight:=Viewport.Canvas.TextHeight('X');
            while CurrentHeight>Height do begin
               Viewport.Canvas.Font.Size:=Viewport.Canvas.Font.Size-1;
               CurrentHeight:=Viewport.Canvas.TextHeight('X');
               if Viewport.Canvas.Font.Size<4 then break;
            end;
-        end;{SetFontHeight}
+        end;
     begin
        DrawStations:=Viewport.ViewType<>fvBodyplan;
        DrawButtocks:=Viewport.ViewType<>fvProfile;
@@ -5599,7 +5601,8 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
           Viewport.PenColor:=Preferences.GridColor;
           Viewport.FontName:='Arial';
           Viewport.FontColor:=Preferences.GridFontColor; // calculate and set fontheight
-          SetFontHeight(Abs(Min-Max)/FontheightFactor);
+      //++ Viewport.Canvas.Font.Size:=Preferences.FontSize;
+          SetFontHeight( Abs(Min-Max)/FontheightFactor );
           Height:=Viewport.Canvas.TextHeight('X');
           Viewport.BrushStyle:=bsClear;                      // draw centerline
           if Viewport.ViewType<>fvProfile then begin
@@ -5920,7 +5923,7 @@ begin
       Rect.Right:=Rect.Left+LegendWidth;
       Viewport.Canvas.Rectangle(Rect);
       Viewport.FontName:='Arial';
-      Viewport.FontSize:=8;
+      Viewport.FontSize:=Preferences.FontSize; //8;
       Viewport.FontColor:=Preferences.GridFontColor;
       NDecimal:=3;
       for I:=1 to NRect do begin
@@ -6569,8 +6572,7 @@ var I: integer; P: TFreeHullWindow; //FreeViewPort;
 begin        // Redraws model to all viewports by re-initializing all viewports
   with Application.MainForm as TMainForm do begin
     for I:=0 to NumberofViewPorts-1 do begin
-      P:=TCustomForm( ViewPort[I] ) as TFreeHullWindow;
-      P.ViewPort.ZoomExtents;
+        ViewPort[I].ZoomExtents;
     end;
     if LinesplanFrame<>nil then
        TFreeLinesplanframe(LinesplanFrame).Viewport.ZoomExtents;
