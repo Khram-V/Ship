@@ -59,7 +59,8 @@ end;
 
 procedure TFreeSplitSectionDialog.SpeedButton3Click(Sender: TObject);
 begin                                                    // 'From hydrostatics'
-//##  SetMiF( Ship.DesignHydrostatics.Data.CenterOfBuoyancy.X );
+//  SetMiF( Ship.FDesignHydrostatics.FData.CenterOfBuoyancy.X );
+  SetMiF( Ship.FDesignHydrostatics.Data.CenterOfBuoyancy.X );
 end;
 
 procedure TFreeSplitSectionDialog.tbMiFChange(Sender: TObject);

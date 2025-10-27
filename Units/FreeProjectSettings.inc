@@ -254,14 +254,12 @@ begin
   ShowTranslatedValues(Dialog);
   if Dialog.Execute then begin
     FreeShip.Edit.CreateUndoObject( 'Project settings ',True );
-
     FProjectName         :=BlankOff( Dialog.Edit1.Text ); //ProjectName.Trim;
     FProjectDesigner     :=BlankOff( Dialog.Edit7.Text ); //ProjectDesigner.Trim;
     FProjectComment      :=BlankOff( Dialog.Edit9.Text ); //ProjectComment.Trim;
     FProjectFileCreatedBy:=BlankOff( Dialog.Edit10.Text); //ProjectFileCreatedBy.Trim;
     ProjectUnits:=TFreeUnitType(Dialog.UnitBox.ItemIndex);
     ProjectPrecision:=TFreePrecisionType(Dialog.PrecisionBox.ItemIndex);
-
     ProjectLength:=Dialog.Length;
     ProjectBeam:=Dialog.Beam;
     ProjectDraft:=Dialog.Draft;
@@ -304,10 +302,10 @@ begin
   Source.LoadTFloatType(FProjectDraft);
   Source.LoadBoolean(MainparticularsHasBeenset);
   Source.LoadTFloatType(FProjectWaterDensity);
-  //   Source.LoadTFloatType(FProjectWaterTemper);
+// Source.LoadTFloatType(FProjectWaterTemper);
   Source.LoadTFloatType(FProjectAppendageCoefficient);
   Source.LoadBoolean(FProjectShadeUnderwaterShip);
-//     Source.LoadTColor( ProjectUnderWaterColor,ProjectUnderWaterColorAlpha );
+// Source.LoadTColor( ProjectUnderWaterColor,ProjectUnderWaterColorAlpha );
   Source.LoadInteger( ProjectUnderWaterColor );
          ProjectUnderWaterColorAlpha:=255-Byte(ProjectUnderWaterColor shr 24);
          ProjectUnderWaterColor:=ProjectUnderWaterColor and $FFFFFF;

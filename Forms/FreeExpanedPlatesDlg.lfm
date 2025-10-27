@@ -699,7 +699,7 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
     Top = 24
     Width = 450
     Height = 476
-    Angle = 90.000000000000000000
+    Angle = 90
     Align = alClient
     BackgroundImage.Alpha = 255
     BackgroundImage.Tolerance = 5
@@ -708,8 +708,8 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
     BackgroundImage.Visible = True
     CameraType = ftStandard
     Color = clWhite
-    Elevation = 90.000000000000000000
-    Margin = 4.000000000000000000
+    Elevation = 90
+    Margin = 4
     ViewType = fvPlan
     ViewportMode = vmWireFrame
     OnMouseDown = ViewportMouseDown

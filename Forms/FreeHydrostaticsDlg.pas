@@ -5,7 +5,7 @@ interface uses
   StdCtrls,  ExtCtrls,
   Buttons,   FreeShipUnit, FreeLanguageSupport;
 type                                                { TFreeHydrostaticsDialog }
-  TFreeHydrostaticsDialog=class(TForm)
+  TFreeHydrostaticsDialog=class( TForm )
     Edit: TMemo;
     Panel1,Panel22: TPanel;
     ButtonClose,ButtonSave: TSpeedButton;
@@ -18,7 +18,6 @@ type                                                { TFreeHydrostaticsDialog }
 var FreeHydrostaticsDialog: TFreeHydrostaticsDialog;
 
 implementation
-
 {$R *.lfm}
 
 procedure TFreeHydrostaticsDialog.ButtonCloseClick( Sender: TObject );

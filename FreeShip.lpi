@@ -122,7 +122,9 @@
       <Unit>
         <Filename Value="Forms\FreePreferencesDlg.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FreePreferencesDialog"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Forms\FreeExpanedPlatesDlg.pas"/>

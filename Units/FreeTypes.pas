@@ -57,6 +57,7 @@ Function Inter( const a,b,c: Integer ): Integer; overload;
 Procedure WestPoint;            // ... или сброс всех запятых с заменой точками
 Function BlankOff( S: AnsiString ): AnsiString;
 
+function Sqr( const P: T2DCoordinate ): extended; overload;
 function Abs( const P: T2DCoordinate ): extended; overload;
 function Sqr( const V: T3DVector ): extended; overload;
 function Abs( const V: T3DVector ): extended; overload;
@@ -64,6 +65,12 @@ Function AxisStep( D: double ): double;            // для разметки о
 procedure ArraySort( var FloatArray:TFloatArray; var N:integer );
 
 Function I2S( Value: Integer ): String;
+procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
+( XX: TFloatType;             // аргумент поиска
+  N: integer;                 // наверное,длина массива
+  X,Y: array of TFloatType;   // собственно аргумент и функция
+  var YY: TFloatType );       // результат
+
 {function createDialogFilter( FilterName: AnsiString;
                              extensions: array of AnsiString;
                              NeedsAll: boolean=True ): AnsiString;}
@@ -123,8 +130,10 @@ operator - ( const A,B: T2DCoordinate ): T2DCoordinate; // A-B
    begin result.x:=(A.x-B.x);
          result.y:=(A.y-B.y);
    end;
+function Sqr( const P: T2DCoordinate ): extended;
+   begin Result:=P.X*P.X+P.Y*P.Y; end;
 function Abs( const P: T2DCoordinate ): extended;
-   begin Result:=sqrt( sqr( P.X )+sqr( P.Y ) ); end;
+   begin Result:=hypot( P.X,P.Y ); end;             // sqrt(sqr(P.X)+sqr(P.Y));
 function Sqr( const V: T3DVector ): extended;
    begin Result:=sqr( V.X )+sqr( V.Y )+sqr( V.Z ); end;
 function Abs( const V: T3DVector ): extended;
@@ -239,6 +248,20 @@ begin                                              // begin procedure ArraySort
   end else Inc(I);
 end; {SortFloatArray}
 {$endif}
+
+procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
+( XX: TFloatType;             // аргумент поиска
+  N: integer;                 // наверное,длина массива
+  X,Y: array of TFloatType;   // собственно аргумент и функция
+  var YY: TFloatType );       // результат
+var I:integer; B:boolean;     // и без проверок интервалов аргумента !!!
+begin
+//if XX<=Xs[0] then YY:=Y[0]+(XX-X[0])*(Y[1]-Y[0])/(X[1]-X[0]) else
+//if XX>=Xs[N-1] then YY:=Y[N-2]+(XX-X[N-2])*(Y[N-2]-Y[N-1])/(X[N-2]-X[N-1]) else
+  B:=XX<=X[0];
+  for I:=0 to N-1 do if B or (XX>=X[I]) or (I=N-2) then
+    begin YY:=Y[I]+((XX-X[I]))*(Y[I+1]-Y[I])/(X[I+1]-X[I]); break; end;
+end;
 
 (*
 function createDialogFilter( FilterName: AnsiString;

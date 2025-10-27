@@ -2,12 +2,12 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
   Left = 259
   Height = 572
   Top = 196
-  Width = 836
+  Width = 1060
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Проектные характеристики корпуса.'
   ClientHeight = 572
-  ClientWidth = 836
+  ClientWidth = 1060
   Position = poOwnerFormCenter
   LCLVersion = '4.2.0.0'
   OnShow = FormShow
@@ -15,18 +15,18 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
     Left = 0
     Height = 538
     Top = 34
-    Width = 836
+    Width = 1060
     Align = alClient
     BevelOuter = bvLowered
     BorderWidth = 10
     ClientHeight = 538
-    ClientWidth = 836
+    ClientWidth = 1060
     TabOrder = 0
     object Edit: TMemo
       Left = 11
       Height = 516
       Top = 11
-      Width = 814
+      Width = 1060
       Align = alClient
       Font.Height = 17
       Font.Name = 'Courier New'
@@ -41,12 +41,12 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
     Left = 0
     Height = 34
     Top = 0
-    Width = 836
+    Width = 1060
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
     ClientHeight = 34
-    ClientWidth = 836
+    ClientWidth = 1060
     TabOrder = 1
     object ButtonSave: TSpeedButton
       Left = 2
