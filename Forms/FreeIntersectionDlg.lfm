@@ -3,12 +3,15 @@ object FreeIntersectionDialog: TFreeIntersectionDialog
   Height = 264
   Top = 114
   Width = 226
-  BorderStyle = bsDialog
-  Caption = 'Intersections'
+  BorderIcons = []
+  BorderStyle = bsSingle
+  Caption = 'Контуры теоретических чертежей'
   ClientHeight = 264
   ClientWidth = 226
   Color = clBtnFace
   ParentFont = True
+  FormStyle = fsStayOnTop
+  PopupMode = pmAuto
   Position = poScreenCenter
   LCLVersion = '3.8.0.0'
   object Panel1: TPanel
@@ -41,7 +44,6 @@ object FreeIntersectionDialog: TFreeIntersectionDialog
     Top = 0
     Width = 226
     AutoSize = True
-    Caption = 'ToolBar1'
     Color = clBtnFace
     Images = MenuImages
     Indent = 5
@@ -73,7 +75,6 @@ object FreeIntersectionDialog: TFreeIntersectionDialog
       Left = 97
       Height = 22
       Top = 2
-      Caption = 'ToolButton14'
       ImageIndex = 12
       Style = tbsSeparator
     end
@@ -96,7 +97,6 @@ object FreeIntersectionDialog: TFreeIntersectionDialog
       Left = 174
       Height = 22
       Top = 2
-      Caption = 'ToolButton21'
       ImageIndex = 12
       Style = tbsSeparator
     end
@@ -162,51 +162,51 @@ object FreeIntersectionDialog: TFreeIntersectionDialog
     Left = 40
     Top = 68
     object ViewStations: TAction
-      Caption = 'Stations'
+      Caption = 'Шпангоуты'
       Checked = True
-      Hint = 'Switch to view or add stations.'
+      Hint = 'Перестройка списока абсцисс ξ шпангоутов'
       ImageIndex = 2
       OnExecute = ViewStationsExecute
     end
     object ViewButtocks: TAction
-      Caption = 'Buttocks'
-      Hint = 'Switch to view or add buttocks.'
+      Caption = 'Батоксы'
+      Hint = 'Установка списка ординат η батоксов'
       ImageIndex = 0
       OnExecute = ViewButtocksExecute
     end
     object ViewWaterlines: TAction
-      Caption = 'Waterlines'
-      Hint = 'Switch to view or add waterlines.'
+      Caption = 'Ватерлинии'
+      Hint = 'Подборка аппликат ζ уровней ватерлиний'
       ImageIndex = 1
       OnExecute = ViewWaterlinesExecute
     end
     object ViewDiagonals: TAction
-      Caption = 'Diagonals'
-      Hint = 'Switch to view or add diagonals.'
+      Caption = 'Рыбины'
+      Hint = 'Включение параллельных рыбин с наклоном 45°'
       ImageIndex = 3
       OnExecute = ViewDiagonalsExecute
     end
     object CloseDialog: TAction
-      Caption = 'CloseDialog'
-      Hint = 'Close this dialog.'
+      Caption = 'Выход'
+      Hint = 'Заврешить работу с теоретическими контурами'
       ImageIndex = 4
       OnExecute = CloseDialogExecute
     end
     object AddOne: TAction
-      Caption = 'Add...'
-      Hint = 'Add one station.'
+      Caption = 'Добавить'
+      Hint = 'Добавить один теоретический контур'
       ImageIndex = 7
       OnExecute = AddOneExecute
     end
     object AddRange: TAction
-      Caption = 'Range'
-      Hint = 'Add a whole range of intersection curves.'
+      Caption = 'Разметить'
+      Hint = 'Сделать равномерную разметку контуров по всему корпусу'
       ImageIndex = 6
       OnExecute = AddRangeExecute
     end
     object DeleteAll: TAction
-      Caption = 'Delete all'
-      Hint = 'Delete all stations.'
+      Caption = 'Удалить всё'
+      Hint = 'Удалить все теоретические контуры (если один: <del>)'
       ImageIndex = 5
       OnExecute = DeleteAllExecute
     end

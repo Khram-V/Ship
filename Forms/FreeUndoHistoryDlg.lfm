@@ -3,14 +3,18 @@ object FreeUndoHistoryDialog: TFreeUndoHistoryDialog
   Top = 89
   Width = 684
   Height = 434
-  Caption = 'Undo history.'
+  Caption = 'Обзор проведённых изменений'
   Color = clBtnFace
+  BorderIcons = []
+  BorderStyle = bsSingle
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  FormStyle = fsStayOnTop
+  PopupMode = pmAuto
   Position = poMainFormCenter
   OnResize = FormResize
   PixelsPerInch = 96
@@ -29,9 +33,9 @@ object FreeUndoHistoryDialog: TFreeUndoHistoryDialog
     object SpeedButton1: TSpeedButton
       Left = 540
       Top = 0
-      Width = 65
+      Width = 100
       Height = 19
-      Caption = 'Select'
+      Caption = '&Восстановить'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -58,7 +62,7 @@ object FreeUndoHistoryDialog: TFreeUndoHistoryDialog
       Top = 0
       Width = 65
       Height = 19
-      Caption = 'Cancel'
+      Caption = '&Отмена'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100

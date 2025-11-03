@@ -971,9 +971,7 @@ begin
       + ConvertDimension( FreeShip.FDesignHydrostatics.Data.KMtransverse
                         + FreeShip.FDesignHydrostatics.Data.ModelMin.Z,Freeship.ProjectSettings.ProjectUnits )
       + '  ' + Lengthstr( FreeShip.ProjectSettings.ProjectUnits ) );
-
-
-   Screen.Cursor:=Prevcursor;
+  Screen.Cursor:=Prevcursor;
 end;
 procedure TFreeLinesplanFrame.ZoomExtentsExecute(Sender: TObject);
     begin Viewport.ZoomExtents; end;
@@ -981,21 +979,11 @@ procedure TFreeLinesplanFrame.ZoomInExecute(Sender: TObject);
     begin Viewport.ZoomIn; end;
 procedure TFreeLinesplanFrame.ZoomOutExecute(Sender: TObject);
     begin Viewport.ZoomOut; end;
-
 procedure TFreeLinesplanFrame.ShowFillColorExecute(Sender: TObject);
-begin
-   ShowFillcolor.Checked:=not ShowFillcolor.Checked;
-   UpdateMenu;
-   Viewport.Refresh;
-end;
-(*
-procedure TFreeLinesplanFrame.PrintExecute(Sender: TObject);
-begin
-   if Viewport.Width>Viewport.Height then Printer.Orientation:=poLandscape
-                                     else Printer.Orientation:=poPortrait;
-   if PrintDialog.Execute then Viewport.Print(Freeship.ProjectSettings.ProjectUnits,True,Userstring(246));
-end;
-*)
+    begin ShowFillcolor.Checked:=not ShowFillcolor.Checked;
+          UpdateMenu;
+          Viewport.Refresh;
+    end;
 procedure TFreeLinesplanFrame.ViewportMouseMove(Sender: TObject;Shift: TShiftState; X, Y: Integer);
 var P    : TPoint;
 begin
@@ -1124,18 +1112,15 @@ var SaveDialog: TSaveDialog;
       Setlength(Params,Spline.NumberOfPoints);
       // count number of knucklepoints
       if not Spline.Build then Spline.Rebuild;
-      for I:=2 to Spline.NumberOfPoints-1 do
-      begin
-         if Spline.Knuckle[I-1] then
-         begin
+      for I:=2 to Spline.NumberOfPoints-1 do begin
+         if Spline.Knuckle[I-1] then begin
             Params[NParams]:=Spline.Parameter[I-1];
             inc(NParams);
          end;
       end;
       Spline.Fragments:=100;
       Setlength(Params,NParams+Spline.Fragments);
-      for I:=1 to Spline.Fragments do
-      begin
+      for I:=1 to Spline.Fragments do begin
          Params[NParams]:=(I-1)/(Spline.Fragments-1);
          inc(NParams);
       end;
@@ -1147,26 +1132,21 @@ var SaveDialog: TSaveDialog;
       Strings.Add('8'+EOL+LayerName);   // layername
       Strings.Add('62'+EOL+IntToStr(FindDXFColorIndex(Color)));
       Strings.Add('66'+EOL+'1');    // vertices follow
-      for I:=0 to NParams-1 do
-      begin
+      for I:=0 to NParams-1 do begin
          P.Z:=0.0;
-         if lvProfile in views then
-         begin
+         if lvProfile in views then begin
             P.X:=FProfileOrigin.X+Points[I].X;
             P.Y:=FProfileOrigin.Y+Points[I].Z;
          end;
-         if lvAftBody in views then
-         begin
+         if lvAftBody in views then begin
             P.X:=FAftOrigin.X-Points[I].Y;
             P.Y:=FAftOrigin.Y+Points[I].Z;
          end;
-         if lvFrontBody in views then
-         begin
+         if lvFrontBody in views then begin
             P.X:=FFrontOrigin.X-Points[I].Y;
             P.Y:=FFrontOrigin.Y+Points[I].Z;
          end;
-         if lvPlan in views then
-         begin
+         if lvPlan in views then begin
             P.X:=FPlanOrigin.X+Points[I].X;
             P.Y:=FPlanOrigin.Y+Points[I].Y;
          end;
@@ -1177,9 +1157,12 @@ var SaveDialog: TSaveDialog;
       end;
       Strings.Add('0'+EOL+'SEQEND');
 
-      if (lvAftBody in views) or (lvFrontBody in views) or ((lvPlan in views) and (Freeship.NumberofDiagonals=0) and (MirrorPlanView.Checked))then
-      begin
-         // mirror line
+      if (lvAftBody in views)
+      or (lvFrontBody in views)
+      or ((lvPlan in views)
+      and (Freeship.NumberofDiagonals=0)
+      and (MirrorPlanView.Checked) )
+      then begin                                                 // mirror line
          Strings.Add('0'+EOL+'POLYLINE');
          Strings.Add('8'+EOL+LayerName);   // layername
          Strings.Add('62'+EOL+IntToStr(FindDXFColorIndex(Color)));
@@ -1235,9 +1218,11 @@ var SaveDialog: TSaveDialog;
       end;
       Strings.Add('0'+EOL+'SEQEND');
 
-      if (lvAftBody in views) or (lvFrontBody in views) or ((lvPlan in views) and (Freeship.NumberofDiagonals=0) and (MirrorPlanView.Checked))then
-      begin
-         // mirror line
+      if (lvAftBody in views)
+      or (lvFrontBody in views)
+      or ((lvPlan in views)
+      and (Freeship.NumberofDiagonals=0) and (MirrorPlanView.Checked))
+      then begin                                                 // mirror line
          Strings.Add('0'+EOL+'POLYLINE');
          Strings.Add('8'+EOL+LayerName);   // layername
          Strings.Add('62'+EOL+IntToStr(FindDXFColorIndex(Color)));
@@ -1392,8 +1377,7 @@ begin
       end;
       // stations
       Space:=CalculateSpace(textspace,FMin3D.Y,FMax3D.Y);
-      for I:=1 to Freeship.NumberofStations do
-      begin
+      for I:=1 to Freeship.NumberofStations do begin
          Tmp:=-Freeship.Station[I-1].Plane.D;
          if (Freeship.NumberofDiagonals=0) and (MirrorPlanview.Checked) then AddLine(Vector(Tmp,-FMax3D.Y-space,0),Vector(Tmp,FMax3D.Y+space,0),[lvPlan],'stationgrid',Freeship.Preferences.GridColor)
                                                                         else AddLine(Vector(Tmp,-FDiagonalWidth-space,0),Vector(Tmp,FMax3D.Y+space,0),[lvPlan],'stationgrid',Freeship.Preferences.GridColor);
@@ -1402,16 +1386,14 @@ begin
       for I:=1 to Freeship.NumberofWaterlines do AddIntersection(Freeship.Waterline[I-1],[lvPLan],'waterlines',Freeship.Preferences.WaterlineColor);
 
       // draw diagonals
-      for I:=1 to Freeship.NumberofDiagonals do
-      begin
+      for I:=1 to Freeship.NumberofDiagonals do begin
          Diagonal:=Freeship.Diagonal[I-1];
          Plane.a:=0.0;
          Plane.b:= 1/Sqrt(2);
          Plane.c:=-1/sqrt(2);
          Plane.d:=-Diagonal.Plane.d;
          if not Diagonal.Built then Diagonal.Rebuild;
-         for J:=1 to Diagonal.Count do
-         begin
+         for J:=1 to Diagonal.Count do begin
             Spline:=Diagonal.Items[J-1];
             Min:=0;
             Max:=0;
@@ -1459,13 +1441,11 @@ begin
       end;
 
       // Destroy extracted edgeloops
-      for I:=1 to Edges.Count do
-      begin
+      for I:=1 to Edges.Count do  begin
          Points:=Edges[I-1];
          Points.Destroy;
       end;
       Edges.Destroy;
-
       Strings.Add('0'+EOL+'ENDSEC');
       Strings.Add('0'+EOL+'EOF');
       Strings.SaveToFile(ChangeFileExt(SaveDialog.FileName,'.dxf'));

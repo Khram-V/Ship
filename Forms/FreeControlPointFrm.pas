@@ -4,7 +4,7 @@ interface uses
   SysUtils,Classes,
   Graphics,Controls,
   Forms,   Dialogs,
-  Math,    StdCtrls,StrUtils,
+  Math,    StdCtrls, StrUtils, Windows,
   Buttons, ExtCtrls,
   FreeTypes,FreeGeometry,FreeStringUtils,FreeLanguageSupport;
 type
@@ -51,26 +51,35 @@ end;
 
 var FreeControlPointForm: TFreeControlPointForm;
 
-implementation uses FreeShipUnit;
+implementation uses Main,FreeShipUnit;
 {$R *.lfm}
 
 procedure TFreeControlPointForm.FSetActiveControlPoint
   ( Val:TFreeSubdivisionControlPoint );
 var I,N,Npoi: Integer; BCol,FCol: TColor; Str: String=''; Len: TFloatType;
-    Angle,C0,CN,C1,Cp,Ci: T3DVector;
+    Angle,C0,CN,C1: T3DVector;
     IsPointDifferent: boolean;
 begin
   IsPointDifferent:=FActiveControlPoint<>Val;
   FActiveControlPoint:=Val;
 //FActiveControlPointChanging:=true;
-  if ActiveControlPoint=nil then begin Visible:=False; exit; end;       // ! убрать ?
+  if ActiveControlPoint=nil then begin Visible:=False; exit; end; // ! убрать ?
 { if Ship.Surface.SelectedControlPoints.IndexOf(ActiveControlPoint)=-1 then
      Ship.Surface.SelectedControlPoints.Add( ActiveControlPoint ); }
 
-  Visible:=True;
+// FormStyle:=fsSystemStayOnTop;
+   Visible:=True;
+//  PopupParent:=MainForm;
+//  ShowOnTop;
+//  Show;
+//  SetWindowPos( Handle,HWND_TOPMOST,0,0,0,0,SWP_NOACTIVATE+SWP_NOMOVE+SWP_NOSIZE );
+//  TopMost:=True;
+//  PopupMode:=pmExplicit; //pmAuto;
+//  SetFocus;
+//SetForegroundWindow( MainForm.Handle ); //hWnd );
   C0:=FActiveControlPoint.Coordinate;
   ShowTranslatedValues( Self );
-  Self.Caption:=UserString(1675)+'['+IntToStr(FActiveControlPoint.FGetIndex )+']: ' // Id )+']: '
+  Self.Caption:=' 🌀 '+UserString(1675)+'['+IntToStr(FActiveControlPoint.FGetIndex )+']: ' // Id )+']: '
          +' ( '+FloatToDec(C0.X,3)
          + ', '+FloatToDec(C0.Y,3)
          + ', '+FloatToDec(C0.Z,3)
@@ -85,13 +94,11 @@ begin
              +FloatToDec( Abs( Angle ),4 );
      Angle:=Angles( Angle );                           // и направление
      if Npoi>=2 then begin Len:=0.0;                   // длина всего пути
-       for I:=1 to Npoi do begin
-         Cp:=Ship.SelectedControlPoint[i-1].Coordinate;
-         Ci:=Ship.SelectedControlPoint[i].Coordinate;
-         Len:=Len+Abs( Cp-Ci );
-       end;
-       Str:=Str+'.  '+UserString(1493)+'='+FloatToDec( Len,4 );
-    end;
+        for I:=1 to Npoi do
+          Len+=Abs( Ship.SelectedControlPoint[i-1].Coordinate
+                 -  Ship.SelectedControlPoint[i].Coordinate );
+        Str:=Str+'.  '+UserString(1493)+'='+FloatToDec( Len,4 );
+     end;
   end;
   LabelA.Caption:=' α  '+FloatToDec( Angle.x,2 )+' °'; // Alpha;
   LabelB.Caption:=' β  '+FloatToDec( Angle.y,2 )+' °'; // Beta;
@@ -122,7 +129,7 @@ begin
      if Edit2.Font.Color<>FCol then Edit2.Font.Color:=FCol;
      if Edit3.Color<>BCol then Edit3.Color:=BCol;
      if Edit3.Font.Color<>FCol then Edit3.Font.Color:=FCol;
-  end;     // FActiveControlPointChanging:=false;
+  end;        // FActiveControlPointChanging:=false;
 end;
 procedure TFreeControlPointForm.Reload;
     begin FSetActiveControlPoint( ActiveControlPoint ); end;
@@ -216,9 +223,9 @@ begin
      end;
   end;
   if not Saved then Undo.Delete else begin Undo.Accept;
-    ActiveControlPoint:=ActiveControlPoint;
     Ship.FileChanged:=True;
     Ship.Redraw;
+    ActiveControlPoint:=ActiveControlPoint;
   end;
 end;
 procedure TFreeControlPointForm.Edit1Exit( Sender: TObject ); // OnEditingDone=Edit1Exit

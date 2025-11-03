@@ -3,8 +3,7 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
   Height = 572
   Top = 196
   Width = 1060
-  BorderIcons = []
-  BorderStyle = bsDialog
+  BorderIcons = [biSystemMenu]
   Caption = 'Проектные характеристики корпуса.'
   ClientHeight = 572
   ClientWidth = 1060
@@ -26,7 +25,7 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
       Left = 11
       Height = 516
       Top = 11
-      Width = 1060
+      Width = 1038
       Align = alClient
       Font.Height = 17
       Font.Name = 'Courier New'
@@ -98,7 +97,7 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
       OnClick = ButtonSaveClick
     end
     object ButtonClose: TSpeedButton
-      Left = 754
+      Left = 978
       Height = 30
       Top = 2
       Width = 80

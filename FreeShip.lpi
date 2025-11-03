@@ -246,7 +246,9 @@
       <Unit>
         <Filename Value="Forms\FreeSplitSectionDlg.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FreeSplitSectionDialog"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Forms\FreeHydrostaticsDlg.pas"/>
@@ -321,7 +323,6 @@
       <CompilerMessages>
         <IgnoredMessages idx2042="True"/>
       </CompilerMessages>
-      <CompilerPath Value="C:\(Act)\Compile\Pascal\fpc\3.2.2\bin\i386-win32\fpc.exe"/>
       <ExecuteBefore>
         <CompileReasons Compile="False" Build="False" Run="False"/>
       </ExecuteBefore>

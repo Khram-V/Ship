@@ -93,7 +93,7 @@ private
    FAllowPanOrZoom, // Flag to check whether panning or zooming is allowed or not (not when an item has just been selected)
    FPanned:Boolean; // Private variable from which can be seen if the popup menu has to be shown or not
    procedure FSetFreeShip(Val:TFreeShip);
-   function FCaptionText:string;
+   function FCaptionText: string;
 public
 // constructor Create( TheOwner: TComponent );
    procedure SetCaption;
@@ -210,7 +210,10 @@ begin if FreeShip<>nil then begin
       end;
 end;
 procedure TFreeHullWindow.ViewportRedraw(Sender: TObject);
-    begin if FreeShip<>nil then FreeShip.DrawToViewport( Viewport ); end;
+    begin if FreeShip<>nil then begin FreeShip.DrawToViewport( Viewport );
+             if FreeShip.ActiveControlPoint<>nil then
+                FreeShip.ActiveControlPoint:=FreeShip.ActiveControlPoint;
+    end end;
 procedure TFreeHullWindow.PopupMenuPopup(Sender: TObject);
     begin UpdateMenu; end;
 procedure TFreeHullWindow.StandardLensExecute(Sender: TObject);
@@ -312,7 +315,7 @@ begin
          Viewport.SelectionFrameRect:=Rect(FInitialPosition.X,FInitialPosition.Y,X,Y);
       // Viewport.Rectangle( FInitialPosition.X,FInitialPosition.Y,X,Y );
       end;
-}  end else FFreeShip.MouseMove(Viewport,Shift,X,Y);
+}  end else FFreeShip.MouseMove( Viewport,Shift,X,Y );
 end;
 procedure TFreeHullWindow.ViewportMouseUp(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var P:TPoint;

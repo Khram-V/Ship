@@ -2,92 +2,92 @@ object FreeLayerDialog: TFreeLayerDialog
   Left = 378
   Height = 375
   Top = 94
-  Width = 616
+  Width = 682
   BorderIcons = []
   BorderStyle = bsDialog
-  Caption = 'Layer properties.'
+  Caption = 'Настройка проекта по графическим слоям'
   ClientHeight = 375
-  ClientWidth = 616
+  ClientWidth = 682
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
+  FormStyle = fsStayOnTop
+  PopupMode = pmAuto
   Position = poOwnerFormCenter
   LCLVersion = '4.2.0.0'
   object Panel1: TPanel
     Left = 0
     Height = 351
     Top = 24
-    Width = 616
+    Width = 682
     Align = alClient
     BevelOuter = bvLowered
     BorderWidth = 6
     ClientHeight = 351
-    ClientWidth = 616
+    ClientWidth = 682
     ParentBackground = False
     TabOrder = 0
     object Panel2: TPanel
-      Left = 356
+      Left = 392
       Height = 337
       Top = 7
-      Width = 253
+      Width = 283
       Align = alRight
       BevelOuter = bvLowered
       ClientHeight = 337
-      ClientWidth = 253
+      ClientWidth = 283
       ParentBackground = False
       TabOrder = 0
       object Label1: TLabel
         Left = 8
         Height = 13
         Top = 14
-        Width = 28
-        Caption = 'Name'
+        Width = 53
+        Caption = 'Название:'
       end
       object Label2: TLabel
         Left = 8
         Height = 13
         Top = 38
-        Width = 24
-        Caption = 'Color'
-      end
-      object Label3: TLabel
-        Left = 8
-        Height = 13
-        Top = 170
-        Width = 72
-        Caption = 'Specific weight'
-      end
-      object _Label4: TLabel
-        Left = 230
-        Height = 13
-        Top = 170
-        Width = 6
-        Caption = '[]'
-      end
-      object Label5: TLabel
-        Left = 8
-        Height = 13
-        Top = 192
-        Width = 49
-        Caption = 'Thickness'
-      end
-      object _Label6: TLabel
-        Left = 230
-        Height = 13
-        Top = 192
-        Width = 6
-        Caption = '[]'
+        Width = 54
+        Caption = 'Расцветка'
       end
       object Label4: TLabel
         Left = 7
         Height = 13
         Top = 56
-        Width = 65
-        Caption = 'Transparency'
+        Width = 72
+        Caption = 'Прозрачность'
+      end
+      object Label3: TLabel
+        Left = 8
+        Height = 13
+        Top = 170
+        Width = 156
+        Caption = 'Плотность материала корпуса'
+      end
+      object Label5: TLabel
+        Left = 8
+        Height = 13
+        Top = 192
+        Width = 143
+        Caption = 'Толщина бортовой обшивки'
+      end
+      object _Label4: TLabel
+        Left = 260
+        Height = 1
+        Top = 170
+        Width = 1
+      end
+      object _Label6: TLabel
+        Left = 260
+        Height = 1
+        Top = 192
+        Width = 1
       end
       object _Label1: TLabel
-        Left = 216
+        Left = 248
         Height = 11
         Top = 56
         Width = 27
@@ -99,15 +99,15 @@ object FreeLayerDialog: TFreeLayerDialog
         ParentFont = False
       end
       object Edit1: TEdit
-        Left = 90
+        Left = 125
         Height = 21
-        Top = 6
+        Top = 8
         Width = 153
         TabOrder = 0
         OnChange = Edit1Change
       end
       object Panel3: TPanel
-        Left = 90
+        Left = 125
         Height = 18
         Top = 31
         Width = 30
@@ -120,8 +120,8 @@ object FreeLayerDialog: TFreeLayerDialog
         Left = 6
         Height = 17
         Top = 128
-        Width = 78
-        Caption = 'Developable'
+        Width = 270
+        Caption = 'Назначение к развертывающимся поверхностям'
         TabOrder = 5
         OnClick = CheckBox1Click
       end
@@ -129,8 +129,8 @@ object FreeLayerDialog: TFreeLayerDialog
         Left = 6
         Height = 17
         Top = 110
-        Width = 108
-        Caption = 'Intersection curves'
+        Width = 272
+        Caption = 'К теоретическим контурам в базовых плоскостях'
         TabOrder = 4
         OnClick = CheckBox2Click
       end
@@ -138,15 +138,15 @@ object FreeLayerDialog: TFreeLayerDialog
         Left = 6
         Height = 17
         Top = 74
-        Width = 111
-        Caption = 'Use for hydrostatics'
+        Width = 273
+        Caption = 'Включать в гидростатику и расчеты остойчивости'
         TabOrder = 2
         OnClick = CheckBox3Click
       end
       object Edit2: TEdit
-        Left = 168
-        Height = 19
-        Top = 164
+        Left = 200
+        Height = 16
+        Top = 170
         Width = 56
         AutoSize = False
         TabOrder = 7
@@ -154,9 +154,9 @@ object FreeLayerDialog: TFreeLayerDialog
         OnKeyPress = Edit2KeyPress
       end
       object Edit3: TEdit
-        Left = 168
-        Height = 19
-        Top = 186
+        Left = 200
+        Height = 16
+        Top = 192
         Width = 56
         AutoSize = False
         TabOrder = 8
@@ -167,49 +167,49 @@ object FreeLayerDialog: TFreeLayerDialog
         Left = 16
         Height = 104
         Top = 224
-        Width = 230
-        Caption = 'Surface properties. '
+        Width = 256
+        Caption = 'Информация по расчётам обшивки корпуса'
         ClientHeight = 86
-        ClientWidth = 226
+        ClientWidth = 252
         ParentBackground = False
         TabOrder = 9
         object Label7: TLabel
           Left = 8
           Height = 13
           Top = 16
-          Width = 22
-          Caption = 'Area'
+          Width = 47
+          Caption = 'Площадь'
         end
         object Label8: TLabel
           Left = 8
           Height = 13
           Top = 34
-          Width = 34
-          Caption = 'Weight'
+          Width = 33
+          Caption = 'Масса'
         end
         object Label9: TLabel
           Left = 8
           Height = 13
           Top = 52
-          Width = 77
-          Caption = 'Center of gravity'
+          Width = 76
+          Caption = 'Центр тяжести'
         end
         object _Label10: TLabel
-          Left = 98
+          Left = 110
           Height = 13
           Top = 16
           Width = 6
           Caption = '--'
         end
         object _Label11: TLabel
-          Left = 98
+          Left = 110
           Height = 13
           Top = 34
           Width = 6
           Caption = '--'
         end
         object _Label12: TLabel
-          Left = 98
+          Left = 110
           Height = 13
           Top = 52
           Width = 6
@@ -220,8 +220,8 @@ object FreeLayerDialog: TFreeLayerDialog
         Left = 6
         Height = 17
         Top = 146
-        Width = 100
-        Caption = 'Show in linesplan'
+        Width = 231
+        Caption = 'Включать в блок теоретических чертежей'
         TabOrder = 6
         OnClick = CheckBox4Click
       end
@@ -229,8 +229,8 @@ object FreeLayerDialog: TFreeLayerDialog
         Left = 6
         Height = 17
         Top = 92
-        Width = 66
-        Caption = 'Symmetric'
+        Width = 269
+        Caption = 'С симметричным дополнением по правому борту'
         TabOrder = 3
         OnClick = CheckBox5Click
       end
@@ -238,7 +238,7 @@ object FreeLayerDialog: TFreeLayerDialog
         Left = 90
         Height = 13
         Top = 54
-        Width = 121
+        Width = 150
         LargeChange = 5
         Max = 255
         PageSize = 0
@@ -250,7 +250,7 @@ object FreeLayerDialog: TFreeLayerDialog
       Left = 7
       Height = 337
       Top = 7
-      Width = 349
+      Width = 385
       Align = alClient
       ItemHeight = 0
       TabOrder = 1
@@ -262,9 +262,8 @@ object FreeLayerDialog: TFreeLayerDialog
     Left = 0
     Height = 24
     Top = 0
-    Width = 616
+    Width = 682
     AutoSize = True
-    Caption = 'ToolBar1'
     Color = clBtnFace
     Images = MenuImages
     Indent = 5
@@ -274,16 +273,15 @@ object FreeLayerDialog: TFreeLayerDialog
     TabOrder = 1
     object ToolButton20: TToolButton
       Left = 5
-      Hint = 'Create a new empty layer.'
+      Hint = 'Создание нового чистого графического слоя'
       Top = 2
       ImageIndex = 1
       OnClick = ToolButton20Click
     end
     object ToolButton3: TToolButton
       Left = 28
-      Hint = 'Remove all empty layers from the model.'
+      Hint = 'Удаление из модели всех пустых слоёв'
       Top = 2
-      Caption = 'ToolButton3'
       ImageIndex = 2
       OnClick = ToolButton3Click
     end
@@ -291,23 +289,22 @@ object FreeLayerDialog: TFreeLayerDialog
       Left = 51
       Height = 22
       Top = 2
-      Caption = '_ToolButton2'
       ImageIndex = 1
       Style = tbsSeparator
     end
     object MoveUp: TToolButton
       Left = 59
-      Hint = 'Move the layer up in the list.'
+      Hint = 'Переместить слой по спискау вверх'
       Top = 2
-      Caption = 'Up'
+      Caption = 'Сдвиг к началу'
       ImageIndex = 3
       OnClick = MoveUpClick
     end
     object MoveDown: TToolButton
       Left = 82
-      Hint = 'Move the layer down in the list.'
+      Hint = 'Опустить слой по текущему списку'
       Top = 2
-      Caption = 'Down'
+      Caption = 'Сдвиг в конец'
       ImageIndex = 4
       OnClick = MoveDownClick
     end
@@ -315,13 +312,12 @@ object FreeLayerDialog: TFreeLayerDialog
       Left = 105
       Height = 22
       Top = 2
-      Caption = '_ToolButton4'
       ImageIndex = 1
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
       Left = 113
-      Hint = 'Close this window.'
+      Hint = 'Закрыть список графических слоёв'
       Top = 2
       Caption = 'Done'
       ImageIndex = 0

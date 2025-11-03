@@ -1,37 +1,22 @@
-
 unit FreeSelectLayersDlg;
 {$MODE Delphi}
 interface uses
-  Messages,
-     SysUtils,
-     Variants,
-     Classes,
-     Graphics,
-     Controls,
-     Forms,
-     Dialogs,
-     Buttons,
-     ExtCtrls,
-     StdCtrls,
-     FreeShipUnit,
-     FreeGeometry,
-     FasterList,
-     CheckLst;
+     Controls,     Forms,
+     Buttons,      ExtCtrls,
+     StdCtrls,     FreeShipUnit,
+     FreeGeometry, FasterList, CheckLst;
 
-type TFreeSelectMode          = (fsFaces,fsPoints);
-     TFreeSelectLayersDialog  = class(TForm)
-        Panel1: TPanel;
-        Panel3: TPanel;
-        BitBtn1: TSpeedButton;
-        BitBtn2: TSpeedButton;
+type TFreeSelectMode = (fsFaces,fsPoints);
+     TFreeSelectLayersDialog = class(TForm)
+        Panel1,Panel3,Panel4: TPanel;
+        BitBtn1,BitBtn2: TSpeedButton;
         LayerBox: TCheckListBox;
-        Panel4: TPanel;
         CheckBox: TCheckBox;
         procedure BitBtn1Click(Sender: TObject);
         procedure BitBtn2Click(Sender: TObject);
         procedure LayerBoxClickCheck(Sender: TObject);
         procedure CheckBoxClick(Sender: TObject);
-     private   { Private declarations }
+     private
         FFreeship   : TFreeShip;
         FSelectMode : TFreeSelectMode;
         function FGetLayer(Index:Integer):TFreeSubdivisionLayer;
@@ -39,7 +24,7 @@ type TFreeSelectMode          = (fsFaces,fsPoints);
         function FGetSelected(Index:Integer):boolean;
         procedure FFillBox;
         procedure FUpdateSelection(Destination:TFasterList);
-     public    { Public declarations }
+     public
         function Execute(Freeship:TFreeShip;SelectMode:TFreeSelectMode):Boolean;
         procedure ExtractSelectedFaces(var Destination:TFasterList);
         procedure ExtractSelectedPoints(var Destination:TFasterList);
@@ -60,8 +45,8 @@ function TFreeSelectLayersDialog.FGetSelected(Index:Integer):boolean;
 function TFreeSelectLayersDialog.FGetLayer(Index:Integer):TFreeSubdivisionLayer;
    begin Result:=Layerbox.Items.Objects[index] as TFreeSubdivisionLayer; end;
 procedure TFreeSelectLayersDialog.FFillBox;
-var I,Index : Integer;
-    Layer   : TFreeSubdivisionLayer;
+var I,Index: Integer;
+    Layer: TFreeSubdivisionLayer;
 begin
    LayerBox.Items.BeginUpdate;
    Layerbox.Clear;
@@ -77,74 +62,62 @@ begin
 end;
 
 procedure TFreeSelectLayersDialog.FUpdateSelection(Destination:TFasterList);
-var I,J    : Integer;
-    Ind    : Integer;
+var I,J,Ind: Integer;
     Layer  : TFreeSubdivisionLayer;
     Select : Boolean;
     Point  : TFreeSubdivisionControlPoint;
     Face   : TFreeSubdivisionControlFace;
 begin
-   if FSelectMode=fsFaces then
-   begin
-      for I:=1 to LayerBox.Count do
-      begin
+   if FSelectMode=fsFaces then begin
+      for I:=1 to LayerBox.Count do begin
          Layer:=self.Layer[I-1];
          Select:=Layerbox.Checked[I-1];
-         for J:=1 to Layer.Count do if Layer.Items[J-1].Selected<>Select then Layer.Items[J-1].Selected:=Select;
+         for J:=1 to Layer.Count do
+          if Layer.Items[J-1].Selected<>Select then Layer.Items[J-1].Selected:=Select;
       end;
       if LayerBox.Count>0 then FFreeship.Redraw;
-   end else
-   begin
-      for I:=1 to FFreeship.Surface.NumberOfControlPoints do
-      begin
+   end else begin
+      for I:=1 to FFreeship.Surface.NumberOfControlPoints do begin
          Point:=FFreeship.Surface.ControlPoint[I-1];
          Select:=False;
-         if Point.NumberOfFaces>0 then
-         begin
-            if Checkbox.Checked then
-            begin
+         if Point.NumberOfFaces>0 then begin
+            if Checkbox.Checked then begin
                // Point must be included in the selection if AT LEAST 1 attached
                // face belongs to a selected layer
-               for J:=1 to Point.NumberOfFaces do
-               begin
+               for J:=1 to Point.NumberOfFaces do begin
                   Face:=Point.Face[J-1] as TFreeSubdivisionControlFace;
                   Layer:=Face.Layer;
                   Ind:=LayerBox.Items.IndexOfObject(Layer);
-                  if Layerbox.Checked[ind] then
-                  begin
+                  if Layerbox.Checked[ind] then begin
                      Select:=True;
                      break;
                   end;
                end;
-            end else
-            begin
+            end else begin
                // Point must be included in the selection only if ALL attached
                // faces belong to selected layers
                Select:=True;
-               for J:=1 to Point.NumberOfFaces do
-               begin
+               for J:=1 to Point.NumberOfFaces do begin
                   Face:=Point.Face[J-1] as TFreeSubdivisionControlFace;
                   Layer:=Face.Layer;
                   Ind:=LayerBox.Items.IndexOfObject(Layer);
-                  if not Layerbox.Checked[ind] then
-                  begin
+                  if not Layerbox.Checked[ind] then begin
                      Select:=false;
                      break;
                   end;
                end;
             end;
             if Destination=nil then Point.Selected:=Select
-                               else if Select then Destination.Add(Point);
+                else if Select then Destination.Add(Point);
          end;
       end;
       FFreeship.Redraw;
    end;
-end;{TFreeSelectLayersDialog.FUpdateSelection}
+end;
 
-function TFreeSelectLayersDialog.Execute(Freeship:TFreeShip;SelectMode:TFreeSelectMode):Boolean;
-var OldEdges      : Boolean;
-    OldNormals    : Boolean;
-    OldControlNet : boolean;
+function TFreeSelectLayersDialog.Execute
+( Freeship:TFreeShip;SelectMode:TFreeSelectMode ):Boolean;
+var OldEdges,OldNormals,OldControlNet : boolean;
 begin
    FFreeship:=Freeship;
    FSelectMode:=SelectMode;
@@ -153,29 +126,23 @@ begin
    OldEdges:=Freeship.Visibility.ShowInteriorEdges;
    OldControlNet:=Freeship.Visibility.ShowControlNet;
    Checkbox.Visible:=SelectMode=fsPoints;
-   if SelectMode=fsFaces then
-   begin
+   if SelectMode=fsFaces then begin
       Freeship.Visibility.ShowNormals:=False;
       Freeship.Visibility.ShowInteriorEdges:=True;
-   end else
-   begin
+   end else begin
       Freeship.Visibility.ShowNormals:=False;
       Freeship.Visibility.ShowControlNet:=True;
       Freeship.Visibility.ShowInteriorEdges:=False;
    end;
-// try
       ShowModal;
-// finally
       Result:=ModalResult=mrOK;
       Freeship.Visibility.ShowInteriorEdges:=OldEdges;
       Freeship.Visibility.ShowNormals:=OldNormals;
       Freeship.Visibility.ShowControlNet:=OldControlNet;
-// end;
 end;
 
 procedure TFreeSelectLayersDialog.ExtractSelectedFaces(var Destination:TFasterList);
-var I,J  : Integer;
-    Layer: TFreeSubdivisionLayer;
+var I,J: Integer; Layer: TFreeSubdivisionLayer;
 begin
    for I:=1 to NumberOfLayers do if Selected[I-1] then begin
       Layer:=self.Layer[I-1];
@@ -185,28 +152,14 @@ begin
 end;
 
 procedure TFreeSelectLayersDialog.ExtractSelectedPoints(var Destination:TFasterList);
-begin
-   FUpdateSelection(Destination);
-end;{TFreeSelectLayersDialog.ExtractSelectedPoints}
-
+    begin FUpdateSelection(Destination); end;
 procedure TFreeSelectLayersDialog.BitBtn1Click(Sender: TObject);
-begin
-   Modalresult:=mrOK;
-end;{TFreeSelectLayersDialog.BitBtn1Click}
-
+    begin Modalresult:=mrOK; end;
 procedure TFreeSelectLayersDialog.BitBtn2Click(Sender: TObject);
-begin
-   Modalresult:=mrCancel;
-end;{TFreeSelectLayersDialog.BitBtn2Click}
-
+    begin Modalresult:=mrCancel; end;
 procedure TFreeSelectLayersDialog.LayerBoxClickCheck(Sender: TObject);
-begin
-   if Layerbox.ItemIndex<>-1 then FUpdateSelection(nil);
-end;{TFreeSelectLayersDialog.LayerBoxClickCheck}
-
+    begin if Layerbox.ItemIndex<>-1 then FUpdateSelection(nil); end;
 procedure TFreeSelectLayersDialog.CheckBoxClick(Sender: TObject);
-begin
-   if FSelectMode=fsPoints then FUpdateSelection(nil);
-end;{TFreeSelectLayersDialog.CheckBoxClick}
+    begin if FSelectMode=fsPoints then FUpdateSelection(nil); end;
 
 end.

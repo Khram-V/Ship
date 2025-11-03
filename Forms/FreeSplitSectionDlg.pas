@@ -1,18 +1,15 @@
 unit FreeSplitSectionDlg;
-{$mode objfpc}{$H+}
 interface uses
   Classes,SysUtils,Forms,Controls,Dialogs,ComCtrls,ExtCtrls,Buttons,Spin,Types,
   FreeTypes,FreeShipUnit;
 type
   TEditMode=(emProgrammatic,emMouse,emKeyboard);
   TFreeSplitSectionDialogChangeEvent=procedure ( Sender: TObject; aValue: TFloatType ) of object;
-  TFreeSplitSectionDialog=class(TForm)            { TFreeSplitSectionDialog }
+  TFreeSplitSectionDialog=class( TForm )
     BitBtn1: TBitBtn;
     fseMiF: TFloatSpinEdit;
-    Panel1: TPanel;
-    SpeedButton1: TSpeedButton;
-    SpeedButton3: TSpeedButton;
-    TopPanel: TPanel;
+    Panel1,TopPanel: TPanel;
+    SpeedButton1,SpeedButton3: TSpeedButton;
     tbMiF: TTrackBar;
     procedure BitBtn1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -25,8 +22,8 @@ type
     procedure SpeedButton3Click(Sender: TObject);
     procedure tbMiFChange(Sender: TObject);
   private
-    FEditMode:TEditMode;
-    FMiF:TFloatType;
+    FEditMode: TEditMode;
+    FMiF: TFloatType;
     FOnMiFChange: TFreeSplitSectionDialogChangeEvent;
     procedure SetMiF(AValue: TFloatType);
   public
@@ -37,8 +34,7 @@ type
              write FOnMiFChange;
   end;
 
-var
-  FreeSplitSectionDialog: TFreeSplitSectionDialog;
+var FreeSplitSectionDialog: TFreeSplitSectionDialog;
 
 implementation                                      { TFreeSplitSectionDialog }
 {$R *.lfm}
@@ -53,54 +49,44 @@ procedure TFreeSplitSectionDialog.fseMiFMouseWheel
 begin FEditMode:=emMouse; end;
 
 procedure TFreeSplitSectionDialog.SpeedButton1Click(Sender: TObject);
-begin                                                               // 'Medium'
-  with Ship.Surface do SetMiF( (Min.X+Max.X)*0.5 );
-end;
+    begin with Ship.Surface do SetMiF( (Min.X+Max.X)*0.5 ); end;    // 'Medium'
 
 procedure TFreeSplitSectionDialog.SpeedButton3Click(Sender: TObject);
-begin                                                    // 'From hydrostatics'
-//  SetMiF( Ship.FDesignHydrostatics.FData.CenterOfBuoyancy.X );
-  SetMiF( Ship.FDesignHydrostatics.Data.CenterOfBuoyancy.X );
-end;
-
+    begin                                                // 'From hydrostatics'
+          SetMiF( Ship.FDesignHydrostatics.Data.CenterOfBuoyancy.X );
+    end;
 procedure TFreeSplitSectionDialog.tbMiFChange(Sender: TObject);
-begin
-    SetMiF( 0.001*tbMiF.Position );
-end;
+    begin SetMiF( 0.001*tbMiF.Position ); end;
 
 procedure TFreeSplitSectionDialog.SetMiF( AValue: TFloatType );
 begin
   if FMiF=AValue then Exit;
   FMiF:=AValue;                  // FEditMode:=emProgrammatic;
   fseMiF.Value:=AValue;
-  tbMiF.Position:=round(AValue*1000);
-  if assigned(OnMiFChange) then
-     OnMiFChange( Self,FMiF );
+  tbMiF.Position:=round( AValue*1e3 );
+  if assigned(OnMiFChange) then OnMiFChange( Self,FMiF );
 end;
 
 // Lendth of ship,location of widest place,location of spaciest place
+
 procedure TFreeSplitSectionDialog.SetDimensions;
 begin
-  tbMiF.Min:=round(Ship.Surface.Min.X*1000);
-  tbMiF.Max:=round(Ship.Surface.Max.X*1000+1);
-  fseMiF.MinValue:=Ship.Surface.Min.X;
-  fseMiF.MaxValue:=Ship.Surface.Max.X;
+ tbMiF.Min:=round(Ship.Surface.Min.X*1e3); fseMiF.MinValue:=Ship.Surface.Min.X;
+ tbMiF.Max:=round(Ship.Surface.Max.X*1e3); fseMiF.MaxValue:=Ship.Surface.Max.X;
 end;
 
 procedure TFreeSplitSectionDialog.fseMiFKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState );
-begin FEditMode:=emKeyboard; end;
+    begin FEditMode:=emKeyboard; end;
 
 procedure TFreeSplitSectionDialog.fseMiFEditingDone(Sender: TObject);
-begin
-//if abs(fseMiF.Value-FMiF) < 1e-5 then exit;
-  FEditMode:=emKeyboard;
-  SetMiF( fseMiF.Value );
+begin //if abs(fseMiF.Value-FMiF) < 1e-5 then exit;
+        FEditMode:=emKeyboard;
+        SetMiF( fseMiF.Value );
 end;
 
 procedure TFreeSplitSectionDialog.fseMiFChange(Sender: TObject);
-begin
-//if FEditMode in [emMouse] then
-  SetMiF( fseMiF.Value );
+begin // if FEditMode in [emMouse] then
+         SetMiF( fseMiF.Value );
 end;
 
 procedure TFreeSplitSectionDialog.BitBtn1Click(Sender: TObject);

@@ -4,7 +4,9 @@ object FreePreferencesDialog: TFreePreferencesDialog
   Top = 51
   Width = 638
   AutoSize = True
-  Caption = 'Настройки Free!Ship.'
+  BorderIcons = []
+  BorderStyle = bsSingle
+  Caption = 'Настройки интерфейсов Free!Ship'
   ClientHeight = 660
   ClientWidth = 638
   Constraints.MinHeight = 400

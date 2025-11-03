@@ -2,25 +2,28 @@ object FreeExtrudeDialog: TFreeExtrudeDialog
   Left = 387
   Height = 132
   Top = 141
-  Width = 234
-  BorderStyle = bsDialog
-  Caption = 'Extrusion vector'
+  Width = 235
+  BorderIcons = []
+  BorderStyle = bsSingle
+  Caption = 'Вынос копии крайнего ребра'
   ClientHeight = 132
-  ClientWidth = 234
+  ClientWidth = 235
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
-  LCLVersion = '3.8.0.0'
+  FormStyle = fsStayOnTop
+  PopupMode = pmAuto
+  LCLVersion = '4.2.0.0'
   object Panel2: TPanel
     Left = 0
     Height = 97
     Top = 22
-    Width = 234
+    Width = 235
     Align = alClient
     BevelOuter = bvLowered
     ClientHeight = 97
-    ClientWidth = 234
+    ClientWidth = 235
     ParentBackground = False
     TabOrder = 0
     object _Label3: TLabel
@@ -28,42 +31,42 @@ object FreeExtrudeDialog: TFreeExtrudeDialog
       Height = 13
       Top = 18
       Width = 14
-      Caption = '[m]'
+      Caption = '[м]'
     end
     object _Label6: TLabel
       Left = 206
       Height = 13
       Top = 48
       Width = 14
-      Caption = '[m]'
+      Caption = '[м]'
     end
     object _Label9: TLabel
       Left = 206
       Height = 13
       Top = 78
       Width = 14
-      Caption = '[m]'
+      Caption = '[м]'
     end
     object Label1: TLabel
       Left = 5
       Height = 13
       Top = 18
-      Width = 100
-      Caption = 'Longitudinal direction'
+      Width = 96
+      Caption = 'Продольный сдвиг'
     end
     object Label2: TLabel
       Left = 5
       Height = 13
       Top = 48
-      Width = 96
-      Caption = 'Transverse direction'
+      Width = 90
+      Caption = 'Снос по ординате'
     end
     object Label4: TLabel
       Left = 5
       Height = 13
       Top = 78
-      Width = 78
-      Caption = 'Vertical direction'
+      Width = 112
+      Caption = 'Подъём по аппликате'
     end
     object Edit1: TEdit
       Left = 125
@@ -97,11 +100,11 @@ object FreeExtrudeDialog: TFreeExtrudeDialog
     Left = 0
     Height = 22
     Top = 0
-    Width = 234
+    Width = 235
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 22
-    ClientWidth = 234
+    ClientWidth = 235
     ParentBackground = False
     TabOrder = 1
     object BitBtn1: TSpeedButton
@@ -109,7 +112,7 @@ object FreeExtrudeDialog: TFreeExtrudeDialog
       Height = 19
       Top = 1
       Width = 65
-      Caption = 'OK'
+      Caption = '&Есть!'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -137,7 +140,7 @@ object FreeExtrudeDialog: TFreeExtrudeDialog
       Height = 19
       Top = 1
       Width = 65
-      Caption = 'Cancel'
+      Caption = '&Отмена'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -165,7 +168,7 @@ object FreeExtrudeDialog: TFreeExtrudeDialog
     Left = 0
     Height = 13
     Top = 119
-    Width = 234
+    Width = 235
     Align = alBottom
     BevelOuter = bvNone
     ParentBackground = False

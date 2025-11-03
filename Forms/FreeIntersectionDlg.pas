@@ -52,24 +52,24 @@ uses FreeLanguageSupport;
 procedure TFreeIntersectionDialog.UpdateMenu;
 begin
    if ViewStations.Checked then begin
-      AddOne.Hint:=Userstring(223)+'.';
-      AddRange.Hint:=Userstring(224)+'.';
-      DeleteAll.Hint:=Userstring(225)+'.';
+//      AddOne.Hint:=Userstring(223)+'.';
+//      AddRange.Hint:=Userstring(224)+'.';
+//      DeleteAll.Hint:=Userstring(225)+'.';
       DeleteAll.Enabled:=FFreeship.NumberofStations>0;
    end else if ViewButtocks.Checked then begin
-      AddOne.Hint:=Userstring(226)+'.';
-      AddRange.Hint:=Userstring(227)+'.';
-      DeleteAll.Hint:=Userstring(228)+'.';
+//      AddOne.Hint:=Userstring(226)+'.';
+//      AddRange.Hint:=Userstring(227)+'.';
+//      DeleteAll.Hint:=Userstring(228)+'.';
       DeleteAll.Enabled:=FFreeship.NumberofButtocks>0;
    end else if ViewWaterlines.Checked then begin
-      AddOne.Hint:=Userstring(229)+'.';
-      AddRange.Hint:=Userstring(230)+'.';
-      DeleteAll.Hint:=Userstring(231)+'.';
+//      AddOne.Hint:=Userstring(229)+'.';
+//      AddRange.Hint:=Userstring(230)+'.';
+//      DeleteAll.Hint:=Userstring(231)+'.';
       DeleteAll.Enabled:=FFreeship.NumberofWaterlines>0;
    end else if ViewDiagonals.Checked then begin
-      AddOne.Hint:=Userstring(232)+'.';
-      AddRange.Hint:=Userstring(233)+'.';
-      DeleteAll.Hint:=Userstring(234)+'.';
+//      AddOne.Hint:=Userstring(232)+'.';
+//      AddRange.Hint:=Userstring(233)+'.';
+//      DeleteAll.Hint:=Userstring(234)+'.';
       DeleteAll.Enabled:=FFreeship.NumberofDiagonals>0;
    end;
 end;

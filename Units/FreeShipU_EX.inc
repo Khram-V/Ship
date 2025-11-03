@@ -160,6 +160,219 @@ begin
   end;
   Dialog.Destroy;
 end;
+
+//
+// STL (stereolithography) - список треугольных граней, и их нормалей.
+//
+procedure TFreeEdit.File_ImportSTL;
+var
+  OpenDialog: TOpenDialog;    Answer: Word;
+  FileName,Str: AnsiString;   PrevCursor: TCursor;
+  FFile: TextFile;
+begin
+  OpenDialog:=TOpenDialog.Create(Ship);
+  OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
+//OpenDialog.Filter:=createDialogFilter( rsSTLFile,['stl'] );
+  OpenDialog.Filter:='StereoLitography STL (*.stl)|*.stl';
+  if OpenDialog.Execute then begin
+    Answer:=Ship.Edit.File_SaveCheck;
+    if (Answer=mrCancel) or Ship.FileChanged
+       then begin OpenDialog.Destroy; exit; end;
+    CreateUndoObject('STL file',True);
+    PrevCursor:=Screen.Cursor;
+    Screen.Cursor:=crHourglass;
+    Ship.Clear;
+    FileName:=ChangeFileExt( OpenDialog.FileName,'.stl' );
+    AssignFile( FFile,FileName ); Reset( FFile );
+    if IOResult=0 then begin
+      if not EOF(FFile) then begin
+        Readln( FFile,Str ); Str:=Str.Trim.ToLower; CloseFile( FFile );
+        if Str.StartsWith( 'solid ' )
+           then File_ImportSTLtext( FileName )
+           else File_ImportSTLbin( FileName );
+      end;
+//    CloseFile( FFile );
+      Ship.FileName:=ChangeFileExt( Opendialog.FileName,'' );
+//    Ship.ModelIsLoaded:=True;
+      Ship.FileChanged:=True;
+      Ship.RebuildModel;
+      Ship.Redraw;
+    end else ShowMessage( UserString(97) );
+    Screen.Cursor:=PrevCursor;
+  end;
+  FreeAndNil(OpenDialog);
+end;{TFreeEdit.File_ImportSTL}
+
+procedure TFreeEdit.File_ImportSTLtext( FileName: AnsiString );
+var
+  FFile: TextFile;
+  Str: AnsiString; idSolid:boolean;
+  LineNr,SolidNr,FacetNr,VertexNr:Integer; V:T3DVector;
+  Layer: TFreeSubdivisionLayer;
+  FacePoints: TFasterList; //TFreeSubdivisionControlPoint;
+  CtrPoint: TFreeSubdivisionControlPoint;
+  SubdivisionSurface: TFreeSubdivisionSurface;
+//  Tokens: array of string;
+begin
+    Ship.ProjectSettings.FProjectName:=ExtractFileName( FileName );
+    AssignFile( FFile,FileName ); Reset( FFile);
+    if IOResult=0 then begin
+      SubdivisionSurface:=Ship.Surface;
+//    SubdivisionSurface.IsLoading:=true;
+      FacePoints:=TFasterList.Create; // TFreeSubdivisionControlPoint.Create;
+      LineNr:=1; SolidNr:=0; FacetNr:=0; VertexNr:=0;
+      while not EOF(FFile) do begin
+        Readln( FFile,Str );                     // if EOF( FFile ) then break;
+        idSolid:=copy( Str,1,6 ).ToLower.StartsWith( 'solid ' );
+        if not idSolid then Str:=BlankOff( Str ); Inc( LineNr );
+        if idSolid then begin                     inc( SolidNr );
+          if SolidNr=1
+             then Layer:=SubdivisionSurface.Layer[0]
+             else Layer:=SubdivisionSurface.AddNewLayer;
+          if Length( Str )>7 then Layer.Name:=copy( Str,7,Length(Str)-6 )       // Str.SubString( 7,256 )
+                             else Layer.Name:='Layer '+inttostr( SolidNr );
+        end else
+        if Str.StartsWith('facet ') then begin inc(FacetNr);    // read Normal?
+          VertexNr:=1; FacePoints.Clear;
+        end else
+        if Str.StartsWith('outer loop') then else
+        if Str.StartsWith('vertex ') then begin Str:=copy( Str,7,Length(Str)-6 ); // Str.SubString(7,Length(Str)-6);
+          V.X:=GetFloat( Str );
+          V.Y:=GetFloat( Str );
+          V.Z:=GetFloat( Str );
+          CtrPoint:=SubdivisionSurface.AddControlPoint( V );
+          if FacePoints.IndexOf( CtrPoint )=-1 then begin
+             FacePoints.Add( CtrPoint );
+             inc( VertexNr );
+          end;
+        end else
+        if Str.StartsWith('endloop') then else                      // break;
+        if Str.StartsWith('endfacet') then begin
+          if FacePoints.Count>2 then
+             SubdivisionSurface.AddControlFace( FacePoints,True,Layer );
+        end else
+        if Str.StartsWith('endsolid') then begin end;               // break;
+      end;
+      FreeAndNil(FacePoints);
+      CloseFile(FFile);
+//    SubdivisionSurface.IsLoading:=false;
+    end else ShowMessage( UserString(97) );
+end;
+
+procedure TFreeEdit.File_ImportSTLbin(FileName: AnsiString);
+var
+  FileStream: TFileStream;
+  STLheader: array[0..79] of char;
+  STLfacets: uint32;
+  STLrecord: packed record
+      normalX,  normalY,  normalZ: single;
+    vertex1_X,vertex1_Y,vertex1_Z: single;      // для Зумвальта,т.к.
+    vertex2_X,vertex2_Y,vertex2_Z: single;      // другого файла провреки
+    vertex3_X,vertex3_Y,vertex3_Z: single;      // тогда не находилось
+    unused: uint16;
+  end;
+  Str: AnsiString; SolidNr,FacetNr: Integer; r: longint; V: T3DVector;
+  Layer: TFreeSubdivisionLayer;
+  FacePoints: TFasterList; //TFreeSubdivisionControlPoint;
+  CtrPoint: TFreeSubdivisionControlPoint;
+  SubdivisionSurface: TFreeSubdivisionSurface;    //  Precision: double=1e-8;
+begin
+    Ship.ProjectSettings.FProjectName:=ExtractFileName( FileName );
+    FileStream:=TFileStream.Create( FileName,fmOpenRead );
+    if FileStream.Size>80 then begin
+//    try
+      SubdivisionSurface:=Ship.Surface;
+//    SubdivisionSurface.IsLoading:=true;
+      FacePoints:=TFasterList.Create; //TFreeSubdivisionControlPoint.Create;
+      SolidNr:=0; FacetNr:=1;
+      r:=FileStream.Read( STLheader,80 );
+      Str:=trim( String.Create( STLheader ) );                inc( SolidNr );
+      if Str='' then Str:='STL layer '+InttoStr( Layer.Count );
+      if SolidNr=1 then Layer:=SubdivisionSurface.Layer[0]
+                   else Layer:=SubdivisionSurface.AddNewLayer;
+      Layer.Name:=Str;
+      r:=FileStream.Read( STLfacets,4 );
+      for FacetNr:=1 to STLfacets do begin
+        r:=FileStream.Read( STLrecord,SizeOf( STLrecord ) );
+        if r<SizeOf( STLrecord ) then break;
+        FacePoints.Clear;
+        V.X:=STLrecord.vertex1_X;
+        V.Y:=STLrecord.vertex1_Y;
+        V.Z:=STLrecord.vertex1_Z;                    //     Precision:=0.1;
+        CtrPoint:=SubdivisionSurface.AddControlPoint( V );  //,Precision );
+        FacePoints.Add( CtrPoint );
+        V.X:=STLrecord.vertex2_X;
+        V.Y:=STLrecord.vertex2_Y;
+        V.Z:=STLrecord.vertex2_Z;                    //     Precision:=0.1;
+        CtrPoint:=SubdivisionSurface.AddControlPoint( V );  //,Precision );
+        FacePoints.Add( CtrPoint );
+        V.X:=STLrecord.vertex3_X;
+        V.Y:=STLrecord.vertex3_Y;
+        V.Z:=STLrecord.vertex3_Z;                    //     Precision:=0.1;
+        CtrPoint:=SubdivisionSurface.AddControlPoint( V );  //,Precision );
+        FacePoints.Add( CtrPoint );
+        SubdivisionSurface.AddControlFace( FacePoints,True,Layer );
+      end;
+      FileStream.Free;
+//    SubdivisionSurface.IsLoading:=false;
+    end else MessageDlg( UserString(97),mtError,[mbOK],0);
+end;
+{
+  © Import the files are always UTF8
+}
+procedure TFreeEdit.File_ImportObj;
+var
+  OpenDialog: TOpenDialog; Answer: Word;
+  PrevCursor: TCursor;
+  Strings: TStringList;
+begin
+   OpenDialog:=TOpenDialog.Create( Ship );
+   OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory; //+ConfigDirectory
+// OpenDialog.Filter:=createDialogFilter( 'OBJ file',['obj'] );
+   OpenDialog.Filter:='WaveFront OBJ (*.obj)|*.obj';
+   Opendialog.Options:=[ofHideReadOnly];
+   if OpenDialog.Execute then begin
+      Answer:=Ship.Edit.File_SaveCheck;
+      if (Answer=mrCancel) or Ship.FileChanged
+         then begin OpenDialog.Destroy; exit; end;
+      CreateUndoObject('OBJ file',True);
+      PrevCursor:=Screen.Cursor;
+      Screen.Cursor:=crHourglass;
+      Ship.Clear;
+      Strings:=TStringList.Create;
+      Strings.LoadFromFile( ChangeFileExt( OpenDialog.FileName,'.obj' ) );
+      Ship.Surface.ImportObjFile( Strings );
+//      Ship.ModelIsLoaded:=True;
+      Ship.FileName:=ChangeFileExt( Opendialog.FileName,'' );
+      Ship.RebuildModel;
+      Ship.FileChanged:=True;
+      Ship.Redraw;
+      FreeAndNil(Strings);
+      if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
+      Screen.Cursor:=PrevCursor;
+  end;
+  FreeAndNil( OpenDialog );
+end;
+
+procedure TFreeEdit.File_ExportObj;
+var SaveDialog : TSaveDialog;
+    Strings    : TStringlist;
+begin
+   SaveDialog:=TSaveDialog.Create(Ship);
+   SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
+   SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'.obj');
+   SaveDialog.Filter:='Wavefront file (*.Obj)|*.Obj|Controlnet to wavefront file (*.obj)|*.obj';
+   Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
+   if SaveDialog.Execute then begin
+      Ship.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
+      Strings:=TStringlist.Create;
+      Ship.Surface.ExportObjFile(SaveDialog.FilterIndex=2,Strings);
+      Strings.SaveToFile(ChangeFileExt(Savedialog.FileName,'.obj'));
+      Strings.Destroy;
+   end;
+   SaveDialog.Destroy;
+end;
+
 {
     Loads a bodyplane and tries to fit a surface to it
 }
@@ -189,8 +402,7 @@ begin
    OpenDialog.InitialDir:=ExtractFilepath(Application.ExeName);
    OpenDialog.Filter:='3D text file (*.Txt)|*.txt';
    Opendialog.Options:=[ofHideReadOnly];
-   if OpenDialog.Execute then
-   begin
+   if OpenDialog.Execute then begin
       Frames:=TFasterList.Create;
       Case OpenDialog.FilterIndex of
          1 :begin   // 3D textfile containing stations, waterlines and buttocks
@@ -398,29 +610,22 @@ begin
 end;
 
 // Imports a number of curves and fits a surface;
+
 procedure TFreeEdit.File_ImportSurface;
-var OpenDialog    : TOpenDialog;
-    I,J,Nr        : integer;
-    Str           : string;
-    FFile         : TextFile;
-    Cols,Rows     : Integer;
-    Spline        : TFreeSpline;
-    NewSpline     : TFreeSpline;
-    P             : T3DVector;
-    Points        : array of array of T3DVector;
-    ControlPoints : array of array of TFreeSubdivisionControlPoint;
-    P1            : TFreeSubdivisionControlPoint;
-    Curves        : TFasterList;
-    LongCurves    : TFasterList;
-    Pts           : TfasterList;
-    Matrix        : TFreeMatrix;
-    ColMatrix     : TFreeMatrix;
-    RowMatrix     : TFreematrix;
-    OrgPts        : TFreeMatrix;
-    NewPts        : TFreeMatrix;
-    UnitType      : TFreeUnitType;
-    Marker        : TFreeMarker;
-    PrevCursor    : TCursor;
+var OpenDialog: TOpenDialog;
+    I,J,Nr,Cols,Rows: integer;
+    Str: string;
+    FFile: TextFile;
+    Spline,NewSpline: TFreeSpline;
+    P: T3DVector;
+    Points: array of array of T3DVector;
+    ControlPoints: array of array of TFreeSubdivisionControlPoint;
+    P1: TFreeSubdivisionControlPoint;
+    Curves,LongCurves,Pts: TfasterList;
+    Matrix,ColMatrix,RowMatrix,OrgPts,NewPts: TFreeMatrix;
+    UnitType: TFreeUnitType;
+    Marker: TFreeMarker;
+    PrevCursor: TCursor;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
@@ -613,8 +818,8 @@ begin
             Pts.Destroy;
             Ship.FileChanged:=True;
 //       finally
-            if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
-            Screen.Cursor:=PrevCursor;
+         if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
+         Screen.Cursor:=PrevCursor;
 //      end;
       end;
       Ship.Build:=False;
@@ -1077,8 +1282,8 @@ begin
             end;
          end;
 //    finally
-         Strings.Destroy;
-         Screen.Cursor:=PrevCursor;
+      Strings.Destroy;
+      Screen.Cursor:=PrevCursor;
 //    end;
    end;
    Dialog.Destroy;
@@ -1240,7 +1445,6 @@ begin
    Screen.Cursor:=crHourGlass;
    Strings:=TStringList.Create;
    Frames:=TFasterList.Create;
-// try
       Ship.FBuildValidFrameTable(Frames,True);
       if Ship.ProjectSettings.ProjectUnits=fuImperial then Scale:=1.0
                                                       else Scale:=1/Foot;
@@ -1333,12 +1537,10 @@ begin
       Strings.SaveToFile(Str);
 
       SaveDialog.Destroy;
-// finally
-      Frames.Destroy;
-      Screen.Cursor:=PrevCursor;
-      Strings.Destroy;
-// end;
-end;{TFreeEdit.File_ExportGHS}
+   Frames.Destroy;
+   Screen.Cursor:=PrevCursor;
+   Strings.Destroy;
+end;
 
 // Save part of the geometry to a file
 procedure TFreeEdit.File_ExportPart;
@@ -1800,69 +2002,6 @@ begin
    Dialog.Destroy;
 end;
 
-{
-  © Import the files are always UTF8
-}
-procedure TFreeEdit.File_ImportObj;
-var
-  OpenDialog: TOpenDialog; Answer: Word;
-  PrevCursor: TCursor;
-  Strings: TStringList;
-begin
-   OpenDialog:=TOpenDialog.Create( Ship );
-   OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory; //+ConfigDirectory
-// OpenDialog.Filter:=createDialogFilter( 'OBJ file',['obj'] );
-   OpenDialog.Filter:='WaveFront OBJ (*.obj)|*.obj';
-   Opendialog.Options:=[ofHideReadOnly];
-   if OpenDialog.Execute then begin
-      Answer:=Ship.Edit.File_SaveCheck;
-      if (Answer=mrCancel) or Ship.FileChanged
-         then begin OpenDialog.Destroy; exit; end;
-      CreateUndoObject('OBJ file',True);
-      PrevCursor:=Screen.Cursor;
-      Screen.Cursor:=crHourglass;
-      Ship.Clear;
-//      assignFile(FFile,ChangeFileExt(Opendialog.FileName,'.xyz'));
-//      {$I-}Reset(FFile);{$I+}
- //     if IOResult=0 then begin
-  //       Ship.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-   //  Ship.Clear;
-
-      Strings:=TStringList.Create;
-      Strings.LoadFromFile( ChangeFileExt( OpenDialog.FileName,'.obj' ) );
-      Ship.Surface.ImportObjFile( Strings );
-
-//      Ship.ModelIsLoaded:=True;
-      Ship.FileName:=ChangeFileExt( Opendialog.FileName,'' );
-      Ship.RebuildModel;
-      Ship.FileChanged:=True;
-      Ship.Redraw;
-      FreeAndNil(Strings);
-      if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
-      Screen.Cursor:=PrevCursor;
-  end;
-  FreeAndNil( OpenDialog );
-end;
-
-procedure TFreeEdit.File_ExportObj;
-var SaveDialog : TSaveDialog;
-    Strings    : TStringlist;
-begin
-   SaveDialog:=TSaveDialog.Create(Ship);
-   SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
-   SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'.obj');
-   SaveDialog.Filter:='Wavefront file (*.Obj)|*.Obj|Controlnet to wavefront file (*.obj)|*.obj';
-   Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
-   if SaveDialog.Execute then begin
-      Ship.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
-      Strings:=TStringlist.Create;
-      Ship.Surface.ExportObjFile(SaveDialog.FilterIndex=2,Strings);
-      Strings.SaveToFile(ChangeFileExt(Savedialog.FileName,'.obj'));
-      Strings.Destroy;
-   end;
-   SaveDialog.Destroy;
-end;
-
 // Exports all intersections to a textfile as 3D points
 procedure TFreeEdit.File_ExportOffsets;
 var SaveDialog : TSaveDialog;
@@ -1873,8 +2012,7 @@ var SaveDialog : TSaveDialog;
         Str    : string;
         P      : T3DVector;
     begin
-      for J:=1 to Spline.NumberOfPoints do
-      begin
+      for J:=1 to Spline.NumberOfPoints do begin
          P:=Spline.Point[J-1];
          Str:='        '+MakeLength(P.X,4,10)+#32+MakeLength(P.Y,4,10)+#32+MakeLength(P.Z,4,10);
          if Spline.Knuckle[J-1] then Str:=Str+'    KNUCKLE';
@@ -1888,13 +2026,11 @@ var SaveDialog : TSaveDialog;
         Spline : TFreeSpline;
     begin
        if not Intersection.Built then Intersection.Rebuild;
-       if Intersection.Count>0 then
-       begin
+       if Intersection.Count>0 then begin
           Str:=Intersection.Description;
           Strings.Add(Str);
           if Intersection.Count>1 then Strings.Add(IntToStr(Intersection.Count)+' segments.');
-          for I:=1 to Intersection.count do
-          begin
+          for I:=1 to Intersection.count do begin
              Spline:=Intersection.Items[I-1];
              if Intersection.Count>1 then Strings.Add('SEGMENT '+IntToStr(I));
              SendSpline(Spline);
@@ -2355,7 +2491,7 @@ begin
                   P2:=TFreeSubdivisionControlPoint.Create(Ship.Surface);
                   Ship.Surface.AddControlPoint(P2);
                   P2.LoadBinary(PartFile);
-                  P2.Coordinate:=ScalePoint(Scale,P2.Coordinate);
+                  P2.Coordinate:=Scale*P2.Coordinate;
                   Points.Add(P2);
                   Changed:=True;
                end;
@@ -2425,7 +2561,7 @@ begin
                Edges.Destroy;
                Layers.Destroy;
 //          finally
-               Screen.Cursor:=Prevcursor;
+            Screen.Cursor:=Prevcursor;
 //          end;
             if Changed then begin
                if Assigned(Ship.Surface.OnChangeLayerData) then Ship.Surface.OnChangeLayerData(Ship.Surface);
@@ -2473,7 +2609,7 @@ var OpenDialog : TOpenDialog;
           MessageDlg(UserString(115),mtError,[mbOk],0);
        end;
     end;{NextLine}
-
+(*
     Function GetInteger(str:string):Integer;
     var Index:Integer;
     begin
@@ -2507,7 +2643,7 @@ var OpenDialog : TOpenDialog;
          end;
       end else Abort:=True;
     end;{GetFloat}
-
+*)
     function NextParameter(var input:string):string;
     var Index:Integer;
     begin
@@ -2691,9 +2827,9 @@ begin
             end else MessageDlg(UserString(123),mtInformation,[mbOK],0);
          end else MessageDlg(UserString(124),mtInformation,[mbOk],0);
 //    finally
-         Strings.Destroy;
-         if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
-         Screen.Cursor:=PrevCursor;
+      Strings.Destroy;
+      if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
+      Screen.Cursor:=PrevCursor;
 //    end;
    end;
    OpenDialog.Destroy;
@@ -2715,19 +2851,16 @@ begin
          then begin OpenDialog.Destroy; exit; end;
       PrevCursor:=Screen.Cursor;
       Screen.Cursor:=crHourglass;
-//    try
-         CreateUndoObject(Userstring(125),True);
-         Ship.Clear;
-         Ship.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-         Ship.Surface.LoadVRMLFile(Opendialog.FileName);
-         Ship.FileName:=ChangeFileExt(Opendialog.FileName,'');
-         Ship.Build:=False;
-         Ship.RebuildModel;
-         Ship.FileChanged:=true;
-//    finally
-         if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
-         Screen.Cursor:=PrevCursor;
-//    end;
+      CreateUndoObject(Userstring(125),True);
+      Ship.Clear;
+      Ship.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
+      Ship.Surface.LoadVRMLFile(Opendialog.FileName);
+      Ship.FileName:=ChangeFileExt(Opendialog.FileName,'');
+      Ship.Build:=False;
+      Ship.RebuildModel;
+      Ship.FileChanged:=true;
+      if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
+      Screen.Cursor:=PrevCursor;
    end;
    OpenDialog.Destroy;
 end;
@@ -2802,59 +2935,53 @@ begin
 
       PrevCursor:=Screen.Cursor;
       Screen.Cursor:=crHourGlass;
-//    try
-         Partfile.Add('FREE!ship partfile');
-         Partfile.Add(ord(CurrentVersion));                                      // File version
-         I:=Ord(ProjectSettings.ProjectUnits);
-         Partfile.Add(I);                                                        // Write units type used (imperial or metric);
-         Partfile.Add(Layers.Count);                                             // Number of layers in the file
-         for I:=1 to Layers.Count do begin                                       // Save layer info
-            Layer:=Layers[I-1];
-            Layer.SaveBinary(Partfile);
-         end;
-         // Save controlpoints
-         Partfile.Add(Points.Count);
-         for I:=1 to Points.Count do begin
-            P2:=Points[I-1];
-            P2.SaveBinary(PartFile);
-         end;
-         // Save control edges
-         Partfile.Add(Edges.Count);
-         for I:=1 to Edges.Count do begin
-            Edge:=Edges[I-1];
-            Index:=Points.SortedIndexOf(Edge.StartPoint);
-            Partfile.Add(Index);
-            Index:=Points.SortedIndexOf(Edge.EndPoint);
-            Partfile.Add(Index);
-            Partfile.Add(Edge.Crease);
-         end;
-         // save controlfaces
-         Partfile.Add(Faces.Count);
-         for I:=1 to Faces.Count do begin
-            Face:=Faces[I-1];
-            Partfile.Add(Face.NumberOfpoints);
-            for J:=1 to Face.NumberOfPoints do begin
-               Index:=Points.SortedIndexOf(Face.Point[J-1]);
-               Partfile.Add(Index);
-            end;
-            Index:=Layers.SortedIndexOf(Face.Layer);
+      Partfile.Add('FREE!ship partfile');
+      Partfile.Add(ord(CurrentVersion));                        // File version
+      I:=Ord(ProjectSettings.ProjectUnits);
+      Partfile.Add(I);           // Write units type used (imperial or metric);
+      Partfile.Add(Layers.Count);               // Number of layers in the file
+      for I:=1 to Layers.Count do begin                      // Save layer info
+         Layer:=Layers[I-1];
+         Layer.SaveBinary(Partfile);
+      end;
+
+      Partfile.Add(Points.Count);                         // Save controlpoints
+      for I:=1 to Points.Count do begin
+         P2:=Points[I-1];
+         P2.SaveBinary(PartFile);
+      end;
+      Partfile.Add(Edges.Count);                          // Save control edges
+      for I:=1 to Edges.Count do begin
+         Edge:=Edges[I-1];
+         Index:=Points.SortedIndexOf(Edge.StartPoint);
+         Partfile.Add(Index);
+         Index:=Points.SortedIndexOf(Edge.EndPoint);
+         Partfile.Add(Index);
+         Partfile.Add(Edge.Crease);
+      end;
+      Partfile.Add(Faces.Count);                           // save controlfaces
+      for I:=1 to Faces.Count do begin
+         Face:=Faces[I-1];
+         Partfile.Add(Face.NumberOfpoints);
+         for J:=1 to Face.NumberOfPoints do begin
+            Index:=Points.SortedIndexOf(Face.Point[J-1]);
             Partfile.Add(Index);
          end;
-         // Save controlcurves
-         Partfile.Add(Curves.Count);
-         for I:=1 to Curves.Count do begin
-            Curve:=Curves[I-1];
-            Partfile.Add(Curve.NumberOfControlPoints);
-            for J:=1 to Curve.NumberOfControlPoints do begin
-               P2:=Curve.ControlPoint[j-1];
-               Index:=points.SortedIndexOf(P2);
-               Partfile.Add(Index);
-            end;
+         Index:=Layers.SortedIndexOf(Face.Layer);
+         Partfile.Add(Index);
+      end;
+      Partfile.Add(Curves.Count);                         // Save controlcurves
+      for I:=1 to Curves.Count do begin
+         Curve:=Curves[I-1];
+         Partfile.Add(Curve.NumberOfControlPoints);
+         for J:=1 to Curve.NumberOfControlPoints do begin
+            P2:=Curve.ControlPoint[j-1];
+            Index:=points.SortedIndexOf(P2);
+            Partfile.Add(Index);
          end;
-         Partfile.SaveToFile(ChangeFileExt(SaveDialog.FileName,'.part'));
-//    finally
-         Screen.Cursor:=PrevCursor;
-//    end;
+      end;
+      Partfile.SaveToFile(ChangeFileExt(SaveDialog.FileName,'.part'));
+      Screen.Cursor:=PrevCursor;
       Partfile.Destroy;
       Points.Destroy;
       Edges.Destroy;
@@ -2863,3 +2990,177 @@ begin
    end;
    SaveDialog.Destroy;
 end;
+//
+// imports a number of longitudinally lines and creates developable
+//    surfaces between each two subsequent chines
+//
+procedure TFreeShip.ImportChines( Np:Integer;Chines:TFasterList );
+var I,J        : integer;
+    P,Min,Max  : T3DVector;
+    Pts,Pts2,Tmp: TFasterList;
+    Points     : array of array of TFreeSubdivisionControlPoint;
+    Curve      : TFreeSubdivisionControlCurve;
+    Point      : TFreeSubdivisionControlPoint;
+    Edge       : TFreeSubdivisionControlEdge;
+    Layer      : TFreeSubdivisionLayer;
+    Spline     : TFreeSpline;
+    Marker     : TFreeMarker;
+    Matrix,Inv,OrgPts,NewPts: TFreeMatrix;
+begin
+// try
+      for I:=1 to Chines.Count-1 do begin
+         if I<=Surface.NumberOfLayers then Layer:=Surface.Layer[I-1]
+                                      else Layer:=Surface.AddNewLayer;
+         Layer.Name:=Userstring(186)+#32+IntToStr(I);
+         Layer.Developable:=True;
+      end;                 // add special layer to close the hull at centerline
+      Layer:=Surface.AddNewLayer;
+      Layer.Name:=Userstring(187);
+      Setlength(Points,Np);                                 // Prepare matrices
+      Matrix:=TFreeMatrix.Create;
+      Matrix.SetSize(Np,Np);
+      Matrix.Fill(0.0);
+      Matrix.Value[0,0]:=1.0;
+      for I:=2 to Np-1 do begin
+         Matrix.Value[I-1,I-2]:=1/6;
+         Matrix.Value[I-1,I-1]:=2/3;
+         Matrix.Value[I-1,I  ]:=1/6;
+      end;
+      Matrix.Value[Np-1,Np-1]:=1.0;                            // Invert matrix
+      Inv:=Matrix.Invert;
+      Matrix.Destroy;
+
+      OrgPts:=TFreeMatrix.Create;
+      OrgPts.SetSize(3,Np);
+
+      for I:=1 to Np do Setlength(Points[I-1],Chines.Count);
+      for I:=1 to Chines.Count do begin
+         Spline:=Chines[I-1];
+         OrgPts.Fill(0.0);
+         for J:=1 to Np do begin
+            P:=Spline.Value((J-1)/(Np-1));
+            OrgPts.Value[J-1,0]:=P.X;
+            OrgPts.Value[J-1,1]:=P.Y;
+            OrgPts.Value[J-1,2]:=P.Z;
+         end;
+         // calculate new points
+         NewPts:=Inv.Multiply(OrgPts);
+         for J:=1 to Np do begin
+            P.X:=NewPts.Value[J-1,0];
+            P.Y:=NewPts.Value[J-1,1];
+            if P.Y<0 then P.Y:=0;
+            P.Z:=NewPts.Value[J-1,2];
+            if (I=1) and (J=1) then begin
+               Min:=P;
+               Max:=Min;
+            end else MinMax(P,Min,Max);
+            Points[J-1][I-1]:=Surface.AddControlPoint(P);
+         end;
+         NewPts.Destroy;
+      end;
+      OrgPts.Destroy;                                 // Delete inverted matrix
+      Inv.Destroy;                                    // Add chines as markers
+      for I:=1 to Chines.Count do begin
+         Spline:=Chines[I-1];
+         Marker:=TFreeMarker.Create;
+         Marker.FOwner:=self;
+         Edit.Marker_Add(Marker);
+         for J:=1 to Spline.NumberOfPoints do begin
+            Marker.Add(Spline.Point[J-1]);
+            Marker.Knuckle[J-1]:=Spline.Knuckle[J-1];
+         end;
+      end;                                                // Setup controlfaces
+      Pts:=TFasterlist.Create;
+      for I:=2 to Np do
+      for J:=2 to Chines.Count do begin Pts.Clear;
+        Point:=Points[I-1][J-1]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
+        Point:=Points[I-2][J-1]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
+        Point:=Points[I-2][J-2]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
+        Point:=Points[I-1][J-2]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
+        if Pts.Count>2 then Surface.AddControlFace(Pts,True,Surface.Layer[J-2]);
+      end;
+      for I:=2 to Np do begin
+         for J:=1 to Chines.Count do begin
+            Edge:=Surface.EdgeExists(Points[I-2][J-1],Points[I-1][J-1]) as TFreeSubdivisionControlEdge;
+            if Edge<>nil then Edge.Crease:=True;
+         end;
+      end;
+      // Add controlcurves
+      for J:=1 to Chines.Count do begin
+         Curve:=TFreeSubdivisionControlCurve.Create(Surface);
+         Surface.AddControlCurve(Curve);
+         for I:=1 to Np do begin
+            Curve.AddPoint(Points[I-1][J-1]);
+            if I>1 then begin
+               Edge:=Surface.EdgeExists(Points[I-2][J-1],Points[I-1][J-1]) as TFreeSubdivisionControlEdge;
+               if Edge<>nil then Edge.Curve:=Curve;
+            end;
+         end;
+      end;
+      // Check for stem, keel and stern points to be closed
+      Pts.Clear;                                                 // first stern
+      for I:=Chines.Count downto 2 do Pts.Add(Points[Np-1][I-1]);  // then keel
+      for I:=Np downto 1 do Pts.Add(Points[I-1][0]);        // and finally stem
+      for I:=2 to Chines.Count do Pts.Add(Points[0][I-1]);
+      Pts2:=TFasterList.Create;
+      for I:=1 to Pts.Count do begin
+         Point:=Pts[I-1];
+         P:=Point.Coordinate;
+         if P.Y<>0.0 then begin
+            P.Y:=0;
+            Point:=Surface.AddControlPoint(P);
+            if Point.Coordinate.Y<>0.0 then Point.Coordinate:=P;
+            Pts2.Add(Point);
+         end else Pts2.Add(Point);
+      end;
+      Tmp:=TFasterList.Create;
+      for I:=2 to Pts.Count do begin Tmp.Clear;
+         if Tmp.IndexOf(Pts2[I-1])=-1 then Tmp.Add(Pts2[I-1]);
+         if Tmp.IndexOf(Pts2[I-2])=-1 then Tmp.Add(Pts2[I-2]);
+         if Tmp.IndexOf(Pts[I-2]) =-1 then Tmp.Add(Pts[I-2]);
+         if Tmp.IndexOf(Pts[I-1]) =-1 then Tmp.Add(Pts[I-1]);
+         if Tmp.Count>2 then Surface.AddControlFace(Tmp,False,Layer);
+      end;
+   // Now check if there are any edges on the bottom panel that are created by extruding the
+   // bottom points and whose crease properties are set to true. This causes undesired knuckle in the bottompanel
+      {
+      for I:=Np-1 downto 2 do begin
+         Point:=Points[I-1][0];
+         if Point.Coordinate.Y>0 then begin
+            for J:=1 to point.NumberOfEdges do begin
+               Edge:=Point.Edge[J-1] as TFreeSubdivisionControlEdge;
+               if ((Edge.Crease) and (Edge.StartPoint=Point) and (abs(Edge.EndPoint.Coordinate.Y)<1e-5)) or
+                  ((Edge.Crease) and (Edge.EndPoint=Point) and (abs(Edge.StartPoint.Coordinate.Y)<1e-5)) then Edge.Crease:=False;
+            end;
+         end;
+      end;
+      }
+      // set transom as knuckle
+      for J:=2 to Chines.Count do begin
+         Edge:=Surface.EdgeExists(Points[Np-1][J-2],Points[Np-1][J-1]) as TFreeSubdivisionControlEdge;
+         if Edge<>nil then Edge.Crease:=true;
+      end;
+      // Delete unused layers;
+      Edit.Layer_DeleteEmpty(True);
+      // delete unused controlpoints
+      for I:=Surface.NumberOfControlPoints downto 1 do if Surface.ControlPoint[I-1].NumberOfFaces=0 then Surface.ControlPoint[I-1].Delete;
+      Tmp.Destroy;
+      Pts2.Destroy;
+      Pts.Destroy;
+// finally
+      Extents(Min,Max);
+      //ProjectSettings.ProjectWaterDensity:=1.0;
+      ProjectSettings.ProjectBeam:=2*Max.Y;
+      ProjectSettings.ProjectLength:=Max.X-Min.X;
+      ProjectSettings.ProjectDraft:=1.0;
+      Build:=False;
+      Precision:=fpHigh;
+      Draw;
+      FileChanged:=true;
+      for I:=1 to Chines.Count do begin
+         Spline:=Chines[I-1];
+         Spline.Destroy;
+      end;
+//   end;
+end;
+

@@ -80,7 +80,6 @@ object MainForm: TMainForm
       ParentShowHint = False
       SimpleText = ' ...'
       ShowHint = True
-      TabOrder = 3
     end
   end
   object ToolBar: TToolBar
@@ -444,12 +443,30 @@ end
       ImageIndex = 1
       OnExecute = ExitProgramExecute
     end
+    object ImportSTL: TAction
+      Category = 'Import'
+      Caption = 'Stereolithography (STL)'
+      Hint = 'Текстовый или двоичный файл из треугольников [и их нормалей].'
+      OnExecute = ImportSTLExecute
+    end
+    object ImportVRML: TAction
+      Category = 'Import'
+      Caption = 'Virtual Reality (VRML)'
+      Hint = 'Импорт модели из Virtual Reality Modeling Language.'
+      OnExecute = ImportVRMLExecute
+    end
     object ImportCarene: TAction
       Category = 'Import'
       Caption = 'Carene.XYZ...'
       Hint = 'Считывания яхтенного формата.'
       ImageIndex = 35
       OnExecute = ImportCareneExecute
+    end
+    object ExportSTL: TAction
+      Category = 'Export'
+      Caption = 'STL...'
+      Hint = 'Запись треугольников Stereolithography (STL)'
+      OnExecute = ExportSTLExecute
     end
     object ExportDXF2DPolylines: TAction
       Category = 'Export'
@@ -715,12 +732,6 @@ end
       Hint = 'Изображение векторов ориентации нормалей на выбранных поверхностях'
       ImageIndex = 21
       OnExecute = ShowNormalsExecute
-    end
-    object ImportVRML: TAction
-      Category = 'Import'
-      Caption = 'Virtual Reality (VRML)'
-      Hint = 'Импорт модели из Virtual Reality Modeling Language.'
-      OnExecute = ImportVRMLExecute
     end
     object RemoveNegative: TAction
       Category = 'Tools'
@@ -1023,12 +1034,6 @@ end
       ImageIndex = 58
       ShortCut = 16449
       OnExecute = SelectAllExecute
-    end
-    object ExportSTL: TAction
-      Category = 'Export'
-      Caption = 'STL...'
-      Hint = 'Запись треугольников Stereolithography (STL)'
-      OnExecute = ExportSTLExecute
     end
   end
   object MenuImages: TImageList
@@ -1577,6 +1582,9 @@ end
         end
         object Carenefile1: TMenuItem
           Action = ImportCarene
+        end
+        object MenuImportSTL: TMenuItem
+          Action = ImportSTL
         end
         object ImportObj1: TMenuItem
           Action = ImportObj

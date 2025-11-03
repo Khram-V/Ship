@@ -1,55 +1,58 @@
 object FreeInsertPlaneDialog: TFreeInsertPlaneDialog
   Left = 239
-  Height = 237
+  Height = 248
   Top = 210
-  Width = 212
-  BorderStyle = bsDialog
-  Caption = 'Insert multiple points'
-  ClientHeight = 237
-  ClientWidth = 212
+  Width = 244
+  BorderIcons = []
+  BorderStyle = bsSingle
+  Caption = 'Узлы в пересечениях с плоскостью'
+  ClientHeight = 248
+  ClientWidth = 244
   Color = clBtnFace
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
+  FormStyle = fsStayOnTop
+  PopupMode = pmAuto
   Position = poMainFormCenter
-  LCLVersion = '3.8.0.0'
+  LCLVersion = '4.2.0.0'
   object Panel2: TPanel
     Left = 0
-    Height = 202
+    Height = 213
     Top = 22
-    Width = 212
+    Width = 244
     Align = alClient
     BevelOuter = bvLowered
-    ClientHeight = 202
-    ClientWidth = 212
+    ClientHeight = 213
+    ClientWidth = 244
     ParentBackground = False
     TabOrder = 0
     object GroupBox1: TGroupBox
       Left = 12
-      Height = 181
+      Height = 200
       Top = 8
-      Width = 191
-      Caption = 'Insert multiple vertices on a plane.  '
-      ClientHeight = 163
-      ClientWidth = 187
+      Width = 220
+      Caption = 'Узлы в сечениях с базовой плоскостью'
+      ClientHeight = 182
+      ClientWidth = 216
       ParentBackground = False
       TabOrder = 0
       object Label1: TLabel
         Left = 14
         Height = 13
         Top = 136
-        Width = 42
-        Caption = 'Distance'
+        Width = 110
+        Caption = 'Координатный отсчёт'
       end
       object Label2: TLabel
         Left = 14
         Height = 13
         Top = 92
-        Width = 49
-        Caption = 'Min. value'
+        Width = 121
+        Caption = 'Минимальная величина'
       end
       object Label4: TLabel
-        Left = 96
+        Left = 150
         Height = 13
         Top = 110
         Width = 3
@@ -59,11 +62,11 @@ object FreeInsertPlaneDialog: TFreeInsertPlaneDialog
         Left = 14
         Height = 13
         Top = 110
-        Width = 52
-        Caption = 'Max. value'
+        Width = 127
+        Caption = 'Максимальное значение'
       end
       object Label3: TLabel
-        Left = 96
+        Left = 150
         Height = 13
         Top = 92
         Width = 3
@@ -73,8 +76,8 @@ object FreeInsertPlaneDialog: TFreeInsertPlaneDialog
         Left = 8
         Height = 17
         Top = 22
-        Width = 100
-        Caption = 'Transverse plane'
+        Width = 153
+        Caption = 'В сечениях по шпангоутам'
         Checked = True
         TabOrder = 0
         TabStop = True
@@ -84,8 +87,8 @@ object FreeInsertPlaneDialog: TFreeInsertPlaneDialog
         Left = 8
         Height = 17
         Top = 44
-        Width = 94
-        Caption = 'Horizontal plane'
+        Width = 166
+        Caption = 'На поверхностях ватерлиний'
         TabOrder = 1
         OnClick = RadioButton2Click
       end
@@ -93,16 +96,16 @@ object FreeInsertPlaneDialog: TFreeInsertPlaneDialog
         Left = 8
         Height = 17
         Top = 66
-        Width = 82
-        Caption = 'Vertical plane'
+        Width = 194
+        Caption = 'Продольно-вертикальные сечения'
         TabOrder = 2
         OnClick = RadioButton3Click
       end
       object Edit1: TEdit
-        Left = 82
+        Left = 136
         Height = 21
         Top = 128
-        Width = 83
+        Width = 75
         TabOrder = 3
         Text = '0.000'
         OnKeyPress = Edit1KeyPress
@@ -111,9 +114,9 @@ object FreeInsertPlaneDialog: TFreeInsertPlaneDialog
         Left = 12
         Height = 17
         Top = 154
-        Width = 102
+        Width = 181
         Alignment = taLeftJustify
-        Caption = 'Add control curve'
+        Caption = 'Добавлять контрольный контур  '
         Checked = True
         State = cbChecked
         TabOrder = 4
@@ -124,19 +127,19 @@ object FreeInsertPlaneDialog: TFreeInsertPlaneDialog
     Left = 0
     Height = 22
     Top = 0
-    Width = 212
+    Width = 244
     Align = alTop
     BevelOuter = bvNone
     ClientHeight = 22
-    ClientWidth = 212
+    ClientWidth = 244
     ParentBackground = False
     TabOrder = 1
     object BitBtn1: TSpeedButton
-      Left = 84
+      Left = 104
       Height = 19
       Top = 1
       Width = 60
-      Caption = 'OK'
+      Caption = '&Есть!'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -160,11 +163,11 @@ object FreeInsertPlaneDialog: TFreeInsertPlaneDialog
       OnClick = BitBtn1Click
     end
     object BitBtn2: TSpeedButton
-      Left = 144
+      Left = 168
       Height = 19
-      Top = 1
+      Top = 0
       Width = 60
-      Caption = 'Cancel'
+      Caption = '&Отмена'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -191,8 +194,8 @@ object FreeInsertPlaneDialog: TFreeInsertPlaneDialog
   object Panel3: TPanel
     Left = 0
     Height = 13
-    Top = 224
-    Width = 212
+    Top = 235
+    Width = 244
     Align = alBottom
     BevelOuter = bvNone
     ParentBackground = False

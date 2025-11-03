@@ -21,9 +21,9 @@ end;
 procedure TFreeHydrostaticCalc.FSetCalculated(val:Boolean);
 begin
    FCalculated:=val;
-   if not FCalculated then begin Errors:=[];
+   if not FCalculated then begin // FErrors:=[];
       Fillchar(FData,SizeOf(FData),0);
-      FMainframe.Clear;
+      MidFrame.Clear;
    end;
 end;
 procedure TFreeHydrostaticCalc.FSetHeelingAngle(Val:TFloatType);
@@ -32,16 +32,14 @@ procedure TFreeHydrostaticCalc.FSetTrim(Val:TFloatType);
     begin if Val<>FTrim then begin FTrim:=val; Calculated:=False; end; end;
 procedure TFreeHydrostaticCalc.FSetDraft(Val:TFloatType);
     begin if Val<>FDraft then begin FDraft:=val; Calculated:=False; end; end;
-
+(*
 procedure TFreeHydrostaticCalc.FSetErrors(val:TFreeHydrostaticErrors);
     begin {FErrors:=Val;} end; //#//#// Val:=[feNothingSubmerged]; без регистрации ошибок
 procedure TFreeHydrostaticCalc.FSetHydrostaticType(val:TFreeHydrostaticType);
-begin if Val<>FHydrostaticType then begin
-          FHydrostaticType:=val;
-            Calculated:=False;
-       end; // Calculated:=True;
+    begin if Val<>FHydrostaticType then begin
+            FHydrostaticType:=val; Calculated:=False; end; // Calculated:=True;
 end;
-
+*)
 // The actual calculation of the hydrostatics finds place in this procedure
 procedure TFreeHydrostaticCalc.Calculate;
 var I,J,K,L,First,Last,
@@ -189,10 +187,10 @@ begin                                                  // Initial setup of data
                   if Side2<-1e-5 then begin // point is submerged, check if the model is making water
                      if (Child.Point[L-1].IsBoundaryVertex)
                      and (abs(Child.Point[L-1].Coordinate.Y)>1e-4) then begin
-                        if not (feMakingWater in Errors) then begin
-                           Errors:=Errors+[feMakingwater];
+                        //if not (feMakingWater in Errors) then begin
+                        //   Errors:=Errors+[feMakingwater];
                            FData.Leak:=Child.Point[L-1].Coordinate;
-                        end;
+                        //end;
                      end;
                   end;
                   CheckSubmergedBody(P2,Side2);
@@ -242,10 +240,10 @@ begin                                                  // Initial setup of data
                      if Side2<-1e-5 then begin // point is submerged, check if the model is making water
                         if (Child.Point[L-1].IsBoundaryVertex)
                         and (abs(Child.Point[L-1].Coordinate.Y)>1e-4) then begin
-                           if not (feMakingWater in Errors) then begin
-                              Errors:=Errors+[feMakingwater];
-                              FData.Leak:=Child.Point[L-1].Coordinate;
-                           end;
+                           //if not (feMakingWater in Errors) then begin
+                             // Errors:=Errors+[feMakingwater];
+                             FData.Leak:=Child.Point[L-1].Coordinate;
+                           //end;
                         end;
                      end;
                      CheckSubmergedBody(P2,Side2);
@@ -263,15 +261,15 @@ begin                                                  // Initial setup of data
    if FirstPoint then begin // No intersection with the watersurface found, the
                            // ship is either not submerged or totally submerged
       if not submerged then begin
-         Errors:=Errors+[feNothingSubmerged];
+         //Errors:=Errors+[feNothingSubmerged];
          FData.AbsoluteDraft:=0.0;
       end;
    end;
-   if feMakingWater in Errors then begin
+{  if feMakingWater in Errors then begin
       FData.Volume:=0.0;
       FData.CenterOfBuoyancy:=ZERO;
    end;
-   SubmergedLength:=Fdata.SubMax.X-FData.SubMin.X;
+}  SubmergedLength:=Fdata.SubMax.X-FData.SubMin.X;
    SubmergedWidth:=FData.SubMax.Y-FData.SubMin.Y;
    FData.Displacement:=VolumeToDisplacement(FData.Volume,Owner.ProjectSettings.ProjectWaterDensity,Owner.ProjectSettings.ProjectAppendageCoefficient,Owner.ProjectSettings.ProjectUnits);
    FData.LengthWaterline:=FData.WlMax.X-FData.WlMin.X;
@@ -283,22 +281,22 @@ begin                                                  // Initial setup of data
       // Apply appendage coeff.
       FData.Volume:=FData.Volume*Owner.ProjectSettings.ProjectAppendageCoefficient;
    end;
-   if (FData.Volume>0) and (Errors=[])
+   if (FData.Volume>0) {and (Errors=[])}
    and ((hcMainframe in Calculations)
    or (hcAll in Calculations)) then begin     // Calculate mainframe properties
-      FMainframe.IntersectionType:=fiStation;
-      FMainframe.UseHydrostaticsSurfacesOnly:=True;
-      FMainframe.FPlane.a:=1.0;
-      FMainframe.FPlane.b:=0.0;
-      FMainframe.FPlane.c:=0.0;
-      FMainframe.FPlane.d:=-Owner.ProjectSettings.MidleFrame;
-      FMainframe.CalculateArea(FData.WaterlinePlane,FData.MainframeArea,FData.MainframeCOG,TmpP2D);
+      MidFrame.IntersectionType:=fiStation;
+      MidFrame.UseHydrostaticsSurfacesOnly:=True;
+      MidFrame.FPlane.a:=1.0;
+      MidFrame.FPlane.b:=0.0;
+      MidFrame.FPlane.c:=0.0;
+      MidFrame.FPlane.d:=-Owner.ProjectSettings.MidleFrame;
+      MidFrame.CalculateArea(FData.WaterlinePlane,FData.MainframeArea,FData.MainframeCOG,TmpP2D);
       FData.MainframeCOG.Z:=FData.MainframeCOG.Z-FData.ModelMin.Z;
       if Owner.ProjectSettings.ProjectCoefficients=fcActualData then begin
          if SubmergedWidth*Draft<>0.0 then FData.MainframeCoeff:=FData.Mainframearea/(SubmergedWidth*Draft);
       end else if Owner.ProjectSettings.ProjectBeam*Draft<>0.0 then FData.MainframeCoeff:=FData.Mainframearea/(Owner.ProjectSettings.ProjectBeam*Draft);
    end;
-   if (FData.Volume>0) and (Errors=[])
+   if (FData.Volume>0) {and (Errors=[])}
    and ((hcWaterline in Calculations)
    or (hcAll in Calculations)) then begin    // Calculate waterplane properties
       Waterplane:=TFreeIntersection.Create(Owner);
@@ -799,7 +797,6 @@ begin                                                             // Проек�
   ' : '+MakeLength(Owner.ProjectSettings.ProjectAppendageCoefficient,4,10));
 end;
 
-//procedure TFreeHydrostaticCalc.AddFooter( Strings: TStringList ); // Mode: TFreeHydrostaticsMode );
 Procedure TFreeHydrostaticCalc.AddFooter(Strings:TStringlist); //;Mode:TFreeHydrostaticsMode);
 begin
   Strings.Add(Userstring(52));
@@ -880,12 +877,12 @@ end;
 procedure TFreeHydrostaticCalc.Clear;
 begin
    Calculated:=False;
-   FHydrostaticType:=fhShort;
+// FHydrostaticType:=fhShort;
    FHeelingAngle:=0.0;
    FTrim:=0.0;
    FDraft:=0.0;
    Fillchar(FData,SizeOf(FData),0);
-   FMainframe.Clear;
+   MidFrame.Clear;
    FCalculations:=[hcAll];
 end;
 
@@ -893,7 +890,7 @@ constructor TFreeHydrostaticCalc.Create(Owner:TFreeShip);
 begin
    Inherited create;
    FOwner:=Owner;
-   FMainframe:=TFreeIntersection.Create(Owner);
+   MidFrame:=TFreeIntersection.Create(Owner);
    Owner.FHydrostaticCalculations.Add(self);
    Clear;
 end;
@@ -904,7 +901,7 @@ begin
    Clear;
    Index:=Owner.FHydrostaticCalculations.IndexOf(self);
    if Index<>-1 then Owner.FHydrostaticCalculations.Delete(Index);
-   FMainframe.Destroy;
+   MidFrame.Destroy;
    Inherited Destroy;
 end;
 

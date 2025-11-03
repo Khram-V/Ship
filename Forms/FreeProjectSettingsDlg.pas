@@ -7,13 +7,13 @@ interface uses
   StdCtrls, Buttons,
   ComCtrls, Spin,
   FreeTypes,FreeGeometry,FreeShipUnit,FreeLanguageSupport;
-type                                             { TFREEProjectSettingsDialog }
+type
   TFREEProjectSettingsDialog=class( TForm )
     ColorDialog:                              TColorDialog;
     ComboBox1,Unitbox,PrecisionBox:           TComboBox;
     cbSavePreviewImage,cbShadeUnderwater,cbSimplifyIntersections,
     CheckBox11,CheckBox12,CheckBox2,CheckBox5,CheckBox6,CheckBox7,
-    CheckBox8,CheckBox9,CheckBox3,CheckBox13: TCheckBox;           // MainFrame
+    CheckBox8,CheckBox9,CheckBox3,CheckBox13: TCheckBox;
     GroupBox1: TGroupBox;
     Label1:  TLabel;  Edit1:  TEdit;   // 'Project name'
     Label7:  TLabel;  Edit7:  TEdit;   // 'Designer'
@@ -148,7 +148,7 @@ begin
   Label21.Caption:=Str;
   Label23.Caption:=Str;
   if UnitBox.ItemIndex=1 then Str:=DensityStr( fuImperial )
-                           else Str:=DensityStr( fuMetric );
+                         else Str:=DensityStr( fuMetric );
   lbWaterDensity.Caption:=Str;
 end;
 

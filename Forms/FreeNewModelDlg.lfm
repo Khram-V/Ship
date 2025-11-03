@@ -3,12 +3,15 @@ object FreeNewModelDialog: TFreeNewModelDialog
   Height = 190
   Top = 124
   Width = 295
-  BorderStyle = bsDialog
-  Caption = 'New model.'
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = 'Аналитические обводы корпуса'
   ClientHeight = 190
   ClientWidth = 295
   Color = clBtnFace
   ParentFont = True
+  FormStyle = fsStayOnTop
+  PopupMode = pmAuto
   Position = poScreenCenter
   LCLVersion = '4.2.0.0'
   object Panel3: TPanel
@@ -27,7 +30,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
       Height = 19
       Top = 1
       Width = 65
-      Caption = 'OK'
+      Caption = '&Есть!'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -55,7 +58,7 @@ object FreeNewModelDialog: TFreeNewModelDialog
       Height = 19
       Top = 1
       Width = 65
-      Caption = 'Cancel'
+      Caption = '&Отмена'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100

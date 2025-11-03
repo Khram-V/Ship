@@ -11,6 +11,8 @@ object DXFExport2DDialog: TDXFExport2DDialog
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  FormStyle = fsStayOnTop
+  PopupMode = pmAuto
   OldCreateOrder = True
   Position = poOwnerFormCenter
   PixelsPerInch = 96

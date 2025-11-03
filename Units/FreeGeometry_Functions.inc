@@ -249,12 +249,11 @@ end;{Lines3DIntersect}
 // Calculate the mid-point between P1 and P2
 function Midpoint(P1,P2:T3DVector):T3DVector;
    begin Result:=0.5*(P1+P2); end;
-
-function MirrorPlane(P:T3DVector;Plane:T3DPLane):T3DVector;
-   begin Result := P + 2.0*( ProjectPointOnPlane(P,Plane)-P ); end;
-
-function Mid3point(P1,P2,P3: T3DVector): T3DVector;
+function Mid3point( P1,P2,P3: T3DVector ): T3DVector;
    begin Result:=(P1+P2+P3)/3.0; end;
+
+function MirrorPlane( P:T3DVector; Plane:T3DPLane ):T3DVector;
+   begin Result := P + 2.0*( ProjectPointOnPlane( P,Plane )-P ); end;
 
 // Finds out with how many decimals a number should be presented
 function NumberOfDecimals(Value: TFloatType): integer;
@@ -437,20 +436,25 @@ begin ///   q:=Plane.a*Plane.a+Plane.b*Plane.b+Plane.c*Plane.c;
   end else Result:=ZERO;
 end;
 
-Function ProjectPointOnLine(P,P1,P2:T3DVector):T3DVector;
-var V1,V2: T3DVector;
-    L,T: TFloatType;
-begin
-   V1:=P-P1;
-   V2:=P2-P1; L:=Sqr( V2 );
-   if L>1e-6 then begin
-      T:=( V1.X*V2.X + V1.Y*V2.Y + V1.Z*V2.Z )/L;
-      Result:=P1+T*V2;
-   end else Result:=P;
+Function ProjectPointOnLine( P,P1,P2: T3DVector ):T3DVector;
+  var V1,V2: T3DVector; L,T: Extended;
+begin V1:=P-P1; V2:=P2-P1; L:=Sqr( V2 );
+   if L>1e-6 
+   then begin T:=(V1.X*V2.X+V1.Y*V2.Y+V1.Z*V2.Z)/L; Result:=P1+T*V2; end 
+   else Result:=P;
 end;
+{ 
+var T: Extended;
+begin T:=( (P.X-P1.X)*(P2.X-P1.X)
+          +(P.Y-P1.Y)*(P2.Y-P1.Y)
+          +(P.Z-P1.Z)*(P2.Z-P1.Z) ) / Sqr( P2-P1 );
+      Result:=P1+T*(P2-P1);
+end; }
 
-// This procedure takes a lot of linesegments and tries to connect them into as few as possible splines
-procedure JoinSplineSegments(JoinError:TFloatType;ForceToOneSegment:Boolean;List:TFasterList);
+// This procedure takes a lot of linesegments 
+// and tries to connect them into as few as possible splines
+procedure JoinSplineSegments
+( JoinError:TFloatType;ForceToOneSegment:Boolean;List:TFasterList );
 (*
 type TSegmentRecord = record Length: TFloatType; COG: T3DVector; end;
      TSegmentdata   = array[0..0] of TSegmentRecord;
@@ -561,18 +565,14 @@ begin
   xyz:=Abs( Endpoint );                                                         // sqrt(Endpoint.x*Endpoint.x+Endpoint.y*Endpoint.y+Endpoint.z*Endpoint.z);
   if xyz=0 then begin Result:=Point; exit; end
              else begin sinhy:=Endpoint.x/xyz; coshy:=yz/xyz;  end;
-  P1.x:=Point.x-StartPoint.x;                            // Translate to origin
-  P1.y:=Point.y-StartPoint.y;
-  P1.z:=Point.z-StartPoint.z;
-  P2.X:=P1.x*coshy+P1.z*sinhy;                      // Rotate around Y-axis
+  P1:=Point-StartPoint;                                  // Translate to origin
+  P2.X:=P1.x*coshy+P1.z*sinhy;                          // Rotate around Y-axis
   P2.Y:=P1.Y;
   P2.Z:=-P1.x*sinhy+P1.z*coshy;
   P1.x:=P2.x;                                           // Rotate around X-axis
   P1.y:=P2.y*coshx-P2.z*sinhx;
   P1.z:=P2.y*sinhx+P2.z*coshx;
-  Result.x:=P1.x+StartPoint.x;                // Translate back to centre again
-  Result.y:=P1.y+StartPoint.y;
-  Result.z:=P1.z+StartPoint.z;
+  Result:=P1+StartPoint;                      // Translate back to centre again
 end;
 
 // Rotates a vector around the origin
@@ -621,8 +621,8 @@ begin if P.X<Min.X then Min.X:=P.X else if P.X>Max.X then Max.X:=P.X;
 end;
 
 // Scales a vector
-function ScalePoint(Scale:TFloatType;P:T3DVector):T3DVector;
-   begin Result:=Scale*P; end;
+//function ScalePoint(Scale:TFloatType;P:T3DVector):T3DVector;
+//   begin Result:=Scale*P; end;
 
 function Truncate(Value:TFloatType;Maxlength:integer):String;
 // Convert a floatingpoint to a string value with a max. number of specified decimals
@@ -741,87 +741,5 @@ begin
          Result:=I;
       end;
    end;
-end; {FindDXFColorIndex}
-
-{                                                      // outer box of 3 points
-function Box3P( P1,P2,P3: T3DVector): T3DLine;
-begin
-  Result.A.X:=MaxFloat; Result.A.Y:=MaxFloat; Result.A.Z:=MaxFloat;
-  Result.B.X:=MinFloat; Result.B.Y:=MinFloat; Result.B.Z:=MinFloat;
-
-  if Result.A.X > P1.X then Result.A.X:=P1.X;
-  if Result.A.X > P2.X then Result.A.X:=P2.X;
-  if Result.A.X > P3.X then Result.A.X:=P3.X;
-
-  if Result.A.Y > P1.Y then Result.A.Y:=P1.Y;
-  if Result.A.Y > P2.Y then Result.A.Y:=P2.Y;
-  if Result.A.Y > P3.Y then Result.A.Y:=P3.Y;
-
-  if Result.A.Z > P1.Z then Result.A.Z:=P1.Z;
-  if Result.A.Z > P2.Z then Result.A.Z:=P2.Z;
-  if Result.A.Z > P3.Z then Result.A.Z:=P3.Z;
-
-  if Result.B.X < P1.X then Result.B.X:=P1.X;
-  if Result.B.X < P2.X then Result.B.X:=P2.X;
-  if Result.B.X < P3.X then Result.B.X:=P3.X;
-
-  if Result.B.Y < P1.Y then Result.B.Y:=P1.Y;
-  if Result.B.Y < P2.Y then Result.B.Y:=P2.Y;
-  if Result.B.Y < P3.Y then Result.B.Y:=P3.Y;
-
-  if Result.B.Z < P1.Z then Result.B.Z:=P1.Z;
-  if Result.B.Z < P2.Z then Result.B.Z:=P2.Z;
-  if Result.B.Z < P3.Z then Result.B.Z:=P3.Z;
 end;
-
-function PointInTriangleBarycentric(P,A,B,C: T3DVector): boolean;
-  // This function calculates using Barycentric method
-  // if a point lies inside a triangle
-  // from: http://blogs.msdn.com/b/rezanour/archive/2011/08/07/barycentric-coordinates-and-point-in-triangle-tests.aspx
-var
-  s,t,r,denom: double;
-  u,v,w,vCrossU,vCrossW,uCrossV,uCrossW: T3DVector; //vectors
-  i: double;
-begin
-  Result:=False;
-  u:=B-A;
-  v:=C-A;
-  w:=P-A;
-  vCrossW:=v*w; //CrossProduct(v,w);
-  vCrossU:=v*u; //CrossProduct(v,w);
-  r:=DotProduct( vCrossW,vCrossU ); // calc r just to know its sign
-  if (r < 0) then exit;
-  uCrossW:=u*w; //CrossProduct(u,w);
-  uCrossV:=u*v; //CrossProduct(u,v);
-  t:=DotProduct(uCrossW,uCrossV);  // calc t just to know its sign
-  if (t < 0) then exit;
-  // At this point,we know that r and t and both > 0.
-  // Therefore,as long as their sum is <= 1,each must be less <= 1
-  denom:=VectorLength(uCrossV);
-  r:=VectorLength(vCrossW)/denom;
-  t:=VectorLength(uCrossW)/denom;
-  i:=(r+t);
-  if abs(i) < 1e-5 then i:=0.0 else
-  if abs(1.0-i) <= 1e-5 then i:=1.0;
-  Result:=(i <= 1);
-end;
-function PointInPoligon(const P: TPoint; const Points: TPointArray): boolean;
-var i,j,cn:integer; vt: TFloatType; r:boolean; p1,p2: TPoint;
-begin
-  result:=false; cn:=0; j:=length(Points)-1;
-  for i:=0 to length(Points)-1 do begin
-    p1:=Points[i];
-    p2:=Points[j];
-    if ((p1.y < P.Y) and (p2.y >= P.y))
-     or((p2.y < P.Y) and (p1.y >= P.y)) then begin // compute the actual edge-ray intersect x-coordinate
-       vt:=(P.y-p1.y)/(p2.y-p1.y);
-       if (P.x > (p1.x+vt*(p2.x-p1.x))) then // P.x < intersect
-         //inc(cn);   // a valid crossing of y=P.y right of P.x
-         result:=not result;
-    end; j:=i;
-  end;
-end;
-
-}
-
 

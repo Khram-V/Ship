@@ -1,41 +1,44 @@
 object FreeSplitSectionDialog: TFreeSplitSectionDialog
   Left = 522
-  Height = 105
+  Height = 81
   Top = 273
   Width = 600
-  Caption = 'Split section location'
-  ClientHeight = 105
+  BorderIcons = []
+  BorderStyle = bsSingle
+  Caption = 'Выбор местоположения ξ мидельшпангоута'
+  ClientHeight = 81
   ClientWidth = 600
   FormStyle = fsStayOnTop
+  PopupMode = pmAuto
+  LCLVersion = '4.2.0.0'
   OnShow = FormShow
-  LCLVersion = '2.0.10.0'
   object TopPanel: TPanel
     Left = 0
-    Height = 44
+    Height = 34
     Top = 0
     Width = 600
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 44
+    ClientHeight = 34
     ClientWidth = 600
     TabOrder = 0
     object BitBtn1: TBitBtn
-      Left = 538
-      Height = 36
+      Left = 541
+      Height = 26
       Top = 4
-      Width = 58
+      Width = 55
       Align = alRight
       AutoSize = True
       BorderSpacing.Around = 4
-      Caption = 'Close'
+      Caption = '&Есть!'
       ModalResult = 11
-      OnClick = BitBtn1Click
       TabOrder = 0
+      OnClick = BitBtn1Click
     end
     object fseMiF: TFloatSpinEdit
       Left = 4
-      Height = 36
+      Height = 26
       Top = 4
       Width = 140
       Align = alLeft
@@ -46,27 +49,27 @@ object FreeSplitSectionDialog: TFreeSplitSectionDialog
       Increment = 0.1
       MaxValue = 1000
       MinValue = -1000
+      TabOrder = 1
       OnChange = fseMifChange
       OnEditingDone = fseMifEditingDone
       OnKeyDown = fseMifKeyDown
       OnMouseDown = fseMifMouseDown
       OnMouseWheel = fseMifMouseWheel
-      TabOrder = 1
     end
     object Panel1: TPanel
       Left = 148
-      Height = 44
+      Height = 34
       Top = 0
-      Width = 386
+      Width = 389
       Align = alClient
       BevelOuter = bvNone
-      ClientHeight = 44
-      ClientWidth = 386
+      ClientHeight = 34
+      ClientWidth = 389
       TabOrder = 2
       object SpeedButton1: TSpeedButton
         Left = 2
-        Height = 36
-        Hint = 'Medium'
+        Height = 26
+        Hint = 'Середина размерений по оконечностям'
         Top = 4
         Width = 30
         Align = alLeft
@@ -76,14 +79,14 @@ object FreeSplitSectionDialog: TFreeSplitSectionDialog
         BorderSpacing.Bottom = 4
         Images = MainForm.MenuImages
         ImageIndex = 64
-        OnClick = SpeedButton1Click
         ShowHint = True
         ParentShowHint = False
+        OnClick = SpeedButton1Click
       end
       object SpeedButton3: TSpeedButton
         Left = 34
-        Height = 36
-        Hint = 'From hydrostatics'
+        Height = 26
+        Hint = 'Относительно центра величины'
         Top = 4
         Width = 30
         Align = alLeft
@@ -93,20 +96,20 @@ object FreeSplitSectionDialog: TFreeSplitSectionDialog
         BorderSpacing.Bottom = 4
         Images = MainForm.MenuImages
         ImageIndex = 49
-        OnClick = SpeedButton3Click
         ShowHint = True
         ParentShowHint = False
+        OnClick = SpeedButton3Click
       end
     end
   end
   object tbMif: TTrackBar
     Left = 10
     Height = 46
-    Top = 54
+    Top = 44
     Width = 580
-    OnChange = tbMifChange
     Position = 0
     TabStop = False
+    OnChange = tbMifChange
     Align = alTop
     BorderSpacing.Around = 10
     TabOrder = 1

@@ -3,6 +3,8 @@ object FreeSplashWindow: TFreeSplashWindow
   Height = 160
   Top = 945
   Width = 460
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
   Caption = 'Числовая модель корпуса корабля'
   FormStyle = fsSystemStayOnTop
   ClientHeight = 160
@@ -58,7 +60,7 @@ object FreeSplashWindow: TFreeSplashWindow
       BorderSpacing.Around = 2
       BorderSpacing.CellAlignHorizontal = ccaCenter
       BorderSpacing.CellAlignVertical = ccaCenter
-      Caption = '&Ok'
+      Caption = '&Есть!'
       Constraints.MaxHeight = 20
       Constraints.MaxWidth = 80
       Constraints.MinHeight = 20

@@ -3,8 +3,9 @@ object FREEProjectSettingsDialog: TFREEProjectSettingsDialog
   Height = 414
   Top = 286
   Width = 489
-  BorderStyle = bsDialog
-  Caption = 'Установки проекта.'
+  BorderIcons = []
+  BorderStyle = bsSingle
+  Caption = 'Установки по корабельному проекту'
   ClientHeight = 414
   ClientWidth = 489
   OnShow = FormShow

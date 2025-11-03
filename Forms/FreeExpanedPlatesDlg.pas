@@ -1,43 +1,30 @@
 
 unit FreeExpanedPlatesDlg;
 
-interface
-
-uses Windows,
-     Messages,
+interface uses Windows,
      SysUtils,
-     Variants,
      Classes,
      Graphics,
      Controls,
      Forms,
      Dialogs,
      ExtCtrls,
-     FreeGeometry,
-     FasterList,
      StdCtrls,
      ActnList,
      ComCtrls,
-     ToolWin,
-     FreeShipUnit,
-//   Printers,
-     ImgList,
      Math,
-     CheckLst,FreeTypes;
+     CheckLst,
+     FasterList,FreeGeometry,FreeShipUnit,FreeTypes;
 
 type TFreeExpanedplatesDialog  = class(TForm)
-     Panel2: TPanel;
-     Panel3: TPanel;
-     Label1: TLabel;
-     _Label2: TLabel;
-     Label3: TLabel;
-     _Label4: TLabel;
-     Label5: TLabel;
-     _Label6: TLabel;
-     Label7: TLabel;
-     Edit1: TEdit;
-     Splitter1: TSplitter;
      ToolBar1: TToolBar;
+     Splitter1: TSplitter;
+     Panel2,Panel3: TPanel;
+     Label1,_Label2,Label3,_Label4,Label5,_Label6,Label7,Label8,_Label9,Label10,
+     Label11,_Label12,_Label13,_Label14,Label15,_Label16,Label17,_Label18: TLabel;
+     Edit1,Edit2,Edit3: TEdit;
+     CheckBox1: TCheckBox;
+
      ToolButton20: TToolButton;
      ActionList1: TActionList;
      RotateCCW90: TAction;
@@ -78,33 +65,16 @@ type TFreeExpanedplatesDialog  = class(TForm)
      ToolButton18: TToolButton;
      ShowFillColor: TAction;
      ToolButton19: TToolButton;
-     Label8: TLabel;
-     _Label9: TLabel;
      _ToolButton21: TToolButton;
      ToolButton22: TToolButton;
      ShowErrorEdges: TAction;
      ToolButton23: TToolButton;
      ShowDiagonals: TAction;
      ToolButton24: TToolButton;
-//   Print: TAction;
-//   PrintDialog: TPrintDialog;
-//   ToolButton25: TToolButton;
      ShowDimensions: TAction;
      ToolButton26: TToolButton;
-     Label10: TLabel;
-     Edit2: TEdit;
-     Label11: TLabel;
-     Edit3: TEdit;
-     _Label12: TLabel;
-     _Label13: TLabel;
-     _Label14: TLabel;
      ShowPartName: TAction;
      ToolButton27: TToolButton;
-     Label15: TLabel;
-     _Label16: TLabel;
-     Label17: TLabel;
-     _Label18: TLabel;
-     CheckBox1: TCheckBox;
      ShowSubmergedArea: TAction;
      ToolButton4: TToolButton;
      ExportTextFile: TAction;
@@ -134,7 +104,6 @@ type TFreeExpanedplatesDialog  = class(TForm)
      procedure ToolButton22Click(Sender: TObject);
      procedure ShowErrorEdgesExecute(Sender: TObject);
      procedure ShowDiagonalsExecute(Sender: TObject);
-//   procedure PrintExecute(Sender: TObject);
      procedure ShowDimensionsExecute(Sender: TObject);
      procedure Edit2KeyPress(Sender: TObject; var Key: Char);
      procedure Edit2Exit(Sender: TObject);
@@ -163,10 +132,7 @@ end;
 
 var FreeExpanedplatesDialog: TFreeExpanedplatesDialog;
 
-implementation
-
-uses FreeLanguageSupport;
-
+implementation uses FreeLanguageSupport;
 {$R *.lfm}
 
 function GetGridSpacing(OveralSize:TFloatType):TFloatType;
@@ -180,13 +146,14 @@ begin
    while OveralSize/Tmp>20 do Tmp:=Tmp*2;
    if Tmp<OveralSize/1000 then Tmp:=OveralSize/1000;
    Result:=Tmp;
-end;{GetGridSpacing}
+end;
 
 function TFreeExpanedplatesDialog.FGetActivePatch:TFreeDevelopedPatch;
 begin
    Result:=nil;
-   if ListBox.ItemIndex<>-1 then Result:=Listbox.Items.Objects[ListBox.ItemIndex] as TFreeDevelopedPatch;
-end;{TFreeExpanedplatesDialog.FGetActivePatch}
+   if ListBox.ItemIndex<>-1 then
+      Result:=Listbox.Items.Objects[ListBox.ItemIndex] as TFreeDevelopedPatch;
+end;
 
 procedure TFreeExpanedplatesDialog.FSetActivePatch(Val:TFreeDevelopedPatch);
 var Current : TFreeDevelopedPatch;
@@ -226,17 +193,17 @@ begin
       Edit1.Text:='';
       Checkbox1.Checked:=False;
    end else begin
-      _Label2.Caption:=': '+FloatToStrF(Val.MinError,ffFixed,7,5);
-      _Label4.Caption:=': '+FloatToStrF(Val.MaxError,ffFixed,7,5);
-      _Label16.Caption:=': '+FloatToStrF(Val.MaxAreaError,ffFixed,7,6);
-      _Label18.Caption:=': '+FloatToStrF(Val.TotalAreaError,ffFixed,7,6);
+      _Label2.Caption:=': '+FloatToDec(Val.MinError,5);
+      _Label4.Caption:=': '+FloatToDec(Val.MaxError,5);
+      _Label16.Caption:=': '+FloatToDec(Val.MaxAreaError,6);
+      _Label18.Caption:=': '+FloatToDec(Val.TotalAreaError,6);
       _Label6.Caption:=': '+Val.Name;
       _Label9.Caption:=IntToStr(Val.NumberOfIterations);
       Edit1.Text:=Truncate(Val.Rotation,3);
       Checkbox1.Checked:=Val.MirrorOnScreen;
    end;
    Viewport.Refresh;
-end;{TFreeExpanedplatesDialog.FSetActivePatch}
+end;
 
 procedure TFreeExpanedplatesDialog.FUpdateListBox;
 var I,Index : Integer;
@@ -244,31 +211,26 @@ var I,Index : Integer;
 begin
    ListBox.Items.BeginUpdate;
    ListBox.Clear;
-   for I:=1 to FPlates.Count do
-   begin
+   for I:=1 to FPlates.Count do begin
       Patch:=FPlates[I-1];
       Index:=ListBox.Items.AddObject(Patch.Name,Patch);
       ListBox.Checked[index]:=Patch.Visible;
    end;
    Listbox.Items.EndUpdate;
-end;{TFreeExpanedplatesDialog.FUpdateListBox}
+end;
 
 procedure TFreeExpanedplatesDialog.ViewportRequestExtents(Sender: TObject;var Min, Max: T3DVector);
 var FMin,FMax  : T3DVector;
     I,N        : Integer;
     Patch      : TFreeDevelopedPatch;
 begin
-   if FPlates<>nil then
-   begin
+   if FPlates<>nil then begin
       N:=1;
-      for I:=1 to FPlates.Count do
-      begin
+      for I:=1 to FPlates.Count do begin
          Patch:=FPlates[I-1];
-         if Patch.Visible then
-         begin
+         if Patch.Visible then begin
             Patch.Extents(FMin,FMax);
-            if N=1 then
-            begin // this is the first visible patch
+            if N=1 then begin                // this is the first visible patch
                Min:=FMin;
                Max:=FMax;
             end;
@@ -278,16 +240,14 @@ begin
          end;
       end;
    end;
-end;{TFreeExpanedplatesDialog.ViewportRequestExtents}
+end;
 
 function TFreeExpanedplatesDialog.Execute(FreeShip:TFreeShip;Plates:TFasterList):boolean;
-var I          : Integer;
-    Patch      : TFreeDevelopedPatch;
-    Min,Max    : T3DVector;
-    MinT,MaxT  : T3DVector;
-    P2D        : T2DCoordinate;
-    Clearance  : TFloatType;
-    Tmp        : TFloatType;
+var I: Integer;
+    Patch: TFreeDevelopedPatch;
+    Min,Max,MinT,MaxT  : T3DVector;
+    P2D: T2DCoordinate;
+    Clearance,Tmp: TFloatType;
 begin
    FFreeship:=FreeShip;
    FPlates:=Plates;
@@ -304,21 +264,17 @@ begin
 // Print.Enabled:=Printer<>nil;
    _Label13.Caption:=LengthStr(FFreeship.ProjectSettings.ProjectUnits);
    _Label14.Caption:=_Label13.Caption;
-
-   // Calculate the initial position fo each surface
-   for I:=1 to FPlates.Count do
-   begin
+                              // Calculate the initial position fo each surface
+   for I:=1 to FPlates.Count do begin
       Patch:=Plates[I-1];
       Patch.Extents( Min,Max );
       Clearance:=0.025*Abs( Min-Max );
-      if I=1 then
-      begin
+      if I=1 then begin
          P2D.X:=-Min.X;
          P2D.Y:=-Max.Y-0.5*Clearance;
          Patch.Translation:=P2D;
          Patch.Extents(MinT,MaxT);
-      end else
-      begin
+      end else begin
          P2D.X:=-Min.X;
          if odd(I) then P2D.Y:=MinT.Y-Max.Y-Clearance  // Odd(I) means portside plate, put at bottom
                    else P2D.Y:=MaxT.Y-Min.Y+Clearance; // even(I) is starboard plate, put at top
@@ -330,16 +286,13 @@ begin
    end;
 
    // calculate extents
-   for I:=1 to FPlates.Count do
-   begin
+   for I:=1 to FPlates.Count do begin
       Patch:=Plates[I-1];
       Patch.Extents(MinT,MaxT);
-      if I=1 then
-      begin
+      if I=1 then begin
          Min:=MinT;
          Max:=MaxT;
-      end else
-      begin
+      end else begin
          MinMax(MinT,Min,Max);
          MinMax(MaxT,Min,Max);
       end;
@@ -358,7 +311,7 @@ begin
    ActivePatch:=ActivePatch;
    ShowModal;
    Result:=ModalResult=mrOk;
-end;{TFreeExpanedplatesDialog.Execute}
+end;
 
 procedure TFreeExpanedplatesDialog.ViewportRedraw(Sender: TObject);
 var I,N     : Integer;
@@ -532,7 +485,7 @@ begin
          end;
       end;
    end;
-end;{TFreeExpanedplatesDialog.ViewportMouseDown}
+end;
 
 procedure TFreeExpanedplatesDialog.ListBoxClick(Sender: TObject);
 var Patch: TFreeDevelopedPatch;
@@ -548,13 +501,13 @@ begin
       end;
    end;
    ActivePatch:=ActivePatch;
-end;{TFreeExpanedplatesDialog.ListBoxClick}
+end;
 
 procedure TFreeExpanedplatesDialog.ViewportMouseUp(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
    if (not FAllowPanOrZoom) and (Viewport.Zoom=1.0) then Viewport.ZoomExtents;
    FAllowPanOrZoom:=True;
-end;{TFreeExpanedplatesDialog.ViewportMouseUp}
+end;
 
 procedure TFreeExpanedplatesDialog.RotateCCW90Execute(Sender: TObject);
 begin
@@ -565,7 +518,7 @@ begin
       if Viewport.Zoom=1.0 then Viewport.ZoomExtents
                            else Viewport.Refresh;
    end;
-end;{TFreeExpanedplatesDialog.RotateCCW90Execute}
+end;
 
 procedure TFreeExpanedplatesDialog.RotateCCW5Execute(Sender: TObject);
 begin
@@ -576,7 +529,7 @@ begin
       if Viewport.Zoom=1.0 then Viewport.ZoomExtents
                            else Viewport.Refresh;
    end;
-end;{TFreeExpanedplatesDialog.RotateCCW5Execute}
+end;
 
 procedure TFreeExpanedplatesDialog.RotateCW5Execute(Sender: TObject);
 begin
@@ -587,7 +540,7 @@ begin
       if Viewport.Zoom=1.0 then Viewport.ZoomExtents
                            else Viewport.Refresh;
    end;
-end;{TFreeExpanedplatesDialog.RotateCW5Execute}
+end;
 
 procedure TFreeExpanedplatesDialog.RotateCW90Execute(Sender: TObject);
 begin
@@ -646,7 +599,7 @@ begin
       if Viewport.Zoom=1.0 then Viewport.ZoomExtents
                            else Viewport.Refresh;
    end;
-end;{TFreeExpanedplatesDialog.RotateCW1Execute}
+end;
 
 procedure TFreeExpanedplatesDialog.ExportDXFExecute(Sender: TObject);
 var I          : Integer;
@@ -679,79 +632,56 @@ begin
       Strings.Destroy;
    end;
    SaveDialog.Destroy;
-end;{TFreeExpanedplatesDialog.ExportDXFExecute}
+end;
 
 procedure TFreeExpanedplatesDialog.ShowStationsExecute(Sender: TObject);
 begin
    ShowStations.Checked:=not ShowStations.Checked;
    Viewport.Refresh;
-end;{TFreeExpanedplatesDialog.ShowStationsExecute}
+end;
 
 procedure TFreeExpanedplatesDialog.ShowButtocksExecute(Sender: TObject);
 begin
    ShowButtocks.Checked:=not ShowButtocks.Checked;
    Viewport.Refresh;
-end;{TFreeExpanedplatesDialog.ShowButtocksExecute}
+end;
 
 procedure TFreeExpanedplatesDialog.ShowWaterlinesExecute(Sender: TObject);
 begin
    ShowWaterlines.Checked:=not ShowWaterlines.Checked;
    Viewport.Refresh;
-end;{TFreeExpanedplatesDialog.ShowWaterlinesExecute}
+end;
 
 procedure TFreeExpanedplatesDialog.ShowInteriorEdgesExecute(Sender: TObject);
 begin
    ShowInteriorEdges.Checked:=not ShowInteriorEdges.Checked;
    Viewport.Refresh;
-end;{TFreeExpanedplatesDialog.ShowInteriorEdgesExecute}
+end;
 
 procedure TFreeExpanedplatesDialog.ShowFillColorExecute(Sender: TObject);
 begin
    ShowFillColor.Checked:=not ShowFillColor.Checked;
    ShowSubmergedArea.Enabled:=ShowFillColor.Checked;
    Viewport.Refresh;
-end;{TFreeExpanedplatesDialog.ShowFillColorExecute}
+end;
 
 procedure TFreeExpanedplatesDialog.ToolButton22Click(Sender: TObject);
 begin
    Close;
-end;{TFreeExpanedplatesDialog.ToolButton22Click}
+end;
 
 procedure TFreeExpanedplatesDialog.ShowErrorEdgesExecute(Sender: TObject);
 begin
    ShowErrorEdges.Checked:=not ShowErrorEdges.Checked;
    Viewport.Refresh;
-end;{TFreeExpanedplatesDialog.ShowErrorEdgesExecute}
+end;
 
 procedure TFreeExpanedplatesDialog.ShowDiagonalsExecute(Sender: TObject);
 begin
    ShowDiagonals.Checked:=not ShowDiagonals.Checked;
    Viewport.Refresh;
 end;
-(*
-procedure TFreeExpanedplatesDialog.PrintExecute(Sender: TObject);
-begin
-   if Viewport.Width>Viewport.Height then Printer.Orientation:=poLandscape
-                                     else Printer.Orientation:=poPortrait;
-   if PrintDialog.Execute then Viewport.Print(self.FFreeShip.ProjectSettings.ProjectUnits,True,Userstring(214));
-end;
-object Print: TAction
-  Category = 'Export'
-  Caption = 'Print'
-  Hint = 'Send unfolded plates to printer or plotter.'
-  ImageIndex = 20
-  OnExecute = PrintExecute
-end
-object ToolButton25: TToolButton
-  Left = 482
-  Top = 0
-  Action = Print
-end
-object PrintDialog: TPrintDialog
-  Left = 80
-  Top = 40
-end
-*)
+
 procedure TFreeExpanedplatesDialog.ShowDimensionsExecute(Sender: TObject);
 begin
    ShowDimensions.Checked:=not ShowDimensions.Checked;
@@ -778,7 +708,7 @@ procedure TFreeExpanedplatesDialog.Edit3KeyPress(Sender: TObject;var Key: Char);
 begin
    if (Key in [#8,'1'..'9','0',#13]) or (Key=DecimalSeparator) then else key:=#0;
    if Key=#13 then Edit3Exit(self);
-end;{TFreeExpanedplatesDialog.Edit3KeyPress}
+end;
 
 procedure TFreeExpanedplatesDialog.Edit3Exit(Sender: TObject);
 var Value:TFloatType;
@@ -788,53 +718,49 @@ begin
    FYGridSpacing:=Value;
    Edit3.Text:=FloatToStrF(FYGridSpacing,ffFixed,7,3);
    Viewport.Refresh;
-end;{TFreeExpanedplatesDialog.Edit3Exit}
+end;
 
 procedure TFreeExpanedplatesDialog.Edit1KeyPress(Sender: TObject;var Key: Char);
 begin
    if (Key in [#8,'1'..'9','0','-',#13]) or (Key=DecimalSeparator) then else key:=#0;
    if Key=#13 then Edit1Exit(self);
-end;{TFreeExpanedplatesDialog.Edit1KeyPress}
+end;
 
 procedure TFreeExpanedplatesDialog.Edit1Exit(Sender: TObject);
 var Value:TFloatType;
 begin
-   if ActivePatch<>nil then
-   begin
+   if ActivePatch<>nil then begin
       Value:=StrToFloat(Edit1.Text);
-      if Value<>ActivePatch.Rotation then
-      begin
+      if Value<>ActivePatch.Rotation then begin
          ActivePatch.Rotation:=Value;
          if Viewport.Zoom=1.0 then Viewport.ZoomExtents
                               else Viewport.Refresh;
       end;
    end;
-end;{TFreeExpanedplatesDialog.Edit1Exit}
+end;
 
 procedure TFreeExpanedplatesDialog.ShowPartNameExecute(Sender: TObject);
 begin
    ShowPartName.Checked:=not ShowPartName.Checked;
    Viewport.Refresh;
-end;{TFreeExpanedplatesDialog.ShowPartNameExecute}
+end;
 
 procedure TFreeExpanedplatesDialog.CheckBox1Click(Sender: TObject);
 begin
-   if ActivePatch<>nil then
-   begin
-      if Checkbox1.Checked<>ActivePatch.MirrorOnScreen then
-      begin
+   if ActivePatch<>nil then begin
+      if Checkbox1.Checked<>ActivePatch.MirrorOnScreen then begin
          ActivePatch.MirroronScreen:=Checkbox1.Checked;
          if Viewport.Zoom=1.0 then Viewport.ZoomExtents
                               else Viewport.Refresh;
       end;
    end;
-end;{TFreeExpanedplatesDialog.CheckBox1Click}
+end;
 
 procedure TFreeExpanedplatesDialog.ShowSubmergedAreaExecute(Sender: TObject);
 begin
    ShowSubmergedArea.Checked:=not ShowSubmergedarea.Checked;
    Viewport.Refresh;;
-end;{TFreeExpanedplatesDialog.ShowSubmergedAreaExecute}
+end;
 
 procedure TFreeExpanedplatesDialog.ExportTextFileExecute(Sender: TObject);
 var I          : Integer;

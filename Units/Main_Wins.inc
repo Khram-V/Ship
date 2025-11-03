@@ -14,6 +14,7 @@ procedure TMainForm.FormCreate( Sender: TObject );
 begin
    Windows:=TFasterList.Create;
    WindowState:=wsNormal; //wsMaximized;
+   FormStyle:=fsNormal;
 // AlphaBlend:= True;
 // AlphaBlendValue:= 128;
    Color:=1; //clWhite;        --- не лучший вариант ...
@@ -21,7 +22,7 @@ begin
    SetLayeredWindowAttributes(Self.Handle, 1{clWhite}, 128, LWA_COLORKEY);
                      // Initialize memcheck, for memory-leak tracking = MemChk;
 //{$ifndef Windows}
-   if self.Align=alTop then self.Top:=0;
+//   if self.Align=alTop then self.Top:=0;
 //{$endif}                                       // Removed from LFM,moved here
    Ship:=TFreeShip.Create( self );
    With Ship do begin        // FreeShipUnit оригинал воссоздания новых моделей
@@ -65,13 +66,17 @@ const S: array [0..3,0..3] of single
 
 procedure TMainForm.FOpenHullWindows;
 var HullformWindow: TFreeHullWindow; I,J,W,H,L,T: Integer; R: TRect;
-begin  W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+73;
+begin  W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+75; //73;
     if Ship.NumberOfViewports=0 then begin
       for I:=3 downto 0 do begin                          // open a new window
         HullformWindow:=TFreeHullWindow.Create(self); // Connect viewport to freeship component
         HullformWindow.FreeShip:=Ship;
         AddWindow( HullFormWindow );
-/// !!! Parent:=Self;
+        HullformWindow.PopUpParent:=Self;
+//      PopupParent:=Self;
+//      PopupMode:=pmExplicit;
+//      PopupMode:=pmAuto;
+//      PopupMode:=pmNone;
         with HullformWindow do begin
            Viewport.ViewType:=TFreeViewType( I );
            J:=ord( ViewPort.ViewType );  // fvBodyplan,fvProfile,fvPlan,fvPerspective
@@ -79,7 +84,7 @@ begin  W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+73;
            R.Top   :=Round( S[J][1]*H )+T;
            R.Right :=Round( S[J][2]*W );
            R.Bottom:=Round( S[J][3]*H );
-           FormStyle:=fsStayOnTop; // (fsNormal, fsMDIChild, fsMDIForm, fsStayOnTop, fsSplash, fsSystemStayOnTop);
+           FormStyle:=fsNormal; // (fsNormal, fsMDIChild, fsMDIForm, fsStayOnTop, fsSplash, fsSystemStayOnTop);
            SetBounds( R.Left,R.Top,R.Right,R.Bottom );
            BorderStyle:=bsSizeable; //Sizeable; //bsNone; //bsToolWindow; //bsDialog; //bsSingle; //bsSizeToolWin;
            BorderIcons:= [biSystemMenu,biMaximize]; // , biMinimize, biMaximize, biHelp )]
@@ -87,6 +92,10 @@ begin  W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+73;
            if Viewport.ViewType=fvPerspective then
               Viewport.ViewportMode:=vmShade;
            ViewPort.Invalidate;
+//           ViewPort.Parent:=Self;
+//           PopUpParent:=Self;
+//           ViewPort.Show;
+//           ShowOnTop;
         end;
         ShowTranslatedValues( HullformWindow );
         HullformWindow.SetCaption;

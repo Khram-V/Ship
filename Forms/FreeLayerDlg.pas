@@ -87,7 +87,7 @@ begin
    _Label4.Caption:=DensityStr(FFreeship.ProjectSettings.ProjectUnits); // Skip translation
    if FFreeship.ProjectSettings.ProjectUnits=fuImperial then _Label6.Caption:='[Inch]'
                                                         else _Label6.Caption:='[mm]';
-   UpdateMenu; // End skip translation
+   UpdateMenu;
    ShowModal;
    Result:=ModalResult=mrOk;
    if Result then Undo.Accept else begin

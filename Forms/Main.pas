@@ -1,18 +1,18 @@
 unit Main;
-interface uses  Windows,
-     SysUtils,
-     Classes,
-     Graphics,
-     Controls,
-     Forms,
-     Menus,
-     Dialogs,
-     ExtCtrls,
-     ActnList,
-     StdCtrls,
-     ComCtrls,Spin,
-     LazFileUtils,FasterList,
-     FreeSplitSectionDlg,FreeGeometry,FreeShipUnit,FreeHullformWindow,FreeTypes;
+interface uses Windows,
+    SysUtils,
+    Classes,
+    Graphics,
+    Controls,
+    Forms,
+    Menus,
+    Dialogs,
+    ExtCtrls,
+    ActnList,
+    StdCtrls,
+    ComCtrls,Spin,
+    LazFileUtils,FasterList,
+    FreeSplitSectionDlg,FreeGeometry,FreeShipUnit,FreeHullformWindow,FreeTypes;
 
 type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     ActionList1: TActionList;
@@ -33,6 +33,7 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     ToolButton37,ToolButton38,ToolButton39,ToolButton40,ToolButton41,ToolButton42,
     ToolButton43,ToolButton44,ToolButton45,ToolButton46,ToolButton47,ToolButton48,
                                       ShowBuildCurve,tbMiddleFrame: TToolButton;
+    ExportAurora      : TAction; AuroraHullVsl    : TMenuItem;
     IntersectionDialog: TAction; Intersections1   : TMenuItem;
     ShowHydrostatics  : TAction; Hydrostatics1    : TMenuItem;
     DesignHydrostatics: TAction; Calculations1    : TMenuItem;
@@ -138,11 +139,12 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
                                 Show1:    TMenuItem;
     ImportPolyCad: TAction;     PolyCad1: TMenuItem;
     RemoveUnusedPoints: TAction; Removeunusedpoints1: TMenuItem;
-    ExportGHS:    TAction;      GHS1:         TMenuItem;
-    ShowFlowlines:TAction;      Flowlines1:   TMenuItem;
-    SelectAll:    TAction;      Selectall1:   TMenuItem;
-    ExportSTL:    TAction;      STL1:         TMenuItem;
-                        N1,N2,N3,N4,N5,N6,N7: TMenuItem;
+    ExportGHS:    TAction;      GHS1:       TMenuItem;
+    ShowFlowlines:TAction;      Flowlines1: TMenuItem;
+    SelectAll:    TAction;      Selectall1: TMenuItem;
+    ImportSTL:    TAction;      MenuImportSTL:TMenuItem;
+    ExportSTL:    TAction;      STL1:       TMenuItem;
+                      N1,N2,N3,N4,N5,N6,N7: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -188,7 +190,16 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     procedure EditProjectSettingsExecute(Sender: TObject);
     procedure CheckModelExecute(Sender: TObject);
     procedure ShowNormalsExecute(Sender: TObject);
+    procedure ImportSTLExecute(Sender: TObject);
     procedure ImportVRMLExecute(Sender: TObject);
+    procedure ImportObjExecute(Sender: TObject);
+    procedure ImportHullFileExecute(Sender: TObject);
+    procedure ImportSurfaceExecute(Sender: TObject);
+    procedure ImportChinesExecute(Sender: TObject);
+    procedure ImportBodyplanExecute(Sender: TObject);
+    procedure ExportDXF3DPolylinesExecute(Sender: TObject);
+    procedure ExportDXFFacesExecute(Sender: TObject);
+    procedure ExportObjExecute(Sender: TObject);
     procedure RemoveNegativeExecute(Sender: TObject);
     procedure RotateModelExecute(Sender: TObject);
     procedure ScaleModelExecute(Sender: TObject);
@@ -196,14 +207,8 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     procedure UndoExecute(Sender: TObject);
     procedure FreeShipUpdateUndoData(Sender: TObject);
     procedure ExportAuroraHullVslExecute(Sender: TObject);
-    procedure ImportObjExecute(Sender: TObject);
-    procedure ExportObjExecute(Sender: TObject);
     procedure InvertFaceExecute(Sender: TObject);
     procedure PreferencesExecute(Sender: TObject);
-    procedure ImportBodyplanExecute(Sender: TObject);
-    procedure ExportDXF3DPolylinesExecute(Sender: TObject);
-    procedure ExportDXFFacesExecute(Sender: TObject);
-    procedure ImportHullFileExecute(Sender: TObject);
     procedure ExportOffsetsExecute(Sender: TObject);
     procedure MoveModelExecute(Sender: TObject);
     procedure AddPointExecute(Sender: TObject);
@@ -215,12 +220,10 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     procedure ImportCareneExecute(Sender: TObject);
     procedure ShowMarkersExecute(Sender: TObject);
     procedure DeleteMarkersExecute(Sender: TObject);
-    procedure ImportSurfaceExecute(Sender: TObject);
     procedure ShowcurvatureExecute(Sender: TObject);
     procedure IncreaseCurvatureScaleExecute(Sender: TObject);
     procedure DecreaseCurvatureScaleExecute(Sender: TObject);
     procedure FileSaveExecute(Sender: TObject);
-    procedure ImportChinesExecute(Sender: TObject);
     procedure ShowControlCurvesExecute(Sender: TObject);
     procedure NewCurveExecute(Sender: TObject);
     procedure ExportCoordinatesExecute(Sender: TObject);
@@ -239,11 +242,11 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     procedure ExportIGESExecute(Sender: TObject);
     procedure ExportPartExecute(Sender: TObject);
     procedure ImportPartExecute(Sender: TObject);
+    procedure ImportPolyCadExecute(Sender: TObject);
     procedure LayerIntersectionExecute(Sender: TObject);
     procedure RedoExecute(Sender: TObject);
     procedure ClearUndoExecute(Sender: TObject);
     procedure ShowUndoHistoryExecute(Sender: TObject);
-    procedure ImportPolyCadExecute(Sender: TObject);
     procedure RemoveUnusedPointsExecute(Sender: TObject);
     procedure ExportGHSExecute(Sender: TObject);
     procedure ShowFlowlinesExecute(Sender: TObject);
@@ -451,6 +454,7 @@ begin With Ship do begin
    TransformLackenby.Enabled:=Surface.NumberOfControlFaces>0;
    if Assigned( OnUpdateGeometryInfo )
            then OnUpdateGeometryInfo( Ship);
+// ActiveControlPoint:=ActiveControlPoint;
 end; end;
 
 procedure TMainForm.LoadFileExecute( Sender: TObject );
@@ -652,10 +656,22 @@ procedure TMainForm.EditProjectSettingsExecute(Sender: TObject);
 procedure TMainForm.CheckModelExecute(Sender: TObject);
     begin Ship.Edit.Model_Check(True); UpdateMenu; end;
 procedure TMainForm.ShowNormalsExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowNormals:=not Ship.Visibility.ShowNormals;
-   UpdateMenu;
+    begin Ship.Visibility.ShowNormals:=not Ship.Visibility.ShowNormals;
+          UpdateMenu;
+    end;
+procedure TMainForm.ExportAuroraHullVslExecute(Sender: TObject);
+    begin Ship.Edit.File_Export_Aurora_Experiments; UpdateMenu; end;
+
+procedure TMainForm.ImportOBJExecute(Sender: TObject);
+    begin Ship.Edit.File_ImportOBJ;
+          FOpenHullWindows; SetCaption; UpdateMenu;
 end;
+procedure TMainForm.ExportObjExecute(Sender: TObject);
+    begin Ship.Edit.File_ExportObj; UpdateMenu; end;
+procedure TMainForm.ImportSTLExecute(Sender: TObject);
+    begin Ship.Edit.File_ImportSTL;
+          FOpenHullWindows; SetCaption; UpdateMenu;
+    end;
 procedure TMainForm.ImportVRMLExecute(Sender: TObject);
     begin Ship.Edit.File_ImportVRML; FOpenHullWindows; UpdateMenu; end;
 procedure TMainForm.RemoveNegativeExecute(Sender: TObject);
@@ -682,15 +698,6 @@ begin
    SetCaption;
    UpdateMenu;
 end;
-procedure TMainForm.ExportAuroraHullVslExecute(Sender: TObject);
-    begin Ship.Edit.File_Export_Aurora_Experiments; UpdateMenu; end;
-
-procedure TMainForm.ImportOBJExecute(Sender: TObject);
-    begin Ship.Edit.File_ImportOBJ;
-          FOpenHullWindows; SetCaption; UpdateMenu;
-end;
-procedure TMainForm.ExportObjExecute(Sender: TObject);
-    begin Ship.Edit.File_ExportObj; UpdateMenu; end;
 
 procedure TMainForm.InvertFaceExecute(Sender: TObject);
     begin Ship.Edit.Face_Flip; UpdateMenu; end;
