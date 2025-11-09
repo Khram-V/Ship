@@ -1,0 +1,11 @@
+rotate      CURSOR "rotate.cur"
+setorigin   CURSOR "setorigin.cur"
+setscale    CURSOR "setscale.cur"
+colorpicker CURSOR "colorpicker.cur"
+
+// setpoint    CURSOR "Images\\setpoint.cur"
+// setline     CURSOR "Images\\setline.cur"
+// setspline   CURSOR "Images\\setspline.cur"
+
+// FreeShip    ICON   "Images\\FreeShip.ico"
+// smallcross  CURSOR "Images\\smallcross.cur"

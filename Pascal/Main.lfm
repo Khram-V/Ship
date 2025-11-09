@@ -1,0 +1,1943 @@
+object MainForm: TMainForm
+  Left = 0
+  Height = 989
+  Top = 0
+  Width = 1920
+  FormStyle = fsNormal
+  ClientHeight = 989
+  ClientWidth = 1920
+  Color = 6908265
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Menu = MainMenu1
+  Position = poDefault
+  ShowHint = True
+  LCLVersion = '4.2.0.0'
+  OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnShow = FormShow
+  object StatusBar: TPanel
+    Left = 0
+    Height = 18
+    Top = 962
+    Width = 1920
+    Align = alBottom
+    BevelOuter = bvLowered
+    ClientHeight = 18
+    ClientWidth = 1920
+    Color = clWindow
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Times'
+    ParentBackground = False
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 0
+    object Panel2: TPanel
+      Left = 1
+      Height = 16
+      Top = 1
+      Width = 200
+      Align = alLeft
+      BevelOuter = bvLowered
+      Caption = 'Память отката: 0 kb.'
+      ParentBackground = False
+      TabOrder = 0
+    end
+    object Panel3: TPanel
+      Left = 201
+      Height = 16
+      Top = 1
+      Width = 200
+      Align = alLeft
+      BevelOuter = bvLowered
+      Caption = 'Шаг приращений : 0.1'
+      ParentBackground = False
+      TabOrder = 1
+      OnClick = Panel3Click
+    end
+    object Panel4: TPanel
+      Left = 401
+      Height = 16
+      Top = 1
+      Width = 320
+      Align = alLeft
+      BevelOuter = bvLowered
+      ParentBackground = False
+      TabOrder = 2
+      OnClick = Panel3Click
+    end
+    object HintBar: TStatusBar
+      Left = 444
+      Height = 16
+      Top = 1
+      Width = 1600
+      Align = alLeft
+      AutoHint = True
+      Panels = <>
+      ParentShowHint = False
+      SimpleText = ' ...'
+      ShowHint = True
+    end
+  end
+  object ToolBar: TToolBar
+    Left = 0
+    Height = 23
+    Top = 0
+    Width = 1227
+    AutoSize = True
+    Caption = 'ToolBar'
+    Color = clBtnFace
+    EdgeInner = esLowered
+    EdgeOuter = esNone
+    Images = MenuImages
+    Indent = 2
+    ParentColor = False
+    ParentShowHint = True
+    ShowHint = True
+    TabOrder = 1
+    object ToolButton20: TToolButton
+      Left = 2
+      Top = 1
+      Action = NewModel
+    end
+    object ToolButton1: TToolButton
+      Left = 33
+      Top = 1
+      Action = LoadFile
+    end
+    object ToolButton38: TToolButton
+      Left = 56
+      Top = 1
+      Action = FileSave
+    end
+    object ToolButton3: TToolButton
+      Left = 79
+      Top = 1
+      Action = ExitProgram
+    end
+    object ToolButton4: TToolButton
+      Left = 102
+      Height = 22
+      Top = 1
+      ImageIndex = 2
+      Style = tbsSeparator
+    end
+    object PrecisionBox: TComboBox
+      Left = 110
+      Height = 21
+      Hint = 'Частота сетки сплайновых аппроксимаций'
+      Top = 1
+      Width = 75
+      ItemHeight = 13
+      ItemIndex = 1
+      Items.Strings = (
+        'Редкая'
+        'Средняя'
+        'Частая'
+        'Густая'
+      )
+      TabOrder = 1
+      Text = 'Средняя'
+      OnChange = PrecisionBoxChange
+    end
+    object ToolButton7: TToolButton
+      Left = 185
+      Height = 22
+      Top = 1
+      ImageIndex = 7
+      Style = tbsSeparator
+    end
+    object ToolButton26: TToolButton
+      Left = 475
+      Top = 1
+      Action = IntersectionDialog
+    end
+    object tbMiddleFrame: TToolButton
+      Left = 485
+      Top = 1
+      Action = SplitSectionDialog
+    end
+    object ToolButton8: TToolButton
+      Left = 193
+      Top = 1
+      Action = ShowControlNet
+    end
+    object ToolButton2: TToolButton
+      Left = 216
+      Top = 1
+      Action = ShowControlCurves
+    end
+    object ToolButton9: TToolButton
+      Left = 239
+      Top = 1
+      Action = ShowInteriorEdges
+    end
+    object ToolButton10: TToolButton
+      Left = 262
+      Top = 1
+      Action = BothSides
+    end
+    object ToolButton31: TToolButton
+      Left = 285
+      Top = 1
+      Action = ShowGrid
+    end
+    object ToolButton21: TToolButton
+      Left = 308
+      Top = 1
+      Action = ShowStations
+      AllowAllUp = True
+    end
+    object ToolButton22: TToolButton
+      Left = 331
+      Top = 1
+      Action = ShowButtocks
+    end
+    object ToolButton23: TToolButton
+      Left = 354
+      Top = 1
+      Action = ShowWaterlines
+    end
+    object ToolButton35: TToolButton
+      Left = 377
+      Top = 1
+      Action = ShowDiagonals
+    end
+    object ToolButton48: TToolButton
+      Left = 400
+      Top = 1
+      Action = ShowFlowlines
+    end
+    object ShowBuildCurve: TToolButton
+      Left = 412
+      Top = 1
+      Action = ShowHydrostatics
+    end
+object SpinEditFontSize: TSpinEdit
+  Left = 418
+  Height = 21
+  Hint = 'Высота букв в надписях на чертежах'
+  Top = 1
+  Width = 36
+  Constraints.MinWidth = 36
+  MaxValue = 20
+  MinValue = 3
+  ParentFont = False
+  TabOrder = 0
+  Value = 8
+  OnChange = SpinEditFontSizeChange
+end
+    object ToolButton30: TToolButton
+      Left = 423
+      Top = 1
+      Action = ShowNormals
+    end
+    object ToolButton37: TToolButton
+      Left = 446
+      Top = 1
+      Action = Showcurvature
+    end
+    object ToolButton36: TToolButton
+      Left = 469
+      Top = 1
+      Action = ShowMarkers
+    end
+    object ToolButton12: TToolButton
+      Left = 25
+      Height = 22
+      Top = 1
+      ImageIndex = 5
+      Style = tbsSeparator
+      Wrap = True
+    end
+    object ToolButton5: TToolButton
+      Left = 492
+      Top = 1
+      Action = NewLayer
+    end
+    object ToolButton34: TToolButton
+      Left = 515
+      Top = 1
+      Action = DeleteEmptyLayers
+    end
+    object ToolButton33: TToolButton
+      Left = 538
+      Top = 1
+      Action = LayerDialog
+    end
+    object ToolButton6: TToolButton
+      Left = 561
+      Top = 1
+      Action = LayerAutoGroup
+    end
+    object LayerBox: TComboBox
+      Left = 584
+      Height = 21
+      Hint = 'Изменить активный, или собрать всё выделенное в ином слое'
+      Top = 1
+      Width = 145
+      ItemHeight = 13
+      Style = csDropDownList
+      TabOrder = 0
+      OnChange = LayerBoxChange
+    end
+    object Panel1: TPanel
+      Left = 729
+      Height = 22
+      Hint = 'Изменить цвет активного слоя'
+      Top = 1
+      Width = 23
+      BevelOuter = bvLowered
+      ParentBackground = False
+      TabOrder = 2
+      OnClick = Panel1Click
+    end
+    object ToolButton11: TToolButton
+      Left = 775
+      Height = 22
+      Top = 1
+      ImageIndex = 7
+      Style = tbsSeparator
+    end
+    object ToolButton15: TToolButton
+      Left = 783
+      Top = 1
+      Action = Delete
+    end
+    object ToolButton14: TToolButton
+      Left = 806
+      Height = 22
+      Top = 1
+      ImageIndex = 10
+      Style = tbsSeparator
+    end
+    object ToolButton45: TToolButton
+      Left = 814
+      Top = 1
+      Action = PointAlign
+    end
+    object ToolButton18: TToolButton
+      Left = 837
+      Top = 1
+      Action = PointCollapse
+    end
+    object ToolButton41: TToolButton
+      Left = 860
+      Top = 1
+      Action = InsertPlane
+    end
+    object ToolButton47: TToolButton
+      Left = 883
+      Top = 1
+      Action = LayerIntersection
+    end
+    object ToolButton42: TToolButton
+      Left = 906
+      Top = 1
+      Action = PointsLock
+    end
+    object ToolButton43: TToolButton
+      Left = 929
+      Top = 1
+      Action = PointsUnlock
+    end
+    object ToolButton44: TToolButton
+      Left = 952
+      Top = 1
+      Action = PointsUnlockAll
+    end
+    object ToolButton19: TToolButton
+      Left = 975
+      Height = 22
+      Top = 1
+      ImageIndex = 12
+      Style = tbsSeparator
+    end
+    object ToolButton27: TToolButton
+      Left = 983
+      Top = 1
+      Action = EdgeExtrude
+    end
+    object ToolButton29: TToolButton
+      Left = 1006
+      Top = 1
+      Action = EdgeSplit
+    end
+    object ToolButton13: TToolButton
+      Left = 1029
+      Top = 1
+      Action = EdgeCollapse
+    end
+    object ToolButton16: TToolButton
+      Left = 1052
+      Top = 1
+      Action = NewEdge
+    end
+    object ToolButton17: TToolButton
+      Left = 1075
+      Top = 1
+      Action = EdgeCrease
+    end
+    object ToolButton25: TToolButton
+      Left = 1098
+      Height = 22
+      Top = 1
+      ImageIndex = 19
+      Style = tbsSeparator
+    end
+    object ToolButton40: TToolButton
+      Left = 1106
+      Top = 1
+      Action = NewCurve
+    end
+    object ToolButton39: TToolButton
+      Left = 1129
+      Height = 22
+      Top = 1
+      ImageIndex = 15
+      Style = tbsSeparator
+    end
+    object ToolButton24: TToolButton
+      Left = 1137
+      Top = 1
+      Action = NewFace
+    end
+    object ToolButton32: TToolButton
+      Left = 1160
+      Top = 1
+      Action = InvertFace
+    end
+    object ToolButton28: TToolButton
+      Left = 1183
+      Height = 22
+      Top = 1
+      ImageIndex = 15
+      Style = tbsSeparator
+    end
+  end
+  object ActionList1: TActionList
+    Images = MenuImages
+    Left = 18
+    Top = 78
+    object ExportAurora: TAction
+      Category = 'Export'
+      Caption = 'Aurora+Hull.vsl'
+      Hint = 'Теория корабля, мореходность и штормовое маневрирование.'
+      ImageIndex = 65
+      OnExecute = ExportAuroraHullVslExecute
+    end
+    object LoadFile: TAction
+      Category = 'File'
+      Caption = 'Открыть...'
+      Hint = 'Считать числовую модель'
+      ImageIndex = 0
+      OnExecute = LoadFileExecute
+    end
+    object ExitProgram: TAction
+      Category = 'File'
+      Caption = 'Выход'
+      Hint = 'Завершить FreeShip'
+      ImageIndex = 1
+      OnExecute = ExitProgramExecute
+    end
+    object ImportSTL: TAction
+      Category = 'Import'
+      Caption = 'Stereolithography (STL)'
+      Hint = 'Текстовый или двоичный файл из треугольников [и их нормалей].'
+      OnExecute = ImportSTLExecute
+    end
+    object ImportVRML: TAction
+      Category = 'Import'
+      Caption = 'Virtual Reality (VRML)'
+      Hint = 'Импорт модели из Virtual Reality Modeling Language.'
+      OnExecute = ImportVRMLExecute
+    end
+    object ImportCarene: TAction
+      Category = 'Import'
+      Caption = 'Carene.XYZ...'
+      Hint = 'Считывания яхтенного формата.'
+      ImageIndex = 35
+      OnExecute = ImportCareneExecute
+    end
+    object ExportSTL: TAction
+      Category = 'Export'
+      Caption = 'STL...'
+      Hint = 'Запись треугольников Stereolithography (STL)'
+      OnExecute = ExportSTLExecute
+    end
+    object ExportDXF2DPolylines: TAction
+      Category = 'Export'
+      Caption = 'Листы DXF проекций...'
+      Hint = 'Сохранение контуров раздельными листами.dxf'
+      ImageIndex = 27
+      OnExecute = ExportDXF2DPolylinesExecute
+    end
+    object ExportDXF3DPolylines: TAction
+      Category = 'Export'
+      Caption = 'Контуры в пространстве.DXF'
+      Hint = 'Пространственные контуры AutoCad'
+      ImageIndex = 27
+      OnExecute = ExportDXF3DPolylinesExecute
+    end
+    object ExportDXFFaces: TAction
+      Category = 'Export'
+      Caption = 'Модель.DXF с обшивкой'
+      Hint = 'Сохранение модели в AutoCad.dxf'
+      ImageIndex = 27
+      OnExecute = ExportDXFFacesExecute
+    end
+    object ExportCoordinates: TAction
+      Category = 'Export'
+      Caption = 'Координаты.txt'
+      Hint = 'Сохраняются ординаты штевней и шпангоутов.'
+      OnExecute = ExportCoordinatesExecute
+    end
+    object ShowControlNet: TAction
+      Category = 'Visibility'
+      Caption = 'Опорные узлы '
+      Hint = 'Опорные узлы и рёбра к редактированию'
+      ImageIndex = 2
+      OnExecute = ShowControlNetExecute
+    end
+    object ShowInteriorEdges: TAction
+      Category = 'Visibility'
+      Caption = 'Внутренние ребра'
+      Hint = 'Интерполирующие контуры по обшивке'
+      ImageIndex = 3
+      OnExecute = ShowInteriorEdgesExecute
+    end
+    object NewWindow: TAction
+      Category = 'Window'
+      Caption = 'Лист новой проекции'
+      Hint = 'Создаётся аксонометрической проекции'
+      ImageIndex = 33
+      OnExecute = NewWindowExecute
+    end
+    object TileWindow: TAction
+      Category = 'Window'
+      Caption = 'Раскладка листов'
+      Hint = 'Смежная раскладка чертёжных проеций'
+      ImageIndex = 32
+      OnExecute = TileWindowExecute
+    end
+    object CascadeWindow: TAction
+      Category = 'Window'
+      Caption = 'Листы с перекрытием'
+      Hint = 'Листы чертёжных проекций накладываются поверх друг друга'
+      ImageIndex = 34
+      OnExecute = CascadeWindowExecute
+    end
+    object BothSides: TAction
+      Category = 'Visibility'
+      Caption = 'Вид обоих бортов'
+      Hint = 'Изображается только левый борт или весь корпус.'
+      ImageIndex = 4
+      OnExecute = BothSidesExecute
+    end
+    object FileSaveas: TAction
+      Category = 'File'
+      Caption = 'Сохранить как...'
+      Hint = 'Запись с новым импенем, типом(fef,ftm,fbm) и местоположением файла'
+      ImageIndex = 39
+      OnExecute = FileSaveasExecute
+    end
+    object Showcurvature: TAction
+      Category = 'Visibility'
+      Caption = 'Кривизна контуров'
+      Hint = 'Отметка кривизны контуров по теоретическим чертежам'
+      ImageIndex = 38
+      OnExecute = ShowcurvatureExecute
+    end
+    object IncreaseCurvatureScale: TAction
+      Category = 'Visibility'
+      Caption = 'Шире метки кривизны'
+      Hint = 'Увеличение ширины отметок кривизны контуров'
+      ShortCut = 121
+      OnExecute = IncreaseCurvatureScaleExecute
+    end
+    object DecreaseCurvatureScale: TAction
+      Category = 'Visibility'
+      Caption = 'Уже отметки кривизны'
+      Hint = 'Заужение отметок контурных прорисовок кривизны'
+      ShortCut = 120
+      OnExecute = DecreaseCurvatureScaleExecute
+    end
+    object LayerAutoGroup: TAction
+      Category = 'Layer'
+      Caption = 'Автоматическая группировка'
+      Hint = 'Автоматическая сборка сопряженных граней в новом слое'
+      ImageIndex = 6
+      OnExecute = LayerAutoGroupExecute
+    end
+    object NewLayer: TAction
+      Category = 'Layer'
+      Caption = 'Новый слой'
+      Hint = 'Создание пустого слоя взаимно связных элементв корпуса'
+      ImageIndex = 7
+      OnExecute = NewLayerExecute
+    end
+    object Delete: TAction
+      Category = 'Edit'
+      Caption = 'Удалить выбранное'
+      Hint = 'Удаление всех отмеченных объектов'
+      ImageIndex = 8
+      ShortCut = 16472
+      OnExecute = DeleteExecute
+    end
+    object EdgeCollapse: TAction
+      Category = 'Edge'
+      Caption = 'Связывание'
+      Hint = 'Убрать ребро со связываением смежных граней в единую поверхность'
+      ImageIndex = 9
+      OnExecute = EdgeCollapseExecute
+    end
+    object NewEdge: TAction
+      Category = 'Edge'
+      Caption = 'Рассечение'
+      Hint = 'Разрыв грани по новому ребру между двумя узлами'
+      ImageIndex = 10
+      OnExecute = NewEdgeExecute
+    end
+    object EdgeCrease: TAction
+      Category = 'Edge'
+      Caption = 'Слом по ребру'
+      Hint = 'Установка слома гладкой поверхности по выбранному ребру'
+      ImageIndex = 11
+      OnExecute = EdgeCreaseExecute
+    end
+    object DeselectAll: TAction
+      Category = 'Edit'
+      Caption = 'Отмена выбора'
+      Hint = 'Отмена активности для всех выбранных элементов.'
+      OnExecute = DeselectAllExecute
+    end
+    object PointCollapse: TAction
+      Category = 'Point'
+      Caption = 'Сброс углового узла'
+      Hint = 'Объединить два крайних ребра со сбросом общих узлов'
+      ImageIndex = 12
+      OnExecute = PointCollapseExecute
+    end
+    object ActiveLayerColor: TAction
+      Category = 'Layer'
+      Caption = 'Цвет активного слоя'
+      Hint = 'Изменить цвет активного слоя'
+      ImageIndex = 25
+      OnExecute = ActiveLayerColorExecute
+    end
+    object DeleteEmptyLayers: TAction
+      Category = 'Layer'
+      Caption = 'Удалить пустые слои'
+      Hint = 'Удалить пустые слои из числовой модели'
+      ImageIndex = 29
+      OnExecute = DeleteEmptyLayersExecute
+    end
+    object LayerDialog: TAction
+      Category = 'Layer'
+      Caption = 'Свойства графических слоёв'
+      Hint = 'Интерактивное управление свойствами графических слоёв'
+      ImageIndex = 24
+      ShortCut = 16460
+      OnExecute = LayerDialogExecute
+    end
+    object NewModel: TAction
+      Category = 'File'
+      Caption = 'Новая модель...'
+      Hint = 'Создать корпус по аналитической модели'
+      ImageIndex = 13
+      ShortCut = 16462
+      OnExecute = NewModelExecute
+    end
+    object ShowStations: TAction
+      Category = 'Visibility'
+      Caption = 'Шпангоуты'
+      Hint = 'Прорисовка контуров шпангоутов (поперечные сечения)'
+      ImageIndex = 15
+      OnExecute = ShowStationsExecute
+    end
+    object ShowButtocks: TAction
+      Category = 'Visibility'
+      Caption = 'Батоксы'
+      Hint = 'Изображение батоксов (продольных вертикальных плоскостей)'
+      ImageIndex = 16
+      OnExecute = ShowButtocksExecute
+    end
+    object ShowWaterlines: TAction
+      Category = 'Visibility'
+      Caption = 'Ватерлинии'
+      Hint = 'Теоретические контуры по гравитационным уровням воды'
+      ImageIndex = 17
+      OnExecute = ShowWaterlinesExecute
+    end
+    object ShowHydrostatics: TAction
+      Category = 'Visibility'
+      Caption = 'Строевая и центры гидростатики'
+      Hint = 'Строевая по шпангоутам и основные гидрорстатические центры.'
+      ImageIndex = 49
+      OnExecute = ShowHydrostaticsExecute
+    end
+    object NewFace: TAction
+      Category = 'Face'
+      Caption = 'Новая грань'
+      Hint = 'Создание поверхности по выбранным контрольным узлам'
+      ImageIndex = 18
+      OnExecute = NewFaceExecute
+    end
+    object IntersectionDialog: TAction
+      Category = 'Edit'
+      Caption = 'Теоретические контуры...'
+      Hint = 'Установка линий теоретического чертежа: шпангоуты, ватерлинии, батоксы и рыбины'
+      ImageIndex = 14
+      OnExecute = IntersectionDialogExecute
+    end
+    object DesignHydrostatics: TAction
+      Category = 'Calculate'
+      Caption = 'Размерения и обводы корпуса'
+      Hint = 'Главные размерения и гидростатические расчёты по корпусу.'
+      ImageIndex = 67
+      OnExecute = DesignHydrostaticsExecute
+    end
+    object EdgeExtrude: TAction
+      Category = 'Edge'
+      Caption = 'Вынос граничных рёбер'
+      Hint = 'Создание новой грани путём выноса выбранных граничных рёбер'
+      ImageIndex = 19
+      OnExecute = EdgeExtrudeExecute
+    end
+    object EdgeSplit: TAction
+      Category = 'Edge'
+      Caption = 'Разделение ребра пополам'
+      Hint = 'Create new controlpoints by splitting an controledge into two.'
+      ImageIndex = 20
+      OnExecute = EdgeSplitExecute
+    end
+    object EditProjectSettings: TAction
+      Category = 'Project'
+      Caption = 'Установки по проекту'
+      Hint = 'Настройка размерностей и описание цифровой модели корабля'
+      OnExecute = EditProjectSettingsExecute
+    end
+    object CheckModel: TAction
+      Category = 'Tools'
+      Caption = 'Контроль модели'
+      Hint = 'Поиск ошибок в построении и несовместимостей в элементах корпуса'
+      OnExecute = CheckModelExecute
+    end
+    object ShowNormals: TAction
+      Category = 'Visibility'
+      Caption = 'Векторы нормалей'
+      Hint = 'Изображение векторов ориентации нормалей на выбранных поверхностях'
+      ImageIndex = 21
+      OnExecute = ShowNormalsExecute
+    end
+    object RemoveNegative: TAction
+      Category = 'Tools'
+      Caption = 'Убрать отрицательные ординаты'
+      Hint = 'Удалить или вернуть на ДП все отрицательные ординаты'
+      OnExecute = RemoveNegativeExecute
+    end
+    object RotateModel: TAction
+      Category = 'Transform'
+      Caption = 'Вращение...'
+      Hint = 'Пространственный поворот в главных осях корпуса'
+      OnExecute = RotateModelExecute
+    end
+    object ScaleModel: TAction
+      Category = 'Transform'
+      Caption = 'Перемасштабирование...'
+      Hint = 'Линейное (афинное) преобразование пространственных координат.'
+      OnExecute = ScaleModelExecute
+    end
+    object MoveModel: TAction
+      Category = 'Transform'
+      Caption = 'Cмещение...'
+      Hint = 'Пространственное смещение координат модели'
+      OnExecute = MoveModelExecute
+    end
+    object MirrorFace: TAction
+      Category = 'Transform'
+      Caption = 'Зеркальная копия'
+      Hint = 'Зеркальное отображние корпуса в главных осях координат.'
+      OnExecute = MirrorFaceExecute
+    end
+    object TransformLackenby: TAction
+      Category = 'Transform'
+      Caption = 'Деформация Lackenby'
+      Hint = 'Трансформация корпуса по главным размерениям и коэффициентам полноты.'
+      OnExecute = TransformLackenbyExecute
+    end
+    object ShowGrid: TAction
+      Category = 'Visibility'
+      Caption = 'Сетка теоретических плоскостей'
+      Hint = 'Разметка плоскостей шпангоутов, ватерлинний, батоксов и рыбин'
+      ImageIndex = 22
+      OnExecute = ShowGridExecute
+    end
+    object Undo: TAction
+      Category = 'Edit'
+      Caption = 'Отмена'
+      Hint = 'Отмена последних действий'
+      ShortCut = 16474
+      OnExecute = UndoExecute
+    end
+    object Redo: TAction
+      Category = 'Edit'
+      Caption = 'Возврат'
+      Hint = 'Восстановление результатов отменённых действий'
+      ShortCut = 16466
+      OnExecute = RedoExecute
+    end
+    object ClearUndo: TAction
+      Category = 'Edit'
+      Caption = 'Сброс всех отмен'
+      Hint = 'Очистка памяти и шагов по отмене выполненных действий.'
+      OnExecute = ClearUndoExecute
+    end
+    object ShowUndoHistory: TAction
+      Category = 'Edit'
+      Caption = 'Контроль выполненных действий'
+      Hint = 'Работа со списком выполненных команд для выборолчного восстановления'
+      OnExecute = ShowUndoHistoryExecute
+    end
+    object ImportOBJ: TAction
+      Category = 'Import'
+      Caption = 'Wavefront (OBJ)'
+      Hint = 'Wavefront Technologies for Advanced Visualizer animation.'
+      OnExecute = ImportOBJExecute
+    end
+    object ExportObj: TAction
+      Category = 'Export'
+      Caption = 'Wavefront (Obj)'
+      Hint = 'Wavefront Technologies Advanced Visualizer.'
+      OnExecute = ExportObjExecute
+    end
+    object InvertFace: TAction
+      Category = 'Face'
+      Caption = 'Обращение нормалей'
+      Hint = 'Обратная ориентация нормалей на поверхностях'
+      ImageIndex = 23
+      OnExecute = InvertFaceExecute
+    end
+    object Preferences: TAction
+      Category = 'Project'
+      Caption = 'Настройки'
+      Hint = 'Настройки параметров программного комплекса Free!Ship.'
+      OnExecute = PreferencesExecute
+    end
+    object ImportBodyplan: TAction
+      Category = 'Import'
+      Caption = 'Ординаты корпуса...'
+      Hint = 'Считывание ординат и оконечностей корпуса (.txt).'
+      OnExecute = ImportBodyplanExecute
+    end
+    object ImportHullFile: TAction
+      Category = 'Import'
+      Caption = 'Carlson Hulls...'
+      Hint = 'Импорт файлов созданных в Carlson Hulls...'
+      ImageIndex = 28
+      OnExecute = ImportHullFileExecute
+    end
+    object ExportOffsets: TAction
+      Caption = 'Ординаты в T7-смещениях...'
+      Hint = 'Ординаты теоретического чертежа и контрольные контуры'
+      OnExecute = ExportOffsetsExecute
+    end
+    object AddPoint: TAction
+      Category = 'Point'
+      Caption = 'Добавить точку'
+      Hint = 'Добавляется одна свободная точка в прострнстве.'
+      OnExecute = AddPointExecute
+    end
+    object DevelopLayers: TAction
+      Caption = 'Развёртки обшивки'
+      Hint = 'Плоские фигуры для раскроя листов обшивки.'
+      OnExecute = DevelopLayersExecute
+    end
+    object ExportArchimedes: TAction
+      Category = 'Export'
+      Caption = 'Archimedes...'
+      Hint = 'Export stations to Arcimedes'
+      ImageIndex = 26
+      OnExecute = ExportArchimedesExecute
+    end
+    object ShowLinesplan: TAction
+      Category = 'Project'
+      Caption = 'Теоретические чертёжи'
+      Hint = 'Формирование листа с традиционным теоретическим чертежом.'
+      ImageIndex = 31
+      OnExecute = ShowLinesplanExecute
+    end
+    object ShowDiagonals: TAction
+      Category = 'Visibility'
+      Caption = 'Рыбины'
+      Hint = 'Включение рыбин в прорисовку чертежей корпуса корабля.'
+      ImageIndex = 30
+      OnExecute = ShowDiagonalsExecute
+    end
+    object ShowMarkers: TAction
+      Category = 'Visibility'
+      Caption = 'Независимые маркеры'
+      Hint = 'Показать все маркеры.'
+      ImageIndex = 36
+      OnExecute = ShowMarkersExecute
+    end
+    object DeleteMarkers: TAction
+      Category = 'Tools'
+      Caption = 'Удалить все маркеры'
+      Hint = 'Вычистка всех маркеролв из цифровой модели корабля.'
+      ImageIndex = 37
+      OnExecute = DeleteMarkersExecute
+    end
+    object ImportSurface: TAction
+      Category = 'Import'
+      Caption = 'Поверхность...'
+      Hint = 'Считывание продольных пространственных контуров для формирования гладкой обшивки'
+      OnExecute = ImportSurfaceExecute
+    end
+    object FileSave: TAction
+      Category = 'File'
+      Caption = 'Сохранить'
+      Hint = 'Сохранить модель как есть.'
+      ImageIndex = 5
+      ShortCut = 16467
+      OnExecute = FileSaveExecute
+    end
+    object ImportChines: TAction
+      Category = 'Import'
+      Caption = 'Линии сломов Chines...'
+      Hint = 'Импорт cкуловых контуров Chines (линий слома борта).'
+      OnExecute = ImportChinesExecute
+    end
+    object ShowControlCurves: TAction
+      Category = 'Visibility'
+      Caption = 'Контрольные контуры'
+      Hint = 'Изображение опорных контуров (control curves).'
+      ImageIndex = 40
+      OnExecute = ShowControlCurvesExecute
+    end
+    object NewCurve: TAction
+      Category = 'Curve'
+      Caption = 'Новая кривая линия'
+      Hint = 'Построить новый контур по выбранным рёбрам'
+      ImageIndex = 41
+      OnExecute = NewCurveExecute
+    end
+    object InsertPlane: TAction
+      Category = 'Point'
+      Caption = 'Расстановка узлов по плоскости'
+      Hint = 'Вставка узлов на рёбрах в пересечение базовой плоскости.'
+      ImageIndex = 42
+      OnExecute = InsertPlaneExecute
+    end
+    object PointsLock: TAction
+      Category = 'Point'
+      Caption = 'Блокирование узлов'
+      Hint = 'Фиксация положения нескольких опорных узлов.'
+      ImageIndex = 44
+      OnExecute = PointsLockExecute
+    end
+    object PointsUnlock: TAction
+      Category = 'Point'
+      Caption = 'Освбождение захваченных точек'
+      Hint = 'Разблокировка местоположения захваченных опорных точек.'
+      ImageIndex = 43
+      OnExecute = PointsUnlockExecute
+    end
+    object PointsUnlockAll: TAction
+      Category = 'Point'
+      Caption = 'Разблокирование всех опорных точек'
+      Hint = 'Разблокирование сразу всех ранее захваченных опорных точек.'
+      ImageIndex = 45
+      OnExecute = PointsUnlockAllExecute
+    end
+    object ImportMarkers: TAction
+      Category = 'Tools'
+      Caption = 'Импорт маркеров'
+      Hint = 'Считывание контрольных маркеров для построения орбводов корпуса'
+      ImageIndex = 46
+      OnExecute = ImportMarkersExecute
+    end
+    object PointAlign: TAction
+      Category = 'Point'
+      Caption = 'Выравнивание вдоль линии'
+      Hint = 'Выстраивание всех выбранных точек на прямую линию, проходящую между крайними узлами.'
+      ImageIndex = 48
+      OnExecute = PointAlignExecute
+    end
+    object ExportIGES: TAction
+      Category = 'Export'
+      Caption = 'экспорт в IGES'
+      Hint = 'Initial Graphics Exchange Specification (IGES)'
+      ImageIndex = 60
+      OnExecute = ExportIGESExecute
+    end
+    object ExportPart: TAction
+      Category = 'Export'
+      Caption = 'Часть корпуса (.Part)...'
+      Hint = 'Сохранение выбранного фрагмента корпуса'
+      OnExecute = ExportPartExecute
+    end
+    object ImportPart: TAction
+      Category = 'Import'
+      Caption = 'Часть корпуса (.Part)...'
+      Hint = 'Считывание ранее приготовленного фрагмента корпуса'
+      OnExecute = ImportPartExecute
+    end
+    object LayerIntersection: TAction
+      Category = 'Point'
+      Caption = 'Пересечение слоёв...'
+      Hint = 'Поиск и устоновка опорных точек на линии пересечения поверхностей'
+      ImageIndex = 51
+      OnExecute = LayerIntersectionExecute
+    end
+    object ImportPolyCad: TAction
+      Category = 'Import'
+      Caption = 'PolyCad.geo '
+      Hint = 'B-Spline поверхности (ShipLines,YachtLines) из PolyCAD Маркуса Боул'
+      ImageIndex = 53
+      OnExecute = ImportPolyCadExecute
+    end
+    object RemoveUnusedPoints: TAction
+      Category = 'Tools'
+      Caption = 'Вычистка лишних точек'
+      Hint = 'Сброс всех точек, не включеных в структуру слоёв цифровой модели.'
+      OnExecute = RemoveUnusedPointsExecute
+    end
+    object ExportGHS: TAction
+      Category = 'Export'
+      Caption = 'GHS...'
+      Hint = 'Запись шпангоутов в GHS формате для типовых расчётов гидростатики (Creative Systems, Inc.)'
+      ImageIndex = 54
+      OnExecute = ExportGHSExecute
+    end
+    object ShowFlowlines: TAction
+      Category = 'Visibility'
+      Caption = 'Потоковые линии...'
+      Hint = 'Прорисовка потоковых контуров для обтекания корпуса частицами воды.'
+      ImageIndex = 55
+      OnExecute = ShowFlowlinesExecute
+    end
+    object SplitSectionDialog: TAction
+      Category = 'Visibility'
+      Caption = 'Мидельшпангоут'
+      Hint = 'Установить местоположение мидельшпангоута (для проекции "корпус").'
+      ImageIndex = 63
+      OnExecute = MidleFrameDialogExecute
+    end
+    object SelectAll: TAction
+      Category = 'Selection'
+      Caption = 'Выбрать всё сразу'
+      Hint = 'Выбор для корректировки сразу всех графических объектов.'
+      ImageIndex = 58
+      ShortCut = 16449
+      OnExecute = SelectAllExecute
+    end
+  end
+  object MenuImages: TImageList
+    Left = 49
+    Top = 78
+    Bitmap = {
+      4C7A450000001000000010000000F63E00000000000078DAED5D055C15D9DB1E
+      30B0BBC0EE56504C0C0411412C440401151303305031901013035154C4EEC45A
+      BB58BB76B1BB756D575D75D1359EEFBCE7DEB9CCBD776E815BFF6FCFFD3DBF99
+      39739EB7CE7BA667AE20FC250512A4872BB78CEF604F7AECD36C0B018A42538D
+      F53042B68AAB77AA876F906B80AFA3ADF1D0E446471B86247E19E0AAFC4F2737
+      AD3FD3C7154C8CD53FB964D40F561F2DF6A42A2FB460049FA6E9E5A7E16FE68B
+      6DFFADF6FF7FE7CB718DE5EBE21AC3D7C735C84FDFF8ED96B81722461C79C6D1
+      6FC34FAA3A9A17EBA56D456E952A55D0B76F5F142A5408AD4262384AD46A808E
+      1D3B72D0BC584F6DA82D71BA2D54C8A165DA0DD4A953076D9C7D394A95A8C0EB
+      08342FD6D7AD5B97D7F5E9D347C52799C4CD912307C6872DE5B0AD63CF751068
+      5EACA736D49638C4279FC8AECE1D7A63FAC4B56A28615556AB8E406D5B0D8F51
+      C584F83E9E0198179BA4865225CA69D511A8ADC8A7D8527C2A96AF866676CE58
+      3E7F0747DF1EC3902B671E5E47F3623D2D535BE2887D4431A69890AF654B57E0
+      C89D2B8F2A7E342FD6531BAA238E183F297F7FD2518E364EED547C9A17EB35F9
+      A2FD36356DE0DEA6234EEC3EC511393212F9F2E6E375342FD6D3B24D4D6B95FD
+      62FCC60D1B8B8BC9296AA856A9AA561D81DA6AC67FC2E870DC3D73490D35AA54
+      D3AA23505B912FE60FE515E5C68B4BD739BA797451E50FCD8BF5D486DA8AF9A3
+      99BFB3A2A2391ADBDAAAE2D7D8B69EAA5E2E7F49072DF3F1C3EC22688D1F653D
+      B5A1B6E2F8E16390E428A1367E95756AE357D2361D8708E93C8601D2B8A6C890
+      F24CB10188888880E97EA8EB93934175DAF57276AACBD0E6191F0F795F006362
+      226FAF61199A3C799FE5E5E9D29756AFDF5ED363614A7E18973F19CFFFF4E4AD
+      2E19C8C0B98369DCF9F3E7C3CBCB0BEDDAB5E3A850A1029FBABBBB23282848AF
+      ACAEFDBAA248DB22281F591ED3974DE76D894B5337B72DA854291E254B76C5AC
+      59B3B4E478F7F346E8C450B8CC7281EF5C5FB498D902AD625BC1D6D69D6D5777
+      339BB6A361C35D18356A1DDAB40954933168D020F847F8C3799633662E9F099B
+      181BCC5E311B9E733CD9F6D213D3A76F40AF5E5B196F079FAF576F3BFAF5EB87
+      D9B36783FC6DE6D90C2B56AF40F082600C4F1C8E718BC7A1564C2DCC5F399FFB
+      DEBBF756D8DBEFC4DCB9EBE1E1B11D0909EB3175EA12787B7B73D84DB0C38425
+      1390B0320155C3AA62D8D46170F677866D6B5B1E3F2BABCE888C9C82C68D17C1
+      CF6F0356AE5C8B162DB6F198123F726E24CA0796875B5B37B8757543FE0EF999
+      9D9AF11B8A326582987E0F346DEACBECD9CA6D23BE8B8B0B1AF76E8C894B272A
+      38710A4EE8C250A6DF03CB97AF4570F0164C9CB891D73B3AAEE7BAC936E20F8D
+      1BCA7D97F217AE5A0821828E15BDE1E8B8538DDFAEDD0F5C66D5AA9DD87439DA
+      BAB7D5E2533F969F5C1EA54B7746B66C07E1E3B34D8DBF70E12274EAE4CD97AB
+      F5A906DB0EB698382F8DEF38D311DEF1DEDCC79C390F323BB7ABF80E0E1399CF
+      1EAC6E8DAA7D705C305CBBBBB23E6E8346031BC1A6BF0D5A04B640A3468D98FE
+      1816EFF17075ED8BAE5DBBC2DA3A8AE95FC765AAF8CCFE809901BC7DCE123991
+      255F161E9BAA55ABB27CA9C7DA9565FD588EED7B03793CA47CA75827C42D8F43
+      D3194DB17CF5720C4B1C8606C31AB03EB2E7C70BFEFE036163B38573468F4E62
+      B1FF01B1B11B547CFB99F698B47412BCE678F19C8F5F118F3AD3EA6068E250E6
+      677B9EFF03076E4174F426D4A8B187E5DE463839EDC4E4C98A784C5E3A197633
+      ECD06C4633148A2E841C513978FCC5FE2B5D7A1F1B47BBD97C32F36F171B876C
+      FFDF6DDB77BB1E119D766DC468283969E72ED18A7A4345DA56EEDCC728BEDCF5
+      BF8CEAFF1FE047471BD36F7AF49B021D7C7D36441BC1A7F9E3C78FF3FC22D0BC
+      08CD76BAF83C3795CB54FE6CFE77183FE92E0E0E407A21F275C99E34B91AF4E9
+      954E69BB6D0C5F6C27A75F5C274E45BE66BD2EBED8468EAF699F2EFDFAF8C6E8
+      4F4FFCA89DA9F8DEFDF7BDFCCF68FCD3DBFFDF23FFD21BBF8C8CBF8C96437AEE
+      4B1C3270CF425CAFAB9DB1B23D3D05988A81038BAAF8F7EF3B223959300A2929
+      79F1FC79757CFEDC44C5FFF62D0C0F1FB6C29123596439478F66C6C993D9F0EE
+      9D2DE701F678F6CC4EC5BF702184D545E0D1A3D6B878B1921AF7CA952278FAB4
+      2AE7101E3E6C84F5EBABB363B01C2A7EAF5E9E387D7A2897F1E5CB682EE7D123
+      5B860A2A1E2132B22CDCDC0AAA1DBF501CE91A11C910ED50C04FC55BB3A61A3B
+      EECBABBE0F494C84D8079BEEDF4777763E4472FCFD3D71FDFA08F9FD0E5DBB1A
+      33467A2D9A976436BFEAF265F41C385075CD8ACE2DD47843874278F3268DBB66
+      8D8AEFC764928CB5D7AF63F6EEDDEAFCF5EB219C3B97C63B71022C61B4F2CA2B
+      24047B7EFF1D87BE7EC50F2F5FA2C3D3A7101E3D5270DEBD83F0F021843A75F4
+      E6B3E7902198FCC30FDC164F511FE9EFDE1D86725A2D9F99AF95C85F8211E322
+      23E3E77B8C5FB992D94CE0D72ACB952B079A37659B42EDF3E7CFCF72B2173BE7
+      59C8A7C6CAA1369AFC61C386711892237275F1A5D09421E5EAE3AF5AB58AC745
+      CAA779AAA7F6FAF82297D6C9C5AB73E7CE2A399A7C91ABA95B2C141751B62887
+      B80429B765CB96B27CAAEB9BD097AF2719A27E914BF29190A0BC7EADE34A135B
+      8FB367B91C9A270EC921997C9DB24E179FEB607C1124479425425F0ED13A299F
+      836DDB442ED94EB1117DD4E7833E3E41175FD307914F3A09FAB86A7E887630BE
+      295C4D39A2BFA6724D290B170A482F443EE5991CECD92E4CD7BA7F2A9F8A1C5F
+      5A6F48BFD856E46B7235F9BA0AF17595EFA9FF7BFBFF6FEEFFF4F033327EFE0D
+      65D3A64D983871A21668DDC85B2331ECA7613877E79C963F67CE9CE1DB2E9796
+      3DE1E2108C2E1D46C2DF772C06F68D4291C256BC7DFD4B0DD0FC5D73B4BDD516
+      F5031AA0BA4D0D54AF5E13D5AAD6844DADA668EF14896EEE0B1012B00553C2F7
+      637EEC51AC5BFE33CA97559C9FD9F93B60C8A3316893DA0ECE1F5CE17F3C1443
+      A62E457FFFB59C47E8EDB552C18FD88F8459EAFCB66E5DB0EDD0594C38BB001D
+      5F7AA365AA33DA5DF743D779E3E1E7136F90DFCECD0B0777DF40D2C6144CDEBC
+      06DD2E06A3E587D668F9CA15ED9206A0EBC0E9E8ED6D98BF75FD452C9A7B1C93
+      66EC40BF7553E072AF335A7C6809E7AB1EF09A1D8521C3D61AE42F9E7B02D3A3
+      0F226CD80FE8337201DA1CE809875F5BC3F16D6B743E1A88B0B96B306FCE8F86
+      F943776060B7F5F0F58F83FBDC11687DD5132D3E3AA2D3DDEE18B5770E96AD3B
+      827265AB1AE453ECFCBCE6C16F642C3A1F0C82E34727B8BE6B8741D7C7A054D3
+      7246F1095D3BCC410FDF59F09E370C2D2EB74233962FB576D7E2FCDEBD062234
+      640A562C3A22E1FFC0F95E6D636167EB8F36AD7D781E7A7A79A247640F04A504
+      B118F753CBD7CE9DFCE1D0AC13EC1A7480ADB51B6A547666F3ED3169D224FCF8
+      E38FAAB64F9F3DC583670FFE5163F7CE9D3B2853A6A2CEEB8D43860C63E7C747
+      646D4E4949818787377E3E7D1F1FDE400BEF5E0161A3A7A346D5C64864E79D72
+      F774B364CE8E06F5EDB5E0EBDD0F2F1F0377AF0329273FA09D6B1FCC9831C3E8
+      D82524707D08193C03077F7881A5F32EC0BEB1AFAC1DFA0A5DF7E9E1331EF153
+      2F60C2C8D3B030ABA88A07F9EFE9E903BBC60EB2B0B0C8096B6B6B7E0DCBB9E9
+      3084F44946A5123EE8D36B1028EEC43D7DE21AF005B2A07524433C44EDE5BE13
+      1E0E9BB85F4A1B7482172683EC20F29C39F3915D6800D7862B0C3E934A367319
+      12BEA2148673FD25463F2FFDBFC8AF5F693CB29817348A4FFD477D2CADAB56C9
+      9EF7BD317CE2528E49C78B74595FA1FC3052CF7F25DD652632DE5EBB4EFE1AAF
+      663B5A4EC3C16481437A9D58AC936B9B71FDDFCBFFFFCABFBC64F4DD0763EED9
+      A79B6FE01D1A63F51B7C8FC6C8E70FFEE3FF0FF285FF8DF7804C2AE273A286C0
+      5ACA829EC732EE994F39289F3B64324439BAF51B2EA21C39FC83B7AD46F1D7AE
+      9C88A589A355A06553F819D59F3DBB851A2F57AE1C26F19B37AD8D80DE6E081B
+      E5C3A7B46C0A7FD4706FC44D1F8085F342F89496FF4ABEAF774B6EFB8C29017C
+      4ACBE9F17FFEECC15C46C29C217F4AFFC5C7C7A3468D1A285EBC3807B5A129DD
+      D7E8D0A1835E7D7676FC9E386AD7AE0D9243754A1982ABAB2BF2E5CBC7D74F9D
+      3A15725C7ABE989E3D1E3060007F3E95AEB788F2A8BE7EFDFA18356A142A57AE
+      AC26A36DDBB67C7D972E5D909090004747477EDFAB77EFDE9C1F1717C7E7C906
+      9A27794E4E4EFC195BB2B358B16258B76E1DC68C19C3B71593274FE6CF6E2E5B
+      B68CFB4EEF77346BD68CCBECD4A913962C59C2DBD4AA558B83F4CD9C3993B727
+      D9E4073D379A295326559CE91E5EB56AD5F8B664C3860D68D2A4098F29F1C78F
+      1FCFF5901D152B2AAEC1509D347EC4A57A5A9F274F1E50BC681DF10B162CC865
+      C5C6C6F2B67E7E7E7CAA9481356BD660C89021AA981157791F8EF3434242B8EF
+      52FECA952B51B4287FC6022D5AB450E353BCD728EEDF63F5EAD52859B2A4165F
+      EC2F6A636666065F5F5F353EC552E9AB407EE7CC9993C754E453FFD333DAE463
+      E6CC9979DC443EC59638D417627B8A2FD593CD3425FFA82FC4F8932EB1AE4081
+      02BCAFC4ED3AF1C97E7A8E5C3A3628369AE385F286E221E5539E2E58B000E417
+      E5D1B871E3B81EB29B38944BD47FC4090B0BE3BE51DE897C1A57143BCA3392B5
+      68D122AE87E4142E5C98CB22DB283EE41BE51AE55C4C4C0CE7534ED3B5257A56
+      9AD6972E5D9AC75FEC3F2B2B2BD8D8D8F079EA138A4377C9330DFFF2730CA38F
+      BF286622C465E93AA922493BB565293F1DC77D5AFA8CD12B332FBBDED0B294AF
+      4FBF117C415FDC8CE40B19E16BF481DE3E939B17B99AFDAA0F1AFD2D64A0FFFF
+      3185B6E384A4A424ECDFBFDF6488C709B44DA16D97B3B333DFC72E5DBAD4283E
+      6DF3689B48DB23E2D33697B6610D1A34E0535A47F6E9E2D3B6D2DFDF9FF70FED
+      CFA92DEDCF68FF1A1A1ACAF7F9B973E7E6B2B76DDBA6C58F8C8CC48E1D3BF83C
+      EDE3020202B8FDBB76EDC2DCB973B95CDA4E935F74DC216D4F20FB828383F9B3
+      32C4A33A9A060606727B68393C3C1C6E6E6EFCB9368A151DDF68DA42F7238843
+      DB709249FD41F6D0326DE76999D6931D142B7A2785ECD3F467CB962D9833670E
+      B7876CA7FD6E993265F8FD07D249FBB91123467039F4AE0BF92B078A29E507F9
+      4CC76D59B36645E3C68D797FD17330145FEA2B4DFDE43BE9262EF503F94CBE53
+      0C68DF4872697F487CB28D38E41BD513C8478A05F523F94ECBB49E62401C8A1D
+      F943B1A16314F291F491CF7BF6ECE13E92FD14438A85B84CFB43CA2902C9A2FE
+      156DA679AA23BB48AEB84CBE527BF2C5D2D292C75DD35F924D36923EDA2FD332
+      E50BE51DF1C956B25BCC0D4D905D245FCC77F299E6A97F687F2FD7C752109764
+      1028DF296E747C69ECF8953EC7297745C4D01537BDED4C912DD756BD0E06E56A
+      D7ABB6B94F9E3C3175DBABE24961CC7548399E11320CF264F91ADFEC319AAFF1
+      0C6F066D375A86B1D78233C09595611457261EB2F13636D7755DBB3626F78D1D
+      3FDF63FCFE3987EABADE8937E238C8E0BBED7AF830F0AEBCBEEF87C1904DE9F8
+      A680546FBADF2BD7130FDD5CDDEF88A57176ECA80A5D5C11199161ACBFBA6498
+      122BC3320CE7BB6E19C68F156D19A68FB33419E91FA3C6C7545771F89BF8224F
+      736AAA0C117F97FF192D86EF938BF7F63521F74C807CBB8CE9FFAFFC57325A66
+      CD4A0141B3BE572FEDE796D6AE3D81D1A3AFA8EA972D3B8DA2455339685ECAB5
+      B0F80227A7A76A324A957A8FBC793F212AEA12AFAF54E937159FE6A98ED6D13C
+      F1692ADA41B2443ED58BFA860DBB0E82A6ADA23C69494838CBCE877F51ABFF5F
+      E03B396DD07AC7AA68D1875A75BEBE3351ABD609D5F2DAB56BD9F21CB4AE3F03
+      A3BA3AAAA15881EB5A753D5AF78775851F94EB73A3797D6B2C0B0DC29EA96371
+      7ADE1035AC1B3749ABEEC7D811D81A1D85FEED1A232A229CF563A574212A2AEA
+      BF6D232B74CD24BDCBF46EC4F7E0A707DF437F469615BAFF3EFFBF87FEBF7359
+      6AFFDFD1FFFF94F87DEF32E1EA04FA022F665ED27DEC57F7695DDE6653CA26B5
+      3663AE8FE1F5E24F4E86FD637BB536D2759B533663FCD5F1BC9EA6BB7EDAA5C5
+      4FBC9008E787CEAA36A25EE24ACE96B5783DEEF450D58DBFCE781F146D447FD5
+      381A7CD1E66A2F14EFBB48F9525F0ABE29084DBE664CC80E353E95D4345F7871
+      1650A44811350897D2EA849282F2DB4EDA7C7A1640BC3EB2CDBB880AC2E3B465
+      5A47D7AAA5FC5129A350BB62715C98E0007C48C4A6013514DFD2195117D83F88
+      DB8E9323909FD56DDEBC593DBE8C2FD808B8BFA21F804B6A18EF5919DDEA5A70
+      FB6D8A08AA7BFCD26251DFC2A8FB66A6BEB391D173F0EFC1DFB5EB278C1F7F9D
+      5FFBA1E9E6CD2926C99939F312D2AEA50163C65C37D90E51C6840957B5DFBD61
+      2B4C42C78E88A85245019A3795AF8199A54AE16C4242BA40DC043DEFA31B2A09
+      75EAA8F8EBD70761D020730C1C28E84460A039468ECC855DBB42A1C97FF76E21
+      2E5DAA82E46433ADEF871C3E6C8E9F7ECA8D3B774AE1B7DFEAE1E3C7295AFC5F
+      7FDD84376F067219C78FE756FB5EC9DDBB65F8B7475EBF6E8CBD7B6B63C38691
+      5AFCA4A4454C4F30933D14CF9F7BE2D62D6B86D2484D6D882F5F9AB27536EC78
+      BB244A94B0C08001FDB4F8CBD6AC41CF3E7E4C67309E3E1D8DDBB7BBE3CC9906
+      3870A0367AF62C8602C57240285C18429B36E8AB7CF744CABFF0FE3D26AE5A05
+      2F1F6F16231FB8B8D8C0DCDC1C023D03C3FA49E8D60DC2EAD5105253D1F7D933
+      2DFE0E2673C3FDFB98CCDA048C18C1EF6F5A58B0ED027D739278F42D8F070F50
+      8ACDFF28C37FF1FA35C62F5D8A1D6FDE80BE6732E0D831E4D9BD1BC2AB57109E
+      3F87307B36565CBE8C2B2447A6FFC5123E7F3E56325B86325D7919EAB26D5DF4
+      36F96FE5C9F1A95CB97D1B93D7AFC700FA768891F997DEFC9D902307B89C7480
+      B8DFEB62BF90B16720D4B67182E6B7DBD557FE43F919F33F60FA721568F9F6E3
+      E72AFC1BF819EE7FF56342B5AFDE2BE29F56F58FE4FF4B9F010A1B3D1C713326
+      61CA8471889D369163FCB8918899148131238311163A04A3860762F890000C1E
+      D40B03FBF9A1CF800E68BDD61FBD126D70F1C223FCFAEA3D6E5EBB84EB57CE21
+      E5CC516C5899800DAB16202E260C73664460D6D4304C8D0AC18471C11837C00B
+      333BD7C0C65E75E0B67B200AE7DA0397A6BFC0CFE712E267BDC49E5D2F70FDDA
+      AFB879E3390EEDFF117B77EDC6AEED5BB075D306AC5A1C8F01CDCA6373FF0658
+      EA638D6EEB47A0BDCB354C8D00DC9ABF455BC7D7A85BE531B2665E8762F96F22
+      4F9E28585BAF8783C30A38B65887506F372CECDD08474739E1F8103BF44C0A45
+      D0C0BBB8781638760038BC17D8BA0E081FF60D112140BD1AB750C1EA1CAC0ADD
+      46DE1C9BE0DE3012D33C3BE25CB41B1E4F6BC7F9F64D2E60E664766C1506AC5E
+      0224AD65D345C0EE2DC09A85C0E655ECB82FE41B06F44845F1C2975128D7718C
+      7108C0B9299DE1BF69242C0B1F44F5CABFA08CD50B34B67D0F8726AF51BDC21B
+      F4F0FA0287C6BF61C4E03F303CF033827A7FC1E0DE5F91CFE22AAAE45B8F799E
+      35B9FFB6D63B5128FF69942F751905F23C44D62CCB9035D329E4CE7198E5D80C
+      E4CB7D16850B1C6331D9845296E759DD7414CA1B8F896E55E0B37A18ACEB2D80
+      5FBB27E8D0EA5716BF54542D771DD52A3C4426613B7265DF0473337AC6249081
+      CE2F163174856DD9C118DFA632BAAE1A8686FDDA618A7B4BF4B373C20007778C
+      E81081CE8D2250BFFC62B835D887E636BB59FC36329D27996D7361537132029A
+      54C5B40ED5E0BB36049DE6F4C389610DB1CACF1AEB7ADA605B405D2CF1A98531
+      AD2A227F0E0B4C6A5F8BF5797D64C9541E01F676C89DCD020E950AC1BE6241F4
+      D838023D368CC08B98D6D83FB021CE8D6A8A07D1F63819D298C9E3DFFA42EF86
+      2510D4BA3A9F4F0A68C8A787062AA6D47F84DF62DBE0705063DC8EB4C7BB194E
+      B8196E8F5D01FCB91F64CF62CE7466E1F34FE7289EF91FD8A4349A5628C8B93E
+      5B87E1D9D4D63814D80877A35AE0F75867DC8B6C813DFD153A7AD99542FFC625
+      F9FCB305FC992A7C5AD68D4F89EB766400E267B8626BCF5A3837AC1ECE8FB4C3
+      A590FAD8D5D71A9D6B15C2D65EB59032D496CF9F1BD9984F7BD4B78473EF869C
+      3B2E3213FC57DBA1C37E7F93401CE22A1F0390DD9E49EFDF4ADB68CE4B8B78CF
+      58FADE9D81F7A9D4E4C97C0B55AF7EB975D132FFD564ACFD52BE91EF83C9EAD7
+      BCF76DACFD6295A68CF4C65F30E088F43EBFE8B7E6BC3EFDA22E5D31D7B047B6
+      5E6E591A5FA90B0A3DAAFFF8D1EC73593BD3FCD1E64ADA41772E4939DA5CB95C
+      D7D69726432E7FD4FB40BB4F34FDD5913F72ED74F9CBCBC58B17A10BF4ECD327
+      5F5F15DE5EB880B76FDFB273CA5495FDBAB8CFA64F07DBF9E2C2BE7DC08B170A
+      F4EF0FD4AE0DB46F8F6BD7AEC9F29FC4C703FDFAD14793C014E1ECD9B3ECFCF5
+      8B0AECE417EF070E04A64DE3CB52EE23CA1FB61EECFCF0363B07A342DF49F8F4
+      E993829B948497F3E6E1F6F404DC1CB5889D6FBF5171AF1D3E8C97CCAE678CFB
+      E1C307D07787C472E5CA15EC58BC18EFBB74C195932771C2B20726075E53D34D
+      36BF673A894F85F4930C8AD7E7A74F81A828AEE362ABA168205CC0EDAD5BD5F9
+      6E6E9C7781C5582C24E35E44047E69D912578F1EC5A59F7FC6F182DDB1590850
+      F73B311158B040C5A36F4D272D5F0EB46D8B27ECBC576C77CE79041C84DD7835
+      6E5C9A5EB4C1FBC040A053277CE9DE1D6F1D1D59551B7CF1F050D3F13A2C0C45
+      8587D867E1AF56FFE9930F3E0DF5C343A68FFC231BA5EBEFAF5881940681E82E
+      2CC72061191EAE89637EA5F9FEF26534DE3F9C07B0FC12EBAE9C388167C3C762
+      BDD00FF3CA6D4049E1364285787CD8DD051F3F7667FD71423D7660F9D2A1258F
+      C389EA81D86F39143E259F208BF0018996ACBFBBF80237EAB0BE998AA74F6770
+      7CF8D08FFBAEE0B35C69D31C33D8F1522C4B2D6B2BE06C8FB978D483B5B93A9B
+      ADAFCFE0C07CF553F16FDEDCA5D2FFEEDD3B457E912C3666F099B663B3F1EAD5
+      368671B874E92CF48D33DE878F1EF1BEA39CA47943EDBF170C3F6F66FAB500EB
+      3AB9D3FD5F9FC475F70AC0BC98B9263FEF29E5A61EDE6DCC3BFF7AB934D56747
+      AE5CB96088AB4B06BF96AFF8FE99412EAD97C654C555FA670A97A62A6E7838AF
+      37857BE8D021C53271957C53B86AEFD12BF882D4075DDC590D66A974911C7ADE
+      5F197F412A438EBB2E6C1DE7850B0A7BE9FD4D1D7DAA974B189F6BBCC1EF4848
+      E7DFD47CA3C6D5B0D960A1F6C44B0F57E6FA844985DE47C8C8B5858CF29399CD
+      2443178CD19F2CF15BCA11E7F5C917DB887648B952BE3EFBE5E68DE18B3AA5BA
+      A5F39AF6CBE995F274ADD3942317734DDD727668EA31B42CB543B39F34FD97F3
+      45AA5F971E5DFDA7E98B2E3BA43130A44357BEEAF25F339F9265C6A75C6E68FA
+      A2D9DE987CD62C1B376EE4C79DE7CE9DC3F9F3E7D540759AA0B6C411F9542796
+      AF5F3EE3E3EFEF39BE7EFDA2F3BC53FAFD32917FE2D8114C1FDD1D0BC67962DB
+      E2F138B47D39EEDCBE856FDFBEE9E5939DCF1EDDC19C707F0C762D84E8AEA570
+      746B3C7E581C8E55330271F9CC7EFD7CE6CF99E42D983DD411537A54C464BF32
+      38BC2106DBE60521A66765AC9ADA1B5F356C50D77F01F76E5EC4DC710118E7E7
+      80319EB658113316B342FC10D6A5367EDC9260D07FF2F1F2F95B888FD90C8F16
+      51F0749A81A9E3D6E2D8C1D3F898FABB51F113CBC65527303B660F3E7F362DFE
+      62F9E5E12B5CBFF28BDEEB1EFAF8C6145D7C8AC3E7CF9FF1C71F7F6881EAC55C
+      D0C5FFF8F1238E1D3B26FBAEDB61767EF2FEFD7BBD7CD273EAD429DEFEC08103
+      6AA06F78D2F99C21FFE97C93EC90C3D7AF5FBF7BFCC4F1AB3976754173FCFE43
+      CA77B887A875234F27FE8C7B58A6947F22FFBFF8FFABE3FFB714CDEBC7A640ED
+      FA315D6B3600B19D347E5C96115C4D48F9E929FFF1FFE3EBB85FF5FFF13B8019
+      F5D7E0BEC3087E86F467E0BB8F2A7E06EC50BF5F677A1CBE57DE7D9738642016
+      5A7AFEE263883F25167F173F3DFEFFF1C717AC5C79117DFA6E47268B388615A8
+      5A7305C68C4DC6A3476FF9F9979CB2AF5FBFE1DEBDD7B0A9BB02A57ADE47F8CD
+      57F0BE7C19DE09090867B63A2F7D01AB726B3077FE55FCFEFB1F5A32962EBD0C
+      AB92AB117EF5056FDFE7EE5D08E5CBA3665C1C5F166115FC0C356BAF5093F1F8
+      F16F68E9BC42C50D67E75F9E2121A849DF9D9170A532C80EF285ECEED9FB105C
+      57BC50ADF764E77A56E5CA21FC975F1475EFDE61D0B56B5CAE4A06F385E2919A
+      FA191679D7A8EA07318E50A102ACE7CE55F8BD772FAADAD9A148A54AA8DABE3D
+      BC2F5E54D4C7DCC7983187B074E93994ED734CC5778F8A8275EBD68A367BF640
+      285B161DE6CDC394376F5063EC5858F7EEAD68CBE25BB5DA722E836489FC1ABE
+      BE68386D1AC2D9796A594747344F4AC21C563FEDF973D876EE8C76C7D27451DF
+      6AF2DB1D3D0A81F95ED2DA1AA56AD4801FB38160EBE9C9D7D15DC6092A7E1C6E
+      DDFA1565ABAE518B6F55FA0E60BE7CA8D8B62D07CD531DAD235B688FEBBCE215
+      FC7B6D67E7CA5F50CB9AF5DD8D570AFE6FBFA16AC386704C4C54C9A379AAA375
+      625D49FFFB3C4F15B9730EA5FA9CE2F5CD376C80A38707EF33954D6CBE48E5CA
+      7C1D5F667942794AB92EE6EE80C00318BCFF1C042B2B789E39A39533CE0B16A0
+      86D206AB9EA778AE4BF397E760CBA5E830F30056C8E45C786A2A42922FC1AA7C
+      2CCBBDF33CEF34C7C0870F7F60C58AF370715BCDFAE418EF17058E317FB7A0FF
+      A01D5CAF1C575A28A6870FDF636D22395C5D57F13C35C433717F2FD8C31E7F03
+      3FEDFDB77F1FFFDFAAFB6FE79AC887095CBDFB44E2A5A7AF8CE589ED347F7FD5
+      81BB4497C93AE97E647AF9E23D6C0D5F610A57E0FF6E6B325FEDFEB7897CB9FB
+      DF82913274DEFF36826FF0FEB71E1946DFFF969161F2FD6F4D19A6DEFFD6CCFD
+      F4DCFF96193F269F6FEB1887269FC37FAFF1FC776F27FEBC0B076AAF5AC8C210
+      5F6E5EBA6C408E6C5FCAB58771DFE992CD0BA92DA6EEC374F9959E7D683AF86A
+      32D2E147DAF9AC9EBE32D50FA4EF7D5CA3F3CAD838FCD5FC0CDAFFA7DD0330F5
+      BA8BC6F3F1FC630AC65EF310DBCA8D3B23AF9968F133AAFF7F811F1D6D4CBFE9
+      E69B025D7C7D3688BAF5F1699E9E7F16EF31D1BC08CD76BAF8FC9E8068ABF279
+      EA3F93FF1DC6CF5FB5B7CEE0F7171430E53F7974E94F1F5FC830DFD4FF14D2B5
+      FF4A0F5FCA319EAF7E9D58E419C7577B27DA54DB215EBED76CAFBE0CE83B7E4A
+      4E4E867EBB25EF6CCBB4D755A72FA7E474EAF2D9B8FFBEFA5F2BDF673BF0F7E8
+      4FDFB58EEFC8FF37DB9E013E90316EBA7346B51D3221974CB847AFB6FD49878F
+      F8376D1F904EBB1571A1ED6A99070A18C74FE3895C71593F5F9B4760F3573665
+      E3D0DBEF228FE6953C35AEB67E759E8CBD6A5C51B6C895E369D8ABC655E70B5A
+      BE6ADA2BA7437B3CA6D5EBB257D32FD9F841DE5E693C0D7C475D962BFA65707C
+      4137D758BE8E781ABF3D50C6C264AE92AF8891A44F4CD8A6A471BFD7F6FE6F2F
+      FC782C4250413C3E3396AB3C064B83293214DFD953B5176D31FAB82E42669F10
+      61C27EC248BE968FFAAE5547E8B83F2689B12CBE977E5DD7EC8DD5AFE338FCDF
+      ACFFBFA231DE85346478BC9B2423597BBC0BC9269CC7C96DAF4DD986A79F9FD1
+      1C6474B5B8CBE33FFDFF5FB601FFED7735DEF9948987B17DAE2B1E46EF77F4C7
+      C370CEE98887A9FA35F99AFA4D3D0ED1D46FEA714886F4FF771C225BE83F19E8
+      FF84E97F0BE93F88E9FF17B76EDD6AF4D8A7FF2CA4FF5EA479FADF475B5B5BAD
+      FB7DA2AF43232351CFD91976BEBEFC3FA1A5A0FF31F4F1F141850A15D4BF572D
+      E1576EDF9E3F5FD9FDEE5D38335D95199A3374090E86878707F45DC3207E31C6
+      8F61FC40FA8ACCAB5798C4E40433B43872042E2E2EFCFF2944C8F16B30FE18C6
+      EDFFF02104FA4FE5468DB4C1ECA7FFDA94E3D767FCFE1F3E2093B73784E1C321
+      509CA4080D4553777731FEDACFFBD0FF3AD3FF48B37ED2E2060571AE2EDF5575
+      969610E8DD700D34EAD041DAEFFF3D3FA8BFEDBFF5F941FC15C897337D3CEB0A
+      79F0E3D64178705EB95DCB9A9D4DB34ADAD0B719B369F12A96CF8FED8BFD81D7
+      33811771F8E35E0272E561EB320BFCBF6CC57659E9FFE925BCA2F932636D9C27
+      F06111F0EB327CB83A0F1FCE4F03AEC5A08D8BE2FFEC3367D6B6333FF36F41AC
+      2F706F32DE9C9F82573FCF663A57022FD7E28F9BF381AB93101AE8827C5905E4
+      CD9B498BFFFCC63CA4DE5E8507A717E0E9B109787B361AA95712980D1B80A74C
+      CEB5995830C61975CBE544810259B4F86BA7F8E1C3ED4D487DB4092F4FC7E2ED
+      9948A49E67BE3F5F03BC5D07DC88C7B69836686B571CF9F26556F1B299317FD8
+      74E5F80E787B6B03FE78B299F1E3183F021FCFCF60BA572BF837E762575C47B4
+      75A9825CB9CCB4F49FDB3719BF5D5F8BE79757E0C5F118667F14522FC633FF19
+      F71593717D1636CFEE8AF6ED1B33BEB9163FB84F13BCBE158FDFAFCEC4E36313
+      F1EBE9E9F8E3CE72EEFF977BAC2FAE4EC1A2D8BE6C9BEC084BCB9C6ADC4CCAA9
+      19F36574BFC648BD3589F116030F56E0C38D85F8787906BEB0F8878DEDCDF8AD
+      9033A799DE9CA39C9832AE1DF02496E54E2C3E5E9F8E4FD7E251DFB61C8A9428
+      6274EEE6617AE2235C8037F1F8F4344E519F5B507CD75CD2CEDC809C32C5B222
+      A04B4DA3745A88B190919FD9E46301E3CE7B8C389FFDD3EF37F5EEDD1B19E5AB
+      CB4836EAB96691278546DCFE54FDDFCB7F53E3AF479F0E7E5A1E68FB6A889F16
+      4FED58FF15FABF87FF7FC7F8316EFC862BBFE36608E169DF6BD3F2919E493704
+      C1C0B3F119E5EBB3DD543EA03EFD2BF41BF05BEF7BB3623BCD292167CE9C6ACF
+      06D2375535EFFDE9D22B72058D670B3564E8D52FE8783653932FA73F2C2C8CE7
+      DDA851A3D4FE7FAF62C58A46E99716E2E988A34EFDBAF892B8E8D1AFFE5D60D1
+      660D6E86FB3FA3E3D718BE999919F063260E9A3775FC8A7C196EBAF9927983E3
+      4FD37E71D998F12FE56AC2907E4DAEA85B843EFFE5B8C68E7F6EBB06D7D8F12F
+      C73575FC8B32FE1BFFFFFCF1AF59AA55AB865A356C11181898AE630FE2C74D4F
+      42DB365D101010A025232828088E8E8ED0C75F9A70108BE6ED43AB96ED3174E8
+      50DE96AE49D2B5C0460D1D50AF8E7E7E62FC6ECC9CB21E53A357A0699316C897
+      B7007A770BC79C6907307746325C5B7593E593BDC58A158347C7BEA86FD38E23
+      E5E74B7068EA8DF0D0E55838FB0487269FFC21BD2D1D3AA25C991A706F3302E1
+      213B39EEDD7E85C1FD96711993233669F18B14B14450C0344C9FF00366C7EC87
+      AD8D038606AC54E3D334347023AA546CA0C5A779D12E822E3EA174C91A7F3A9F
+      FCA85FC715230337C8F2E7CDFC118ECD3BEBE48B32ECEDBA20A8CF6215BFAFDF
+      6C142E58129EEE0378ACF5F109516356C3B1990FEF3FEAC78E6E7D51A4B015BC
+      BCBCD4FA4ECA9F1F7B98E748F4D8B5285FAE06F2E72B8406F51B610ACBA3E50B
+      9351B9522DADBC21FED8E18B11DC7F06DAB7E9C173D486AECB2ACBC89123E160
+      EFCA73528E5FBE6C4D3839BAF231E1E7E7279B9703070E849B6B6766BF65BACF
+      0768DC516EEB5A7FF4E82624259971CC986186C58B15888A32C38205669836AD
+      8F5EDDDBB7AFC6860D02F6EF1710172760CD1A05A2A204AC5841F766DAEAE51F
+      3EBC1B3B77CAF3D7AF173071A2AF5EFE891327B068916EFE8C19FACFD9AE5EBD
+      8A79F3E8FF2D05E637FDDFA4823F75AA80E5CB0DF3A9905EE2919CA02081C54C
+      A19FDE5D494C1C6E90BF6E5D716EEBB66D0A3EC56DFA74D22D60D5AA7106F9DB
+      B7B7E53AC9E6800001B3670B183448C0F0E1242BD6207FEFDE89983245A13332
+      526177FFFE8AE9FAF5CB0DF24F9F3E8A254B14FA691A1F2F7079A47F37FD1F9F
+      1125313137EF3FE20E1EAC8803D9A0E77BF56A65EBD6C1DC7EFACF46E2878408
+      6CCC1B7F1E7EE1C2CFEC7843C0881169FFFDE8E757C0A471B76C596F96EF02FC
+      FD296F05F4E963DA3D00FACF89B1632DD93641E0888D35FD3D828B172FB07D78
+      7BD4AE5D403C5E335822C708D8D15AC0E53503F8FF1A6C19EF82093504CC1A20
+      605C98EE18D2BA414E8A87A1CF952D8B870F1FE2E79F7FC681BE7D7181D511E2
+      4BB0BC0AD29641DC834D145C6AC7128D73A5FC930C3F316C6088D19021EAE5DC
+      3265F8FF27ECDDBB578DBF86D6B56C899974ADDBBB39366E6C03D15F1597B070
+      21FFFE2B7D43F6F4E9D3D8DDA50B4E906E5F5FFCF4D34FD8121ACAFFBB64D6AC
+      5E8AFFAD744AE3D234F5DC395CBA74098F1F3FC691234770C0D616FB4A97C6D3
+      CB97B93D2473F5EAD5186B658EE99305A4D448E3A6B0FDC6FDFBF77168C912CE
+      DFCBE2B08C642F58C0EF859E3C7992CB886AD10273D87E62EBD6DE9C7F411237
+      FAC6EDC276ED708DB59D59BC38E258FD286643DFDCB9F1242585F317325F9EDC
+      B983989866BC6F45FECB972FB12E2E8EC76A63B66C7C4AFC308605B56BF36FCE
+      92FD141BF1BEA0A81FC1C1FCDBD03B7BF6E4FE1E69DE1C871852972DC38D3D7B
+      F0DB850B9C436398E232AE51238C1BA5C82BCEDFBC19B4FDBEB573278FD5AD5B
+      B73848664242022EB2980CA85B17C16CBF3FD4DA1A154BD0B901DBA62EB0C28D
+      A4A95CAE98335290ADCB9B34C104A134FA333D4E0CB518860608CAFF5D7DAC6A
+      4BFD4EF7BA09A493EEFFCE63FBF196CA18D82BB9AD1A2974139FC6C8BE7DFBD8
+      B62A08ABDD1BF0768431744F43394F533B25B70DE38E1D9B96BF13263461DB89
+      DC8A5C0C15D08B8DF57825AF8164DADF8AED3F03D2F4EA7D0680E574188B2D6D
+      C354531D3CFA2678AF5EBD54A0E5AE5DBBAAD5E5BA904B6D59DA96A6C70F1CE7
+      98366D9AEA5C83E6A9AED71D25FF4E5A3B11A21C9AA7EF2B2BBF4FAE022D1357
+      843E3ED92C77CEA34F86C827DDFACE9B8827FA23C72768F31A29CFFF1A71BE68
+      0BE94A2F5F2BB64AAE34EEEA80CA7ECD752ADF1D049D203E4D89AFAB8DB4FFB5
+      FD90D74F71D0EC3F11EA3900B5BE937275F1A5B1D1D42FE5EAE2136C6C5E233C
+      EC1CE74B63AC2FFF3421EE4E4896DC7A437C513F4DF5F135C7AF7A4E41E73A91
+      3B61EE3CFCB06347BACF294262E370FCD61DA4DCB98BE4536CDFB6C1B4EF8A0F
+      9A38198B8E1CC7D49D7B10B5791B6277EF43E2DEFD58B429098B972C35282B30
+      723C961E65E78B8C17BA6E13FA2E58822E3367A3DBEC790859B60A312B5662E1
+      E2253AE58C9A3419718C1BB36B2F46ACD980DE098BD0797A1CDA4C988A561113
+      E0327E12BAB2E5B1F173999CC55A72A6CE8AC3B8D5EB30E587DD18B6722DFCE7
+      26C2635A2CDA444FE17CC771E3D1626C049A8F0A43DB31E1983A275E4DC60276
+      BCD17FF65C8CDFFA038297AD46B73909E81493C677088B428B311168161A06BB
+      A123D1704010064544B1F393345BFC27C72074ED46F44D5C82AEB3E2D171CA0C
+      053F92F8914CF738341D39064D4242D170D01058FBF9A3E3804158B8681197D1
+      3178147CA6CE45C78933D17ED234B8464F56DA1E05FBD1E10AEEB050341E321C
+      0D0387A04E8F5EA8ECD61E9DFA29AEED38790D4005C77E2869D703F96B774636
+      6B0FE46ED80585ECBBC2CAB91BCA75EC892A5E7D60DDB33FEAF51D88DABEDD51
+      C9C50DB5DA28CE07BDFB0E43AE1AEEC0B182C852D90D59CB3BC3A2AC235F2608
+      25ED20946AC291A96C13E4AED614960D9AC1DEC393F3878F8942A60A4EC85ACE
+      89B7CF5AB231B25AD58545919AC856886D4F9450C92B5011656BD9613EDBC7F3
+      3E589088BC55EC91B54C33E4B0AC83AC85ABC3A24005DED6224F0964CB6D85AC
+      0C02215731D46DD21273E2E7AA5F83637952B2AE0BCC8B59C3227F796463EDF2
+      E42CCC65E4CA5108D9B217448992953072F8489DB9487D3A7E520CBC7A0F868D
+      6367E42C6D8BAC4C56566603D9E3D0A11B9625261A3DBE162D5A8C4896C75EBD
+      8250CBDE1D5D7A066229CB37A36FFC2ACACC74DD34D6FE0F4793B942DA7771D3
+      C5952CF24F309ACA15747C4FC358AE1CE46498FACD5C65A99D417EBA6D68D5AA
+      956C1CF4C54F7AEFA27EFDFA46C75159EE4AEBF4F1E5F247D9FF2A3E5DD73694
+      579A7D4E3A356C4A494F3E9992D3227FC284091C743E64AC6E898CD71AAEE435
+      817B283DE3F77B6C0344BEAE7C35C00BD7EC73636418FA5E90A1F14FFD93CEB1
+      179C91F14BF3CA7B35E9E6E7CE9D3B43DB0E293F53A64C26C54F93AF2C878CED
+      3FAA2F54A89066DBE6C6E68F66DFD1F7118DD9E64BF879758D7313C63A1FA7F4
+      BF43E2785796D726E47D690DB3EF0A7F5131F26F13961A1AEB7AEFDFEB9161CC
+      F8D12743E457AF5E5DEF77C34419BAF8E6E6E6C8962D9B160C6DFF4D1DFFA6DA
+      4F85D6FDD9FC8CDA4FF1CD9C39B32CA4CF21FC59F667547F46FDCF08DFC4FF2F
+      493B77712FF0802185E1AC043F33FCC03098612B43699DCF0FBA17B8C4D098A1
+      024325862A0C15199C192E301C6428A2877F86A126C3208612CA3A2B867D0CD7
+      186AEB7D7ED1BDC02986F60CBF30ECA0F60CAB185E30B81BDA7629FD2DC6D085
+      E19952CE9B884EF966457AE4F131925F5439DF956430EEF43EF62D06B8D7E973
+      B04CDEC3E3CAE64B1EC1E0C09053869FA28C5D6EA62F5F58C7C26EB625170757
+      28B0EF5AA5423B7F659C530C17189E326C64A8A8C1BFCDB08B611BD3BBCDB39E
+      DF8FACCDDBEA4537C1A36ECFB965F31DCACE960B30B832FCC47090A1A4845F95
+      A1469447AEEAFE4D5D1DAA16D972B36CBE1FEF97CB7FF04B95C2DB0F94CB77A8
+      B8D896F16A33DC6088918B05F3B535E33E64EB5B32CC67F35FD9740B839544C6
+      54867B727C56DF8FE10A4361867C0C8B1848461283A5B24D37868F3AF8BE0CB7
+      184A2B97C9EF254A199B180A310CA2F8E8E0D76278C0D05D524732962A656C66
+      38C4B05F073F33038B79F235063B0633657D7E86D50C6078CEE0A62B9FD8BAE2
+      0C5B9576CC62E8C13050D96F2F19063064D297936C7D11862886BB0C7F30BC67
+      4866684736CA503259585854B4B4B4741251B44811A7BC39B23BE5CA92994D73
+      38152E54D0299B8545656A2BC3CF59B76EDDD1FBF6EDBB73E0C081BB3BB76DBB
+      3B3D64E85D8FB225EEBAE4CB71D7B37CA9BBA3BD3DEF36A8578FCEC373CAF073
+      393A3A4EFDF4E9D3D7CF7F7CC2A2C0FEE86D991F03AB55C4D086F51154B30AFC
+      0BE7468D5CD937980B42095DFC8F1F3F7E7D70F912FA952C8CC1D6D531D2CB1F
+      C37A0463AC6F1F8C6DE508C7AC66F7729A09EEBAF8EF7FFBEDEB8EB819E86559
+      10A33B7446E0A838F48F4C4470E80CC48E898657BEEC1F8B9B0BF1F4F8A1063F
+      AF8B8BCBECDFDFBDFBB665EA24F4295E18633BFB20306A21FA317EE0B8B99837
+      6536FC8AE6FBA394B9B09CB5379770735866329BDCBD6A8597374E9FFA7676E7
+      0FDFFC8BE4FD36A6A5C3B7D03EC3BE850C1EFF75C2C8E8AF270F1DFEDADDB2E0
+      1FA5CD851512BE05EB8CF64D320B8F3A5B987DEED7D2E1E9C8A0C08B2D0BE4BE
+      E75728D7E7916E6D523D5BBB5DEEEEED7B66CCE8D1173D0BE44E2D632EAC63BC
+      DC121FB29434179636CE2C3C63F3C5329B67AA96CB227BFF9259B26C73CA6AF6
+      A27266B33D4C59EDE299CCE6B5CF2AA43A66119E64158476AC6D56D101C65FD8
+      30B3F0346BE62CF63655ACB7B4B46F77BF499D2657CA67364F76CE22BC6636DA
+      9BD3A32EE6C2B642664218A36493068FF113497FB9921596F70C8CFED4377CFE
+      B70163E2BE552F56E22CD3F7349F993052A92F8B46EC78B1321766396511DE96
+      29516E63977EA33FF58D5880EEC3A781F1535A66159EE73513864BEDD5EA7C33
+      C1C321B3F0A08C4596E47A55ACCF776EEBF7DCBE8EDD9D6A99CDCFB5CC22BC64
+      0AEBEA1B6F6C7D71E6C322E7ACC2AFB5B366BA543547CE9FAC2DB25C6D9545F8
+      95C57BA5A6BF3A4A36E66768F54CC2CE069985B33533097B7308026D87F29B70
+      289E83756A4936C0AB309B4AE9F3595228362F196E31B4D0D3AE85B2CD4B2547
+      2CCF6AD6AC89D2A54BD371C532B9FE51D62D6B2634435781DFAB7B2659779F9E
+      99B2B4E4CF3625C88C2D4159975047B0416BA135B5BB2F59D7816127C31A7AFC
+      4FB7F923DB0A82D32F6C6617437BCDD86BC48AB6711ADB498C1784F7D146C4B4
+      023DC6C2B081A1A992CBB659D8CB6063447FC4D37F1C94295386FCFC51B1BD44
+      4F86C58AD7B80403A928AC2A57AE9CF80C5A8A20742B4DB7F419DA199943F60C
+      67D9F1EE0D36ED2108DFE816F8767A8DD3483EF555611A96821040AF9DD12DED
+      A0749E595665D8C750CED0D891E917A6FBCD68BA656AE0359C0ECA9C582BC99F
+      86F4289120D83D1584FE7E06746BE62FD9B29572BD99D094EAB6D0765A0F5F3A
+      7EE8DC940D7B61B79BE00602CD1BD87E8430BC60B8A9EC3B2A9D187E51C25DF8
+      9714766A922522E464B043DDC3771B563D71B765FDD32981BDAE35EAE171A176
+      D35A278F34AB7D32B98FF7C5EA32BCCC0F6E5D6CB867CDB4A531812EAF3BD41F
+      8DD2790EA38BF3CE2FFB9356CDBD94F24BCDE636A75639D89E1E3873D25D0B09
+      2FD3E3FBD76DF66F889B1F1FDAFE4568A79218D23A27025A3541B5627B50A7F4
+      268CE9DAE2DBFC88E01B5D5C4E9E9A1C7EBBB254EFCD8B27A62F1AEFF77414E3
+      0D76CEC3B87931C4252F86B6B1827DB5F92857E008FC9A77412FC736F0779DF4
+      79D78A89FB5EBD785A4F9538372FB4DDB96272F2F4A01608712BA490E1920FC3
+      5CF3C0BB691F94CD7F144EB567A34BF3C9880E1CF369FFFA699B7F7DF94CB50D
+      B979E9548FA4F9A34F2584796251942F26F5A9C77417C0E0D6B930C0D906B58A
+      6F47A5C287D0DE6E25564C1BFEFEFCD16D137F3C94EC387BDE5CF7D87973BDAF
+      FE7C38766164D72764FFE8CEA53177547BB06544F7B4C1D401CDE0E9B812150B
+      1D4417BB0044FA55C2BA2593BEC6AC58F6A2EB9851AFFAC54CFD4D11BF1BD62C
+      7E09B347B8BD1AD9D10A615E15317FAC07660F77C5B00EB608F1ECF26D4ED4E0
+      CFA3C286C03774045C060D806D87F6085AB1547A0D32F3BD1BE79BB058AC9911
+      ECF8DBF0764531C6B3ECB705913E1F12E64EFCD57760C09BB2B67551A47C7914
+      B0B28255C54AE83B6F8EDC7970B61BE78FB93039493F6E993F6DE1DAD5B18E5D
+      BD3F566AD41025AB554311B64DCD6F6985A24C8E7FEC0C7DD7042DE83479E884
+      F1C18DDC3B7CADD8A03E4A54AB8A22E5CAA24089122856B122BA4F8B31786D6F
+      FC9CB8BE4D3B75FCA3423D5B14AF5A15452B9447E1B265518A8D77BFA9530CF2
+      B7EDDBEBDCB197FFA38AF5EBA138D35FAC52455855AE0CB2C777EAE4FFBE29A6
+      6F5BA27888E60EC32586F60C454DE4E760A8C2402F7E383154CE802D760CE565
+      CEFDED189A1222DC0B3491C04EC4B84E051A9F29673170A7750ECF70361FD189
+      5F6B6914D6B140A32E0D73BDAC5932EB0725DECBA254D677BD8B64F9DDCD92B5
+      2965F18ED5BDB32D6BF1BE9F43DEDBCDAB66FF6CCC35A7E60C65C5F7C83399A1
+      61856CCF87BAE6EBE9D530D7C3CA96593F15CD9B09B92CCCF93A33193E3D3B57
+      CE8CBE03618E963572DC1ED9367FA70B934A998FF728586554BBFC6DFBB7CC3B
+      CAC72EF7B2B675721E6E512DFBF50615B23DB52E6DF196FCAAC17C185034CBBB
+      EE15B3DDF26D9A7B09F3BFAEFC9875304B1A629933BE4761CB29DE05AB447914
+      A8477165F16B72B19445C0A5CAD96D1DB0DD2C9DFDE7C0402FE1D3034AE5A175
+      6C6890DF9C815E64F985E13014C747FF95EF3FE6EB30DC60B8CAD089C1D2447E
+      76E598AFACECF3EA19B0A581A16D06CBE5FA2C4F1B2AD14089FA119D0BD63F5B
+      2E5B9F0335727846762E588F7259C47886C84E056CC7752C60EBD528F733364E
+      7ED3C0DBDA0CBD8A6679EF6E95F51DCD5BABE34DBDF2D9DEF673CC7B4BDFF86F
+      42DF5191A9CF642EA07EF96CAFD8714A3FCF86B91E572C96E573E13C9990C3C2
+      8CAF13DBB1131F54D0FC0E4C0E73B0F17D6F845B7EAFC361C533313F6AD0B680
+      D912EEDD28F79A36D6394F309B6EDB96CFF682B659AE45B37CAC56226BAA0DB3
+      DB9ED5FBDAE5A6EBBA0D64E37DB09AF99A41C572CFEA56B8E404AF8235CF96B5
+      18985427A7EF88CE059B877915AC3BA35BE152A7224B6431A1FF9A31D452E602
+      8DF94CE9D8E607333C6238097E3EF44F3BDEBEAD81C7F6F46DB9A54B97E2DEBD
+      7BEC10E8D708ED36FA909A4C3CE26B1792A54FDE637BE28AFA69AABBC8C9494D
+      E61C424484165FFC3F86B47AE6EBBDE3F611C99B2314507C275404D940ED070F
+      1E8C1E3D7AA8EA636363791D95641E2345E921DAACE4521B6A2B9549DF4513BF
+      05C80BFD1F8CF261517B655D329B8A3C6A2FDA4C3245B92A9F8408B66F557CB7
+      9B6C244875125F8C254D69BD7A4C147191FA27672F7145B99A3195E349FB9040
+      F2A576EBE38B7E1AE2F25829632972A43C4D992A9D92BF97E3FDC6E4BF79F386
+      B7BBA7CC7B5ABEA79425E624EF2E252F4209EA6BB28D7358AC88435C9AA77717
+      68194AB9146C9E638AA0ABE11EB3411C73E7589C799DC865EBEEB1F31655AED0
+      54F1B1D2B47982249774426C4FFE7CE7EF91DEBA7307F18B97C07750203A0F1D
+      0CDFE848F8B3731CEFF031E817118ED59B37E1C1E3A7B23A0F9E3A85DAEDDDD0
+      764408127FB907BFD9B1A8E3E3835D2CC4BB950F838CDEBF1703972CC1A91BD7
+      B564CC5AB91C659B35419EF2E56051B020B2172E8CE2D6D6D8C1781B18567DFE
+      88052F9E61E2B914ECBE7A55C5FFF1E79FE0E0D715159AD9C1B27A35E429550A
+      390B1686458102285CB90AB632EE7A86E51F3F20F1CD2BCC7BF410D3AE5C44E4
+      FE7DB8FBF22512B724A176C70E28DFB8218A56ABC2F9398A144116C62F50A912
+      36E10BD39D8AC5EFDF62DECB67887B788FF347251FC4BECB979198B401B5DAB6
+      4159763E47FF519DA77469E4B0B4448EA24551A4460DAC62BC456F5E32DB9F62
+      EEC38788BD7513532F9E4358F27E245FBB86033F9D456D371794B2B565F65646
+      5E766E99A77429E42F570E65ED1A23E1E923CC663A8937FDDA154CBE700151A7
+      8F63F8AEEDB8F5FC398F836BCFEE4C3FE357A98CFC2C7E052A55E0B1A8CEEC9A
+      71ED2A265F4C41D499E3883892CCFA60174236272162CD6A550CDFA7A6A2A397
+      3F72E62C8DECD9AD90234749E4CD5301A5ACECD1B1ED2CB4719E82560EE3D0BC
+      C950346CDC07A3A2E5DF43BC79E50EFAFA0621975979E460BBDB02ECF0A99AD0
+      0BE5840E2863EE88B14133F1ECF10B83397BFFE623D42EEA8A226CF75B41E802
+      E71A0178FB2AD5A45C7F70FB314A9839A266B6CE48FDED73BAC64980C7784C09
+      5D92EE31B66CDE061CDC7B2CDDFCDFDEBCC71F9F3E9BFCCC5BBA8AB84D49DBA9
+      A8F6C35AEDE4B8CA6D29076DA344AE548674DB25DD0FC9E956FEF79A8A2F852E
+      BB34ED90E38A6DE4FC90ECD3A4C71B868AB80F13F7859A7C53E410EC99EF627B
+      519E5827C25E191FA96EAA9342AA5794AD396F8C5DBAE223C6D1BE873D047BC1
+      68A8F58B282639C2F07773C5EF36DF4B96EF53FDC1D5CE2169DEC8ADFB1714AD
+      EB8DEDDB09BBBA7A0B3BBCBA085BDDDD856DEE1D85ED9DDC85ED1D3B085B5C5D
+      746E471654AA24ECF6F116B6797A0A499D3A6153FBF6D8D0A60DD6393B638DA3
+      2356356F8EB5F6F64C862B6F2B2DAB59FD4E2F2F21C9BD2336B66B87F5AEAE58
+      D7AA15D638386055B36658D1B83192DCED911CE68D45B56A61534B473519649F
+      C85BABC15B56BF3E5636B5C595AD31D83BB8331656AFCEB1A5B533E76E716B23
+      6C6036116F35E3AD94F096D4A9C3F51D89EE851BBB666379A35A2AFE521B6B21
+      C9A9A5B0A55D5B61758B164C4753B6BE1196D5AB87056DDB616BDC1C2C1D1888
+      251EAD71737F027607765471452439B71236B6721236B676C6DA16F658C7C6DC
+      1AA67BF3CC5978F2E42952D97E3574E4088405FAE0ECB12398DBDA45C55D5CB3
+      26B6B2FEB835315A78B36A39DEAC5C86978B13716B562CCEA79CC7B56B37D8B1
+      FB566CDCB8914F69796750108EF5EB83EBD151F835713E6E4E8812EEF87415DE
+      0507E14D50205E319C88998677EFDEE3EAD56B58B66C39C7A95367D8F275DC67
+      FC173E5DF1BAB307DEF6F4C71D3F5FE1028BC15376DC4178C27072F55A3C78F0
+      9071CEE2D8317A5FF91C1E3F7E829F0F1FC3E32A55F0941DD33C63717DD6B021
+      AE3A3A0A673A7554F12F37B6C3C387BF70CEE9D33FE1CA956B3C0EAF5FBFC1A9
+      556BF08C1DCF3D63FDF2BC49133C677D75A17D7BE107D67FB76BD7E632923B77
+      41CAF19378F4E8177CFCF891BFBF7EFBF65DC67F8D135362F09CC5F6398BF10B
+      D6D70F58EC0EB7553C8273D6A185F0446903D978A561239C706B87A32346E2D4
+      D2E54839710A878306E345CB9678C172EC45870E38EFD1492DF7539C9D55329E
+      B2FE79666383670D1AE039CB8B672CFF7F7173C34B36265E7878E082AF8FD618
+      A0E533CE4EC2EDA64D84672C879EDBD9E139CBAB176CFCBC6CDB162FD9987AC0
+      C6568AB79716575A76B078A4746C2F5C61BE5D65F3D7DBB513AE75EE2C5CF0F1
+      11923BB4D76AFF7FC816E357
+    }
+  end
+  object MainMenu1: TMainMenu
+    Images = MenuImages
+    Left = 84
+    Top = 78
+    object File1: TMenuItem
+      Caption = 'Файл'
+      Hint = 'Блок операций с моделями и настройки'
+      object New3: TMenuItem
+        Action = NewModel
+      end
+      object FindFile: TMenuItem
+        Action = LoadFile
+      end
+      object Save2: TMenuItem
+        Action = FileSave
+      end
+      object Save1: TMenuItem
+        Action = FileSaveas
+      end
+      object Import1: TMenuItem
+        Caption = 'Импорт'
+        object Part2: TMenuItem
+          Action = ImportPart
+        end
+        object Carlssonhulfile1: TMenuItem
+          Action = ImportHullFile
+        end
+        object Surface1: TMenuItem
+          Action = ImportSurface
+        end
+        object Chines1: TMenuItem
+          Action = ImportChines
+        end
+        object Carenefile1: TMenuItem
+          Action = ImportCarene
+        end
+        object MenuImportSTL: TMenuItem
+          Action = ImportSTL
+        end
+        object ImportObj1: TMenuItem
+          Action = ImportObj
+        end
+        object VRML1: TMenuItem
+          Action = ImportVRML
+        end
+        object PolyCad1: TMenuItem
+          Action = ImportPolyCad
+        end
+        object N6: TMenuItem
+          Caption = '-'
+        end
+      end
+      object Export1: TMenuItem
+        Caption = 'Экспорт'
+        object Part1: TMenuItem
+          Action = ExportPart
+        end
+        object IGES1: TMenuItem
+          Action = ExportIGES
+        end
+        object DXF3Dfaces1: TMenuItem
+          Action = ExportDXFFaces
+        end
+        object DXF2DPolylines1: TMenuItem
+          Action = ExportDXF2DPolylines
+        end
+        object ExportDXFPolylines1: TMenuItem
+          Action = ExportDXF3DPolylines
+        end
+        object WavefrontfileObj1: TMenuItem
+          Action = ExportObj
+        end
+        object STL1: TMenuItem
+          Action = ExportSTL
+        end
+        object Offsets1: TMenuItem
+          Action = ExportOffsets
+        end
+        object Coordinates1: TMenuItem
+          Action = ExportCoordinates
+        end
+        object N3: TMenuItem
+          Caption = '-'
+        end
+        object AuroraHullVsl: TMenuItem
+          Action = ExportAurora
+        end
+        object ArchimedesMB1: TMenuItem
+          Action = ExportArchimedes
+        end
+        object GHS1: TMenuItem
+          Action = ExportGHS
+        end
+      end
+      object ExitProgram1: TMenuItem
+        Action = ExitProgram
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+      object Preferences1: TMenuItem
+        Action = Preferences
+      end
+      object N4: TMenuItem
+        Caption = '-'
+      end
+      object Recentfiles: TMenuItem
+        Caption = 'Предыдущие модели'
+      end
+    end
+    object Project1: TMenuItem
+      Caption = 'Размерения'
+      object Projectsettings1: TMenuItem
+        Action = EditProjectSettings
+      end
+      object Linesplan1: TMenuItem
+        Action = ShowLinesplan
+      end
+    end
+    object Edit1: TMenuItem
+      Caption = 'Редактирование'
+      Hint = 'Контроль операций текущего редактирования'
+      object Undo1: TMenuItem
+        Action = Undo
+      end
+      object Redo1: TMenuItem
+        Action = Redo
+      end
+      object Delete1: TMenuItem
+        Action = Delete
+      end
+      object N7: TMenuItem
+        Caption = '-'
+      end
+      object Undohistory1: TMenuItem
+        Caption = 'Возврат изменений'
+        object Clear1: TMenuItem
+          Action = ClearUndo
+        end
+        object Show1: TMenuItem
+          Action = ShowUndoHistory
+        end
+      end
+    end
+    object Point1: TMenuItem
+      Caption = 'Узел'
+      Hint = 'Подборка операций с опорными узлами.'
+      object Add1: TMenuItem
+        Action = AddPoint
+      end
+      object Projectline1: TMenuItem
+        Action = PointAlign
+      end
+      object PointCollapse1: TMenuItem
+        Action = PointCollapse
+      end
+      object InsertPlane1: TMenuItem
+        Action = InsertPlane
+      end
+      object LayerIntersection1: TMenuItem
+        Action = LayerIntersection
+      end
+      object PointsLock1: TMenuItem
+        Action = PointsLock
+      end
+      object Unlockpoints1: TMenuItem
+        Action = PointsUnlock
+      end
+      object Unlockallpoints1: TMenuItem
+        Action = PointsUnlockAll
+      end
+    end
+    object Edge1: TMenuItem
+      Caption = 'Ребро'
+      Hint = 'Операции с рёбрами и граничными кромками.'
+      object Extrude1: TMenuItem
+        Action = EdgeExtrude
+      end
+      object Split1: TMenuItem
+        Action = EdgeSplit
+      end
+      object Collapse1: TMenuItem
+        Action = EdgeCollapse
+      end
+      object New2: TMenuItem
+        Action = NewEdge
+      end
+      object Crease1: TMenuItem
+        Action = EdgeCrease
+      end
+    end
+    object Curve1: TMenuItem
+      Caption = 'Кривые'
+      Hint = 'Работа со сборками контурных кривых'
+      object AddCurve1: TMenuItem
+        Action = NewCurve
+      end
+    end
+    object Face1: TMenuItem
+      Caption = 'Грань'
+      Hint = 'Создание и контроль ориентации граней.'
+      object New4: TMenuItem
+        Action = NewFace
+      end
+      object Invert1: TMenuItem
+        Action = InvertFace
+      end
+    end
+    object Layer1: TMenuItem
+      Caption = 'Слой'
+      Hint = 'Послойная обработка блоков цифровой модели.'
+      object Activelayercolor1: TMenuItem
+        Action = ActiveLayerColor
+      end
+      object Autogroup1: TMenuItem
+        Action = LayerAutoGroup
+      end
+      object New1: TMenuItem
+        Action = NewLayer
+      end
+      object Deleteempty1: TMenuItem
+        Action = DeleteEmptyLayers
+      end
+      object Deleteempty2: TMenuItem
+        Action = LayerDialog
+      end
+    end
+    object Visibility1: TMenuItem
+      Caption = 'Видимость'
+      Hint = 'Настройка графического отображения цифровой модели корабля.'
+      object ShowControlNet1: TMenuItem
+        Action = ShowControlNet
+      end
+      object Controlcurves1: TMenuItem
+        Action = ShowControlCurves
+      end
+      object ShowInteriorEdges1: TMenuItem
+        Action = ShowInteriorEdges
+      end
+      object Showbothsides1: TMenuItem
+        Action = BothSides
+      end
+      object Analyzesurface2: TMenuItem
+        Action = ShowGrid
+      end
+      object Stations1: TMenuItem
+        Action = ShowStations
+      end
+      object Buttocks1: TMenuItem
+        Action = ShowButtocks
+      end
+      object Waterlines1: TMenuItem
+        Action = ShowWaterlines
+      end
+      object Diagonals1: TMenuItem
+        Action = ShowDiagonals
+      end
+      object Flowlines1: TMenuItem
+        Action = ShowFlowlines
+      end
+      object Normals1: TMenuItem
+        Action = ShowNormals
+      end
+      object Curvature1: TMenuItem
+        Action = Showcurvature
+      end
+      object Markers1: TMenuItem
+        Action = ShowMarkers
+      end
+      object N5: TMenuItem
+        Caption = '-'
+      end
+      object Decrcurvaturescale1: TMenuItem
+        Action = DecreaseCurvatureScale
+      end
+      object Incrcurvaturescale1: TMenuItem
+        Action = IncreaseCurvatureScale
+      end
+    end
+    object Selection1: TMenuItem
+      Caption = 'Выбор'
+      Hint = 'Выбор объектов и опорных точек для особой обработки.'
+      object Selectall1: TMenuItem
+        Action = SelectAll
+      end
+      object Clearselection1: TMenuItem
+        Action = DeselectAll
+      end
+    end
+    object Tools1: TMenuItem
+      Caption = 'Средства'
+      Hint = 'Специальные инструменты для преобразования цифровой модели корпуса.'
+      object Analyzesurface1: TMenuItem
+        Action = CheckModel
+      end
+      object Removenegative1: TMenuItem
+        Action = RemoveNegative
+      end
+      object Removeunusedpoints1: TMenuItem
+        Action = RemoveUnusedPoints
+      end
+      object Developplates1: TMenuItem
+        Action = DevelopLayers
+      end
+      object Markers2: TMenuItem
+        Caption = 'Маркеры'
+        Hint = 'Независимые маркеры для отработки корабельных обводов и др.'
+        object Import2: TMenuItem
+          Action = ImportMarkers
+        end
+        object Deletemarkers1: TMenuItem
+          Action = DeleteMarkers
+        end
+      end
+    end
+    object ransform1: TMenuItem
+      Caption = 'Трансформация'
+      Hint = 'Геометрическое перестроение размерений или положения корпуса...'
+      object Scale3D1: TMenuItem
+        Action = ScaleModel
+      end
+      object Deselectall2: TMenuItem
+        Action = MoveModel
+      end
+      object Rotatemodel1: TMenuItem
+        Action = RotateModel
+      end
+      object MirrorFace1: TMenuItem
+        Action = MirrorFace
+      end
+      object Lackenby1: TMenuItem
+        Action = TransformLackenby
+      end
+    end
+    object Calculations1: TMenuItem
+      Caption = 'Вычисления'
+       Hint = 'Информационные геометрические и гидростатические расчёты по корпусу корабля.'
+      object Intersections1: TMenuItem
+        Action = IntersectionDialog
+      end
+      object Hydrostatics1: TMenuItem
+        Action = DesignHydrostatics
+      end
+    end
+    object Window1: TMenuItem
+      Caption = 'Кульман'
+      Hint = 'Добавление или обновление расположения чертёжных проекций по окнам Free!Ship.'
+      object NewWindow1: TMenuItem
+        Action = NewWindow
+      end
+      object Tile1: TMenuItem
+        Action = TileWindow
+      end
+      object Cascade1: TMenuItem
+        Action = CascadeWindow
+      end
+      object N1: TMenuItem
+        Caption = '-'
+      end
+    end
+    object About1: TMenuItem
+      Caption = 'Справка'
+      Hint = 'Информация об авторах и версии сборки'
+      OnClick = About1Click
+    end
+  end
+  object ColorDialog: TColorDialog
+    Color = clBlack
+    CustomColors.Strings = (
+      'ColorA=000000'
+      'ColorB=000080'
+      'ColorC=008000'
+      'ColorD=008080'
+      'ColorE=800000'
+      'ColorF=800080'
+      'ColorG=808000'
+      'ColorH=808080'
+      'ColorI=C0C0C0'
+      'ColorJ=0000FF'
+      'ColorK=00FF00'
+      'ColorL=00FFFF'
+      'ColorM=FF0000'
+      'ColorN=FF00FF'
+      'ColorO=FFFF00'
+      'ColorP=FFFFFF'
+      'ColorQ=C0DCC0'
+      'ColorR=F0CAA6'
+      'ColorS=F0FBFF'
+      'ColorT=A4A0A0'
+    )
+    Left = 114
+    Top = 78
+  end
+end
