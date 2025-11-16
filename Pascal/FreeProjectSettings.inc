@@ -170,9 +170,9 @@ begin
   FEnableModelAutoMove:=False;
   FDisableModelCheck:=True;
 //FEnableBonjeanSAC:=False;
-  FSavePreview:=True;
+  FSavePreview:=False;
   FFreeHydrostaticCoefficients:=fcActualData;
-  FProjectSimplifyIntersections:=True;
+  FProjectSimplifyIntersections:=False;
   // hydrostatics settings
   FStartDraft:=0.0;
   FEndDraft:=1.0;

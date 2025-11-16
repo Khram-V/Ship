@@ -17,7 +17,7 @@ interface uses Windows,
 type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     ActionList1: TActionList;
     MenuImages : TImageList;
-    MainMenu1  : TMainMenu;
+    MainMenu1  : TMainMenu;              //  WindowMenu: TMenuItem;
     HintBar    : TStatusBar;
     LayerBox,PrecisionBox: TComboBox;
     ToolBar    : TToolBar;

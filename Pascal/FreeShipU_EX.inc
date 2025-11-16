@@ -2552,10 +2552,7 @@ var OpenDialog : TOpenDialog;
     Answer     : Word;
     PrevCursor : TCursor;
     Strings    : TStringList;
-    I,J,K,N    : Integer;
-    Cols,Rows  : Integer;
-    Index      : Integer;
-    NSurfaces  : Integer;
+    I,J,K,N,Cols,Rows,Index,NSurfaces: Integer;
     Indices    : array of Integer;
     Str,Tmp    : String;
     Abort      : Boolean;
@@ -2565,63 +2562,22 @@ var OpenDialog : TOpenDialog;
 
     function NextLine:string;
     begin
-       if Index+1<Strings.Count then
-       begin
+//     if Index+1<Strings.Count then begin
           inc(Index);
           Result:=Strings[index];
-       end else
-       begin
-          Result:='';
-          Abort:=True;
-          MessageDlg(UserString(115),mtError,[mbOk],0);
-       end;
+{      end else begin Result:=''; Abort:=True; ShowMessage(UserString(115));
+       end; }
     end;{NextLine}
-(*
-    Function GetInteger(str:string):Integer;
-    var Index:Integer;
-    begin
-      Index:=Pos('=',Str);
-      Result:=0;
-      if Index<>0 then
-      begin
-         Str:=Copy(Str,Index+1,Length(Str)-Index);
-         Val(Str,Result,Index);
-         if Index<>0 then
-         begin
-            MessageDlg(Userstring(116)+#32+IntToStr(I),mtError,[mbOk],0);
-            Abort:=True;
-         end;
-      end else Abort:=True;
-    end;{GetInteger}
 
-    Function GetFloat(str:string):TFloatType;
-    var Index:Integer;
-    begin
-      Index:=Pos('=',Str);
-      Result:=0;
-      if Index<>0 then
-      begin
-         Str:=Copy(Str,Index+1,Length(Str)-Index);
-         Val(Str,Result,Index);
-         if Index<>0 then
-         begin
-            MessageDlg(Userstring(117)+#32+IntToStr(I),mtError,[mbOk],0);
-            Abort:=True;
-         end;
-      end else Abort:=True;
-    end;{GetFloat}
-*)
     function NextParameter(var input:string):string;
     var Index:Integer;
     begin
        Index:=pos(#32,Input);
-       if Index<>0 then
-       begin
+       if Index<>0 then begin
           Result:=Copy(Input,1,Index-1);
           Delete(Input,1,Index);
           Input:=Trim(Input);
-       end else
-       begin
+       end else begin
           Result:='';
           Abort:=True;
        end;

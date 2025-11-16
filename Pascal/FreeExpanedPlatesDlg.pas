@@ -342,7 +342,7 @@ begin
             I:=Round((Viewport.Min3D.X)/FXGridSpacing)-2;
             X:=I*FXGridSpacing;
             // Skip translation
-            Viewport.FontName:='Arial';
+            Viewport.FontName:=UFont; //'Arial';
             // End Skip translation
             Viewport.Canvas.Font.Size:=6;
             while X<=Viewport.Max3D.X do
@@ -373,7 +373,7 @@ begin
             I:=Round((Viewport.Min3D.Y)/FYGridSpacing)-2;
             Y:=I*FYGridSpacing;
             // Skip translation
-            Viewport.FontName:='Arial';
+            Viewport.FontName:=UFont; //'Arial';
             // End Skip translation
             Viewport.Canvas.Font.Size:=6;
             while Y<=Viewport.Max3D.Y do

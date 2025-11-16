@@ -8,8 +8,8 @@ object FreeHullWindow: TFreeHullWindow
   Color = clBtnFace
   DesignTimePPI = 192
   Font.Color = clWindowText
+  Font.Name = 'Times New Roman'
   Font.Height = -22
-  Font.Name = 'MS Sans Serif'
   Position = poDefault
   ShowHint = True
   LCLVersion = '4.2.0.0'

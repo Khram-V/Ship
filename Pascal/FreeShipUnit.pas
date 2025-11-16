@@ -1343,8 +1343,7 @@ begin
    Case IntersectionType of
       fiStation : begin
                      Index:=Owner.FStations.IndexOf(self);
-                     if Index<>-1 then
-                     begin
+                     if Index<>-1 then begin
                         Owner.FStations.Delete(Index);
                         Owner.FileChanged:=True;
                         if Redraw then Owner.Redraw;
@@ -1353,8 +1352,7 @@ begin
                   end;
       fiButtock : begin
                      Index:=Owner.FButtocks.IndexOf(self);
-                     if Index<>-1 then
-                     begin
+                     if Index<>-1 then begin
                         Owner.FButtocks.Delete(Index);
                         Owner.FileChanged:=True;
                         if Redraw then Owner.Redraw;
@@ -1363,8 +1361,7 @@ begin
                   end;
       fiWaterline: begin
                      Index:=Owner.FWaterlines.IndexOf(self);
-                     if Index<>-1 then
-                     begin
+                     if Index<>-1 then begin
                         Owner.FWaterlines.Delete(Index);
                         Owner.FileChanged:=True;
                         if Redraw then Owner.Redraw;
@@ -1373,15 +1370,13 @@ begin
                   end;
       fiDiagonal : begin
                      Index:=Owner.FDiagonals.IndexOf(self);
-                     if Index<>-1 then
-                     begin
+                     if Index<>-1 then begin
                         Owner.FDiagonals.Delete(Index);
                         Owner.FileChanged:=True;
                         if Redraw then Owner.Redraw;
                         Destroy;
                      end;
                   end;
-
    end;
 end;
 
@@ -1598,7 +1593,8 @@ begin                                     // Force to destroy all current Items
    Built:=false;
    Owner.Surface.IntersectPlane(Plane,UseHydrostaticsSurfacesOnly,FItems);
    // Use a low simplification factor to remove only points that are (nearly) on a line
-   if Owner.ProjectSettings.ProjectSimplifyIntersections then for I:=1 to Count do self.Items[I-1].Simplify(2.0);
+   if Owner.ProjectSettings.ProjectSimplifyIntersections then
+            for I:=1 to Count do self.Items[I-1].Simplify(2.0);
    Built:=true;
 end;
 
@@ -2595,7 +2591,7 @@ begin
    FShowHydrostDisplacement:=True;
    FShowHydrostLateralArea:=True;
    FShowHydrostSectionalAreas:=True;
-   FShowHydrostMetacentricHeight:=True;
+   FShowHydrostMetacentricHeight:=False;
    FShowHydrostLCF:=True;
    FShowFlowlines:=True;
    if assigned(Owner.FOnChangeCursorIncrement) then Owner.FOnChangeCursorIncrement(self);
@@ -2623,24 +2619,20 @@ begin
    Source.LoadBoolean(FShowMarkers);
    Source.LoadBoolean(FShowCurvature);
    Source.LoadTFloatType(FCurvatureScale);
-   if Owner.FileVersion>=fv195 then
-   begin
+   if Owner.FileVersion>=fv195 then begin
       Source.LoadBoolean(FShowControlCurves);
-      if Owner.FileVersion>=fv210 then
-      begin
+      if Owner.FileVersion>=fv210 then begin
          Source.LoadTFloatType(FCursorIncrement);
          if abs(FCursorIncrement)<1e-5 then FCursorIncrement:=0.1;
          if assigned(Owner.FOnChangeCursorIncrement) then Owner.FOnChangeCursorIncrement(self);
-         if Owner.FileVersion>=fv220 then
-         begin
+         if Owner.FileVersion>=fv220 then begin
             Source.LoadBoolean(FShowHydrostaticData);
             Source.LoadBoolean(FShowHydrostDisplacement);
             Source.LoadBoolean(FShowHydrostLateralArea);
             Source.LoadBoolean(FShowHydrostSectionalAreas);
             Source.LoadBoolean(FShowHydrostMetacentricHeight);
             Source.LoadBoolean(FShowHydrostLCF);
-            if Owner.FileVersion>=fv250 then
-            begin
+            if Owner.FileVersion>=fv250 then begin
                Source.LoadBoolean(FShowFlowlines);
             end;
          end;
@@ -5126,7 +5118,7 @@ end;
 procedure TFreeShip.Draw;
 var I: integer;
 begin       // Redraws model to all viewports by re-initializing all viewports
-   For I:=1 to NumberOfViewports do Viewport[I-1].ZoomExtents;
+   for I:=1 to NumberOfViewports do Viewport[I-1].ZoomExtents;
    if LinesplanFrame<>nil then begin
       TFreeLinesplanframe(LinesplanFrame).Viewport.ZoomExtents;
    end;
@@ -5138,24 +5130,24 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
     Curve: TFreeSpline;
     P    : T3DVector;
     Pt   : TPoint;
-    Str  : string;
     Rect : TRect;
     R,G,B: Byte;
     Tmp  : TFloatType;
+    Str  : string;
 
     procedure DrawPoint(P:T3DVector;Text:string;CompensateHeight:boolean);
     var Pt: TPoint; Size,Sold: Integer;
     begin
       if CompensateHeight then P.Z:=P.Z+FDesignHydrostatics.FData.ModelMin.Z;
       Pt:=Viewport.Project(P);
-      Viewport.FontName:='Arial';
+      Viewport.FontName:=UFont; //'Arial';
       Viewport.FontColor:=Preferences.HydrostaticsFontColor;
 //--  size:=Round(Sqrt(Viewport.Zoom)*7);
       size:=Round( Preferences.FontSize*Sqrt( Viewport.Zoom )*0.875 );
       if size<3 then size:=3;
       Sold:=Viewport.FontSize;
       Viewport.FontSize:=Size;
-//++Viewport.FontSize:=Preferences.FontSize;
+//##  Viewport.FontSize:=Preferences.FontSize;
       Size:=Round( Sqrt( Viewport.Zoom )*(Preferences.PointSize+1) );
       if size<1 then size:=1;
       Viewport.BrushStyle:=bsClear;
@@ -5210,7 +5202,7 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
        or DrawWaterlines
        or DrawDiagonals then begin
           Viewport.PenColor:=Preferences.GridColor;
-          Viewport.FontName:='Arial';
+          Viewport.FontName:=UFont; //'Arial';
           Viewport.FontColor:=Preferences.GridFontColor; // calculate and set fontheight
       //++ Viewport.Canvas.Font.Size:=Preferences.FontSize;
           SetFontHeight( Abs(Min-Max)/FontheightFactor );
@@ -5231,9 +5223,9 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
              Width:=Viewport.Canvas.TextWidth(Str);
              if Viewport.ViewType=fvBodyplan then begin
                 Viewport.Canvas.TextOut(Pt1.X-Width div 2,Pt1.Y,str);
-                Viewport.Canvas.TextOut(Pt2.X-width div 2,Pt2.Y-Height,Str);
+//              Viewport.Canvas.TextOut(Pt2.X-width div 2,Pt2.Y-Height,Str);
              end else begin
-               Viewport.Canvas.TextOut(Pt1.X-Width,Pt1.Y-Height,str);
+//             Viewport.Canvas.TextOut(Pt1.X-Width,Pt1.Y-Height,str);
                Viewport.Canvas.TextOut(Pt2.X,Pt2.Y-Height,Str);
              end;
              Viewport.PenWidth:=1;
@@ -5241,8 +5233,7 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
           end;
           if Viewport.Viewtype<>fvPlan then begin
              Viewport.FontColor:=clRed;
-             // Draw baseline
-             Viewport.PenWidth:=2;
+             Viewport.PenWidth:=2;                             // Draw baseline
              P1:=Min;
              P2:=Max;
              Position:=Surface.Min.Z;
@@ -5254,8 +5245,8 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
              Viewport.Canvas.MoveTo(Pt1.X,Pt1.Y);
              Viewport.Canvas.LineTo(Pt2.X,Pt2.Y);
              Width:=Viewport.Canvas.TextWidth(Str);
-             Viewport.Canvas.TextOut(Pt1.X,Pt1.Y-Height,Str);
-             Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y-Height,str);
+//           Viewport.Canvas.TextOut(Pt1.X,Pt1.Y-Height,Str);
+             Viewport.Canvas.TextOut(Pt2.X{-Width},Pt2.Y-Height,str);
              // Draw dwl
 //##         if ProjectSettings.FMainparticularsHasBeenset then
              begin
@@ -5270,8 +5261,8 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
                 Viewport.Canvas.MoveTo(Pt1.X,Pt1.Y);
                 Viewport.Canvas.LineTo(Pt2.X,Pt2.Y);
                 Width:=Viewport.Canvas.TextWidth(Str);
-                Viewport.Canvas.TextOut(Pt1.X-width div 2,Pt1.Y-Height,Str);
-                Viewport.Canvas.TextOut(Pt2.X-Width div 2,Pt2.Y-Height,str);
+//              Viewport.Canvas.TextOut(Pt1.X-width div 2,Pt1.Y-Height,Str);
+                Viewport.Canvas.TextOut(Pt2.X{-Width div 2},Pt2.Y-Height,str);
              end;
              Viewport.PenWidth:=1;
              Viewport.FontColor:=Preferences.GridFontColor;
@@ -5289,7 +5280,7 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
                 Viewport.Canvas.MoveTo(Pt1.X,Pt1.Y);
                 Viewport.Canvas.LineTo(Pt2.X,Pt2.Y);
                 Viewport.Canvas.TextOut(Pt1.X,Pt1.Y,Str);
-                Viewport.Canvas.TextOut(Pt2.X,Pt2.Y-Height,Str);
+//              Viewport.Canvas.TextOut(Pt2.X,Pt2.Y-Height,Str);
              end;
           end;
           if DrawDiagonals then begin
@@ -5318,7 +5309,7 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
           if DrawButtocks then begin
              P1:=Min;
              P2:=Max;
-             for I:=1 to self.NumberofButtocks do begin
+             for I:=2 to self.NumberofButtocks do begin
                 Position:=-Buttock[I-1].Plane.d;
                 Str:=ConvertDimension(Position,ProjectSettings.ProjectUnits);
                 P1.Y:=Position;
@@ -5327,14 +5318,15 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
                 Pt2:=Viewport.Project(P2);
                 Viewport.Canvas.MoveTo(Pt1.X,Pt1.Y);
                 Viewport.Canvas.LineTo(Pt2.X,Pt2.Y);
-                if Viewport.ViewType=fvBodyplan then Width:=0
-                                                else Width:=Viewport.Canvas.TextWidth(Str);
+                if Viewport.ViewType=fvBodyplan
+                   then Width:=0
+                   else Width:=Viewport.Canvas.TextWidth(Str);
                 if Viewport.ViewType=fvBodyplan then begin
                    Viewport.Canvas.TextOut(Pt1.X,Pt1.Y,Str);
-                   Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y-Height,str);
+//                 Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y-Height,str);
                 end else begin
-                  Viewport.Canvas.TextOut(Pt1.X,Pt1.Y-Height,Str);
-                  Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y-Height,str);
+                   Viewport.Canvas.TextOut(Pt1.X,Pt1.Y-Height,Str);
+//                 Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y-Height,str);
                 end;
                 if (Visibility.ModelView=mvBoth)
                 or (Viewport.ViewType=fvBodyplan) then begin
@@ -5348,9 +5340,9 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
                   Viewport.Canvas.LineTo(Pt2.X,Pt2.Y);
                   if Viewport.ViewType=fvBodyplan then begin
                      Viewport.Canvas.TextOut(Pt1.X-Width,Pt1.Y,Str);
-                     Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y-Height,str);
+//                   Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y-Height,str);
                   end else begin
-                     Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y,str);
+//                   Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y,str);
                      Viewport.Canvas.TextOut(Pt1.X,Pt1.Y,Str);
                   end;
                 end;
@@ -5369,11 +5361,10 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
                 Viewport.Canvas.MoveTo(Pt1.X,Pt1.Y);
                 Viewport.Canvas.LineTo(Pt2.X,Pt2.Y);
                 Width:=Viewport.Canvas.TextWidth(Str);
-                Viewport.Canvas.TextOut(Pt1.X,Pt1.Y-Height,Str);
-                Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y-Height,str);
+                Viewport.Canvas.TextOut(Pt1.X-Width,Pt1.Y-Height,Str);
+//              Viewport.Canvas.TextOut(Pt2.X-Width,Pt2.Y-Height,str);
              end;
-          end;
-                                     // Draw Split Section (formerly Mainframe)
+          end;                       // Draw Split Section (formerly Mainframe)
           if not (Viewport.Viewtype in [fvBodyplan,fvPerspective]) then begin
             Viewport.FontColor:=clBlue;
             Viewport.PenColor:=clBlue;
@@ -5468,17 +5459,20 @@ begin
       if not FDesignHydrostatics.Calculated then FDesignHydrostatics.Calculate;
 //    if FDesignHydrostatics.Errors=[] then
       begin
-         // Center of bouyancy
-         if Visibility.FShowHydrostDisplacement then
-            DrawPoint(FDesignHydrostatics.FData.CenterOfBuoyancy,'Displ='+FloatToStrF(FDesignHydrostatics.Data.Displacement,ffFixed,7,2),True);
-         // Transverse metacentric height
-         if Visibility.FShowHydrostMetacentricHeight then
-            DrawPoint(Vector(FDesignHydrostatics.FData.CenterOfBuoyancy.X,0.0,FDesignHydrostatics.FData.KMtransverse),'KM='+FloatToStrF(FDesignHydrostatics.Data.KMtransverse,ffFixed,7,2),True);
-         // Longitudinal center of floatation
-         if Visibility.FShowHydrostLCF then
-            DrawPoint(FDesignHydrostatics.FData.WaterplaneCOG,'LCF='+FloatToStrF(FDesignHydrostatics.Data.WaterplaneCOG.X,ffFixed,7,2),False);
+         if Visibility.FShowHydrostDisplacement then      // Center of bouyancy
+            DrawPoint(FDesignHydrostatics.FData.CenterOfBuoyancy,'C:'           // 'Displ='
+            +FloatToDec( FDesignHydrostatics.Data.Displacement,1 ),True);
+         if Visibility.FShowHydrostMetacentricHeight then // Transverse metacentric height
+            DrawPoint(Vector( FDesignHydrostatics.FData.CenterOfBuoyancy.X,0.0,
+                              FDesignHydrostatics.FData.KMtransverse),'m: '     // 'KM='
+           +FloatToDec(FDesignHydrostatics.Data.KMtransverse,2),True);
+         if Visibility.FShowHydrostLCF then // Longitudinal center of floatation
+            DrawPoint(FDesignHydrostatics.FData.WaterplaneCOG,'S: '              // 'LCF='
+           +FloatToDec(FDesignHydrostatics.Data.WaterplaneCOG.X,2),False);
          // Lateral center
-         if Visibility.FShowHydrostLateralArea then DrawPoint(FDesignHydrostatics.FData.LateralCOG,Userstring(29)+'='+FloatToStrF(FDesignHydrostatics.Data.LateralArea,ffFixed,7,2),True);
+         if Visibility.FShowHydrostLateralArea then
+            DrawPoint(FDesignHydrostatics.FData.LateralCOG,Userstring(29)+'='
+            +FloatToDec(FDesignHydrostatics.Data.LateralArea,2),True);
          if (Viewport.ViewType=fvProfile)
          and (Visibility.FShowHydrostSectionalAreas) then begin // draw sectionalarea curve
             Curve:=TFreespline.Create;
@@ -5486,7 +5480,8 @@ begin
                P.X:=FDesignHydrostatics.FData.SAC[I-1].X;
                P.Y:=0;
                if (FDesignHydrostatics.FData.BeamWaterline*FDesignHydrostatics.Draft)<>0
-                  then P.Z:=2*(FDesignHydrostatics.FData.ModelMax.Z-FDesignHydrostatics.FData.ModelMin.Z)*FDesignHydrostatics.FData.SAC[I-1].Y/(FDesignHydrostatics.FData.BeamWaterline*FDesignHydrostatics.Draft)
+                  then P.Z:=2*(FDesignHydrostatics.FData.ModelMax.Z-FDesignHydrostatics.FData.ModelMin.Z)
+                      *FDesignHydrostatics.FData.SAC[I-1].Y/(FDesignHydrostatics.FData.BeamWaterline*FDesignHydrostatics.Draft)
                   else P.Z:=FDesignHydrostatics.FData.SAC[I-1].Y;
                P.Z:=P.Z+FDesignHydrostatics.FData.ModelMin.Z;
                Curve.Add(P);
@@ -5502,7 +5497,7 @@ begin
                Viewport.Canvas.LineTo(Pt.X,Pt.Y+Size);
                Viewport.Canvas.MoveTo(Pt.X-Size,Pt.Y);
                Viewport.Canvas.LineTo(Pt.X+Size,Pt.Y);
-               Str:=FloatToStrF(FDesignHydrostatics.FData.SAC[I-1].Y,ffFixed,7,2);
+               Str:=FloatToDec(FDesignHydrostatics.FData.SAC[I-1].Y,2);
                if P.X<FProjectsettings.MidleFrame
                   then Viewport.Canvas.TextOut(Pt.X-Viewport.Canvas.TextWidth(str),Pt.Y-Viewport.Canvas.TextHeight(str),Str)
                   else Viewport.Canvas.TextOut(Pt.X,Pt.Y-Viewport.Canvas.TextHeight(str),Str);
@@ -5514,9 +5509,8 @@ begin
    if Visibility.ShowFlowlines then
       For I:=1 to NumberOfFlowlines do Flowline[I-1].Draw(Viewport);
    if (Viewport.ViewportMode=vmShadeGauss)
-   and (Surface.NumberOfControlFaces>0)
+   and (Surface.NumberOfControlFaces>0) // Draw Legend with Gaussian curvature values
    and (Surface.MaxGaussCurvature-Surface.MinGaussCurvature>1e-7) then begin
-      // Draw Legend with Gaussian curvature values
       NRect:=21;
       LegendHeight:=round(0.5*Viewport.ClientHeight);
       if LegendHeight<100 then LegendHeight:=100;
@@ -5533,7 +5527,7 @@ begin
       Rect.Bottom:=Rect.Top+LegendHeight;
       Rect.Right:=Rect.Left+LegendWidth;
       Viewport.Canvas.Rectangle(Rect);
-      Viewport.FontName:='Arial';
+      Viewport.FontName:=UFont; //'Consolas'; //'Arial';
       Viewport.FontSize:=Preferences.FontSize; //8;
       Viewport.FontColor:=Preferences.GridFontColor;
       NDecimal:=3;
@@ -5548,10 +5542,10 @@ begin
             Tmp:=(I-1)/(NRect-1);
             if Tmp>=0.5 then begin
                Tmp:=2*(Tmp-0.5);
-               Str:=FloatToStrF(Surface.MinGaussCurvature*Tmp,ffFixed,7,NDecimal);
+               Str:=FloatToDec(Surface.MinGaussCurvature*Tmp,NDecimal);
             end else if Tmp<0.5 then begin
                Tmp:=2*(0.5-Tmp);
-               Str:=FloatToStrF(Surface.MaxGaussCurvature*Tmp,ffFixed,7,NDecimal);
+               Str:=FloatToDec(Surface.MaxGaussCurvature*Tmp,NDecimal);
             end else Str:='0.0';
             Viewport.Canvas.TextOut(Rect.Right+5,(Rect.Top+Rect.Bottom-Viewport.Canvas.TextHeight(str)) div 2,Str);
          end;
@@ -5567,13 +5561,13 @@ var I : integer;
 begin
    if Surface.NumberOfControlFaces>0 then begin
       Surface.DrawMirror:=Visibility.ModelView=mvBoth;
-      Min.X:=1e6;
+      Min.X:=1e4;
       Min.Y:=Min.X;
       Min.Z:=Min.X;
       Max.X:=-Min.X;
       Max.Y:=-Min.Y;
       Max.Z:=-Min.Z;
-      Surface.Extents(Min,Max);
+      Surface.Extents( Min,Max );
       if Visibility.ShowMarkers then for I:=1 to NumberOfMarkers do Marker[I-1].Extents(Min,Max);
    end else begin
       if Surface.NumberOfControlPoints>1 then begin
@@ -5590,7 +5584,7 @@ begin
          Max.Y:=Max.X;
          Max.Z:=Max.X;
       end;
-   end;
+   end; //Min:=1.06*Min; Max:=1.06*Max;;
 end;
 
 function TFreeShip.FindLowestHydrostaticsPoint:TFloatType;

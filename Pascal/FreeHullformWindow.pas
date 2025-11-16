@@ -254,7 +254,7 @@ begin
    and (Viewport.Viewtype<>fvPerspective) then begin          // для линий тока
       P:=Viewport.ProjectBackTo2D(FInitialPosition);
       if (Freeship.Visibility.ModelView=mvBoth)
-      and (Viewport.ViewType=fvBodyplan) then P.X:=abs(P.X);
+      and (Viewport.ViewType=fvBodyplan) then P.X:=abs( P.X );
       Freeship.Edit.Flowline_Add( P,Viewport.Viewtype );
       TMainform( Application.MainForm ).UpdateMenu;
       exit;

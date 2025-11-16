@@ -2,6 +2,7 @@ unit FreeTypes;
 {$mode objfpc}{$H+}
 Interface Uses SysUtils,Math;
 Const
+  UFont='Times New Roman';
   Radian=57.295779513082320876798154814105;                // 180/π = °\rad
   PixelCountMax=32768; // used for faster pixel acces when shading to viewport
   Foot = 0.3048;       // All new models are initialized to this version

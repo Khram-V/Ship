@@ -799,7 +799,7 @@ var Pt      : TPoint;
 begin
    if FFreeship<>nil then
    if FOriginalSectionalAreaCurve.NumberOfPoints>0 then begin // Skip translation
-      TopView.FontName:='Arial';                          // End skip translation
+      TopView.FontName:=UFont; //'Arial';                          // End skip translation
       TopView.FontSize:=7;
       TopView.FontColor:=clBlack;
       TopView.BrushStyle:=bsClear;

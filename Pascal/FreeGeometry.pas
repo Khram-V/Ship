@@ -1703,9 +1703,9 @@ procedure TFreeViewport.FSetFontColor(Val:TColor);
     begin if Canvas.Font.Color<>val then Canvas.Font.Color:=Val; end;
 procedure TFreeViewport.FSetFontSize(val:integer);
     begin if Canvas.Font.Size<>val then Canvas.Font.Size:=val; end;
-procedure TFreeViewport.FSetFontName(val:string);
+procedure TFreeViewport.FSetFontName( Val:string );
 begin
-   if Uppercase(Canvas.Font.Name)<>uppercase(name) then Canvas.Font.Name:=Name;
+   if Uppercase(Canvas.Font.Name)<>uppercase(Val) then Canvas.Font.Name:=Val;
 end;
 procedure TFreeViewport.FSetHorScrollbar(val:TScrollbar);
 begin
@@ -1850,7 +1850,7 @@ begin
    Screen.Cursors[crSetSpline]:=LoadCursor(hInstance,'SETSPLINE'  );   ## 8
                   crSmallCross = X
                   crColorPicker }
-   FontName:='Consolas';                    // 'Times New Roman'; // 'Courier';
+   FontName:=UFont;           //'Consolas'; // 'Times New Roman'; // 'Courier';
    FontColor:=clNavy;                       // clOlive; // clWhite;
    FontSize:=8;
    Invalidate;
@@ -3423,42 +3423,33 @@ begin
          end;
       end;
    end;
-
-   // draw dimensions
-   if ShowDimensions then begin
+   if ShowDimensions then begin                              // draw dimensions
       Viewport.PenColor:=clBlack;
       Viewport.BrushStyle:=bsClear;
       Viewport.PenWidth:=1; //PenwidthFactor;
-
-      // calculate and set fontheight
-      Viewport.FontName:='arial';
+      Viewport.FontName:=UFont;                 // calculate and set fontheight
       SetFontHeight(Abs(Viewport.Min3D-Viewport.Max3D)/150);
-
       for I:=1 to FBoundaryEdges.Count do begin
          Edge:=FBoundaryEdges[I-1];
-         if (not FMirror) or (FMirror and (abs(Edge.FStartPoint.Coordinate.Y)>1e-3)
-                                      and (abs(Edge.FEndPoint.Coordinate.Y)>1e-3)) then
-         begin
+         if (not FMirror)
+         or (FMirror and (abs(Edge.FStartPoint.Coordinate.Y)>1e-3)
+                     and (abs(Edge.FEndPoint.Coordinate.Y)>1e-3)) then begin
             S:=FPoints.SortedIndexOf(Edge.StartPoint);
             E:=FPoints.SortedIndexOf(Edge.EndPoint);
-            if (S<>-1) and (E<>-1) then
-            begin
+            if (S<>-1) and (E<>-1) then begin
                DrawDimension(self.Point[S],self.Point[E]);
                if FMirror then DrawDimension(MirrorPoint[S],MirrorPoint[E]);
             end;
          end;
       end;
-
-      for I:=1 to FCorners.Count do
-      begin
+      for I:=1 to FCorners.Count do begin
          Point:=FCorners[I-1];
          S:=FPoints.SortedIndexOf(Point);
          P1:=Self.Point[S];
          Str:='('+ConvertDimension(P1.X,Units)+' / '+ConvertDimension(P1.Y,Units)+')';
          Pt:=Viewport.Project(P1);
          Viewport.Canvas.TextOut(Pt.X-Viewport.Canvas.TextWidth(Str) div 2,Pt.Y,Str);
-         if FMirror then
-         begin
+         if FMirror then begin
             P1:=Self.MirrorPoint[S];
             Str:='('+ConvertDimension(P1.X,Units)+' / '+ConvertDimension(P1.Y,Units)+')';
             Pt:=Viewport.Project(P1);
@@ -3466,8 +3457,7 @@ begin
          end;
       end;
    end;
-   // show edges with errors
-   if ShowErrorEdges then begin
+   if ShowErrorEdges then begin                       // show edges with errors
       Viewport.PenWidth:=2; //*PenwidthFactor;
       for I:=1 to FEdges.Count do begin
          if abs(FEdgeErrors[I-1])>1e-4 then begin
@@ -3819,7 +3809,7 @@ begin                                             // Extract edges as polylines
          P:=Source[J-1];
          Index:=FPoints.SortedIndexOf(P);
          P3D:=Point[Index]-Min;
-         Strings.Add(FloatToStrF(P3D.X,ffFixed,7,3)+#32+FloatToStrF(P3D.Y,ffFixed,7,3));
+         Strings.Add(FloatToDec(P3D.X,3)+#32+FloatToDec(P3D.Y,3));
       end;
       if FMirror then begin
          Strings.Add('');
@@ -3827,7 +3817,7 @@ begin                                             // Extract edges as polylines
             P:=Source[J-1];
             Index:=FPoints.SortedIndexOf(P);
             P3D:=MirrorPoint[Index]-Min;
-            Strings.Add(FloatToStrF(P3D.X,ffFixed,7,3)+#32+FloatToStrF(P3D.Y,ffFixed,7,3));
+            Strings.Add(FloatToDec(P3D.X,3)+#32+FloatToDec(P3D.Y,3));
          end;
       end;  Source.Destroy;
    end;     Dest.Destroy;
@@ -4563,18 +4553,14 @@ begin
       FDerivatives[FNoPoints-1].X:=(Un.X-Qn.X*U[FNoPoints-2].X)/(Qn.X*FDerivatives[FNoPoints-2].X+1.0);
       FDerivatives[FNoPoints-1].Y:=(Un.Y-Qn.Y*U[FNoPoints-2].Y)/(Qn.Y*FDerivatives[FNoPoints-2].Y+1.0);
       FDerivatives[FNoPoints-1].Z:=(Un.Z-Qn.Z*U[FNoPoints-2].Z)/(Qn.Z*FDerivatives[FNoPoints-2].Z+1.0);
-
-      // Back substitution
-      for K:=FNoPoints-1 downto 1 do begin
+      for K:=FNoPoints-1 downto 1 do begin                 // Back substitution
          FDerivatives[K-1].X:=FDerivatives[K-1].X*FDerivatives[K].X+U[K-1].X;
          FDerivatives[K-1].Y:=FDerivatives[K-1].Y*FDerivatives[K].Y+U[K-1].Y;
          FDerivatives[K-1].Z:=FDerivatives[K-1].Z*FDerivatives[K].Z+U[K-1].Z;
       end;
    end;
    FBuild:=true;
-   // Determine min/max values
-   if FNoPoints>0 then
-   begin
+   if FNoPoints>0 then begin                        // Determine min/max values
       for I:=1 to FNoPoints do begin
          if I=1 then begin
             FMin:=FPoints[I-1];
@@ -4586,58 +4572,43 @@ begin
 end;
 
 function TFreeSpline.SecondDerive(Parameter:TFloatType):T3DVector;
-var Lo,Hi,K : integer;
-    Frac    : TFloatType;
+var Lo,Hi,K: integer;
+    Frac: TFloatType;
 begin
-   Result.X:=0;
-   Result.Y:=0;
-   Result.Z:=0;
+   Result:=Zero; Lo:=0;
    if FNoPoints<2 then exit;
    if not FBuild then Rebuild;
    if FNoPoints<2 then exit;
-   if FNoPoints=2 then begin
-      Lo:=0;
-      Hi:=1;
-   end else begin
-      Lo:=0;
-      Hi:=FNoPoints-1;
+   if FNoPoints=2 then Hi:=1
+   else begin Hi:=FNoPoints-1;
       repeat
          K:=(Lo+Hi) div 2;
-//       try
-            if FParameters[K]<Parameter then Lo:=K
-                                        else Hi:=K;
-//       except
-//          FParameters[K]:=FParameters[K]-1+1;
-//       end;
+         if FParameters[K]<Parameter then Lo:=K
+                                     else Hi:=K;
       until Hi-Lo<=1;
    end;
-   if FParameters[Hi]-FParameters[Lo]<=0.0 then Frac:=0.5
-                                           else Frac:=(Parameter-FParameters[Lo])/(FParameters[Hi]-FParameters[Lo]);
-   Result.X:=FDerivatives[Lo].X+Frac*(FDerivatives[Hi].X-FDerivatives[Lo].X);
-   Result.Y:=FDerivatives[Lo].Y+Frac*(FDerivatives[Hi].Y-FDerivatives[Lo].Y);
-   Result.Z:=FDerivatives[Lo].Z+Frac*(FDerivatives[Hi].Z-FDerivatives[Lo].Z);
+   if FParameters[Hi]-FParameters[Lo]<=0.0
+   then Frac:=0.5
+   else Frac:=(Parameter-FParameters[Lo])/(FParameters[Hi]-FParameters[Lo]);
+   Result:=FDerivatives[Lo]+Frac*(FDerivatives[Hi]-FDerivatives[Lo]);
 end;
 
 // Remove points that do not contribute significantly to the shape
 function TFreeSpline.Simplify(Criterium:TFloatType):Boolean;
-var Weights    : array of TFloatType;
+var Weights: array of TFloatType;
     TotalLength: TFloatType;
-    I,Index    : Integer;
-    N1,N2:Integer;
-
+    I,Index {,N1,N2}:Integer;
    Function Weight(Index:Integer):TFloatType;
    var P1,P2,P3: T3DVector;
        Length,Dist: TFloatType;
    begin
-      if (Index=0) or (Index=NumberOfPoints-1) or (Knuckle[Index]) then Result:=1e10 else
-      begin
+      if (Index=0) or (Index=NumberOfPoints-1)
+      or (Knuckle[Index]) then Result:=1e10 else begin
          P1:=Point[Index-1];
          P2:=Point[Index];
          P3:=Point[Index+1];
          Length:=Abs( P3-P1 );
-         if Length<1e-5 then begin
-            Result:=0.0;
-         end else begin
+         if Length<1e-5 then Result:=0.0 else begin
             Dist:=DistancepointToLine(P2,P1,P3);
             if Dist<1e-2 then begin
                if Length*Length/TotalLength>0.01 then Result:=1e10
@@ -4645,17 +4616,12 @@ var Weights    : array of TFloatType;
             end else Result:=1e8*Dist*Dist*Length;
          end;
       end;
-   end;{Weight}
-
+   end;
    Function FindNextPoint:integer;
-   var MinVal:TFloatType;
-       I:Integer;
+   var MinVal:TFloatType; I:Integer;
    begin
-      Result:=-1;
-      if NumberOfPoints<3 then exit;
-      MinVal:=Weights[1];
-      Result:=1;
-      I:=2;
+      Result:=-1; if NumberOfPoints<3 then exit;
+      Result:=1;  MinVal:=Weights[1]; I:=2;
       While (I<NumberOfPoints) and (MinVal>0) do begin
          if Weights[I-1]<MinVal then begin
             MinVal:=Weights[I-1];
@@ -4663,60 +4629,43 @@ var Weights    : array of TFloatType;
          end;
          Inc(I);
       end;
-   end;{FindNextPoint}
-
+   end;
 begin
    Result:=False;
-   if NumberOfPoints<3 then
-   begin
-      Result:=True;
-      exit;
-   end;
-
-   N1:=0;
-   N2:=0;
-   for I:=1 to numberofpoints do if Knuckle[I-1] then inc(N1);
-
+   if NumberOfPoints<3 then begin Result:=True; exit; end;
+// N1:=0;
+// N2:=0;
+// for I:=1 to numberofpoints do if Knuckle[I-1] then inc(N1);
    TotalLength:=FTotalLength*FTotalLength;
    if TotalLength=0 then exit;
-   SetLength(Weights,NumberOfPoints);
+   SetLength( Weights,NumberOfPoints );
    for I:=1 to NumberOfPoints do Weights[I-1]:=Weight(I-1)/TotalLength;
-// try
-      repeat
-         Index:=FindNextPoint;
-         if Index<>-1 then begin
-            if (Index=0) or (Index=FNoPoints-1) or (FNoPoints<3) then begin
-               Index:=-1;
-            end else
-            begin
-               if Weights[Index]<Criterium then begin
-                  Move(Weights[Index+1],Weights[Index],(FNoPoints-Index-1)*SizeOf(TFloatType));
-                  Move(FPoints[Index+1],FPoints[Index],(FNoPoints-Index-1)*SizeOf(T3DVector));
-                  Move(FKnuckles[Index+1],FKnuckles[Index],(FNoPoints-Index-1));
-                  Dec(FNoPoints);
-                  if (Index-1>=0) and (Index-1<FNoPoints) then Weights[Index-1]:=Weight(Index-1)/TotalLength;
-                  if (Index>=0) and (Index<FNoPoints) then     Weights[Index]:=Weight(Index)/TotalLength;
-                  if (Index+1>=0) and (Index+1<FNoPoints) then Weights[Index+1]:=Weight(Index+1)/TotalLength;
-               end else Index:=-1;
-            end;
+   repeat
+      Index:=FindNextPoint;
+      if Index<>-1 then begin
+         if (Index=0) or (Index=FNoPoints-1)
+         or (FNoPoints<3) then Index:=-1 else begin
+            if Weights[Index]<Criterium then begin
+               Move(Weights[Index+1],Weights[Index],(FNoPoints-Index-1)*SizeOf(TFloatType));
+               Move(FPoints[Index+1],FPoints[Index],(FNoPoints-Index-1)*SizeOf(T3DVector));
+               Move(FKnuckles[Index+1],FKnuckles[Index],(FNoPoints-Index-1));
+               Dec(FNoPoints);
+               if (Index-1>=0) and (Index-1<FNoPoints) then Weights[Index-1]:=Weight(Index-1)/TotalLength;
+               if (Index>=0)   and (Index < FNoPoints) then Weights[Index]  :=Weight(Index)/TotalLength;
+               if (Index+1>=0) and (Index+1<FNoPoints) then Weights[Index+1]:=Weight(Index+1)/TotalLength;
+            end else Index:=-1;
          end;
-      until index=-1;
-      Result:=True;
-// except
-//    Result:=False;
-// end;
-   for I:=1 to numberofpoints do if Knuckle[I-1] then inc(N2);
-// if N1<>N2 then Build:=false;
-                  Build:=False;
+      end;
+   until index=-1;
+   Result:=True;
+{  for I:=1 to numberofpoints do if Knuckle[I-1] then inc(N2);
+   if N1<>N2 then } Build:=false;
    Capacity:=NumberOfPoints;
 end;
 
 procedure TFreeSpline.Add(P:T3DVector);
-begin
-   if NumberOfPoints=Capacity then begin
-      // Make sure that the allocated memory is sufficient
-      Capacity:=capacity+IncrementSize;
-   end;
+begin                      // Make sure that the allocated memory is sufficient
+   if NumberOfPoints=Capacity then Capacity:=Capacity+IncrementSize;
    FPoints[FNoPoints]:=P;
    FKnuckles[FNoPoints]:=False;
    inc(FNoPoints);
@@ -4882,7 +4831,7 @@ end;
 procedure TFreeSpline.Insert(Index:Integer;P:T3DVector);
 var I : integer;
 begin
-   if (Index>=0) and (Index<NumberOfPoints) then begin
+// if (Index>=0) and (Index<NumberOfPoints) then begin
       if NumberOfPoints=Capacity then Capacity:=Capacity+IncrementSize;
       for I:=NumberOfPoints-1 downto Index do begin
          FPoints[I+1]:=FPoints[I];
@@ -4892,7 +4841,7 @@ begin
       FKnuckles[Index]:=False;
       inc(FNoPoints);
       Build:=false;
-   end; // else raise Exception.Create('Index out of range'+EOL+IntToStr(Index)+#32+IntToStr(FNoPoints));
+// end else raise Exception.Create('Index out of range'+EOL+IntToStr(Index)+#32+IntToStr(FNoPoints));
 end;
 
 procedure TFreeSpline.Draw(Viewport:TFreeViewport);
@@ -4933,7 +4882,7 @@ begin
       Viewport.Canvas.Pen.Style:=FPenstyle;
       Viewport.Canvas.Polyline(PArray1);
       if ShowPoints then begin
-         Viewport.Fontname:='small fonts';
+         Viewport.Fontname:=UFont; //'Consolas'; //'small fonts';
          Viewport.FontSize:=ViewPort.FontSize; // =7; ?? Ship.Preferences.FontSize;
          Viewport.FontColor:=clBlack;
          Viewport.BrushStyle:=bsClear;
@@ -11812,67 +11761,58 @@ begin
       VRMLList:=TVRMLList.Create;
       VRMLList.LoadFromFile(Filename);
       Data:=VRMLList.ExtractFaceSetData;
-      if Data<>nil then begin
-         Clear;
-//       try
-            AddedCtrlPts:=TFasterList.Create;
-            AddedCtrlPts.Capacity:=Data.Count;      // Assemble coordinate sets
-            for I:=1 to Data.Count do begin
-               FaceInfo:=Data[I-1];
-               if AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates)=-1 then AddedCtrlPts.AddSorted(FaceInfo.Coordinates);
-            end;
-            // now add actual controlPoints
-            for I:=1 to AddedCtrlPts.Count do begin
-               CoordInfo:=AddedCtrlPts[I-1];
-               Points:=TFasterList.Create;
-               Points.Capacity:=CoordInfo.Count;
-               AddedCtrlPts.Objects[I-1]:=points;
-               for J:=1 to CoordInfo.Count do
-               begin
-                  Points.Add(AddControlPoint(CoordInfo.Point[J-1]));
-               end;
-            end;
-            // Add controlfaces
-            FacePoints:=TFasterList.Create;
-            for I:=1 to Data.Count do begin
-               FaceInfo:=Data[I-1];
-               Index:=AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates);
-               if Index<>-1 then begin
-                  Points:=AddedCtrlPts.Objects[Index];
-                  Layer:=AddNewLayer;
-                  for J:=1 to FaceInfo.Count do begin
-                     Face:=FaceInfo.Face[J-1];
-                     if Face<>nil then begin
-                        N:=length(Face);
-                        FacePoints.Clear;
-                        for K:=1 to N do begin
-                           Index:=face[K-1];
-                           if (Index>=0) and (Index<Points.Count) then begin
-                              CtrPoint:=Points[index];
-                              if FacePoints.IndexOf(CtrPoint)=-1 then FacePoints.Add(CtrPoint);
-                           end;
+      if Data<>nil then begin Clear;
+//    try
+         AddedCtrlPts:=TFasterList.Create;
+         AddedCtrlPts.Capacity:=Data.Count;      // Assemble coordinate sets
+         for I:=1 to Data.Count do begin
+            FaceInfo:=Data[I-1];
+            if AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates)=-1 then AddedCtrlPts.AddSorted(FaceInfo.Coordinates);
+         end;
+         for I:=1 to AddedCtrlPts.Count do begin // now add actual controlPoints
+            CoordInfo:=AddedCtrlPts[I-1];
+            Points:=TFasterList.Create;
+            Points.Capacity:=CoordInfo.Count;
+            AddedCtrlPts.Objects[I-1]:=points;
+            for J:=1 to CoordInfo.Count do
+               Points.Add(AddControlPoint(CoordInfo.Point[J-1]));
+         end;
+         FacePoints:=TFasterList.Create;                 // Add controlfaces
+         for I:=1 to Data.Count do begin
+            FaceInfo:=Data[I-1];
+            Index:=AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates);
+            if Index<>-1 then begin
+               Points:=AddedCtrlPts.Objects[Index];
+               Layer:=AddNewLayer;
+               for J:=1 to FaceInfo.Count do begin
+                  Face:=FaceInfo.Face[J-1];
+                  if Face<>nil then begin
+                     N:=length(Face);
+                     FacePoints.Clear;
+                     for K:=1 to N do begin
+                        Index:=face[K-1];
+                        if (Index>=0) and (Index<Points.Count) then begin
+                           CtrPoint:=Points[index];
+                           if FacePoints.IndexOf(CtrPoint)=-1 then FacePoints.Add(CtrPoint);
                         end;
-                        if FacePoints.Count>2 then AddControlFace(FacePoints,True,Layer);
                      end;
+                     if FacePoints.Count>2 then AddControlFace(FacePoints,True,Layer);
                   end;
                end;
             end;
-            FacePoints.Destroy;
-
-            for I:=1 to AddedCtrlPts.Count do begin
-               Points:=AddedCtrlPts.Objects[I-1];
-               Points.Destroy;
-            end;
-            AddedCtrlPts.Destroy;
-            // delete empty layers
-            for I:=NumberOfLayers downto 1 do begin
-               if (self.Layer[I-1].Count=0) and (NumberOfLayers>1) then self.Layer[I-1].Delete;
-            end;
-            ActiveLayer:=self.Layer[NumberOfLayers-1];
-//       finally
-            build:=false;
-            Data.Destroy;
-//       end;
+         end;
+         FacePoints.Destroy;
+         for I:=1 to AddedCtrlPts.Count do begin
+            Points:=AddedCtrlPts.Objects[I-1];
+            Points.Destroy;
+         end;
+         AddedCtrlPts.Destroy;
+         for I:=NumberOfLayers downto 1 do begin      // delete empty layers
+            if (self.Layer[I-1].Count=0) and (NumberOfLayers>1) then self.Layer[I-1].Delete;
+         end;
+         ActiveLayer:=self.Layer[NumberOfLayers-1];
+         build:=false;
+         Data.Destroy;
       end;  // else ShowMessage(Userstring(203)+'.');
       VRMLList.Destroy;
    end;

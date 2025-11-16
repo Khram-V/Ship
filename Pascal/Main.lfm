@@ -8,8 +8,8 @@ object MainForm: TMainForm
   ClientWidth = 1920
   Color = 6908265
   Font.Color = clWindowText
+  Font.Name = 'Times New Roman'
   Font.Height = -11
-  Font.Name = 'MS Sans Serif'
   Menu = MainMenu1
   Position = poDefault
   ShowHint = True
@@ -30,7 +30,6 @@ object MainForm: TMainForm
     Color = clWindow
     Font.Color = clWindowText
     Font.Height = -11
-    Font.Name = 'Times'
     ParentBackground = False
     ParentColor = False
     ParentFont = False

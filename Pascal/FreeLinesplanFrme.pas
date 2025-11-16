@@ -618,9 +618,9 @@ begin
    Prevcursor:=Screen.Cursor;
    Screen.Cursor:=crHourglass;
    Viewport.PenColor:=clSilver;
-// Viewport.FontName:='Arial';
+// Viewport.FontName:=UFont; //'Arial';
    Viewport.FontColor:=clBlack;                 // calculate and set fontheight
-   Viewport.Canvas.Font.Name:='Arial';
+   Viewport.Canvas.Font.Name:=UFont; //'Arial';
    Viewport.Canvas.Font.Size:=Font.Value;
 // SetFontHeight( Abs( FMin3D-FMax3D )/FontheightFactor);
    if (not ShowMonochrome.Checked) and (ShowFillcolor.Checked) then begin
@@ -889,8 +889,8 @@ begin
       end;
    end;
   // и текстовые надписи
-  Viewport.Canvas.Font.Name:='Times';
-//Viewport.FontName:='Times';
+  Viewport.Canvas.Font.Name:=UFont; //'Times';
+//Viewport.FontName:=UFont; //'Times';
   Viewport.FontColor:=clGray;
   Viewport.Canvas.Font.Size:=(8*Font.Value) div 6;
   Tmp:=0.0;

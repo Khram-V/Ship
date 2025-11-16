@@ -18,7 +18,8 @@ begin
 // AlphaBlend:= True;
 // AlphaBlendValue:= 128;
    Color:=1; //clWhite;        --- не лучший вариант ...
-   SetWindowLongPtr(Self.Handle, GWL_EXSTYLE,GetWindowLongPtr(Self.Handle, GWL_EXSTYLE) or WS_EX_LAYERED);
+   SetWindowLongPtr( Self.Handle,GWL_EXSTYLE,
+   GetWindowLongPtr( Self.Handle,GWL_EXSTYLE) or WS_EX_LAYERED );
    SetLayeredWindowAttributes(Self.Handle, 1{clWhite}, 128, LWA_COLORKEY);
                      // Initialize memcheck, for memory-leak tracking = MemChk;
 //{$ifndef Windows}
@@ -67,82 +68,78 @@ const S: array [0..3,0..3] of single
 procedure TMainForm.FOpenHullWindows;
 var HullformWindow: TFreeHullWindow; I,J,W,H,L,T: Integer; R: TRect;
 begin  W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+75; //73;
-    if Ship.NumberOfViewports=0 then begin
-      for I:=3 downto 0 do begin                          // open a new window
-        HullformWindow:=TFreeHullWindow.Create(self); // Connect viewport to freeship component
-        HullformWindow.FreeShip:=Ship;
-        AddWindow( HullFormWindow );
-        HullformWindow.PopUpParent:=Self;
-//      PopupParent:=Self;
-//      PopupMode:=pmExplicit;
-//      PopupMode:=pmAuto;
-//      PopupMode:=pmNone;
-        with HullformWindow do begin
-           Viewport.ViewType:=TFreeViewType( I );
-           J:=ord( ViewPort.ViewType );  // fvBodyplan,fvProfile,fvPlan,fvPerspective
-           R.Left  :=Round( S[J][0]*W )+L;
-           R.Top   :=Round( S[J][1]*H )+T;
-           R.Right :=Round( S[J][2]*W );
-           R.Bottom:=Round( S[J][3]*H );
-           FormStyle:=fsNormal; // (fsNormal, fsMDIChild, fsMDIForm, fsStayOnTop, fsSplash, fsSystemStayOnTop);
-           SetBounds( R.Left,R.Top,R.Right,R.Bottom );
-           BorderStyle:=bsSizeable; //Sizeable; //bsNone; //bsToolWindow; //bsDialog; //bsSingle; //bsSizeToolWin;
-           BorderIcons:= [biSystemMenu,biMaximize]; // , biMinimize, biMaximize, biHelp )]
-           BorderWidth:=0;
-           if Viewport.ViewType=fvPerspective then
-              Viewport.ViewportMode:=vmShade;
-           ViewPort.Invalidate;
-//           ViewPort.Parent:=Self;
-//           PopUpParent:=Self;
-//           ViewPort.Show;
-//           ShowOnTop;
-        end;
-        ShowTranslatedValues( HullformWindow );
-        HullformWindow.SetCaption;
+   if Ship.NumberOfViewports=0 then
+   for I:=3 downto 0 do begin                          // open a new window
+      HullformWindow:=TFreeHullWindow.Create(self); // Connect viewport to freeship component
+      HullformWindow.FreeShip:=Ship;
+      AddWindow( HullFormWindow );
+      HullformWindow.PopUpParent:=Self;
+//    PopupMode:=pmExplicit; =pmAuto; =pmNone;
+      with HullformWindow do begin
+         Viewport.ViewType:=TFreeViewType( I );
+         J:=ord( ViewPort.ViewType );  // fvBodyplan,fvProfile,fvPlan,fvPerspective
+         R.Left  :=Round( S[J][0]*W )+L;
+         R.Top   :=Round( S[J][1]*H )+T;
+         R.Right :=Round( S[J][2]*W );
+         R.Bottom:=Round( S[J][3]*H );
+         FormStyle:=fsNormal; // (fsNormal, fsMDIChild, fsMDIForm, fsStayOnTop, fsSplash, fsSystemStayOnTop);
+         SetBounds( R.Left,R.Top,R.Right,R.Bottom );
+         BorderStyle:=bsSizeable; //Sizeable; //bsNone; //bsToolWindow; //bsDialog; //bsSingle; //bsSizeToolWin;
+         BorderIcons:= [biSystemMenu,biMaximize]; // , biMinimize, biMaximize, biHelp )]
+         BorderWidth:=0;
+         if Viewport.ViewType=fvPerspective then
+            Viewport.ViewportMode:=vmShade;
+         ViewPort.Invalidate;
+//         ViewPort.Parent:=Self;
+//         PopUpParent:=Self;
+//         ViewPort.Show;
+//         ShowOnTop;
       end;
-   end;// else Tile;
+      ShowTranslatedValues( HullformWindow );
+      HullformWindow.SetCaption;
+   end;
    SetCaption;
 end;
 
 procedure TMainForm.TileView;
 Var R: Trect; I,J,LU,RU,LD,RD,W,H,L,T: Integer;         // Количество наложений
 begin LU:=0; RU:=0; LD:=0; RD:=0; W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+73;
-    for I:=0 to Windows.Count-1 do begin
-      with TFreeHullWindow( Windows[I] ) do begin
-         J:=ord(ViewPort.ViewType);  // fvBodyplan,fvProfile,fvPlan,fvPerspective
-         R.Left  :=Round( S[J][0]*W )+L;
-         R.Top   :=Round( S[J][1]*H )+T;
-         R.Right :=Round( S[J][2]*W );
-         R.Bottom:=Round( S[J][3]*H );
-         if J=1 then begin R.left+=LU; R.Top+=LU; end else // fvProfile
-         if J=2 then begin R.left+=LD; R.Top-=LD; end else // fvPlan
-         if J=0 then begin R.left-=RU; R.Top+=RU; end else // fvBodyplan
-         if J=3 then begin R.left-=RD; R.Top-=RD; end;     // fvPerspective
-         SetBounds( R.Left,R.Top,R.Right,R.Bottom );
-{        if Viewport.ViewType=fvPerspective then
-            Viewport.ViewportMode:=vmShade;
-}        if J=1 then LU+=25 else // постобработка последующих позиций
-         if J=2 then LD+=25 else
-         if J=0 then RU+=25 else
-         if J=3 then RD+=25;
-         ViewPort.Invalidate;
-         SetCaption;
-    end; end;
-    SetCaption;
+   for I:=0 to Windows.Count-1 do
+   with TFreeHullWindow( Windows[I] ) do begin
+      J:=ord(ViewPort.ViewType);   // fvBodyplan,fvProfile,fvPlan,fvPerspective
+      R.Left  :=Round( S[J][0]*W )+L;
+      R.Top   :=Round( S[J][1]*H )+T;
+      R.Right :=Round( S[J][2]*W );
+      R.Bottom:=Round( S[J][3]*H );
+      if J=1 then begin R.left+=LU; R.Top+=LU; end else // fvProfile
+      if J=2 then begin R.left+=LD; R.Top-=LD; end else // fvPlan
+      if J=0 then begin R.left-=RU; R.Top+=RU; end else // fvBodyplan
+      if J=3 then begin R.left-=RD; R.Top-=RD; end;     // fvPerspective
+      SetBounds( R.Left,R.Top,R.Right,R.Bottom );
+{     if Viewport.ViewType=fvPerspective then
+         Viewport.ViewportMode:=vmShade;
+}     if J=1 then LU+=25 else // постобработка последующих позиций
+      if J=2 then LD+=25 else
+      if J=0 then RU+=25 else
+      if J=3 then RD+=25;
+      ViewPort.Invalidate;
+//    SetCaption;
+   end;
+   SetCaption;
 end;
 
 procedure TMainForm.CascadeView; Var I,J,W0,H0,W,H,L,T: Integer;
 begin
    W0:=ClientWidth;     W:=Round( 0.75*W0 ); J:=0;
    H0:=ClientHeight-72; H:=Round( 0.75*H0 ); L:=Left; T:=Top+73;
-    for I:=0 to Windows.Count-1 do begin
-      with TFreeHullWindow( Windows[I] ) do begin
-         SetBounds( L+J,T+J,W,H );
-         ViewPort.Invalidate;
-         SetCaption;
-         J+=25; if (J+W>W0) or (J+H>H0) then J:=0;
-    end; end;
-    SetCaption;
+   for I:=0 to Windows.Count-1 do
+   with TFreeHullWindow( Windows[I] ) do begin
+      SetBounds( L+J,T+J,W,H );
+      ViewPort.Invalidate;
+      SetCaption;
+      J+=25; if (J+W>W0) or (J+H>H0) then J:=0;
+   end;
+   SetCaption;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);

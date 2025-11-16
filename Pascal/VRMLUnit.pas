@@ -337,11 +337,11 @@ function TVRMLCoordinate3.FGetNumberOfFacesets:Integer;
 
 function TVRMLCoordinate3.FGetPoint(Index:Integer):T3DVector;
 begin
-   if (Index>=0) and (Index<FCount) then Result:=FCoordinates[index] else
-   begin
+ { if (Index>=0) and (Index<FCount) then} Result:=FCoordinates[index]
+ { else begin
       Result:=ZERO;
       ShowMessage('Point index out of bounds in TVRMLCoordinate3.FGetPoint');
-   end;
+   end;}
 end;
 
 procedure TVRMLCoordinate3.FSetCapacity(val:Integer);
@@ -433,10 +433,11 @@ end;
 // # VRML Indexed face set #
 function TVRMLIndexedFaceSet.FGetFace(Index:Integer):TIntArray;
 begin
-   if (Index>=0) and (Index<FCount) then Result:=FFaces[index] else begin
+  { if (Index>=0) and (Index<FCount) then } Result:=FFaces[index]
+  { else begin
       Result:=nil;
       ShowMessage('Face index out of bounds in TVRMLIndexedFaceSet.FGetFace');
-   end;
+   end; }
 end;
 
 procedure TVRMLIndexedFaceSet.FSetCapacity(val:Integer);
