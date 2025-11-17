@@ -4,18 +4,18 @@
    Each calculation has it's own draft, trim and angle of heel.
    Multiple calculations can be stored and then send to a report.
 }
-function TFreeHydrostaticCalc.FGetTrimAngle:TFloatType;
+function TFreeHydrostaticCalc.FGetTrimAngle:Real;
 begin
    Result:=RadToDeg(ArcTan((-Trim*Cos(DegToRad(HeelingAngle)))/Owner.ProjectSettings.ProjectLength));
 end;
-function TFreeHydrostaticCalc.FGetWlPlane:T3DPlane;
-var LowestValue:TFloatType;
-    P1,P2,P3:T3DVector;
+function TFreeHydrostaticCalc.FGetWlPlane:Plate;
+var LowestValue:Real;
+    P1,P2,P3:Vector;
 begin
    LowestValue:=Owner.FindLowestHydrostaticsPoint;
-   P1:=Vector(0.0,0.0,LowestValue+(Draft-0.5*Trim));
-   P2:=Vector(Owner.ProjectSettings.ProjectLength,0.0,LowestValue+(Draft+0.5*Trim));
-   P3:=Vector(Owner.ProjectSettings.ProjectLength,Cos(DegToRad(-HeelingAngle)),LowestValue+(Draft+0.5*Trim)-Sin(DegToRad(-HeelingAngle)));
+   P1:=iVect(0.0,0.0,LowestValue+(Draft-0.5*Trim));
+   P2:=iVect(Owner.ProjectSettings.ProjectLength,0.0,LowestValue+(Draft+0.5*Trim));
+   P3:=iVect(Owner.ProjectSettings.ProjectLength,Cos(DegToRad(-HeelingAngle)),LowestValue+(Draft+0.5*Trim)-Sin(DegToRad(-HeelingAngle)));
    Result:=PlanePPP(P1,P2,P3);
 end;
 procedure TFreeHydrostaticCalc.FSetCalculated(val:Boolean);
@@ -26,11 +26,11 @@ begin
       MidFrame.Clear;
    end;
 end;
-procedure TFreeHydrostaticCalc.FSetHeelingAngle(Val:TFloatType);
+procedure TFreeHydrostaticCalc.FSetHeelingAngle(Val:Real);
     begin if Val<>FHeelingAngle then begin FheelingAngle:=val; Calculated:=False; end; end;
-procedure TFreeHydrostaticCalc.FSetTrim(Val:TFloatType);
+procedure TFreeHydrostaticCalc.FSetTrim(Val:Real);
     begin if Val<>FTrim then begin FTrim:=val; Calculated:=False; end; end;
-procedure TFreeHydrostaticCalc.FSetDraft(Val:TFloatType);
+procedure TFreeHydrostaticCalc.FSetDraft(Val:Real);
     begin if Val<>FDraft then begin FDraft:=val; Calculated:=False; end; end;
 (*
 procedure TFreeHydrostaticCalc.FSetErrors(val:TFreeHydrostaticErrors);
@@ -46,18 +46,18 @@ var I,J,K,L,First,Last,
     PointCapacity,             // Length of the dynamic point-array
     NoPoints: integer;         // number of points stored int the dynamic array
     CosHeel,SinHeel,CosTrim,SinTrim,Parameter,
-    Side1,Side2,SubmergedLength,SubmergedWidth: TFloatType;
+    Side1,Side2,SubmergedLength,SubmergedWidth: Real;
     Layer: TFREESubdivisionLayer;
     Face : TFreeSubdivisionControlFace;
     Child: TFreeSubdivisionFace;
-    P1,P2,P,Keel,NewOrigin: T3DVector;
-    TmpP2D: T2DCoordinate;
+    P1,P2,P,Keel,NewOrigin: Vector;
+    TmpP2D: Place;
     FirstSubmPoint,FirstPoint,Submerged: Boolean;
-    Points: array of T3DVector; // Array containing the coordinates of the underwaterpart of a face
+    Points: VectorArray; // Array containing the coordinates of the underwaterpart of a face
     Waterplane,LateralPlane,Frame: TFreeIntersection;
     Spline: TFreeSpline;
 
-    function RotatePoint(P:T3DVector):T3DVector;
+    function RotatePoint(P:Vector):Vector;
     begin // Rotate a point at heel=0 and trim=0 position to given trim and heel
       P.Z:=P.Z-Keel.Z;
       Result.x:=P.x*CosTrim+P.y*SinHeel*SinTrim+P.z*CosHeel*SinTrim;
@@ -65,9 +65,9 @@ var I,J,K,L,First,Last,
       Result.z:=-P.x*SinTrim+P.y*SinHeel*CosTrim+P.z*CosHeel*CosTrim;
     end;
 
-    procedure ProcessTriangle(P1,P2,P3:T3DVector);
-    var VolumeMoment,Center: T3DVector;
-        Volume,ax,ay,az: TFloatType;
+    procedure ProcessTriangle(P1,P2,P3:Vector);
+    var VolumeMoment,Center: Vector;
+        Volume,ax,ay,az: Real;
     begin         // Reposition points with respect to the new projected origin
        P1:=P1-NewOrigin;
        P2:=P2-NewOrigin;
@@ -87,7 +87,7 @@ var I,J,K,L,First,Last,
        FData.WettedSurface:=FData.WettedSurface+Sqrt(ax*ax+ay*ay+az*az);
     end;
 
-    procedure CheckSubmergedBody(P:T3DVector;Side:TFloatType);
+    procedure CheckSubmergedBody(P:Vector;Side:Real);
     begin                 // Calculate extents of waterplane and submerged body
       P:=RotatePoint(P);
       if FirstSubmPoint then begin
@@ -115,7 +115,7 @@ begin                                                  // Initial setup of data
    SinTrim:=Sin(DegToRad(-TrimAngle));
    Calculated:=False;         // Resets all data and calculated variables
                               // Calculate the definition of the waterlineplane
-   Keel:=Vector(0.0,0.0,Owner.FindLowestHydrostaticsPoint);
+   Keel:=iVect(0.0,0.0,Owner.FindLowestHydrostaticsPoint);
    FData.WaterlinePlane:=WaterlinePlane;
 
    // In order to calculate the volume enclosed by the underwatership correctly,
@@ -392,7 +392,7 @@ end;
 // Creates and calculates a hydrostatics calculation
 
 function TFreeEdit.Hydrostatics_Calculate
-( Draft,AngleOfHeel,Trim: TFloatType): TFreeHydrostaticCalc;
+( Draft,AngleOfHeel,Trim: Real): TFreeHydrostaticCalc;
 begin
    if not Ship.ProjectSettings.DisableModelCheck then Model_Check(False);
    Result:=TFreeHydrostaticCalc.Create(Ship);
@@ -458,8 +458,8 @@ var
   Str: String; I,N,II: Integer;
   HydObject: TFreehydrostaticCalc;
   Properties,Total: TLayerProperties;
-  Min,Max: T3DVector;                 {@}
-  StartDraft,EndDraft,DraftStep,Trim, {@} Zmin,Value, A: TFloatType;
+  Min,Max: Vector;                 {@}
+  StartDraft,EndDraft,DraftStep,Trim, {@} Zmin,Value, A: Real;
 const Line_1='┌─────────────────────────┬─────────┬───────────┬──────────┬─────────┬─────────┬─────────┐';
 const Line_2='├─────────────────────────┼─────────┼───────────┼──────────┼─────────┼─────────┼─────────┤';
 const Line_3='└─────────────────────────┴─────────┴───────────┴──────────┴─────────┴─────────┴─────────┘';
@@ -694,7 +694,7 @@ begin
   Owner.ProjectSettings.Hydrostatics_DraftStep:=DraftStep;
   Owner.ProjectSettings.Hydrostatics_Trim:=Trim;
   Strings.add('');
-  Strings.add(UserString(1677)); //Кривые элементов теоретического чертежа
+  Strings.add( UserString(1677) ); //Кривые элементов теоретического чертежа
   Strings.add('');
   Strings.Add('T   : '+Userstring(48));   // Draft проектная осадка
   Strings.Add('δd  : '+Userstring(1674)); // Trim дифферент (δd=dн-dк)
@@ -812,7 +812,7 @@ var
   PrevCursor: TCursor;
   Point: TFreeSubdivisionControlPoint;
   Proceed: boolean;
-  P,Translate: T3DVector;
+  P,Translate: Vector;
   Marker: TFreeMarker;
 begin
   for I:=1 to Owner.NumberOfLayers do

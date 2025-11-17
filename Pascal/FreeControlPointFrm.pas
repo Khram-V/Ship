@@ -6,7 +6,7 @@ interface uses
   Forms,   Dialogs,
   Math,    StdCtrls, StrUtils, Windows,
   Buttons, ExtCtrls,
-  FreeTypes,FreeGeometry,FreeStringUtils,FreeLanguageSupport;
+  FreeTypes,FreeGeometry,FreeLanguageSupport;
 type
 {TEntryMethod=( emNone,emTyping,emArrowKeys,emMouse,emPaste );
 TFormStyle=(fsNormal,fsMDIChild,fsMDIForm,fsStayOnTop,fsSplash,fsSystemStayOnTop);
@@ -56,8 +56,8 @@ implementation uses Main,FreeShipUnit;
 
 procedure TFreeControlPointForm.FSetActiveControlPoint
   ( Val:TFreeSubdivisionControlPoint );
-var I,N,Npoi: Integer; BCol,FCol: TColor; Str: String=''; Len: TFloatType;
-    Angle,C0,CN,C1: T3DVector;
+var I,N,Npoi: Integer; BCol,FCol: TColor; Str: String=''; Len: Real;
+    Angle,C0,CN,C1: Vector;
     IsPointDifferent: boolean;
 begin
   IsPointDifferent:=FActiveControlPoint<>Val;
@@ -203,7 +203,7 @@ Var IdUndo: Integer=1;
 
 Function TFreeControlPointForm.Change( Text: String; Comp: Integer ):String; // Comp: 0:X,1:Y,2:Z
 var Saved: Boolean; I: Integer;
-    Val,R: TFloatType; P: T3DVector;  Undo: TFreeUndoObject;
+    Val,R: Real; P: Vector;  Undo: TFreeUndoObject;
 begin
   Edit1.OnEditingDone:=nil; Result:=Text; // writeln( Text,'[',Comp,'] ',' N=',Ship.NumberOfSelectedControlPoints );
   Edit2.OnEditingDone:=nil; Saved:=false; // сброс повторных прерывений

@@ -79,7 +79,7 @@ type TFreeExpanedplatesDialog  = class(TForm)
      ToolButton4: TToolButton;
      ExportTextFile: TAction;
      ToolButton6: TToolButton;
-     procedure ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
+     procedure ViewportRequestExtents(Sender: TObject; var Min,Max: Vector);
      procedure ViewportRedraw(Sender: TObject);
      procedure ViewportMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
      procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
@@ -120,8 +120,8 @@ private
    FFreeShip         : TFreeShip;
    FInitialPosition  : TPoint;
    FAllowPanOrZoom   : Boolean;
-   FXGridSpacing     : TFloatType;
-   FYGridSpacing     : TFloatType;
+   FXGridSpacing     : Real;
+   FYGridSpacing     : Real;
    function FGetActivePatch:TFreeDevelopedPatch;
    procedure FSetActivePatch(Val:TFreeDevelopedPatch);
    procedure FUpdateListBox;
@@ -135,8 +135,8 @@ var FreeExpanedplatesDialog: TFreeExpanedplatesDialog;
 implementation //uses FreeLanguageSupport;
 {$R *.lfm}
 
-function GetGridSpacing(OveralSize:TFloatType):TFloatType;
-var I,Tmp : TFloatType;
+function GetGridSpacing(OveralSize:Real):Real;
+var I,Tmp : Real;
 begin
    OveralSize:=Abs(OveralSize);
    if OveralSize<1e-6 then OveralSize:=1e-6;
@@ -219,8 +219,8 @@ begin
    Listbox.Items.EndUpdate;
 end;
 
-procedure TFreeExpanedplatesDialog.ViewportRequestExtents(Sender: TObject;var Min, Max: T3DVector);
-var FMin,FMax  : T3DVector;
+procedure TFreeExpanedplatesDialog.ViewportRequestExtents(Sender: TObject;var Min, Max: Vector);
+var FMin,FMax  : Vector;
     I,N        : Integer;
     Patch      : TFreeDevelopedPatch;
 begin
@@ -245,9 +245,9 @@ end;
 function TFreeExpanedplatesDialog.Execute(FreeShip:TFreeShip;Plates:TFasterList):boolean;
 var I: Integer;
     Patch: TFreeDevelopedPatch;
-    Min,Max,MinT,MaxT  : T3DVector;
-    P2D: T2DCoordinate;
-    Clearance,Tmp: TFloatType;
+    Min,Max,MinT,MaxT  : Vector;
+    P2D: Place;
+    Clearance,Tmp: Real;
 begin
    FFreeship:=FreeShip;
    FPlates:=Plates;
@@ -302,8 +302,8 @@ begin
                               else Tmp:=Max.Y-Min.Y;
    FXGridSpacing:=GetGridSpacing(Tmp)/2;
    FYGridSpacing:=FXGridSpacing;
-   Edit2.Text:=FloatToStrF(FXGridSpacing,ffFixed,7,3);
-   Edit3.Text:=FloatToStrF(FYGridSpacing,ffFixed,7,3);
+   Edit2.Text:=FloatToDec(FXGridSpacing,3);
+   Edit3.Text:=FloatToDec(FYGridSpacing,3);
 
    Viewport.ZoomExtents;
    if Plates.Count=0 then ActivePatch:=nil
@@ -316,10 +316,10 @@ end;
 procedure TFreeExpanedplatesDialog.ViewportRedraw(Sender: TObject);
 var I,N     : Integer;
     Patch   : TFreeDevelopedPatch;
-    X,Y     : TFloatType;
-    P       : T3DVector;
+    X,Y     : Real;
+    P       : Vector;
     Pt1,Pt2 : TPoint;
-    Space   : TFloatType;
+    Space   : Real;
     Suppress:Boolean;
     Str     : string;
 begin
@@ -349,10 +349,10 @@ begin
             begin
                if (X>=Viewport.Min3D.X-0.01) and (X<=Viewport.Max3D.X+0.01) then
                begin
-                  P:=Vector(X,Viewport.Min3D.Y-Space,0.0);
+                  P:=iVect(X,Viewport.Min3D.Y-Space,0.0);
                   Pt1:=Viewport.Project(P);
                   Viewport.Canvas.MoveTo(Pt1.X,Pt1.Y);
-                  P:=Vector(X,Viewport.Max3D.Y+Space,0.0);
+                  P:=iVect(X,Viewport.Max3D.Y+Space,0.0);
                   Pt2:=Viewport.Project(P);
                   Viewport.Canvas.LineTo(Pt2.X,Pt2.Y);
                   Str:=ConvertDimension(X,FFreeship.ProjectSettings.ProjectUnits);
@@ -380,10 +380,10 @@ begin
             begin
                if (Y>=Viewport.Min3D.Y-0.01) and (Y<=Viewport.Max3D.Y+0.01) then
                begin
-                  P:=Vector(Viewport.Min3D.X-Space,Y,0.0);
+                  P:=iVect(Viewport.Min3D.X-Space,Y,0.0);
                   Pt1:=Viewport.Project(P);
                   Viewport.Canvas.MoveTo(Pt1.X,Pt1.Y);
-                  P:=Vector(Viewport.Max3D.X+Space,Y,0.0);
+                  P:=iVect(Viewport.Max3D.X+Space,Y,0.0);
                   Pt2:=Viewport.Project(P);
                   Viewport.Canvas.LineTo(Pt2.X,Pt2.Y);
                   Str:=ConvertDimension(Y,FFreeship.ProjectSettings.ProjectUnits);
@@ -422,8 +422,8 @@ end;
 
 procedure TFreeExpanedplatesDialog.ViewportMouseMove(Sender: TObject;Shift: TShiftState; X, Y: Integer);
 var P       : TPoint;
-    P1,P2   : T2DCoordinate;
-    Diff    : T2DCoordinate;
+    P1,P2   : Place;
+    Diff    : Place;
     Patch   : TFreeDevelopedPatch;
 begin
    if FAllowPanOrZoom then begin
@@ -686,12 +686,12 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.Edit2Exit(Sender: TObject);
-var Value:TFloatType;
+var Value:Real;
 begin
    if Edit2.Text='' then Value:=FXGridSpacing
                     else Value:=StrToFloat(Edit2.Text);
    FXGridSpacing:=Value;
-   Edit2.Text:=FloatToStrF(FXGridSpacing,ffFixed,7,3);
+   Edit2.Text:=FloatToDec(FXGridSpacing,3);
    Viewport.Refresh;
 end;
 
@@ -702,12 +702,12 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.Edit3Exit(Sender: TObject);
-var Value:TFloatType;
+var Value:Real;
 begin
    if Edit3.Text='' then Value:=FYGridSpacing
                     else Value:=StrToFloat(Edit3.Text);
    FYGridSpacing:=Value;
-   Edit3.Text:=FloatToStrF(FYGridSpacing,ffFixed,7,3);
+   Edit3.Text:=FloatToDec(FYGridSpacing,3);
    Viewport.Refresh;
 end;
 
@@ -718,7 +718,7 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.Edit1Exit(Sender: TObject);
-var Value:TFloatType;
+var Value:Real;
 begin
    if ActivePatch<>nil then begin
       Value:=StrToFloat(Edit1.Text);

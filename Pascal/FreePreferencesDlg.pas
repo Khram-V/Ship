@@ -1,14 +1,12 @@
 unit FreePreferencesDlg;
-{$MODE Delphi}{$H+}
 interface uses
-  LCLIntf,LCLType,
+  LCLIntf, LCLType,
   SysUtils,Variants,
-  Classes,Graphics,
+  Classes, Graphics,
   Controls,Forms,
-  Dialogs,StdCtrls,
-  Buttons,ExtCtrls,
-  ComCtrls,Spin,
-  Menus,FreeShipUnit;
+  Dialogs, StdCtrls,
+  Buttons, ExtCtrls,
+  ComCtrls,Spin,Menus, FreeShipUnit;
 type                                                 { TFreePreferencesDialog }
   TFreePreferencesDialog=class(TForm)
     EditExportDir,EditImportDir,EditLanguagesDir,
@@ -64,8 +62,7 @@ type                                                 { TFreePreferencesDialog }
     function Execute( Freeship: TFreeShip ): boolean;
   end;
 
-var
-  FreePreferencesDialog: TFreePreferencesDialog;
+var FreePreferencesDialog: TFreePreferencesDialog;
 
 const rs_Save='Are you sure you want to reset the preferences?'
                 +#13#10+'The current settings will be lost.';
@@ -178,7 +175,7 @@ var TxH,HdrHeight,BrdWidth,TbT,PgT,PnT,PGIB: integer; ScreenPoint: TPoint;
 begin
   Invalidate;
 //Application.ProcessMessages;
-  ScreenPoint:=ButtonPanel.ClientToScreen(Point(0,0));
+  ScreenPoint:=ButtonPanel.ClientToScreen( Point(0,0) );
   HdrHeight:=ScreenPoint.Y-self.Top;
   BrdWidth:=ScreenPoint.X-self.Left;
   HdrHeight:=HdrHeight-BrdWidth;
@@ -192,19 +189,18 @@ begin
     self.AdjustSize;
     Application.ProcessMessages;
 }
-  TbT:=TabSheet2.ClientToParent(Point(0,0),self).Y;
-  PgT:=PageControl1.ClientToParent(Point(0,0),self).Y;
-  PnT:=Panel1.ClientToParent(Point(0,0),self).Y;
+  TbT:=TabSheet2.ClientToParent( Point(0,0),self ).Y;
+  PgT:=PageControl1.ClientToParent( Point(0,0),self ).Y;
+  PnT:=Panel1.ClientToParent( Point(0,0),self ).Y;
 //TbH:=PgT-PnT-Panel1.BorderWidth-Panel1.BorderSpacing.InnerBorder;
   PGIB :={EditImportDir}Panel42.Height*10+TabSheet2.ChildSizing.VerticalSpacing*9;
 //PGIB:=PanelGlobalImportDir.Height*10+TabSheet2.ChildSizing.VerticalSpacing*9;
-  TxH:=PGIB+TabSheet2.ChildSizing.TopBottomSpacing*2+//TbH +
+  TxH:=PGIB+TabSheet2.ChildSizing.TopBottomSpacing*2 + //TbH +
     Panel1.BorderWidth*2+Panel1.BorderSpacing.InnerBorder*2 +
     ButtonPanel.Height+HdrHeight+BrdWidth*2;
-  {if self.Constraints.MinHeight < TxH then self.Constraints.MinHeight:=TxH;}
-  result:=Rect(0,0,Width,BitBtnResetDirs.Top+BitBtnResetDirs.Height+16);
+{ if self.Constraints.MinHeight < TxH then self.Constraints.MinHeight:=TxH; }
+  result:=Rect( 0,0,Width,BitBtnResetDirs.Top+BitBtnResetDirs.Height+16 );
 end;
-
 
 procedure TFreePreferencesDialog.SpinEdit1Change(Sender: TObject);
     begin FConfigChanged:=True; end;

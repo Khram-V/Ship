@@ -38,10 +38,8 @@ begin
          Destination.Add( NumberOfMarkers );
          for I:=1 to NumberOfMarkers do Marker[I-1].SaveBinary(Destination);
          if FileVersion>=fv210 then begin
-     (*##*) Fillchar(FResistanceDelftData,SizeOf(FResistanceDelftData),0);     // чистка
-     (*##*) Fillchar(FResistanceKaperData,SizeOf(TFreeKAPERResistanceData),0); // файла
-            Destination.Add(FResistanceDelftData {,SizeOf(FResistanceDelftData)    } );
-            Destination.Add(FResistanceKaperData {,SizeOf(TFreeKAPERResistanceData)} );
+            for I:=1 to 17 do Destination.Add( 0.0 ); Destination.Add( false ); Destination.Add( false ); // Delft
+            for I:=1 to 9 do Destination.Add( 0.0 ); Destination.Add( false );                // Kaper
             if FileVersion>=fv250 then begin
                Destination.Add(NumberOfbackgroundImages);
                for I:=1 to NumberOfBackgroundImages do BackgroundImage[I-1].SaveBinary(Destination);
@@ -265,8 +263,7 @@ begin    // Remember the filename because it will be erased by the clear method
                    Marker.LoadBinary(Source);
                end;
                if FileVersion>=fv210 then begin
-                  Source.LoadTFreeDelftSeriesResistanceData(FResistanceDelftData ); //,SizeOf(FResistanceDelftData));
-                  Source.LoadTFreeKAPERResistanceData(FResistanceKaperData ); // ,SizeOf(TFreeKAPERResistanceData));
+                  Source.FPosition += 112;      // Delft(72) + Kaper(40) = 112;
                   if FileVersion>=fv250 then begin
                      Source.LoadInteger(N);
                      for I:=1 to N do begin
@@ -307,7 +304,7 @@ const
  Name_A='«Великие географические открытия». Корпус всепогодного корабля среднего водоизмещения (галеон)';
  Comm_A='Вариант эволюционного совершенствования корабельных обводов с уверенным штормованием в эпоху Великих Испанских географических открытий.';
 
- Ship_A: array [0..6,0..4] of T3DVector=
+ Ship_A: array [0..6,0..4] of Vector=
 {$if false}
  ( ( ( x: 0.06; y:0;    z:0    ),  // station 0,stern=Галеон
      ( x: 0.02; y:0;    z:1.75 ),
@@ -388,7 +385,7 @@ const
  Name_B='«Новый корабль золотого XIX века». Корпус всепогодного корабля среднего водоизмещения (фрегат)';
  Comm_B='Вариант эволюции корабельных обводов с достижением ограниченной штормовой ходкости при совершенном парусном вооружении.';
 
- Ship_B: array [0..6,0..4] of T3DVector=
+ Ship_B: array [0..6,0..4] of Vector=
  ( ( ( x: 0.06; y:0;    z:0    ),  // station 0,stern=Фелюга
      ( x: 0.04; y:0;    z:1.3  ),
      ( x:-0.006;y:0;    z:1.5  ),
@@ -431,7 +428,7 @@ const
  Name_C='Обводы быстроходного высокоманевренного корабля среднего водоизмещения с мощными машинами';
  Comm_C='Корабль с проектной отработкой элементов технической эстетики с ипытаниями под скоростной тележкой опытового бассена.';
 
- Ship_C: array [0..6,0..4] of T3DVector=
+ Ship_C: array [0..6,0..4] of Vector=
  ( ( ( x: 0.1;   y: 0    ; z: 0     ),     // 0,stern 3 1 =Moдняга
      ( x: 0.06;  y: 0    ; z: 1.1   ),     //         1 1
      ( x:-0.025; y: 0.05 ; z: 1.4   ),     //         1 1
@@ -472,7 +469,7 @@ const
 
 function TFreeEdit.Model_New:Boolean;
 var Answer: word; I,J,Cols,Rows: integer;
-    L,B,D,dd: TFloatType; P: T3DVector;
+    L,B,D,dd: Real; P: Vector;
     Spline1,Spline2: TFreeSpline;
     TrvSplines: TFasterList;
     Pts: array of array of TFreeSubdivisionControlPoint;

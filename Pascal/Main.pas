@@ -254,7 +254,7 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     procedure ExportSTLExecute(Sender: TObject);
   private
     FSplitSectionDialog: TFreeSplitSectionDialog;
-    procedure OnSplitSectionLocationChange(Sender: TObject; aV: TFloatType);
+    procedure OnSplitSectionLocationChange(Sender: TObject; aV: Real);
     procedure FLoadRecentFile(sender:TObject);
     procedure FreeShipChangeLayerData(Sender: TObject);
     procedure FreeShipChangeActiveLayer(Sender: TObject;Layer: TFreeSubdivisionLayer);
@@ -833,7 +833,7 @@ begin
    Panel3.Caption:=Userstring(284)+': '+FloatToDec(Ship.Visibility.CursorIncrement,5);
 end;
 procedure TMainForm.Panel3Click(Sender: TObject);
-var Str: String; I: integer; Value: TFloatType;
+var Str: String; I: integer; Value: Real;
 begin
    if Ship.Surface.NumberOfControlPoints=0 then exit;
    Str:=FloatToDec( Ship.Visibility.CursorIncrement,5 );
@@ -915,7 +915,7 @@ procedure TMainForm.SelectAllExecute(Sender: TObject);
 procedure TMainForm.ExportSTLExecute(Sender: TObject);
     begin Ship.Edit.File_ExportSTL; UpdateMenu; end;
 
-procedure TMainForm.OnSplitSectionLocationChange(Sender: TObject; aV: TFloatType);
+procedure TMainForm.OnSplitSectionLocationChange(Sender: TObject; aV: Real);
     begin Ship.ProjectSettings.MidleFrame:=aV;
           Ship.FileChanged:=True;
           Ship.Redraw;

@@ -1,5 +1,4 @@
 unit FreeFileBuffer;
-{$mode Delphi}{$H+}
 interface uses
   Classes,
   SysUtils,
@@ -10,20 +9,14 @@ interface uses
   FreeVersionUnit;
 const FileBufferBlockSize=32768;                         //=2^15 <= 4096=2^12
                         // used for reading and writing files using TFilebuffer
-
 type
-//  TNameData=record N:integer; Name:String; end;
-//  TLinearConstraintData=record N,LinearConstraintPointA,LinearConstraintPointB:integer; end;
-//  TAnchorData=record N,AnchorPoint:integer; IsAnchorHard:boolean; end;
-
-{ TFreeFileBuffer
+{
+  TFreeFileBuffer
   Binary stream used to store file info
 }
 TFreeFileBuffer=class
   private
     FCapacity: integer; // Amount of bytes allocated
-    FCount: integer;    // The amount of bytes actually used
-    FPosition: integer; // current position when reading information from buffer
     FVersion: TFreeFileVersion;
     FData: array of byte;
     FFileName: String;
@@ -31,42 +24,26 @@ TFreeFileBuffer=class
     procedure FSetCapacity(val: integer); virtual;
     function FGetCapacity: integer; virtual;
   public
+    FCount: integer;    // The amount of bytes actually used
+    FPosition: integer; // current position when reading information from buffer
     Encoding: String;
     procedure Add( IntegerValue: integer);     overload; virtual;
     procedure Add( Text: String);          overload; virtual;
     procedure Add( BooleanValue: boolean);     overload; virtual;
-    procedure Add( FloatValue: TFloatType);    overload; virtual;
-    procedure Add( Coordinate: T3DVector);     overload; virtual;
-    procedure Add( Plane: T3DPlane);           overload; virtual;
+    procedure Add( FloatValue: Real);    overload; virtual;
+    procedure Add( Coordinate: Vector);     overload; virtual;
+    procedure Add( Plane: Plate);           overload; virtual;
     procedure Add( Version: TFreeFileVersion); overload; virtual;
     procedure Add(JPegImage: TJPEGImage); overload; virtual;
-    procedure Add(Data: TFreeDelftSeriesResistanceData); overload; virtual; /// только
-    procedure Add(Data: TFreeKAPERResistanceData); overload; virtual;       /// здесь
     procedure LoadInteger(var Output: integer); virtual;
     procedure LoadString(var Output: String); virtual;
     procedure LoadTStrings(var Output: TStrings); virtual;
     procedure LoadTFreeFileVersion(var Output: TFreeFileVersion); virtual;
     procedure LoadBoolean(var Output: boolean); virtual;
-    procedure LoadTFloatType(var Output: TFloatType); virtual;
-    procedure LoadT3DVector(var Output: T3DVector); virtual;
-    procedure LoadT3DPlane(var Output: T3DPlane); virtual;
+    procedure LoadTFloatType(var Output: Real); virtual;
+    procedure LoadVector(var Output: Vector); virtual;
+    procedure LoadT3DPlane(var Output: Plate); virtual;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); virtual;
-    procedure LoadTFreeKAPERResistanceData(var Data: TFreeKAPERResistanceData); virtual;
-    procedure LoadTFreeDelftSeriesResistanceData(var Data: TFreeDelftSeriesResistanceData); virtual;
-//  procedure Add( Color: TColor; Alfa:byte ); overload; virtual;
-//  procedure Add( words: TStrings);           overload; virtual;
-//  procedure Add2(BooleanValue:Boolean);      overload; virtual;
-//  procedure Add(WordValue:word);             overload; virtual;
-//  procedure Add(NameData: TNameData);        overload; virtual;
-//  procedure Add(AnchorData: TAnchorData);    overload; virtual;
-//  procedure Add(LCData:TLinearConstraintData); overload; virtual;
-//  procedure Add(const source;Size:Integer);  overload;virtual;
-//  procedure Load( var Output:Word ); virtual;
-//  procedure LoadTNameData(var NameData: TNameData); virtual;
-//  procedure LoadTAnchorData(var AnchorData: TAnchorData); virtual;
-//  procedure LoadTLinearConstraintData(var LCData: TLinearConstraintData); virtual;
-// ?procedure Load(var Dest;Size:Integer); overload;virtual;
-//  procedure LoadTColor( var Output: TColor {var Alfa: Byte} ); virtual;
     constructor Create;
     procedure Clear; virtual;
     procedure LoadFromFile(Filename: String); virtual;
@@ -85,30 +62,30 @@ TFreeFileBuffer=class
   TFreeTextBuffer=class( TFreeFileBuffer )
   private
     FLines: TStringList;
-    FPosition: integer;    // this is our position
 //  FormatSettings: TFormatSettings;
     function FGetCapacity: integer; override;
     procedure FSetCapacity( val: integer ); override;
   public
+    FPosition: integer;    // this is our position
     constructor Create;
     destructor Destroy; override;
     procedure Clear; override;
     procedure Add(IntegerValue: integer); override; overload;
     procedure Add(Text: String); override; overload;
     procedure Add(BooleanValue: boolean); override; overload;
-    procedure Add(FloatValue: TFloatType); override; overload;
+    procedure Add(FloatValue: Real); override; overload;
     procedure Add(PVersion: TFreeFileVersion); override; overload;
-    procedure Add(Coordinate: T3DVector); override; overload;
-    procedure Add(Plane: T3DPlane); override; overload;
+    procedure Add(Coordinate: Vector); override; overload;
+    procedure Add(Plane: Plate); override; overload;
     procedure Add(JPegImage: TJPEGImage); override; overload;
     procedure LoadInteger(var Output: integer); override;
     procedure LoadString(var Output: String); override;
     procedure LoadTFreeFileVersion(var Output: TFreeFileVersion); override;
     procedure LoadBoolean(var Output: boolean); override;
-    procedure LoadTFloatType(var Output: TFloatType); override;
+    procedure LoadTFloatType(var Output: Real); override;
     procedure LoadTStrings(var Output: TStrings); override;
-    procedure LoadT3DVector(var Output: T3DVector); override;
-    procedure LoadT3DPlane(var Output: T3DPlane); override;
+    procedure LoadVector(var Output: Vector); override;
+    procedure LoadT3DPlane(var Output: Plate); override;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); override;
     procedure LoadFromFile(Filename: String); override;
     procedure Reset; override;                 // reset the data before reading
@@ -116,24 +93,13 @@ TFreeFileBuffer=class
     function GetPosition:integer; override;
     property Capacity: integer read FGetCapacity write FSetCapacity;
     property Position: integer read GetPosition;
-//  procedure Add( Color:TColor; Alfa:byte ); overload; overload;
-//  procedure Add(words: TStrings); override; overload;
-//  procedure Add(NameData: TNameData); override; overload;
-//  procedure Add(LCData: TLinearConstraintData); override; overload;
-//  procedure Add(const source;Size:Integer);     override;
-//  procedure LoadTColor( var Output: TColor {var Alfa: Byte} ); override;
-//  procedure LoadTNameData(var Output: TNameData); override;
-//  procedure LoadTLinearConstraintData(var Output: TLinearConstraintData); override;
   end;
 
-
 implementation
-
 {
   TFreeFileBuffer
   Binary stream used to store file info
 }
-
 function TFreeFileBuffer.FGetCapacity: integer; begin Result:=FCapacity; end;
 procedure TFreeFileBuffer.FSetCapacity( Val: Integer ); //Var I: Integer;
 begin if FCapacity<=Val then begin
@@ -163,23 +129,20 @@ begin
   FFileName:=Filename;
   AssignFile( FFile,Filename );
 //TheStream:=TFileStream.Create(FileName,fmOpenRead or fmShareDenyWrite);
-//try
-    system.FileMode:=fmOpenRead;
-    system.Reset( FFile,1 );
-    FCount:=0;
-    DataLeft:=FileSize( FFile );
-    Capacity:=DataLeft;
-    FPosition:=0;
-    while DataLeft>0 do begin
-      if DataLeft<FileBufferBlockSize then Size:=DataLeft
-                                      else Size:=FileBufferBlockSize;
-      BlockRead( FFile,FData[FCount],Size,Tmp );
-      Dec( DataLeft,Tmp );
-      Inc( FCount,Tmp );
-    end;
-//finally
-    Closefile(FFile);
-//end;
+  system.FileMode:=fmOpenRead;
+  system.Reset( FFile,1 );
+  FCount:=0;
+  DataLeft:=FileSize( FFile );
+  Capacity:=DataLeft;
+  FPosition:=0;
+  while DataLeft>0 do begin
+    if DataLeft<FileBufferBlockSize then Size:=DataLeft
+                                    else Size:=FileBufferBlockSize;
+    BlockRead( FFile,FData[FCount],Size,Tmp );
+    Dec( DataLeft,Tmp );
+    Inc( FCount,Tmp );
+  end;
+  Closefile(FFile);
   FFileName:='';
 end;
 
@@ -212,38 +175,7 @@ begin Size:=SizeOf( Integer );
    if Count+Size>Capacity then Capacity:=Count+Size;
       Move( IntegerValue,FData[FCount],Size ); Inc( FCount,Size );
   end;                            // NtoLE( IntegerValue )=Indian swap bytes
-{
-procedure TFreeFileBuffer.Add( Color: TColor; Alfa:byte );
-  var C: Cardinal; Size: Integer;
-begin Size:=4; // SizeOf( Integer );
-  C := ( Color and $FFFFFF ) or ( Cardinal( 255-Alfa ) shl 24 );
-  if Count+Size > Capacity then Capacity:=Count+Size;
-  Move( C,FData[FCount],Size );
-  Inc( FCount,Size );              // NtoLE( IntegerValue )=Indian swap bytes
-end;
-                    // Destination.Add( (ProjectUnderWaterColor and $FFFFFF )
-                   //  or (TColor( 255-ProjectUnderWaterColorAlpha ) shl 24) );
- *
-procedure TFreeFileBuffer.Add(NameData: TNameData);
-begin
-  Add( NameData.N );    // integer
-  Add( NameData.Name ); // string
-end;
- *
-procedure TFreeFileBuffer.Add(AnchorData: TAnchorData);
-begin
-  Add( AnchorData.N );
-  Add( AnchorData.AnchorPoint );
-  Add( AnchorData.IsAnchorHard );
-end;
- *
-procedure TFreeFileBuffer.Add(LCData: TLinearConstraintData);
-begin
-  Add(LCData.N);
-  Add(LCData.LinearConstraintPointA);
-  Add(LCData.LinearConstraintPointB);
-end;
-}
+
 procedure TFreeFileBuffer.Add(Version: TFreeFileVersion);
 var
   Size: integer;
@@ -254,29 +186,19 @@ begin
   Move(Version,FData[FCount],Size);
   Inc(FCount,Size);
 end;
-
-procedure TFreeFileBuffer.Add(Coordinate: T3DVector);
-var
-  Size: integer;
-begin
-  Size:=SizeOf(Coordinate);
+procedure TFreeFileBuffer.Add( FloatValue: Real );
+const Size=SizeOf( Single ); var W: Single;
+begin W:=FloatValue;
   if Count+Size>Capacity then Capacity:=Count+Size;
-  Move(Coordinate,FData[FCount],Size);
-  Inc(FCount,Size);
+  Move( W,FData[FCount],Size );
+  Inc( FCount,Size );
 end;
-
-procedure TFreeFileBuffer.Add(Plane: T3DPlane);
-var Size: integer;
-begin
-  Size:=SizeOf(Plane);
-  if Count+Size>Capacity then Capacity:=Count+Size;
-  Move(Plane,FData[FCount],Size);
-  Inc(FCount,Size);
-end;
+procedure TFreeFileBuffer.Add( Coordinate: Vector );
+begin Add( Coordinate.X ); Add( Coordinate.Y ); Add( Coordinate.Z ); end;
+procedure TFreeFileBuffer.Add( Plane: Plate );
+begin Add( Plane.a ); Add( Plane.b ); Add( Plane.c ); Add( Plane.d ); end;
 procedure TFreeFileBuffer.Add(JPegImage: TJPEGImage);
-var
-  Stream: TMemoryStream;
-  Size: integer;
+var Stream: TMemoryStream; Size: integer;
 begin
   Add(JPEGImage.Width);
   Add(JPEGImage.Height);
@@ -307,105 +229,9 @@ begin
   JPEGImage.LoadFromStream(Stream);
   FreeAndNil(Stream);
 end;
-
-/// !!!-на случай восстановления ~~~ c множеством перезагружаемых вызовов
-
-procedure TFreeFileBuffer.LoadTFreeDelftSeriesResistanceData(var Data: TFreeDelftSeriesResistanceData);
-  var bp: integer;
-begin bp:=FPosition;
-  with Data do begin
-    LoadTFloatType(StartSpeed);
-    LoadTFloatType(EndSpeed);
-    LoadTFloatType(StepSpeed);
-    LoadTFloatType(Bwl);
-    LoadTFloatType(Cp);
-    LoadTFloatType(Displacement);
-    LoadTFloatType(Draft);
-    LoadTFloatType(DraftTotal);
-    LoadTFloatType(KeelChordLength);
-    LoadTFloatType(KeelArea);
-    LoadTFloatType(LCB);
-    LoadTFloatType(Lwl);
-    LoadTFloatType(RudderChordLength);
-    LoadTFloatType(RudderArea);
-    LoadTFloatType(Viscosity);
-    LoadTFloatType(WettedSurface);
-    LoadTFloatType(WlArea);
-    LoadBoolean(EstimateWetSurf); // Structures are aligned to 2 bytes,so LoadTFreeMHSeriesResistanceData Boolean as Word
-    LoadBoolean( Extract );
-  end;
-  FPosition:=bp+sizeof(Data); //record data can be aligned
-end;
-
-procedure TFreeFileBuffer.LoadTFreeKAPERResistanceData(var Data: TFreeKAPERResistanceData);
-  var bp: integer;
-begin bp:=FPosition;
-  with Data do begin
-    LoadTFloatType(Draft);
-    LoadTFloatType(Lwl);
-    LoadTFloatType(Bwl);
-    LoadTFloatType(Cp);
-    LoadTFloatType(Displacement);
-    LoadTFloatType(LCB);
-    LoadTFloatType(WettedSurface);
-    LoadTFloatType(At_Ax);
-    LoadTFloatType(EntranceAngle);
-    LoadBoolean( Extract );
-  end;
-  FPosition:=bp+sizeof( Data ); //record data can be aligned
-end;
-
-////////// Add
-
-procedure TFreeFileBuffer.Add( Data: TFreeDelftSeriesResistanceData );
-var Size: integer=sizeof( Data ); bp: integer;
-begin
-  bp:=FCount;
-  if Count+Size>Capacity then Capacity:=Count+Size;
-  with Data do begin
-    Add(StartSpeed);
-    Add(EndSpeed);
-    Add(StepSpeed);
-    Add(Bwl);
-    Add(Cp);
-    Add(Displacement);
-    Add(Draft);
-    Add(DraftTotal);
-    Add(KeelChordLength);
-    Add(KeelArea);
-    Add(LCB);
-    Add(Lwl);
-    Add(RudderChordLength);
-    Add(RudderArea);
-    Add(Viscosity);
-    Add(WettedSurface);
-    Add(WlArea);
-    Add(EstimateWetSurf);
-    Add(Extract);
-  end;
-  FCount:=bp+Size;
-end;
-
-procedure TFreeFileBuffer.Add(Data: TFreeKAPERResistanceData);
-var Size: integer=sizeof( Data ); bp: integer;
-begin
-  bp:=FCount;
-  if Count+Size>Capacity then Capacity:=Count+Size;
-  with Data do begin
-    Add( Draft );
-    Add( Lwl );
-    Add( Bwl );
-    Add( Cp );
-    Add( Displacement );
-    Add( LCB );
-    Add( WettedSurface );
-    Add( At_Ax );
-    Add( EntranceAngle );
-    Add( Extract );
-  end;
-  FCount:=bp+Size;
-end;
-
+(*
+   !!!-на случай восстановления ~~~ c множеством перезагружаемых вызовов
+*)
 procedure TFreeFileBuffer.LoadString( var Output: String );
 var I,Size: integer; Ch: char; // S: String;
 begin Output:='';
@@ -427,35 +253,6 @@ begin Size:=4; Output:=0;              //if FPosition+Size >= FCount then exit;
   Output:=LEtoN( Output );
   Inc( FPosition,Size );
 end;
-{
-// MM: This may be not endiness safe. Will replace it typed
-procedure TFreeFileBuffer.Add(const source;Size:Integer);
-var S: PChar;
-    I: Integer;
-begin
-   S:=PChar(@Source);
-   if Count+Size+20>Capacity then Capacity:=Count+Size+20;
-   for I:=0 to size-1 do begin FData[FCount]:=Byte(S[I]); Inc(FCount); end;
-end;
-~~~
-procedure TFreeFileBuffer.LoadTColor( var Output: TColor ); Var Size: integer;
-begin Size:=4; Output:=0;              //if FPosition+Size >= FCount then exit;
-  Move( FData[FPosition],Output,Size );
-  Output:=LEtoN( Output );
-  Inc( FPosition,Size );
-end;
----
-procedure TFreeFileBuffer.LoadTColor( var Output: TColor; var Alfa: Byte );
-var Size: integer; Color: Cardinal;
-begin
-  Size:=4; Color:=0;                   //if FPosition+Size >= FCount then exit;
-  Move( FData[FPosition],Color,Size );
-//Color:=LEtoN( Color );
-  Alfa := 255-Byte( Color shr 24 );
-  OutPut:=Color and $FFFFFF;
-  Inc( FPosition,Size );
-end;
-}
 procedure TFreeFileBuffer.LoadTStrings(var Output: TStrings);
 var i,c: integer; S:String;
 begin
@@ -475,61 +272,27 @@ begin
   Inc( FPosition,Size );
 end;
 
-procedure TFreeFileBuffer.LoadBoolean(var Output: boolean);
-var
-  Size: integer;
-begin
-  Size:=1;
-  Output:=False;                   //if FPosition+Size >= FCount then exit;
+procedure TFreeFileBuffer.LoadBoolean( var Output: boolean );
+const Size=1;
+begin Output:=False;                   //if FPosition+Size >= FCount then exit;
   Move(FData[FPosition],Output,Size);
   Inc( FPosition,Size );
 end;
-(*
-procedure TFreeFileBuffer.LoadTNameData(var NameData: TNameData);
-begin
-  LoadInteger(NameData.N);
-  LoadString(NameData.Name);
+procedure TFreeFileBuffer.LoadTFloatType( var Output: Real );
+const Size=sizeof( Single ); var W: Single=0.0;
+begin// if FPosition+Size >= FCount then exit;
+  Move( FData[FPosition],W,Size ); OutPut:=W; Inc( FPosition,Size );
 end;
-*
-procedure TFreeFileBuffer.LoadTAnchorData(var AnchorData: TAnchorData);
-begin
-  LoadInteger(AnchorData.N);
-  LoadInteger(AnchorData.AnchorPoint);
-  LoadBoolean(AnchorData.IsAnchorHard);
+procedure TFreeFileBuffer.LoadVector( var Output: Vector );
+begin LoadTFloatType( OutPut.X );
+      LoadTFloatType( OutPut.Y );
+      LoadTFloatType( OutPut.Z );
 end;
- *
-procedure TFreeFileBuffer.LoadTLinearConstraintData(var LCData: TLinearConstraintData);
-begin
-  LoadInteger(LCData.N);
-  LoadInteger(LCData.LinearConstraintPointA);
-  LoadInteger(LCData.LinearConstraintPointB);
-end;
-*)
-procedure TFreeFileBuffer.LoadTFloatType(var Output: TFloatType);
-var
-  Size: integer;
-begin
-  Size:=SizeOf(Output);
-  Output:=0.0;                     //if FPosition+Size >= FCount then exit;
-  Move( FData[FPosition],Output,Size );
-  Inc(FPosition,Size);
-end;
-
-procedure TFreeFileBuffer.LoadT3DVector(var Output: T3DVector);
-var Size: integer;
-begin
-  Size:=SizeOf(Output);
-  Output:=ZERO;                    //if FPosition+Size >= FCount then exit;
-  Move(FData[FPosition],Output,Size);
-  Inc(FPosition,Size);
-end;
-
-procedure TFreeFileBuffer.LoadT3DPlane(var Output: T3DPlane);
-var Size: integer;
-begin
-  Size:=SizeOf( Output );            //if FPosition+Size >= FCount then exit;
-  Move(FData[FPosition],Output,Size);
-  Inc(FPosition,Size);
+procedure TFreeFileBuffer.LoadT3DPlane( var Output: Plate );
+begin LoadTFloatType( OutPut.a );
+      LoadTFloatType( OutPut.b );
+      LoadTFloatType( OutPut.c );
+      LoadTFloatType( OutPut.d );
 end;
 
 procedure TFreeFileBuffer.Add( Text: String );
@@ -545,27 +308,12 @@ begin                                 // convert text from UTF8 to Windows ANSI
 end;
 
 procedure TFreeFileBuffer.Add( BooleanValue: boolean );
-var
-  Size: integer;
+const Size=1; // SizeOf( BooleanValue );
 begin
-  Size:=1;//SizeOf(BooleanValue);
   if Count+Size>Capacity then Capacity:=Count+Size;
-  Move(BooleanValue,FData[FCount],Size);
-  Inc(FCount,Size);
-end;
-
-procedure TFreeFileBuffer.Add( FloatValue: TFloatType );
-  var Size: integer;
-begin Size:=SizeOf( FloatValue );
-  if Count+Size>Capacity then Capacity:=Count+Size;
-  Move( FloatValue,FData[FCount],Size );
+  Move( BooleanValue,FData[FCount],Size );
   Inc( FCount,Size );
 end;
-(*
-procedure TFreeFileBuffer.Add( words: TStrings ); Var I: Integer;
-    begin Add( words.Count ); for i:=0 to words.Count-1 do Add( words[i] );
-    end;
-*)
 {
   TFreeTextBuffer
   Text file used to store file info
@@ -595,7 +343,7 @@ begin                        // if BooleanValue then S:='True' else S:='False';
   Inc( FPosition );
 end;
 
-procedure TFreeTextBuffer.Add( FloatValue: TFloatType ); var S: String;
+procedure TFreeTextBuffer.Add( FloatValue: Real ); var S: String;
 begin S:=FloatTypeToStr( FloatValue ); FLines.Add(S); Inc(FPosition); end;
 
 procedure TFreeTextBuffer.Add( IntegerValue: integer );
@@ -607,47 +355,14 @@ procedure TFreeTextBuffer.Add( PVersion: TFreeFileVersion ); var S: String;
       FLines.Add( S );
       Inc( FPosition );
     end;
-(*
-procedure TFreeTextBuffer.Add( Color: TColor; Alfa:byte );
-  var C: Cardinal; S: String;
-begin
-  C := Cardinal( Color and $FFFFFF ) + ( Cardinal( 255-Alfa ) shl 24 );
-  S:=UIntToStr( C ); FLines.Add( S ); Inc( FPosition );
-end;
-procedure TFreeTextBuffer.Add( Words: TStrings );
-  var I: integer; S: String;
-begin S:='';
-      if words.Count > 0 then S:=words[0];
-      for i:=1 to words.Count-1 do S:=S+' '+words[i];
-      FLines.Add(S);
-      Inc( FPosition );
-end;
- *
-procedure TFreeTextBuffer.Add( NameData: TNameData );
-var S: String;
-begin
-  S:=IntToStr(NameData.N)+' '+NameData.Name;
-  FLines.Add(S);
-  Inc(FPosition);
-end;
- *
-procedure TFreeTextBuffer.Add(LCData: TLinearConstraintData);
-var S: String;
-begin
-  S:=IntToStr( LCData.N ) +' '+IntToStr( LCData.LinearConstraintPointA )
-                          +' '+IntToStr( LCData.LinearConstraintPointB );
-  FLines.Add(S);
-  Inc(FPosition);
-end;
-*)
-procedure TFreeTextBuffer.Add( Coordinate: T3DVector );
+procedure TFreeTextBuffer.Add( Coordinate: Vector );
   var S: String;
 begin S:=FloatTypeToStr( Coordinate.X )+' '
         +FloatTypeToStr( Coordinate.Y )+' '
         +FloatTypeToStr( Coordinate.Z ); FLines.Add(S); Inc(FPosition);
 end;
 
-procedure TFreeTextBuffer.Add(Plane: T3DPlane);
+procedure TFreeTextBuffer.Add(Plane: Plate);
 var S: String;
 begin
   S:=FloatTypeToStr( Plane.a )+' '+FloatTypeToStr( Plane.b )+' '
@@ -711,22 +426,7 @@ procedure TFreeTextBuffer.LoadInteger( var Output: integer ); var S: String;
       Output:=GetInteger( S ); //StrToInt( S );
       Inc(FPosition);
     end;
-{
-procedure TFreeTextBuffer.LoadTColor( var Output: TColor ); var S: String;
-    begin S:=FLines[FPosition];
-      Output:=GetInteger( S ) ;//StrToUInt( S );
-      Inc(FPosition);
-    end;
--------
-procedure TFreeTextBuffer.LoadTColor( var Output: TColor; var Alfa: Byte );
-  var S: String; Color: Cardinal;
-begin S:=FLines[FPosition];
-      Color:=StrToUInt( S );
-      Alfa := 255-Byte( Color shr 24 );
-      OutPut:=Color and $FFFFFF;
-      Inc(FPosition);
-end;
-}
+
 procedure TFreeTextBuffer.LoadString( var Output: String );
 var S: String;
 begin
@@ -746,57 +446,29 @@ var S: String;
 begin S:=FLines[FPosition]; Output:=StrToBool( S );  Inc( FPosition );
 end;
 
-procedure TFreeTextBuffer.LoadTFloatType( var Output: TFloatType );
+procedure TFreeTextBuffer.LoadTFloatType( var Output: Real );
   var S: String;                   // LocalFormatSettings: TFormatSettings;
 begin S:=FLines[FPosition]; Output:=GetFloat( S ); Inc( FPosition );
 end;
-(*
-procedure TFreeTextBuffer.LoadTJPEGImage(var Output: TColor);
+
+procedure TFreeTextBuffer.LoadVector(var Output: Vector);
 var S: String;
 begin
   S:=FLines[FPosition];
-  Output:=StrToInt(S);
-  Inc(FPosition);
-end;
-
-procedure TFreeTextBuffer.LoadTNameData(var Output: TNameData);
-var  p:integer; S: String;
-begin
-  S:=FLines[FPosition];
-  p:=pos(' ',S);
-  Output.N:=StrToInt(copy(S,1,p-1));
-  Output.Name:=copy(S,p+1,length(S));
+  Output.X:=GetFloat( S );
+  Output.Y:=GetFloat( S );
+  Output.Z:=GetFloat( S );
   Inc( FPosition );
 end;
 
-procedure TFreeTextBuffer.LoadTLinearConstraintData(var Output: TLinearConstraintData);
-var  S: String;
-begin
-  S:=FLines[FPosition];
-  Output.N:=GetInteger( S );                      // StrToInt(ExtractWord(1,S,[' ']));
-  Output.LinearConstraintPointA:=GetInteger( S ); // StrToInt(ExtractWord(2,S,[' ']));
-  Output.LinearConstraintPointB:=GetInteger( S ); // StrToInt(ExtractWord(3,S,[' ']));
-  Inc( FPosition );
-end;
-*)
-procedure TFreeTextBuffer.LoadT3DVector(var Output: T3DVector);
+procedure TFreeTextBuffer.LoadT3DPlane(var Output: Plate);
 var S: String;
 begin
   S:=FLines[FPosition];
-  Output.X:=GetFloat( S ); // ExtractWord(1,S,[' ']));
-  Output.Y:=GetFloat( S ); // ExtractWord(2,S,[' ']));
-  Output.Z:=GetFloat( S ); // ExtractWord(3,S,[' ']));
-  Inc( FPosition );
-end;
-
-procedure TFreeTextBuffer.LoadT3DPlane(var Output: T3DPlane);
-var S: String;
-begin
-  S:=FLines[FPosition];
-  Output.a:=GetFloat( S ); // ExtractWord(1,S,[' ']));
-  Output.b:=GetFloat( S ); // ExtractWord(2,S,[' ']));
-  Output.c:=GetFloat( S ); // ExtractWord(3,S,[' ']));
-  Output.d:=GetFloat( S ); // ExtractWord(4,S,[' ']));
+  Output.a:=GetFloat( S );
+  Output.b:=GetFloat( S );
+  Output.c:=GetFloat( S );
+  Output.d:=GetFloat( S );
   Inc( FPosition );
 end;
 
@@ -835,22 +507,4 @@ end;
 function TFreeTextBuffer.GetPosition:integer; begin Result:=FPosition; end;
 
 end.
-(*
-procedure Add(ColorValue: TColor); overload; virtual;
-procedure Add(ColorValue: TColor); overload; virtual;
-procedure TFreeFileBuffer.Add( ColorValue: TColor );
-var Size: integer;
-begin
-  Size:=4; //SizeOf(TColor);
-  if Count+Size > Capacity then FGrow(Size);
-  Move( ColorValue,FData[FCount],Size );
-  Inc(FCount,Size);
-end;
-procedure TFreeTextBuffer.Add( ColorValue: TColor );
-var S: String;
-begin
-  S:='$'+HexStr(ColorValue,8); FLines.Add(S); Inc(FPosition);
-end;
-procedure LoadColor(var Output: TColor); virtual;
-procedure LoadColor(var Output: TColor); virtual;  StringToColor(...
-*)
+

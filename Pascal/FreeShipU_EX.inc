@@ -12,13 +12,13 @@ procedure TFreeEdit.File_Export_Aurora_Experiments;
 var
   Str: String;
   Strings: TStringList;
-  Procedure Str2( A,B: single ); begin Str:=Str+'  '+FloatToDec(A,5)+' '+FloatToDec(B,5); end;
-  Procedure Str3( X,Y,Z: single ); begin Str:=Str+'  '+FloatToDec(X,5)+' '+FloatToDec(Y,5)+' '+FloatToDec(Z,5); end;
-//Procedure Str2( A,B: single ); begin Str:=Str+' '+FloatTypetoStr(A)+' '+FloatTypetoStr(B); end;
-//Procedure Str3( X,Y,Z: single ); begin Str:=Str+' '+FloatTypetoStr(X)+' '+FloatTypetoStr(Y)+' '+FloatTypetoStr(Z); end;
+  Procedure Str2( A,B: Real ); begin Str:=Str+'  '+FloatToDec(A,5)+' '+FloatToDec(B,5); end;
+  Procedure Str3( X,Y,Z: Real ); begin Str:=Str+'  '+FloatToDec(X,5)+' '+FloatToDec(Y,5)+' '+FloatToDec(Z,5); end;
+//Procedure Str2( A,B: Real ); begin Str:=Str+' '+FloatTypetoStr(A)+' '+FloatTypetoStr(B); end;
+//Procedure Str3( X,Y,Z: Real ); begin Str:=Str+' '+FloatTypetoStr(X)+' '+FloatTypetoStr(Y)+' '+FloatTypetoStr(Z); end;
 
   Procedure StemStern( Dir:boolean ); // Dir=true - форштевень, иначе - ахтерштевень
-    var I,J,K,M,N: Integer; z1:single;
+    var I,J,K,M,N: Integer; z1:Real;
   begin Str:='';
     for I:=0 to Ship.NumberofButtocks-1 do        // поиск нулевого батокса
     with Ship.Buttock[I] do begin
@@ -62,7 +62,7 @@ var
     end;
   end;
   procedure SendSpline( Spline:TFreespline );
-  var J,N: integer; //P: T3DVector;
+  var J,N: integer; //P: Vector;
   begin N:=Spline.NumberOfPoints-1;
      Str:=format( ' %3d ',[N+1] );
      if Spline.Point[0].Z<=Spline.Point[N].Z
@@ -71,9 +71,9 @@ var
      Strings.Add( Str );
   end;
 var I,J,K,N: integer;
-    Title,S: String; P0,PN: T3DVector; Dis: boolean;
+    Title,S: String; P0,PN: Vector; Dis: boolean;
     Dialog: TSaveDialog;
-//  T3: T3DVector=(X:0;Y:0;Z:0);
+//  T3: Vector=(X:0;Y:0;Z:0);
     EdgePointLists: TFasterList; // TFasterListTFreeSubdivisionPoint;
     Points: TFasterList;         // TFreeSubdivisionPoint;
     Point: TFreeSubdivisionPoint;
@@ -160,7 +160,6 @@ begin
   end;
   Dialog.Destroy;
 end;
-
 //
 // STL (stereolithography) - список треугольных граней, и их нормалей.
 //
@@ -172,7 +171,6 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(Ship);
   OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-//OpenDialog.Filter:=createDialogFilter( rsSTLFile,['stl'] );
   OpenDialog.Filter:='StereoLitography STL (*.stl)|*.stl';
   if OpenDialog.Execute then begin
     Answer:=Ship.Edit.File_SaveCheck;
@@ -207,7 +205,7 @@ procedure TFreeEdit.File_ImportSTLtext( FileName: String );
 var
   FFile: TextFile;
   Str: String; idSolid:boolean;
-  LineNr,SolidNr,FacetNr,VertexNr:Integer; V:T3DVector;
+  LineNr,SolidNr,FacetNr,VertexNr:Integer; V:Vector;
   Layer: TFreeSubdivisionLayer;
   FacePoints: TFasterList; //TFreeSubdivisionControlPoint;
   CtrPoint: TFreeSubdivisionControlPoint;
@@ -265,13 +263,13 @@ var
   STLheader: array[0..79] of char;
   STLfacets: uint32;
   STLrecord: packed record
-      normalX,  normalY,  normalZ: single;
-    vertex1_X,vertex1_Y,vertex1_Z: single;      // для Зумвальта,т.к.
-    vertex2_X,vertex2_Y,vertex2_Z: single;      // другого файла провреки
-    vertex3_X,vertex3_Y,vertex3_Z: single;      // тогда не находилось
+      normalX,  normalY,  normalZ,
+    vertex1_X,vertex1_Y,vertex1_Z,       // для Зумвальта,т.к.
+    vertex2_X,vertex2_Y,vertex2_Z,       // другого файла провреки
+    vertex3_X,vertex3_Y,vertex3_Z: Real; // тогда не находилось
     unused: uint16;
   end;
-  Str: String; SolidNr,FacetNr: Integer; r: longint; V: T3DVector;
+  Str: String; SolidNr,FacetNr: Integer; r: longint; V: Vector;
   Layer: TFreeSubdivisionLayer;
   FacePoints: TFasterList; //TFreeSubdivisionControlPoint;
   CtrPoint: TFreeSubdivisionControlPoint;
@@ -328,7 +326,6 @@ var
 begin
    OpenDialog:=TOpenDialog.Create( Ship );
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory; //+ConfigDirectory
-// OpenDialog.Filter:=createDialogFilter( 'OBJ file',['obj'] );
    OpenDialog.Filter:='WaveFront OBJ (*.obj)|*.obj';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
@@ -377,7 +374,7 @@ end;
     Loads a bodyplane and tries to fit a surface to it
 }
 procedure TFreeEdit.ImportFrames;
-type TMinMax = record MinZ,MaxZ:TFloatType; end;
+type TMinMax = record MinZ,MaxZ:Real; end;
 // Assumptions:
 //    1. All stations have multiplicity of 1
 //    2. All stations are defined from bottom to top
@@ -387,10 +384,10 @@ var OpenDialog    : TOpenDialog;
     FFile         : TextFile;
     Spline        : TFreeSpline;
     NewSpline     : TFreeSpline;
-    P             : T3DVector;
+    P             : Vector;
     ValidStation  :Boolean;
     MinMaxData    : array of TMinMax;
-    MinZ,MaxZ     : TFloatType;
+    MinZ,MaxZ     : Real;
     ControlPoints : array of array of TFreeSubdivisionControlPoint;
     P1,P2         : TFreeSubdivisionControlPoint;
     Edge          : TFreeSubdivisionControlEdge;
@@ -617,8 +614,8 @@ var OpenDialog: TOpenDialog;
     Str: string;
     FFile: TextFile;
     Spline,NewSpline: TFreeSpline;
-    P: T3DVector;
-    Points: array of array of T3DVector;
+    P: Vector;
+    Points: array of VectorArray;
     ControlPoints: array of array of TFreeSubdivisionControlPoint;
     P1: TFreeSubdivisionControlPoint;
     Curves,LongCurves,Pts: TfasterList;
@@ -834,7 +831,7 @@ var Frames     : TFasterList;
     Frame      : TFreeSpline;
     Tmp,Str    : widestring;
     I,J,Np     : integer;
-    P          : T3DVector;
+    P          : Vector;
     SaveDialog : TSaveDialog;
     ffile      : textfile;
     Strings    : TStringList;
@@ -1074,10 +1071,10 @@ var I          : integer;
          Layername:string;
          procedure SaveSpline(Spline:TFreeSpline;Strings:TStringList;IntersectionType:TFreeIntersectiontype);
          var NParams,Cap: Integer;
-             Params  : TFloatArray;
+             Params  : RealArray;
              I,Ind   : Integer;
              Length,T: Real;
-             P1,P2   : T3DVector;
+             P1,P2   : Vector;
          begin
             Ind:=FindDXFColorIndex(Spline.Color);
             NParams:=0;
@@ -1411,12 +1408,12 @@ var I,J        : integer;
     SaveDialog : TSaveDialog;
     Strings    : TStringList;
     PrevCursor : TCursor;
-    Scale      : TFloatType;
+    Scale      : Real;
     Frames     : TFasterList;
     Str        : string;
-    P          : T3DVector;
+    P          : Vector;
     NParams    : Integer;
-    Params     : TFloatArray;
+    Params     : RealArray;
 begin
    //if not Ship.ProjectSettings.FMainparticularsHasBeenset then begin
    //   ShowMessage( Userstring(95) );
@@ -1716,13 +1713,13 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
         BottomRow,TopRow,LeftColumn,RightColumn: array of TFreeSubdivisionPoint;
         BottomLeft,BottomRight,TopLeft,TopRight: TFreeSubdivisionPoint;
         BottomPresent,LeftPresent,RightPresent,TopPresent: Boolean;
-        P: T3DVector;
+        P: Vector;
 
-        function PhantomPoint( BorderPoint,InnerPoint:T3DVector ):T3DVector;
+        function PhantomPoint( BorderPoint,InnerPoint:Vector ):Vector;
            begin Result:=2.0*BorderPoint-InnerPoint; end;     {PhantomPoint}
 
-        function CornerPoint(P5,P6,P8,P9:T3DVector):T3DVector;
-        var P2,P3,P4,P7:T3DVector;
+        function CornerPoint(P5,P6,P8,P9:Vector):Vector;
+        var P2,P3,P4,P7:Vector;
         begin
            P2:=PhantomPoint(P5,P8);
            P3:=PhantomPoint(P6,P9);
@@ -1826,7 +1823,7 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
          for I:=1 to Nurb.ColDegree do Nurb.DeleteColumn(Nurb.ColCount-1);
          for I:=1 to Nurb.RowDegree do Nurb.DeleteRow(0);
          for I:=1 to Nurb.RowDegree do Nurb.DeleteRow(Nurb.RowCount-1);
-         // Set knotvectors to open-knot vector type (standard interpolating form)
+         // Set knotvectors to open-knot iVect type (standard interpolating form)
          Nurb.SetDefaultColKnotvector;
          Nurb.SetDefaultRowKnotvector;
 
@@ -1872,7 +1869,6 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
          NURB.Destroy;
       end;
     end;{ProcessGrid}
-
 begin
    Dialog:=TSaveDialog.Create(Ship);
    Dialog.InitialDir:=Ship.Preferences.ExportDirectory;
@@ -1884,7 +1880,6 @@ begin
       Screen.Cursor:=crHourglass;
       PrevLevel:=Ship.Surface.DesiredSubdivisionLevel;
       NSurfaces:=0;
-//    try
       Ship.Surface.DesiredSubdivisionLevel:=1;
       Ship.Surface.SubdivisionMode:=fmCatmullClark;
       if not Ship.Surface.Build then Ship.Surface.Rebuild;
@@ -1989,13 +1984,11 @@ begin
       end else MessageDlg(Userstring(100),mtInformation,[mbOK],0);
       IGESList.Destroy;
       Layers.Destroy;
-//    finally
       Ship.Surface.DesiredSubdivisionLevel:=PrevLevel;
       Ship.Surface.SubdivisionMode:=fmQuadTriangle;
       if not Ship.Surface.Build then Ship.Surface.Rebuild;
       Screen.Cursor:=Prev;
       Ship.Redraw;
-//    end;
    end;
    Dialog.Destroy;
 end;
@@ -2008,7 +2001,7 @@ var SaveDialog : TSaveDialog;
     procedure SendSpline(Spline:TFreespline);
     var J      : integer;
         Str    : string;
-        P      : T3DVector;
+        P      : Vector;
     begin
       for J:=1 to Spline.NumberOfPoints do begin
          P:=Spline.Point[J-1];
@@ -2035,7 +2028,6 @@ var SaveDialog : TSaveDialog;
           end;
        end;
     end;{SendIntersection}
-
 begin
    SaveDialog:=TSaveDialog.Create(Ship);
    SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
@@ -2084,7 +2076,7 @@ var SaveDialog : TSaveDialog;
     Child      : TFreeSubdivisionface;
 
     procedure Addfacet(P1,P2,P3:TFreeSubdivisionPoint);
-    var Normal:T3DVector;
+    var Normal:Vector;
     begin
        Normal:=UnifiedNormal(p1.Coordinate,P2.Coordinate,P3.Coordinate);
        Write(FFile,'  facet normal ');
@@ -2132,7 +2124,7 @@ var OpenDialog : TOpenDialog;
     Answer     : Word;
     Str        : string;
     I{,LineNr} : Integer;
-    P          : T3DVector;
+    P          : Vector;
     FFile      : TextFile;
     Chines     : TFasterList;
     Spline     : TFreeSpline;
@@ -2151,49 +2143,41 @@ begin
       {$I-}Reset(FFile);{$I+}
       if IOResult=0 then begin
          Ship.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-//       try
-//          LineNr:=1;
+         Readln(FFile,Str);              // first 18 characters are description
+         Str:=Copy(Str,1,18);
+         Str:=Trim(Str);
+         Ship.ProjectSettings.FProjectName:=Str;
+         Chines:=TFasterList.Create;
+         while not EOF(FFile) do begin
             Readln(FFile,Str);
-            // first 18 characters are description
-            Str:=Copy(Str,1,18);
-            Str:=Trim(Str);
-            Ship.ProjectSettings.FProjectName:=Str;
-            Chines:=TFasterList.Create;
-            while not EOF(FFile) do begin
-               Readln(FFile,Str);
-//             inc(LineNr);
-               if Pos('LINE',Str)=1 then begin // New chine skip one line
-                  if not EOF(FFile) then begin
-                     Readln(FFile);
-//                   inc(LineNr);
-                  end;
-                  if not EOF(FFile) then begin
-                     Spline:=TFreeSpline.Create;
-                     Chines.Add(Spline);
+            if Pos('LINE',Str)=1 then begin          // New chine skip one line
+               if not EOF(FFile) then begin
+                  Readln(FFile);
+               end;
+               if not EOF(FFile) then begin
+                  Spline:=TFreeSpline.Create;
+                  Chines.Add(Spline);
+                  repeat
+                     Readln(FFile,Str);
                      repeat
-                        Readln(FFile,Str);
-                        repeat
-                           I:=Pos(#9,Str);
-                           if I<>0 then Str[I]:=#32;
-                        until I=0;
-//                      inc(LineNr);
-                        if Str<>'' then begin
-                           P.X:=GetFloat(Str);
-                           P.Y:=GetFloat(Str);
-                           P.Z:=GetFloat(Str);
-                           Spline.Add(P);
-                           Str:=#32;
-                        end;
-                     until (EOF(FFile)) or (Str='');
-                  end;
+                        I:=Pos(#9,Str);
+                        if I<>0 then Str[I]:=#32;
+                     until I=0;
+                     if Str<>'' then begin
+                        P.X:=GetFloat(Str);
+                        P.Y:=GetFloat(Str);
+                        P.Z:=GetFloat(Str);
+                        Spline.Add(P);
+                        Str:=#32;
+                     end;
+                  until (EOF(FFile)) or (Str='');
                end;
             end;
-            Ship.ImportChines(8,Chines);
-            Chines.Destroy;
-//       finally
-            CloseFile(FFile);
-            Ship.Filename:=ChangeFileExt(Opendialog.FileName,'.fbm');
-//       end;
+         end;
+         Ship.ImportChines(8,Chines);
+         Chines.Destroy;
+         CloseFile(FFile);
+         Ship.Filename:=ChangeFileExt(Opendialog.FileName,'.fbm');
       end else
       begin
          MessageDlg(Userstring(106),mtError,[mbOk],0);
@@ -2208,8 +2192,7 @@ var OpenDialog : TOpenDialog;
     Answer     : Word;
     Str        : string;
     I          : integer;
-//  LineNr     : Integer;
-    P          : T3DVector;
+    P          : Vector;
     FFile      : TextFile;
     Chines     : TFasterList;
     Spline     : TFreeSpline;
@@ -2228,55 +2211,42 @@ begin
       {$I-}Reset(FFile);{$I+}
       if IOResult=0 then begin
          Ship.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-//       LineNr:=1;
          Chines:=TFasterList.Create;
-//       try
-//          try
-               // first read unit information; 0=metric, 1=imperial
-               readln(FFile,I);
-               if I in [0,1] then Ship.ProjectSettings.ProjectUnits:=TFreeUnitType(I)
-                             else MessageDlg(Userstring(108),mtError,[mbOk],0);
-               Spline:=TFreeSpline.Create;
-               repeat
-                  Readln(FFile,Str);
-                  repeat
-                     i:=Pos(#9,Str);
-                     if I<>0 then str[I]:=#32;
-                  until I=0;
-//                inc(LineNr);
-                  Str:=Trim(Uppercase(Str));
-                  if (Str<>'') and (Str<>'EOF') then begin
-                     P.X:=GetFloat(Str);
-                     P.Y:=GetFloat(Str);
-                     P.Z:=GetFloat(Str);
-                     Spline.Add(P);
-                     Str:=#32;
-                  end else if Str='' then
-                  begin
-                     if Spline.NumberOfPoints>1 then Chines.Add(Spline)
-                                                else Spline.Destroy;
-                     Spline:=TFreeSpline.Create;
-                  end;
-               until (Str='EOF') or (EOF(FFile));
+      // first read unit information; 0=metric, 1=imperial
+         readln(FFile,I);
+         if I in [0,1] then Ship.ProjectSettings.ProjectUnits:=TFreeUnitType(I)
+                       else MessageDlg(Userstring(108),mtError,[mbOk],0);
+         Spline:=TFreeSpline.Create;
+         repeat
+            Readln(FFile,Str);
+            repeat
+               i:=Pos(#9,Str);
+               if I<>0 then str[I]:=#32;
+            until I=0;
+            Str:=Trim(Uppercase(Str));
+            if (Str<>'') and (Str<>'EOF') then begin
+               P.X:=GetFloat(Str);
+               P.Y:=GetFloat(Str);
+               P.Z:=GetFloat(Str);
+               Spline.Add(P);
+               Str:=#32;
+            end else if Str='' then begin
                if Spline.NumberOfPoints>1 then Chines.Add(Spline)
                                           else Spline.Destroy;
-//          except
-//             MessageDlg('Error on line '+IntToStr(LineNr)+' in file '+Opendialog.Filename,mtError,[mbOk],0);
-//          end;
-            Ship.ImportChines(8,Chines);
-            Chines.Destroy;
-//       finally
-            CloseFile(FFile);
-            Ship.Filename:=ChangeFileExt(Opendialog.FileName,'.fbm');
-            if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
-//       end;
-      end else
-      begin
-         MessageDlg(Userstring(106),mtError,[mbOk],0);
-      end;
+               Spline:=TFreeSpline.Create;
+            end;
+         until (Str='EOF') or (EOF(FFile));
+         if Spline.NumberOfPoints>1 then Chines.Add(Spline)
+                                    else Spline.Destroy;
+         Ship.ImportChines(8,Chines);
+         Chines.Destroy;
+         CloseFile(FFile);
+         Ship.Filename:=ChangeFileExt(Opendialog.FileName,'.fbm');
+         if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
+      end else ShowMessage(Userstring(106));
    end;
    OpenDialog.Destroy;
-end;{TFreeEdit.File_ImportChines}
+end;
 
 // Imports a file created with Carlssons's Hulls program
 procedure TFreeEdit.File_ImportHull;
@@ -2296,14 +2266,14 @@ begin
       Ship.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
    end;
    OpenDialog.Destroy;
-end;{TFreeEdit.File_ImportHull}
+end;
 
 procedure TFreeEdit.File_ImportHull(Filename:string;Quiet:Boolean);
 var I,J,NBulkHeads,NoChines: integer;
-    P,Min,Max  : T3DVector;
+    P,Min,Max  : Vector;
     FFile      : TextFile;
-    Value      : TFloatType;
-    Points     : array of array of T3DVector;
+    Value      : Real;
+    Points     : array of VectorArray;
     Chines     : TFasterList;
     Spline     : TFreeSpline;
     Str        : string;
@@ -2412,7 +2382,7 @@ var OpenDialog    : TOpenDialog;
     I,J,N,Np,Ind1,Ind2,LayerID: Integer;
     PartVersion   : TFreeFileversion;
     Str           : string;
-    Scale         : TFloatType;
+    Scale         : Real;
     Points,Edges,Layers,FacePoints: TFasterList;
     Edge          : TFreeSubdivisionControlEdge;
     P1,P2         : TFreeSubdivisionControlPoint;
@@ -2538,7 +2508,7 @@ begin
                Ship.FileChanged:=True;
                if assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(Ship);
             end;
-         end else ShowMessage(UserString(113));
+         end; // else ShowMessage(UserString(113));
       end else ShowMessage(Userstring(114));
       if not Changed then Undo.Delete;
       Partfile.Destroy;
@@ -2557,8 +2527,8 @@ var OpenDialog : TOpenDialog;
     Str,Tmp    : String;
     Abort      : Boolean;
     Points     : TFreeCoordinateGrid;
-    Value      : TFloatType;
-    P          : T3DVector;
+    Value      : Real;
+    P          : Vector;
 
     function NextLine:string;
     begin
@@ -2919,7 +2889,7 @@ end;
 //
 procedure TFreeShip.ImportChines( Np:Integer;Chines:TFasterList );
 var I,J        : integer;
-    P,Min,Max  : T3DVector;
+    P,Min,Max  : Vector;
     Pts,Pts2,Tmp: TFasterList;
     Points     : array of array of TFreeSubdivisionControlPoint;
     Curve      : TFreeSubdivisionControlCurve;

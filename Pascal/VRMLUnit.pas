@@ -42,12 +42,12 @@ type TIntArray           = array of integer;
         FCapacity      : Integer;
         FCount         : Integer;
         FFaceSets      : TFasterList;
-        FCoordinates   : array of T3DVector;
+        FCoordinates   : VectorArray;
         function FGetNumberOfFacesets:Integer;
-        function FGetPoint(Index:INteger):T3DVector;
+        function FGetPoint(Index:INteger):Vector;
         procedure FSetCapacity(val:Integer);
      public
-        procedure Add(P:T3DVector);
+        procedure Add( P:Vector );
         procedure AddFaceSet(FaceSet:TVRMLIndexedFaceSet);
         procedure Clear;override;
         constructor Create(Owner:TVRMLList);override;
@@ -56,7 +56,7 @@ type TIntArray           = array of integer;
         property Count                : Integer read FCount;
         property Capacity             : Integer read FCapacity write FSetCapacity;
         property NumberOfFaceSets     : Integer read FGetNumberOfFacesets;
-        property Point[index:Integer] : T3DVector read FGetPoint;
+        property Point[index:Integer] : Vector read FGetPoint;
      end;
      TVRMLIndexedFaceSet = class(TVRMLobject)
      private
@@ -335,7 +335,7 @@ end;
 function TVRMLCoordinate3.FGetNumberOfFacesets:Integer;
    begin Result:=FFaceSets.Count; end;
 
-function TVRMLCoordinate3.FGetPoint(Index:Integer):T3DVector;
+function TVRMLCoordinate3.FGetPoint(Index:Integer):Vector;
 begin
  { if (Index>=0) and (Index<FCount) then} Result:=FCoordinates[index]
  { else begin
@@ -351,7 +351,7 @@ begin
    if FCapacity<FCount then FCount:=FCapacity;
 end;
 
-procedure TVRMLCoordinate3.Add(P:T3DVector);
+procedure TVRMLCoordinate3.Add(P:Vector);
 begin
    if FCount>=FCapacity then Capacity:=Count+25;
    inc(FCount);
@@ -373,26 +373,22 @@ destructor TVRMLCoordinate3.Destroy;
      begin Inherited Destroy; FFaceSets.Destroy; end;
 
 procedure TVRMLCoordinate3.Load(var LineNr:Integer;Strings:TStringList);
-var Data    : String;
-    Index   : Integer;
-    S,F,I,L : Integer;
-    Flag    : Integer;
+var Data: String;
+    Index,S,F,I,L,Flag: Integer;
     Ch      : char;
     OK      : boolean;
     Points  : TStringList;
-    P       : T3DVector;
+    P       : Vector;
 
 begin
    Data:=Strings.Text;
    Index:=Pos('POINT',Data);
-   if Index<>0 then
-   begin
+   if Index<>0 then begin
       S:=-1;
       F:=-1;
       L:=Length(Data);
       I:=Index+1;
-      While I<=L do
-      begin
+      While I<=L do begin
          Ch:=Data[I];
          if (Ch='[') and (S=-1) then S:=I;
          if (Ch=']') and (F=-1) then F:=I;
@@ -400,27 +396,18 @@ begin
          inc(I);
       end;
       OK:=(S<>-1) and (F<>-1);
-      if OK then
-      begin
+      if OK then begin
          Points:=TStringList.Create;
          ProcessString(Copy(Data,S+1,F-S-2),Points);
-         if Points.Count mod 3=0 then
-         begin
+         if Points.Count mod 3=0 then begin
             Capacity:=Points.Count div 3;
             I:=1;
-            while I<=Points.Count do
-            begin
+            while I<=Points.Count do begin
                P:=ZERO;
                OK:=True;
-               Val(Points[I-1],P.X,Flag);
-               if Flag<>0 then OK:=False;
-
-               Val(Points[I],P.Y,Flag);
-               if Flag<>0 then OK:=False;
-
-               Val(Points[I+1],P.Z,Flag);
-               if Flag<>0 then OK:=False;
-
+               Val(Points[I-1],P.X,Flag); if Flag<>0 then OK:=False;
+               Val(Points[I],P.Y,Flag);   if Flag<>0 then OK:=False;
+               Val(Points[I+1],P.Z,Flag); if Flag<>0 then OK:=False;
                if OK then Add(P);
                inc(I,3);
             end;
@@ -472,8 +459,7 @@ begin
       F:=-1;
       L:=Length(Data);
       I:=Index+1;
-      While I<=L do
-      begin
+      While I<=L do begin
          Ch:=Data[I];
          if (Ch='[') and (S=-1) then S:=I;
          if (Ch=']') and (F=-1) then F:=I;
@@ -481,8 +467,7 @@ begin
          inc(I);
       end;
       OK:=(S<>-1) and (F<>-1);
-      if OK then
-      begin
+      if OK then begin
          Data:=Copy(Data,S+1,F-S-2);
          Faces:=TStringList.Create;
          ProcessString(Data,Faces);
@@ -521,13 +506,12 @@ function TVRMLList.FGetItems(Index:Integer):TVRMLObject;
 procedure TVRMLList.Add(VRMLObject:TVRMLObject);
 begin
    FObjects.Add(VRMLObject);
-   if VRMLObject is TVRMLCoordinate3 then
-   begin
+   if VRMLObject is TVRMLCoordinate3 then begin
       FLastAddedCoordinates:=VRMLObject as TVRMLCoordinate3
-   end else if VRMLObject is TVRMLIndexedFaceSet then
-   begin
+   end else if VRMLObject is TVRMLIndexedFaceSet then begin
       FFaceSets.Add(VRMLObject);
-      if FLastAddedCoordinates<>nil then FLastAddedCoordinates.AddFaceSet(VRMLObject as TVRMLIndexedFaceSet);
+      if FLastAddedCoordinates<>nil then
+         FLastAddedCoordinates.AddFaceSet(VRMLObject as TVRMLIndexedFaceSet);
    end;
 end;
 
@@ -561,17 +545,14 @@ var I       : Integer;
     FaceSet : TVRMLIndexedFaceSet;
 begin
    Result:=nil;
-   if FFaceSets.Count>0 then
-   begin
+   if FFaceSets.Count>0 then begin
       Result:=TFasterList.Create;
       Result.Capacity:=FFaceSets.Count;
-      for I:=1 to FFaceSets.Count do
-      begin
+      for I:=1 to FFaceSets.Count do begin
          FaceSet:=FFacesets[I-1];
          if Faceset.Coordinates<>nil then Result.Add(FaceSet);
       end;
-      if Result.Count=0 then
-      begin
+      if Result.Count=0 then begin
          Result.Destroy;
          result:=nil;
       end;

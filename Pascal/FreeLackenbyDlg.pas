@@ -12,17 +12,17 @@ const NStations     = 40;
       MaxDisplError = 1e-4;
 
 type TSimpsonData = record
-        Area      : TFloatType;
-        Distance  : TFloatType;
-        SF        : TFloatType;
+        Area      : Real;
+        Distance  : Real;
+        SF        : Real;
      end;
      TBodyProp = record
-        Displacement: TFloatType;
-        LCB         : TFloatType;
-        Cp          : TFloatType;
-        Length      : TFloatType;
-        k,p,z       : TFloatType;
-        A,B,C,dCp,dp: TFloatType;
+        Displacement: Real;
+        LCB         : Real;
+        Cp          : Real;
+        Length      : Real;
+        k,p,z       : Real;
+        A,B,C,dCp,dp: Real;
      end;
 
 TFreeLackenbyDialog = class(TForm)
@@ -45,19 +45,19 @@ TFreeLackenbyDialog = class(TForm)
     procedure Input1AfterSetValue(Sender: TObject);
     procedure Input2AfterSetValue(Sender: TObject);
     procedure Input3AfterSetValue(Sender: TObject);
-    procedure ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
+    procedure ViewportRequestExtents(Sender: TObject; var Min,Max: Vector);
     procedure ViewportRedraw(Sender: TObject);
-    procedure TopViewRequestExtents(Sender: TObject; var Min,Max: T3DVector);
+    procedure TopViewRequestExtents(Sender: TObject; var Min,Max: Vector);
     procedure TopViewRedraw(Sender: TObject);
 private
     FFreeship: TFreeship;
     FAftShip,FForeShip,FOriginalStations,FNewStations,FOriginalWaterline,FNewWaterline: TFasterList;
-    FWaterlinePlane: T3DPlane;
-    FMainArea      : TFloatType;
-    FMin,FMax      : T3DVector;
+    FWaterlinePlane: Plate;
+    FMainArea      : Real;
+    FMin,FMax      : Vector;
     FModified      : Boolean;
     FOriginalSectionalAreaCurve,FNewSectionalAreaCurve: TFreeSpline;
-    procedure FCalulateHydrostaticProperties(Wlplane:T3DPlane;MainArea:TFloatType;Stations:TFasterList;var Prop:TBodyProp;SAC:TFreeSpline);
+    procedure FCalulateHydrostaticProperties(Wlplane:Plate;MainArea:Real;Stations:TFasterList;var Prop:TBodyProp;SAC:TFreeSpline);
     procedure FUpdateData(SAC:TFreeSpline);
     procedure FCopyValues;
     procedure FUpdateDifferences;
@@ -65,7 +65,7 @@ private
     procedure FExtractWaterline(Dest:TFasterList);
 public
     function Execute(Freeship:TFreeship;var Modified:Boolean):Boolean;
-    procedure Transform(NewDispl:TFloatType;MaxIterations:integer;UpdateWindows:Boolean;var Succeeded:Boolean);
+    procedure Transform(NewDispl:Real;MaxIterations:integer;UpdateWindows:Boolean;var Succeeded:Boolean);
 end;
 
 var FreeLackenbyDialog:TFreeLackenbyDialog;
@@ -76,13 +76,13 @@ uses FreeLanguageSupport,Math;
 
 {$R *.LFM}
 
-procedure TFreeLackenbyDialog.FCalulateHydrostaticProperties(Wlplane:T3DPlane;MainArea:TFloatType;Stations:TFasterList;var Prop:TBodyProp;SAC:TFreeSpline);
+procedure TFreeLackenbyDialog.FCalulateHydrostaticProperties(Wlplane:Plate;MainArea:Real;Stations:TFasterList;var Prop:TBodyProp;SAC:TFreeSpline);
 var I,N           : Integer;
     Station       : TFreeIntersection;
     SimpsonData   : array of TSimpsonData;
-    Area,Prod,Dist,fie,Y: TFloatType;
-    COG           : T3DVector;
-    Mom           : T2DCoordinate;
+    Area,Prod,Dist,fie,Y: Real;
+    COG           : Vector;
+    Mom           : Place;
 begin
    N:=Stations.Count;
    Setlength(SimpsonData,N);
@@ -118,8 +118,8 @@ begin
   y:=0.95*(FMax.X-FMin.X)*Topview.ClientHeight/Topview.ClientWidth;
   for I:=1 to N do begin
      Prod:=SimpsonData[I-1].SF*SimpsonData[I-1].Area;
-     if SAC<>nil then if FMainArea<>0 then SAC.Add(Vector(SimpsonData[I-1].Distance,y*SimpsonData[I-1].Area/FMainArea,0.0))
-                                      else SAC.Add(Vector(SimpsonData[I-1].Distance,y*SimpsonData[I-1].Area,0.0));
+     if SAC<>nil then if FMainArea<>0 then SAC.Add(iVect(SimpsonData[I-1].Distance,y*SimpsonData[I-1].Area/FMainArea,0.0))
+                                      else SAC.Add(iVect(SimpsonData[I-1].Distance,y*SimpsonData[I-1].Area,0.0));
      Prop.Displacement:=Prop.Displacement+Prod;
      Prop.LCB:=prop.LCB+Prod*SimpsonData[I-1].Distance;
      Prop.k:=Prop.k+Prod*SimpsonData[I-1].Distance*SimpsonData[I-1].Distance;
@@ -167,7 +167,7 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.FUpdateData;
-var AftProperties,ForeProperties,TotalProp: TBodyProp; MaxDispl: TFloatType;
+var AftProperties,ForeProperties,TotalProp: TBodyProp; MaxDispl: Real;
 begin
    Fillchar(AftProperties,SizeOf(AftProperties),0);
    if SAC<>nil then SAC.Clear;
@@ -199,7 +199,7 @@ end;
 
 procedure TFreeLackenbyDialog.FExtractStations(Dest:TFasterList);
 var I,J,K   : Integer;
-    P       : T3DVector;
+    P       : Vector;
     Station : TFreeIntersection;
     Spline  : TFreeSpline;
 begin
@@ -227,10 +227,10 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.FExtractWaterline(Dest:TFasterList);
-var I,J        : Integer;
-    Waterline  : TFreeIntersection;
-    Spline     : TFreeSpline;
-    Plane      : T3DPlane;
+var I,J: Integer;
+    Waterline: TFreeIntersection;
+    Spline: TFreeSpline;
+    Plane: Plate;
 begin
    for I:=1 to Dest.Count do begin
       Spline:=Dest[I-1];
@@ -254,15 +254,15 @@ begin
    Waterline.Destroy;
 end;
 
-procedure TFreeLackenbyDialog.Transform(NewDispl:TFloatType;MaxIterations:Integer;UpdateWindows:Boolean;var Succeeded:Boolean);
+procedure TFreeLackenbyDialog.Transform(NewDispl:Real;MaxIterations:Integer;UpdateWindows:Boolean;var Succeeded:Boolean);
 var Point         : TFreeSubdivisionControlPoint;
-    P3D           : T3DVector;
+    P3D           : Vector;
     Iteration,I,J,K,Index: integer;
     Face          : TFreeSubdivisionFace;
     LockedPoints  : TFasterList;
     AftProperties,ForeProperties,TotalProp,DesiredData: TBodyProp;
     ConvFactor    : Real;
-    MainLoc,dz,x,dx,DisplError,LCBError: TFloatType;
+    MainLoc,dz,x,dx,DisplError,LCBError: Real;
     Proceed,Modified: Boolean;
     Undo          : TFreeUndoObject;
     PrevCursor    : TCursor;
@@ -464,14 +464,14 @@ begin
 end;
 
 function TFreeLackenbyDialog.Execute(Freeship:TFreeship;var Modified:boolean):Boolean;
-var I,Index       : Integer;
-    Value,MainLocation: TFloatType;
-    Station       : TFreeIntersection;
-    Plane         : T3DPlane;
-    P             : T3DVector;
-    P2D           : T2DCoordinate;
-    Layer         : TFreeSubdivisionLayer;
-    Spline        : TFreeSpline;
+var I,Index: Integer;
+    Value,MainLocation: Real;
+    Station: TFreeIntersection;
+    Plane: Plate;
+    P: Vector;
+    P2D: Place;
+    Layer: TFreeSubdivisionLayer;
+    Spline: TFreeSpline;
 begin
    FFreeship:=Freeship;
    FOriginalStations:=TFasterList.Create;
@@ -598,7 +598,7 @@ procedure TFreeLackenbyDialog.BitBtn1Click(Sender: TObject);
 procedure TFreeLackenbyDialog.BitBtn2Click(Sender: TObject);
     begin ModalResult:=mrCancel; end;
 procedure TFreeLackenbyDialog.Button1Click(Sender: TObject);
-var NewDispl  : TFloatType;
+var NewDispl  : Real;
     Succeeded : Boolean;
 begin
    if Input1.Value>0 then begin
@@ -618,7 +618,7 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.Input1AfterSetValue(Sender: TObject);
-var NewDispl : TFloatType;
+var NewDispl : Real;
 begin
    if Input1.Value>0 then begin      // New displacement set, update otherboxes
       with FFreeship.ProjectSettings do
@@ -633,7 +633,7 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.Input2AfterSetValue(Sender: TObject);
-var NewDispl : TFloatType;
+var NewDispl : Real;
 begin
    NewDispl:=Input2.Value*((FMax.X-FMin.X)*(FMax.Y-FMin.Y)*(FMax.Z-FMin.Z));
    Input1.Value:=VolumeToDisplacement(NewDispl,FFreeship.ProjectSettings.ProjectWaterDensity,FFreeship.ProjectSettings.ProjectAppendageCoefficient,FFreeship.ProjectSettings.ProjectUnits);
@@ -642,7 +642,7 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.Input3AfterSetValue(Sender: TObject);
-var NewDispl : TFloatType;
+var NewDispl : Real;
 begin
    NewDispl:=Input3.Value*FMainArea*(FMax.X-FMin.X);
    Input1.Value:=VolumeToDisplacement(NewDispl,FFreeship.ProjectSettings.ProjectWaterDensity,FFreeship.ProjectSettings.ProjectAppendageCoefficient,FFreeship.ProjectSettings.ProjectUnits);
@@ -650,7 +650,7 @@ begin
    FUpdateDifferences;
 end;
 
-procedure TFreeLackenbyDialog.ViewportRequestExtents(Sender: TObject;var Min, Max: T3DVector);
+procedure TFreeLackenbyDialog.ViewportRequestExtents(Sender: TObject;var Min, Max: Vector);
 var I,J,K   : Integer;
     Spline  : TFreeSpline;
     First   : Boolean;
@@ -694,8 +694,8 @@ begin
       end;
    end;
    if First then begin
-      Min:=Vector(-1,-1,-1);
-      Max:=Vector(1,1,1);
+      Min:=iVect(-1,-1,-1);
+      Max:=iVect(1,1,1);
    end;
 end;
 
@@ -734,14 +734,14 @@ begin
       end;
       Viewport.PenColor:=clBlack;
       Viewport.PenStyle:=psSolid;
-      Pt:=Viewport.Project(Vector(Viewport.Min3D.X,0.0,Viewport.Min3D.Z));
+      Pt:=Viewport.Project(iVect(Viewport.Min3D.X,0.0,Viewport.Min3D.Z));
       Viewport.Canvas.MoveTo(Pt.X,Pt.Y);
-      Pt:=Viewport.Project(Vector(Viewport.Min3D.X,0.0,Viewport.Max3D.Z));
+      Pt:=Viewport.Project(iVect(Viewport.Min3D.X,0.0,Viewport.Max3D.Z));
       Viewport.Canvas.LineTo(Pt.X,Pt.Y);
    end;
 end;
 
-procedure TFreeLackenbyDialog.TopViewRequestExtents(Sender: TObject;var Min, Max: T3DVector);
+procedure TFreeLackenbyDialog.TopViewRequestExtents(Sender: TObject;var Min, Max: Vector);
 var I,J,K   : Integer;
     Spline  : TFreeSpline;
     First   : Boolean;
@@ -785,8 +785,8 @@ begin
          Spline.Extents(Min,Max);
       end;
    end else begin
-      Min:=Vector(-1,-1,-1);
-      Max:=Vector(1,1,1);
+      Min:=iVect(-1,-1,-1);
+      Max:=iVect(1,1,1);
    end;
 end;
 
@@ -814,9 +814,9 @@ begin
          end;
       end;
       Topview.PenStyle:=psDot;
-      Pt:=Topview.Project(Vector(FFreeship.ProjectSettings.MidleFrame,Topview.Min3D.Y,0));
+      Pt:=Topview.Project(iVect(FFreeship.ProjectSettings.MidleFrame,Topview.Min3D.Y,0));
       Topview.Canvas.MoveTo(Pt.X,Pt.Y);
-      Pt:=Topview.Project(Vector(FFreeship.ProjectSettings.MidleFrame,Topview.Max3D.Y,0));
+      Pt:=Topview.Project(iVect(FFreeship.ProjectSettings.MidleFrame,Topview.Max3D.Y,0));
       Topview.Canvas.LineTo(Pt.X,Pt.Y);
 
       FNewSectionalAreaCurve.Color:=clRed;
@@ -852,9 +852,9 @@ begin
       end;
       TopView.PenColor:=clBlack;
       TopView.PenStyle:=psSolid;
-      Pt:=TopView.Project(Vector(TopView.Min3D.X,0.0,0.0));
+      Pt:=TopView.Project(iVect(TopView.Min3D.X,0.0,0.0));
       TopView.Canvas.MoveTo(Pt.X,Pt.Y);
-      Pt:=TopView.Project(Vector(TopView.Max3D.X,0.0,0.0));
+      Pt:=TopView.Project(iVect(TopView.Max3D.X,0.0,0.0));
       TopView.Canvas.LineTo(Pt.X,Pt.Y);
    end;
 end;

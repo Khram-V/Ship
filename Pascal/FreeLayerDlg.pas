@@ -149,13 +149,13 @@ begin
          Prop:=Layer.SurfaceProperties;
          if FFreeship.ProjectSettings.ProjectUnits=fuImperial then Prop.Weight:=Prop.Weight/(12*2240)
                                                               else Prop.Weight:=Prop.Weight/1000;
-         _Label10.Caption:=FloatToStrF(Prop.SurfaceArea,ffFixed,7,3)+#32+AreaStr(FFreeship.ProjectSettings.ProjectUnits);
-         _Label11.Caption:=FloatToStrF(Prop.Weight,ffFixed,7,3)+#32+WeightStr(FFreeship.ProjectSettings.ProjectUnits);
+         _Label10.Caption:=FloatToDec(Prop.SurfaceArea,3)+#32+AreaStr(FFreeship.ProjectSettings.ProjectUnits);
+         _Label11.Caption:=FloatToDec(Prop.Weight,3)+#32+WeightStr(FFreeship.ProjectSettings.ProjectUnits);
          _Label12.Caption:=Makelength(Prop.SurfaceCenterOfGravity.X,2,7)+','+
                           Makelength(Prop.SurfaceCenterOfGravity.Y,2,7)+', '+
                           Makelength(Prop.SurfaceCenterOfGravity.Z,2,7)+#32+LengthStr(FFreeship.ProjectSettings.ProjectUnits);
          Alphabar.Position:=255-Layer.AlphaBlend;
-         _label1.Caption:=FloatToStrF(100*(255-Layer.AlphaBlend)/255,ffFixed,7,1)+'%';
+         _label1.Caption:=FloatToDec(100*(255-Layer.AlphaBlend)/255,1)+'%';
       end;
    end;
    UpdateMenu;
@@ -262,7 +262,7 @@ begin
 end;
 
 procedure TFreeLayerDialog.Edit2Exit(Sender: TObject);
-var Value:TFloatType;
+var Value:Real;
 begin
    if SelectedLayer<>nil then begin
       Value:=StrToFloat(Edit2.Text);
@@ -280,7 +280,7 @@ begin
 end;
 
 procedure TFreeLayerDialog.Edit3Exit(Sender: TObject);
-var Value:TFloatType;
+var Value:Real;
 begin
    if SelectedLayer<>nil then begin
       Value:=StrToFloat(Edit3.Text);
@@ -350,7 +350,7 @@ begin
    Val:=255-Alphabar.Position;
    if SelectedLayer<>nil then if SelectedLayer.AlphaBlend<>val then begin
       SelectedLayer.AlphaBlend:=val;
-      _label1.Caption:=FloatToStrF(100*(255-SelectedLayer.AlphaBlend)/255,ffFixed,7,1)+'%';
+      _label1.Caption:=FloatToDec(100*(255-SelectedLayer.AlphaBlend)/255,1)+'%';
       FFreeShip.FileChanged:=true;
       FFreeShip.Redraw;
    end;

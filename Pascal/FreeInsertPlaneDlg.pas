@@ -22,16 +22,16 @@ TFreeInsertPlaneDialog  = class(TForm)
     procedure BitBtn1Click(Sender: TObject);
     procedure BitBtn2Click(Sender: TObject);
   private
-    FMin,FMax: T3DVector;
+    FMin,FMax: Vector;
     function FGetCreateControlcurve:Boolean;
-    function FGetPlane:T3DPlane;
+    function FGetPlane:Plate;
     procedure FUpdate;
   public
     function Execute:Boolean;
     property CreateControlcurve : Boolean read FGetCreateControlcurve;
-    property Max               : T3DVector read FMax write FMax;
-    property Min               : T3DVector read FMin write FMin;
-    property Plane             : T3DPlane read FGetPlane;
+    property Max: Vector read FMax write FMax;
+    property Min: Vector read FMin write FMin;
+    property Plane: Plate read FGetPlane;
 end;
 
 var FreeInsertPlaneDialog: TFreeInsertPlaneDialog;
@@ -41,7 +41,7 @@ implementation
 
 function TFreeInsertPlaneDialog.FGetCreateControlcurve:Boolean;
    begin Result:=Checkbox1.Checked; end;
-function TFreeInsertPlaneDialog.FGetPlane:T3DPlane;
+function TFreeInsertPlaneDialog.FGetPlane:Plate;
 begin
    Fillchar(Result,SizeOf(Result),0);
    if RadioButton1.Checked then Result.a:=1.0;

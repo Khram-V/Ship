@@ -219,9 +219,9 @@ end;
 
 procedure TFreeIntersectionDialog.AddRangeExecute(Sender: TObject);
 var Str        : String;
-    Min,Max    : T3DVector;
-    Start,Stop : TFloatType;
-    Step       : TFloatType;
+    Min,Max    : Vector;
+    Start,Stop : Real;
+    Step       : Real;
     Index      : Integer;
 begin
    Str:='1.0';

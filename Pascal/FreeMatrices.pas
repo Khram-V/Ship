@@ -10,12 +10,12 @@ private
    procedure CreateIdentity;
    procedure Assign(Matrix: TFreeMatrix);
 public
-   Value: Array of Array of single;
+   Value: Array of Array of Real;
    constructor Create;
    destructor Destroy; override;
    procedure SetSize(Cols,Rows:Integer);
    procedure Add(Matrix: TFreeMatrix);
-   procedure Fill( V: single );
+   procedure Fill( V: Real );
    procedure Clear;
    function  Invert: TFreeMatrix;
    function  Multiply( Matrix: TFreeMatrix ): TFreeMatrix;
@@ -43,7 +43,7 @@ begin if RowCount>0 then                                    // сначала в
       if Rows>0 then for I:=0 to Rows-1 do Setlength( Value[I],Cols );
       Fill( 0.0 );                                    // set all values to zero
 end;
-procedure TFreeMatrix.Fill( V: single ); var I,J: Integer;
+procedure TFreeMatrix.Fill( V: Real ); var I,J: Integer;
     begin for I:=0 to RowCount-1 do
           for J:=0 to ColCount-1 do Value[I][J]:=V;
     end;

@@ -1,6 +1,4 @@
-
 unit FreeIGESUnit;
-{$MODE Delphi}
 interface uses Windows,
      Classes,
      SysUtils,
@@ -25,7 +23,7 @@ type TFreeIgesString = string[80];
            FTerminateSection: TStringList;
            FNumberOfSurfaces: Integer;
            FIGESunits       : TFreeUnitType;
-           FMaxCoordinate   : TFloatType;
+           FMaxCoordinate   : Real;
            FSystemID        : TFreeIgesString;
            FFileCreatedBy   : TFreeIgesString;
            FFileName        : String;
@@ -105,10 +103,9 @@ var K1,K2,M1,M2,I,J,C: Integer;
     Param: TStringList;
     PROP: array[1..10] of integer;
     EntityStr: String;
-    P: T3DVector;
-    function CreateKnotvector(N,Degree:Integer;knots:TFloatArray) :String;
-    var I:Integer;
-        Tmp:single;
+    P: Vector;
+    function CreateKnotvector(N,Degree:Integer;knots:RealArray) :String;
+    var I:Integer; Tmp:Real;
     begin
        Result:='';
        for I:=1 to Length(Knots) do begin
@@ -287,83 +284,64 @@ var Str     : String;
     var Time    : TDateTime;
     begin
        Time:=now;
-       // year
-       Result:=IntToStr(YearOf(Time));
-       // month
-       Tmp:=IntToStr(MonthOf(Time));
+       Result:=IntToStr(YearOf(Time));                    // year
+       Tmp:=IntToStr(MonthOf(Time));                      // month
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       // day
-       Tmp:=IntToStr(DayOf(Time));
+       Tmp:=IntToStr(DayOf(Time));                        // day
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       // separator
-       Result:=Result+'.';
-       // Hours
-       Tmp:=IntToStr(HourOf(Time));
+       Result:=Result+'.';                                // separator
+       Tmp:=IntToStr(HourOf(Time));                       // Hours
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       // minutes
-       Tmp:=IntToStr(MinuteOf(Time));
+       Tmp:=IntToStr(MinuteOf(Time));                     // minutes
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
-       // seconds
-       Tmp:=IntToStr(SecondOf(Time));
+       Tmp:=IntToStr(SecondOf(Time));                     // seconds
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
        Result:=IntToStr(length(Result))+'H'+Result;
-
     end;{CreateTimeStamp}
-
 begin
-   // Create time string
-   TimeStr:=CreateTimeStamp;
-   // Create the start section
-   FStartSection.Clear;
+   TimeStr:=CreateTimeStamp;                        // Create time string
+   FStartSection.Clear;                             // Create the start section
    FStartSection.Add(CheckString('FREE!ship IGES file. (www.freeship.org)',LastColumn,'S',1));
    // Create the global section
    Str:=ConvertString(ParameterDelimiter)+ParameterDelimiter+
         ConvertString(RecordDelimiter)+ParameterDelimiter+
-        ConvertString(ChangeFileExt(ExtractFilename(Application.ExeName),''))+ParameterDelimiter+                    // ProductNameSender
-        ConvertString(FFilename)+ParameterDelimiter+                                                                 // Original filenameh
-        ConvertString(SystemID)+ParameterDelimiter+                                                                  // Preprocessor
-        ConvertString(SystemID)+ParameterDelimiter+                                                                  // Preprocessor version
-        IntToStr(32)+ParameterDelimiter+                                                                             // Integer bits
-        IntToStr(38)+ParameterDelimiter+                                                                             // Single precision
-        IntToStr(6)+ParameterDelimiter+                                                                              // Single sign. bits
-        IntToStr(308)+ParameterDelimiter+                                                                            // Double precision
-        IntToStr(15)+ParameterDelimiter+                                                                             // Double sign. bits
-        ConvertString('')+ParameterDelimiter+                                                                        // Post processor
-        FloatToStrF(1.0,ffFixed,7,4)+ParameterDelimiter;                                                             // Model scale
+        ConvertString(ChangeFileExt(ExtractFilename(Application.ExeName),''))+ParameterDelimiter+ // ProductNameSender
+        ConvertString(FFilename)+ParameterDelimiter+                // Original filenameh
+        ConvertString(SystemID)+ParameterDelimiter+                 // Preprocessor
+        ConvertString(SystemID)+ParameterDelimiter+                 // Preprocessor version
+        IntToStr(32)+ParameterDelimiter+                            // Integer bits
+        IntToStr(38)+ParameterDelimiter+                            // Single precision
+        IntToStr(6)+ParameterDelimiter+                             // Single sign. bits
+        IntToStr(308)+ParameterDelimiter+                           // Double precision
+        IntToStr(15)+ParameterDelimiter+                            // Double sign. bits
+        ConvertString('')+ParameterDelimiter+                       // Post processor
+        FloatToStrF(1.0,ffFixed,7,4)+ParameterDelimiter;            // Model scale
    if IGESUnits=fuImperial then Str:=Str+IntToStr(4)+ParameterDelimiter+ConvertString('Feet')+ParameterDelimiter
                            else Str:=Str+IntToStr(6)+ParameterDelimiter+ConvertString('Meters')+ParameterDelimiter;
-   Str:=Str+IntToStr(1)+ParameterDelimiter+                                                                          // Lineweight graduations
-        FloatToStrF(1.0,ffFixed,7,4)+ParameterDelimiter+                                                             // max lineweight
-        TimeStr+ParameterDelimiter+                                                                                  // Time
-        FloatToStrF(0.01,ffFixed,7,6)+ParameterDelimiter+                                                            // Minimum resolution
-        FloatToStrF(FMaxCoordinate,ffFixed,7,6)+ParameterDelimiter+                                                  // Maximum coordinate
-        ConvertString(FileCreatedBy)+ParameterDelimiter+                                                             // Author
-        ''+ParameterDelimiter+                                                                                       // Author organisation
-        IntToStr(9)+ParameterDelimiter+                                                                              // IGES version 5.1
-        IntToStr(1)+ParameterDelimiter+                                                                              // draftingstandard=NONE
+   Str:=Str+IntToStr(1)+ParameterDelimiter+                         // Lineweight graduations
+        FloatToStrF(1.0,ffFixed,7,4)+ParameterDelimiter+            // max lineweight
+        TimeStr+ParameterDelimiter+                                 // Time
+        FloatToStrF(0.01,ffFixed,7,6)+ParameterDelimiter+           // Minimum resolution
+        FloatToStrF(FMaxCoordinate,ffFixed,7,6)+ParameterDelimiter+ // Maximum coordinate
+        ConvertString(FileCreatedBy)+ParameterDelimiter+            // Author
+        ''+ParameterDelimiter+                                      // Author organisation
+        IntToStr(9)+ParameterDelimiter+                             // IGES version 5.1
+        IntToStr(1)+ParameterDelimiter+                             // draftingstandard=NONE
         TimeStr+RecordDelimiter;
-
-   // split up into lines of max. 72 characters
-   Index:=1;
-   while length(Str)>LastColumn do
-   begin
-      //
+   Index:=1;                       // split up into lines of max. 72 characters
+   while length(Str)>LastColumn do begin
       Tmp:=Copy(Str,1,LastColumn);
       LastCol:=LastColumn;
-      while (Tmp<>'') and (Tmp[LastCol]<>ParameterDelimiter) do
-      begin
-         if pos(ParameterDelimiter,Tmp)=0 then
-         begin
-            // This must be a stringvalue which spans multiple lines
-            Tmp:=Uppercase(Tmp);
+      while (Tmp<>'') and (Tmp[LastCol]<>ParameterDelimiter) do begin
+         if pos(ParameterDelimiter,Tmp)=0 then begin
+            Tmp:=Uppercase(Tmp); // This must be a stringvalue which spans multiple lines
             break;
-         end else
-         begin
+         end else begin
             Delete(Tmp,LastCol,1);
             Dec(LastCol);
          end;
@@ -373,20 +351,16 @@ begin
       Inc(Index);
       Delete(Str,1,LastCol);
    end;
-   if Str<>'' then
-   begin
+   if Str<>'' then begin
       Tmp:=CheckString(Str,LastColumn,'G',Index);
       FGlobalSection.Add(Tmp);
    end;
-
-   // create the terminate section
-   Str:='S'+IndexStr(FStartsection.Count,7)+
+   Str:='S'+IndexStr(FStartsection.Count,7)+    // create the terminate section
         'G'+IndexStr(FGlobalsection.Count,7)+
         'D'+IndexStr(FDirectorysection.Count,7)+
         'P'+IndexStr(FParametersection.Count,7);
    Str:=CheckString(Str,LastColumn,'T',1);
    FTerminateSection.Add(Str);
-
    Strings:=TStringList.Create;
    Strings.AddStrings(FStartSection);
    Strings.AddStrings(FGlobalSection);
@@ -395,7 +369,6 @@ begin
    Strings.AddStrings(FTerminateSection);
    Strings.SaveToFile(ChangeFileExt(Filename,'.igs'));
    Strings.Destroy;
-end;{TFreeIGESList.SaveToFile}
-
+end;
 
 end.

@@ -16,10 +16,10 @@ type TFreeMirrorPlaneDialog  = class(TForm)
      procedure BitBtn1Click(Sender: TObject);
      procedure BitBtn2Click(Sender: TObject);
   private
-     function FGetPlane:T3DPlane;
+     function FGetPlane:Plate;
   public
      function Execute:Boolean;
-     property Plane : T3DPlane read FGetPlane;
+     property Plane : Plate read FGetPlane;
 end;
 
 var FreeMirrorPlaneDialog: TFreeMirrorPlaneDialog;
@@ -28,7 +28,7 @@ implementation
 
 {$R *.lfm}
 
-function TFreeMirrorPlaneDialog.FGetPlane:T3DPlane;
+function TFreeMirrorPlaneDialog.FGetPlane:Plate;
 begin
    Fillchar(Result,SizeOf(Result),0);
    if RadioButton1.Checked then Result.a:=1.0;

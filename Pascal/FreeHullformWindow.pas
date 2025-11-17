@@ -44,7 +44,7 @@ type TFreeHullWindow = class( TForm )
      BackgroundExport: TAction;  Export1: TMenuItem;
      BackgroundTolerance: TAction; Tolerance1: TMenuItem;
      BackgroundVisible: TAction; Visible1: TMenuItem;
-   procedure ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
+   procedure ViewportRequestExtents(Sender: TObject; var Min,Max: Vector);
    procedure ViewportRedraw(Sender: TObject);
    procedure FormCreate(Sender: TObject);
    procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -203,7 +203,7 @@ begin                                        // Update all menuitems and action
                          and (Viewport.BackgroundImage.Bitmap<>nil)
                          and (Viewport.BackgroundImage.ShowInView=Viewport.ViewType);
 end;
-procedure TFreeHullWindow.ViewportRequestExtents(Sender: TObject; var Min,Max: T3DVector);
+procedure TFreeHullWindow.ViewportRequestExtents(Sender: TObject; var Min,Max: Vector);
 begin if FreeShip<>nil then begin
          Freeship.Extents( Min,Max );
          if Viewport.ViewType=fvBodyPlan then Min.Y:=-Max.Y;
@@ -246,7 +246,7 @@ procedure TFreeHullWindow.ZoomOutExecute(Sender: TObject);
     begin Viewport.ZoomOut; end;
 
 procedure TFreeHullWindow.ViewportMouseDown(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-var Select: Boolean; P:T2DCoordinate;
+var Select: Boolean; P:Place;
 begin
    FInitialPosition.X:=X;
    FInitialPosition.Y:=Y;
@@ -267,7 +267,7 @@ begin
 end;
 procedure TFreeHullWindow.ViewportMouseMove(Sender: TObject;Shift: TShiftState; X, Y: Integer);
 var P  : TPoint;
-    P2D: T2DCoordinate; P3D: T3DVector;
+    P2D: Place; P3D: Vector;
     Str: string;
 begin
 // if Viewport.ViewType<>fvPerspective then

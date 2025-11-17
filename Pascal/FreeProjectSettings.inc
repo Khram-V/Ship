@@ -28,45 +28,45 @@ begin
     FDisableModelCheck:=Val; FreeShip.FileChanged:=True;
   end;
 end;
-function TFreeProjectSettings.FGetMidleFrame: TFloatType;
+function TFreeProjectSettings.FGetMidleFrame: Real;
 begin
   if FUseMidleFrame
      then Result:=(FreeShip.Surface.Max.X+FreeShip.Surface.Min.X)/2
      else Result:=FMidleFrame;
 end;
-procedure TFreeProjectSettings.FSetProjectAppendageCoefficient(Val: TFloatType);
+procedure TFreeProjectSettings.FSetProjectAppendageCoefficient(Val: Real);
 begin
   if abs(Val-FProjectAppendageCoefficient) > 1e-6 then begin
     FProjectAppendageCoefficient:=Val; FreeShip.FileChanged:=True;
   end;
 end;
-procedure TFreeProjectSettings.FSetProjectBeam( Val: TFloatType );
+procedure TFreeProjectSettings.FSetProjectBeam( Val: Real );
 begin
   if Val<0.001 then Val:=1; FProjectBeam:=Val; FreeShip.FileChanged:=True;
 end;
 
-procedure TFreeProjectSettings.FSetProjectDraft(Val: TFloatType);
+procedure TFreeProjectSettings.FSetProjectDraft(Val: Real);
 begin
   if Val<0.001 then Val:=1; FProjectDraft:=Val; FreeShip.FileChanged:=True;
 end;
 
-procedure TFreeProjectSettings.FSetProjectLength(Val: TFloatType);
+procedure TFreeProjectSettings.FSetProjectLength(Val: Real);
 begin
   if Val<0.001 then Val:=1; FProjectLength:=Val; FreeShip.FileChanged:=True;
 end;
 
-procedure TFreeProjectSettings.FSetMidleFrame(Mid: TFloatType);
+procedure TFreeProjectSettings.FSetMidleFrame(Mid: Real);
 begin
   if Mid<>FMidleFrame then begin FMidleFrame:=Mid; FreeShip.FileChanged:=True;
   end;
 end;
 
-procedure TFreeProjectSettings.FSetProjectWaterDensity(Val: TFloatType);
+procedure TFreeProjectSettings.FSetProjectWaterDensity(Val: Real);
 begin if abs( Val-FProjectWaterDensity )>1e-6 then
       begin FProjectWaterDensity:=Val; FreeShip.FileChanged:=True; end;
 end;
 
-procedure TFreeProjectSettings.FSetProjectWaterTemper(Val: TFloatType);
+procedure TFreeProjectSettings.FSetProjectWaterTemper(Val: Real);
 begin if abs( Val-FProjectWaterTemper )>1e-6 then
       begin FProjectWaterTemper:=Val; FreeShip.FileChanged:=True; end;
 end;
@@ -74,18 +74,18 @@ procedure TFreeProjectSettings.FSetSavePreview(val: boolean);
 begin if val<>FSavePreview then
       begin FSavePreview:=Val; FreeShip.FileChanged:=True; end;
 end;
-procedure TFreeProjectSettings.FSetStartDraft(Val: TFloatType);
+procedure TFreeProjectSettings.FSetStartDraft(Val: Real);
 begin if Val<>FStartDraft then
       begin FStartdraft:=Val; FreeShip.FileChanged:=True; end;
 end;
-procedure TFreeProjectSettings.FSetTrim(Val: TFloatType);
+procedure TFreeProjectSettings.FSetTrim(Val: Real);
 begin if Val<>FTrim then begin FTrim:=Val; FreeShip.FileChanged:=True; end;
 end;
-procedure TFreeProjectSettings.FSetEndDraft(Val: TFloatType);
+procedure TFreeProjectSettings.FSetEndDraft(Val: Real);
 begin
   if Val<>FEndDraft then begin FEnddraft:=Val; FreeShip.FileChanged:=True; end;
 end;
-procedure TFreeProjectSettings.FSetDraftStep(Val: TFloatType);
+procedure TFreeProjectSettings.FSetDraftStep(Val: Real);
 begin if Val<>FDraftStep then
       begin FDraftStep:=Val; FreeShip.FileChanged:=True; end;
 end;
@@ -116,9 +116,9 @@ end;
 procedure TFreeProjectSettings.FSetProjectUnits(Val: TFreeUnitType);
 var
   UnitConversionFactor: Real;
-  ScaleVector: T3DVector;
-  WeightFactor: TFloatType;
-  ThicknessFactor: TFloatType;
+  ScaleVector: Vector;
+  WeightFactor: Real;
+  ThicknessFactor: Real;
   I: integer;
   Layer: TFreeSubdivisionLayer;
 begin
@@ -420,12 +420,12 @@ begin
   end;
 end;
 (*
-function TFreeProjectSettings.FGetProjectMainframeLocation:TFloatType;
+function TFreeProjectSettings.FGetProjectMainframeLocation:Real;
 begin
    if UseDefaultMainframeLocation then Result:=FProjectLength/2
                                   else Result:=FProjectMainframeLocation;
 end;
-procedure TFreeProjectSettings.FSetProjectMainframeLocation(val:TFloatType);
+procedure TFreeProjectSettings.FSetProjectMainframeLocation(val:Real);
 begin
    if Val<>FProjectMainframeLocation then begin
       FProjectMainframeLocation:=val;

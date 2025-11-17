@@ -4,7 +4,7 @@ interface uses
   FreeTypes,FreeShipUnit;
 type
   TEditMode=(emProgrammatic,emMouse,emKeyboard);
-  TFreeSplitSectionDialogChangeEvent=procedure ( Sender: TObject; aValue: TFloatType ) of object;
+  TFreeSplitSectionDialogChangeEvent=procedure ( Sender: TObject; aValue: Real ) of object;
   TFreeSplitSectionDialog=class( TForm )
     BitBtn1: TBitBtn;
     fseMiF: TFloatSpinEdit;
@@ -23,12 +23,12 @@ type
     procedure tbMiFChange(Sender: TObject);
   private
     FEditMode: TEditMode;
-    FMiF: TFloatType;
+    FMiF: Real;
     FOnMiFChange: TFreeSplitSectionDialogChangeEvent;
-    procedure SetMiF(AValue: TFloatType);
+    procedure SetMiF(AValue: Real);
   public
     procedure SetDimensions;
-    property MiF:TFloatType read FMiF write SetMiF;
+    property MiF:Real read FMiF write SetMiF;
     property OnMiFChange: TFreeSplitSectionDialogChangeEvent
              read FOnMiFChange
              write FOnMiFChange;
@@ -58,7 +58,7 @@ procedure TFreeSplitSectionDialog.SpeedButton3Click(Sender: TObject);
 procedure TFreeSplitSectionDialog.tbMiFChange(Sender: TObject);
     begin SetMiF( 0.001*tbMiF.Position ); end;
 
-procedure TFreeSplitSectionDialog.SetMiF( AValue: TFloatType );
+procedure TFreeSplitSectionDialog.SetMiF( AValue: Real );
 begin
   if FMiF=AValue then Exit;
   FMiF:=AValue;                  // FEditMode:=emProgrammatic;

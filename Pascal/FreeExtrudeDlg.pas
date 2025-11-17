@@ -5,7 +5,7 @@ interface uses
      SysUtils,     Classes,
      Controls,     Forms,
      StdCtrls,     Buttons,
-     ExtCtrls;
+     ExtCtrls,     FreeTypes;
 
 type TFreeExtrudeDialog = class(TForm)
     Panel1,Panel2,Panel3: TPanel;
@@ -47,20 +47,20 @@ function TFreeExtrudeDialog.FGetXValue:Real;
                           else Result:=StrToFloat(Edit1.Text);
    end;
 procedure TFreeExtrudeDialog.FSetXValue(val:Real);
-    begin Edit1.Text:=FloatToStrF(Val,ffFixed,7,4); end;
+    begin Edit1.Text:=FloatToDec(Val,4); end;
 
 function TFreeExtrudeDialog.FGetYValue:Real;
    begin if Edit2.Text='' then result:=0.0
                           else Result:=StrToFloat(Edit2.Text);
    end;
 procedure TFreeExtrudeDialog.FSetYValue(val:Real);
-    begin Edit2.Text:=FloatToStrF(Val,ffFixed,7,4); end;
+    begin Edit2.Text:=FloatToDec(Val,4); end;
 function TFreeExtrudeDialog.FGetZValue:Real;
    begin if Edit3.Text='' then result:=0.0
                           else Result:=StrToFloat(Edit3.Text);
    end;
 procedure TFreeExtrudeDialog.FSetZValue(val:Real);
-    begin Edit3.Text:=FloatToStrF(Val,ffFixed,7,4); end;
+    begin Edit3.Text:=FloatToDec(Val,4); end;
 
 function TFreeExtrudeDialog.Execute(Str:string):Boolean;
 begin

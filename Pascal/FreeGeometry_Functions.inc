@@ -1,16 +1,5 @@
 
-{ included in FreeGometry.pas
-
-Function AddPoint( P1,P2: T3DVector ): T3DVector;            // Add two vectors
-begin Result.X:=P1.X+P2.X;
-      Result.Y:=P1.Y+P2.Y; if Result.Y<0 then Result.Y:=0.0;
-      Result.Z:=P1.Z+P2.Z;
-end;
-function AddPointSymm( P1,P2: T3DVector ): T3DVector;        // Add two vectors
-  begin Result.X:=P1.X+P2.X;
-        Result.Y:=P1.Y+P2.Y; if Result.Y<0 then Result.Y:=0.0;
-        Result.Z:=P1.Z+P2.Z;
-end; }                            // Returns a string value with the area units
+{ included in FreeGometry.pas }
 
 function AreaStr(Units: TFreeUnitType): String;
 begin if Units=fuImperial then Result:=UserString(465)  //Result:='ft^2 '
@@ -49,7 +38,7 @@ begin if Units=fuImperial then Result:='in '
 end;
 
 function VolumeToDisplacement              // Converts a volume to displacement
-( Volume,Density,AppCoeff: TFloatType; Units: TFreeUnitType): TFloatType;
+( Volume,Density,AppCoeff: Real; Units: TFreeUnitType): Real;
 begin         // convert to British imperial tons (1 imperial LONG ton=2240 lb)
   if Units=fuImperial then Result:=Volume*AppCoeff*Density/2240
                       else Result:=Volume*AppCoeff*Density;
@@ -65,22 +54,10 @@ end;
 function BoolToStr( Val: boolean ): String;
    begin if Val then Result:='1' else Result:='0'; end;
 
-function Line3P(P1,P2,P3:T3DVector):T3DLine; // longest line of 3 points on same ray
-var d12,d23,d13: TFloatType;
-begin
-  d12:=Sqr(P1-P2);
-  d23:=Sqr(P2-P3);
-  d13:=Sqr(P1-P3);
-  if (d12>d23) and (d12>d13) then begin Result.A:=P1; Result.B:=P2; end else
-  if (d23>d13) and (d23>d12) then begin Result.A:=P2; Result.B:=P3; end else
-  if (d13>d12) and (d13>d23) then begin Result.A:=P1; Result.B:=P3; end else
-                                  begin Result.A:=Zero; Result.B:=Zero; end;
-end;
-
-procedure ClipTriangle( P1,P2,P3: T3DVector; s1,s2,s3: TFloatType;
-        var Nf,Nb: integer; var Front,Back: TFreeCoordinateArray); overload;
+procedure ClipTriangle( P1,P2,P3: Vector; s1,s2,s3: Real;
+        var Nf,Nb: integer; var Front,Back: VectorArray); overload;
 var T: Real;
-    P: T3DVector;
+    P: Vector;
 begin
   Nf:=0;
   Nb:=0;
@@ -130,7 +107,7 @@ begin
 end;
 
 procedure ClipTriangle
-( P1,P2,P3: T3DVector; Plane: T3DPlane; var Nf,Nb: integer; var Front,Back: TFreeCoordinateArray);
+( P1,P2,P3: Vector; Plane: Plate; var Nf,Nb: integer; var Front,Back: VectorArray);
 var  S1,S2,S3: Real;
 begin
   S1:=Plane.a*P1.x+Plane.b*P1.y+Plane.c*P1.z+Plane.d;
@@ -139,8 +116,8 @@ begin
   ClipTriangle( P1,P2,P3,s1,s2,s3,Nf,Nb,Front,Back );
 end;
 
-function ConvertDimension(Value: TFloatType; Units: TFreeUnitType): String;
-var Feet: integer; Inches: TFloatType;
+function ConvertDimension(Value: Real; Units: TFreeUnitType): String;
+var Feet: integer; Inches: Real;
 begin
   if Units=fuImperial then begin
     if Value<0 then Feet:=-abs(Trunc(Value))
@@ -153,28 +130,28 @@ begin
   Result:=FloatToDec( Value,2 ); //Str( Round( Value*100 )/100 );
 end;
 
-Function DistancePointToLine(P,P1,P2:T3DVector):TFloatType;
-var V1,V2: T3DVector; Len: TFloatType;
+Function DistancePointToLine(P,P1,P2:Vector):Real;
+var V1,V2: Vector; Len: Real;
 begin
   V1:=P-P1;
   V2:=P1-P2; Len:=Abs( V2 );
   if Len>1e-6 then Result:=Abs( V1*V2 )/Len
               else Result:=Abs( P-P1 );
 end;
-
-function DistancePointToPlane( P: T3DVector; Plane: T3DPlane ): TFloatType;
+{
+function DistancePointToPlane( P: Vector; Plane: Plate ): Real;
 begin Result:=Plane.a*P.x + Plane.b*P.y + Plane.c*P.z + Plane.d;
 end;
-
+}
 function DistanceToLine
-( P1,P2: TPoint; X,Y: integer; var Parameter: TFloatType ): TFloatType;
-  var Pt: T2DCoordinate;
+( P1,P2: TPoint; X,Y: integer; var Parameter: Real ): Real;
+  var Pt: Place;
 begin
   if (P1.X<0) and (P2.X<0) then Result:=1e6 else
   if (P1.X>Screen.Width) and (P2.X>Screen.Width) then Result:=1e6 else
   if (P1.Y<0) and (P2.Y<0) then Result:=1e6 else
   if (P1.Y>Screen.Height) and (P2.Y>Screen.Height) then Result:=1e6 else
-  if (P2.X=P1.X) and (P1.Y=P2.Y) then begin Result:=Hypot( P1.X-X,P1.Y-Y ); //  Sqrt(Sqr(P1.X-X)+Sqr(P1.Y-Y));
+  if (P2.X=P1.X) and (P1.Y=P2.Y) then begin Result:=Hypot( P1.X-X,P1.Y-Y );
   end else begin
     Parameter:=((X-P1.X)*(P2.X-P1.X)+(Y-P1.Y)*(P2.Y-P1.Y))/(sqr(P2.X-P1.X)+Sqr(P2.Y-P1.Y));
     if (Parameter >= 0) and (Parameter <= 1) then begin
@@ -182,13 +159,13 @@ begin
       Pt.Y:=P1.Y+Parameter*(P2.Y-P1.Y);
       if (Pt.X >= 0) and (Pt.Y >= 0)
       and (Pt.X <= Screen.Width)
-      and (Pt.Y <= Screen.Height) then Result:=Hypot( Pt.X-X,Pt.Y-Y )           //Sqrt(Sqr(Pt.X-X)+Sqr(Pt.Y-Y))
+      and (Pt.Y <= Screen.Height) then Result:=Hypot( Pt.X-X,Pt.Y-Y )
       else Result:=1e6;
     end else Result:=1e6;
   end;
 end;
 function DisplacementToVolume              // Converts a displacement to volume
- ( Displ,Density,AppCoeff: TFloatType; Units: TFreeUnitType ): TFloatType;
+ ( Displ,Density,AppCoeff: Real; Units: TFreeUnitType ): Real;
 begin Result:=Displ/Density/AppCoeff;
       if Units=fuImperial then Result:=Result*2240;
 end;
@@ -196,13 +173,13 @@ end;
      then Result:=Displ*2240/Density else Result:=Displ/Density;
           Result:=Result/AppCoeff; end;
 }
-function DotProduct( U,V: T3DVector): TFloatType;
+function DotProduct( const U,V: Vector): Real;
    begin Result := (U.X*V.X)+(U.Y*V.Y)+(U.Z*V.Z); end;
 
-function Interpolate( P1,P2: T3DVector; Param: TFloatType): T3DVector;
+function Interpolate( P1,P2: Vector; Param: Real): Vector;
    begin Result:=P1+Param*(P2-P1); end;
 
-Function Lines3DIntersect(P1,P2,P3,P4:T3DVector;var Param:Real;var Int:T3DVector):Boolean;
+Function Lines3DIntersect(P1,P2,P3,P4:Vector;var Param:Real;var Int:Vector):Boolean;
 //   Calculate the line segment PaPb that is the shortest route between
 //   two lines P1P2 and P3P4. Calculate also the values of mua and mub where
 //      Pa = P1 + mua (P2 - P1)
@@ -210,7 +187,7 @@ Function Lines3DIntersect(P1,P2,P3,P4:T3DVector;var Param:Real;var Int:T3DVector
 //   Return FALSE if no solution exists.
 
 const eps=1e-6;
-var pa,{pb,}p13,p43,p21:T3DVector;
+var pa,{pb,}p13,p43,p21:Vector;
     numer,denom,mua,mub,d1343,d4321,d1321,d4343,d2121: Real;
 begin Result:=False;
    P43:=P4-P3;
@@ -248,17 +225,17 @@ begin Result:=False;
 end;{Lines3DIntersect}
 
 // Calculate the mid-point between P1 and P2
-function Midpoint(P1,P2:T3DVector):T3DVector;
+function Midpoint(P1,P2:Vector):Vector;
    begin Result:=0.5*(P1+P2); end;
-function Mid3point( P1,P2,P3: T3DVector ): T3DVector;
+function Mid3point( P1,P2,P3: Vector ): Vector;
    begin Result:=(P1+P2+P3)/3.0; end;
 
-function MirrorPlane( P:T3DVector; Plane:T3DPLane ):T3DVector;
+function MirrorPlane( P:Vector; Plane:Plate ):Vector;
    begin Result := P + 2.0*( ProjectPointOnPlane( P,Plane )-P ); end;
 
 // Finds out with how many decimals a number should be presented
-function NumberOfDecimals(Value: TFloatType): integer;
-var I: TFloatType;
+function NumberOfDecimals(Value: Real): integer;
+var I: Real;
 begin Value:=Abs( Value );
    if Value < 1e-6 then Value:=1e-6;
    I:=Ln( Value )/2.30258;
@@ -268,9 +245,9 @@ begin Value:=Abs( Value );
 end;
 
 // Function to determine if a plane intersects a bounding box
-function PlaneIntersectsBox(Min,Max: T3DVector; Plane: T3DPlane): boolean;
+function PlaneIntersectsBox(Min,Max: Vector; Plane: Plate): boolean;
 var
-  P: array[1..8] of T3DVector; I: integer; S,SMin,SMax: TFloatType;
+  P: array[1..8] of Vector; I: integer; S,SMin,SMax: Real;
 begin SMin:=0; SMax:=0;
   P[1]:=Min;
   P[2].X:=Max.X;  P[2].Y:=Min.Y;  P[2].Z:=Min.Z;
@@ -287,20 +264,20 @@ begin SMin:=0; SMax:=0;
     if S > SMax then SMax:=S;
   end;
   Result:=((Smin<=0.0) and (SMax>=0.0)) or ((SMax<=0.0) and (SMin>=0.0));
-end;{PlaneIntersectsBox}
+end;
 
 // Calculates the plane with a given normal N through point P
-function PlanePointNormal(P,Normal: T3DVector): T3DPlane;
+function PlanePointNormal(P,Normal: Vector): Plate;
 begin
   Result.a:=Normal.x;
   Result.b:=Normal.y;
   Result.c:=Normal.z;
   Result.d:=-P.x*Result.a-P.y*Result.b-P.z*Result.c;
-end;{PlanePointNormal}
+end;
 
-function PlanePPP(P1,P2,P3:T3DVector):T3DPlane;
-var N : T3DVector;
-    L : TFloatType;
+function PlanePPP(P1,P2,P3:Vector):Plate;
+var N : Vector;
+    L : Real;
 begin
    // Calculate normal
    N:=(P2-P1)*(P3-P1);
@@ -311,18 +288,18 @@ begin
    Result.b:=N.y/L;
    Result.c:=N.z/L;
    Result.d:=-P1.x*Result.a-P1.y*Result.b-P1.z*Result.c;
-end;{PlanePPP}
+end;
 
-function PointInBlock(P,Pmin,Pmax: T3DVector): boolean;
+function PointInBlock(P,Pmin,Pmax: Vector): boolean;
 begin Result:=((P.X >= Pmin.X) and (P.Y >= Pmin.Y) and (P.Z >= Pmin.Z))
           and ((P.X <= Pmax.X) and (P.Y <= Pmax.Y) and (P.Z <= Pmax.Z));
 end;
 
-function PointInTriangle(Int,P0,P1,P2:T3DVector):Boolean;
+function PointInTriangle(Int,P0,P1,P2:Vector):Boolean;
 // This function calculates if a point lies inside a triangle
 // assuming it lies on the plane determined by the triangle
-   function SameSide(p1,p2,a,b:T3DVector):Boolean;
-   var Cp1,Cp2,P,Ba: T3DVector; Dp: Real;
+   function SameSide(p1,p2,a,b:Vector):Boolean;
+   var Cp1,Cp2,P,Ba: Vector; Dp: Real;
    begin
       Ba:=B-A;
       P:=P1-A; Cp1:=P*Ba;
@@ -335,70 +312,8 @@ begin
    Result:=SameSide(Int,P0,P1,P2) and SameSide(Int,P1,P0,P2) and SameSide(Int,P2,P0,P1);
 end;
 
-// from http://read.pudn.com/downloads352/sourcecode/graph/fractal/1532960/Geometry_Algorithm_Archive.pdf#%16%95%9F%98%88H%5C%07%8F%97%F2%12%F2%EF%04%C5%CDintersect_RayTriangle%28%29
-const SMALL_NUM=0.00000001; // anything that avoids division overflow
-
-// intersect_RayTriangle(): intersect a ray with a 3D triangle
-//    Input:  a ray R,and a triangle T
-//    Output: *I=intersection point (when it exists)
-//    Return: -1=triangle is degenerate (a segment or point)
-//             0=disjoint (no intersect)
-//             1=intersect in unique point I1
-//             2=are in the same plane
-function RayIntersectTriangle(
-           Ray:T3DLine; V0,V1,V2:T3DVector;
-           var IntersectionPoint:T3DVector):integer;
-var
-  u,v,n,                        // triangle vectors
-  dir,w0,w : T3DVector;          // ray vectors
-  r,a,b,                        // params to calc ray-plane intersect
-  uu,uv,vv,wu,wv,D,s,t : TFloatType;
-begin
-  result:=0; IntersectionPoint:=ZERO;
-  // get triangle edge vectors and plane normal
-  u:=V1-V0;
-  v:=V2-V0;
-  n:=u*v;                                         // cross product
-  if n=T3DVector(ZERO)then begin                  // triangle is degenerate
-    result:=-1; exit;                             // do not deal with this case
-  end;
-  dir:=Ray.B-Ray.A;                               // ray direction vector
-  w0:=Ray.A-V0;
-  a:=dotProduct(n,w0);
-  b:=dotProduct(n,dir);
-  if abs( b )<SMALL_NUM then begin         // ray is parallel to triangle plane
-    if a=0 then                            // ray lies in triangle plane
-      begin result:=2; exit; end else      // ray disjoint from plane
-      begin result:=0; exit; end
-  end;
-  r:=-a/b;                    // get intersect point of ray with triangle plane
-  if r<0.0 then                                  // ray goes away from triangle
-    begin result:=0; exit;                                   // => no intersect
-    end;                // for a segment,also test if (r > 1.0) => no intersect
-  IntersectionPoint:=Ray.A+r*dir;      // intersect point of ray and plane
-  uu:=dotProduct(u,u);                 // is IntersectionPoint inside Triangle?
-  uv:=dotProduct(u,v);
-  vv:=dotProduct(v,v);
-  w:=IntersectionPoint-V0;
-  wu:=dotProduct(w,u);
-  wv:=dotProduct(w,v);
-  D:=uv*uv-uu*vv;
-  if D=0 then                          // IntersectionPoint is outside Triangle
-     begin result:=0; exit; end;                             // => no intersect
-  s:=(uv*wv-vv*wu)/D;            // get and test parametric coords
-  if (s < 0.0) or (s > 1.0) then       // IntersectionPoint is outside Triangle
-     begin result:=0; exit; end;                             // => no intersect
-  t:=(uv*wu-uu*wv)/D;
-  if (t < 0.0) or ((s+t) > 1.0) then   // IntersectionPoint is outside Triangle
-     begin  result:=0; exit; end;                            // => no intersect
-  result:=1;                                // IntersectionPoint is in Triangle
-end;
-
-
-function RotatePoint(Center,Point: T3DVector; Angle,Elevation:TFloatType): T3DVector;
-var
-  CosAngle,SinAngle: TFloatType;
-  CosElevation,SinElevation: TFloatType;
+function RotatePoint(Center,Point: Vector; Angle,Elevation:Real): Vector;
+var CosAngle,SinAngle,CosElevation,SinElevation: Real;
 begin
 // This function takes a point from 3D space and rotates it around the C center
 // of the scene as specified by the viewing-parameters (angle/elevation)
@@ -407,24 +322,20 @@ begin
   SinAngle:=sin(DegToRad(Angle));
   CosElevation:=cos(DegToRad(Elevation));
   SinElevation:=sin(DegToRad(Elevation));
-  Point.X:=Point.X-Center.X;
-  Point.Y:=Point.Y-Center.Y;
-  Point.Z:=Point.Z-Center.Z;  // Rotate a point first around Y-axis then around the Z-axis
+  Point-=Center;  // Rotate a point first around Y-axis then around the Z-axis
   Result.x:=(Point.x*CosElevation+Point.z*SinElevation)*CosAngle-Point.y*SinAngle;
   Result.y:=(Point.x*CosElevation+Point.z*SinElevation)*SinAngle+Point.y*CosAngle;
   Result.z:=(-Point.x*SinElevation+Point.z*CosElevation); // Translate origin back to midpoint
-  Result.X:=Result.X+Center.X;
-  Result.Y:=Result.Y+Center.Y;
-  Result.Z:=Result.Z+Center.Z;
-end;  {TFreeViewport.RotatedPoint}
+  Result+=Center;
+end;
 
 // converts pounds to Newton
-function PoundsToNewton(InpLbs: TFloatType): TFloatType;
+function PoundsToNewton(InpLbs: Real): Real;
    begin Result:=InpLbs*Lbs*9.81; end;
 
-function ProjectPointOnPlane(P: T3DVector; Plane: T3DPlane): T3DVector;
+function ProjectPointOnPlane(P: Vector; Plane: Plate): Vector;
                                                  // Projects a point on a plane
-var q,r: TFloatType;
+var q,r: Real;
 begin ///   q:=Plane.a*Plane.a+Plane.b*Plane.b+Plane.c*Plane.c;
   q:=Sqr(Plane.a)+Sqr(Plane.b)+Sqr(Plane.c);
   if Q<>0.0 then begin
@@ -435,8 +346,8 @@ begin ///   q:=Plane.a*Plane.a+Plane.b*Plane.b+Plane.c*Plane.c;
   end else Result:=ZERO;
 end;
 
-Function ProjectPointOnLine( P,P1,P2: T3DVector ):T3DVector;
-  var V1,V2: T3DVector; L,T: Real;
+Function ProjectPointOnLine( P,P1,P2: Vector ):Vector;
+  var V1,V2: Vector; L,T: Real;
 begin V1:=P-P1; V2:=P2-P1; L:=Sqr( V2 );
    if L>1e-6 
    then begin T:=(V1.X*V2.X+V1.Y*V2.Y+V1.Z*V2.Z)/L; Result:=P1+T*V2; end 
@@ -445,16 +356,16 @@ end;
 // This procedure takes a lot of linesegments
 // and tries to connect them into as few as possible splines
 procedure JoinSplineSegments
-( JoinError:TFloatType;ForceToOneSegment:Boolean;List:TFasterList );
-{ type TSegmentRecord = record Length: TFloatType; COG: T3DVector; end;
+( JoinError:Real;ForceToOneSegment:Boolean;List:TFasterList );
+{ type TSegmentRecord = record Length: Real; COG: Vector; end;
        TSegmentdata   = array[0..0] of TSegmentRecord;
        PSegmentdata   = ^TSegmentdata; }
 var I,J,MatchIndex: Integer;
     Fixed,Match,Nearest: TFreeSpline;
-    D1,D2,D3,D4,NearestDist,Min: TFloatType;
+    D1,D2,D3,D4,NearestDist,Min: Real;
     FixedClosed,
     MatchClosed: Boolean;
-    function Minimum(D1,D2,D3,D4:TFloatType):TFloatType;
+    function Minimum(D1,D2,D3,D4:Real):Real;
     begin                Result:=D1;
        if D2<Result then Result:=D2;
        if D3<Result then Result:=D3;
@@ -516,9 +427,9 @@ end;
 function RandomColor:TColor; const B = 40;
 begin Result:=RGB(B+Random(255-B),B+Random(255-B),B+Random(255-B));
 end;
-
-Function RotateAroundPoint(P:T3DVector;Center:T3DVector;sinhx,coshx,sinhy,coshy,sinhz,coshz:TFloatType):T3DVector;
-var P1: T3DVector; r11,r12,r13,r21,r22,r23,r31,r32,r33: TFloatType;
+(*
+Function RotateAroundPoint(P:Vector;Center:Vector;sinhx,coshx,sinhy,coshy,sinhz,coshz:Real):Vector;
+var P1: Vector; r11,r12,r13,r21,r22,r23,r31,r32,r33: Real;
 begin                                               // Translate back to origin
    P1:=P-Center; // P1.x:=P.x-Center.x; P1.y:=P.y-Center.y; P1.z:=P.z-Center.z;
    r11:= coshy * coshz;                                          // Do rotation
@@ -536,13 +447,13 @@ begin                                               // Translate back to origin
    Result:=Result+Center;
 end;
 
-// Function to rotate a point around a vector
-function RotatePointAroundVector(Point,StartPoint,Endpoint: T3DVector): T3DVector;
+// Function to rotate a point around a iVect
+function RotatePointAroundVector(Point,StartPoint,Endpoint: Vector): Vector;
 var
-  sinhx,coshx: TFloatType;
-  sinhy,coshy: TFloatType;
-  yz,xyz: TFloatType;
-  P1,P2: T3DVector;
+  sinhx,coshx: Real;
+  sinhy,coshy: Real;
+  yz,xyz: Real;
+  P1,P2: Vector;
 begin
   Result:=ZERO;
   yz:=hypot( Endpoint.y,Endpoint.z );                                           //sqrt(Endpoint.y*Endpoint.y+Endpoint.z*Endpoint.z);
@@ -560,11 +471,11 @@ begin
   P1.z:=P2.y*sinhx+P2.z*coshx;
   Result:=P1+StartPoint;                      // Translate back to centre again
 end;
-
-// Rotates a vector around the origin
-function RotateVector(P0: T3DVector;
-  sinx,cosx,siny,cosy,sinz,cosz: TFloatType): T3DVector;
-var r11,r12,r13,r21,r22,r23,r31,r32,r33: TFloatType;
+*)
+// Rotates a iVect around the origin
+function RotateVector(P0: Vector;
+  sinx,cosx,siny,cosy,sinz,cosz: Real): Vector;
+var r11,r12,r13,r21,r22,r23,r31,r32,r33: Real;
 begin // Do rotation
   r11:=cosy*cosz;
   r12:=cosy*sinz;
@@ -580,14 +491,14 @@ begin // Do rotation
   Result.z:=P0.x*r31+P0.y*r32+P0.z*r33;
 end; {RotateVector}
 
-function SetPlane(a,b,c,d: TFloatType): T3DPlane;
+function SetPlane(a,b,c,d: Real): Plate;
 begin Result.a:=a;
       Result.b:=b;
       Result.c:=c;
       Result.d:=d;
 end; {SetPlane}
 
-function MakeLength(Value: TFloatType; Decimals,DesLength: integer): String;
+function MakeLength(Value: Real; Decimals,DesLength: integer): String;
 var Input: String;
 begin
   if Decimals=-1 then Decimals:=NumberOfDecimals(Value);
@@ -597,37 +508,24 @@ begin
 end;
 
 function MakeLength(Value: String; DesLength: integer): String;
-   begin while Len(Value) < DesLength do Value:=Value+' '; Result:=Value; end;
-procedure MinMax(P: T3DVector; var Min,Max: T3DVector);
+   begin while UTF8Length(Value) < DesLength do Value:=Value+' '; Result:=Value;
+   end;
+procedure MinMax(P: Vector; var Min,Max: Vector);
    begin if P.X<Min.X then Min.X:=P.X else if P.X>Max.X then Max.X:=P.X;
          if P.Y<Min.Y then Min.Y:=P.Y else if P.Y>Max.Y then Max.Y:=P.Y;
          if P.Z<Min.Z then Min.Z:=P.Z else if P.Z>Max.Z then Max.Z:=P.Z;
    end;
 
-// Scales a vector
-//function ScalePoint(Scale:TFloatType;P:T3DVector):T3DVector;
-//   begin Result:=Scale*P; end;
-(*
-function Truncate(Value:TFloatType;Maxlength:integer):String;
-// Convert a floatingpoint to a string value with a max. number of specified decimals
-// All trailing zeros will be removed
-begin
-   Result:=FloatToStrF(Value,ffFixed,10,Maxlength);
-   while Result[Length(Result)]='0' do Delete(Result,Length(Result),1);
-   if Length(Result)<MaxLength then Result:=Result+'0' else
-      if Result[Length(Result)] in ['.',','] then Result:=Result+'0';
-end;{Truncate}
-*)
-// Normalize a vector to unit length
-function Normalize( P: T3DVector ): T3DVector; var L: Real;
+// Normalize a iVect to unit length
+function Normalize( P: Vector ): Vector; var L: Real;
    begin L:=sqr( P ); if L>1e-8 then Result:=P/sqrt( L ) else Result:=P; end;   //if IsNan(L) then///
 
-Function UnifiedNormal(P1,P2,P3:T3DVector):T3DVector;
+Function UnifiedNormal(P1,P2,P3:Vector):Vector;
    begin Result:=Normalize( (P2-P3)*(P2-P1) ); end;
 
-procedure FillColor(Parameter:TFloatType; var R,G,B:byte); // Calculate color on basis of wavelength (0.0-1.0)
-var Blue,Green,Red,wavelength: single;
-  function Adjust(Color: single): integer;
+procedure FillColor(Parameter:Real; var R,G,B:byte); // Calculate color on basis of wavelength (0.0-1.0)
+var Blue,Green,Red,wavelength: Real;
+  function Adjust(Color: Real): integer;
   begin if color <= 0.0 then Result:=0 else
         if Color >= 1.0 then Result:=255 else begin
            Result:=Round(255*Power(Color,0.8));
@@ -708,7 +606,7 @@ const DXFLayerColors: array[1..255] of TColor =
       $BF7FFF, $5200A5, $7C52A5, $3F007F, $5F3F7F, $26004C, $39264C, $130026, $1C1326, $3F00FF,
       $9F7FFF, $2900A5, $6752A5, $1F007F, $4F3F7F, $13004C, $2F264C, $090026, $171326, $000000,
       $2D2D2D, $5B5B5B, $898989, $B7B7B7, $B3B3B3);
-var R,G,B, R1,G1,B1:Byte; I:Integer; Dist,Tmp:single;
+var R,G,B, R1,G1,B1:Byte; I:Integer; Dist,Tmp:Real;
 begin
    Result:=1;
    R:=GetRValue(Color);

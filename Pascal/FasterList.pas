@@ -170,8 +170,8 @@ begin
    end;
 end;
 procedure TFasterList.AddSortedObject( Item,UserObject:Pointer );
-var Address : Pointer;
-    L,H,Mid : Integer;
+var Address: Pointer;
+    L,H,Mid: Integer;
 begin
    if not FUseUserData then begin
       FUseUserData:=True;
@@ -253,8 +253,9 @@ procedure TFasterList.Sort;
    procedure QuickSort( L,R:Integer );
    var I,J: Integer; Val: Pointer;
      Procedure Swap( I,J: Integer ); var Tmp: Pointer;
-     begin                        Tmp:=FList[I]; FList[I]:=FList[J]; FList[J]:=Tmp;
-       if FUseUserdata then begin Tmp:=FData[I]; FData[I]:=FData[J]; FData[J]:=Tmp; end;
+     begin Tmp:=FList[I]; FList[I]:=FList[J]; FList[J]:=Tmp;
+       if FUseUserdata then
+          begin Tmp:=FData[I]; FData[I]:=FData[J]; FData[J]:=Tmp; end;
      end;
    begin I:=L; J:=R; Val:=FList[(L+R) div 2];
       repeat

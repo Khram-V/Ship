@@ -136,7 +136,7 @@ procedure TFREEProjectSettingsDialog.FSetXWindAreaMax(Val: Real);
     begin Edit27.Value:=Val; end;
 
 procedure TFREEProjectSettingsDialog.FSetUnitCaptions;
-var Str: String; Min,Max: T3DVector;
+var Str: String; Min,Max: Vector;
 begin
   if UnitBox.ItemIndex=1 then Str:=LengthStr( fuImperial )
                            else Str:=Lengthstr( fuMetric );

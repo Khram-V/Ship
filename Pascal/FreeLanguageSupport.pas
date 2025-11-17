@@ -11,7 +11,7 @@ interface uses
      LCLType, LazFileUtils,
      SysUtils,Classes,
      stdCtrls,typInfo,
-     extCtrls,iniFiles,FreeStringUtils;
+     extCtrls,iniFiles,LazUTF8;
 
 type TLanguageIniFile=class( TMemIniFile )               { TLanguageIniFile }
 public Name: String;
@@ -47,7 +47,7 @@ begin Result:='';
      if U[I].L=Index then begin Result:=U[I].C; break; end;
    end else begin Val:=IntToStr( Index );
      Result:=CurrentLanguage.readString
-           ( 'User',Copy( 'User0000',1,8-len( Val ) )+Val,'' );
+           ( 'User',Copy( 'User0000',1,8-UTF8Length( Val ) )+Val,'' );
    end;
 end;
 
