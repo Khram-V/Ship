@@ -2,7 +2,6 @@
    FreePreferences
    Container class for all program settings
 }
-
 const iniFileName='FreeShip.ini';
 const G='Graphic';
 const D='Directories';
@@ -10,18 +9,18 @@ const D='Directories';
 procedure TFreePreferences.FSetViewportColor( Val: TColor );
 var I: integer;
 begin FViewportColor:=Val;
-  for I:=0 to Owner.NumberOfViewports-1 do
-              Owner.Viewport[I].Color:=FViewportColor;
+  for I:=0 to Ship.nV-1 do
+              Ship.Viewport[I].Color:=FViewportColor;
 end;
 procedure TFreePreferences.Clear;
 begin
   ResetColors;           PointSize:=2;
   ResetDirectories;      LastDirectory:='Ships\';
   Language:='Russian';   LanguageFile:='Russian.ini';
-  FbmEncoding:='cp1251'; MaxUndoMemory:=128;              // Max 20Mb undomemory
+  FbmEncoding:='cp1251'; MaxUndoMemory:=128;             // Max 20Mb undomemory
 end;
-constructor TFreePreferences.Create(Owner: TFreeShip);
-  begin inherited Create; FOwner:=Owner; Clear; end;
+constructor TFreePreferences.Create( Owner: TFreeShip );
+  begin inherited Create; Ship:=Owner; Clear; end;
 
 procedure TFreePreferences.Edit;
 var Dialog: TFreePreferencesDialog;
@@ -51,7 +50,7 @@ var Dialog: TFreePreferencesDialog;
     end;
   end; {Browse}
 begin
-  Dialog:=TFreePreferencesDialog.Create(Owner);
+  Dialog:=TFreePreferencesDialog.Create( Ship );
   ShowTranslatedValues( Dialog );
   Dir:=LanguagesDirectory; // ConfigDirectory=установлена активная директория
   Dialog.ComboBox1.Items.Clear;
@@ -61,7 +60,7 @@ begin
     if Uppercase(Dialog.ComboBox1.Items[I-1])=Uppercase(Language) then begin
        Dialog.ComboBox1.ItemIndex:=I-1; break;
     end;
-  if Dialog.Execute(Owner) then begin
+  if Dialog.Execute(Ship) then begin
     LayerColor       :=Dialog.Panel2.Color;
     ViewportColor    :=Dialog.Panel4.Color; // Set viewportcolor last,because it forces a repaint
     UnderWaterColor  :=Dialog.Panel5.Color;
@@ -107,35 +106,23 @@ begin
         if Application.Components[I-1] is TCustomForm
            then ShowTranslatedValues( Application.Components[I-1] );
         with Application.MainForm as TMainForm do
-         for I:=1 to Ship.NumberofViewports do
-          if TCustomForm( Ship.ViewPort[I-1] ) is TFreeLinesplanForm
-           then ShowTranslatedValues( TFreeLinesplanForm(Ship.ViewPort[I-1]).LinesplanFrame )
-           else ShowTranslatedValues( Ship.ViewPort[I-1] );
-      end; // else FLanguage:=Lang;
+         for I:=1 to Ship.nV do
+            ShowTranslatedValues( Ship.ViewPort[I-1] );
+         if Ship.LinesplanFrame<>nil then
+            ShowTranslatedValues( Ship.LinesplanFrame );
+       end; // else FLanguage:=Lang;
     end;
     FbmEncoding:=string( Dialog.ComboBoxEncoding.Items.Objects[Dialog.ComboBoxEncoding.ItemIndex] );
     MaxUndoMemory:=Dialog.FreeNumInput1.Value;
-
-    if assigned(Owner.OnFileChanged) then Owner.OnFileChanged(Owner);
-    if assigned(Owner.OnUpdateUndoData) then Owner.OnUpdateUndoData(Owner);
-    if assigned(Owner.OnUpdateRecentFileList) then Owner.OnUpdateRecentFileList(Owner);
-    if assigned(Owner.OnChangeCursorIncrement) then Owner.OnChangeCursorIncrement(Owner);
-    if assigned(Owner.OnUpdateGeometryInfo) then Owner.OnUpdateGeometryInfo(owner);
-    Owner.Redraw;
+    if assigned(Ship.OnFileChanged) then Ship.OnFileChanged(Ship);
+    if assigned(Ship.OnUpdateUndoData) then Ship.OnUpdateUndoData(Ship);
+    if assigned(Ship.OnUpdateRecentFileList) then Ship.OnUpdateRecentFileList(Ship);
+    if assigned(Ship.OnChangeCursorIncrement) then Ship.OnChangeCursorIncrement(Ship);
+    if assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(Ship);
+    Ship.Redraw;
     end;
   FreeAndNil(Dialog);
 end;
-(*
-procedure TFreePreferences.detectApplicationScope; var appPath:String;
-begin appPath:=ExtractFilePath( Application.Exename );
-{$ifdef Windows}
-   if appPath.StartsWith( windirs.GetWindowsSpecialDir( CSIDL_LOCAL_APPDATA) )
-   or appPath.StartsWith( windirs.GetWindowsSpecialDir( CSIDL_PROFILE ) )
-      then FApplicationScope:=asUser
-      else FApplicationScope:=asMachine;
-{$endif}
-end;
-*)
 function TColorIniFile.ReadColor(const Section,Ident:String; Default:TColor): TColor;
 begin Result:=StringToColor(ReadString(Section,Ident,ColorToString(Default)));
 end;
@@ -161,33 +148,33 @@ begin
   LanguagesDirectory:=params.ReadString(D,'LanguagesDirectory',LanguagesDirectory);
   ManualsDirectory  :=params.ReadString(D,'ManualsDirectory',ManualsDirectory);
 
-  PointSize           :=params.ReadInteger(G,'PointSize',PointSize);
-  FontSize            :=params.ReadInteger(G,'FontSize',FontSize);
-  StationColor        :=params.ReadColor  (G,'StationColor',StationColor);
-  ButtockColor        :=params.ReadColor  (G,'ButtockColor',ButtockColor);
-  WaterlineColor      :=params.ReadColor  (G,'WaterlineColor',WaterlineColor);
-  DiagonalColor       :=params.ReadColor  (G,'DiagonalColor',DiagonalColor);
-  UnderWaterColor     :=params.ReadColor  (G,'UnderWaterColor',UnderWaterColor);
+  PointSize        :=params.ReadInteger(G,'PointSize',PointSize);
+  FontSize         :=params.ReadInteger(G,'FontSize',FontSize);
+  StationColor      :=params.ReadColor (G,'StationColor',StationColor);
+  ButtockColor      :=params.ReadColor (G,'ButtockColor',ButtockColor);
+  WaterlineColor    :=params.ReadColor (G,'WaterlineColor',WaterlineColor);
+  DiagonalColor     :=params.ReadColor (G,'DiagonalColor',DiagonalColor);
+  UnderWaterColor   :=params.ReadColor (G,'UnderWaterColor',UnderWaterColor);
   UnderWaterColorAlpha:=params.ReadInteger(G,'UnderWaterColorAlpha',UnderWaterColorAlpha);
-  CreaseColor         :=params.ReadColor  (G,'CreaseColor',CreaseColor);
-  CreaseEdgeColor     :=params.ReadColor  (G,'CreaseEdgeColor',CreaseEdgeColor);
-  GridColor           :=params.ReadColor  (G,'GridColor',GridColor);
-  GridFontColor       :=params.ReadColor  (G,'GridFontColor',GridFontColor);
-  EdgeColor           :=params.ReadColor  (G,'EdgeColor',EdgeColor);
-  CreasePointColor    :=params.ReadColor  (G,'CreasePointColor',CreasePointColor);
-  RegularPointColor   :=params.ReadColor  (G,'RegularPointColor',RegularPointColor);
-  CornerPointColor    :=params.ReadColor  (G,'CornerPointColor',CornerPointColor);
-  DartPointColor      :=params.ReadColor  (G,'DartPointColor',DartPointColor);
-  SelectColor         :=params.ReadColor  (G,'SelectColor',SelectColor);
-  LayerColor          :=params.ReadColor  (G,'LayerColor',LayerColor);
-  NormalColor         :=params.ReadColor  (G,'NormalColor',NormalColor);
-  LeakPointColor      :=params.ReadColor  (G,'LeakPointColor',LeakPointColor);
-  MarkerColor         :=params.ReadColor  (G,'MarkerColor',MarkerColor);
-  CurvaturePlotColor  :=params.ReadColor  (G,'CurvaturePlotColor',CurvaturePlotColor);
-  ControlCurveColor   :=params.ReadColor  (G,'ControlCurveColor',ControlCurveColor);
-  HydrostaticsFontColor:=params.ReadColor (G,'HydrostaticsFontColor',HydrostaticsFontColor);
-  ZebraStripeColor    :=params.ReadColor  (G,'ZebraStripeColor',ZebraStripeColor);
-  FViewportColor      :=params.ReadColor  (G,'ViewportColor',FViewportColor );
+  CreaseColor       :=params.ReadColor (G,'CreaseColor',CreaseColor);
+  CreaseEdgeColor   :=params.ReadColor (G,'CreaseEdgeColor',CreaseEdgeColor);
+  GridColor         :=params.ReadColor (G,'GridColor',GridColor);
+  GridFontColor     :=params.ReadColor (G,'GridFontColor',GridFontColor);
+  EdgeColor         :=params.ReadColor (G,'EdgeColor',EdgeColor);
+  CreasePointColor  :=params.ReadColor (G,'CreasePointColor',CreasePointColor);
+  RegularPointColor :=params.ReadColor (G,'RegularPointColor',RegularPointColor);
+  CornerPointColor  :=params.ReadColor (G,'CornerPointColor',CornerPointColor);
+  DartPointColor    :=params.ReadColor (G,'DartPointColor',DartPointColor);
+  SelectColor       :=params.ReadColor (G,'SelectColor',SelectColor);
+  LayerColor        :=params.ReadColor (G,'LayerColor',LayerColor);
+  NormalColor       :=params.ReadColor (G,'NormalColor',NormalColor);
+  LeakPointColor    :=params.ReadColor (G,'LeakPointColor',LeakPointColor);
+  MarkerColor       :=params.ReadColor (G,'MarkerColor',MarkerColor);
+  CurvaturePlotColor:=params.ReadColor (G,'CurvaturePlotColor',CurvaturePlotColor);
+  ControlCurveColor :=params.ReadColor (G,'ControlCurveColor',ControlCurveColor);
+  HydrostaticsFontColor:=params.ReadColor(G,'HydrostaticsFontColor',HydrostaticsFontColor);
+  ZebraStripeColor  :=params.ReadColor (G,'ZebraStripeColor',ZebraStripeColor);
+  FViewportColor    :=params.ReadColor (G,'ViewportColor',FViewportColor );
 
   FIntersectionLineWidth:= params.ReadInteger(G,'IntersectionLineWidth',FIntersectionLineWidth);
   FControlEdgeLineWidth:=params.ReadInteger(G,'ControlEdgeLineWidth',FControlEdgeLineWidth);
@@ -197,12 +184,12 @@ begin
 
   RecentFileNames:=TStringList.Create;
   params.ReadSectionValues( 'RecentFiles',RecentFileNames );
-  Owner.Edit.RecentFiles.Clear;
-  Owner.Edit.RecentFiles.Capacity:=RecentFileNames.Count;
+  Ship.Edit.RecentFiles.Clear;
+  Ship.Edit.RecentFiles.Capacity:=RecentFileNames.Count;
   for I:=0 to RecentFileNames.Count-1 do
-    Owner.Edit.RecentFiles.Add( RecentFileNames.ValueFromIndex[I] );
+    Ship.Edit.RecentFiles.Add( RecentFileNames.ValueFromIndex[I] );
   FreeAndNil( RecentFileNames );
-  if assigned( Owner.OnUpdateRecentFileList ) then Owner.OnUpdateRecentFileList( self );
+  if assigned( Ship.OnUpdateRecentFileList ) then Ship.OnUpdateRecentFileList( self );
 
   T:=params.ReadInteger( 'Window','Top',0 );
   L:=params.ReadInteger( 'Window','Left',0 );
@@ -359,8 +346,8 @@ begin
   params.WriteInteger( G,'HydrostaticLineWidth',FHydrostaticLineWidth);
   params.WriteInteger( G,'AuxEdgeLineWidth',    FAuxEdgeLineWidth);
   params.EraseSection( 'RecentFiles');
-  for I:=0 to Owner.Edit.RecentFiles.Count-1 do
-    params.WriteString('RecentFiles','File'+IntToStr(I+1),Owner.Edit.RecentFiles[I] );
-  if assigned( Owner.OnUpdateRecentFileList ) then Owner.OnUpdateRecentFileList( self );
+  for I:=0 to Ship.Edit.RecentFiles.Count-1 do
+    params.WriteString('RecentFiles','File'+IntToStr(I+1),Ship.Edit.RecentFiles[I] );
+  if assigned( Ship.OnUpdateRecentFileList ) then Ship.OnUpdateRecentFileList( self );
 end;
 

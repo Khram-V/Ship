@@ -14,10 +14,10 @@ interface uses Windows,
 
 type  
 TFreeUndoHistoryDialog = class(TForm)
+    Viewport: TFreeViewport;
     Panel,Panel1: TPanel;
     UndoBox: TListBox;
     FreeShip1: TFreeShip;
-    Viewport: TFreeViewport;
     Splitter1: TSplitter;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;

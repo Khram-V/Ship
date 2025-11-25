@@ -8,8 +8,7 @@ object FreeHullWindow: TFreeHullWindow
   Color = clBtnFace
   DesignTimePPI = 192
   Font.Color = clWindowText
-  Font.Name = 'Times New Roman'
-  Font.Height = -22
+  Font.Height = -12
   Position = poDefault
   ShowHint = True
   LCLVersion = '4.2.0.0'
@@ -87,7 +86,8 @@ object FreeHullWindow: TFreeHullWindow
       Action = DeselectAll
     end
     object View1: TMenuItem
-      Caption = 'View'
+      Caption = 'Проекция'
+      Hint = 'Выбор проекции теоретического чертежа: корпус, бок, полуширота, аксонометрия'
       ImageIndex = 2
       object Bodyplan1: TMenuItem
         Action = ViewBodyPlan
@@ -103,7 +103,8 @@ object FreeHullWindow: TFreeHullWindow
       end
     end
     object Zoom1: TMenuItem
-      Caption = 'Zoom'
+      Caption = 'Масштаб'
+      Hint = 'Размерения изображения относительно листа чертёжной проекции.'
       object ZoomIn1: TMenuItem
         Action = ZoomIn
       end
@@ -115,7 +116,8 @@ object FreeHullWindow: TFreeHullWindow
       end
     end
     object Camera1: TMenuItem
-      Caption = 'Camera'
+      Caption = 'Объектив'
+      Hint = 'Настойка дистанции для прорисовки перспективной проекции в аксонометрии.'
       ImageIndex = 0
       object Widelens28mm1: TMenuItem
         Action = WideLens
@@ -134,7 +136,8 @@ object FreeHullWindow: TFreeHullWindow
       end
     end
     object Mode1: TMenuItem
-      Caption = 'Mode'
+      Caption = 'Изображение'
+      Hint = 'Выбор метода пространственного построения и прорисовки цифровой модели корпуса корабля.'
       object Wireframe1: TMenuItem
         Action = ShowWireFrame
       end
@@ -152,7 +155,8 @@ object FreeHullWindow: TFreeHullWindow
       end
     end
     object Backgroundimage2: TMenuItem
-      Caption = 'Background image'
+      Caption = 'Фоновый чертёж'
+      Hint = 'Выбор и настройка фоновой подложки для ручной оцифровки бумажной версии старого чертежа.'
       ImageIndex = 7
       object Visible1: TMenuItem
         Action = BackgroundVisible
@@ -190,138 +194,150 @@ object FreeHullWindow: TFreeHullWindow
     Images = Images
     Left = 32
     Top = 32
-    object StandardLens: TAction
-      Category = 'Camera'
-      Caption = 'Standard lens 50mm.'
-      OnExecute = StandardLensExecute
-    end
     object WideLens: TAction
       Category = 'Camera'
-      Caption = 'Wide lens 28 mm.'
+      Caption = 'широкий обзор     28 мм.'
       OnExecute = WideLensExecute
+    end
+    object StandardLens: TAction
+      Category = 'Camera'
+      Caption = 'штатный фокус     50 мм.'
+      OnExecute = StandardLensExecute
     end
     object ShortTeleLens: TAction
       Category = 'Camera'
-      Caption = 'Short telelens 90 mm.'
+      Caption = 'средняя дальность 90 мм.'
       OnExecute = ShortTeleLensExecute
     end
     object MediumTeleLens: TAction
       Category = 'Camera'
-      Caption = 'Medium telelens 130 mm.'
+      Caption = 'удалённый вид     130 мм.'
       OnExecute = MediumTeleLensExecute
     end
     object LongTeleLens: TAction
       Category = 'Camera'
-      Caption = 'Long telelens 200 mm.'
+      Caption = 'длинный фокус    200 мм.'
       OnExecute = LongTeleLensExecute
     end
     object ViewBodyPlan: TAction
       Category = 'View'
-      Caption = 'Bodyplan'
+      Caption = 'Корпус'
       ShortCut = 16433
       OnExecute = ViewBodyPlanExecute
     end
     object ViewProfile: TAction
       Category = 'View'
-      Caption = 'Profile'
+      Caption = 'Бок'
       ShortCut = 16434
       OnExecute = ViewProfileExecute
     end
     object ViewPlan: TAction
       Category = 'View'
-      Caption = 'Plan view'
+      Caption = 'Полуширота'
       ShortCut = 16435
       OnExecute = ViewPlanExecute
     end
     object ViewPerspective: TAction
       Category = 'View'
-      Caption = 'Perspective'
+      Caption = 'Аксонометрия'
       ShortCut = 16436
       OnExecute = ViewPerspectiveExecute
     end
     object ZoomIn: TAction
       Category = 'Zoom'
-      Caption = 'Zoom in'
+      Caption = 'Приблизить'
       ImageIndex = 5
       ShortCut = 16457
       OnExecute = ZoomInExecute
     end
     object ZoomExtents: TAction
       Category = 'Zoom'
-      Caption = 'All'
+      Caption = 'Вместить в лист'
       ImageIndex = 4
       ShortCut = 16449
       OnExecute = ZoomExtentsExecute
     end
     object ZoomOut: TAction
       Category = 'Zoom'
-      Caption = 'Zoom out'
+      Caption = 'Отдалить'
       ImageIndex = 6
       ShortCut = 16463
       OnExecute = ZoomOutExecute
     end
     object DeselectAll: TAction
-      Caption = 'Deselect all     Esc'
+      Caption = 'Отменить весь выбор  Esc'
+      Hint = 'Сброс активности всех выбранных элементов и возврат к исходному режиму редактирования.'
       OnExecute = DeselectAllExecute
     end
     object ShowWireFrame: TAction
       Category = 'Mode'
-      Caption = 'Wireframe'
+      Caption = 'Контурные прорисовки'
+      Hint = 'Изображение в теоретических контурах для редактирования.'
       ShortCut = 16471
       OnExecute = ShowWireFrameExecute
     end
     object ShowFlatShade: TAction
       Category = 'Mode'
-      Caption = 'Shade'
+      Caption = 'Освещённая раскраска'
+      Hint = 'Раскраска исходными цветами со светотеневыми оттенками.'
       ShortCut = 16454
       OnExecute = ShowFlatShadeExecute
     end
+    object ShadeZebra: TAction
+      Category = 'Mode'
+      Caption = 'Полосовое отражение'
+      Hint = 'Освещённая зеркальная поверхность с полосовыми отражениями'
+      ShortCut = 16453
+      OnExecute = ShadeZebraExecute
+    end
     object ShowGaussCurvature: TAction
       Category = 'Mode'
-      Caption = 'Gaussian curvature'
+      Caption = 'Гаусовы искривления'
+      Hint = 'Выделение фрагментов обшивки без прогибов и седловатестей.'
       ShortCut = 16455
       OnExecute = ShowGaussCurvatureExecute
     end
     object ShowDevelopablity: TAction
       Category = 'Mode'
-      Caption = 'Developablity check'
+      Caption = 'Развёртываемость листов'
+      Hint = 'Выделение фрагментов обшивки, развёртывающихся на плоскоски.'
       ShortCut = 16452
       OnExecute = ShowDevelopablityExecute
     end
     object SaveAsBitmap: TAction
-      Caption = 'Save image'
+      Caption = 'Сохранить в растре'
+      Hint = 'Сохранение одного листа с изображением проекции в растре .png'
       OnExecute = SaveAsBitmapExecute
-    end
-    object ShadeZebra: TAction
-      Category = 'Mode'
-      Caption = 'Zebra shading'
-      ShortCut = 16453
-      OnExecute = ShadeZebraExecute
     end
     object ImportBackGround: TAction
       Category = 'Background'
-      Caption = 'Load'
+      Caption = 'Считать фоновый растр'
+      Hint = 'Выбор растра и установка фонового чертежа для ручной оцифровки.'
       ImageIndex = 9
       OnExecute = ImportBackGroundExecute
     end
     object BackgroundOrigin: TAction
       Category = 'Background'
-      Caption = 'Origin'
+      Caption = 'Перемещение подложки'
+      Hint = 'Перемещение фонового чертежа по листу проекции.'
       OnExecute = BackgroundOriginExecute
     end
     object BackgroundScale: TAction
       Category = 'Background'
-      Caption = 'Set scale'
+      Caption = 'Масштабирование '
+      Hint = 'Приведение фоновоой точки в позицию нового массштаба от нуля координат'
       OnExecute = BackgroundScaleExecute
     end
     object BackgroundTransparentColor: TAction
       Category = 'Background'
-      Caption = 'Transparent color'
+      Caption = 'Прозрачный цвет'
+      Hint = 'Назначение чисто прозрачного цвета для фонового изображения.'
       OnExecute = BackgroundTransparentColorExecute
     end
     object Backgroundclear: TAction
       Category = 'Background'
-      Caption = 'Clear'
+      Caption = 'Очистить'
+      Hint = 'Безвозвратно удалить фоновое изображение'
       OnExecute = BackgroundclearExecute
     end
     object BackgroundBlending: TAction
@@ -331,18 +347,21 @@ object FreeHullWindow: TFreeHullWindow
     end
     object BackgroundExport: TAction
       Category = 'Background'
-      Caption = 'Save'
+      Caption = 'Сохранить фон'
+      Hint = 'Пересохранение оригинального фонового чертежа.'
       ImageIndex = 8
       OnExecute = BackgroundExportExecute
     end
     object BackgroundTolerance: TAction
       Category = 'Background'
-      Caption = 'Tolerance'
+      Caption = 'Полоса прозрачности'
+      Hint = 'Интервал близкой фоновой расцветки, приводимая к полной прозрачности.'
       OnExecute = BackgroundToleranceExecute
     end
     object BackgroundVisible: TAction
       Category = 'Background'
-      Caption = 'Visible'
+      Caption = 'Показать/скрыть'
+      Hint = 'Показать или вренно скрыть фоновый рисунок'
       OnExecute = BackgroundVisibleExecute
     end
   end

@@ -626,7 +626,7 @@ begin
             end;
          end;
          words.Destroy;
-      end else MessageDlg(Userstring(208)+'!',mtError,[mbOK],0);
+      end else ShowMessage(Userstring(208)+'!');
       Strings.destroy;
    end;
 end;

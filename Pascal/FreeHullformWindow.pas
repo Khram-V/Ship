@@ -98,7 +98,7 @@ public
 // constructor Create( TheOwner: TComponent );
    procedure SetCaption;
    procedure UpdateMenu;
-   property FreeShip: TFreeShip read FFreeShip write FSetFreeShip;
+   property Ship: TFreeShip read FFreeShip write FSetFreeShip;
 end;
 
 var FreeHullWindow: TFreeHullWindow;
@@ -124,7 +124,7 @@ begin //Inherited;
 end;
 procedure TFreeHullWindow.FormClose(Sender: TObject; var Action: TCloseAction);
 begin                                  // Disconnect from FreeShip component
-     Freeship:=nil; Action:=caFree;
+     Ship:=nil; Action:=caFree;
      TMainform( Application.MainForm ).DelWindow( Self );
 end;
 
@@ -204,15 +204,15 @@ begin                                        // Update all menuitems and action
                          and (Viewport.BackgroundImage.ShowInView=Viewport.ViewType);
 end;
 procedure TFreeHullWindow.ViewportRequestExtents(Sender: TObject; var Min,Max: Vector);
-begin if FreeShip<>nil then begin
-         Freeship.Extents( Min,Max );
+begin if Ship<>nil then begin
+         Ship.Extents( Min,Max );
          if Viewport.ViewType=fvBodyPlan then Min.Y:=-Max.Y;
       end;
 end;
 procedure TFreeHullWindow.ViewportRedraw(Sender: TObject);
-    begin if FreeShip<>nil then begin FreeShip.DrawToViewport( Viewport );
-             if FreeShip.ActiveControlPoint<>nil then
-                FreeShip.ActiveControlPoint:=FreeShip.ActiveControlPoint;
+    begin if Ship<>nil then begin Ship.DrawToViewport( Viewport );
+             if Ship.ActiveControlPoint<>nil then
+                Ship.ActiveControlPoint:=Ship.ActiveControlPoint;
     end end;
 procedure TFreeHullWindow.PopupMenuPopup(Sender: TObject);
     begin UpdateMenu; end;
@@ -227,17 +227,17 @@ procedure TFreeHullWindow.MediumTeleLensExecute(Sender: TObject);
 procedure TFreeHullWindow.LongTeleLensExecute(Sender: TObject);
     begin Viewport.CameraType:=ftFarTele; end;
 procedure TFreeHullWindow.ViewBodyPlanExecute(Sender: TObject);
-    begin Viewport.ViewType:=fvBodyplan; end;
+    begin Viewport.ViewType:=fvBodyplan; MainForm.WindowMenu; end;
 procedure TFreeHullWindow.ViewProfileExecute(Sender: TObject);
-    begin Viewport.ViewType:=fvProfile; end;
+    begin Viewport.ViewType:=fvProfile; MainForm.WindowMenu; end;
 procedure TFreeHullWindow.ViewPlanExecute(Sender: TObject);
-    begin Viewport.ViewType:=fvPlan; end;
+    begin Viewport.ViewType:=fvPlan; MainForm.WindowMenu; end;
 procedure TFreeHullWindow.ViewPerspectiveExecute(Sender: TObject);
-    begin Viewport.ViewType:=fvPerspective; end;
+    begin Viewport.ViewType:=fvPerspective;  MainForm.WindowMenu; end;
 procedure TFreeHullWindow.FormShow(Sender: TObject);
     begin SetCaption; end;
 procedure TFreeHullWindow.ViewportChangeViewType(Sender: TObject);
-    begin SetCaption; end;
+    begin SetCaption; MainForm.WindowMenu; end;
 procedure TFreeHullWindow.ZoomInExecute(Sender: TObject);
     begin Viewport.ZoomIn; end;
 procedure TFreeHullWindow.ZoomExtentsExecute(Sender: TObject);
@@ -245,77 +245,71 @@ procedure TFreeHullWindow.ZoomExtentsExecute(Sender: TObject);
 procedure TFreeHullWindow.ZoomOutExecute(Sender: TObject);
     begin Viewport.ZoomOut; end;
 
-procedure TFreeHullWindow.ViewportMouseDown(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TFreeHullWindow.ViewportMouseDown(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 var Select: Boolean; P:Place;
 begin
-   FInitialPosition.X:=X;
-   FInitialPosition.Y:=Y;
+   FInitialPosition:=Point( X,Y );
    if (ssAlt in Shift)
    and (Viewport.Viewtype<>fvPerspective) then begin          // для линий тока
       P:=Viewport.ProjectBackTo2D(FInitialPosition);
-      if (Freeship.Visibility.ModelView=mvBoth)
+      if (Ship.Visibility.ModelView=mvBoth)
       and (Viewport.ViewType=fvBodyplan) then P.X:=abs( P.X );
-      Freeship.Edit.Flowline_Add( P,Viewport.Viewtype );
+      Ship.Edit.Flowline_Add( P,Viewport.Viewtype );
       TMainform( Application.MainForm ).UpdateMenu;
       exit;
    end;
    FPanned:=False;
 // if Viewport.ViewportMode=vmWireframe then
-      FreeShip.MouseDown( Viewport,Button,Shift,X,Y,Select );
-   FAllowPanOrZoom:=not select; // An item has just been selected or deselect,
-// so do NOT pan or zoom the vieport when the user (accidently) moves the mouse
+   Ship.MouseDown( Viewport,Button,Shift,X,Y,Select );
+   FAllowPanOrZoom:=not select;  // An item has just been selected or deselect,
+                                 //      so do NOT pan or zoom the vieport when
+                                 //       the user (accidently) moves the mouse
+   if Shift=[ssLeft,ssCtrl] then begin //           выделение контрольных точек
+     Viewport.SelectionFrameRect:=Rect( FInitialPosition.X,FInitialPosition.Y,
+                                        FInitialPosition.X,FInitialPosition.Y );
+     Viewport.SelectionFrameActive:=true;
+   end;
 end;
 procedure TFreeHullWindow.ViewportMouseMove(Sender: TObject;Shift: TShiftState; X, Y: Integer);
-var P  : TPoint;
-    P2D: Place; P3D: Vector;
-    Str: string;
+var P2D: Place; P3D: Vector; Str: string;
 begin
-// if Viewport.ViewType<>fvPerspective then
-   begin
-      P.X:=X;
-      P.Y:=Y;
-      P2D:=Viewport.ProjectBackTo2D(P);
-      Case Viewport.ViewType of
-         fvBodyplan: Str:=Userstring(215)+'.  Y='+FloatToDec(P2D.X,3)+'  Z='+FloatToDec(P2D.Y,3);
-         fvProfile : Str:=Userstring(216)+'.  X='+FloatToDec(P2D.X,3)+'  Z='+FloatToDec(P2D.Y,3);
-         fvPlan    : Str:=Userstring(217)+'.  X='+FloatToDec(P2D.X,3)+'  Y='+FloatToDec(P2D.Y,3);
-         fvPerspective: begin
-         { Str:=format('. Pan.X=%d Pan.Y=%d Elevation=%6.2f Rotation=%6.2f Zoom=%6.4f Scale=%6.3f',
-           [Viewport.Pan.X,Viewport.Pan.Y,Viewport.Elevation,Viewport.Angle,Viewport.Zoom,Viewport.Scale] );
-         }
-           P3D:=Viewport.ProjectBack( Point(X,Y),ZERO );
-           Str:=UserString(218)+format( '.  X=%-4.2f  Y=%-4.2f  Z=%-4.2f',[P3D.X,P3D.Y,P3D.Z]);
-         end else Str:='';
-      end;
-      Caption:=Str;
-   end;
-   if (ssLeft in Shift) and (FAllowPanOrZoom) then begin // Zoom in or zoom out
-      if abs(FInitialPosition.Y-Y)>4 then begin
+// if Viewport.ViewType<>fvPerspective then begin
+   P2D:=Viewport.ProjectBackTo2D( Point( X,Y ) );
+   Case Viewport.ViewType of
+      fvBodyplan: Str:=Userstring(215)+'.  Y='+FloatToDec(P2D.X,3)+'  Z='+FloatToDec(P2D.Y,3);
+      fvProfile : Str:=Userstring(216)+'.  X='+FloatToDec(P2D.X,3)+'  Z='+FloatToDec(P2D.Y,3);
+      fvPlan    : Str:=Userstring(217)+'.  X='+FloatToDec(P2D.X,3)+'  Y='+FloatToDec(P2D.Y,3);
+      fvPerspective: begin
+        P3D:=Viewport.ProjectBack( Point( X,Y ),ZERO );
+        Str:=UserString(218)+format( '.  X=%-4.2f  Y=%-4.2f  Z=%-4.2f',[P3D.X,P3D.Y,P3D.Z]);
+       end else Str:='';
+   end; Caption:=Str;
+// end;
+   if (Shift=[ssLeft]) and (FAllowPanOrZoom) then begin // Zoom in or zoom out
+      if (Viewport.ViewType<>fvPerspective) and (abs(FInitialPosition.Y-Y)>4)
+      then begin
          if Y<FInitialPosition.Y then Viewport.ZoomIn else
          if Y>FInitialPosition.Y then Viewport.ZoomOut;
-         FInitialPosition.X:=X;
-         FInitialPosition.Y:=Y;
+         FInitialPosition:=Point( X,Y );
       end;
    end else
-   if (ssRight in Shift) and (FAllowPanOrZoom) then begin
-      // Pan the window left, right, top or bottom
+   if (Shift=[ssRight]) and (FAllowPanOrZoom) then begin // Pan the window left, right, top or bottom
       if (abs(FInitialPosition.X-X)>4)
       or (abs(FInitialPosition.Y-Y)>4) then begin
-         P.X:=Viewport.Pan.X+X-FInitialPosition.X;
-         P.Y:=Viewport.Pan.Y+Y-FInitialPosition.Y;
-         Viewport.Pan:=P;
+         Viewport.Pan:=Point( Viewport.Pan.X+X-FInitialPosition.X,
+                              Viewport.Pan.Y+Y-FInitialPosition.Y );
          FPanned:=True;
-         FInitialPosition.X:=X;
-         FInitialPosition.Y:=Y;
+         FInitialPosition:=Point( X,Y );
       end;
-{  end else
+   end else
    if (Shift=[ssLeft,ssCtrl]) then begin                // Draw selection frame
       if (abs(FInitialPosition.X-X)>4)
       or (abs(FInitialPosition.Y-Y)>4) then begin
          Viewport.SelectionFrameRect:=Rect(FInitialPosition.X,FInitialPosition.Y,X,Y);
       // Viewport.Rectangle( FInitialPosition.X,FInitialPosition.Y,X,Y );
       end;
-}  end else FFreeShip.MouseMove( Viewport,Shift,X,Y );
+   end else
+   Ship.MouseMove( Viewport,Shift,X,Y );
 end;
 procedure TFreeHullWindow.ViewportMouseUp(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var P:TPoint;
@@ -324,17 +318,19 @@ begin
       // Tracing:=false;
       // Only show pop-up menu if user has not panned the viewport (with right mouse-button)
       if FPanned then begin FPanned:=False; end else begin
-         P.X:=X;
-         P.Y:=Y;
-         P:=Viewport.ClientToScreen(P);
-         PopupMenu.Popup(P.X,P.Y);
+         P:=Viewport.ClientToScreen( Point( X,Y ) );
+         PopupMenu.Popup( P.X,P.Y );
       end;
    end;                                              // Reset the pan/zoom flag
    FAllowPanOrZoom:=True;
-   Freeship.MouseUp(Viewport,Shift,X,Y);
+   if Viewport.SelectionFrameActive then begin
+      Ship.SelectPointsInFrame( Viewport,Viewport.SelectionFrameRect );
+      Viewport.SelectionFrameActive:=false;
+   end;
+   Ship.MouseUp(Viewport,Shift,X,Y);
 end;
 procedure TFreeHullWindow.DeselectAllExecute(Sender: TObject);
-    begin FreeShip.Edit.Selection_Clear; end;
+    begin Ship.Edit.Selection_Clear; end;
 procedure TFreeHullWindow.ViewportMouseLeave(Sender: TObject);
 begin            // stop panning or zooming when the cursor leaves the viewport
    FAllowPanOrZoom:=False;   // And remove the cursor location from the caption
@@ -356,18 +352,18 @@ begin{  Case Viewport.ViewType of
              fvPlan       : vpt:='_Plan';
              fvPerspective: vpt:='_Perspective'; else vpt:='';
         end; }
-  Viewport.SaveAsBitmap( Freeship.Preferences.ExportDirectory
+  Viewport.SaveAsBitmap( Ship.Preferences.ExportDirectory
      + ChangeFileExt( ExtractFilename
-     ( ChangeFileExt( Freeship.Filename,'' ) )+'_'+FCaptionText,'.png' ),true );
+     ( ChangeFileExt( Ship.Filename,'' ) )+'_'+FCaptionText,'.png' ),true );
 end;
 procedure TFreeHullWindow.ViewportKeyUp(Sender: TObject; var Key: Word;Shift: TShiftState);
-    begin Freeship.KeyUp(Viewport,Key,Shift); end;
+    begin Ship.KeyUp(Viewport,Key,Shift); end;
 procedure TFreeHullWindow.ViewportKeyPress(Sender: TObject; var Key: Char);
     begin if key=#27 then DeselectAllExecute(self); end;
 procedure TFreeHullWindow.ShadeZebraExecute(Sender: TObject);
     begin Viewport.ViewportMode:=vmShadeZebra; UpdateMenu; end;
 procedure TFreeHullWindow.ImportBackGroundExecute(Sender: TObject);
-    begin if Freeship<>nil then Freeship.Edit.BackgroundImage_Open(Viewport);
+    begin if Ship<>nil then Ship.Edit.BackgroundImage_Open(Viewport);
     end;
 procedure TFreeHullWindow.BackgroundOriginExecute(Sender: TObject);
     begin Viewport.BackgroundMode:=emSetOrigin; end;
@@ -379,37 +375,33 @@ procedure TFreeHullWindow.BackgroundTransparentColorExecute(Sender: TObject);
 procedure TFreeHullWindow.BackgroundClearExecute(Sender: TObject);
 begin if (Viewport.BackgroundImage.Bitmap<>nil)
       and (Viewport.BackgroundImage.Visible) then begin
-          if Freeship<>nil then Freeship.Edit.BackgroundImage_Delete(Viewport);
+          if Ship<>nil then Ship.Edit.BackgroundImage_Delete(Viewport);
       end;
 end;
 procedure TFreeHullWindow.BackgroundBlendingExecute( Sender: TObject );
     begin Viewport.BackgroundImage.SetBlendingValue; end;
 procedure TFreeHullWindow.ViewportRequestBackgroundImage(Sender: TObject);
-var I: Integer;
-    Data: TFreeBackgroundImageData;
-    Pt:TPoint;
+var I: Integer; Data: TFreeBackgroundImageData; Pt:TPoint;
 begin
-   if Freeship<>nil then begin
-      Data:=nil;
-      for I:=1 to Freeship.NumberofBackgroundImages do
-       if Freeship.BackgroundImage[I-1].AssignedView=Viewport.ViewType then
-         Data:=Freeship.BackgroundImage[I-1];
-      if Data<>nil then Viewport.BackgroundImage.AssignData(Data.Image,Data.AssignedView,Data.Origin,Data.Scale,Data.Transparent,Data.TransparentColor,Data.BlendingValue,Data.Quality,Data.Tolerance,True)
-      else if Viewport.BackgroundImage.Bitmap<>nil then begin
-         Pt.X:=0;
-         Pt.Y:=0;
+   if Ship<>nil then begin Data:=nil;
+      for I:=1 to Ship.NumberofBackgroundImages do
+       if Ship.BackgroundImage[I-1].AssignedView=Viewport.ViewType then
+         Data:=Ship.BackgroundImage[I-1];
+      if Data<>nil
+      then Viewport.BackgroundImage.AssignData(Data.Image,Data.AssignedView,Data.Origin,Data.Scale,Data.Transparent,Data.TransparentColor,Data.BlendingValue,Data.Quality,Data.Tolerance,True)
+      else if Viewport.BackgroundImage.Bitmap<>nil then begin Pt.X:=0; Pt.Y:=0;
          Viewport.BackgroundImage.AssignData(nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True);
       end;
    end;
 end;
 
 procedure TFreeHullWindow.ViewportChangeBackground(Sender: TObject);
-var I:Integer;
+var I: Integer;
 begin
-   for I:=1 to Freeship.NumberofBackgroundImages do
-   if Freeship.BackgroundImage[I-1].AssignedView=Viewport.ViewType then begin
-      Freeship.Edit.CreateUndoObject(Userstring(219),true);
-      Freeship.BackgroundImage[I-1].UpdateData(Viewport);
+   for I:=1 to Ship.NumberofBackgroundImages do
+   if Ship.BackgroundImage[I-1].AssignedView=Viewport.ViewType then begin
+      Ship.Edit.CreateUndoObject(Userstring(219),true);
+      Ship.BackgroundImage[I-1].UpdateData(Viewport);
       Break;
    end;
 end;
@@ -419,7 +411,7 @@ procedure TFreeHullWindow.BackgroundExportExecute(Sender: TObject);
 
 procedure TFreeHullWindow.BackgroundToleranceExecute(Sender: TObject);
 var Str:String;
-    Value,I:Integer;
+    Value,I: Integer;
 begin
    Str:=IntToStr(Viewport.BackgroundImage.Tolerance);
    if InputQuery(Userstring(220),Userstring(221)+' (0-255)',Str) then begin

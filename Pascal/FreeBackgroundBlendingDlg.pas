@@ -26,7 +26,7 @@ var FreeBackgroundBlendDialog: TFreeBackgroundBlendDialog;
 implementation
 {$R *.lfm}
 
-function TFreeBackgroundBlendDialog.Execute(Viewport:TFreeViewport):Boolean;
+function TFreeBackgroundBlendDialog.Execute( Viewport:TFreeViewport ):Boolean;
 begin
    FViewport:=Viewport;
    Trackbar1.Position :=FViewport.BackgroundImage.Alpha;

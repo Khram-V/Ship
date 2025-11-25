@@ -459,7 +459,7 @@ var
   HydObject: TFreehydrostaticCalc;
   Properties,Total: TLayerProperties;
   Min,Max: Vector;                 {@}
-  StartDraft,EndDraft,DraftStep,Trim, {@} Zmin,Value, A: Real;
+  StartDraft,EndDraft,DraftStep,Trim, {@} Zmin,Value, {dT,} A: Real;
 const Line_1='┌─────────────────────────┬─────────┬───────────┬──────────┬─────────┬─────────┬─────────┐';
 const Line_2='├─────────────────────────┼─────────┼───────────┼──────────┼─────────┼─────────┼─────────┤';
 const Line_3='└─────────────────────────┴─────────┴───────────┴──────────┴─────────┴─────────┴─────────┘';
@@ -635,15 +635,11 @@ begin
        ' │');
       Total.SurfaceArea:=Total.SurfaceArea+Properties.SurfaceArea;
       Total.Weight:=Total.Weight+Properties.Weight;
-      Total.SurfaceCenterOfGravity.X:=Total.SurfaceCenterOfGravity.X+Properties.Weight*Properties.SurfaceCenterOfGravity.X;
-      Total.SurfaceCenterOfGravity.Y:=Total.SurfaceCenterOfGravity.Y+Properties.Weight*Properties.SurfaceCenterOfGravity.Y;
-      Total.SurfaceCenterOfGravity.Z:=Total.SurfaceCenterOfGravity.Z+Properties.Weight*Properties.SurfaceCenterOfGravity.Z;
+      Total.SurfaceCenterOfGravity+=Properties.Weight*Properties.SurfaceCenterOfGravity;
     end;
     Strings.Add( Line_3 );
-    if Total.Weight<>0 then begin
-      Total.SurfaceCenterOfGravity.X := Total.SurfaceCenterOfGravity.X/Total.Weight;
-      Total.SurfaceCenterOfGravity.Y := Total.SurfaceCenterOfGravity.Y/Total.Weight;
-      Total.SurfaceCenterOfGravity.Z := Total.SurfaceCenterOfGravity.Z/Total.Weight+FData.ModelMin.Z;
+    if Total.Weight<>0 then begin Total.SurfaceCenterOfGravity/=Total.Weight;
+                                  Total.SurfaceCenterOfGravity.Z+=FData.ModelMin.Z;
     end;
     if N>1 then begin // if more then 1 layer is added,then show the properties of all layers together
       Strings.Add('  '+MakeLength(UserString(37),24)+'   '+Makelength(Total.SurfaceArea,-1,6)+
@@ -672,9 +668,6 @@ begin
     Strings.Add(' │ '+Makelength(FData.SubMax.X,3,9)+' │ '+Makelength(0.,3,8)+' │ ');
     Strings.Add(' └───────────┴──────────┘');
   end;
-
-  if (FData.ModelMin.Z<>0.0)
-  and Owner.ProjectSettings.EnableModelAutoMove then Face_MoveZAuto;
 
   StartDraft:=Owner.ProjectSettings.Hydrostatics_Startdraft;
   EndDraft:=Owner.ProjectSettings.Hydrostatics_Enddraft;
@@ -741,20 +734,20 @@ begin
     +'│'+Makelength(Trim,                2,5 )
     +'│'+Makelength(Data.LengthWaterline,2,6 )
     +'│'+Makelength(Data.BeamWaterline,  2,5 )
-    +'│'+Makelength(Data.Volume,         1,7 )    //NumberOfDecimals(HydObject.Data.Volume),7)
-    +'│'+Makelength(Data.Displacement,   1,7 )    //NumberOfDecimals(HydObject.Data.Displacement),7)
+    +'│'+Makelength(Data.Volume,         1,7 )
+    +'│'+Makelength(Data.Displacement,   1,7 )
     +'│'+Makelength(Data.CenterOfBuoyancy.X,2,6 )
     +'│'+Makelength(Data.CenterOfBuoyancy.Z+Zmin,2,5 )
     +'│'+Makelength(Data.BlockCoefficient,       3,6 )
     +'│'+Makelength(Data.MainFrameArea,          2,6 )
     +'│'+Makelength(Data.MainFrameCoeff,         3,6 )
-    +'│'+Makelength(Data.Waterplanearea,1,6 )     //NumberOfDecimals(HydObject.Data.Waterplanearea),6)
+    +'│'+Makelength(Data.Waterplanearea,1,6 )
     +'│'+Makelength(Data.WaterplaneCoeff,3,6)
     +'│'+Makelength(Data.WaterplaneCOG.X,2,6)
     +'│'+Makelength(Data.PrismCoefficient,3,6)
-    +'│'+Makelength(Data.WettedSurface,1,6 )      //NumberOfDecimals(HydObject.Data.WettedSurface),6)
+    +'│'+Makelength(Data.WettedSurface,1,6 )
     +'│'+Makelength(Data.KMtransverse+Zmin,2,6)
-    +'│'+Makelength(Data.KMlongitudinal+Zmin,1,6) //NumberOfDecimals(HydObject.Data.KMlongitudinal),6)
+    +'│'+Makelength(Data.KMlongitudinal+Zmin,1,6)
     +'│'
     );   Value:=Value+DraftStep;
   end;   //  ('│     │     │      │     │       │       │      │     │      │      │      │      │      │      │      │      │      │      │');
@@ -803,75 +796,6 @@ begin
   if FOwner.ProjectSettings.ProjectCoefficients=fcActualData
      then Strings.Add(Userstring(53))
      else Strings.Add(Userstring(54));               // Проверка наличия бульба
-end;
-
-procedure TFreeHydrostaticCalc.Face_MoveZAuto;   /// ...нечто неопределённое
-var
-  I,J,Nlocked: integer;
-  Points: TFasterList; //TFreeSubdivisionControlPoint;
-  PrevCursor: TCursor;
-  Point: TFreeSubdivisionControlPoint;
-  Proceed: boolean;
-  P,Translate: Vector;
-  Marker: TFreeMarker;
-begin
-  for I:=1 to Owner.NumberOfLayers do
-    if Owner.Layer[I-1].{Surface}Visible then
-      for J:=1 to Owner.Layer[I-1].Count do
-        Owner.Layer[I-1].Items[J-1].Selected:=True;
-  for I:=1 to Owner.Surface.NumberOfControlPoints do
-    if Owner.Surface.ControlPoint[I-1].Visible then
-       Owner.Surface.ControlPoint[I-1].Selected:=True;
-  for I:=1 to Owner.NumberofMarkers do
-    if Owner.Marker[I-1].Visible then
-       Owner.Marker[I-1].Selected:=True;
-  Owner.Redraw;
-
-  Points:=TFasterList.Create;            //TFreeSubdivisionControlPoint.Create;
-  if Owner.ActiveControlPoint<>nil then
-     Points.Add(Owner.ActiveControlPoint);
-  Owner.Surface.ExtractPointsFromSelection(Points,NLocked);
-  Translate.X:=0.0;
-  Translate.Y:=0.0;
-  Translate.Z:=-FData.ModelMin.Z;
-  PrevCursor:=Screen.Cursor;
-  Screen.Cursor:=crHourGlass;
-  for I:=1 to Points.Count do begin
-    Point:=TFreeSubdivisionControlPoint(Points[I-1]);
-    if not Point.Locked then begin
-      P:=Point.Coordinate;
-      P.Z:=P.Z+Translate.Z;
-      Point.Coordinate:=P;
-    end;
-  end;
-  if Points.Count=Owner.Surface.NumberOfControlPoints then begin
-    for I:=1 to Owner.NumberofWaterlines do
-      Owner.Waterline[I-1].FPlane.d:=Owner.Waterline[I-1].FPlane.d-Translate.Z; // Update markers
-    for I:=1 to Owner.NumberofMarkers do begin
-      Marker:=Owner.Marker[I-1];
-      for J:=1 to Marker.NumberOfPoints do begin
-        P:=Marker.Point[J-1];
-        P.Z:=P.Z+Translate.Z;
-        Marker.Point[J-1]:=P;
-      end;
-    end;
-  end;
-  Owner.Build:=False;
-  Owner.Redraw;                                    // Refresh controlpoint data
-  if Points.IndexOf(Owner.ActiveControlPoint)<>-1 then
-     Owner.ActiveControlPoint:=Owner.ActiveControlPoint;
-  Screen.Cursor:=PrevCursor;
-  for I:=1 to Owner.Surface.NumberOfControlPoints do
-    if Owner.Surface.ControlPoint[I-1].Visible then
-      Owner.Surface.ControlPoint[I-1].Selected:=False;
-  for I:=1 to Owner.NumberofMarkers do
-    if Owner.Marker[I-1].Visible then
-      Owner.Marker[I-1].Selected:=False;
-  Owner.Surface.Clearselection;
-  //  Owner.ActiveControlPoint:=nil;
-  //  Owner.FSelectedFlowlines.Clear;
-  Owner.FSelectedMarkers.Clear;
-  FreeAndNil(Points);
 end;
 
 procedure TFreeHydrostaticCalc.Clear;

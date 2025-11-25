@@ -235,9 +235,7 @@ begin
         end else
         if Str.StartsWith('outer loop') then else
         if Str.StartsWith('vertex ') then begin Str:=copy( Str,7,Length(Str)-6 ); // Str.SubString(7,Length(Str)-6);
-          V.X:=GetFloat( Str );
-          V.Y:=GetFloat( Str );
-          V.Z:=GetFloat( Str );
+          V:=GetVector( Str );
           CtrPoint:=SubdivisionSurface.AddControlPoint( V );
           if FacePoints.IndexOf( CtrPoint )=-1 then begin
              FacePoints.Add( CtrPoint );
@@ -313,7 +311,7 @@ begin
       end;
       FileStream.Free;
 //    SubdivisionSurface.IsLoading:=false;
-    end else MessageDlg( UserString(97),mtError,[mbOK],0);
+    end else ShowMessage( UserString(97) );
 end;
 {
   © Import the files are always UTF8
@@ -369,7 +367,6 @@ begin
    end;
    SaveDialog.Destroy;
 end;
-
 {
     Loads a bodyplane and tries to fit a surface to it
 }
@@ -380,20 +377,18 @@ type TMinMax = record MinZ,MaxZ:Real; end;
 //    2. All stations are defined from bottom to top
 var OpenDialog    : TOpenDialog;
     I,J,K,Nr,Index,NoStations,NoPoints: integer;
-    Frames        : TFasterList;
-    FFile         : TextFile;
-    Spline        : TFreeSpline;
-    NewSpline     : TFreeSpline;
-    P             : Vector;
-    ValidStation  :Boolean;
-    MinMaxData    : array of TMinMax;
-    MinZ,MaxZ     : Real;
-    ControlPoints : array of array of TFreeSubdivisionControlPoint;
-    P1,P2         : TFreeSubdivisionControlPoint;
-    Edge          : TFreeSubdivisionControlEdge;
-    Face          : TFreeSubdivisionControlFace;
-    Points        : TFasterList;
-    Marker        : TFreeMarker;
+    Frames,Points: TFasterList;
+    FFile: TextFile;
+    Spline,NewSpline: TFreeSpline;
+    P: Vector;
+    ValidStation:Boolean;
+    MinMaxData: array of TMinMax;
+    MinZ,MaxZ: Real;
+    ControlPoints: array of array of TFreeSubdivisionControlPoint;
+    P1,P2: TFreeSubdivisionControlPoint;
+    Edge: TFreeSubdivisionControlEdge;
+    Face: TFreeSubdivisionControlFace;
+    Marker: TFreeMarker;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=ExtractFilepath(Application.ExeName);
@@ -628,8 +623,7 @@ begin
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
    OpenDialog.Filter:='3D text file (*.Txt)|*.txt';
    Opendialog.Options:=[ofHideReadOnly];
-   if OpenDialog.Execute then
-   begin
+   if OpenDialog.Execute then begin
       UnitType:=TFreeUnitType(0);
       Curves:=TFasterList.Create;
       Case OpenDialog.FilterIndex of
@@ -642,7 +636,7 @@ begin
                      // first read unit information; 0=metric, 1=imperial
                      readln(FFile,I);
                      if I in [0,1] then UnitType:=TFreeUnitType(I)
-                                   else MessageDlg(Userstring(108),mtError,[mbOk],0);
+                                   else ShowMessage(Userstring(108));
                      Spline:=TFreeSpline.Create;
                      repeat
                         Readln(FFile,Str);
@@ -653,9 +647,7 @@ begin
 //                      inc(Nr);
                         Str:=Trim(Uppercase(Str));
                         if (Str<>'') and (Str<>'EOF') then begin
-                           P.X:=GetFloat(Str);
-                           P.Y:=GetFloat(Str);
-                           P.Z:=GetFloat(Str);
+                           P:=GetVector( Str );
                            Spline.Add(P);
                            Str:=#32;
                         end else if Str='' then begin
@@ -667,7 +659,7 @@ begin
                      if Spline.NumberOfPoints>1 then Curves.Add(Spline)
                                                 else Spline.Destroy;
 //                except
-//                   MessageDlg(Userstring(132)+#32+IntToStr(Nr),mtError,[mbOk],0);
+//                   ShowMessage(Userstring(132)+#32+IntToStr(Nr));
 //                end;
                   CloseFile(FFile);
                end; // else ShowMessage(Userstring(132));
@@ -717,7 +709,7 @@ begin
             end;
             Matrix.Value[Cols-1,Cols-1]:=1.0;
             Colmatrix:=Matrix.Invert;
-   
+
             Matrix.SetSize(Rows,Rows);
             Matrix.Fill(0.0);
             Matrix.Value[0,0]:=1.0;
@@ -728,7 +720,6 @@ begin
             end;
             Matrix.Value[Rows-1,Rows-1]:=1.0;                  // Invert matrix
             Rowmatrix:=Matrix.Invert;
-
             Matrix.Destroy;                         // build initial point grid
             Setlength(Points,Rows);
             for I:=1 to Rows do begin
@@ -743,7 +734,6 @@ begin
                   OrgPts.Value[J-1,2]:=P.Z;
                end;
                NewPts:=ColMatrix.Multiply(OrgPts);
-   
                for J:=1 to Cols do begin
                   P.X:=NewPts.Value[J-1,0];
                   P.Y:=NewPts.Value[J-1,1];
@@ -755,9 +745,7 @@ begin
                NewPts.Destroy;
             end;
             ColMatrix.Destroy;
-   
-            // interpolate rows
-            for I:=1 to Cols do begin
+            for I:=1 to Cols do begin                       // interpolate rows
                OrgPts:=TFreeMatrix.Create;
                OrgPts.SetSize(3,Rows);
                for J:=1 to Rows do begin
@@ -778,16 +766,12 @@ begin
                NewPts.Destroy;
             end;
             RowMatrix.Destroy;
-   
-            // delete long. curves
-            for I:=1 to LongCurves.Count do begin
+            for I:=1 to LongCurves.Count do begin        // delete long. curves
                Spline:=LongCurves[I-1];
                Spline.Destroy;
             end;
             LongCurves.Destroy;
-   
-            // import actual surface
-            Setlength(ControlPoints,Rows);
+            Setlength(ControlPoints,Rows);             // import actual surface
             for I:=1 to Rows do begin
                Setlength(ControlPoints[I-1],Cols);
                for J:=1 to Cols do begin
@@ -837,7 +821,7 @@ var Frames     : TFasterList;
     Strings    : TStringList;
 begin
    //if not Ship.ProjectSettings.FMainparticularsHasBeenset then begin
-   //   MessageDlg(Userstring(95),mtWarning,[mbOk],0);
+   //   ShowMessage(Userstring(95));
    //   exit;
    //end;
    Frames:=TFasterList.Create;
@@ -1126,7 +1110,6 @@ var I          : integer;
                   P1:=Spline.Value(Params[I-1]);
                   Strings.Add('0'+EOL+'VERTEX');
                   Strings.Add('8'+EOL+LayerName);
-
                   Case IntersectionType of
                      fiStation    : begin
                                        Strings.Add('10'+EOL+FloatToDec(Scale*P1.Y,5));
@@ -1375,8 +1358,7 @@ begin
    Dialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'.dxf');
    Dialog.Filter:='Autocad dxf file (*.dxf)|*.dxf';
    dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
-   if Dialog.Execute then
-   begin
+   if Dialog.Execute then begin
       Prev:=Screen.Cursor;
       Screen.Cursor:=crHourglass;
 //    try
@@ -1390,7 +1372,7 @@ begin
 //       try
             Strings.SaveToFile( ChangeFileExt(Dialog.FileName,'.dxf') );
 //       except
-//          MessageDlg('Could not access '+ChangeFileExt(Dialog.FileName,'.dxf'),mtError,[mbOk],0);
+//          ShowMessage('Could not access '+ChangeFileExt(Dialog.FileName,'.dxf'));
 //       end;
 //    finally
          Screen.Cursor:=Prev;
@@ -1497,33 +1479,26 @@ begin
          end;
          Section.Destroy;
       end;
-      Strings.Add('0,0,0');         // shell thickness data of shape
-
-      // save Component
-      Strings.Add('**');
-      Strings.Add('HULL.C');        // ComponentName
-      // side
-      Strings.Add('0');             // side=center
-      Strings.Add('1.0');           // effectivenes
-      Strings.Add('0,0,0');         // attachpoint
-      Strings.Add('HULL');          // partname
-
-      // Save part
-      Strings.Add('***');
-      Strings.Add('HULL');          // Partname and description
-      Strings.Add('WATER');                  // FluidName
-      strings.Add('1');                      // part type (displacement)
+      Strings.Add('0,0,0');      // shell thickness data of shape
+      Strings.Add('**');         // save Component
+      Strings.Add('HULL.C');     // ComponentName
+      Strings.Add('0');          // side=center
+      Strings.Add('1.0');        // effectivenes
+      Strings.Add('0,0,0');      // attachpoint
+      Strings.Add('HULL');       // partname
+      Strings.Add('***');        // Save part
+      Strings.Add('HULL');       // Partname and description
+      Strings.Add('WATER');      // FluidName
+      strings.Add('1');          // part type (displacement)
       if Ship.ProjectSettings.ProjectUnits=fuMetric
-         then Strings.Add(FloatToStrF(Ship.ProjectSettings.ProjectWaterDensity,ffFixed,7,3)) // specific gravity of water
-         else Strings.Add(FloatToStrF(Ship.ProjectSettings.ProjectWaterDensity/WeightConversionFactor,ffFixed,7,3));
+        then Strings.Add(FloatToStrF(Ship.ProjectSettings.ProjectWaterDensity,ffFixed,7,3)) // specific gravity of water
+        else Strings.Add(FloatToStrF(Ship.ProjectSettings.ProjectWaterDensity/WeightConversionFactor,ffFixed,7,3));
       Strings.Add('0,0,0');      // ReferencePoint
       Strings.Add('1');          // Number of components
       Strings.Add('HULL.C');     // Componentname
-      // Mark end of file
-      Strings.Add('****');
+      Strings.Add('****');       // Mark end of file
       Str:=ChangeFileExt(ExtractFilename(Savedialog.FileName),'.GF');
-      // no spaces allowed in filename
-      repeat
+      repeat                     // no spaces allowed in filename
          I:=Pos(#32,Str);
          if I<>0 then Delete(Str,I,1);
       until I=0;
@@ -1563,17 +1538,17 @@ procedure TFreeEdit.File_ExportIGES;
 const MinimizeFaces  = True;
       SendTriangles  = False; // true;
 var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
-    ColorIndices  : array of Integer;
-    Dialog        : TSaveDialog;
-    Prev          : TCursor;
+    ColorIndices: array of Integer;
+    Dialog      : TSaveDialog;
     Layers,CheckFaces: TFasterlist;
-    Layer         : TFreeSubdivisionLayer;
-    FaceData      : TFreeFaceGrid;
-    Assembled     : TFreeFaceArray;
-    IGESList      : TFreeIGESList;
-    Grid          : TFreeSubdivisionGrid;
-    CtrlFace      : TFreeSubdivisionControlFace;
-    Face          : TFreeSubdivisionFace;
+    Layer    : TFreeSubdivisionLayer;
+    FaceData : TFreeFaceGrid;
+    Assembled: TFreeFaceArray;
+    IGESList : TFreeIGESList;
+    Grid     : TFreeSubdivisionGrid;
+    CtrlFace : TFreeSubdivisionControlFace;
+    Face     : TFreeSubdivisionFace;
+    Prev     : TCursor;
 
     function FindFourtPoint(P1,P2,p3:TFreeSubdivisionPoint):TFreeSubdivisionPoint;
     var Face  : TFreeSubdivisionFace;
@@ -1586,24 +1561,22 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
              Face:=P2.Face[I-1];
              if (Face.IndexOfPoint(P1)<>-1) and
              // (Face.IndexOfPoint(P2)<>-1) and
-                (Face.IndexOfPoint(P3)<>-1)
-             then begin
+                (Face.IndexOfPoint(P3)<>-1) then
+             begin
                 List:=TList.Create;
                 for J:=1 to face.NumberOfpoints do list.Add(Face.Point[J-1]);
-                J:=List.IndexOf(P1);
-                if J<>-1 then list.Delete(J);
-                J:=List.IndexOf(P2);
-                if J<>-1 then list.Delete(J);
-                J:=List.IndexOf(P3);
-                if J<>-1 then list.Delete(J);
+                J:=List.IndexOf(P1); if J<>-1 then list.Delete(J);
+                J:=List.IndexOf(P2); if J<>-1 then list.Delete(J);
+                J:=List.IndexOf(P3); if J<>-1 then list.Delete(J);
                 if list.Count>0 then result:=List[0];
                 List.Destroy;
              end;
           end;
        end;
-    end;{FindFourtPoint}
-
-    procedure FindOpposingPoints(P1,P2,P3,P4:TFreeSubdivisionPoint;var OppPoint2,OppPoint3:TFreeSubdivisionPoint);
+    end;
+    procedure FindOpposingPoints
+    ( P1,P2,P3,P4:TFreeSubdivisionPoint;
+      var OppPoint2,OppPoint3:TFreeSubdivisionPoint );
     // find the points opposite to P2 and P3
     var I,Index:Integer;
         Edge:TFreeSubdivisionEdge;
@@ -1725,9 +1698,7 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
            P3:=PhantomPoint(P6,P9);
            P4:=PhantomPoint(P5,P6);
            P7:=PhantomPoint(P8,P9);
-           Result.X:=20*P5.X-4*P2.X-P3.X-4*P4.X-4*P6.X-P7.X-4*P8.X-P9.X;
-           Result.Y:=20*P5.Y-4*P2.Y-P3.Y-4*P4.Y-4*P6.Y-P7.Y-4*P8.Y-P9.Y;
-           Result.Z:=20*P5.Z-4*P2.Z-P3.Z-4*P4.Z-4*P6.Z-P7.Z-4*P8.Z-P9.Z;
+           Result:=20*P5 - 4*P2 - P3 - 4*P4 - 4*P6 - P7 - 4*P8 -P9;
         end;{CornerPoint}
 
     begin
@@ -1886,7 +1857,7 @@ begin
       Ship.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
       IGESList:=TFreeIGESList.Create;
       IGESList.IGESUnits:=Ship.ProjectSettings.ProjectUnits;
-      IGESList.SystemID:='FREE!ship'+#32+VersionString(CurrentVersion);
+      IGESList.SystemID:='Free!Ship'+#32+VersionString(CurrentVersion);
       IGESList.FileCreatedBy:=Ship.ProjectSettings.ProjectFileCreatedBy;
       IGESList.FileName:=Dialog.FileName;
       // Build color table
@@ -1980,8 +1951,8 @@ begin
       end;
       if NSurfaces>0 then begin
          IGESList.SaveToFile(ChangeFileExt(Dialog.Filename,'.igs'));
-         MessageDlg('Exported '+IntToStr(NSurfaces)+' surfaces.',mtInformation,[mbOK],0);
-      end else MessageDlg(Userstring(100),mtInformation,[mbOK],0);
+         ShowMessage('Exported '+IntToStr(NSurfaces)+' surfaces.');
+      end else ShowMessage(Userstring(100));
       IGESList.Destroy;
       Layers.Destroy;
       Ship.Surface.DesiredSubdivisionLevel:=PrevLevel;
@@ -2113,7 +2084,7 @@ begin
          end;
          writeln(FFile,'endsolid');
          Closefile(FFile);
-      end else MessageDlg(Userstring(97),mtError,[mbOk],0);
+      end else ShowMessage(Userstring(97));
    end;
    SaveDialog.Destroy;
 end;
@@ -2164,9 +2135,7 @@ begin
                         if I<>0 then Str[I]:=#32;
                      until I=0;
                      if Str<>'' then begin
-                        P.X:=GetFloat(Str);
-                        P.Y:=GetFloat(Str);
-                        P.Z:=GetFloat(Str);
+                        P:=GetVector( Str );
                         Spline.Add(P);
                         Str:=#32;
                      end;
@@ -2178,24 +2147,21 @@ begin
          Chines.Destroy;
          CloseFile(FFile);
          Ship.Filename:=ChangeFileExt(Opendialog.FileName,'.fbm');
-      end else
-      begin
-         MessageDlg(Userstring(106),mtError,[mbOk],0);
-      end;
+      end else ShowMessage(Userstring(106));
    end;
    OpenDialog.Destroy;
-end;{TFreeEdit.File_ImportCarene}
+end;
 
 // Import chines from a textfile and fit a surface through them
 procedure TFreeEdit.File_ImportChines;
-var OpenDialog : TOpenDialog;
-    Answer     : Word;
-    Str        : string;
-    I          : integer;
-    P          : Vector;
-    FFile      : TextFile;
-    Chines     : TFasterList;
-    Spline     : TFreeSpline;
+var OpenDialog: TOpenDialog;
+    Answer: Word;
+    Str: string;
+    I: integer;
+    P: Vector;
+    FFile: TextFile;
+    Chines: TFasterList;
+    Spline: TFreeSpline;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
@@ -2215,7 +2181,7 @@ begin
       // first read unit information; 0=metric, 1=imperial
          readln(FFile,I);
          if I in [0,1] then Ship.ProjectSettings.ProjectUnits:=TFreeUnitType(I)
-                       else MessageDlg(Userstring(108),mtError,[mbOk],0);
+                       else ShowMessage(Userstring(108));
          Spline:=TFreeSpline.Create;
          repeat
             Readln(FFile,Str);
@@ -2225,9 +2191,7 @@ begin
             until I=0;
             Str:=Trim(Uppercase(Str));
             if (Str<>'') and (Str<>'EOF') then begin
-               P.X:=GetFloat(Str);
-               P.Y:=GetFloat(Str);
-               P.Z:=GetFloat(Str);
+               P:=GetVector( Str );
                Spline.Add(P);
                Str:=#32;
             end else if Str='' then begin
@@ -2293,13 +2257,9 @@ begin
                Readln(FFile,P.Y);
                Readln(FFile,P.Z);
                Readln(FFile,P.X);                // scale from inches to meters
-               P.X:=P.X*0.0254;
-               P.Y:=P.Y*0.0254;
-               P.Z:=P.Z*0.0254;
-               if (I=1) and (J=1) then begin
-                  Min:=P;
-                  Max:=Min;
-               end else MinMax(P,Min,Max);
+               P:=0.0254*P;
+               if (I=1) and (J=1) then begin Min:=P; Max:=Min; end
+                                  else MinMax(P,Min,Max);
                Points[I-1][J-1]:=P;
             end;
          end;
@@ -2314,13 +2274,9 @@ begin
                   Readln(FFile,P.Y);
                   Readln(FFile,P.Z);
                   Readln(FFile,P.X);             // scale from inches to meters
-                  P.X:=P.X*0.0254;
-                  P.Y:=P.Y*0.0254;
-                  P.Z:=P.Z*0.0254;
-                  if (I=1) and (J=1) then begin
-                     Min:=P;
-                     Max:=Min;
-                  end else MinMax(P,Min,Max);
+                  P:=0.0254*P;
+                  if (I=1) and (J=1) then begin Min:=P; Max:=Min; end
+                                     else MinMax(P,Min,Max);
                   Points[I-1][J-1]:=P;
                end;
             end;
@@ -2366,10 +2322,7 @@ begin
          Ship.FileName:=ChangeFileExt(FileName,'');
          Ship.Draw;
 //    end;
-   end else
-   begin
-      MessageDlg(Userstring(106),mtError,[mbOk],0);
-   end;
+   end else ShowMessage(Userstring(106));
 end;
 
 // Import a partfile and add it to the current geometry
@@ -2392,7 +2345,7 @@ var OpenDialog    : TOpenDialog;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   OpenDialog.Filter:='FREE!ship geometry part (*.Part)|*.part';
+   OpenDialog.Filter:='Free!Ship geometry part (*.Part)|*.part';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       PartFile:=TFreeFileBuffer.Create;
@@ -2501,7 +2454,7 @@ begin
 //          end;
             if Changed then begin
                if Assigned(Ship.Surface.OnChangeLayerData)
-                  then Ship.Surface.OnChangeLayerData(Ship.Surface);
+                      then Ship.Surface.OnChangeLayerData(Ship.Surface);
                Undo.Accept;
                Ship.Build:=False;
                Ship.Draw;
@@ -2537,10 +2490,8 @@ var OpenDialog : TOpenDialog;
           Result:=Strings[index];
 {      end else begin Result:=''; Abort:=True; ShowMessage(UserString(115));
        end; }
-    end;{NextLine}
-
-    function NextParameter(var input:string):string;
-    var Index:Integer;
+    end;
+    function NextParameter(var input:string):string; var Index:Integer;
     begin
        Index:=pos(#32,Input);
        if Index<>0 then begin
@@ -2551,8 +2502,7 @@ var OpenDialog : TOpenDialog;
           Result:='';
           Abort:=True;
        end;
-    end;{NextParameter}
-
+    end;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
@@ -2568,7 +2518,8 @@ begin
 //    try
          Strings.LoadFromFile(OpenDialog.FileName);
          // delete empty strings
-         for I:=Strings.Count downto 1 do if Strings[I-1]='' then Strings.Delete(I-1);
+         for I:=Strings.Count downto 1 do
+             if Strings[I-1]='' then Strings.Delete(I-1);
          // count number of BSpline surfaces
          NSurfaces:=0;
          for I:=1 to strings.Count do
@@ -2644,7 +2595,7 @@ begin
                            if not abort then begin
                               Val(Tmp,P.X,N);
                               if N<>0 then begin
-                                 MessageDlg(Userstring(119)+#32+IntToStr(I),mtError,[mbOk],0);
+                                 ShowMessage(Userstring(119)+#32+IntToStr(I));
                                  Abort:=True;
                               end;
                            end;
@@ -2653,7 +2604,7 @@ begin
                               if not abort then begin
                                  Val(Tmp,P.Y,N);
                                  if N<>0 then begin
-                                    MessageDlg(Userstring(120)+#32+IntToStr(I),mtError,[mbOk],0);
+                                    ShowMessage(Userstring(120)+#32+IntToStr(I));
                                     Abort:=True;
                                  end;
                               end;
@@ -2663,7 +2614,7 @@ begin
                               if not abort then begin
                                  Val(Tmp,P.Z,N);
                                  if N<>0 then begin
-                                    MessageDlg(Userstring(121)+#32+IntToStr(I),mtError,[mbOk],0);
+                                    ShowMessage(Userstring(121)+#32+IntToStr(I));
                                     Abort:=True;
                                  end;
                               end;
@@ -2695,13 +2646,13 @@ begin
                               if not abort then begin
                                  Val(Str,Value,N);
                                  if N<>0 then begin
-                                    MessageDlg(Userstring(122),mtError,[mbOk],0);
+                                    ShowMessage(Userstring(122));
                                     Abort:=True;
                                  end else begin
                                     Case K of
-                                       1 : self.Intersection_Add(fiStation,Value);
-                                       2 : if Value>=0 then self.Intersection_Add(fiButtock,Value);
-                                       3 : self.Intersection_Add(fiWaterline,Value);
+                                       1: self.Intersection_Add(fiStation,Value);
+                                       2: if Value>=0 then self.Intersection_Add(fiButtock,Value);
+                                       3: self.Intersection_Add(fiWaterline,Value);
                                     end;
                                  end;
                               end;
@@ -2717,8 +2668,8 @@ begin
                Ship.Build:=False;
                Ship.RebuildModel;
                Ship.FileChanged:=true;
-            end else MessageDlg(UserString(123),mtInformation,[mbOK],0);
-         end else MessageDlg(UserString(124),mtInformation,[mbOk],0);
+            end else ShowMessage(UserString(123));
+         end else    ShowMessage(UserString(124));
 //    finally
       Strings.Destroy;
       if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
@@ -2782,7 +2733,7 @@ begin
    SaveDialog:=TSaveDialog.Create(Owner);
    SaveDialog.InitialDir:=Preferences.ExportDirectory;
    SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FileName),'.part');
-   SaveDialog.Filter:='FREE!ship geometry part (*.Part)|*.part';
+   SaveDialog.Filter:='Free!Ship geometry part (*.Part)|*.part';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin
       Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);

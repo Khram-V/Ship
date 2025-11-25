@@ -13,7 +13,7 @@ type
     ComboBox1,Unitbox,PrecisionBox:           TComboBox;
     cbSavePreviewImage,cbShadeUnderwater,cbSimplifyIntersections,
     CheckBox11,CheckBox12,CheckBox2,CheckBox5,CheckBox6,CheckBox7,
-    CheckBox8,CheckBox9,CheckBox3,CheckBox13: TCheckBox;
+    CheckBox8,CheckBox9,CheckBox3 {,CheckBox13}: TCheckBox;
     GroupBox1: TGroupBox;
     Label1:  TLabel;  Edit1:  TEdit;   // 'Project name'
     Label7:  TLabel;  Edit7:  TEdit;   // 'Designer'

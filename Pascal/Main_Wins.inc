@@ -6,39 +6,13 @@
 //  - используется для создания псевдо-3D-эффектов.
 
 procedure TMainForm.AddWindow( Win: TFreeHullWindow );
-    begin if Windows.IndexOf( Win )=-1 then Windows.Add( Win ); end;
+    begin if Windows.IndexOf( Win )=-1 then Windows.Add( Win );
+             WindowMenu;
+    end;
 procedure TMainForm.DelWindow( Win: TFreeHullWindow ); Var I:Integer;
-    begin I:=Windows.IndexOf( Win ); if I<>-1 then Windows.Delete( I ); end;
-
-procedure TMainForm.FormCreate( Sender: TObject );
-begin
-   Windows:=TFasterList.Create;
-   WindowState:=wsNormal; //wsMaximized;
-   FormStyle:=fsNormal;
-// AlphaBlend:= True;
-// AlphaBlendValue:= 128;
-   Color:=1; //clWhite;        --- не лучший вариант ...
-   SetWindowLongPtr( Self.Handle,GWL_EXSTYLE,
-   GetWindowLongPtr( Self.Handle,GWL_EXSTYLE) or WS_EX_LAYERED );
-   SetLayeredWindowAttributes(Self.Handle, 1{clWhite}, 128, LWA_COLORKEY);
-                     // Initialize memcheck, for memory-leak tracking = MemChk;
-//{$ifndef Windows}
-//   if self.Align=alTop then self.Top:=0;
-//{$endif}                                       // Removed from LFM,moved here
-   Ship:=TFreeShip.Create( self );
-   With Ship do begin        // FreeShipUnit оригинал воссоздания новых моделей
-      MainForm:=self;
-      FileChanged:=true;
-      Filename:='Example_Ship';
-      OnChangeCursorIncrement:=FreeShipChangeCursorIncrement;
-      OnFileChanged          :=FreeShipFileChanged;
-      OnUpdateGeometryInfo   :=FreeShipUpdateGeometryInfo;
-      OnUpdateRecentFileList :=FreeShipUpdateRecentFileList;
-      OnUpdateUndoData       :=FreeShipUpdateUndoData;
-      Precision:=fpLow;
-   // ModelInitallyLoaded:=false;
-   end;
-end;
+    begin I:=Windows.IndexOf( Win ); if I<>-1 then Windows.Delete( I );
+             WindowMenu;
+    end;
 
 procedure TMainForm.NewOneWindow;
 var HullformWindow :TFreeHullWindow; W,H: Integer;
@@ -46,17 +20,18 @@ begin                       // Application.OnException:=CustomExceptionHandler;
    W:=(10*ClientWidth) div 12;
    H:=(10*ClientHeight) div 12;
    HullformWindow:=TFreeHullWindow.Create( self );         // open a new window
-   HullformWindow.SetBounds( Left+W div 12,
-                             Top+75+H div 12, W,H-75 );
-   HullformWindow.FreeShip:=Ship;     // Connect viewport to freeship component
+   HullformWindow.Ship:=Ship;         // Connect viewport to freeship component
+   AddWindow( HullFormWindow );
+   HullformWindow.PopUpParent:=Self;  // !!!
+   HullformWindow.SetBounds( Left+W div 12,Top+75+H div 12, W,H-75 );
    HullformWindow.Viewport.ViewType:=fvPerspective;
    HullformWindow.ViewPort.ViewportMode:=vmShade;
-   HullformWindow.FormStyle:=fsStayOnTop;
+   HullformWindow.FormStyle:=fsNormal;  // fsStayOnTop;
    HullformWindow.BorderStyle:=bsSizeable;
-   HullformWindow.BorderIcons:=[biSystemMenu,biMaximize]; // biMinimize,biMaximize,biHelp
-   AddWindow( HullFormWindow );
+// HullformWindow.BorderIcons:=[biSystemMenu,biMaximize]; // biMinimize,biMaximize,biHelp
+   HullformWindow.ViewPort.Invalidate;
    SetCaption;
-   UpdateMenu;
+   WindowMenu;
 end;
 
 const S: array [0..3,0..3] of single
@@ -68,10 +43,10 @@ const S: array [0..3,0..3] of single
 procedure TMainForm.FOpenHullWindows;
 var HullformWindow: TFreeHullWindow; I,J,W,H,L,T: Integer; R: TRect;
 begin  W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+75; //73;
-   if Ship.NumberOfViewports=0 then
+   if Ship.nV=0 then
    for I:=3 downto 0 do begin                          // open a new window
       HullformWindow:=TFreeHullWindow.Create(self); // Connect viewport to freeship component
-      HullformWindow.FreeShip:=Ship;
+      HullformWindow.Ship:=Ship;
       AddWindow( HullFormWindow );
       HullformWindow.PopUpParent:=Self;
 //    PopupMode:=pmExplicit; =pmAuto; =pmNone;
@@ -85,7 +60,7 @@ begin  W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+75; //73;
          FormStyle:=fsNormal; // (fsNormal, fsMDIChild, fsMDIForm, fsStayOnTop, fsSplash, fsSystemStayOnTop);
          SetBounds( R.Left,R.Top,R.Right,R.Bottom );
          BorderStyle:=bsSizeable; //Sizeable; //bsNone; //bsToolWindow; //bsDialog; //bsSingle; //bsSizeToolWin;
-         BorderIcons:= [biSystemMenu,biMaximize]; // , biMinimize, biMaximize, biHelp )]
+//       BorderIcons:= [biSystemMenu,biMaximize]; // , biMinimize, biMaximize, biHelp )]
          BorderWidth:=0;
          if Viewport.ViewType=fvPerspective then
             Viewport.ViewportMode:=vmShade;
@@ -99,6 +74,7 @@ begin  W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+75; //73;
       HullformWindow.SetCaption;
    end;
    SetCaption;
+   WindowMenu;
 end;
 
 procedure TMainForm.TileView;
@@ -106,6 +82,7 @@ Var R: Trect; I,J,LU,RU,LD,RD,W,H,L,T: Integer;         // Количество 
 begin LU:=0; RU:=0; LD:=0; RD:=0; W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+73;
    for I:=0 to Windows.Count-1 do
    with TFreeHullWindow( Windows[I] ) do begin
+      WindowState:=wsNormal;
       J:=ord(ViewPort.ViewType);   // fvBodyplan,fvProfile,fvPlan,fvPerspective
       R.Left  :=Round( S[J][0]*W )+L;
       R.Top   :=Round( S[J][1]*H )+T;
@@ -126,6 +103,7 @@ begin LU:=0; RU:=0; LD:=0; RD:=0; W:=ClientWidth; H:=ClientHeight-72; L:=Left; T
 //    SetCaption;
    end;
    SetCaption;
+   WindowMenu;
 end;
 
 procedure TMainForm.CascadeView; Var I,J,W0,H0,W,H,L,T: Integer;
@@ -134,12 +112,14 @@ begin
    H0:=ClientHeight-72; H:=Round( 0.75*H0 ); L:=Left; T:=Top+73;
    for I:=0 to Windows.Count-1 do
    with TFreeHullWindow( Windows[I] ) do begin
+      WindowState:=wsNormal;
       SetBounds( L+J,T+J,W,H );
       ViewPort.Invalidate;
       SetCaption;
       J+=25; if (J+W>W0) or (J+H>H0) then J:=0;
    end;
    SetCaption;
+   WindowMenu;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -157,15 +137,54 @@ begin Ship.Preferences.Save;
 end;
 
 procedure TMainForm.CascadeWindowExecute( Sender: TObject );
-    begin if Ship.NumberOfViewports=0 then FOpenHullWindows; CascadeView; end;
+    begin if Ship.nV=0 then FOpenHullWindows; CascadeView; end;
 procedure TMainForm.TileWindowExecute( Sender: TObject );
-    begin if Ship.NumberOfViewports=0 then FOpenHullWindows else TileView;
+    begin if Ship.nV=0 then FOpenHullWindows else TileView;
     end;
 procedure TMainForm.BothSidesExecute( Sender: TObject );
     begin if Ship.Visibility.ModelView=mvBoth
              then Ship.Visibility.ModelView:=mvPort
              else Ship.Visibility.ModelView:=mvBoth; UpdateMenu;
     end;
+
+var AI: Array of TmenuItem = nil; // пополняемый статичесчкий массив строк меню
+    NI: Integer = 0;              // почему-то Length от массива не срабатывает
+
+procedure TMainForm.WinClick( Sender: TObject );
+  var MI: TmenuItem; I: Integer;
+begin mi:=Sender as TMenuItem;
+   for I:=0 to Windows.Count-1 do
+    if MI=AI[I] then with TFreeHullWindow( Windows[I] ) do begin
+       WindowState:=wsNormal;
+       BringToFront; exit
+    end;
+    if Ship.LinesplanFrame<>nil then
+    if FreeLinesplanForm<>nil then if MI=AI[Windows.Count] then
+    with FreeLinesplanForm do begin
+       WindowState:=wsNormal; // Resizing( wsNormal ) ~ nV
+       BringToFront;
+end end;
+
+procedure TMainForm.WindowMenu; Var I,N:Integer;
+begin With Ship do begin N:=Windows.Count;
+   if LinesplanFrame<>nil then inc( N );
+   if AI=nil then begin if N>0 then Window1.AddSeparator;  // сначала отделение
+   end else if NI>0 then for I:=NI-1 downto 0             // без старой менюшки
+         do begin Window1.Remove( AI[I] ); AI[I].Free end;
+   if N>0 then begin setLength( AI,N );
+      for I:=0 to Windows.Count-1 do with TFreeHullWindow( Windows[I] ) do begin
+         AI[I]:=TMenuItem.Create( Window1 );
+         AI[I].Caption:=Caption;
+         AI[I].onClick:=WinClick;
+      end;
+      if LinesplanFrame<>nil then begin
+         AI[N-1]:=TMenuItem.Create( Window1 );    // FreeLinesplanForm.Caption;
+         AI[N-1].Caption:=ShowLinesplan.Caption;  //   'Теоретические чертежи';
+         AI[N-1].onClick:=WinClick;
+      end;
+      Window1.Add( AI );
+   end; NI:=N;                                 // и длина как есть запоминается
+end end;
 (*
 /// !!!    ViewPort.BevelWidth:=6;      // - не срабатывает
 /// !!!    ViewPort.BevelOuter:=bvNone; // ( bvNone, bvLowered, bvRaised, bvSpace )

@@ -270,10 +270,6 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="Pascal\FreeStringUtils.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="Pascal\Main_Wins.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -323,7 +319,9 @@
       <CompilerMessages>
         <IgnoredMessages idx2042="True"/>
       </CompilerMessages>
-      <CustomOptions Value="-Sh"/>
+      <CustomOptions Value="-Sh
+-Xs
+-CF64"/>
       <ExecuteBefore>
         <CompileReasons Compile="False" Build="False" Run="False"/>
       </ExecuteBefore>

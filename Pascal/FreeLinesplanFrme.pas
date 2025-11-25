@@ -74,7 +74,6 @@ end;
 procedure TFreeLinesplanFrame.SpinEdit1Change( Sender: TObject );
     begin {FontSize:=(Sender as TSpinEdit).Value;} Viewport.invalidate; end;
 
-
 procedure TFreeLinesplanFrame.ViewportRequestExtents
 ( Sender: TObject;
   var Min,Max: Vector );
@@ -226,7 +225,7 @@ var I,J,N,K,Steps,PenwidthFactor: Integer; Str: string;
       P.Y:=Origin.Y+P2.Z;
       Pt:=Viewport.Project(P);
       Viewport.Canvas.LineTo(Pt.X,Pt.Y);
-   end;{DrawDiagonalLine}
+   end;
 
    procedure DrawLine(P1,P2:Vector);
    var Proj1:Vector;
@@ -290,7 +289,7 @@ var I,J,N,K,Steps,PenwidthFactor: Integer; Str: string;
          Pts[1]:=Viewport.Project(Proj2);
          Viewport.Canvas.Polyline(Pts);
       end;
-   end;{DrawLine}
+   end;
 
    procedure DrawSpline
    ( Spline:TFreeSpline; Views:TLinesplanViews; Style:TPenStyle );
@@ -344,14 +343,14 @@ var I,J,N,K,Steps,PenwidthFactor: Integer; Str: string;
             Viewport.Canvas.Polyline(Pts);
          end;
       end;
-   end;{DrawSpline}
+   end;
 
    procedure DrawIntersection(Intersection:TFreeIntersection;Views:TLinesplanViews;Style:TPenStyle);
    var I:Integer;
    begin
       if not Intersection.Built then Intersection.Rebuild;
       for I:=1 to Intersection.Count do DrawSpline(Intersection.Items[I-1],Views,Style);
-   end;{DrawIntersection}
+   end;
 
    procedure AddTriangle(P1,P2,P3:Vector;Color:TColor;var Destination:TriangleArray;Symmetric:boolean);
    var C:Vector;
@@ -360,9 +359,7 @@ var I,J,N,K,Steps,PenwidthFactor: Integer; Str: string;
          Destination.Capacity:=Destination.Capacity+50;
          Setlength( Destination.Triangles,Destination.Capacity );
       end;
-      C.X:=(P1.X+P2.X+P3.X)/3;
-      C.Y:=(P1.Y+P2.Y+P3.Y)/3;
-      C.Z:=(P1.Z+P2.Z+P3.Z)/3;
+      C:=(P1+P2+P3)/3.0;
       Destination.Triangles[Destination.Count].P1:=P1;
       Destination.Triangles[Destination.Count].P2:=P2;
       Destination.Triangles[Destination.Count].P3:=P3;
@@ -370,7 +367,7 @@ var I,J,N,K,Steps,PenwidthFactor: Integer; Str: string;
       Destination.Triangles[Destination.Count].Color:=Color;
       Destination.Triangles[Destination.Count].Symmetric:=Symmetric;
       inc(Destination.Count);
-   end;{AddTriangle}
+   end;
 
    procedure ProcessFace(Face:TFreeSubdivisionFace;Color:TColor;Symmetric:boolean);
    var I,J,Nabove,Nbelow: Integer;
@@ -385,7 +382,7 @@ var I,J,N,K,Steps,PenwidthFactor: Integer; Str: string;
          for J:=3 to NBelow do AddTriangle(BelowPoints[0],BelowPoints[J-2],BelowPoints[J-1],SubmColor,Below,Symmetric);
          for J:=3 to NAbove do AddTriangle(AbovePoints[0],AbovePoints[J-2],AbovePoints[J-1],Color,Above,Symmetric);
       end;
-   end;{Processface}
+   end;
 
    procedure SortTriangles(var Triangles:TriangleArray;SortType:byte);// Sorttype 1=X, 2=Y, 3=Z
       procedure QuickSort(L,R:Integer);
@@ -421,7 +418,6 @@ var I,J,N,K,Steps,PenwidthFactor: Integer; Str: string;
    begin
       if Triangles.Count>1 then QuickSort(0,Triangles.Count-1);
    end;{SortTriangles}
-
    procedure DrawTriangles(Triangles:TriangleArray;Views:TLinesplanViews);
    var I       : Integer;
        Triangle: TriangleData;
@@ -1186,9 +1182,7 @@ var SaveDialog: TSaveDialog;
     end;{AddSpline}
 
     procedure AddEdgeLoop(Points:TFasterList;Views:TLinesplanViews;Layername:string;Color:TColor);
-    var Point  : TFreeSubdivisionPoint;
-        P      : Vector;
-        I      : Integer;
+    var Point: TFreeSubdivisionPoint; P: Vector; I: Integer;
     begin
       Strings.Add('0'+EOL+'POLYLINE');
       Strings.Add('8'+EOL+LayerName);   // layername

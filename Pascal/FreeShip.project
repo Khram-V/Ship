@@ -7,7 +7,7 @@ uses Interfaces,SysUtils,Forms,Math,
   FreeLanguageSupport;                      // #226+#149+#169 + #10='╩'
 {$R *.res}
 begin
-   WriteLn( 'FreeShip <числовая модель>.[ftm,fbm,fef]'+#10
+   WriteLn( 'Free!Ship <числовая модель>.[ftm,fbm,fef]'+#10
       +#10+'Compiled at '+{$I %DATE%}+' '+{$I %TIME%}
       +#10+'FreePascal версия: '+{$I %FPCVERSION%}
       +#10+'Назначение CPU\OS: '+{$I %FPCTARGETCPU%}+' \ '+{$I %FPCTARGETOS%}

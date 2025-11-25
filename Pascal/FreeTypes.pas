@@ -2,13 +2,14 @@ unit FreeTypes;
 {$mode objfpc}{$H+}
 Interface Uses SysUtils,Math;
 Const
-  UFont='Times New Roman';
-  Radian=57.295779513082320876798154814105;                // 180/π = °\rad
-  PixelCountMax=32768; // used for faster pixel acces when shading to viewport
-  Foot = 0.3048;       // All new models are initialized to this version
+  UFont = 'Times New Roman';
+  Radian = 57.295779513082320876798154814105; // 180/π = °\rad
+  Foot = 0.3048;
+  Lbs  = 0.4535924;
+  WeightConversionFactor=(1000/Lbs)/((1/Foot)*(1/Foot)*(1/Foot));
   EOL  = #13#10;
 Type
-  Real = Float;  { желательно всё привести к единому числовому представлению }
+// Real = Float;  { желательно всё привести к единому числовому представлению }
   RealArray = array of Real;        // single; // double; // extended;
   Vector = record X,Y,Z:Real; end;  // 3D coordinate type
   VectorArray = array of Vector;
@@ -33,6 +34,7 @@ const ZERO: Vector=( X:0.0;Y:0.0;Z:0.0 );
   operator - ( const A,B: Place ): Place; // A-B
 function iVect( const X: Real; const Y: Real=0.0; const Z: Real=0.0 ): Vector;
 Function GetFloat( var S: String): Real;
+Function GetVector( var S: String): Vector;
 Function GetInteger( var S:String ): Integer;
 Function GetBoolean( var S:String ): Boolean;
 Function FloatToDec( const Value: Real; Maxlength: integer ): String;
@@ -49,7 +51,7 @@ function Abs( const P: Place ): Real; overload;
 function Sqr( const V: Vector ): Real; overload;
 function Abs( const V: Vector ): Real; overload;
 Function AxisStep( D: Real ): Real;                // для разметки осевых линий
-procedure ArraySort( var A:RealArray; var N:integer );
+procedure ArraySort( var A:RealArray; var N:integer; Clear:boolean=true );
 Function I2S( Value: Integer ): String;
 procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
 ( XX: Real;               // аргумент поиска
@@ -159,6 +161,10 @@ begin LocalFormatSettings:=DefaultFormatSettings; I:=0; K:=0; Result:=0.0;
   if I>0 then Result:=StrToFloat( copy( S,I,K-I ),LocalFormatSettings );
   Delete( S,1,K-1 ); // удаление считанного с последующим пробелом ??
 end;
+Function GetVector( var S: String): Vector;
+begin Result.X:=GetFloat(S); Result.Y:=GetFloat(S); Result.Z:=GetFloat(S);
+end;
+
 Function GetInteger( var S: String ): Integer;
 var I,J,K: Integer;
 begin I:=0; K:=0; Result:=0;
@@ -210,24 +216,25 @@ begin
   end;
 end;
 {$else}
-procedure ArraySort( var A:RealArray; var N:integer ); var I:integer;
-  procedure QuickSort(L,R:integer); var I,J:integer; Val: Real;
-    procedure Swap(I,J: integer); var Tmp: Real;
-    begin Tmp:=A[I]; A[I]:=A[J]; A[J]:=Tmp; end;
-  begin I:=L; J:=R; Val:=A[(L+R) div 2];
-    repeat while A[I]<Val do Inc(I);
-           while Val<A[J] do Dec(J);
-           if I<=J then begin Swap(I,J); Inc(I); Dec(J); end;
-    until I>J;
-    if L<J then QuickSort( L,J );
-    if I<R then QuickSort( I,R );
-  end; {QuickSort}
+procedure ArraySort( var A:RealArray; var N:integer; Clear:boolean );
+Var I:integer;
+   procedure QuickSort( L,R:Integer ); var I,J:integer; Val:Real;
+      procedure Swap( I,J:Integer ); var T:Real;
+           begin T:=A[I]; A[I]:=A[J]; A[J]:=T; end;
+   begin I:=L; J:=R; Val:=A[(L+R) div 2];
+      repeat while A[I]<Val do Inc(I);
+             while Val<A[J] do Dec(J);
+             if I<=J then begin Swap(I,J); Inc(I); Dec(J); end;
+      until I>J;
+      if L<J then QuickSort( L,J );
+      if I<R then QuickSort( I,R );
+   end;
 begin                                              // begin procedure ArraySort
-  if N<2 then exit; QuickSort( 0,N-1 ); I:=2;
-  while I<=N do                                      // remove duplicate values
-  if abs(A[I-2]-A[I-1])<1e-4 then begin
-     Move(A[I-1],A[I-2],(N-I+1)*SizeOf(Real)); Dec(N);
-  end else Inc(I);
+  if N<2 then exit; QuickSort( 0,N-1 );
+  if not Clear then exit;
+  I:=2;
+  while I<=N do if A[I-1]-A[I-2]<1e-4 then           // remove duplicate values
+     begin Move(A[I-1],A[I-2],(N-I+1)*SizeOf(Real)); Dec(N); end else Inc(I);
 end;
 {$endif}
 

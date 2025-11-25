@@ -136,7 +136,7 @@ begin
   V1:=P-P1;
   V2:=P1-P2; Len:=Abs( V2 );
   if Len>1e-6 then Result:=Abs( V1*V2 )/Len
-              else Result:=Abs( P-P1 );
+              else Result:=Abs( V1 );
 end;
 {
 function DistancePointToPlane( P: Vector; Plane: Plate ): Real;
@@ -186,43 +186,33 @@ Function Lines3DIntersect(P1,P2,P3,P4:Vector;var Param:Real;var Int:Vector):Bool
 //      Pb = P3 + mub (P4 - P3)
 //   Return FALSE if no solution exists.
 
-const eps=1e-6;
+const eps=1e-12; // 1e-6;
 var pa,{pb,}p13,p43,p21:Vector;
-    numer,denom,mua,mub,d1343,d4321,d1321,d4343,d2121: Real;
+    denom,mua,mub,d1343,d4321,d1321,d4343,d2121: Real; // L1,L2:Real;
 begin Result:=False;
-   P43:=P4-P3;
-   if (abs(p43.x)<eps) and (abs(p43.y)<eps) and (abs(p43.z)<eps) then exit;
-   P21:=P2-P1;
-   if (abs(p21.x)<eps) and (abs(p21.y)<eps) and (abs(p21.z)<eps) then exit;
    P13:=P1-P3;
-
-   d1343:=p13.x * p43.x + p13.y * p43.y + p13.z * p43.z;
+   P43:=P4-P3; d4343:=Sqr( P43 ); if sqr( d4343 )<eps then exit;
+   P21:=P2-P1; d2121:=Sqr( P21 ); if sqr( d2121 )<eps then exit;
    d4321:=p43.x * p21.x + p43.y * p21.y + p43.z * p21.z;
-   d1321:=p13.x * p21.x + p13.y * p21.y + p13.z * p21.z;
-   d4343:=Sqr( P43 );
-   d2121:=Sqr( P21 );
-
-   denom:=d2121*d4343 - d4321*d4321;
-   if (abs(denom)<eps) then exit;
-   numer:=d1343*d4321 - d1321*d4343;
-   mua:=numer/denom;
+   denom:=d2121*d4343 - d4321*d4321; if (abs(denom)<eps) then exit;
+   d1343:=p13.x*p43.x + p13.y*p43.y + p13.z*p43.z;
+   d1321:=p13.x*p21.x + p13.y*p21.y + p13.z*p21.z;
+   mua:=(d1343*d4321 - d1321*d4343)/denom;
    mub:=(d1343 + d4321*(mua)) / d4343;
    PA:=P1+mua*P21;
-// PB:=P3+mub*P43;
    if (mua>-1e-6) and (mua<1) and (mub>-1e-6) and (mub<1) then begin
       Result:=true;
       Int:=Pa;
    end;
-   {
+{  PB:=P3+mub*P43;
    if not result then begin
       L1:=Abs(P1-P2);
       L2:=Abs(P3-P4);
-      Result:=(Abs(P1-Pa)<=L1) and (Abs(P2,Pa)<=L1) and
-              (Abs(P3-Pb)<=L2) and (Abs(P4,Pb)<=L2);
+      Result:=(Abs(P1-Pa)<=L1) and (Abs(P2-Pa)<=L1) and
+              (Abs(P3-Pb)<=L2) and (Abs(P4-Pb)<=L2);
       if Result then Int:=Pa;
-   end;
-   }
-end;{Lines3DIntersect}
+   end; }
+end;
 
 // Calculate the mid-point between P1 and P2
 function Midpoint(P1,P2:Vector):Vector;
@@ -295,21 +285,19 @@ begin Result:=((P.X >= Pmin.X) and (P.Y >= Pmin.Y) and (P.Z >= Pmin.Z))
           and ((P.X <= Pmax.X) and (P.Y <= Pmax.Y) and (P.Z <= Pmax.Z));
 end;
 
-function PointInTriangle(Int,P0,P1,P2:Vector):Boolean;
+function PointInTriangle(P,A,B,C:Vector):Boolean;
 // This function calculates if a point lies inside a triangle
 // assuming it lies on the plane determined by the triangle
    function SameSide(p1,p2,a,b:Vector):Boolean;
-   var Cp1,Cp2,P,Ba: Vector; Dp: Real;
-   begin
-      Ba:=B-A;
-      P:=P1-A; Cp1:=P*Ba;
-      P:=P2-A; CP2:=P*Ba;
-      Dp:=(Cp1.X*Cp2.X)+(Cp1.Y*Cp2.Y)+(Cp1.Z*Cp2.Z);
-      if abs( Dp )<1e-5 then Dp:=Dp-1+1;
-      Result:=Dp>=0;
+   var Cp1,Cp2,P,BA: Vector; Dp: Real;
+   begin BA:=B-A;
+         P:=P1-A; Cp1:=BA*P;
+         P:=P2-A; CP2:=BA*P;
+         Dp:=DotProduct( Cp1,Cp2 );
+         if abs( Dp )<1e-5 then Dp:=0.0; // Dp-1+1;
+         Result:=Dp>=0.0;
    end;
-begin
-   Result:=SameSide(Int,P0,P1,P2) and SameSide(Int,P1,P0,P2) and SameSide(Int,P2,P0,P1);
+begin Result:=SameSide(P,A,B,C) and SameSide(P,B,A,C) and SameSide(P,C,A,B);
 end;
 
 function RotatePoint(Center,Point: Vector; Angle,Elevation:Real): Vector;
@@ -328,30 +316,27 @@ begin
   Result.z:=(-Point.x*SinElevation+Point.z*CosElevation); // Translate origin back to midpoint
   Result+=Center;
 end;
-
+{
 // converts pounds to Newton
 function PoundsToNewton(InpLbs: Real): Real;
    begin Result:=InpLbs*Lbs*9.81; end;
-
-function ProjectPointOnPlane(P: Vector; Plane: Plate): Vector;
-                                                 // Projects a point on a plane
-var q,r: Real;
-begin ///   q:=Plane.a*Plane.a+Plane.b*Plane.b+Plane.c*Plane.c;
-  q:=Sqr(Plane.a)+Sqr(Plane.b)+Sqr(Plane.c);
-  if Q<>0.0 then begin
-    r:=(Plane.a*P.x+Plane.b*P.y+Plane.c*P.z+Plane.d)/q;
-    Result.x:=P.x-Plane.a*r;
-    Result.y:=P.y-Plane.b*r;
-    Result.z:=P.z-Plane.c*r;
-  end else Result:=ZERO;
+}
+function ProjectPointOnPlane(P: Vector; Plane: Plate): Vector; // Projects a point on a plane
+var R,Q: Real;
+begin Q:=Sqr(Plane.a)+Sqr(Plane.b)+Sqr(Plane.c);
+   if Q<>0.0 then begin
+      R:=(Plane.a*P.x+Plane.b*P.y+Plane.c*P.z+Plane.d)/Q;
+      Result.x:=P.x-Plane.a*R;
+      Result.y:=P.y-Plane.b*R;
+      Result.z:=P.z-Plane.c*R;
+   end else Result:=ZERO;
 end;
 
 Function ProjectPointOnLine( P,P1,P2: Vector ):Vector;
-  var V1,V2: Vector; L,T: Real;
+  var V1,V2: Vector; L: Real;
 begin V1:=P-P1; V2:=P2-P1; L:=Sqr( V2 );
-   if L>1e-6 
-   then begin T:=(V1.X*V2.X+V1.Y*V2.Y+V1.Z*V2.Z)/L; Result:=P1+T*V2; end 
-   else Result:=P;
+   if L>1e-12 then Result:=P1+(DotProduct( V1,V2 )/L)*V2
+              else Result:=P;
 end;
 // This procedure takes a lot of linesegments
 // and tries to connect them into as few as possible splines
@@ -371,8 +356,7 @@ var I,J,MatchIndex: Integer;
        if D3<Result then Result:=D3;
        if D4<Result then Result:=D4;
     end;
-begin                                  // First remove any single linesegments;
-   I:=1;
+begin I:=1;                            // First remove any single linesegments;
    while I<List.Count do begin
       Fixed:=List.Items[I-1];
       if Fixed.NumberOfPoints>1
@@ -472,7 +456,7 @@ begin
   Result:=P1+StartPoint;                      // Translate back to centre again
 end;
 *)
-// Rotates a iVect around the origin
+// Rotates a Vector around the origin
 function RotateVector(P0: Vector;
   sinx,cosx,siny,cosy,sinz,cosz: Real): Vector;
 var r11,r12,r13,r21,r22,r23,r31,r32,r33: Real;
@@ -489,14 +473,14 @@ begin // Do rotation
   Result.x:=P0.x*r11+P0.y*r12+P0.z*r13;
   Result.y:=P0.x*r21+P0.y*r22+P0.z*r23;
   Result.z:=P0.x*r31+P0.y*r32+P0.z*r33;
-end; {RotateVector}
+end;
 
 function SetPlane(a,b,c,d: Real): Plate;
 begin Result.a:=a;
       Result.b:=b;
       Result.c:=c;
       Result.d:=d;
-end; {SetPlane}
+end;
 
 function MakeLength(Value: Real; Decimals,DesLength: integer): String;
 var Input: String;
@@ -508,7 +492,7 @@ begin
 end;
 
 function MakeLength(Value: String; DesLength: integer): String;
-   begin while UTF8Length(Value) < DesLength do Value:=Value+' '; Result:=Value;
+   begin while UTF8Length(Value)<DesLength do Value:=Value+' '; Result:=Value;
    end;
 procedure MinMax(P: Vector; var Min,Max: Vector);
    begin if P.X<Min.X then Min.X:=P.X else if P.X>Max.X then Max.X:=P.X;
@@ -517,10 +501,11 @@ procedure MinMax(P: Vector; var Min,Max: Vector);
    end;
 
 // Normalize a iVect to unit length
-function Normalize( P: Vector ): Vector; var L: Real;
-   begin L:=sqr( P ); if L>1e-8 then Result:=P/sqrt( L ) else Result:=P; end;   //if IsNan(L) then///
+function Normalize( const P: Vector ): Vector; var L: Real;
+   begin //Result:=P/Abs( P ); end;
+       L:=sqr( P ); if L>=1e-36 then Result:=P/sqrt( L ) else Result:=P; end;   //if IsNan(L) then///
 
-Function UnifiedNormal(P1,P2,P3:Vector):Vector;
+Function UnifiedNormal( const P1,P2,P3:Vector ):Vector;
    begin Result:=Normalize( (P2-P3)*(P2-P1) ); end;
 
 procedure FillColor(Parameter:Real; var R,G,B:byte); // Calculate color on basis of wavelength (0.0-1.0)

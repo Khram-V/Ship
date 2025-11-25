@@ -73,6 +73,7 @@ object MainForm: TMainForm
       Height = 16
       Top = 1
       Width = 1600
+      Color = $FFFFF0
       Align = alLeft
       AutoHint = True
       Panels = <>
@@ -1882,7 +1883,7 @@ end
     end
     object Calculations1: TMenuItem
       Caption = 'Вычисления'
-       Hint = 'Информационные геометрические и гидростатические расчёты по корпусу корабля.'
+       Hint = 'Информационные геометрические и гидростатические расчёты.'
       object Intersections1: TMenuItem
         Action = IntersectionDialog
       end
@@ -1892,7 +1893,7 @@ end
     end
     object Window1: TMenuItem
       Caption = 'Кульман'
-      Hint = 'Добавление или обновление расположения чертёжных проекций по окнам Free!Ship.'
+      Hint = 'Добавление или обновление расположения чертёжных проекций.'
       object NewWindow1: TMenuItem
         Action = NewWindow
       end
@@ -1901,9 +1902,6 @@ end
       end
       object Cascade1: TMenuItem
         Action = CascadeWindow
-      end
-      object N1: TMenuItem
-        Caption = '-'
       end
     end
     object About1: TMenuItem

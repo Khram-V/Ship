@@ -1,20 +1,12 @@
 unit Main;
 interface uses Windows,
-    SysUtils,
-    Classes,
-    Graphics,
-    Controls,
-    Forms,
-    Menus,
-    Dialogs,
-    ExtCtrls,
-    ActnList,
-    StdCtrls,
-    ComCtrls,Spin,
-    LazFileUtils,FasterList,
+    SysUtils,Classes,  Graphics,Controls,
+    Forms,   Menus,    Dialogs, ExtCtrls,
+    ActnList,StdCtrls, ComCtrls,Spin,
+    LazFileUtils, FasterList,
     FreeSplitSectionDlg,FreeGeometry,FreeShipUnit,FreeHullformWindow,FreeTypes;
 
-type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
+type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit~~TCustomForm}
     ActionList1: TActionList;
     MenuImages : TImageList;
     MainMenu1  : TMainMenu;              //  WindowMenu: TMenuItem;
@@ -22,7 +14,7 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     LayerBox,PrecisionBox: TComboBox;
     ToolBar    : TToolBar;
     ColorDialog: TColorDialog;
-    SpinEditFontSize: TSpinEdit;          //!!! нет единого управления шрифтами
+    SpinEditFontSize: TSpinEdit;         //!!! нет единого управления шрифтами
     StatusBar,Panel1,Panel2,Panel3,Panel4: TPanel;
     ToolButton1,ToolButton2,ToolButton3,ToolButton4,ToolButton5,ToolButton6,
     ToolButton7,ToolButton8,ToolButton9,ToolButton10,ToolButton11,ToolButton12,
@@ -45,7 +37,7 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     LoadFile          : TAction; File1            : TMenuItem;
     ExitProgram       : TAction; ExitProgram1     : TMenuItem;
     ShowControlNet    : TAction; ShowControlNet1  : TMenuItem;
-    ShowInteriorEdges : TAction; ShowInteriorEdges1: TMenuItem;
+    ShowInteriorEdges : TAction; ShowInteriorEdges1:TMenuItem;
     BothSides         : TAction; Showbothsides1   : TMenuItem;
     FileSaveas        : TAction; Save1            : TMenuItem;
     LayerAutoGroup    : TAction; Layer1           : TMenuItem;
@@ -144,7 +136,7 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     SelectAll:    TAction;      Selectall1: TMenuItem;
     ImportSTL:    TAction;      MenuImportSTL:TMenuItem;
     ExportSTL:    TAction;      STL1:       TMenuItem;
-                      N1,N2,N3,N4,N5,N6,N7: TMenuItem;
+                    {N1,}N2,N3,N4,N5,N6,N7: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -264,6 +256,8 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit}//TCustomForm
     Windows: TFasterList;        // Список активных окон
     procedure AddWindow( Win: TFreeHullWindow );
     procedure DelWindow( Win: TFreeHullWindow );
+    procedure WindowMenu;        // опции нет, пусть будет процедура
+    procedure WinClick( Sender: TObject );
     procedure NewOneWindow;
     procedure TileView;
     procedure CascadeView;
@@ -275,9 +269,54 @@ var MainForm: TMainForm;
 
 implementation uses FreeSplashWndw,
                     FreeLinesplanFrm,
+                    FreeLinesplanFrme,
                     FreeLanguageSupport;
 {$R *.lfm}
 {$include Main_Wins.inc}
+
+procedure TMainForm.FormCreate( Sender: TObject );
+begin
+   Windows:=TFasterList.Create;
+   WindowState:=wsNormal; //wsMaximized;
+   FormStyle:=fsNormal;
+// AlphaBlend:= True;
+// AlphaBlendValue:= 128;
+   Color:=1; //clWhite;        --- не лучший вариант ...
+   SetWindowLongPtr( Self.Handle,GWL_EXSTYLE,
+   GetWindowLongPtr( Self.Handle,GWL_EXSTYLE) or WS_EX_LAYERED );
+   SetLayeredWindowAttributes( Self.Handle,1{clWhite},128,LWA_COLORKEY );
+   Ship:=TFreeShip.Create( self );
+   With Ship do begin        // FreeShipUnit оригинал воссоздания новых моделей
+      MainForm:=self;
+      FileChanged:=true;
+      Filename:='Example_Ship';
+      OnChangeCursorIncrement:=FreeShipChangeCursorIncrement;
+      OnFileChanged          :=FreeShipFileChanged;
+      OnUpdateGeometryInfo   :=FreeShipUpdateGeometryInfo;
+      OnUpdateRecentFileList :=FreeShipUpdateRecentFileList;
+      OnUpdateUndoData       :=FreeShipUpdateUndoData;
+      Precision:=fpLow;
+   // ModelInitallyLoaded:=false;
+   end;
+end;
+
+procedure TMainForm.FormShow( Sender: TObject ); Var NF: String='';
+begin With Ship do begin                                // Initialize some data
+   OnChangeActiveLayer:=FreeShipChangeActiveLayer;
+   OnChangeLayerData:=FreeShipChangeLayerData;
+   OnSelectItem:=FOnSelectItem;
+   Preferences.Load;
+   Clear;
+   if ParamCount>0 then NF:=ParamStr( 1 ) else
+   if Edit.RecentFiles.Count>0 then NF:=Edit.RecentFiles[0];
+   if FileExistsUTF8( NF ) then Edit.File_Load( NF );
+   FOpenHullWindows;
+   SetCaption;
+   UpdateMenu;
+end end;
+
+procedure TMainForm.ExitProgramExecute(Sender: TObject);
+    begin UpdateMenu; Close; end;
 
 procedure TMainForm.FOnselectItem(Sender:TObject);
 var Face1,Face2: TFreeSubdivisionControlFace;
@@ -307,9 +346,9 @@ begin
 end;
 
 procedure TMainForm.SetCaption;
-begin
-   if Ship.FileChanged then Caption:='FREE!ship    : '+Ship.Filename+' ('+Userstring(280)+')'
-                       else Caption:='FREE!ship    : '+Ship.Filename+' ('+Userstring(281)+')';
+begin if Ship.FileChanged
+         then Caption:='Free!Ship   : '+Ship.Filename+' ('+Userstring(280)+')'
+         else Caption:='Free!Ship   : '+Ship.Filename+' ('+Userstring(281)+')';
 end;
 
 procedure TMainForm.UpdateMenu; // In this procedure all actions are set to enabled/disabled
@@ -319,7 +358,7 @@ begin With Ship do begin
    For I:=1 to NumberOfLayers do if Layer[I-1].Count>0 then inc(NLayers); // File menu
    FileSaveas.Enabled:=(Surface.NumberOfControlPoints>0) or (FileChanged) or (FilenameSet);
    FileSave.Enabled:=(FileSaveas.Enabled) and (FilenameSet);
-// ImportMichletWaves1.Enabled:=(NumberOfViewports>0) and (Surface.NumberOfControlFaces>1);
+// ImportMichletWaves1.Enabled:=(nV>0) and (Surface.NumberOfControlFaces>1);
 // ExportFEF.Enabled:=Surface.NumberOfControlPoints>0;
    ExportObj.Enabled:=Surface.NumberOfControlFaces>0;
    ExportSTL.Enabled:=Surface.NumberOfControlFaces>0;
@@ -341,7 +380,7 @@ begin With Ship do begin
    RecentFiles.Enabled:=RecentFiles.Count>0;
    ExportCoordinates.Enabled:=Surface.NumberOfControlPoints>0;
    ExportPart.Enabled:=(Surface.NumberOfControlFaces>0);
-   ImportPart.Enabled:=(Surface.NumberOfControlFaces>0) and (NumberOfViewports>0);
+   ImportPart.Enabled:=(Surface.NumberOfControlFaces>0) and (nV>0);
    // Show controledges and controlpoints
    ShowControlNet.Enabled:=Surface.NumberOfControlPoints>0;
    ShowControlNet.Checked:=Visibility.ShowControlNet;
@@ -356,8 +395,8 @@ begin With Ship do begin
                    NumberOfSelectedControlFaces+NumberOfSelectedControlCurves+
                    NumberOfSelectedFlowLines+NumberOfselectedMarkers>0;
    // Window menu actions
-   TileWindow.Enabled:=NumberOfViewports>0;
-   CascadeWindow.Enabled:=NumberOfViewports>0;
+   TileWindow.Enabled:=nV>0;
+   CascadeWindow.Enabled:=nV>0;
    // Precision
    PrecisionBox.ItemIndex:=Ord(Precision);
    // Layers
@@ -370,14 +409,14 @@ begin With Ship do begin
       DevelopLayers.Enabled:=True;
       break;
    end;
-// KeelRudderWizard.Enabled:=NumberOfViewports>0;
+// KeelRudderWizard.Enabled:=nV>0;
    DeleteMarkers.Enabled:=NumberofMarkers>0;
 // Calculations
    DesignHydrostatics.Enabled:=Surface.NumberOfControlFaces>0;
 // Hydrostaticsdialog.Enabled:=Surface.NumberOfControlFaces>0;
 // CrossCurves.Enabled:=Surface.NumberOfControlFaces>0;
 // edit commands
-   AddPoint.Enabled:=(NumberOfViewports>0) and (Visibility.ShowControlNet);
+   AddPoint.Enabled:=(nV>0) and (Visibility.ShowControlNet);
    Insertplane.Enabled:=(Surface.NumberOfControlEdges>0) and (Visibility.ShowControlNet);
    LayerIntersection.Enabled:=NLayers>1;
    EdgeCollapse.Enabled:=NumberOfSelectedControlEdges>0;
@@ -455,48 +494,29 @@ begin With Ship do begin
    if Assigned( OnUpdateGeometryInfo )
            then OnUpdateGeometryInfo( Ship);
 // ActiveControlPoint:=ActiveControlPoint;
+   WindowMenu;
 end; end;
 
 procedure TMainForm.LoadFileExecute( Sender: TObject );
-begin
-   Ship.Edit.File_Load;
-// FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
-end;
-procedure TMainForm.ExitProgramExecute(Sender: TObject);
-    begin UpdateMenu; Close; end;
+    begin Ship.Edit.File_Load; // FOpenHullWindows;
+          SetCaption;
+          UpdateMenu;
+    end;
 
-procedure TMainForm.FormShow( Sender: TObject ); Var NF: String='';
-begin With Ship do begin                                // Initialize some data
-   OnChangeActiveLayer:=FreeShipChangeActiveLayer;
-   OnChangeLayerData:=FreeShipChangeLayerData;
-   OnSelectItem:=FOnSelectItem;
-   Preferences.Load;
-   Clear;
-   if ParamCount>0 then NF:=ParamStr( 1 ) else
-   if Edit.RecentFiles.Count>0 then NF:=Edit.RecentFiles[0];
-   if FileExistsUTF8( NF ) then Edit.File_Load( NF );
-   FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
-end end;
 procedure TMainForm.ShowControlNetExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowControlNet:=not Ship.Visibility.ShowControlNet;
-   UpdateMenu;
-end;
+    begin Ship.Visibility.ShowControlNet:=not Ship.Visibility.ShowControlNet;
+          UpdateMenu;
+    end;
 procedure TMainForm.ShowInteriorEdgesExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowInteriorEdges:=not Ship.Visibility.ShowInteriorEdges;
-   UpdateMenu;
-end;
+    begin Ship.Visibility.ShowInteriorEdges:=not Ship.Visibility.ShowInteriorEdges;
+          UpdateMenu;
+    end;
 procedure TMainForm.NewWindowExecute(Sender: TObject);
     begin NewOneWindow; end;
 procedure TMainForm.FreeShipFileChanged(Sender: TObject);
     begin SetCaption; end;
 procedure TMainForm.PrecisionBoxChange(Sender: TObject);
-begin Ship.Precision:=TFreePrecisionType(PrecisionBox.ItemIndex);
+begin Ship.Precision:=TFreePrecisionType( PrecisionBox.ItemIndex );
       UpdateMenu;
 end;
 procedure TMainForm.FileSaveasExecute(Sender: TObject);
@@ -505,18 +525,14 @@ procedure TMainForm.LayerAutoGroupExecute(Sender: TObject);
     begin Ship.Edit.Layer_AutoGroup; UpdateMenu; end;
 
 procedure TMainForm.FLoadRecentFile( sender:TObject );
-var Menu  : TMenuItem;
-    RName : string;
-    N     : Integer;
-    Answer: word;
+var Menu: TMenuItem; RName: string; N: Integer; Answer: word;
 begin
    if sender is TMenuItem then begin
-      Menu:=sender as TMenuItem;                            // Skip translation
-      RName:=Menu.Caption; //+'.fbm';
-      repeat
-         N:=Pos( '&',RName );
-         if N<>0 then system.Delete( RName,N,1 );
-      until N=0;                                        // End Skip translation
+      Menu:=sender as TMenuItem;
+      RName:=Menu.Caption;
+      repeat N:=Pos( '&',RName );
+          if N<>0 then system.Delete( RName,N,1 );
+      until N=0;
       if FileExistsUTF8(RName) then begin
          Answer:=Ship.Edit.File_SaveCheck;
          if (Answer=mrCancel) or Ship.FileChanged then exit;
@@ -528,8 +544,7 @@ begin
    end;
 end;
 
-procedure TMainForm.FreeShipChangeLayerData(Sender: TObject);
-var I : Integer;
+procedure TMainForm.FreeShipChangeLayerData( Sender: TObject ); var I: Integer;
 begin                              // Fill the layerbox with the current layers
    LayerBox.Items.BeginUpdate;
    LayerBox.Items.Clear;
@@ -573,8 +588,7 @@ procedure TMainForm.PointCollapseExecute(Sender: TObject);
     begin Ship.Edit.Point_Collapse; UpdateMenu; end;
 
 procedure TMainForm.LayerBoxChange(Sender: TObject);
-var Layer   : TFreeSubdivisionLayer;
-    I,Index : Integer;
+var Layer: TFreeSubdivisionLayer; I,Index : Integer;
 begin
    Index:=Layerbox.ItemIndex;
    if index=-1 then Index:=0;
@@ -612,20 +626,17 @@ procedure TMainForm.NewModelExecute(Sender: TObject);
     begin if Ship.Edit.Model_New then FOpenHullWindows; Updatemenu;
     end;
 procedure TMainForm.ShowStationsExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowStations:=not Ship.Visibility.ShowStations;
-   UpdateMenu;
-end;
+    begin Ship.Visibility.ShowStations:=not Ship.Visibility.ShowStations;
+          UpdateMenu;
+    end;
 procedure TMainForm.ShowButtocksExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowButtocks:=not Ship.Visibility.ShowButtocks;
-   UpdateMenu;
-end;
+    begin Ship.Visibility.ShowButtocks:=not Ship.Visibility.ShowButtocks;
+          UpdateMenu;
+    end;
 procedure TMainForm.ShowWaterlinesExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowWaterlines:=not Ship.Visibility.ShowWaterlines;
-   UpdateMenu;
-end;
+    begin Ship.Visibility.ShowWaterlines:=not Ship.Visibility.ShowWaterlines;
+          UpdateMenu;
+    end;
 procedure TMainForm.NewFaceExecute(Sender: TObject);
     begin Ship.Edit.Face_New; UpdateMenu; end;
 
@@ -732,27 +743,23 @@ procedure TMainForm.ExportArchimedesExecute(Sender: TObject);
     begin Ship.Edit.File_ExportArchimedes; UpdateMenu; end;
 
 procedure TMainForm.ShowLinesplanExecute(Sender: TObject);
-var I          : Integer;
-    AlreadyOpen: Boolean;
-    Form       : TFreeLinesplanForm;
+  var Form: TFreeLinesplanForm;
 begin
-//##if not Ship.ProjectSettings.MainparticularsHasBeenset then begin
-//##       ShowMessage(Userstring(96)); exit; end;
-   AlreadyOpen:=False;
-   for I:=1 to Ship.NumberOfViewports do
-   if TCustomForm( Ship.Viewport[I-1] ) is TFreeLinesplanForm then begin
-      AlreadyOpen:=True;
-      Ship.ViewPort[I-1].BringToFront;
-      break;
-   end;
-   if not AlreadyOpen then begin
-      Form:=TFreeLinesplanForm.Create(self);
-      ShowTranslatedValues(Form.LinesplanFrame);
-      ShowTranslatedValues(Form);
+   if Ship.LinesplanFrame<>nil then with FreeLinesplanForm do begin
+      WindowState:=wsNormal;
+      BringToFront;
+   end else begin
+      Form:=TFreeLinesplanForm.Create( self );
+      Form.PopUpParent:=Self;
+      Form.FormStyle:=fsNormal;
+      Form.BorderStyle:=bsSizeable;
+      ShowTranslatedValues( Form.LinesplanFrame );
+      ShowTranslatedValues( Form) ;
       Form.LinesplanFrame.FreeShip:=Ship;
       Form.LinesplanFrame.Viewport.ZoomExtents;
-   end;
-end;
+      FreeLinesplanForm:=Form;
+      WindowMenu;
+end end;
 
 procedure TMainForm.ShowDiagonalsExecute(Sender: TObject);
 begin
@@ -855,11 +862,7 @@ begin
 //if SpinEditFontSize.value<10 then SpinEditFontSize.Constraints.MinWidth:=16+24+2
 //                             else SpinEditFontSize.Constraints.MinWidth:=16+16+24+2;
   SpinEditFontSize.Width:=SpinEditFontSize.Constraints.MinWidth;
-  for I:=0 to Ship.NumberofViewPorts-1 do Ship.ViewPort[I].InValidate;
-
-//--with Application.MainForm as TMainForm do \только по теоретическим чертежам
-//  for I:=0 to Windows.Count-1 do
-//     TFreeHullWindow( Windows[I] ).ViewPort.Invalidate;
+  for I:=0 to Ship.nV-1 do Ship.ViewPort[I].InValidate;
 end;
 
 procedure TMainForm.FreeShipUpdateGeometryInfo(Sender: TObject);

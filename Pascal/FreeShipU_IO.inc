@@ -2,8 +2,8 @@
 ///*** Detect Minimal File Version depneding on features used
 //
 function TFreeShip.DetectMinFileVersion( isText: boolean ): TFreeFileVersion;
-var I: integer;
-begin result:=fv160;                           // с картинкой - никак не меньше
+var I: integer;      // 160 => если с картинкой - и хотелось бы никак не меньше
+begin result:=fv165; // в оригинале ошибка на версии 165 = всё должно быть выше
   if NumberOfDiagonals>0 then result:=fv180;
   if NumberOfMarkers>0   then result:=fv191;   // не очень надо,но пусть будет
   if ProjectSettings.FSavePreview then Result:=fv210;
@@ -21,25 +21,27 @@ begin
    FileVersion:=DetectMinFileVersion( Destination is TFreeTextBuffer );
    Destination.Add( 'FREE!ship' );
    Destination.Add( FileVersion );
-   Destination.Add( Ord(Precision) );
+   Destination.Add( Ord( Precision ) );
    Visibility.SaveBinary( Destination );
-   ProjectSettings.SaveBinary( Destination ); // Save actual subdivision-surface data.
-   Surface.SaveBinary( Destination );         // Save stations
+   ProjectSettings.SaveBinary( Destination );// actual subdivision-surface data
+   Surface.SaveBinary( Destination );        // Save stations
    Destination.Add( NumberOfStations );
    For I:=1 to NumberOfStations do Station[I-1].SaveBinary(Destination); // Save Buttocks
    Destination.Add( NumberOfButtocks );
    For I:=1 to NumberOfButtocks do Buttock[I-1].SaveBinary(Destination); // Save Waterlines
    Destination.Add( NumberOfWaterlines );
    For I:=1 to NumberOfWaterlines do Waterline[I-1].SaveBinary(Destination);
-   if FileVersion>=fv180 then begin                        // Save Diagonals
+   if FileVersion>=fv180 then begin                           // Save Diagonals
       Destination.Add( NumberOfDiagonals );
       For I:=1 to NumberOfDiagonals do Diagonal[I-1].SaveBinary(Destination);
-      if FileVersion>=fv191 then begin                       // Save markers
+      if FileVersion>=fv191 then begin                          // Save markers
          Destination.Add( NumberOfMarkers );
          for I:=1 to NumberOfMarkers do Marker[I-1].SaveBinary(Destination);
-         if FileVersion>=fv210 then begin
-            for I:=1 to 17 do Destination.Add( 0.0 ); Destination.Add( false ); Destination.Add( false ); // Delft
-            for I:=1 to 9 do Destination.Add( 0.0 ); Destination.Add( false );                // Kaper
+         if FileVersion>=fv210 then begin     // пропускается и не используется
+            if Destination is TFreeTextBuffer then I:=0 else I:=1; {112 или 29}
+            while I<=28 do begin Destination.Add( integer( 0 ) ); inc( I ) end;
+//          for I:=1 to 17 do Destination.Add(0); +2b (+2) // Delft
+//          for I:=1 to 9 do Destination.Add(0);  +1b (+3) // Kaper
             if FileVersion>=fv250 then begin
                Destination.Add(NumberOfbackgroundImages);
                for I:=1 to NumberOfBackgroundImages do BackgroundImage[I-1].SaveBinary(Destination);
@@ -48,9 +50,7 @@ begin
             end;
          end;
       end;
-   end;
-   FileChanged:=False;
-   Screen.Cursor:=PrevCursor;
+   end; FileChanged:=False; Screen.Cursor:=PrevCursor;
 end;
 
 // save as FREE!ship file without prompting for a filename (must already been set)
@@ -59,7 +59,7 @@ function TFreeEdit.File_Save: boolean;
 var Str: String; Strings: TStringList=nil; Destination: TFreeFileBuffer;
 begin Result:=false;
   if not Ship.FilenameSet // or Ship.FileIsReadOnl
-     then begin Ship.FilenameSet:=false; result:=File_SaveAs; exit; end;
+    then begin Ship.FilenameSet:=false; result:=File_SaveAs; exit; end;
   DeleteFileUTF8( Ship.Filename+'.bak' );
   RenameFileUTF8( Ship.Filename,Ship.Filename+'.bak' );
   Str:=LowerCase( ExtractFileExt( Ship.Filename ) );
@@ -134,7 +134,7 @@ end;
 procedure TFreeEdit.File_Load( FileName: String );
 var Source: TFreeFileBuffer; I,LineNR: Integer; Str: String;
     Strings: TStringList=nil;
-begin
+begin Strings:=nil;
   if ExtractFileExt( FileName )=''
      then FileName:=ChangeFileExt( FileName,FreeShipExtention );
   Str:=LowerCase( ExtractFileExt( FileName ) );
@@ -197,7 +197,7 @@ end;
 Procedure TFreeShip.LoadProject( Source:TFreeFileBuffer );        // LoadBinary
 var PrevCursor  : TCursor;
     I,N         : Integer;
-    Str         : String;
+    Str         : String;                                         // WW:Real;
     Data        : TFreeBackgroundImageData;
     Intersection: TFreeIntersection;
     Flowline    : TFreeFlowline;
@@ -231,21 +231,21 @@ begin    // Remember the filename because it will be erased by the clear method
              FStations.Add(Intersection);
              Intersection.LoadBinary(Source);
          end;
-         Source.LoadInteger(N);                            // Load Buttocks
+         Source.LoadInteger(N);                              // Load Buttocks
          FButtocks.Capacity:=N;
          for I:=1 to N do begin
              Intersection:=TFreeIntersection.Create(self);
              FButtocks.Add(Intersection);
              Intersection.LoadBinary(Source);
          end;
-         Source.LoadInteger(N);                            // Load Waterlines
+         Source.LoadInteger(N);                              // Load Waterlines
          FWaterlines.Capacity:=N;
          for I:=1 to N do begin
              Intersection:=TFreeIntersection.Create(self);
              FWaterlines.Add(Intersection);
              Intersection.LoadBinary(Source);
          end;
-         if FileVersion>=fv180 then begin                  // Load Diagonals
+         if FileVersion>=fv180 then begin                    // Load Diagonals
             Source.LoadInteger(N);
             FDiagonals.Capacity:=N;
             for I:=1 to N do begin
@@ -253,7 +253,7 @@ begin    // Remember the filename because it will be erased by the clear method
                 FDiagonals.Add(Intersection);
                 Intersection.LoadBinary(Source);
             end;
-            if FileVersion>=fv191 then begin               // Load markers
+            if FileVersion>=fv191 then begin                 // Load markers
                Source.LoadInteger(N);
                FMarkers.Capacity:=N;
                for I:=1 to N do begin
@@ -263,9 +263,11 @@ begin    // Remember the filename because it will be erased by the clear method
                    Marker.LoadBinary(Source);
                end;
                if FileVersion>=fv210 then begin
-                  Source.FPosition += 112;      // Delft(72) + Kaper(40) = 112;
+                  if Source is TFreeTextBuffer
+                  then (Source as TFreeTextBuffer).FPosition+=29  // 9+1 + 17+2
+                   else Source.FPosition += 112;     // = Delft(72) + Kaper(40)
                   if FileVersion>=fv250 then begin
-                     Source.LoadInteger(N);
+                     Source.LoadInteger( N );
                      for I:=1 to N do begin
                          Data:=TFreeBackgroundImageData.Create(self);
                          FBackgroundImages.Add(data);
@@ -303,7 +305,6 @@ const
  File_A='Галеон Великих Испанских географических открытий';
  Name_A='«Великие географические открытия». Корпус всепогодного корабля среднего водоизмещения (галеон)';
  Comm_A='Вариант эволюционного совершенствования корабельных обводов с уверенным штормованием в эпоху Великих Испанских географических открытий.';
-
  Ship_A: array [0..6,0..4] of Vector=
 {$if false}
  ( ( ( x: 0.06; y:0;    z:0    ),  // station 0,stern=Галеон
@@ -383,8 +384,7 @@ const
 //
  File_B='Совершенный парусный корабль золотого XIX века';
  Name_B='«Новый корабль золотого XIX века». Корпус всепогодного корабля среднего водоизмещения (фрегат)';
- Comm_B='Вариант эволюции корабельных обводов с достижением ограниченной штормовой ходкости при совершенном парусном вооружении.';
-
+ Comm_B='Вариант эволюции корабельных обводов с достижением наилучшей штормовой ходкости при совершенном парусном вооружении.';
  Ship_B: array [0..6,0..4] of Vector=
  ( ( ( x: 0.06; y:0;    z:0    ),  // station 0,stern=Фелюга
      ( x: 0.04; y:0;    z:1.3  ),
@@ -426,8 +426,7 @@ const
 //
  File_C='Эстетика современных обводов корабля';
  Name_C='Обводы быстроходного высокоманевренного корабля среднего водоизмещения с мощными машинами';
- Comm_C='Корабль с проектной отработкой элементов технической эстетики с ипытаниями под скоростной тележкой опытового бассена.';
-
+ Comm_C='Корабль с проектной отработкой элементов технической эстетики с испытаниями только под скоростной тележкой опытового бассейна.';
  Ship_C: array [0..6,0..4] of Vector=
  ( ( ( x: 0.1;   y: 0    ; z: 0     ),     // 0,stern 3 1 =Moдняга
      ( x: 0.06;  y: 0    ; z: 1.1   ),     //         1 1
@@ -464,8 +463,6 @@ const
      ( x: 0.961; y: 0    ; z: 0.61  ),     //         1 1
      ( x: 1    ; y: 0    ; z: 2     ),     //         1 1
      ( x: 1.1  ; y: 0    ; z: 4.55  ) ) ); //         3 1
-
-// {$include Examples.inc}                            Выбор корабельной эпохи
 
 function TFreeEdit.Model_New:Boolean;
 var Answer: word; I,J,Cols,Rows: integer;
@@ -535,8 +532,7 @@ begin
             Spline1:=TrvSplines[J];
             P:=Spline1.Value(I/Rows);
             Spline2.Add(P);
-         end;
-         // now calculate all points on the longitudinal spline and send it to the surface
+         end; // now calculate all points on longitudinal spline and send it to surface
          for J:=0 to Cols do begin
             P:=Spline2.Value( J/Cols );
             Pts[I,J]:=TFreeSubdivisionControlPoint.Create(Ship.Surface);
@@ -550,7 +546,7 @@ begin
          Spline1:=TrvSplines[I-1];
          Spline1.Destroy;
       end;
-      TrvSplines.Clear; // finally create the controlfaces over the newly calculated points
+      TrvSplines.Clear; // finally create controlfaces over newly calculated points
       for I:=1 to Rows do
       for J:=1 to cols do begin
           TrvSplines.Clear;
@@ -566,20 +562,15 @@ begin
       // Collapse stempoint to mage the grid irregular in order to demonstrate subdivision-surface capabilities
       if StemPoint<>nil then if StemPoint.VertexType=svCorner then stempoint.VertexType:=svCrease;
       Ship.Build:=False;
-{
-      for I:=0 to 24 do Intersection_Add(fiStation,I/25*(Ship.Surface.Max.X-Ship.Surface.Min.X));   // Add 25 stations
-      for I:=0 to 4  do Intersection_Add(fiButtock,I/5*(Ship.Surface.Max.Y-Ship.Surface.Min.Y));    // Add 5 buttocks
-      for I:=0 to 10 do Intersection_Add(fiWaterline,I/10*(Ship.Surface.Max.Z-Ship.Surface.Min.Z)); // Add 11 waterlines
-      Ship.draw;
-}
-      dd:=AxisStep( (Ship.Surface.Max.X-Ship.Surface.Min.X)/7.5 );  // шаг шпации
+
+      dd:=AxisStep( (Ship.Surface.Max.X-Ship.Surface.Min.X)/7.5 );// шаг шпации
       I:=round( Ship.Surface.Min.X/dd+0.5 );
       repeat Intersection_Add( fiStation,I*dd ); inc( I );       // и шпангоуты
        until I*dd>=Ship.Surface.Max.X;
       dd:=AxisStep( B/1.75 ); I:=0;                                  // Батоксы
       repeat Intersection_Add( fiButtock,I*dd ); inc( I ); until I*dd>=B-dd/4;
 
-      dd:=AxisStep( Ship.Surface.Max.Z-Ship.Surface.Min.Z );  // Ватерлинии
+      dd:=AxisStep( Ship.Surface.Max.Z-Ship.Surface.Min.Z );      // Ватерлинии
       I:=round( Ship.Surface.Min.Z/dd+0.51 );
       repeat Intersection_Add( fiWaterline,I*dd ); inc( I );
        until I*dd>=Ship.Surface.Max.Z-dd*0.25;

@@ -106,7 +106,7 @@ private
 public
    procedure Clear;
    constructor Create(Owner:TFreeship);
-   destructor Destroy;              override;
+   destructor Destroy; override;
    procedure LoadBinary(Source:TFreeFileBuffer);
    procedure SaveBinary(Destination:TFreeFileBuffer);
    procedure UpdateData(Viewport:TFreeViewport);
@@ -158,7 +158,7 @@ public
    procedure   AddHeader(Strings:TStringlist);
    Procedure   AddFooter(Strings:TStringlist); // Mode:TFreeHydrostaticsMode );
    procedure   CalculateGravity;
-   procedure   Face_MoveZAuto;
+// procedure   Face_MoveZAuto;
 // function    Balance(Displacement:Real;FreeToTrim:Boolean;var Output:TFreeCrosscurvesData):boolean;
    procedure   Calculate; // The actual calculation of the hydrostatics finds place in this procedure
    property    Calculated           : Boolean read FCalculated write FSetCalculated;
@@ -454,18 +454,16 @@ end;
 TApplicationScope=(asMachine,asUser);
 TFreePreferences=class(TPersistent)
 private
-  FOwner: TFreeShip;
-  FMainForm: TForm;
-  FViewportColor: TColor;
-  // Half width of controlpoints in pixels when drawn on screen
-  // Colors
-  FIntersectionLineWidth,
+  FViewportColor: TColor;  // Half width of controlpoints
+  FIntersectionLineWidth,  //  in pixels when drawn on screen Colors
   FControlEdgeLineWidth,
   FInteriorEdgeLineWidth,
   FAuxEdgeLineWidth,
   FHydrostaticLineWidth: integer;
   procedure FSetViewportColor( Val: TColor );
 public
+  Ship: TFreeShip;
+  MainForm: TForm;
   EdgeColor,       // Color of normal edges
   CreaseColor,     // color of crease edges
   CreaseEdgeColor, // color of crease control-edges
@@ -517,8 +515,6 @@ public
   procedure ResetDirectories;
   procedure SetDefaults;
   procedure Save;
-  property  Owner: TFreeShip read FOwner write FOwner;
-  property  MainForm: TForm read FMainForm write FMainForm;
 published                                                  // General options
   property ViewportColor: TColor read FViewportColor write FSetViewportColor;
 end;
@@ -527,17 +523,15 @@ end;
 }
 TFreeProjectSettings=class
 private
-// FMainparticularsHasBeenset: boolean; // Flag to check if the main particulars have been set before hydrostatic calculationss are being performed
-  FDisableModelCheck: boolean;         // Disable the automatic checking of the surface
-  FEnableModelAutoMove: boolean;       // Unable the automatic moving model along Z
-  FProjectAppendageCoefficient: Real;
-  FProjectBeam,FProjectDraft,FProjectLength: Real;
+//FMainparticularsHasBeenset: boolean; // Flag to check if the main particulars have been set before hydrostatic calculationss are being performed
+  FDisableModelCheck: boolean; // Disable the automatic checking of the surface
+  FProjectAppendageCoefficient,
+  FProjectBeam,FProjectDraft,FProjectLength,
   FProjectWaterDensity,FProjectWaterTemper: Real;
   FProjectName,FProjectDesigner,FProjectComment,FProjectFileCreatedBy: String;
   FProjectSimplifyIntersections,
   FProjectShadeUnderwaterShip,FSavePreview: boolean;
   FProjectUnits: TFreeUnitType;
-//  FProjectPrecision: TFreePrecisionType;
   FFreeHydrostaticCoefficients: TFreeHydrostaticCoeff; // General hydrostatics calculation settings
   FStartDraft,FEndDraft,FDraftStep: Real;
   FTrim: Real;  // crosscurves settings
@@ -557,7 +551,6 @@ private
   procedure FSetUseMidleFrame(Mid:Boolean);
   procedure FSetDisableModelCheck(Val: boolean);
   procedure FSetFreeHydrostaticCoefficients(val: TFreeHydrostaticCoeff);
-  procedure FSetEnableModelAutoMove(Val: boolean);
   procedure FSetProjectAppendageCoefficient(Val: Real);
   procedure FSetProjectBeam(Val: Real);
   procedure FSetProjectDraft(Val: Real);
@@ -572,9 +565,8 @@ private
   procedure FSetEndDraft(Val: Real);
   procedure FSetDraftStep(Val: Real);
   procedure FSetTrim(Val: Real);
-
 public
-  FreeShip: TFreeShip;
+  Ship: TFreeShip;
   ProjectUnderWaterColor: TColor;
   ProjectUnderWaterColorAlpha: byte;
   ProjectPrecision: TFreePrecisionType;
@@ -585,7 +577,6 @@ public
   procedure SaveBinary(Destination: TFreeFileBuffer);
   property MidleFrame: Real read FGetMidleFrame write FSetMidleFrame;
   property UseMidleFrame: Boolean read FUseMidleFrame write FSetUseMidleFrame;
-  property EnableModelAutoMove: boolean read FEnableModelAutoMove write FSetEnableModelAutoMove;
   property Hydrostatics_Startdraft: Real read FStartDraft write FSetStartDraft;
   property Hydrostatics_EndDraft: Real   read FEndDraft write FSetEndDraft;
   property Hydrostatics_DraftStep:Real   read FDraftStep write FSetDraftStep;
@@ -740,6 +731,9 @@ public
    procedure MouseDown(Viewport:TFreeViewport;Button:TMouseButton;Shift:TShiftState;X,Y:integer;var ItemSelected:Boolean);
    procedure MouseMove(Viewport:TFreeViewport;Shift:TShiftState;X,Y:integer);
    procedure MouseUp(Viewport:TFreeViewport;Shift:TShiftState;X,Y:integer);
+   procedure SelectPointsInFrame( Viewport: TfreeViewport; rect: TRect );
+
+   property  nV                                   : integer read FGetNumberOfViewports;
    property  ActiveControlPoint                   : TFreeSubdivisionControlPoint read FActiveControlPoint write FSetActiveControlPoint;
    property  ActiveLayer                          : TFreeSubdivisionLayer read FGetActiveLayer write FSetActiveLayer;
    property  BackgroundImage[index:Integer]       : TFreeBackgroundImageData read FGetBackgroundImage;
@@ -772,7 +766,6 @@ public
    property  NumberOfSelectedLockedPoints         : integer read FGetNumberOfSelectedLockedPoints;
    property  NumberOfselectedMarkers              : integer read FGetNumberOfselectedMarkers;
    property  NumberofStations                     : integer read FGetNumberOfStations;
-   property  NumberOfViewports                    : integer read FGetNumberOfViewports;
    property  NumberofWaterlines                   : integer read FGetNumberOfWaterlines;
    property  OnChangeActiveLayer                  : TChangeActiveLayerEvent read FGetOnChangeActiveLayer write FSetOnChangeActiveLayer;
    property  OnChangeLayerData                    : TNotifyEvent read FGetOnChangeLayerData write FSetOnChangeLayerData;
@@ -1020,7 +1013,7 @@ begin
    FBlendingValue:=Viewport.BackgroundImage.Alpha;
    FTransparentColor:=Viewport.BackgroundImage.TransparentColor;
    FTolerance:=Viewport.BackgroundImage.Tolerance;
-   for I:=1 to FOwner.NumberOfViewports do
+   for I:=1 to FOwner.nV do
     if (FOwner.Viewport[I-1]<>Viewport)
      and (FOwner.Viewport[I-1].ViewType=AssignedView)
    then begin
@@ -1032,7 +1025,7 @@ end;
 procedure TFreeBackgroundImageData.UpdateViews;
 var I:Integer;
 begin
-   for I:=1 to FOwner.NumberOfViewports do
+   for I:=1 to FOwner.nV do
    if FOwner.Viewport[I-1].Viewtype=AssignedView then begin
       FOwner.Viewport[I-1].BackgroundImage.AssignData(FImageData,AssignedView,FOrigin,FScale,FTransparent,FTransparentColor,FBlendingValue,FQuality,FTolerance,False);
    end;
@@ -1522,7 +1515,7 @@ end;
 procedure TFreeIntersection.DrawAll;
 var I : integer;
 begin
-   for I:=1 to Owner.NumberOfViewports do Draw(Owner.Viewport[I-1]);
+   for I:=1 to Owner.nV do Draw(Owner.Viewport[I-1]);
 end;
 
 procedure TFreeIntersection.Extents(Var Min,Max:Vector);
@@ -1604,22 +1597,18 @@ begin
                fiStation: begin
                    Destination.Add(P.Y);
                    Destination.Add(P.Z);
-                   Destination.Add(Spline.Knuckle[J-1]);
-                 end;
+                   Destination.Add(Spline.Knuckle[J-1]); end;
                fiButtock: begin
                    Destination.Add(P.X);
                    Destination.Add(P.Z);
-                   Destination.Add(Spline.Knuckle[J-1]);
-                 end;
+                   Destination.Add(Spline.Knuckle[J-1]); end;
                fiWaterline: begin
                    Destination.Add(P.X);
                    Destination.Add(P.Y);
-                   Destination.Add(Spline.Knuckle[J-1]);
-                 end;
+                   Destination.Add(Spline.Knuckle[J-1]); end;
                fiDiagonal: begin
                    Destination.Add(P);
-                   Destination.Add(Spline.Knuckle[J-1]);
-                 end;
+                   Destination.Add(Spline.Knuckle[J-1]); end;
             end;
          end else begin
             Destination.Add(P);
@@ -1725,7 +1714,7 @@ begin
       end else begin
          Color:=clLime;
          Size:=2;
-         MessageDlg(Userstring(67),mtError,[mbOk],0);
+         ShowMessage(Userstring(67));
       end;
       Fragments:=250;
       if (Viewport.ViewType=fvBodyPlan)
@@ -1818,11 +1807,8 @@ end;
 procedure TFreeMarker.SaveBinary(Destination:TFreeFileBuffer);
 begin
    Destination.Add(FVisible);
-   if Owner.FileVersion>=fv260 then
-   begin
-      Destination.Add(Selected);
-   end;
-   Inherited SaveBinary(Destination);
+   if Owner.FileVersion>=fv260 then Destination.Add(Selected);
+   Inherited SaveBinary( Destination );
 end;
 {
    TFreeFlowline
@@ -1831,7 +1817,7 @@ function TFreeFlowline.FGetColor:TColor;
 begin
    if Selected then result:=Owner.Preferences.SelectColor
 // else if FMethodNew then Result:=clRed
-                      else Result:=clBlue;
+                      else Result:=clAqua; // clBlue;
 end;
 
 function TFreeFlowline.FGetSelected:Boolean;
@@ -2395,7 +2381,7 @@ begin
    if abs(Val-FCurvatureScale)>1e-5 then begin
       FCurvatureScale:=Val;
       Owner.FileChanged:=True;
-      For I:=1 to Owner.NumberOfViewports do
+      For I:=1 to Owner.nV do
        if Owner.Viewport[I-1].ViewportMode=vmWireFrame then
           Owner.Viewport[I-1].Refresh
    end;
@@ -2467,7 +2453,7 @@ begin
       FShowMarkers:=val;
       Owner.FileChanged:=True;
       if Owner.NumberofMarkers>0 then
-        for I:=1 to Owner.NumberOfViewports do
+        for I:=1 to Owner.nV do
           if Owner.Viewport[I-1].Zoom=1.0 then Owner.Viewport[I-1].ZoomExtents
                                           else Owner.Viewport[I-1].Refresh;
    end;
@@ -2638,24 +2624,18 @@ begin
    Destination.Add(FShowMarkers);
    Destination.Add(FShowCurvature);
    Destination.Add(FCurvatureScale);
-   if Owner.FileVersion>=fv195 then
-   begin
+   if Owner.FileVersion>=fv195 then begin
       Destination.Add(FShowControlCurves);
-      if Owner.FileVersion>=fv210 then
-      begin
+      if Owner.FileVersion>=fv210 then begin
          Destination.Add(FCursorIncrement);
-         if Owner.FileVersion>=fv220 then
-         begin
+         if Owner.FileVersion>=fv220 then begin
             Destination.Add(FShowHydrostaticData);
             Destination.Add(FShowHydrostDisplacement);
             Destination.Add(FShowHydrostLateralArea);
             Destination.Add(FShowHydrostSectionalAreas);
             Destination.Add(FShowHydrostMetacentricHeight);
             Destination.Add(FShowHydrostLCF);
-            if Owner.FileVersion>=fv250 then
-            begin
-               Destination.Add(FShowFlowlines);
-            end;
+            if Owner.FileVersion>=fv250 then Destination.Add( FShowFlowlines );
          end;
       end;
    end;
@@ -2712,7 +2692,7 @@ begin
          Ship.FileChanged:=True;
          break;
       end;
-      for I:=1 to Ship.NumberOfViewports do
+      for I:=1 to Ship.nV do
       if Ship.Viewport[I-1].ViewType=Viewport.ViewType then begin
          Ship.Viewport[I-1].BackgroundImage.Clear;
          Ship.Viewport[I-1].Refresh;
@@ -3018,9 +2998,8 @@ end;
 
 procedure TFreeEdit.Face_Assemble;
 var Assembled        : TFreeFaceArray;
-    NAssembled       : Integer;
+    NAssembled,I,J,K : Integer;
     Layers           : TFasterList;
-    I,J,K            : Integer;
     AssFace          : TFreeFaceGrid;
     Layer            : TFreeSubdivisionLayer;
     Face             : TFreeSubdivisionControlFace;
@@ -3256,7 +3235,7 @@ begin
       else begin
          for I:=Ship.NumberOfSelectedControlPoints downto 1
           do Ship.SelectedControlPoint[I-1].Selected:=false;
-         for I:=1 to Ship.NumberOfViewports do Ship.Viewport[I-1].Refresh;
+         for I:=1 to Ship.nV do Ship.Viewport[I-1].Refresh;
       end;
       SelectDlg.Destroy;
    end;
@@ -3302,13 +3281,13 @@ begin
             Screen.Cursor:=PrevCursor;
          end else begin
             for I:=Ship.NumberOfSelectedControlPoints downto 1 do Ship.SelectedControlPoint[I-1].Selected:=false;
-            for I:=1 to Ship.NumberOfViewports do Ship.Viewport[I-1].Refresh;
+            for I:=1 to Ship.nV do Ship.Viewport[I-1].Refresh;
          end;
          Dialog.Destroy;
       end else begin
          for I:=Ship.NumberOfSelectedControlPoints downto 1
           do Ship.SelectedControlPoint[I-1].Selected:=false;
-         for I:=1 to Ship.NumberOfViewports do Ship.Viewport[I-1].Refresh;
+         for I:=1 to Ship.nV do Ship.Viewport[I-1].Refresh;
       end;
    end;
    Points.Destroy;
@@ -3335,7 +3314,7 @@ begin
       else begin
          for I:=Ship.NumberOfSelectedControlPoints downto 1
            do Ship.SelectedControlPoint[I-1].Selected:=false;
-         for I:=1 to Ship.NumberOfViewports do Ship.Viewport[I-1].Refresh;
+         for I:=1 to Ship.nV do Ship.Viewport[I-1].Refresh;
       end;
       SelectDlg.Destroy;
    end;
@@ -3378,12 +3357,12 @@ begin
             Screen.Cursor:=PrevCursor;
          end else begin
             for I:=Ship.NumberOfSelectedControlPoints downto 1 do Ship.SelectedControlPoint[I-1].Selected:=false;
-            for I:=1 to Ship.NumberOfViewports do Ship.Viewport[I-1].Refresh;
+            for I:=1 to Ship.nV do Ship.Viewport[I-1].Refresh;
          end;
          Dialog.Destroy;
       end else begin
          for I:=Ship.NumberOfSelectedControlPoints downto 1 do Ship.SelectedControlPoint[I-1].Selected:=false;
-         for I:=1 to Ship.NumberOfViewports do Ship.Viewport[I-1].Refresh;
+         for I:=1 to Ship.nV do Ship.Viewport[I-1].Refresh;
       end;
    end;
    Points.Destroy;
@@ -3410,7 +3389,7 @@ begin
       then SelectDlg.ExtractSelectedPoints(Points)
       else begin
          for I:=Ship.NumberOfSelectedControlPoints downto 1 do Ship.SelectedControlPoint[I-1].Selected:=false;
-         for I:=1 to Ship.NumberOfViewports do Ship.Viewport[I-1].Refresh;
+         for I:=1 to Ship.nV do Ship.Viewport[I-1].Refresh;
       end;
       SelectDlg.Destroy;
    end;
@@ -3474,13 +3453,13 @@ begin
                then Ship.ActiveControlPoint:=Ship.ActiveControlPoint;
          end else begin
             for I:=Ship.NumberOfSelectedControlPoints downto 1 do Ship.SelectedControlPoint[I-1].Selected:=false;
-            for I:=1 to Ship.NumberOfViewports do Ship.Viewport[I-1].Refresh;
+            for I:=1 to Ship.nV do Ship.Viewport[I-1].Refresh;
          end;
          Dialog.Destroy;
       end else begin
          for I:=Ship.NumberOfSelectedControlPoints downto 1
           do Ship.SelectedControlPoint[I-1].Selected:=false;
-         for I:=1 to Ship.NumberOfViewports do Ship.Viewport[I-1].Refresh;
+         for I:=1 to Ship.nV do Ship.Viewport[I-1].Refresh;
       end;
    end;
    Points.Destroy;
@@ -3513,7 +3492,7 @@ begin
          if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
       end else Undo.Delete;              // Initialize then new edges and faces
       Tmp.Destroy;
-   end else MessageDlg(Userstring(95),mtInformation,[mbOk],0);
+   end else ShowMessage(Userstring(95));
 end;
 
 procedure TFreeEdit.Flowline_Add(Source:Place;View:TFreeviewType);
@@ -3728,16 +3707,15 @@ begin
    N:=0;
    if Quiet then Undo:=nil
             else Undo:=CreateUndoObject(Userstring(140),false);
-   for I:=Ship.NumberOfLayers downto 1 do if (Ship.Layer[I-1].Count=0) and (Ship.NumberOfLayers>1) then
-   begin
+   for I:=Ship.NumberOfLayers downto 1
+   do if (Ship.Layer[I-1].Count=0) and (Ship.NumberOfLayers>1) then begin
       Ship.Layer[I-1].Delete;
       inc(N);
       Ship.FileChanged:=True;
    end;
    if Ship.ActiveLayer=nil then Ship.ActiveLayer:=Ship.Layer[Ship.NumberOfLayers-1]
-                            else Ship.ActiveLayer:=Ship.ActiveLayer;
-   if (N>0) and (not Quiet) then
-   begin
+                           else Ship.ActiveLayer:=Ship.ActiveLayer;
+   if (N>0) and (not Quiet) then begin
       Undo.Accept;
       ShowMessage(IntToStr(N)+#32+Userstring(141)+'.');
    end;
@@ -3745,8 +3723,7 @@ begin
 end;
 
 // Show layer dialog window
-procedure TFreeEdit.Layer_Dialog;
-var LayerDialog : TFreeLayerDialog;
+procedure TFreeEdit.Layer_Dialog; var LayerDialog: TFreeLayerDialog;
 begin
    LayerDialog:=TFreeLayerDialog.Create(Ship);
    ShowTranslatedValues(LayerDialog);
@@ -3779,7 +3756,7 @@ begin
       for I:=1 to Ship.NumberofMarkers do Ship.Marker[I-1].Destroy;
       Ship.FMarkers.Clear;
       Ship.FileChanged:=True;
-      for I:=1 to Ship.NumberOfViewports do if Ship.Viewport[I-1].Zoom=1.0
+      for I:=1 to Ship.nV do if Ship.Viewport[I-1].Zoom=1.0
           then Ship.Viewport[I-1].ZoomExtents
           else Ship.Viewport[I-1].Refresh;
    end;
@@ -3808,7 +3785,7 @@ var OpenDialog : TOpenDialog;
       end;
       Ship.FileChanged:=True;
       Ship.Visibility.ShowMarkers:=True;
-      for I:=1 to Ship.NumberOfViewports do if Ship.Viewport[I-1].Zoom=1.0 then Ship.Viewport[I-1].ZoomExtents
+      for I:=1 to Ship.nV do if Ship.Viewport[I-1].Zoom=1.0 then Ship.Viewport[I-1].ZoomExtents
                                                                              else Ship.Viewport[I-1].Refresh;
       Ship.Redraw;
     end;{import}
@@ -3838,13 +3815,10 @@ begin
 //                inc(LineNr);
                   Str:=Trim(Uppercase(Str));
                   if (Str<>'') and (Str<>'EOF') then begin
-                     P.X:=GetFloat(Str);
-                     P.Y:=GetFloat(Str);
-                     P.Z:=GetFloat(Str);
+                     P:=GetVector( Str );
                      Marker.Add(P);
                      Str:=#32;
-                  end else if Str='' then
-                  begin
+                  end else if Str='' then begin
                      if Marker.NumberOfPoints>1 then Markers.Add(Marker)
                                                 else Marker.Destroy;
                      Marker:=TFreeMarker.Create;
@@ -3853,7 +3827,7 @@ begin
                if Marker.NumberOfPoints>1 then Markers.Add(Marker)
                                           else Marker.Destroy;
 //          except
-//             MessageDlg(Userstring(132)+#32+IntToStr(LineNr),mtError,[mbOk],0);
+//             ShowMessage(Userstring(132)+#32+IntToStr(LineNr));
 //          end;
 //       finally
             CloseFile(FFile);
@@ -4247,17 +4221,17 @@ begin
       Ship.Redraw;
       Ship.FileChanged:=True;
       if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
-      MessageDlg(IntToStr(N)+#32+Userstring(162),mtInformation,[mbOk],0);
+      ShowMessage(IntToStr(N)+#32+Userstring(162));
    end else Undo.Delete;
 end;
 
 // Finds all intersection of VISIBLE edges and a 3D plane, and inserts a point on each of these edges
 
 procedure TFreeEdit.Point_InsertPlane;
-var Dialog  : TFreeInsertPlaneDialog;
-    Min,Max : Vector;
-    Undo    : TFreeUndoObject;
-    N       : Integer;
+var Dialog: TFreeInsertPlaneDialog;
+    Min,Max: Vector;
+    Undo: TFreeUndoObject;
+    N: Integer;
 begin
    Ship.Extents(Min,Max);
    Dialog:=TFreeInsertPlaneDialog.Create(Ship);
@@ -4302,7 +4276,7 @@ begin
                if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
             end else begin
                Undo.Delete;
-               MessageDlg(Userstring(165),mtInformation,[mbOk],0);
+               ShowMessage(Userstring(165));
             end;
          end;
       end;
@@ -4431,8 +4405,9 @@ begin
       Ship.NumberOfselectedMarkers+
       Ship.NumberOfselectedFlowlines;
    if N>0 then begin
-      if MessageDlg(Userstring(173)+#32+IntToStr(N)+#32+Userstring(174)+'?',mtWarning,[mbYes,mbNo],0)=mrYes then
-      begin
+      if MessageDlg( Userstring(173)+#32+IntToStr(N)+#32+Userstring(174)+'?',
+                     mtWarning,[mbYes,mbNo],0 )=mrYes
+      then begin
          CreateUndoObject(Userstring(175),True);
          for I:=Ship.NumberOfselectedFlowlines downto 1 do Ship.SelectedFlowline[I-1].Delete;
          for I:=Ship.NumberOfselectedMarkers downto 1 do Ship.SelectedMarker[I-1].Delete;
@@ -4449,8 +4424,7 @@ end;
 procedure TFreeEdit.Selection_SelectAll;            // Select all visible items
 var I,J:Integer;
 begin
-   for I:=1 to Ship.NumberOfLayers do if Ship.Layer[I-1].Visible then
-   begin
+   for I:=1 to Ship.NumberOfLayers do if Ship.Layer[I-1].Visible then begin
       for J:=1 to Ship.Layer[I-1].Count do Ship.Layer[I-1].Items[J-1].Selected:=True;
    end;
    for I:=1 to Ship.Surface.NumberOfControlEdges do if Ship.Surface.ControlEdge[I-1].Visible then Ship.Surface.ControlEdge[I-1].Selected:=True;
@@ -4462,24 +4436,20 @@ begin
 end;
 
 procedure TFreeEdit.Undo;
-var UndoObject : TFreeUndoObject;
-    Preview    : boolean;
+var UndoObject: TFreeUndoObject; Preview: boolean;
 begin
    if Ship.FUndoObjects.Count>0 then begin
       Preview:=Ship.ProjectSettings.SavePreview;
-//    try
-         if Ship.FUndoPosition=Ship.UndoCount then  begin
-            if Ship.UndoObject[Ship.UndoCount-1].FIsTempRedoObject then begin
-            end else CreateRedoObject;
-         end;
-         if Ship.FPreviousUndoPosition<Ship.FUndoPosition then dec(Ship.FUndoPosition);
-         Ship.FPreviousUndoPosition:=Ship.FUndoPosition;
-         dec(Ship.FUndoPosition);
-         UndoObject:=Ship.FUndoObjects[Ship.FUndoPosition];
-         UndoObject.Restore;
-//    finally
-         Ship.ProjectSettings.SavePreview:=Preview;
-//    end;
+      if Ship.FUndoPosition=Ship.UndoCount then  begin
+         if Ship.UndoObject[Ship.UndoCount-1].FIsTempRedoObject then begin
+         end else CreateRedoObject;
+      end;
+      if Ship.FPreviousUndoPosition<Ship.FUndoPosition then dec(Ship.FUndoPosition);
+      Ship.FPreviousUndoPosition:=Ship.FUndoPosition;
+      dec(Ship.FUndoPosition);
+      UndoObject:=Ship.FUndoObjects[Ship.FUndoPosition];
+      UndoObject.Restore;
+      Ship.ProjectSettings.SavePreview:=Preview;
    end;
 end;
 
@@ -4512,7 +4482,7 @@ begin
       end;
    end else if Redo<>nil then Redo.Delete;
    Dialog.Destroy;
-end;{TFreeEdit.Undo_ShowHistory}
+end;
 
 procedure TFreeEdit.Redo;
 var UndoObject : TFreeUndoObject;
@@ -4530,7 +4500,7 @@ begin
          Ship.ProjectSettings.SavePreview:=Preview;
 //    end;
    end;
-end;{TFreeEdit.Redo}
+end;
 
 // Add a new intersection of the specified type at the specified location
 function  TFreeEdit.Intersection_Add(IntType:TFreeIntersectionType;Distance:Real):TFreeIntersection;
@@ -4598,8 +4568,24 @@ end;
    TFreeShip is the actual component used
    for modelling and representing the ship
 }
+
+procedure TFreeShip.AddViewport( Viewport: TFreeViewport );
+    begin     // Add a viewport to the list of viewports connected to the model
+      if FViewports.IndexOf(Viewport)=-1 then begin
+         Viewport.Color:=Preferences.ViewportColor;
+         FViewports.Add( Viewport );
+         Viewport.ZoomExtents;
+    end end;
+function TFreeShip.FGetViewport(Index:integer):TFreeViewport;
+   begin {if(Index>=0)and(Index<nV)then} Result:=FViewports[index]
+         { else Raise Exception.Create('Invalid viewport index!'); }
+   end;
 function TFreeShip.FGetNumberOfViewports:integer;
    begin Result:=FViewports.Count; end;
+procedure TFreeShip.DeleteViewport(Viewport:TFreeViewport); var Index:integer;
+    begin Index:=FViewports.IndexOf(Viewport);
+          if Index<>-1 then FViewports.Delete(index);
+    end;
 function TFreeShip.FGetOnChangeActiveLayer:TChangeActiveLayerEvent;
    begin Result:=Surface.OnChangeActiveLayer; end;
 function TFreeShip.FGetOnChangeLayerData:TNotifyEvent;
@@ -4708,7 +4694,6 @@ begin
       end;
    end;
 end;
-
 function TFreeShip.FGetActiveLayer:TFreeSubdivisionlayer;
    begin Result:=Surface.ActiveLayer; end;
 function TFreeShip.FGetBackgroundImage(Index:Integer):TFreeBackgroundImageData;
@@ -4737,11 +4722,6 @@ function TFreeShip.FGetNumberOfLockedPoints:Integer;
    begin Result:=Surface.NumberOfLockedPoints; end;
 function TFreeShip.FGetNumberOfLayers:integer;
    begin Result:=Surface.NumberOfLayers; end;
-function TFreeShip.FGetViewport(Index:integer):TFreeViewport;
-   begin { if (Index>=0) and (Index<NumberOfViewports)
-           then } Result:=FViewports[index]
-    //     else Raise Exception.Create('Invalid viewport index!');
-end;
 procedure TFreeShip.FSetActiveControlPoint( Val:TFreeSubdivisionControlPoint );
 begin
    if Val<>FActiveControlPoint then begin
@@ -4751,8 +4731,8 @@ begin
          ShowTranslatedValues(FControlpointForm);
          if FControlpointForm.Visible then FControlpointForm.Visible:=False;
       end else begin
-      // The first line makes sure that the activecontrolpoint form does NOT recieve focus.
-      // because the mousewheel zoom in/out doesn't work anymore in that case
+   // The first line makes sure that the activecontrolpoint form does NOT recieve focus.
+   // because the mousewheel zoom in/out doesn't work anymore in that case
          if not FControlpointForm.Visible then begin
             ShowTranslatedValues(FControlpointForm);
             ShowWindow( FControlpointForm.Handle,SW_SHOWNOACTIVATE );
@@ -4848,127 +4828,24 @@ begin
    end;
 end;
 
-function TFreeShip.FGetPreview:TJPEGImage;
-   procedure Resample1(var source,Target:TBitmap;Width,Height:integer);
-   var I,J,W,H, Row1,Row2, Col1,Col2: Integer;
-       U,V,S,T, R1,G1,B1, R2,G2,B2  : Real;
-       DestPix,SourceRow1,SourceRow2: pRGBTripleArray;
-   begin
-      W:=Width-1;
-      H:=Height-1;
-      if Target.Width<>Width then Target.Width:=Width;
-      if Target.Height<>Height then Target.Height:=Height;
-      for I:=0 to H do begin
-         u:=I/H;
-         S:=u*(Source.Height-1);
-         Row1:=trunc(S);
-         if Row1<0 then Row1:=0 else if Row1>Source.Height-2 then Row1:=Source.Height-2;
-         Row2:=Row1+1;
-         S:=(S-Row1)/(Row2-Row1);
-         DestPix:=Target.ScanLine[I];
-         SourceRow1:=Source.ScanLine[Row1];
-         SourceRow2:=Source.ScanLine[Row2];
-         for J:=0 to W-1 do begin
-            V:=J/W;
-            T:=V*(Source.Width-1);
-            Col1:=Trunc(T);
-            if Col1<0 then Col1:=0 else if Col1>Source.Width-2 then Col1:=Source.Width-2;
-            Col2:=Col1+1;
-            T:=(T-Col1)/(Col2-Col1);
-            R1:=SourceRow1^[Col1].rgbtRed+S*(SourceRow2^[Col1].rgbtRed-SourceRow1^[Col1].rgbtRed);
-            G1:=SourceRow1^[Col1].rgbtGreen+S*(SourceRow2^[Col1].rgbtGreen-SourceRow1^[Col1].rgbtGreen);
-            B1:=SourceRow1^[Col1].rgbtBlue+S*(SourceRow2^[Col1].rgbtBlue-SourceRow1^[Col1].rgbtBlue);
-            R2:=SourceRow1^[Col2].rgbtRed+S*(SourceRow2^[Col2].rgbtRed-SourceRow1^[Col2].rgbtRed);
-            G2:=SourceRow1^[Col2].rgbtGreen+S*(SourceRow2^[Col2].rgbtGreen-SourceRow1^[Col2].rgbtGreen);
-            B2:=SourceRow1^[Col2].rgbtBlue+S*(SourceRow2^[Col2].rgbtBlue-SourceRow1^[Col2].rgbtBlue);
-            DestPix^[J].rgbtRed:=Round(R1+T*(R2-R1));
-            DestPix^[J].rgbtgreen:=Round(G1+T*(G2-G1));
-            DestPix^[J].rgbtBlue:=Round(B1+T*(B2-B1));
-         end;
+function TFreeShip.FGetPreview: TJPEGImage;
+var Frm: TFreeViewPort; OldCanvas: TCanvas; I: Integer;
+begin Result:=nil;
+   if ProjectSettings.FSavePreview then
+   for I:=1 to nV do begin Frm:=Viewport[I-1];
+      if Frm.ViewPortMode=vmShade then begin
+         OldCanvas:=Frm.CanVas;
+         Result:=TJPEGImage.Create;
+         Result.PixelFormat:=pfDevice; // pf24bit; // pf15bit;
+         Result.Width:=Frm.ClientWidth;
+         Result.Height:=Frm.ClientHeight;
+         Result.CompressionQuality:=25;
+         BitBlt(Result.CanVas.Handle,0,0,Frm.ClientWidth,Frm.ClientHeight,Frm.CanVas.Handle,0,0,SRCCOPY);
+         Frm.CanVas:=Result.CanVas;
+         Frm.Refresh;
+         Frm.CanVas:=OldCanVas;             // Result.SaveToFile('F:\test.jpg');
+         Frm.RefResh; break;
       end;
-   end;
-   procedure Resample(var source,Target:TBitmap;Width,Height:integer);
-   var Bmp1: TBitmap;
-       I,J : Integer;
-       Row1,Row2: pRGBTripleArray;
-   begin
-      Bmp1:=TBitmap.Create;
-      Bmp1.PixelFormat:=pf24bit;
-      Resample1(Source,Bmp1,Width,Height);
-      Target.PixelFormat:=pf24bit;
-      if Target.Width<>Width then Target.Width:=Width;
-      if Target.Height<>Height then Target.Height:=Height;
-
-      StretchBlt(Target.Canvas.Handle,0,0,Target.Width,Target.Height,
-                 Source.Canvas.Handle,0,0,Source.Width,Source.Height,SRCCOPY);
-      // interpolate between the two images to get the best interpolation
-      for I:=1 to Target.Height do begin
-         Row1:=Bmp1.ScanLine[I-1];
-         Row2:=Target.ScanLine[I-1];
-         for J:=0 to Target.Width-1 do begin
-            Row2^[J].rgbtRed:=  (4*Row1^[J].rgbtRed  +Row2^[J].rgbtRed) div 5;
-            Row2^[J].rgbtGreen:=(4*Row1^[J].rgbtGreen+Row2^[J].rgbtGreen) div 5;
-            Row2^[J].rgbtBlue:= (4*Row1^[J].rgbtBlue +Row2^[J].rgbtBlue) div 5;
-         end;
-      end;
-      Bmp1.Destroy;
-   end;
-   Procedure SnapShot(xpos: integer; ypos: integer;OrgWidth,OrgHeight:integer; Var Bmp:TBitmap);
-   const DesW = 400;
-         DesH = 300;
-   Var dc    : HDC;
-       lpPal : PLOGPALETTE;
-       W,H   : Integer;
-       TmpBmp: TBitmap;
-   Begin
-      TmpBmp:=TBitmap.Create;
-      TmpBmp.PixelFormat:=pf24bit;
-      If ((OrgWidth=0) Or (OrgHeight = 0)) Then exit;
-      TmpBmp.Width:=OrgWidth;
-      TmpBmp.Height:=OrgHeight;
-      dc := GetDc(0);
-      If (dc = 0) Then exit;
-      If (GetDeviceCaps(dc, RASTERCAPS) And RC_PALETTE = RC_PALETTE) Then Begin
-         GetMem(lpPal, sizeof(TLOGPALETTE) + (255 * sizeof(TPALETTEENTRY)));
-         FillChar(lpPal^, sizeof(TLOGPALETTE) + (255 * sizeof(TPALETTEENTRY)), #0);
-         lpPal^.palVersion := $300;
-         lpPal^.palNumEntries := GetSystemPaletteEntries(dc, 0, 256, lpPal^.palPalEntry);
-         If (lpPal^.PalNumEntries <> 0) Then TmpBmp.Palette := CreatePalette(lpPal^);
-         FreeMem(lpPal, sizeof(TLOGPALETTE) + (255 * sizeof(TPALETTEENTRY)));
-      End;
-      BitBlt(TmpBmp.Canvas.Handle,0,0,OrgWidth,OrgHeight,Dc,xpos,ypos,SRCCOPY);
-      if OrgWidth/OrgHeight>4/3 then begin
-         W:=DesW;
-         H:=round(W*OrgHeight/OrgWidth);
-      end else begin
-         H:=DesH;
-         W:=Round(H*OrgWidth/OrgHeight);
-      end;
-      Resample(TmpBmp,Bmp,W,H);
-      ReleaseDc(0, dc);
-      TmpBmp.Destroy;
-   End;{SnapShot}
-
-var Tmp:TBitmap;
-begin
-   Tmp:=TBitmap.create;
-   Tmp.PixelFormat:=pf24bit;
-   Snapshot( Application.MainForm.Left,
-             Application.MainForm.Top,
-             Application.MainForm.Width,
-             Application.MainForm.Height,Tmp );
-   Result:=TJPEGImage.Create;
-   Result.Assign(Tmp);
-   Result.CompressionQuality:=90;           //Result.SaveToFile('c:\test.jpg');
-   Tmp.Destroy;
-end;
-
-procedure TFreeShip.AddViewport( Viewport:TFreeViewport );
-begin         // Add a viewport to the list of viewports connected to the model
-   if FViewports.IndexOf(Viewport)=-1 then begin
-      Viewport.Color:=Preferences.ViewportColor;
-      FViewports.Add(Viewport);
-      Viewport.ZoomExtents;
    end;
 end;
 
@@ -5010,13 +4887,6 @@ begin
 // FControlpointForm.FreeShip:=self;
 end;
 
-procedure TFreeShip.DeleteViewport(Viewport:TFreeViewport);
-var Index:integer;
-begin
-   Index:=FViewports.IndexOf(Viewport);
-   if Index<>-1 then FViewports.Delete(index);
-end;
-
 procedure TFreeShip.Clear;
 var I:integer; Pt:TPoint;
 begin                                                    // Initialize all data
@@ -5053,7 +4923,7 @@ begin                                                    // Initialize all data
    if not (csDestroying in componentState) then begin // remove backgroundimages from viewports
       Pt.X:=0;
       Pt.Y:=0;
-      for I:=1 to NumberOfViewports do
+      for I:=1 to nV do
          Viewport[I-1].BackgroundImage.AssignData(nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True);
       if assigned(FOnFileChanged) then FOnFileChanged(self);
       if Assigned(OnUpdateGeometryInfo) then OnUpdateGeometryInfo(self);
@@ -5100,7 +4970,7 @@ end;
 procedure TFreeShip.Draw;
 var I: integer;
 begin       // Redraws model to all viewports by re-initializing all viewports
-   for I:=1 to NumberOfViewports do Viewport[I-1].ZoomExtents;
+   for I:=1 to nV do Viewport[I-1].ZoomExtents;
    if LinesplanFrame<>nil then begin
       TFreeLinesplanframe(LinesplanFrame).Viewport.ZoomExtents;
    end;
@@ -5177,7 +5047,7 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
        DrawDiagonals:=Viewport.ViewType=fvBodyplan; // Blowup the boundary box by 3%
        Diff:=0.03*(Viewport.Max3D-Viewport.Min3D);
        Min:=Viewport.Min3D-Diff;
-       Diff:=-1.0*Diff;                               // ScalePoint(-1.0,Diff);
+       Diff:=-1.0*Diff;
        Max:=Viewport.Max3D-diff;
        if DrawStations
        or DrawButtocks
@@ -5627,7 +5497,7 @@ end;
 procedure TFreeShip.Redraw;
 var I : integer;
 begin // Redraws model to all viewports using the current min/max coordinates of the boundingbox
-   For I:=1 to NumberOfViewports do begin
+   For I:=1 to nV do begin
       if Viewport[I-1].Zoom=1.0 then Viewport[I-1].ZoomExtents
                                 else Viewport[I-1].Refresh;
    end;
@@ -5748,13 +5618,12 @@ begin
 end;
 
 procedure TFreeShip.MouseDown(Viewport:TFreeViewport;Button:TMouseButton;Shift:TShiftState;X,Y:integer;var ItemSelected:Boolean);
-var I,J,Tmp: integer;
-    P3D    : Vector;
-    Point  : TFreeSubdivisionControlPoint;
-    Edge   : TFreeSubdivisionControlEdge;
-    Curve  : TFreeSubdivisionControlCurve;
-    Face   : TFreeSubdivisionControlFace;
-    Entity : TFreeSubdivisionBase;
+var I,J,Tmp: integer; P3D: Vector;
+    Point: TFreeSubdivisionControlPoint;
+    Edge: TFreeSubdivisionControlEdge;
+    Curve: TFreeSubdivisionControlCurve;
+    Face: TFreeSubdivisionControlFace;
+    Entity: TFreeSubdivisionBase;
 begin
    ItemSelected:=False;
    if Button=mbLeft then begin
@@ -5767,12 +5636,12 @@ begin
                  if Tmp<=SelectDistance then begin
                     Entity:=Point;      // Point.Selected:=not Point.Selected;
                     ItemSelected:=True; // Draw the selected point to all viewports
-                    for J:=1 to NumberOfViewports do
-                      if self.Viewport[J-1].ViewportMode=vmWireframe then
-                         Point.Draw(self.Viewport[J-1]);
+                    for J:=1 to nV do
+                    if self.Viewport[J-1].ViewportMode=vmWireframe then
+                       Point.Draw(self.Viewport[J-1]);
                     break;
                  end;
-              end;  Inc(I);
+              end; Inc(I);
            end;
            if Entity=nil then begin // No points found, search for nearest controlEdge
               I:=1;
@@ -5788,7 +5657,7 @@ begin
                        if (ssCtrl in shift) then Edge.Trace;
                        ItemSelected:=True;
                        // Draw the selected edge to all viewports
-                       for J:=1 to NumberOfViewports do Self.Viewport[J-1].Refresh;
+                       for J:=1 to nV do Self.Viewport[J-1].Refresh;
                        break;
                     end;
                  end;  Inc(I);
@@ -5807,13 +5676,10 @@ begin
                        // If CTRL key is pressed, select all connected controlfaces that
                        // belong to the same layer and are not separated by a crease edge
                        // and have the same selected state
-                       if (ssCtrl in shift) then
-                       begin
-                          Face.Trace;
-                       end;
+                       if (ssCtrl in shift) then begin Face.Trace; end;
                        ItemSelected:=True;
                        // Draw the selected faces to all viewports
-                       for J:=1 to NumberOfViewports do Self.Viewport[J-1].Refresh;
+                       for J:=1 to nV do Self.Viewport[J-1].Refresh;
                        break;
                     end;
                  end; Inc(I);
@@ -5828,7 +5694,7 @@ begin
                        Entity:=Curve;
                        Curve.Selected:=not Curve.Selected;
                        ItemSelected:=True; // Draw the selected edge to all viewports
-                       for J:=1 to NumberOfViewports do
+                       for J:=1 to nV do
                          if self.Viewport[J-1].ViewportMode=vmWireframe then
                            Curve.Draw(self.Viewport[J-1]);
                        break;
@@ -5844,7 +5710,7 @@ begin
                  if Tmp<=SelectDistance then begin
                     Flowline[I-1].Selected:=not Flowline[I-1].Selected;
                     ItemSelected:=True; // Draw the selected flowline to all viewports
-                    for J:=1 to NumberOfViewports do
+                    for J:=1 to nV do
                       if self.Viewport[J-1].ViewportMode=vmWireframe then
                         Flowline[I-1].Draw(self.Viewport[J-1]);
                     break;
@@ -5860,7 +5726,7 @@ begin
                     Marker[I-1].Selected:=not Marker[I-1].Selected;
                     ItemSelected:=True;
                     // Draw the selected Marker to all viewports
-                    for J:=1 to NumberOfViewports do
+                    for J:=1 to nV do
                       if self.Viewport[J-1].ViewportMode=vmWireframe then
                          Marker[I-1].Draw(self.Viewport[J-1]);
                     break;
@@ -5876,11 +5742,11 @@ begin
                  if not (ssCtrl in shift) then begin
                     if NumberOfSelectedControlPoints>0 then for I:=NumberOfSelectedControlPoints downto 1 do SelectedControlPoint[I-1].Selected:=False;
                     Point.Selected:=True;
-                    for J:=1 to NumberOfViewports do self.Viewport[J-1].Refresh;
+                    for J:=1 to nV do self.Viewport[J-1].Refresh;
                  end else begin
                     Point.Selected:=not Point.Selected;
                     if not Point.Selected then Point:=SelectedControlPoint[NumberOfSelectedControlPoints-1];
-                    for J:=1 to NumberOfViewports do self.Viewport[J-1].Refresh;
+                    for J:=1 to nV do self.Viewport[J-1].Refresh;
                  end;
                  if ActiveControlPoint<>point then ActiveControlPoint:=Point;
                  FCurrentlyMoving:=True;
@@ -5888,7 +5754,7 @@ begin
                  FPrevCursorPosition.X:=X;
                  FPrevCursorPosition.Y:=Y;
               end else if Entity is TFreeSubdivisionControlCurve then begin
-                 for J:=1 to NumberOfViewports do
+                 for J:=1 to nV do
                   if self.Viewport[J-1].ViewportMode=vmWireframe then
                      self.Viewport[J-1].Refresh;
               end;
@@ -5901,11 +5767,7 @@ begin
 end;
 
 procedure TFreeShip.MouseMove(Viewport:TFreeViewport; Shift: TShiftState; X,Y: integer);
-var P2D  : Place;
-    P    : Vector;
-    Pt   : TPoint;
-    Point: TFreeSubdivisionControlPoint;
-    I    : Integer;
+var P2D: Place; P: Vector; PtS: TFreeSubdivisionControlPoint; I: Integer; //  Pt: TPoint;
 begin
    Case EditMode of
       emSelectItems: 
@@ -5925,42 +5787,35 @@ begin
                  end;
                  Edit.CreateUndoObject(Userstring(190),True);
               end;
-              Point:=ActiveControlPoint;
+              PtS:=ActiveControlPoint;
               FileChanged:=True;
               Build:=False;
               FPointHasBeenMoved:=True;
-              Pt.X:=X;
-              Pt.Y:=Y;
-              P2D:=Viewport.ProjectBackTo2D(Pt);
-              P:=Point.Coordinate;
+              P2D:=Viewport.ProjectBackTo2D( Point( X,Y ) );
+              P:=PtS.Coordinate;
               Case Viewport.Viewtype of
-                 fvProfile : begin
-                               P.X:=P2D.X;
-                               P.Z:=P2D.Y; end;
-                 fvPlan    : begin
-                               P.X:=P2D.X;
-                               P.Y:=P2D.Y; end;
+                 fvProfile : begin P.X:=P2D.X; P.Z:=P2D.Y; end;
+                 fvPlan    : begin P.X:=P2D.X; P.Y:=P2D.Y; end;
                  fvBodyplan: begin
                             if P.X<=ProjectSettings.MidleFrame
                                then P.Y:=-P2D.X
                                else P.Y:=P2D.X;
                                P.Z:=P2D.Y; end;
               end;
-              Point.Coordinate:=P;
-              ActiveControlPoint:=Point;
+              PtS.Coordinate:=P;
+              ActiveControlPoint:=PtS;
               if ControlpointForm.Visible then begin
                  // This lines updates the coordinate information in the controlpoint form
-                 ControlPointform.ActiveControlPoint:=Point;
+                 ControlPointform.ActiveControlPoint:=PtS;
                  // and forces a repaint of the form
                  if not Viewport.Focused then Viewport.SetFocus;
                  application.ProcessMessages;
                  TForm(Viewport.Owner).BringToFront;
               end;
               Build:=False;
-              for I:=1 to NumberOfViewports do self.Viewport[I-1].Refresh;
+              for I:=1 to nV do self.Viewport[I-1].Refresh;
               if LinesplanFrame<>nil then TFreeLinesplanframe(LinesplanFrame).Viewport.Refresh;
-              FPrevCursorPosition.X:=X;
-              FPrevCursorPosition.Y:=Y;
+              FPrevCursorPosition:=Point( X,Y );
            end;
         end;
    end;
@@ -5974,11 +5829,29 @@ procedure TFreeShip.ZoomFitAllViewports;
 var I: integer; //P: TFreeHullWindow; //FreeViewPort;
 begin        // Redraws model to all viewports by re-initializing all viewports
   with Application.MainForm as TMainForm do begin
-    for I:=0 to NumberofViewPorts-1 do begin
-        ViewPort[I].ZoomExtents;
-    end;
+    for I:=0 to nV-1 do ViewPort[I].ZoomExtents;
     if LinesplanFrame<>nil then
        TFreeLinesplanframe(LinesplanFrame).Viewport.ZoomExtents;
+  end;
+end;
+
+procedure TFreeShip.SelectPointsInFrame( Viewport: TfreeViewport; rect: TRect );
+var I: Integer; Point: TFreeSubdivisionControlPoint; P2D: TPoint;
+begin
+  case EditMode of
+    emSelectItems: with Rect do begin
+      if Left>Right then begin I:=Left; Left:=Right; Right:=I; end;
+      if Top>Bottom then begin I:=Top; Top:=Bottom; Bottom:=I; end;
+      for I:=0 to Surface.NumberOfControlPoints-1 do // это по узлам для начала
+      if Surface.ControlPoint[I].Visible then begin
+         Point:=Surface.ControlPoint[I];
+         P2D:=Viewport.Project(Point.Coordinate);
+         if (P2D.x >= Left) and (P2D.x <= Right)
+         and (P2D.y >= Top) and (P2D.y <= Bottom)
+         then self.Surface.Selection_Add( Point );
+      end;
+      ReDraw; MainForm.UpdateMenu;
+    end;
   end;
 end;
 

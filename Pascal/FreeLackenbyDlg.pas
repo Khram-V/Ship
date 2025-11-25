@@ -301,7 +301,7 @@ begin
       end;
    end;
    if Points.Count=0 then begin
-      MessageDlg(Userstring(238)+'!',mtError,[mbOK],0);
+      ShowMessage(Userstring(238)+'!');
       Points.Destroy;
       LockedPoints.Destroy;
       exit;
@@ -427,9 +427,9 @@ begin
          end;
          FFreeship.Redraw;
          Succeeded:=True;
-         MessageDlg(Userstring(240)+#32+IntToStr(Iteration)+#32+Userstring(241)+'.',mtInformation,[mbOk],0);
+         ShowMessage(Userstring(240)+#32+IntToStr(Iteration)+#32+Userstring(241)+'.');
       end else begin                                   // Transformation failed
-         MessageDlg(Userstring(242)+'!',mtWarning,[mbOk],0); // Backup layer data
+         ShowMessage(Userstring(242)+'!');             // Backup layer data
          Setlength(TmpLayerInfo,FFreeship.NumberOfLayers);
          for I:=1 to FFreeship.NumberOfLayers do begin
             Layer:=FFreeship.Layer[I-1];
@@ -614,7 +614,7 @@ begin
          FUpdateData(FNewSectionalAreaCurve);
          TopView.ZoomExtents;
       end;
-   end else MessageDlg(Userstring(243)+'!',mtError,[mbOk],0);
+   end else ShowMessage(Userstring(243)+'!');
 end;
 
 procedure TFreeLackenbyDialog.Input1AfterSetValue(Sender: TObject);

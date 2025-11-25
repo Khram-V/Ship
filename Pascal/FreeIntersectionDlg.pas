@@ -148,7 +148,7 @@ begin
          Intersection.ShowCurvature:=ListBox.Checked[ListBox.ItemIndex];
          FFreeShip.FileChanged:=true;
          if FFreeship.Visibility.ShowCurvature then
-           for I:=1 to FFreeship.NumberOfViewports do
+           for I:=1 to FFreeship.nV do
              if FFreeship.Viewport[I-1].Viewportmode=vmWireframe then
                 FFreeship.Viewport[I-1].Refresh;
       end;
@@ -210,19 +210,16 @@ begin
       if ViewButtocks.Checked then Int:=FFreeShip.Edit.Intersection_Add(fiButtock,StrToFloat(Str));
       if ViewWaterlines.Checked then Int:=FFreeShip.Edit.Intersection_Add(fiWaterline,StrToFloat(Str));
       if ViewDiagonals.Checked then Int:=FFreeShip.Edit.Intersection_Add(fiDiagonal,StrToFloat(Str));
-      if Int<>nil then  begin              // Added and sorted, refill the list
-         FillBox;
-      end;
+      if Int<>nil then FillBox;            // Added and sorted, refill the list
       UpdateMenu;
    end;
 end;
 
-procedure TFreeIntersectionDialog.AddRangeExecute(Sender: TObject);
-var Str        : String;
-    Min,Max    : Vector;
-    Start,Stop : Real;
-    Step       : Real;
-    Index      : Integer;
+procedure TFreeIntersectionDialog.AddRangeExecute( Sender: TObject );
+var Str: String;
+    Min,Max: Vector;
+    Start,Stop,Step: Real;
+    Index: Integer;
 begin
    Str:='1.0';
    if not InputQuery(Userstring(237),Userstring(236)+':',Str) then exit;

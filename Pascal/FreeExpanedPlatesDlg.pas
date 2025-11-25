@@ -17,6 +17,8 @@ interface uses Windows,
      FasterList,FreeGeometry,FreeShipUnit,FreeTypes;
 
 type TFreeExpanedplatesDialog  = class(TForm)
+     Viewport: TFreeViewport;
+     ActionList1: TActionList;
      ToolBar1: TToolBar;
      Splitter1: TSplitter;
      Panel2,Panel3: TPanel;
@@ -24,9 +26,7 @@ type TFreeExpanedplatesDialog  = class(TForm)
      Label11,_Label12,_Label13,_Label14,Label15,_Label16,Label17,_Label18: TLabel;
      Edit1,Edit2,Edit3: TEdit;
      CheckBox1: TCheckBox;
-
      ToolButton20: TToolButton;
-     ActionList1: TActionList;
      RotateCCW90: TAction;
      MenuImages: TImageList;
      RotateCCW5: TAction;
@@ -53,7 +53,6 @@ type TFreeExpanedplatesDialog  = class(TForm)
      ListBox: TCheckListBox;
      ExportDXF: TAction;
      ToolButton13: TToolButton;
-     Viewport: TFreeViewport;
      _ToolButton14: TToolButton;
      ShowStations: TAction;
      ToolButton15: TToolButton;
@@ -80,11 +79,11 @@ type TFreeExpanedplatesDialog  = class(TForm)
      ExportTextFile: TAction;
      ToolButton6: TToolButton;
      procedure ViewportRequestExtents(Sender: TObject; var Min,Max: Vector);
-     procedure ViewportRedraw(Sender: TObject);
-     procedure ViewportMouseMove(Sender: TObject; Shift: TShiftState; X,Y: Integer);
-     procedure ViewportMouseDown(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
+     procedure ViewportRedraw(Sender:TObject);
+     procedure ViewportMouseMove(Sender:TObject; Shift:TShiftState; X,Y: Integer);
+     procedure ViewportMouseDown(Sender:TObject; Button:TMouseButton; Shift:TShiftState; X,Y: Integer);
      procedure ListBoxClick(Sender: TObject);
-     procedure ViewportMouseUp(Sender: TObject; Button: TMouseButton;Shift: TShiftState; X, Y: Integer);
+     procedure ViewportMouseUp(Sender:TObject; Button:TMouseButton; Shift:TShiftState; X,Y: Integer);
      procedure RotateCCW90Execute(Sender: TObject);
      procedure RotateCCW5Execute(Sender: TObject);
      procedure RotateCW5Execute(Sender: TObject);
@@ -116,12 +115,12 @@ type TFreeExpanedplatesDialog  = class(TForm)
      procedure ShowSubmergedAreaExecute(Sender: TObject);
      procedure ExportTextFileExecute(Sender: TObject);
 private
-   FPlates           : TFasterList;
-   FFreeShip         : TFreeShip;
-   FInitialPosition  : TPoint;
-   FAllowPanOrZoom   : Boolean;
-   FXGridSpacing     : Real;
-   FYGridSpacing     : Real;
+   FPlates: TFasterList;
+   FFreeShip: TFreeShip;
+   FInitialPosition: TPoint;
+   FAllowPanOrZoom: Boolean;
+   FXGridSpacing,
+   FYGridSpacing: Real;
    function FGetActivePatch:TFreeDevelopedPatch;
    procedure FSetActivePatch(Val:TFreeDevelopedPatch);
    procedure FUpdateListBox;
@@ -132,11 +131,11 @@ end;
 
 var FreeExpanedplatesDialog: TFreeExpanedplatesDialog;
 
-implementation //uses FreeLanguageSupport;
+implementation
 {$R *.lfm}
 
 function GetGridSpacing(OveralSize:Real):Real;
-var I,Tmp : Real;
+var I,Tmp: Real;
 begin
    OveralSize:=Abs(OveralSize);
    if OveralSize<1e-6 then OveralSize:=1e-6;
@@ -156,8 +155,7 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.FSetActivePatch(Val:TFreeDevelopedPatch);
-var Current : TFreeDevelopedPatch;
-    Index   : Integer;
+var Current: TFreeDevelopedPatch; Index: Integer;
 begin
    Current:=ActivePatch;
    if Val<>Current then begin
@@ -169,7 +167,7 @@ begin
    if Val<>nil then begin
       Index:=FPlates.IndexOf(Val);
       if Index<>-1 then begin        // Put it at the end of the list to ensure
-         FPlates.Delete(Index);           // that it is always drawn on top
+         FPlates.Delete(Index);      // that it is always drawn on top
          FPlates.Add(Val);
       end;
    end;
@@ -206,8 +204,7 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.FUpdateListBox;
-var I,Index : Integer;
-    Patch   : TFreeDevelopedPatch;
+var I,Index: Integer; Patch: TFreeDevelopedPatch;
 begin
    ListBox.Items.BeginUpdate;
    ListBox.Clear;
@@ -224,12 +221,9 @@ var FMin,FMax  : Vector;
     I,N        : Integer;
     Patch      : TFreeDevelopedPatch;
 begin
-   if FPlates<>nil then begin
-      N:=1;
-      for I:=1 to FPlates.Count do begin
-         Patch:=FPlates[I-1];
-         if Patch.Visible then begin
-            Patch.Extents(FMin,FMax);
+   if FPlates<>nil then begin N:=1;
+      for I:=1 to FPlates.Count do begin Patch:=FPlates[I-1];
+         if Patch.Visible then begin Patch.Extents(FMin,FMax);
             if N=1 then begin                // this is the first visible patch
                Min:=FMin;
                Max:=FMax;
@@ -261,10 +255,8 @@ begin
    ShowFillColor.Checked:=True;
    ShowErrorEdges.Checked:=False;
    ShowSubmergedArea.Enabled:=ShowFillColor.Checked;
-// Print.Enabled:=Printer<>nil;
    _Label13.Caption:=LengthStr(FFreeship.ProjectSettings.ProjectUnits);
-   _Label14.Caption:=_Label13.Caption;
-                              // Calculate the initial position fo each surface
+   _Label14.Caption:=_Label13.Caption; // Calculate the initial position fo each surface
    for I:=1 to FPlates.Count do begin
       Patch:=Plates[I-1];
       Patch.Extents( Min,Max );
@@ -284,9 +276,7 @@ begin
          MinMax(Max,MinT,MaxT);
       end;
    end;
-
-   // calculate extents
-   for I:=1 to FPlates.Count do begin
+   for I:=1 to FPlates.Count do begin                  // calculate extents
       Patch:=Plates[I-1];
       Patch.Extents(MinT,MaxT);
       if I=1 then begin
@@ -297,7 +287,6 @@ begin
          MinMax(MaxT,Min,Max);
       end;
    end;
-
    if Max.X-Min.X>Max.Y-Min.Y then Tmp:=Max.X-Min.X
                               else Tmp:=Max.Y-Min.Y;
    FXGridSpacing:=GetGridSpacing(Tmp)/2;
@@ -314,41 +303,33 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.ViewportRedraw(Sender: TObject);
-var I,N     : Integer;
-    Patch   : TFreeDevelopedPatch;
-    X,Y     : Real;
-    P       : Vector;
-    Pt1,Pt2 : TPoint;
-    Space   : Real;
+var I,N: Integer;
+    Patch: TFreeDevelopedPatch;
+    X,Y,Space: Real;
+    P: Vector;
+    Pt1,Pt2: TPoint;
     Suppress:Boolean;
-    Str     : string;
+    Str: string;
 begin
    if FPlates<>nil then
    begin
-      if ShowDimensions.Checked then
-      begin
-         Suppress:=False;
-         // Draw grid lines
-         Space:=0.025*Abs( Viewport.Min3D-Viewport.Max3D );
-
-         // Calculate and draw XGrid
-         if FXGridSpacing<>0 then N:=round((2*Space+Viewport.Max3D.X-Viewport.Min3D.X)/FXGridSpacing)
-                             else N:=10000;
-         if N<500 then
-         begin
+      if ShowDimensions.Checked then begin
+         Suppress:=False;                                   // Draw grid lines
+         Space:=0.025*Abs( Viewport.Min3D-Viewport.Max3D ); // Calculate and draw XGrid
+         if FXGridSpacing<>0
+            then N:=round((2*Space+Viewport.Max3D.X-Viewport.Min3D.X)/FXGridSpacing)
+            else N:=10000;
+         if N<500 then begin
             Viewport.PenColor:=RGB(225,225,225);
             Viewport.Penwidth:=1;
             Viewport.PenStyle:=psSolid;
             I:=Round((Viewport.Min3D.X)/FXGridSpacing)-2;
             X:=I*FXGridSpacing;
-            // Skip translation
             Viewport.FontName:=UFont; //'Arial';
-            // End Skip translation
             Viewport.Canvas.Font.Size:=6;
-            while X<=Viewport.Max3D.X do
-            begin
-               if (X>=Viewport.Min3D.X-0.01) and (X<=Viewport.Max3D.X+0.01) then
-               begin
+            while X<=Viewport.Max3D.X do begin
+               if (X>=Viewport.Min3D.X-0.01)
+               and (X<=Viewport.Max3D.X+0.01) then begin
                   P:=iVect(X,Viewport.Min3D.Y-Space,0.0);
                   Pt1:=Viewport.Project(P);
                   Viewport.Canvas.MoveTo(Pt1.X,Pt1.Y);
@@ -361,25 +342,21 @@ begin
                end;
                X:=X+FXGridSpacing;
             end;
-         end else Suppress:=True;
-         // Calculate and draw YGrid
-         if FYGridSpacing<>0 then N:=round((2*Space+Viewport.Max3D.Y-Viewport.Min3D.Y)/FYGridSpacing)
-                             else N:=10000;
-         if N<500 then
-         begin
+         end else Suppress:=True;                   // Calculate and draw YGrid
+         if FYGridSpacing<>0
+            then N:=round((2*Space+Viewport.Max3D.Y-Viewport.Min3D.Y)/FYGridSpacing)
+            else N:=10000;
+         if N<500 then begin
             Viewport.PenColor:=RGB(225,225,225);
             Viewport.Penwidth:=1;
             Viewport.PenStyle:=psSolid;
             I:=Round((Viewport.Min3D.Y)/FYGridSpacing)-2;
             Y:=I*FYGridSpacing;
-            // Skip translation
             Viewport.FontName:=UFont; //'Arial';
-            // End Skip translation
             Viewport.Canvas.Font.Size:=6;
-            while Y<=Viewport.Max3D.Y do
-            begin
-               if (Y>=Viewport.Min3D.Y-0.01) and (Y<=Viewport.Max3D.Y+0.01) then
-               begin
+            while Y<=Viewport.Max3D.Y do begin
+               if (Y>=Viewport.Min3D.Y-0.01)
+               and (Y<=Viewport.Max3D.Y+0.01) then begin
                   P:=iVect(Viewport.Min3D.X-Space,Y,0.0);
                   Pt1:=Viewport.Project(P);
                   Viewport.Canvas.MoveTo(Pt1.X,Pt1.Y);
@@ -395,11 +372,9 @@ begin
          end else Suppress:=True;
       end else Suppress:=False;
 
-      for I:=1 to FPlates.Count do
-      begin
+      for I:=1 to FPlates.Count do begin
          Patch:=FPlates[I-1];
-         if Patch.Visible then
-         begin
+         if Patch.Visible then begin
             Patch.ShowDimensions:=(ShowDimensions.Checked) and (not Suppress);
             Patch.ShowBoundingBox:=Patch=ActivePatch;
             Patch.ShowStations:=ShowStations.Checked;
@@ -421,18 +396,16 @@ begin
 end;
 
 procedure TFreeExpanedplatesDialog.ViewportMouseMove(Sender: TObject;Shift: TShiftState; X, Y: Integer);
-var P       : TPoint;
-    P1,P2   : Place;
-    Diff    : Place;
-    Patch   : TFreeDevelopedPatch;
+var P: TPoint;
+    P1,P2,Diff: Place;
+    Patch: TFreeDevelopedPatch;
 begin
    if FAllowPanOrZoom then begin
       if ssLeft in Shift then begin                      // Zoom in or zoom out
          if abs(FInitialPosition.Y-Y)>4 then begin
             if Y<FInitialPosition.Y then Viewport.ZoomIn else
-               if Y>FInitialPosition.Y then Viewport.ZoomOut;
-            FInitialPosition.X:=X;
-            FInitialPosition.Y:=Y;
+            if Y>FInitialPosition.Y then Viewport.ZoomOut;
+            FInitialPosition:=Point( X,Y );
          end;
       end else if ssRight in Shift then begin // Pan the window left, right, top or bottom
          if (abs(FInitialPosition.X-X)>4) or (abs(FInitialPosition.Y-Y)>4)  then
@@ -440,26 +413,23 @@ begin
             P.X:=Viewport.Pan.X+X-FInitialPosition.X;
             P.Y:=Viewport.Pan.Y+Y-FInitialPosition.Y;
             Viewport.Pan:=P;
-            FInitialPosition.X:=X;
-            FInitialPosition.Y:=Y;
+            FInitialPosition:=Point( X,Y );
          end;
       end;
    end else begin
       Patch:=ActivePatch;
-      if (ssLeft in Shift) and (Patch<>nil) then begin // Translate the selected patch
-         if (abs(FInitialPosition.X-X)>0) or (abs(FInitialPosition.Y-Y)>0)
-         then begin
-            P.X:=X;
-            P.Y:=Y;
-            P1:=Viewport.ProjectBackTo2D(FInitialPosition);
-            P2:=Viewport.ProjectBackTo2D(P);
-            Diff.X:=Patch.Translation.X+(P2.X-P1.X);
-            Diff.Y:=Patch.Translation.Y+(P2.Y-P1.Y);
-            Patch.Translation:=Diff;
-            Viewport.Refresh;
-            FInitialPosition.X:=X;
-            FInitialPosition.Y:=Y;
-         end;
+      if (ssLeft in Shift) and (Patch<>nil) then // Translate the selected patch
+      if (abs(FInitialPosition.X-X)>0) or (abs(FInitialPosition.Y-Y)>0)
+      then begin
+         P.X:=X;
+         P.Y:=Y;
+         P1:=Viewport.ProjectBackTo2D(FInitialPosition);
+         P2:=Viewport.ProjectBackTo2D(P);
+         Diff.X:=Patch.Translation.X+(P2.X-P1.X);
+         Diff.Y:=Patch.Translation.Y+(P2.Y-P1.Y);
+         Patch.Translation:=Diff;
+         Viewport.Refresh;
+         FInitialPosition:=Point( X,Y );
       end;
    end;
 end;
@@ -468,17 +438,13 @@ procedure TFreeExpanedplatesDialog.ViewportMouseDown(Sender: TObject;Button: TMo
 var Active: TFreeDevelopedPatch;
     I,Dist:Integer;
 begin
-   FInitialPosition.X:=X;
-   FInitialPosition.Y:=Y;
+   FInitialPosition:=Point( X,Y );
    FAllowPanOrZoom:=True;
-   if Button=mbLeft then for I:=FPlates.Count downto 1 do
-   begin
+   if Button=mbLeft then for I:=FPlates.Count downto 1 do begin
       Active:=FPlates[I-1];
-      if Active.Visible then
-      begin
+      if Active.Visible then begin
          Dist:=Active.DistanceToCursor(X,Y,Viewport);
-         if Dist<=Active.Owner.Owner.ControlPointSize then
-         begin
+         if Dist<=Active.Owner.Owner.ControlPointSize then begin
             if ActivePatch<>Active then ActivePatch:=Active;
             FAllowPanOrZoom:=False;
             break;
@@ -490,17 +456,14 @@ end;
 procedure TFreeExpanedplatesDialog.ListBoxClick(Sender: TObject);
 var Patch: TFreeDevelopedPatch;
 begin
-   if Listbox.ItemIndex<>-1 then
-   begin
+   if Listbox.ItemIndex<>-1 then begin
       Patch:=Listbox.Items.Objects[Listbox.ItemIndex] as TFreeDevelopedPatch;
-      if Patch.Visible<>Listbox.Checked[Listbox.ItemIndex] then
-      begin
+      if Patch.Visible<>Listbox.Checked[Listbox.ItemIndex] then begin
          Patch.Visible:=Listbox.Checked[Listbox.ItemIndex];
          if Viewport.Zoom=1.0 then Viewport.ZoomExtents
                               else Viewport.Refresh;
       end;
-   end;
-   ActivePatch:=ActivePatch;
+   end; ActivePatch:=ActivePatch;
 end;
 
 procedure TFreeExpanedplatesDialog.ViewportMouseUp(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -511,8 +474,7 @@ end;
 
 procedure TFreeExpanedplatesDialog.RotateCCW90Execute(Sender: TObject);
 begin
-   if ActivePatch<>nil then
-   begin
+   if ActivePatch<>nil then begin
       ActivePatch.Rotation:=ActivePatch.Rotation+90;
       Edit1.Text:=FloatToDec(ActivePatch.Rotation,3);
       if Viewport.Zoom=1.0 then Viewport.ZoomExtents
@@ -522,8 +484,7 @@ end;
 
 procedure TFreeExpanedplatesDialog.RotateCCW5Execute(Sender: TObject);
 begin
-   if ActivePatch<>nil then
-   begin
+   if ActivePatch<>nil then begin
       ActivePatch.Rotation:=ActivePatch.Rotation+5;
       Edit1.Text:=FloatToDec(ActivePatch.Rotation,3);
       if Viewport.Zoom=1.0 then Viewport.ZoomExtents
@@ -533,8 +494,7 @@ end;
 
 procedure TFreeExpanedplatesDialog.RotateCW5Execute(Sender: TObject);
 begin
-   if ActivePatch<>nil then
-   begin
+   if ActivePatch<>nil then begin
       ActivePatch.Rotation:=ActivePatch.Rotation-5;
       Edit1.Text:=FloatToDec(ActivePatch.Rotation,3);
       if Viewport.Zoom=1.0 then Viewport.ZoomExtents
@@ -544,8 +504,7 @@ end;
 
 procedure TFreeExpanedplatesDialog.RotateCW90Execute(Sender: TObject);
 begin
-   if ActivePatch<>nil then
-   begin
+   if ActivePatch<>nil then begin
       ActivePatch.Rotation:=ActivePatch.Rotation-90;
       Edit1.Text:=FloatToDec(ActivePatch.Rotation,3);
       if Viewport.Zoom=1.0 then Viewport.ZoomExtents
@@ -563,9 +522,7 @@ var Str:string;
 begin
    Str:=FFreeShip.Preferences.ExportDirectory;
    if Str[Length(Str)]<>'\' then Str:=Str+'\';
-   // Skip translation
    Str:=Str+ChangeFileExt(ExtractFilename(FFreeship.FileName),'')+'_developments.png';
-   // End Skip translation
    Viewport.SaveAsBitmap(Str);
 end;
 

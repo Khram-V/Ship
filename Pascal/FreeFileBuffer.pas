@@ -1,12 +1,8 @@
 unit FreeFileBuffer;
 interface uses
-  Classes,
-  SysUtils,
-  Graphics,
-  StrUtils,
-  FreeTypes,
-  LConvEncoding,
-  FreeVersionUnit;
+  Classes,   SysUtils,
+  Graphics,  StrUtils,
+  LConvEncoding, FreeTypes, FreeVersionUnit;
 const FileBufferBlockSize=32768;                         //=2^15 <= 4096=2^12
                         // used for reading and writing files using TFilebuffer
 type
@@ -16,7 +12,8 @@ type
 }
 TFreeFileBuffer=class
   private
-    FCapacity: integer; // Amount of bytes allocated
+    FCapacity,         // Amount of bytes allocated
+    FCount: Integer;   // The amount of bytes actually used
     FVersion: TFreeFileVersion;
     FData: array of byte;
     FFileName: String;
@@ -24,17 +21,16 @@ TFreeFileBuffer=class
     procedure FSetCapacity(val: integer); virtual;
     function FGetCapacity: integer; virtual;
   public
-    FCount: integer;    // The amount of bytes actually used
-    FPosition: integer; // current position when reading information from buffer
     Encoding: String;
-    procedure Add( IntegerValue: integer);     overload; virtual;
-    procedure Add( Text: String);          overload; virtual;
-    procedure Add( BooleanValue: boolean);     overload; virtual;
+    FPosition:Integer; // current position when reading information from buffer
+    procedure Add( IntegerValue: integer); overload; virtual;
+    procedure Add( Text: String);        overload; virtual;
+    procedure Add( BooleanValue: boolean); overload; virtual;
     procedure Add( FloatValue: Real);    overload; virtual;
-    procedure Add( Coordinate: Vector);     overload; virtual;
-    procedure Add( Plane: Plate);           overload; virtual;
+    procedure Add( Coordinate: Vector);  overload; virtual;
+    procedure Add( Plane: Plate);        overload; virtual;
     procedure Add( Version: TFreeFileVersion); overload; virtual;
-    procedure Add(JPegImage: TJPEGImage); overload; virtual;
+    procedure Add( JPegImage: TJPEGImage ); overload; virtual;
     procedure LoadInteger(var Output: integer); virtual;
     procedure LoadString(var Output: String); virtual;
     procedure LoadTStrings(var Output: TStrings); virtual;
@@ -61,12 +57,11 @@ TFreeFileBuffer=class
   }
   TFreeTextBuffer=class( TFreeFileBuffer )
   private
-    FLines: TStringList;
-//  FormatSettings: TFormatSettings;
+    FLines: TStringList;                    // FormatSettings: TFormatSettings;
     function FGetCapacity: integer; override;
     procedure FSetCapacity( val: integer ); override;
   public
-    FPosition: integer;    // this is our position
+    FPosition: integer;                                 // this is our position
     constructor Create;
     destructor Destroy; override;
     procedure Clear; override;
@@ -103,23 +98,18 @@ implementation
 function TFreeFileBuffer.FGetCapacity: integer; begin Result:=FCapacity; end;
 procedure TFreeFileBuffer.FSetCapacity( Val: Integer ); //Var I: Integer;
 begin if FCapacity<=Val then begin
-      FCapacity:=Val+512; Setlength( FData,Fcapacity ); //for I:=FCapacity+1 to Val do FData[I-1]:=255;
+      FCapacity:=Val+1024; Setlength( FData,Fcapacity ); //for I:=FCapacity+1 to Val do FData[I-1]:=255;
   end; end;
 
 constructor TFreeFileBuffer.Create;
       begin inherited Create; Clear; end;
 procedure TFreeFileBuffer.Clear;
-begin
-  FCapacity:=0;
-  FCount:=0;
-  FPosition:=0;
-  Setlength( FData,0 );
-  FFileName:='';
-  Encoding:='cp1251';
-end;
+    begin FCapacity:=0;   FCount:=0;
+          FPosition:=0;   Setlength( FData,0 );
+          FFileName:='';  Encoding:='cp1251';
+    end;
 destructor TFreeFileBuffer.Destroy;
      begin Clear; inherited Destroy; end;
-
 function TFreeFileBuffer.GetPosition:integer;
    begin Result:=FPosition; end;
 
@@ -128,7 +118,7 @@ var DataLeft,Tmp,Size: integer;
 begin
   FFileName:=Filename;
   AssignFile( FFile,Filename );
-//TheStream:=TFileStream.Create(FileName,fmOpenRead or fmShareDenyWrite);
+// TheStream:=TFileStream.Create( FileName,fmOpenRead or fmShareDenyWrite );
   system.FileMode:=fmOpenRead;
   system.Reset( FFile,1 );
   FCount:=0;
@@ -142,7 +132,7 @@ begin
     Dec( DataLeft,Tmp );
     Inc( FCount,Tmp );
   end;
-  Closefile(FFile);
+  Closefile( FFile );
   FFileName:='';
 end;
 
@@ -171,23 +161,13 @@ begin
 end;
 
 procedure TFreeFileBuffer.Add( IntegerValue:Integer ); var Size:integer;
-begin Size:=SizeOf( Integer );
+begin Size:=4; //SizeOf( Integer );
    if Count+Size>Capacity then Capacity:=Count+Size;
       Move( IntegerValue,FData[FCount],Size ); Inc( FCount,Size );
   end;                            // NtoLE( IntegerValue )=Indian swap bytes
 
-procedure TFreeFileBuffer.Add(Version: TFreeFileVersion);
-var
-  Size: integer;
-begin
-  FVersion:=Version;
-  Size:=SizeOf(Version);
-  if Count+Size>Capacity then Capacity:=Count+Size;
-  Move(Version,FData[FCount],Size);
-  Inc(FCount,Size);
-end;
 procedure TFreeFileBuffer.Add( FloatValue: Real );
-const Size=SizeOf( Single ); var W: Single;
+const Size=4; {SizeOf( Single );} var W: Single;
 begin W:=FloatValue;
   if Count+Size>Capacity then Capacity:=Count+Size;
   Move( W,FData[FCount],Size );
@@ -197,26 +177,54 @@ procedure TFreeFileBuffer.Add( Coordinate: Vector );
 begin Add( Coordinate.X ); Add( Coordinate.Y ); Add( Coordinate.Z ); end;
 procedure TFreeFileBuffer.Add( Plane: Plate );
 begin Add( Plane.a ); Add( Plane.b ); Add( Plane.c ); Add( Plane.d ); end;
-procedure TFreeFileBuffer.Add(JPegImage: TJPEGImage);
+
+procedure TFreeFileBuffer.Add( Text: String ); var Size: integer;
+begin                                 // convert text from UTF8 to Windows ANSI
+  if Encoding<>'utf8' then Text:=ConvertEncoding( Text,'utf8',Encoding );
+  Size:=Length( Text );
+  Add( Size );
+  if Size=0 then exit;
+  if Count+Size>Capacity then Capacity:=Count+Size;
+  Move( Text[1],FData[FCount],Size );
+  Inc(FCount,Size);
+end;
+
+procedure TFreeFileBuffer.Add( BooleanValue: boolean );
+const Size=1; //SizeOf( Boolean );
+begin
+  if Count+Size>Capacity then Capacity:=Count+Size;
+  Move( BooleanValue,FData[FCount],Size );
+  Inc( FCount,Size );
+end;
+
+procedure TFreeFileBuffer.Add(Version: TFreeFileVersion);
+var Size: integer;
+begin
+  FVersion:=Version;
+  Size:=SizeOf(Version);
+  if Count+Size>Capacity then Capacity:=Count+Size;
+  Move( Version,FData[FCount],Size );
+  Inc( FCount,Size );
+end;
+
+procedure TFreeFileBuffer.Add( JPegImage: TJPEGImage );
 var Stream: TMemoryStream; Size: integer;
 begin
-  Add(JPEGImage.Width);
-  Add(JPEGImage.Height);
+  Add( JPEGImage.Width );
+  Add( JPEGImage.Height );
   Stream:=TMemoryStream.Create;
-  JPEGImage.SaveToStream(Stream);
+  JPEGImage.SaveToStream( Stream );
   Size:=Stream.Size;
   Stream.Position:=0;
   Add( Size );
   if Count+Size+20>Capacity then Capacity:=Count+Size+20;
-  Stream.Read(FData[FCount],Size);
+  Stream.Read( FData[FCount],Size );
   Inc(FCount,Size);
-  FreeAndNil(Stream);
+  Stream.Destroy;
 end;
 
 procedure TFreeFileBuffer.LoadTJPEGImage(var JPegImage: TJPEGImage);
-var
-  Stream: TMemoryStream;
-  W,H,Size: integer;
+var Stream: TMemoryStream; W,H,Size: integer;
 begin
   LoadInteger(W);
   LoadInteger(H);
@@ -294,26 +302,6 @@ begin LoadTFloatType( OutPut.a );
       LoadTFloatType( OutPut.c );
       LoadTFloatType( OutPut.d );
 end;
-
-procedure TFreeFileBuffer.Add( Text: String );
-var Size: integer;
-begin                                 // convert text from UTF8 to Windows ANSI
-  if Encoding<>'utf8' then Text:=ConvertEncoding( Text,'utf8',Encoding );
-  Size:=Length( Text );
-  Add( Size );
-  if Size=0 then exit;
-  if Count+Size>Capacity then Capacity:=Count+Size;
-  Move( Text[1],FData[FCount],Size );
-  Inc(FCount,Size);
-end;
-
-procedure TFreeFileBuffer.Add( BooleanValue: boolean );
-const Size=1; // SizeOf( BooleanValue );
-begin
-  if Count+Size>Capacity then Capacity:=Count+Size;
-  Move( BooleanValue,FData[FCount],Size );
-  Inc( FCount,Size );
-end;
 {
   TFreeTextBuffer
   Text file used to store file info
@@ -362,32 +350,25 @@ begin S:=FloatTypeToStr( Coordinate.X )+' '
         +FloatTypeToStr( Coordinate.Z ); FLines.Add(S); Inc(FPosition);
 end;
 
-procedure TFreeTextBuffer.Add(Plane: Plate);
+procedure TFreeTextBuffer.Add( Plane: Plate );
 var S: String;
 begin
   S:=FloatTypeToStr( Plane.a )+' '+FloatTypeToStr( Plane.b )+' '
     +FloatTypeToStr( Plane.c )+' '+FloatTypeToStr( Plane.d );
-  FLines.Add(S);
+  FLines.Add( S );
   Inc(FPosition);
 end;
 
 procedure TFreeTextBuffer.Add(JPegImage: TJPEGImage);
-var
-  Stream: TMemoryStream;
-  Size: integer;
-  S: PChar;
-  P: PChar;
-  L: String;
+var Stream: TMemoryStream; Size: integer; S,P: PChar; L: String;
 begin
   Add(JPEGImage.Width);
   Add(JPEGImage.Height);
-
   Stream:=TMemoryStream.Create;
   JPEGImage.SaveToStream(Stream);
   Size:=Stream.Size;
   Stream.Position:=0;
   Add(Size);
-
   S:=StrAlloc(Size*2+2);
   S[Size*2]:=#0;
   S[Size*2+1]:=#0;
@@ -437,42 +418,26 @@ begin
    Inc( FPosition );
 end;
 procedure TFreeTextBuffer.LoadTFreeFileVersion( var Output: TFreeFileVersion );
-var S: String;
-begin S:=FLines[FPosition]; Output:=VersionBinary( S ); Inc( FPosition );
-end;
-
+    begin Output:=VersionBinary( FLines[FPosition] ); Inc( FPosition ); end;
 procedure TFreeTextBuffer.LoadBoolean(var Output: boolean);
-var S: String;
-begin S:=FLines[FPosition]; Output:=StrToBool( S );  Inc( FPosition );
-end;
-
+    begin Output:=StrToBool( FLines[FPosition] );  Inc( FPosition ); end;
 procedure TFreeTextBuffer.LoadTFloatType( var Output: Real );
-  var S: String;                   // LocalFormatSettings: TFormatSettings;
-begin S:=FLines[FPosition]; Output:=GetFloat( S ); Inc( FPosition );
-end;
-
-procedure TFreeTextBuffer.LoadVector(var Output: Vector);
-var S: String;
-begin
-  S:=FLines[FPosition];
-  Output.X:=GetFloat( S );
-  Output.Y:=GetFloat( S );
-  Output.Z:=GetFloat( S );
-  Inc( FPosition );
-end;
+  var S: String;                       // LocalFormatSettings: TFormatSettings;
+begin S:=FLines[FPosition]; Output:=GetFloat( S ); Inc( FPosition ); end;
+procedure TFreeTextBuffer.LoadVector( var Output: Vector );
+  var S: String;
+begin S:=FLines[FPosition]; Output:=GetVector( S ); Inc( FPosition ); end;
 
 procedure TFreeTextBuffer.LoadT3DPlane(var Output: Plate);
-var S: String;
-begin
-  S:=FLines[FPosition];
-  Output.a:=GetFloat( S );
-  Output.b:=GetFloat( S );
-  Output.c:=GetFloat( S );
-  Output.d:=GetFloat( S );
-  Inc( FPosition );
+  var S: String;
+begin S:=FLines[FPosition]; Output.a:=GetFloat( S );
+                            Output.b:=GetFloat( S );
+                            Output.c:=GetFloat( S );
+                            Output.d:=GetFloat( S ); Inc( FPosition );
 end;
 
 // load string of words separated by spaces
+
 procedure TFreeTextBuffer.LoadTStrings(var Output: TStrings);
 var  I:integer; S,V: String; //SS:TStrings;
 begin S:=FLines[FPosition]; I:=1;
@@ -486,23 +451,17 @@ end;
 
 destructor TFreeTextBuffer.Destroy; begin Clear; inherited Destroy; end;
 
-procedure TFreeTextBuffer.LoadFromFile( Filename: String );
-begin
-  FFileName:=Filename;
-  FLines.LoadFromFile( Filename );
-  FPosition:=0;
-end;
-
 // reset the data before reading
 procedure TFreeTextBuffer.Reset; begin FPosition:=0; end;
 
-function TFreeTextBuffer.SaveToFile(Filename: String):boolean;
-begin
-  result:=false;
-  FFileName:=Filename;
-  FLines.SaveToFile(Filename);
-  result:=true;
-end;
+procedure TFreeTextBuffer.LoadFromFile( Filename: String );
+    begin FFileName:=Filename; FLines.LoadFromFile( Filename ); FPosition:=0;
+    end;
+
+function TFreeTextBuffer.SaveToFile( Filename: String ):boolean;
+   begin result:=false; FFileName:=Filename;
+                        FLines.SaveToFile( Filename ); result:=true;
+   end;
 
 function TFreeTextBuffer.GetPosition:integer; begin Result:=FPosition; end;
 

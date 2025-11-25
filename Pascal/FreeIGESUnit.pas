@@ -306,7 +306,7 @@ var Str     : String;
 begin
    TimeStr:=CreateTimeStamp;                        // Create time string
    FStartSection.Clear;                             // Create the start section
-   FStartSection.Add(CheckString('FREE!ship IGES file. (www.freeship.org)',LastColumn,'S',1));
+   FStartSection.Add(CheckString('Free!Ship IGES file',LastColumn,'S',1));
    // Create the global section
    Str:=ConvertString(ParameterDelimiter)+ParameterDelimiter+
         ConvertString(RecordDelimiter)+ParameterDelimiter+

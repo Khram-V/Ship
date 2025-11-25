@@ -721,14 +721,6 @@ object FREEProjectSettingsDialog: TFREEProjectSettingsDialog
               Caption = 'Отключить контроль сплошности подводной обшивки корпуса'
               TabOrder = 0
             end
-            object CheckBox13: TCheckBox
-              Left = 3
-              Height = 19
-              Top = 21
-              Width = 387
-              Caption = 'Автоматическое приведение отсчётов аппликат к основной линии'
-              TabOrder = 1
-            end
           end
           object GroupBox1: TGroupBox
             Left = 10
