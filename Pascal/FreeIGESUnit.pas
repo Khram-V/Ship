@@ -4,7 +4,6 @@ interface uses Windows,
      SysUtils,
      DateUtils,
      Forms,
-     Dialogs,
      Graphics,
      FreeTypes,FreeGeometry;
 
@@ -16,21 +15,21 @@ const ParameterDelimiter = ',';
 type TFreeIgesString = string[80];
      TFreeIGESList = class
         private
-           FStartSection    : TStringList;
-           FGlobalSection   : TStringList;
-           FDirectorySection: TStringList;
-           FParameterSection: TStringList;
+           FStartSection,
+           FGlobalSection,
+           FDirectorySection,
+           FParameterSection,
            FTerminateSection: TStringList;
            FNumberOfSurfaces: Integer;
            FIGESunits       : TFreeUnitType;
            FMaxCoordinate   : Real;
-           FSystemID        : TFreeIgesString;
+           FSystemID,
            FFileCreatedBy   : TFreeIgesString;
            FFileName        : String;
            procedure FProcessParameterData(Str:String;ParamData:TStringList);
         public
            procedure Add_Entity_128(NURB:TFreeNURBSurface;ColorIndex:Integer);
-           function  Add_Entity_314(Color:TColor):Integer;
+//         function  Add_Entity_314(Color:TColor):Integer; -- надо разбираться!
            procedure Clear;
            constructor Create;
            destructor Destroy; override;
@@ -44,13 +43,13 @@ type TFreeIgesString = string[80];
 implementation
 
 function ConvertString(Input:String):String;
-begin
-   if Input='' then Result:=''
-               else Result:=IntToStr(Length(Input))+'H'+Input;
-end;
-
-function CheckString(Str:String;MaxLength:integer;SectionCharacter:Char;index:Integer):string;
-const Spaces ='                                                                                ';
+   begin if Input='' then Result:=''
+                     else Result:=IntToStr(Length(Input))+'H'+Input;
+   end;
+function CheckString
+( Str:String; MaxLength:integer; SectionCharacter:Char; index:Integer ):String;
+const Spaces=
+'                                                                                ';
 var L,C:Integer;
 begin
    L:=Length(Str);
@@ -66,18 +65,16 @@ begin
 end;
 
 function IndexStr(Index,MaxLength:Integer):String;
-begin
-   Result:=IntToStr(Index);
-   while length(Result)<MaxLength do Result:=#32+result;
-end;
+   begin Result:=IntToStr( Index );
+         while length( Result )<MaxLength do Result:=' '+Result;
+   end;
 
-// Takes one string conatining all the parameter data and splits it up into
-// lines of 64 characters
+// Takes one string conatining all the parameter data
+// and splits it up into lines of 64 characters
+
 procedure TFreeIGESList.FProcessParameterData(Str:String;ParamData:TStringList);
-var LastCol : Integer;
-    Tmp     : String;
-begin
-   // split up into lines of 64 characters
+var LastCol: Integer; Tmp: String;
+begin                                   // split up into lines of 64 characters
    if Length(Str)>0 then if Str[Length(Str)]<>RecordDelimiter then Str:=Str+RecordDelimiter;
    while length(Str)>LastParameterColumn do begin
       Tmp:=Copy(Str,1,LastParameterColumn);
@@ -97,17 +94,15 @@ begin
       ParamData.Add(Str);
    end;
 end;
-
-procedure TFreeIGESList.Add_Entity_128(NURB:TFreeNURBSurface;ColorIndex:Integer);
+procedure TFreeIGESList.Add_Entity_128
+( NURB:TFreeNURBSurface; ColorIndex:Integer );
 var K1,K2,M1,M2,I,J,C: Integer;
-    Param: TStringList;
     PROP: array[1..10] of integer;
-    EntityStr: String;
+    EntityStr: String; Param: TStringList;
     P: Vector;
     function CreateKnotvector(N,Degree:Integer;knots:RealArray) :String;
     var I:Integer; Tmp:Real;
-    begin
-       Result:='';
+    begin Result:='';
        for I:=1 to Length(Knots) do begin
          Tmp:=Knots[I-1];
          if Tmp<0 then Tmp:=0;
@@ -117,23 +112,18 @@ var K1,K2,M1,M2,I,J,C: Integer;
     end;
     function CreateWeightVector(N:Integer):String;
     var I:Integer;
-    begin
-       Result:='';
-       for I:=1 to N do Result:=Result+ParameterDelimiter+'1.0';
-    end;{CreateWeightVector}
-
+    begin Result:='';for I:=1 to N do Result:=Result+ParameterDelimiter+'1.0';
+    end;
 begin
    inc(FNumberOfSurfaces);
    Param:=TStringList.Create;                       // Create parametersection
-   K1:=Nurb.ColCount-1;
-   K2:=Nurb.Rowcount-1;
-   M1:=Nurb.ColDegree;
-   M2:=Nurb.RowDegree;
-   Prop[1]:=0; // not closed in u-dir
-   Prop[2]:=0; // not closed in v-dir
-   Prop[3]:=1; // rational
-   Prop[4]:=0; // not periodic in u-dir
-   Prop[5]:=0; // not periodic in v-dir
+   K1:=Nurb.ColCount-1; K2:=Nurb.Rowcount-1;
+   M1:=Nurb.ColDegree;  M2:=Nurb.RowDegree;
+   Prop[1]:=0;       // not closed in u-dir
+   Prop[2]:=0;       // not closed in v-dir
+   Prop[3]:=1;       // rational
+   Prop[4]:=0;       // not periodic in u-dir
+   Prop[5]:=0;       // not periodic in v-dir
    C:=(1+K1)*(1+K2); // number of weights
    EntityStr:=IntToStr(128)+ParameterDelimiter+
               IntToStr(K1)+ParameterDelimiter+
@@ -148,22 +138,17 @@ begin
               CreateKnotvector(K1,M1,Nurb.ColKnotVector)+
               CreateKnotvector(K2,M2,Nurb.RowKnotVector)+
               CreateWeightVector(C);
-
    for I:=1 to Nurb.Rowcount do
-   begin
-      for J:=1 to Nurb.ColCount do
-      begin
-         P:=Nurb.Point[J-1,I-1];
-         if abs(P.X)>FMaxCoordinate then FMaxCoordinate:=abs(P.X);
-         if abs(P.Y)>FMaxCoordinate then FMaxCoordinate:=abs(P.Y);
-         if abs(P.Z)>FMaxCoordinate then FMaxCoordinate:=abs(P.Z);
-         EntityStr:=EntityStr+ParameterDelimiter+FloatToDec(P.X,5)+ParameterDelimiter+
-                                                 FloatToDec(P.Y,5)+ParameterDelimiter+
-                                                 FloatToDec(P.Z,5);
-      end;
+   for J:=1 to Nurb.ColCount do begin
+      P:=Nurb.Point[J-1,I-1];
+      if abs(P.X)>FMaxCoordinate then FMaxCoordinate:=abs(P.X);
+      if abs(P.Y)>FMaxCoordinate then FMaxCoordinate:=abs(P.Y);
+      if abs(P.Z)>FMaxCoordinate then FMaxCoordinate:=abs(P.Z);
+      EntityStr:=EntityStr+ParameterDelimiter+FloatToDec(P.X,5)
+                          +ParameterDelimiter+FloatToDec(P.Z,5)
+                          +ParameterDelimiter+FloatToDec(P.Y,5);
    end;
-   FProcessParameterData(EntityStr,Param);
-   // First line
+   FProcessParameterData(EntityStr,Param); // First line
    EntityStr:=IndexStr(128,8)+         // entity nr
               IndexStr(FParameterSection.Count+1,8)+  // pointer to parametersection start
               IndexStr(0,8)+           // structure
@@ -174,8 +159,7 @@ begin
               IndexStr(0,8)+           // Label display associativity
               '00000000';              // Visible,independent,geometry,topdown
    EntityStr:=CheckString(EntityStr,LastColumn,'D',FDirectorySection.Count+1);
-   FDirectorySection.Add(EntityStr);
-   // Second line
+   FDirectorySection.Add(EntityStr);   // Second line
    EntityStr:=IndexStr(128,8)+         // entity nr
               IndexStr(0,8)+           // Lineweight
               IndexStr(ColorIndex,8)+  // color
@@ -189,54 +173,49 @@ begin
    FDirectorySection.Add(EntityStr);
    FParametersection.AddStrings(Param);
    Param.Destroy;
-end;{TFreeIGESList.Add_Entity_128}
-
-function TFreeIGESList.Add_Entity_314(Color:TColor):Integer;
-var R,G,B         : Integer;
-    Param         : TStringList;
-    EntityStr     : String;
+end;
+(*
+function TFreeIGESList.Add_Entity_314( Color:TColor ):Integer;
+  var R,G,B: Integer; Param: TStringList; EntityStr: String;
 begin
-   Param:=TStringList.Create;
-   // Create parametersection
+   Param:=TStringList.Create;                        // Create parametersection
    R:=GetRValue(Color);
    G:=GetGValue(Color);
    B:=GetBValue(Color);
-
    EntityStr:=IntToStr(314)+ParameterDelimiter+
               FloatToDec(100*R/255,3)+ParameterDelimiter+
               FloatToDec(100*G/255,3)+ParameterDelimiter+
               FloatToDec(100*B/255,3)+ParameterDelimiter+
               ConvertString('');
-   FProcessParameterData(EntityStr,Param);
-   // First line
-   EntityStr:=IndexStr(314,8)+                        // entity nr
-              IndexStr(FParameterSection.Count+1,8)+  // pointer to parametersection start
-              IndexStr(0,8)+                          // structure
-              IndexStr(1,8)+                          // line font pattern
-              IndexStr(0,8)+                          // level
-              IndexStr(0,8)+                          // view
-              IndexStr(0,8)+                          // Transformation matrix
-              IndexStr(0,8)+                          // Label display associativity
-              '00000000';                             // Visible,independent,geometry,topdown
+   FProcessParameterData(EntityStr,Param);           // First line
+   EntityStr:=IndexStr(314,8)+                       // entity nr
+              IndexStr(FParameterSection.Count+1,8)+ // pointer to parametersection start
+              IndexStr(0,8)+                         // structure
+              IndexStr(1,8)+                         // line font pattern
+              IndexStr(0,8)+                         // level
+              IndexStr(0,8)+                         // view
+              IndexStr(0,8)+                         // Transformation matrix
+              IndexStr(0,8)+                         // Label display associativity
+              '00000000';                            // Visible,independent,geometry,topdown
    EntityStr:=CheckString(EntityStr,LastColumn,'D',FDirectorySection.Count+1);
    FDirectorySection.Add(EntityStr);
-   Result:=-FDirectorySection.Count;
-   // Second line
-   EntityStr:=IndexStr(314,8)+                        // entity nr
-              IndexStr(0,8)+                          // Lineweight
-              IndexStr(0,8)+                          // color
-              IndexStr(Param.Count,8)+                // number of lines in parameter section
-              IndexStr(0,8)+                          // form number
-              IndexStr(0,8)+                          // reserved for future use
-              IndexStr(0,8)+                          // reserved for future use
-              '        '+                             // entity label
-              IndexStr(0,8);                          // Entity subscript number
+   Result:=-FDirectorySection.Count;                 // Second line
+   EntityStr:=IndexStr(314,8)+                       // entity nr
+              IndexStr(0,8)+                         // Lineweight
+              IndexStr(Color,8)+                     // color
+//#??         IndexStr(0,8)+                         // color
+              IndexStr(Param.Count,8)+               // number of lines in parameter section
+              IndexStr(0,8)+                         // form number
+              IndexStr(0,8)+                         // reserved for future use
+              IndexStr(0,8)+                         // reserved for future use
+              '        '+                            // entity label
+              IndexStr(0,8);                         // Entity subscript number
    EntityStr:=CheckString(EntityStr,LastColumn,'D',FDirectorySection.Count+1);
    FDirectorySection.Add(EntityStr);
    FParametersection.AddStrings(Param);
    Param.Destroy;
-end;{TFreeIGESList.Add_Entity_314}
-
+end;
+*)
 procedure TFreeIGESList.Clear;
 begin
    FStartSection.Clear;
@@ -249,7 +228,7 @@ begin
    FSystemID:='';
    FFileCreatedBy:='';
    FFilename:='';
-end;{TFreeIGESList.Clear}
+end;
 
 constructor TFreeIGESList.Create;
 begin
@@ -260,7 +239,7 @@ begin
    FParameterSection:=TStringList.Create;
    FTerminateSection:=TStringList.Create;
    Clear;
-end;{TFreeIGESList.Create}
+end;
 
 destructor TFreeIGESList.Destroy;
 begin
@@ -270,18 +249,13 @@ begin
    FDirectorySection.Destroy;
    FParameterSection.Destroy;
    FTerminateSection.Destroy;
-end;{TFreeIGESList.Destroy}
+end;
 
 procedure TFreeIGESList.SaveToFile(Filename:String);
-var Str     : String;
-    TimeStr : string;
-    Tmp     : String;
-    Strings : TStringList;
-    Index   : Integer;
-    LastCol : Integer;
-
+var Str,TimeStr,Tmp: String; Strings: TStringList;
+    Index,LastCol: Integer;
     function CreateTimeStamp:string;
-    var Time    : TDateTime;
+    var Time: TDateTime;
     begin
        Time:=now;
        Result:=IntToStr(YearOf(Time));                    // year
@@ -302,7 +276,7 @@ var Str     : String;
        if length(Tmp)<2 then Tmp:='0'+Tmp;
        Result:=Result+Tmp;
        Result:=IntToStr(length(Result))+'H'+Result;
-    end;{CreateTimeStamp}
+    end;
 begin
    TimeStr:=CreateTimeStamp;                        // Create time string
    FStartSection.Clear;                             // Create the start section

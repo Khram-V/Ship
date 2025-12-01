@@ -1,9 +1,7 @@
 unit FreeGeometry;
-interface
-uses Windows,SysUtils,
-     Classes,Graphics,
-     Controls,Forms,Math,Dialogs,
-     StdCtrls,StrUtils,LazFileUtils,LazUTF8,
+interface uses
+     Windows,SysUtils,Classes,Graphics,Controls,Forms,
+     Math,Dialogs,StdCtrls,StrUtils,LazFileUtils,LazUTF8, //LConvEncoding,
      ExtCtrls,FreeTypes,FasterList,FreeFileBuffer,FreeVersionUnit;
 const
      IncrementSize=25; // amount of points which is automaticly allocated extra memory for
@@ -15,14 +13,15 @@ type TShadePoint = record  // Used for drawing to the Z-buffer
         R,G,B: Integer;
      end;
      TLayerProperties= record
-        SurfaceArea           : Real;
-        Weight                : Real;
+        SurfaceArea: Real;
+        Weight: Real;
         SurfaceCenterOfGravity: Vector;
      end;
-     TFreeVertexType = (svRegular,svCrease,svDart,svCorner);   // Different types of subdivisionvertices
-     TFreeCameraType = (ftWide,ftStandard,ftShortTele,ftMediumTele,ftFarTele); // Different types of camera lenses, corresponding to focalpoints 20mm, 50mm, 90mm, 130mm, 200mm
-     TFreeViewType   = (fvBodyplan,fvProfile,fvPlan,fvPerspective);
-     TFreeUnitType   = (fuMetric,fuImperial);                                               // Switch between metric and imperial units
+     TFreeVertexType= (svRegular,svCrease,svDart,svCorner); // Different types of subdivisionvertices
+     TFreeCameraType= (ftWide,ftStandard,ftShortTele,ftMediumTele,ftFarTele);
+     // Different types of camera lenses, corresponding to focalpoints 20,50,90,130 и 200 mm
+     TFreeViewType  = (fvBodyplan,fvProfile,fvPlan,fvPerspective);
+     TFreeUnitType  = (fuMetric,fuImperial); // Switch between metric and imperial units
      TFreeViewportmode= (vmWireFrame,vmShade,vmShadeGauss,vmShadeDevelopable,vmShadeZebra);
      TFreeSubdivisionMode= (fmQuadTriangle,fmCatmullClark);
      TFreeAssembleMode= (amRegular,amNURBS);
@@ -64,17 +63,17 @@ type TFreeSubdivisionBase        = class;
      TChangeActiveLayerEvent=procedure(Sender: TObject;Layer:TFreeSubdivisionLayer) of Object;
      TAlphaBlendData= record
         R,G,B: Byte;
-        Alpha: byte;
+        Alpha: Byte;
         zvalue: Real;
      end;
      TAlphaBlendPixelArray= record
-        Number  : byte;
-        Capacity: byte;
+        Number  : Byte;
+        Capacity: Byte;
         Data    : array of TAlphaBlendData;
      end;
      TAlphaBlendArray= record
         First,Last:Integer;
-        Pixels    : array of TAlphaBlendPixelArray;
+        Pixels: array of TAlphaBlendPixelArray;
      end;
 
 TFreeAlphaBuffer= class // Alpha-buffer class used in the shading algorithm
@@ -244,14 +243,13 @@ public
    procedure SetPenWidth(Width:integer);
    Procedure ShadedColor( Dp:Real; R,G,B:byte; var ROut,GOut,BOut:byte );
    procedure ShadeTriFace(P_1,P_2,P_3:Vector;R,G,B:byte;Alpha:byte);             // overload;virtual;
-   procedure ShadeTriangle(P_1,P_2,P_3:Vector;C1,C2,C3:Real);                    // reintroduce;overload;
    procedure ShadeTriangles(P_1,P_2,P_3:Vector;R1,G1,B1,R2,G2,B2,R3,G3,B3:byte); // reintroduce;overload;
    procedure ZoomIn;
    procedure ZoomExtents;
    procedure ZoomOut;
    procedure SetSelectionFrameRect(Rect: TRect);
    procedure SetSelectionFrameActive(Val: boolean);
-   procedure DrawSelectionFrame; virtual;
+   procedure DrawSelectionFrame; //virtual;
 
    property AlphaBuffer   : TFreeAlphaBuffer read FAlphaBuffer;
    property BackgroundMode: TFreeViewportBackgroundMode read FBackgroundMode write FSetBackgroundMode;
@@ -438,27 +436,23 @@ end;
   interpolation and to accept knuckles in the controlpoints
 }
 TFreeSpline = class(TFreeEntity)
-   FCapacity,           // Number of points for which memory has been allocated
-   FNoPoints,           // Actual number of points present
-   FFragments: Integer; // Number of straight-line segments used when drawing the curve
+   FCapacity,   // Number of points for which memory has been allocated
+   FFragments,  // Number of straight-line segments used when drawing the curve
+   nS: Integer; // Actual number of points present
    FShowCurvature,
-   FShowPoints    : Boolean;
-   FCurvatureScale: Real; // scale factor used to increase or decrease the scale of the curvature plot
-   FCurvatureColor: TColor;     // Color used for draing the curvature plot
-   FTotalLength   : Real;
-   FPoints        : VectorArray; // Array containing all controlpoints
-   FKnuckles      : array of boolean;
-   FParameters    : RealArray;
-   FDerivatives   : VectorArray;
-   function  FGetFragments:Integer;
-   function  FGetKnuckle(Index:integer):Boolean;
-   function  FGetParameter(Index:integer):Real;
-   function  FGetPoint(Index:Integer):Vector;
-   procedure FSetBuild(val:boolean); override;
+   FShowPoints: Boolean;
+   FCurvatureColor: TColor;      // Color used for draing the curvature plot
+   FCurvatureScale,              // scale factor used to increase
+   FTotalLength: Real;           // or decrease the scale of the curvature plot
+   FPoints,FDerivatives: VectorArray; // Array containing all controlpoints
+   FParameters: RealArray;
+   FKnuckles: array of boolean;
    procedure FSetCapacity(Val:Integer);
-   procedure FSetFragments(Val:Integer);
-   procedure FSetKnuckle(Index:integer;Value:Boolean);
-   procedure FSetPoint(Index:Integer;P:Vector);
+   function FGetFragments:Integer;              procedure FSetFragments(Val:Integer);
+   function FGetPoint(Index:Integer):Vector;    procedure FSetPoint(Index:Integer;P:Vector);
+   function FGetKnuckle(Index:integer):Boolean; procedure FSetKnuckle(Index:integer;Value:Boolean);
+   function FGetParameter(Index:integer):Real;
+   procedure FSetBuild(val:boolean); override;
 public
    procedure   Add(P:Vector); // add a new point to the curve
    procedure   Assign(Spline:TFreeSpline); // Copy all data from another spline
@@ -484,13 +478,12 @@ public
    function    Simplify(Criterium:Real):Boolean; // Remove points that do not contribute significantly to the shape
    function    Value( Parameter:Real ):Vector;
    property    Capacity                : Integer read FCapacity write FSetCapacity;
+   property    Point[Index:Integer]    : Vector read FGetPoint write FSetPoint;
    property    CurvatureColor          : TColor read FCurvatureColor write FCurvatureColor;
    property    CurvatureScale          : Real read FCurvatureScale write FCurvatureScale;
    property    Fragments               : integer read FGetFragments write FSetFragments;
    property    Knuckle[Index:integer]  : Boolean  read FGetKnuckle write FSetKnuckle;
-   property    NumberOfPoints          : Integer read FNoPoints;
    property    Parameter[Index:integer]: Real read FGetParameter;
-   property    Point [Index:Integer]   : Vector read FGetPoint write FSetPoint;
    property    ShowCurvature           : Boolean read FShowCurvature write FShowCurvature;
    property    ShowPoints              : boolean read FShowPoints write FShowPoints;
    property    TotalLength             : Real read FTotalLength;
@@ -498,14 +491,14 @@ end;
 
 TFreeNURBSurface  = class(TFreeEntity)
 private
-   FColCount   : integer;
-   FRowCount   : integer;
-   FColCapacity: integer;
-   FRowCapacity: integer;
-   FColDegree  : Integer;
-   FRowDegree  : Integer;
-   FColKnots   : RealArray;
-   FRowKnots   : RealArray;
+   FColCount,
+   FRowCount,
+   FColCapacity,
+   FRowCapacity,
+   FColDegree,
+   FRowDegree: Integer;
+   FColKnots,
+   FRowKnots: RealArray;
    FControlPoints: TFreeCoordinateGrid;
    function  FGetpoint(Col,Row:Integer):Vector;
    procedure FSetColDegree(Val:Integer);
@@ -553,11 +546,9 @@ end;
 
 TFreeSubdivisionControlCurve = class(TFreeSubdivisionBase)
 private
-   FVisible          : Boolean;
-   FControlPoints    : TFasterList;
-   FSubdividedPoints : TFasterList;
-   FCurve            : TFreeSpline;
-   FBuild            : Boolean;
+   FCurve: TFreeSpline;
+   FBuild,FVisible: Boolean;
+   FControlPoints,FSubdividedPoints: TFasterList;
    function FGetColor:TColor;
    function FGetNumberOfControlPoints:Integer;
    function FGetControlPoint(Index:Integer):TFreeSubdivisionControlPoint;
@@ -672,7 +663,7 @@ private
    function FGetCoordinate:Vector;
    function FGetCurvature:Real;
    function FGetFace(Index:Integer):TFreeSubdivisionFace;
-   function FGetIndex:Integer;                                          virtual;
+   function FGetIndex:Integer; virtual;
    function FGetIsBoundaryVertex:Boolean;
    function FGetNormal:Vector;
    function FGetNumberOfCurves:Integer;
@@ -680,17 +671,17 @@ private
    function FGetNumberOfFaces:integer;
    function FGetRegularPoint:Boolean;
    function FGetLimitPoint:Vector;
-   procedure FSetCoordinate(Val:Vector);                         virtual;
+   procedure FSetCoordinate(Val:Vector); virtual;
 public
    procedure   AddEdge(Edge:TFreeSubdivisionEdge);
    procedure   AddFace(Face:TFreeSubdivisionFace);
    function    Averaging:Vector;
-   function    CalculateVertexPoint:TFreeSubdivisionPoint;              virtual;
+   function    CalculateVertexPoint:TFreeSubdivisionPoint; virtual;
    procedure   Clear;
-   constructor Create(Owner:TFreeSubdivisionSurface);                   override;
+   constructor Create(Owner:TFreeSubdivisionSurface); override;
    procedure   DeleteEdge(Edge:TFreeSubdivisionEdge);
    procedure   DeleteFace(Face:TFreeSubdivisionFace);
-   destructor  Destroy;                                                 override;
+   destructor  Destroy; override;
    function    IndexOfFace(Face:TFreeSubdivisionFace):Integer;
    function    IsRegularNURBSPoint(Faces:TFasterList):Boolean;
    property    Coordinate         : Vector read FGetCoordinate write FSetCoordinate;
@@ -1071,7 +1062,7 @@ public
 end;
 
 function  AreaStr(Units:TFreeUnitType):String; // Returns a string value with the area units
-function  BoolToStr(Val:Boolean):String;       // In contrast to delphis own BoolToStrF this procedure returns '0' when false and '1' when true
+function  BoolToStr(Val:Boolean):String; // In contrast to delphis own BoolToStrF this procedure returns '0' when false and '1' when true
 procedure ClipTriangle(P1,P2,P3:Vector;s1,s2,s3:Real;var Nf,Nb:INteger;var Front,Back:VectorArray);overload;
 procedure ClipTriangle(P1,P2,P3:Vector;Plane:Plate;var Nf,Nb:INteger;var Front,Back:VectorArray);overload;
 function  ConvertDimension(Value:Real;Units:TFreeUnitType):String;   // Converts a dimesnion to a string
@@ -1102,17 +1093,15 @@ function  PointInTriangle(P,A,B,C:Vector):Boolean; // This function calculates i
 Function  ProjectPointOnLine(P,P1,P2:Vector):Vector; // Projects point  P on the linesegment through P1 and P2
 function  ProjectPointOnPlane(P:Vector;Plane:Plate):Vector;// Projects a point on to a plane
 function  RandomColor:TColor;                        // create a random color
-//Function  RotateAroundPoint(P:Vector;Center:Vector;sinhx,coshx,sinhy,coshy,sinhz,coshz:Real):Vector;
-//function  RotatePointAroundVector(Point,StartPoint,Endpoint:Vector):Vector; // Function to rotate a point around a iVect
 function  RotateVector(P0:Vector;sinx,cosx,siny,cosy,sinz,cosz:Real):Vector; // Rotates a iVect around the origin
 function  SetPlane(a,b,c,d:Real):Plate;
 function  VolStr(Units:TFreeUnitType):String; // Returns a string value with the volume units
 function  VolumeToDisplacement(Volume,Density,AppCoeff:Real;Units:TFreeUnitType):Real; // Converts a volume to displacement
 function  WeightStr(Units:TFreeUnitType):String; // Returns a string value with the weight units
 Function  UnifiedNormal(const P1,P2,P3:Vector):Vector; // calculate the normal of a plane defined by points P1,P2,P3 and scale to unit-length
-
 function LenMMStr(Units: TFreeUnitType): String;
 function FindDXFColorIndex(Color:TColor):integer; // find nearest DXF color corresponding to a windows color
+function FindIGSColorIndex(Color:TColor):integer;
 
 procedure Register;
 
@@ -1129,71 +1118,6 @@ const crRotate    = 1; // Rotation cursor
       crSetOrigin = 3; // Cursor used when setting the origin of a background image
       crSetScale  = 4; // Cursor used when setting the scale of a background image
       crTranspCol = 5; // Cursor used when setting the transparent color of a background image
-
-
-function ConvertCoordinate(Coord: String; OldCoord: Real):Real;
-{
-  parses input "Coord" and and returns the new value of a coordinate
-  if first character of input is (RelIdentifier - currently '@')
-     then the input value is added to the old value "OldCoord".
-  if the first character of the value is '-',
-     then the remainder is treated as a negative value
-  if the remainding value contains ONE '-'
-     then the part after that '-' is considered as a fraction of a unit
-     The size of the fraction is const. "InchFractions"
-}
-var myString: String;
-    myFactor,
-    myOldValue,
-    myWholeFeet,
-    myWholeInch,
-    myFracInch: Real;
-    myFracPos: Integer;
-const RelIdentifier: String = '@';
-      InchFractions: Real = 8;
-begin
-  myString:= Coord;
-  myFactor:=    1.0;
-  myOldValue:=  OldCoord;
-  myWholeFeet:= 0.0;
-  myWholeInch:= 0.0;
-  myFracInch:=  0.0;
-
-  if LeftStr(myString, 1) = RelIdentifier then begin      // get rid of the '@'
-    myString:= MidStr(myString,2,255);
-    if Pos(RelIdentifier,myString)>0 then myString:='0'; // make sure not to have another '@' (and a 0 doesn't hurt)
-  end else myOldValue:=0; // we have a new value now, so don't add the old one!
-
-  if LeftStr(myString, 1)='-' then begin                // get rid of the minus
-    myFactor:=-1.0;
-    myString:= MidStr(myString,2,255);
-  end;
-  myFracPos:= Pos('-', myString);
-  if myFracPos >0 then begin     // check whether we have imperial input format
-    if myFracPos > 1 then begin   // check whether there is an whole feet value
-      myWholeFeet:= StrToFloat(LeftStr(myString, myFracPos-1));
-      myString:= MidStr(myString,myFracPos+1,255);
-    end;
-
-    myFracPos:= Pos('-', myString); // is there a second "-", i.e. do we have also fractional inches?
-    if myFracPos >0 then begin
-      if myFracPos > 1 then begin  // check whether there is an whole inch value
-        myWholeInch:= StrToFloat(LeftStr(myString, myFracPos-1));
-        myString:= MidStr(myString,myFracPos,255);
-      end;
-      // new: check whether there is a + or a - to add or subtract a half fraction
-      myString:= MidStr(myString,2,255);
-      if (RightStr(myString,1) = '-') then begin
-         myFracInch :=  StrToFloat(LeftStr(myString,Pos('-', myString)-1)) - 0.5;
-      end else
-      if (RightStr(myString,1) = '+') then begin
-         myFracInch :=  StrToFloat(LeftStr(myString,Pos('+', myString)-1)) + 0.5;
-      end else myFracInch :=  StrToFloat(myString);   // end new
-    end else myWholeInch:=StrToFloat(myString);      // no fractional inches
-  end else myWholeFeet:=StrToFloat(myString);       // no imperial input format
-
-  Result:= myOldValue + myFactor*(myWholeFeet + myWholeInch/12 + myFracInch/(12*InchFractions));
-end; {ConvertCoordinate}
 {
  TFreeAlphaBuffer
  Alpha-buffer class used in the shading algorithm
@@ -1505,7 +1429,7 @@ var Dialog     : TOpenDialog;
 begin
    Dialog:=TOpenDialog.Create(Application);
    Dialog.InitialDir:=InitialDir;
-   Dialog.Filter:='All files (*.jpg;*.bmp)|*.jpg; *.bmp|Jpeg images (*.jpg)|*.jpg|Bitmap files (*.bmp)|*.bmp|';
+   Dialog.Filter:='All files [*.jpg;*.bmp]|*.jpg; *.bmp|Jpeg images [*.jpg]|*.jpg|Bitmap files [*.bmp]|*.bmp|';
    Dialog.Options:=[ofHideReadOnly];
    if Dialog.Execute then begin
       Clear;
@@ -1541,7 +1465,7 @@ var Image      : TJPEGImage;
 begin
    SaveDialog:=TSaveDialog.Create(Owner);
    SaveDialog.FileName:='image.jpg';
-   SaveDialog.Filter:='Jpeg files (*.jpg)|*.jpg';
+   SaveDialog.Filter:='Jpeg files [*.jpg]|*.jpg';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin
       Image:=TJPEGImage.Create;
@@ -2139,7 +2063,7 @@ begin
       Dialog.InitialDir:=Ship.Preferences.ExportDirectory;
       Dialog.Title:='Coхранение картинки из ViewPort как есть.';
       Dialog.DefaultExt:= '.png';
-      Dialog.Filter:= 'Portable Network Grapfics (*.png)|*.png';
+      Dialog.Filter:= 'Portable Network Grapfics [*.png]|*.png';
 //    Dialog.Options:=[ofEnableSizing,ofViewDetail,ofReadOnly];
       Dialog.FileName:=ExtractFileName( FileName );
       Ok:=Dialog.Execute;
@@ -2369,8 +2293,7 @@ procedure TFreeViewport.SetPenWidth( Width:integer );
 {$if true}
 Procedure TFreeViewport.ShadedColor
     ( Dp:Real; R,G,B:byte; var ROut,GOut,BOut:byte );
-const Ambient=0.4; { =0.2 }
-var C,Tmp:Real;
+const Ambient=0.4; { =0.2 } var C,Tmp:Real;
 begin
    if Dp<0 then Dp:=-Dp else if Dp>1 then Dp:=1;
    if Dp>=0.80 then begin Tmp:=5-5*Dp;
@@ -2379,7 +2302,7 @@ begin
       GOut:=Round(255-(255-Dp*G)*C);
       BOut:=Round(255-(255-Dp*B)*C);
    end else begin
-      Dp:=Dp-Ambient;
+      Dp-=Ambient;
       if Dp<0 then Dp:=0;
       C:=Dp/(0.8-Ambient);
       C:=Ambient+(0.8-Ambient)*C*C;
@@ -2432,14 +2355,14 @@ var Normal,Center: Vector;
       end;
    end;
 begin                                          // Calculate data for the points
-   Pt1:=ProjectToZBuffer(P_1);
-   Pt2:=ProjectToZBuffer(P_2);
-   Pt3:=ProjectToZBuffer(P_3);
-   P_1:=RotatedPoint(P_1);
-   P_2:=RotatedPoint(P_2);
-   P_3:=RotatedPoint(P_3);              // Calculate triangle normal and center
-   Normal:=UnifiedNormal(P_1,P_2,P_3);
-   Center:=(P_1+P_2+P_3)/3.0;                          // Calculate light iVect
+   Pt1:=ProjectToZBuffer( P_1 );
+   Pt2:=ProjectToZBuffer( P_2 );
+   Pt3:=ProjectToZBuffer( P_3 );
+   P_1:=RotatedPoint( P_1 );
+   P_2:=RotatedPoint( P_2 );
+   P_3:=RotatedPoint( P_3 );            // Calculate triangle normal and center
+   Normal:=UnifiedNormal( P_1,P_2,P_3 );
+   Center:=( P_1+P_2+P_3 )/3.0;                        // Calculate light iVect
    LIntensityRatio:=Dotproduct( Normal,Normalize( Center-FLight.Position ) );
    ShadedColor( LIntensityRatio,R,G,B,R,G,B );
                                             // Sort points according to Y-value
@@ -2509,7 +2432,8 @@ end;
 procedure TFreeViewport.ShadeTriangles                 // три точки - три цвета
   ( P_1,P_2,P_3:Vector; R1,G1,B1, R2,G2,B2, R3,G3,B3:byte );
 var Left,Right,DLeft,dRight,Tmp,V1,V2,V3:TShadePoint; Y,d: integer;
-    Normal,Center:Vector; LIntensityRatio:Real;
+    Normal,Center:Vector;
+    LIntensityRatio:Real;
 
    procedure SetColor( var P:TShadePoint; R,G,B:byte );
    // Set the color of each vertex based on it's curvature and triangle normal
@@ -2560,7 +2484,7 @@ var Left,Right,DLeft,dRight,Tmp,V1,V2,V3:TShadePoint; Y,d: integer;
             Inc(Left.X);
          end;
       end;
-   end;{ShadeLine}
+   end;
 begin                                          // Calculate data for the points
    V1:=ProjectToZBuffer(P_1);
    V2:=ProjectToZBuffer(P_2);
@@ -2588,6 +2512,7 @@ begin                                          // Calculate data for the points
       if V3.X>=V2.X then ShadeLine(V2,V3,V1.Y)
                     else ShadeLine(V3,V2,V1.Y); Exit;
    end;
+
    Left:=V1;
    d:=(V3.Y-V1.Y);
    if d<>0 then begin
@@ -2597,6 +2522,7 @@ begin                                          // Calculate data for the points
       dLeft.G:=(V3.G-V1.G) div d;
       dLeft.B:=(V3.B-V1.B) div d;
    end;
+
    Right:=V1;
    d:=(V2.Y-V1.Y);
    if d<>0 then begin
@@ -2623,185 +2549,6 @@ begin                                          // Calculate data for the points
       Y:=0;
    end;
 
-   while Y<V2.Y do begin
-      if Right.X>=Left.X then ShadeLine(Left,Right,Y)
-                         else ShadeLine(Right,Left,Y);
-      if Y<V2.Y then begin
-         Inc(Left.X,dLeft.X);
-         Left.Z:=Left.Z+dLeft.Z;
-         Inc(Left.R,dLeft.R);
-         Inc(Left.G,dLeft.G);
-         Inc(Left.B,dLeft.B);
-
-         Inc(Right.X,dRight.X);
-         Right.Z:=Right.Z+dRight.Z;
-         Inc(Right.R,dRight.R);
-         Inc(Right.G,dRight.G);
-         Inc(Right.B,dRight.B);
-      end;
-      Inc(Y);
-   end;
-   if V2.Y=V3.Y then Exit;
-
-   Right:=V2;
-   d:=V3.Y-V2.Y;
-   if d<>0 then begin
-      dRight.Z:=(V3.Z-V2.Z)/d;
-      dRight.X:=(V3.X-V2.X) div d;
-      dRight.R:=(V3.R-V2.R) div d;
-      dRight.G:=(V3.G-V2.G) div d;
-      dRight.B:=(V3.B-V2.B) div d;
-   end else Fillchar(dRight,SizeOf(dRight),0);
-
-   Y:=V2.Y;
-   if (Y<0) and (V3.Y>0) then begin
-      Inc(Left.X,-Y*dLeft.X);
-      Left.Z:=Left.Z+-Y*dLeft.Z;
-      Inc(Left.R,-Y*dLeft.R);
-      Inc(Left.G,-Y*dLeft.G);
-      Inc(Left.B,-Y*dLeft.B);
-
-      Inc(Right.X,-Y*dRight.X);
-      Right.Z:=Right.Z+-Y*dRight.Z;
-      Inc(Right.R,-Y*dRight.R);
-      Inc(Right.G,-Y*dRight.G);
-      Inc(Right.B,-Y*dRight.B);
-      Y:=0;
-   end;
-   while Y<=V3.Y do begin
-      if Right.X>=Left.X then ShadeLine(Left,Right,Y)
-                         else ShadeLine(Right,Left,Y);
-      if Y<=V3.Y then begin
-         Inc(Left.X,dLeft.X);
-         Left.Z:=Left.Z+dLeft.Z;
-         Inc(Left.R,dLeft.R);
-         Inc(Left.G,dLeft.G);
-         Inc(Left.B,dLeft.B);
-
-         Inc(Right.X,dRight.X);
-         Right.Z:=Right.Z+dRight.Z;
-         Inc(Right.R,dRight.R);
-         Inc(Right.G,dRight.G);
-         Inc(Right.B,dRight.B);
-         Inc(Y);
-      end;
-   end;
-end;
-
-// Draw a smooth shaded triangle to the ZBuffer (used when all 3 corners of the triangle have
-// different color, as for example when shading GAUSS curvature
-procedure TFreeViewport.ShadeTriangle( P_1,P_2,P_3:Vector; C1,C2,C3:Real );
-var Left,Right,DLeft,dRight,Tmp,V1,V2,V3:TShadePoint; Y,d: integer;
-    Normal,Center:Vector;
-    LIntensityRatio:Real;
-    procedure SetColor(var P:TShadePoint;Curvature:Real); var R,G,B:byte;
-    begin // Set the color of each vertex based on it's curvature and triangle normal
-      if abs(Curvature)<1e-4 then ShadedColor(LIntensityRatio,0,255,0,R,G,B)
-                             else ShadedColor(LIntensityRatio,255,0,0,R,G,B);
-      P.R:=R shl 8;
-      P.G:=G shl 8;
-      P.B:=B shl 8;
-    end;{SetColor}
-   procedure ShadeLine(Left,Right:TShadePoint; Y:Integer);
-   var Delta,Tmp: TShadePoint; D: Integer;
-   begin                                      // if (Y<0) or (Y>H-1) then exit;
-      Left.X:=Left.X div 256;
-      Right.X:=Right.X div 256;
-      if Left.X>Right.X then begin Tmp:=Left; Left:=Right; Right:=Tmp; end;
-      if (Left.X>ClientWidth-1) or (Right.X<0) or (Y<0) or (Y>ClientHeight-1) then exit;
-      d:=Right.X-Left.X;
-      if d<>0 then begin
-         Delta.Z:=(Right.Z-Left.Z)/d;
-         Delta.R:=(Right.R-Left.R) div d;
-         Delta.G:=(Right.G-Left.G) div d;
-         Delta.B:=(Right.B-Left.B) div d;
-      end else begin
-         Delta.Z:=0;
-         Delta.R:=0;
-         Delta.G:=0;
-         Delta.B:=0;
-      end;                           // if (Left.X>W) or (Right.X<0) then exit;
-      if (Left.X<0) then begin
-         Left.Z:=Left.Z+-Left.X*Delta.Z;
-         Inc(Left.R,-Left.X*Delta.R);
-         Inc(Left.G,-Left.X*Delta.G);
-         Inc(Left.B,-Left.X*Delta.B);
-         Left.X:=0;
-      end;
-      if Right.X>ClientWidth-1 then Right.X:=ClientWidth-1;
-      if Left.X>=0 then begin
-         while Left.X<=Right.X do begin
-            if Left.Z>FZBuffer.FBuffer[Y][Left.X] then begin
-               FZBuffer.FBuffer[Y][Left.X]:=Left.Z;
-               Canvas.Pixels[Left.X,Y]:=RGBtoColor(Left.R shr 8,Left.G shr 8,Left.B shr 8);
-            end;
-            Left.Z:=Left.Z+Delta.Z;
-            Inc(Left.R,Delta.R);
-            Inc(Left.G,Delta.G);
-            Inc(Left.B,Delta.B);
-            Inc(Left.X);
-         end;
-      end;
-   end;{ShadeLine}
-begin     // exit;                             // Calculate data for the points
-   V1:=ProjectToZBuffer(P_1);
-   V2:=ProjectToZBuffer(P_2);
-   V3:=ProjectToZBuffer(P_3);
-   P_1:=RotatedPoint(P_1);
-   P_2:=RotatedPoint(P_2);
-   P_3:=RotatedPoint(P_3);              // Calculate triangle normal and center
-   Normal:=UnifiedNormal(P_1,P_2,P_3);
-   Center:=(P_1+P_2+P_3)/3.0;                         // Calculate light Vector
-   LIntensityRatio:=Dotproduct(Normal,Normalize(Center-FLight.Position));
-   SetColor(V1,C1);
-   SetColor(V2,C2);
-   SetColor(V3,C3);
-   if V2.Y<V1.Y then begin Tmp:=V1; V1:=V2; V2:=Tmp; end;
-   if V3.Y<V2.Y then begin Tmp:=V2; V2:=V3; V3:=Tmp;
-      if V2.Y<V1.Y then begin Tmp:=V1; V1:=V2; V2:=Tmp; end;
-   end;
-   V1.X:=V1.X shl 8;
-   V2.X:=V2.X shl 8;
-   V3.X:=V3.X shl 8;
-   if V3.Y=V1.Y then begin
-      if V2.X>=V1.X then ShadeLine(V1,V2,V1.Y)
-                    else ShadeLine(V2,V1,V1.Y);
-      if V3.X>=V2.X then ShadeLine(V2,V3,V1.Y)
-                    else ShadeLine(V3,V2,V1.Y); Exit;
-   end;
-   Left:=V1;
-   d:=(V3.Y-V1.Y);
-   if d<>0 then begin
-      dLeft.Z:=(V3.Z-V1.Z)/d;
-      dLeft.X:=(V3.X-V1.X) div d;
-      dLeft.R:=(V3.R-V1.R) div d;
-      dLeft.G:=(V3.G-V1.G) div d;
-      dLeft.B:=(V3.B-V1.B) div d;
-   end;
-   Right:=V1;
-   d:=(V2.Y-V1.Y);
-   if d<>0 then begin
-      dRight.Z:=(V2.Z-V1.Z)/d;
-      dRight.X:=(V2.X-V1.X) div d;
-      dRight.R:=(V2.R-V1.R) div d;
-      dRight.G:=(V2.G-V1.G) div d;
-      dRight.B:=(V2.B-V1.B) div d;
-   end;
-   Y:=V1.Y;
-   if (Y<0) and (V2.Y>0) then begin
-      Inc(Left.X,-Y*dLeft.X);
-      Left.Z:=Left.Z+-Y*dLeft.Z;
-      Inc(Left.R,-Y*dLeft.R);
-      Inc(Left.G,-Y*dLeft.G);
-      Inc(Left.B,-Y*dLeft.B);
-
-      Inc(Right.X,-Y*dRight.X);
-      Right.Z:=Right.Z+-Y*dRight.Z;
-      Inc(Right.R,-Y*dRight.R);
-      Inc(Right.G,-Y*dRight.G);
-      Inc(Right.B,-Y*dRight.B);
-      Y:=0;
-   end;
    while Y<V2.Y do begin
       if Right.X>=Left.X then ShadeLine(Left,Right,Y)
                          else ShadeLine(Right,Left,Y);
@@ -3153,8 +2900,7 @@ var I,J,K,S,E,Index,Cap,Na,Nb,r,g,b: Integer;
         Pts : array of TPoint;
     begin
        Setlength(Pts,Spline.Fragments+1);
-       for I:=0 to Spline.Fragments do
-       begin
+       for I:=0 to Spline.Fragments do begin
           P3D:=Spline.Value(I/Spline.Fragments);
           P2D.X:=P3D.X;
           P2D.Y:=P3D.Y;
@@ -3165,7 +2911,7 @@ var I,J,K,S,E,Index,Cap,Na,Nb,r,g,b: Integer;
        Viewport.SetPenWidth(1);
        Viewport.PenColor:=Spline.Color;
        Viewport.Canvas.Polyline(Pts);
-    end;{DrawSpline}
+    end;
 
    procedure SetFontHeight(DesiredHeight:Real);
    var Height         : Real;
@@ -3184,10 +2930,7 @@ var I,J,K,S,E,Index,Cap,Na,Nb,r,g,b: Integer;
    procedure Swap(var P1,P2:Vector);
         var Tmp:Vector; begin Tmp:=P1; P1:=P2; P2:=Tmp; end;{Swap}
    procedure DrawDimension(P1,P2:Vector);
-   var Tmp  : Integer;
-       P    : Vector;
-       Pt   : TPoint;
-       Str  : string;
+   var Tmp: Integer; P: Vector; Pt: TPoint; Str: string;
    begin
       if P2.X<>P1.X then begin
          if P2.X<P1.X then Swap(P1,P2);
@@ -3526,19 +3269,18 @@ begin
             Spline.Capacity:=NoPoints;
             for K:=1 to NoPoints do begin
                Spline.Add(IntArray[K-1].Point);
-               Spline.Knuckle[Spline.NumberOfPoints-1]:=IntArray[K-1].Knuckle;
+               Spline.Knuckle[Spline.nS-1]:=IntArray[K-1].Knuckle;
             end;
             Dest.Add(Spline);
          end;
       end;
    end;
-
    if Dest.Count>1 then begin
       Dest.Capacity:=Dest.Count;
       JoinSplineSegments(0.01,False,Dest);
       for I:=Dest.Count downto 1 do begin // Remove tiny fragments of very small length
          Spline:=Dest[I-1];
-         if Spline.NumberOfPoints>1 then begin
+         if Spline.nS>1 then begin
             Parameter:=Sqr( Spline.Min-Spline.Max ); // SquaredDistPP(Spline.Min,Spline.Max);
             if Parameter<1e-3 then begin
                Spline.Destroy;
@@ -3556,7 +3298,7 @@ begin
       if FMirror then begin
          Copy:=TFreeSpline.Create;
          Copy.Assign(Spline);
-         for J:=1 to Spline.NumberOfPoints do
+         for J:=1 to Spline.nS do
             Copy.Point[J-1]:=MirrorPlane(Spline.Point[J-1],FMirrorPlane);
          if abs(Plane.a)>0.9999 then FStations.Add(Copy) else
          if abs(Plane.b)>0.9999 then FButtocks.Add(Copy) else
@@ -3597,14 +3339,11 @@ var I,J,Col,Index: integer;
        Strings.Add('8'+EOL+LayerName);       // layername
        Strings.Add('62'+EOL+IntToStr(Col));  // color by layer
        Strings.Add('66'+EOL+'1');            // vertices follow
-       for I:=0 to Spline.Fragments do
-       begin
+       for I:=0 to Spline.Fragments do begin
           P3D:=Spline.Value(I/Spline.Fragments);
           P2D.X:=P3D.X;
           P2D.Y:=P3D.Y;
-
           if (FMirrorOnScreen) and not (FMirror) then P2D.Y:=-P2D.Y;
-
           P3D:=ConvertTo3D(P2D);
           Strings.Add('0'+EOL+'VERTEX');
           Strings.Add('8'+EOL+Layername);
@@ -3622,11 +3361,8 @@ begin                                             // Extract edges as polylines
    Source.Destroy;
    Col:=FindDXFColorIndex(Owner.Color);
    Layer:=Owner.Name;
-
-   for I:=1 to Dest.Count do
-   begin
-      Source:=Dest[I-1];
-      // Save data as 2D polyline
+   for I:=1 to Dest.Count do begin
+      Source:=Dest[I-1];                        // Save data as 2D polyline
       Strings.Add('0'+EOL+'POLYLINE');
       Strings.Add('8'+EOL+Layer);               // layername
       Strings.Add('62'+EOL+IntToStr(Col));      // color by layer
@@ -3655,9 +3391,8 @@ begin                                             // Extract edges as polylines
             Strings.Add('10'+EOL+FloatToDec(P3D.X,4));
             Strings.Add('20'+EOL+FloatToDec(P3D.Y,4));
          end;
-         Strings.Add('0'+EOL+'SEQEND');
-      end;
-      Source.Destroy;
+            Strings.Add('0'+EOL+'SEQEND');
+      end;  Source.Destroy;
    end;
    if ShowStations then for I:=1 to FStations.Count do ExportSpline(FStations[I-1],'stations');
    if ShowButtocks then for I:=1 to FButtocks.Count do ExportSpline(FButtocks[I-1],'buttocks');
@@ -3673,16 +3408,13 @@ var I,J,Index: integer;
     Source,Dest:TFasterList;
     Min,Max:Vector;
     First:Boolean;
-
-begin                                             // Extract edges as polylines
+begin                   // Extract edges as polylines
    Source:=TFasterList.Create;
    Source.AddList(FBoundaryEdges);
    Dest:=TFasterList.Create;
    Owner.Owner.IsolateEdges(Source,Dest);
-   Source.Destroy;
-                                      // Calculate min.,max extents of coundary
-                        // all measurements are referred to the min. coordinate
-   First:=True;
+   Source.Destroy;      // Calculate min.,max extents of coundary
+   First:=True;         // all measurements are referred to the min. coordinate
    Strings.Add('');
    Strings.Add('Boundary coordinates for: '+Name);
    for I:=1 to Dest.Count do begin
@@ -3702,11 +3434,9 @@ begin                                             // Extract edges as polylines
          end;
       end;
    end;
-   for I:=1 to Dest.Count do begin
-      Source:=Dest[I-1];
+   for I:=1 to Dest.Count do begin Source:=Dest[I-1];
       if I>1 then Strings.Add('');
-      for J:=1 to Source.Count do begin
-         P:=Source[J-1];
+      for J:=1 to Source.Count do begin P:=Source[J-1];
          Index:=FPoints.SortedIndexOf(P);
          P3D:=Point[Index]-Min;
          Strings.Add(FloatToDec(P3D.X,3)+#32+FloatToDec(P3D.Y,3));
@@ -4332,9 +4062,9 @@ begin
    if Val<>FCapacity then begin
       FCapacity:=Val;
       Setlength(FPoints,FCapacity);
-      if FNoPoints>FCapacity then begin
+      if nS>FCapacity then begin
       // Make sure that number of points does not exceed the capacity of the curve
-         FNoPoints:=FCapacity;
+         nS:=FCapacity;
          Build:=false;
       end;
       Setlength(FKnuckles,FCapacity);
@@ -4353,13 +4083,13 @@ begin Result:=FFragments; end;
 
 function TFreeSpline.FGetKnuckle(Index:integer):Boolean;
 begin
-{  if (Index>=0) and (Index<FNoPoints) then } Result:=FKnuckles[Index];
+{  if (Index>=0) and (Index<nS) then } Result:=FKnuckles[Index];
 // else Raise Exception.Create('List index out of bounds in '+ClassName+'.FGetKnuckle. ('+IntToStr(Index)+').');
 end;
 
 procedure TFreeSpline.FSetKnuckle(Index:integer;Value:Boolean);
 begin
-// if (Index>=0) and (Index<FNoPoints) then begin
+// if (Index>=0) and (Index<nS) then begin
       FKnuckles[Index]:=Value;
       Build:=false;
 // end else Raise Exception.Create('List index out of bounds in '+ClassName+'.FSetKnuckle. ('+IntToStr(Index)+').');
@@ -4367,7 +4097,7 @@ end;
 
 procedure TFreeSpline.FSetPoint(Index:Integer;P:Vector);
 begin
-// if (Index>=0) and (Index<NumberOfPoints) then begin
+// if (Index>=0) and (Index<Ns) then begin
       FPoints[index]:=P;
       Build:=False;
 // end else Raise exception.Create('Point index out of bounds!');
@@ -4375,7 +4105,7 @@ end;
 
 function TFreeSpline.FGetParameter(Index:integer):Real;
 begin
-// if (Index>=0) and (Index<FNoPoints) then begin
+// if (Index>=0) and (Index<nS) then begin
       if not build then rebuild;
       Result:=FParameters[Index];
 // end else Raise Exception.Create('List index out of bounds in '+ClassName+'.FGetParameter. ('+IntToStr(Index)+').');
@@ -4383,8 +4113,8 @@ end;
 
 function TFreeSpline.FGetPoint(Index:Integer):Vector;
 begin Result:=FPoints[index];
-// if (Index>=0) and (Index<NumberOfPoints) then Result:=FPoints[index]
-//                                          else Raise exception.Create('Point index out of bounds!');
+// if (Index>=0) and (Index<Ns) then Result:=FPoints[index]
+//                              else Raise exception.Create('Point index out of bounds!');
 end;
 
 procedure TFreeSpline.Rebuild;
@@ -4396,31 +4126,31 @@ begin
    Build:=False;                   // First attempt to eliminate double points
    I:=2;
    FTotalLength:=0;
-   while I<=FNoPoints do begin
+   while I<=nS do begin
       Length:=Sqrt(Abs(FPoints[I-2]-FPoints[I-1]));
       FTotalLength:=FTotalLength+Length;
       Inc(I);
    end;
 
-   if FNoPoints>1 then begin
-      Setlength(FDerivatives,FNoPoints);
-      Setlength(FParameters,FNoPoints);
-      SetLength(U,FNoPoints);
+   if nS>1 then begin
+      Setlength(FDerivatives,nS);
+      Setlength(FParameters,nS);
+      SetLength(U,nS);
 
       Length:=0;
       if abs(FTotalLength)<1e-5 then begin // zero arclength, use uniform parameterisation
-         for I:=1 to FNoPoints do FParameters[I-1]:=(I-1)/(FNoPoints-1);
+         for I:=1 to nS do FParameters[I-1]:=(I-1)/(nS-1);
       end else begin
          FParameters[0]:=0.0;
-         for I:=2 to FNoPoints-1 do begin
+         for I:=2 to nS-1 do begin
             Length+=Sqrt(Abs(FPoints[I-2]-FPoints[I-1]));
             FParameters[I-1]:=Length/FTotalLength;
          end;
-         FParameters[FNoPoints-1]:=1.0;
+         FParameters[nS-1]:=1.0;
       end;
       FDerivatives[0]:=Zero;
       U[0]:=FDerivatives[0];
-      for I:=2 to FNoPoints-1 do begin
+      for I:=2 to nS-1 do begin
          if Knuckle[I-1] then begin U[I-1]:=Zero; FDerivatives[I-1]:=Zero;
          end else begin
             if (abs(FParameters[I]-FParameters[I-2])<1e-5)
@@ -4447,18 +4177,18 @@ begin
          end;
       end;
       Qn:=Zero; Un:=Qn;
-      FDerivatives[FNoPoints-1].X:=(Un.X-Qn.X*U[FNoPoints-2].X)/(Qn.X*FDerivatives[FNoPoints-2].X+1.0);
-      FDerivatives[FNoPoints-1].Y:=(Un.Y-Qn.Y*U[FNoPoints-2].Y)/(Qn.Y*FDerivatives[FNoPoints-2].Y+1.0);
-      FDerivatives[FNoPoints-1].Z:=(Un.Z-Qn.Z*U[FNoPoints-2].Z)/(Qn.Z*FDerivatives[FNoPoints-2].Z+1.0);
-      for K:=FNoPoints-1 downto 1 do begin                 // Back substitution
+      FDerivatives[nS-1].X:=(Un.X-Qn.X*U[nS-2].X)/(Qn.X*FDerivatives[nS-2].X+1.0);
+      FDerivatives[nS-1].Y:=(Un.Y-Qn.Y*U[nS-2].Y)/(Qn.Y*FDerivatives[nS-2].Y+1.0);
+      FDerivatives[nS-1].Z:=(Un.Z-Qn.Z*U[nS-2].Z)/(Qn.Z*FDerivatives[nS-2].Z+1.0);
+      for K:=nS-1 downto 1 do begin                 // Back substitution
          FDerivatives[K-1].X:=FDerivatives[K-1].X*FDerivatives[K].X+U[K-1].X;
          FDerivatives[K-1].Y:=FDerivatives[K-1].Y*FDerivatives[K].Y+U[K-1].Y;
          FDerivatives[K-1].Z:=FDerivatives[K-1].Z*FDerivatives[K].Z+U[K-1].Z;
       end;
    end;
    FBuild:=true;
-   if FNoPoints>0 then begin                        // Determine min/max values
-      for I:=1 to FNoPoints do begin
+   if nS>0 then begin                        // Determine min/max values
+      for I:=1 to nS do begin
          if I=1 then begin
             FMin:=FPoints[I-1];
             FMax:=FMin;
@@ -4473,11 +4203,11 @@ var Lo,Hi,K: integer;
     Frac: Real;
 begin
    Result:=Zero; Lo:=0;
-   if FNoPoints<2 then exit;
+   if nS<2 then exit;
    if not FBuild then Rebuild;
-   if FNoPoints<2 then exit;
-   if FNoPoints=2 then Hi:=1
-   else begin Hi:=FNoPoints-1;
+   if nS<2 then exit;
+   if nS=2 then Hi:=1
+   else begin Hi:=nS-1;
       repeat
          K:=(Lo+Hi) div 2;
          if FParameters[K]<Parameter then Lo:=K
@@ -4499,7 +4229,7 @@ var Weights: array of Real;
    var P1,P2,P3: Vector;
        Length,Dist: Real;
    begin
-      if (Index=0) or (Index=NumberOfPoints-1)
+      if (Index=0) or (Index=nS-1)
       or (Knuckle[Index]) then Result:=1e10 else begin
          P1:=Point[Index-1];
          P2:=Point[Index];
@@ -4517,9 +4247,9 @@ var Weights: array of Real;
    Function FindNextPoint:integer;
    var MinVal:Real; I:Integer;
    begin
-      Result:=-1; if NumberOfPoints<3 then exit;
+      Result:=-1; if nS<3 then exit;
       Result:=1;  MinVal:=Weights[1]; I:=2;
-      While (I<NumberOfPoints) and (MinVal>0) do begin
+      While (I<nS) and (MinVal>0) do begin
          if Weights[I-1]<MinVal then begin
             MinVal:=Weights[I-1];
             Result:=I-1;
@@ -4529,43 +4259,43 @@ var Weights: array of Real;
    end;
 begin
    Result:=False;
-   if NumberOfPoints<3 then begin Result:=True; exit; end;
+   if nS<3 then begin Result:=True; exit; end;
 // N1:=0;
 // N2:=0;
-// for I:=1 to numberofpoints do if Knuckle[I-1] then inc(N1);
+// for I:=1 to Ns do if Knuckle[I-1] then inc(N1);
    TotalLength:=FTotalLength*FTotalLength;
    if TotalLength=0 then exit;
-   SetLength( Weights,NumberOfPoints );
-   for I:=1 to NumberOfPoints do Weights[I-1]:=Weight(I-1)/TotalLength;
+   SetLength( Weights,nS );
+   for I:=1 to nS do Weights[I-1]:=Weight(I-1)/TotalLength;
    repeat
       Index:=FindNextPoint;
       if Index<>-1 then begin
-         if (Index=0) or (Index=FNoPoints-1)
-         or (FNoPoints<3) then Index:=-1 else begin
+         if (Index=0) or (Index=nS-1)
+         or (nS<3) then Index:=-1 else begin
             if Weights[Index]<Criterium then begin
-               Move(Weights[Index+1],Weights[Index],(FNoPoints-Index-1)*SizeOf(Real));
-               Move(FPoints[Index+1],FPoints[Index],(FNoPoints-Index-1)*SizeOf(Vector));
-               Move(FKnuckles[Index+1],FKnuckles[Index],(FNoPoints-Index-1));
-               Dec(FNoPoints);
-               if (Index-1>=0) and (Index-1<FNoPoints) then Weights[Index-1]:=Weight(Index-1)/TotalLength;
-               if (Index>=0)   and (Index < FNoPoints) then Weights[Index]  :=Weight(Index)/TotalLength;
-               if (Index+1>=0) and (Index+1<FNoPoints) then Weights[Index+1]:=Weight(Index+1)/TotalLength;
+               Move(Weights[Index+1],Weights[Index],(nS-Index-1)*SizeOf(Real));
+               Move(FPoints[Index+1],FPoints[Index],(nS-Index-1)*SizeOf(Vector));
+               Move(FKnuckles[Index+1],FKnuckles[Index],(nS-Index-1));
+               Dec(nS);
+               if (Index-1>=0) and (Index-1<nS) then Weights[Index-1]:=Weight(Index-1)/TotalLength;
+               if (Index>=0)   and (Index < nS) then Weights[Index]  :=Weight(Index)/TotalLength;
+               if (Index+1>=0) and (Index+1<nS) then Weights[Index+1]:=Weight(Index+1)/TotalLength;
             end else Index:=-1;
          end;
       end;
    until index=-1;
    Result:=True;
-{  for I:=1 to numberofpoints do if Knuckle[I-1] then inc(N2);
+{  for I:=1 to Ns do if Knuckle[I-1] then inc(N2);
    if N1<>N2 then } Build:=false;
-   Capacity:=NumberOfPoints;
+   Capacity:=nS;
 end;
 
 procedure TFreeSpline.Add(P:Vector);
 begin                      // Make sure that the allocated memory is sufficient
-   if NumberOfPoints=Capacity then Capacity:=Capacity+IncrementSize;
-   FPoints[FNoPoints]:=P;
-   FKnuckles[FNoPoints]:=False;
-   inc(FNoPoints);
+   if nS=Capacity then Capacity:=Capacity+IncrementSize;
+   FPoints[nS]:=P;
+   FKnuckles[nS]:=False;
+   inc(nS);
    Build:=False;  // Curve needs to be rebuild
 end;
 
@@ -4577,12 +4307,10 @@ begin
    FPenWidth:=Spline.FPenwidth;
    FColor:=Spline.FColor;
    FPenstyle:=Spline.FPenStyle;
-   Capacity:=Spline.NumberOfPoints;
-   // Copy controlpoints
-   Move(Spline.FPoints[0],FPoints[0],Spline.NumberOfPoints*SizeOf(Vector));
-   // copy knuckles
-   Move(Spline.FKnuckles[0],FKnuckles[0],Spline.NumberOfPoints*SizeOf(Boolean));
-   FNoPoints:=Spline.NumberOfPoints;
+   Capacity:=Spline.nS;
+   Move(Spline.FPoints[0],FPoints[0],Spline.nS*SizeOf(Vector)); // Copy controlpoints
+   Move(Spline.FKnuckles[0],FKnuckles[0],Spline.nS*SizeOf(Boolean)); // copy knuckles
+   nS:=Spline.nS;
    FShowCurvature:=Spline.ShowCurvature;
    FCurvatureScale:=Spline.FCurvatureScale;
    FCurvatureColor:=Spline.FCurvatureColor;
@@ -4590,9 +4318,7 @@ begin
 end;
 
 function TFreeSpline.CoordLength(T1,T2:Real):Real;
-var I : Integer;
-    T : Real;
-    P1,P2 : Vector;
+var I: Integer; T: Real; P1,P2: Vector;
 begin
    Result:=0.0;
    if not build then Rebuild;
@@ -4651,7 +4377,7 @@ begin
    Setlength(FParameters,0);
    Setlength(FKnuckles,0);
    FCapacity:=0;
-   FNoPoints:=0;
+   nS:=0;
    inherited Create;
 end;
 
@@ -4668,19 +4394,14 @@ begin
    VdotV:=(Vel1.X*Vel1.X)+(Vel1.Y*Vel1.Y)+(Vel1.Z*Vel1.Z);
    Denom:=Power( VdotV,1.5 );
    if Denom>0 then Result:=L/Denom else Result:=0;
-//   Normal:=vdotv*acc-vdota*vel1;
-//   Normal.X:=vdotv*acc.X-vdota*vel1.X;
-//   Normal.Y:=vdotv*acc.Y-vdota*vel1.Y;
-//   Normal.Z:=vdotv*acc.Z-vdota*vel1.Z;
    Normal:=Normalize( vdotv*acc-vdota*vel1 );
 end;
 
 procedure TFreeSpline.DeletePoint(Index:Integer);
 var I : integer;
 begin
-   if NumberOfPoints>0 then begin
-      dec(FNoPoints);
-      for I:=Index to NumberOfPoints-1 do begin
+   if nS>0 then begin dec(nS);
+      for I:=Index to nS-1 do begin
          FPoints[I]:=FPoints[I+1];
          FKnuckles[I]:=FKnuckles[I+1];
       end;
@@ -4719,27 +4440,25 @@ end;
 function TFreeSpline.FirstDerive(Parameter:Real):Vector;
 var T1,T2:Real;
 begin
-   T1:=Parameter-1e-3;
-   T2:=Parameter+1e-3;
-   if T1<0.0 then T1:=0.0;
-   if T2>1.0 then T2:=1.0;
+   T1:=Parameter-1e-3; if T1<0.0 then T1:=0.0;
+   T2:=Parameter+1e-3; if T2>1.0 then T2:=1.0;
    Result:=(Value(T2)-Value(T1))/(T2-T1);
 end;
 
 procedure TFreeSpline.Insert(Index:Integer;P:Vector);
 var I : integer;
 begin
-// if (Index>=0) and (Index<NumberOfPoints) then begin
-      if NumberOfPoints=Capacity then Capacity:=Capacity+IncrementSize;
-      for I:=NumberOfPoints-1 downto Index do begin
-         FPoints[I+1]:=FPoints[I];
-         FKnuckles[I+1]:=FKnuckles[I];
-      end;
-      FPoints[Index]:=P;
-      FKnuckles[Index]:=False;
-      inc(FNoPoints);
-      Build:=false;
-// end else raise Exception.Create('Index out of range'+EOL+IntToStr(Index)+#32+IntToStr(FNoPoints));
+// if (Index>=0) and (Index<Ns) then begin
+   if nS=Capacity then Capacity:=Capacity+IncrementSize;
+   for I:=nS-1 downto Index do begin
+      FPoints[I+1]:=FPoints[I];
+      FKnuckles[I+1]:=FKnuckles[I];
+   end;
+   FPoints[Index]:=P;
+   FKnuckles[Index]:=False;
+   inc(nS);
+   Build:=false;
+// end else raise Exception.Create('Index out of range'+EOL+IntToStr(Index)+#32+IntToStr(nS));
 end;
 
 procedure TFreeSpline.Draw(Viewport:TFreeViewport);
@@ -4780,60 +4499,61 @@ begin
       Viewport.Canvas.Polyline(PArray1);
       if ShowPoints then begin
          Viewport.Fontname:=UFont; //'Consolas'; //'small fonts';
-         Viewport.FontSize:=ViewPort.FontSize; // =7; ?? Ship.Preferences.FontSize;
+         Viewport.FontSize:=ViewPort.FontSize; // =7 Ship.Preferences.FontSize;
          Viewport.FontColor:=clBlack;
          Viewport.BrushStyle:=bsClear;
-         for I:=1 to NumberOfPoints do begin
+         for I:=1 to nS do begin
             Pt:=Viewport.Project(Point[I-1]);
             Viewport.Canvas.Ellipse(Pt.X-2,Pt.Y-2,Pt.X+2,Pt.Y+2);
             Viewport.Canvas.TextOut(Pt.X+2,Pt.Y,IntToStr(I));
          end;
       end;
-   end else begin                                           // draw to z-buffer
+   end else begin // draw to z-buffer
       if not Build then Rebuild;
       R:=GetRValue(Color);
       G:=GetGValue(Color);
       B:=GetBValue(Color);
       P1:=Value(0.0);
       for I:=1 to Fragments do begin
-         P2:=Value(I/Fragments);
-         Viewport.DrawLineToZBuffer(P1,P2,R,G,B);
+         P2:=Value(I/Fragments); Viewport.DrawLineToZBuffer(P1,P2,R,G,B);
          P1:=P2;
       end;
    end;
 end;
 
-procedure TFreeSpline.InsertSpline(Index:Integer;Invert,DuplicatePoint:Boolean;Source:TFreeSpline);
-var I,NoNewPoints:Integer;
+procedure TFreeSpline.InsertSpline
+    ( Index: Integer;
+      Invert,DuplicatePoint: Boolean;
+      Source: TFreeSpline );
+var I,J,NoNewPoints: Integer;
 begin
-   if NumberOfPoints=0 then begin
-      Capacity:=Source.NumberOfPoints;
+   if nS=0 then begin
+      Capacity:=Source.nS;
       if Invert then begin
-         for I:=0 to Source.NumberOfPoints-1 do begin
-            FPoints[Source.NumberOfPoints-1-I]:=Source.FPoints[I];
-            FKnuckles[Source.NumberOfPoints-1-I]:=Source.FKnuckles[I];
+         for I:=0 to Source.nS-1 do begin
+            FPoints[Source.nS-1-I]:=Source.FPoints[I];
+            FKnuckles[Source.nS-1-I]:=Source.FKnuckles[I];
          end;
       end else begin
-         for I:=0 to Source.NumberOfPoints-1 do begin
+         for I:=0 to Source.nS-1 do begin
             FPoints[I]:=Source.FPoints[I];
             FKnuckles[I]:=Source.FKnuckles[I];
          end;
       end;
-      FNoPoints:=Source.NumberOfpoints;
+      nS:=Source.nS;
    end else begin
-      if DuplicatePoint then NoNewPoints:=Source.NumberOfPoints-1
-                        else NoNewPoints:=Source.NumberOfPoints;
-      Capacity:=NumberOfPoints+NoNewPoints;
+      if DuplicatePoint then NoNewPoints:=Source.nS-1
+                        else NoNewPoints:=Source.nS;
+      Capacity:=nS+NoNewPoints;
       Build:=False;
-      if Index<NumberOfPoints then begin        // insert space for new points
-         Move(FPoints[Index],FPoints[Index+NoNewPoints],(NumberOfPoints-Index)*SizeOf(Vector));
-         Move(FKnuckles[Index],FKnuckles[Index+NoNewPoints],(NumberOfPoints-Index));
-         // Insert the new data
-         if Invert then begin
-            Knuckle[index]:=Knuckle[Index] or Source.Knuckle[Source.NumberOfPoints-1];
+      if Index<nS then begin                     // insert space for new points
+         Move(  FPoints[Index],  FPoints[Index+NoNewPoints],(nS-Index)*SizeOf(Vector));
+         Move(FKnuckles[Index],FKnuckles[Index+NoNewPoints],(nS-Index));
+         if Invert then begin                            // Insert the new data
+            Knuckle[index]:=Knuckle[Index] or Source.Knuckle[Source.nS-1];
             for I:=1 to NoNewPoints do begin
-               FPoints[Index+I-1]:=Source.FPoints[Source.FNoPoints-I];
-               FKnuckles[Index+I-1]:=Source.FKnuckles[Source.FNoPoints-I];
+               FPoints[Index+I-1]:=Source.FPoints[Source.nS-I];
+               FKnuckles[Index+I-1]:=Source.FKnuckles[Source.nS-I];
             end;
          end else begin
             Knuckle[index]:=Knuckle[Index] or Source.Knuckle[0];
@@ -4841,29 +4561,20 @@ begin
             Move(Source.FKnuckles[0],FKnuckles[Index],NoNewPoints);
          end;
       end else begin
+         if DuplicatePoint then J:=1 else J:=0;
          if Invert then begin
-            Knuckle[NumberOfPoints-1]:=Knuckle[NumberOfPoints-1] or Source.Knuckle[Source.NumberOfPoints-1];
-            for I:=1 to NoNewPoints do begin
-               FPoints[FNoPoints-1+I]:=Source.FPoints[Source.FNoPoints-I-1];
-               FKnuckles[FNoPoints-1+I]:=Source.FKnuckles[Source.FNoPoints-I-1];
+            Knuckle[nS-1]:=Knuckle[nS-1] or Source.Knuckle[Source.nS-1];
+            for I:=0 to NoNewPoints-1 do begin
+               FPoints[nS+I]:=Source.FPoints[Source.nS-I-1+J];
+               FKnuckles[nS+I]:=Source.FKnuckles[Source.nS-I-1+J];
             end;
-         end else
-         begin
-            Knuckle[NumberOfPoints-1]:=Knuckle[NumberOfPoints-1] or Source.Knuckle[0];
-            if DuplicatePoint then begin
-               // Add controlpoints
-               Move(Source.FPoints[1],FPoints[NumberOfPoints],NoNewPoints*SizeOf(Vector));
-               // Add knuckles
-               Move(Source.FKnuckles[1],FKnuckles[NumberOfPoints],NoNewPoints);
-            end else begin
-               // Add controlpoints
-               Move(Source.FPoints[0],FPoints[NumberOfPoints],NoNewPoints*SizeOf(Vector));
-               // Add knuckles
-               Move(Source.FKnuckles[0],FKnuckles[NumberOfPoints],NoNewPoints);
-            end;
+         end else begin
+            Knuckle[nS-1]:=Knuckle[nS-1] or Source.Knuckle[0];
+            Move(Source.FPoints[J],FPoints[nS],NoNewPoints*SizeOf(Vector));
+            Move(Source.FKnuckles[J],FKnuckles[nS],NoNewPoints); // Add knuckles
          end;
       end;
-      inc(FNoPoints,NoNewPoints);
+      inc(nS,NoNewPoints);
       if not DuplicatePoint then Fknuckles[index]:=True;
    end;
 end;
@@ -4872,8 +4583,7 @@ function TFreeSpline.IntersectPlane(Plane:Plate;var Output:TFreeIntersectionData
 var Capacity,I: Integer; P1,P2: Vector; S1,S2,T1,T2,T: Real;
     procedure AddToOutput(P:Vector;Parameter:Real);
     begin
-       if Output.NumberOfIntersections=Capacity then
-       begin
+       if Output.NumberOfIntersections=Capacity then begin
           inc(Capacity,10);
           Setlength(Output.Points,Capacity);
           Setlength(Output.Parameters,Capacity);
@@ -4881,8 +4591,7 @@ var Capacity,I: Integer; P1,P2: Vector; S1,S2,T1,T2,T: Real;
        Output.Points[Output.NumberOfIntersections]:=P;
        Output.Parameters[Output.NumberOfIntersections]:=Parameter;
        inc(Output.NumberOfIntersections);
-    end;{AddToOutput}
-
+    end;
 begin
    Capacity:=0;
    Output.NumberOfIntersections:=0;
@@ -4898,8 +4607,7 @@ begin
       S2:=Plane.a*P2.x+Plane.b*P2.y+Plane.c*P2.z+Plane.d;
       if abs(S2)<1e-6 then AddToOutput(P2,T2);
       if ((S1<0.0) and (S2>0.0)) or ((S2<0.0) and (S1>0.0)) then begin
-         // intersection found
-         T:=-s1/(s2-s1);
+         T:=-s1/(s2-s1);                         // intersection found
          T:=T1+T*(T2-T1);
          AddToOutput(Value(T),T);
       end;
@@ -4912,39 +4620,22 @@ end;
 
 // Invert the direction of controlpoints and knuckles
 procedure TFreeSpline.InvertDirection;
-var Mid : Integer;
-    I   : Integer;
-    P   : Vector;
-    K   : Boolean;
-begin
-   Mid:=(FNoPoints div 2) - 1;
-   for I:=0 to Mid do
-   begin
-      P:=FPoints[I];
-      FPoints[I]:=FPoints[FNoPoints-I-1];
-      FPoints[FNoPoints-I-1]:=P;
-      K:=FKnuckles[I];
-      FKnuckles[I]:=FKnuckles[FNoPoints-I-1];
-      FKnuckles[FNoPoints-I-1]:=K;
-   end;
-   Build:=False;
+var I,Mid: Integer; P: Vector; K: Boolean;
+begin Mid:=(nS div 2) - 1;
+   for I:=0 to Mid do begin
+      P:=FPoints[I];   FPoints[I]:=FPoints[nS-I-1];     FPoints[nS-I-1]:=P;
+      K:=FKnuckles[I]; FKnuckles[I]:=FKnuckles[nS-I-1]; FKnuckles[nS-I-1]:=K;
+   end; Build:=False;
 end;
 
 procedure TFreeSpline.LoadBinary(Source:TFreeFileBuffer);
-var I,N  : Integer;
-    P    : Vector;
-    K    : Boolean;
+var I,N: Integer; P: Vector; K: Boolean;
 begin
-   Source.LoadBoolean   (FShowCurvature);
+   Source.LoadBoolean(FShowCurvature);
    Source.LoadTFloatType(FCurvatureScale);
-   Source.LoadInteger   (N);
-   Capacity:=N;
-   for I:=1 to N do begin
-      Source.LoadVector(P);
-      Add(P);
-      Source.LoadBoolean(K);
-      Knuckle[I-1]:=K;
-   end;
+   Source.LoadInteger(N); Capacity:=N;
+   for I:=1 to N do begin Source.LoadVector(P); Add(P);
+                          Source.LoadBoolean(K); Knuckle[I-1]:=K; end;
 end;
 
 procedure TFreeSpline.SaveBinary(Destination:TFreeFileBuffer);
@@ -4952,25 +4643,22 @@ var I:Integer;
 begin
    Destination.Add(FShowCurvature);
    Destination.Add(FCurvatureScale);
-   Destination.Add(NumberOfPoints);
-   for I:=1 to NumberOfPoints do begin
+   Destination.Add(nS);
+   for I:=1 to nS do begin
       Destination.Add(Point[I-1]);
       Destination.Add(Knuckle[I-1]);
    end;
 end;
 
-procedure TFreeSpline.SaveToDXF(Strings:TStringList;Layername:string;SendMirror:Boolean);
-var P       : Vector;
-    I,J,Ind : integer;
-    NParams : Integer;
-    Params  : RealArray;
+procedure TFreeSpline.SaveToDXF
+( Strings:TStringList; Layername:string; SendMirror:Boolean );
+var P: Vector; I,J,Ind,NParams: Integer; Params: RealArray;
 begin
   Ind:=FindDXFColorIndex(Color);
   NParams:=0;
-  Setlength(Params,NumberOfPoints);
-  // count number of knucklepoints
+  Setlength(Params,nS); // count number of knucklepoints
   if not Build then Rebuild;
-  for I:=2 to NumberOfPoints-1 do begin
+  for I:=2 to nS-1 do begin
      if Knuckle[I-1] then begin
         Params[NParams]:=Parameter[I-1];
         inc(NParams);
@@ -4983,35 +4671,35 @@ begin
   end;
   ArraySort( Params,NParams );
   Strings.Add('0'+EOL+'POLYLINE');
-  Strings.Add('8'+EOL+LayerName);   // layername
-  Strings.Add('62'+EOL+IntToStr(Ind));  // color by layer
-  Strings.Add('70'+EOL+'10');   // not closed
-  Strings.Add('66'+EOL+'1');    // vertices follow
+  Strings.Add('8'+EOL+LayerName);      // layername
+  Strings.Add('62'+EOL+IntToStr(Ind)); // color by layer
+  Strings.Add('70'+EOL+'10');          // not closed
+  Strings.Add('66'+EOL+'1');           // vertices follow
   for J:=1 to NParams do begin
      P:=Value(Params[J-1]);
      Strings.Add('0'+EOL+'VERTEX');
      Strings.Add('8'+EOL+LayerName);
      Strings.Add('10'+EOL+FloatToDec(P.X,4));
-     Strings.Add('20'+EOL+FloatToDec(P.Y,4));
-     Strings.Add('30'+EOL+FloatToDec(P.Z,4));
-     Strings.Add('70'+EOL+'32');    // 3D polyline mesh vertex
+     Strings.Add('20'+EOL+FloatToDec(P.z,4));
+     Strings.Add('30'+EOL+FloatToDec(P.y,4));
+     Strings.Add('70'+EOL+'32'); // 3D polyline mesh vertex
   end;
   Strings.Add('0'+EOL+'SEQEND');
-  if SendMirror then begin              // send starboard side of the ship also
+  if SendMirror then begin // send starboard side of the ship also
      Strings.Add('0'+EOL+'POLYLINE');
-     Strings.Add('8'+EOL+LayerName);        // layername
-     Strings.Add('62'+EOL+IntToStr(Ind));   // color by layer
-     Strings.Add('70'+EOL+'10');            // not closed
-     Strings.Add('66'+EOL+'1');             // vertices follow
+     Strings.Add('8'+EOL+LayerName);      // layername
+     Strings.Add('62'+EOL+IntToStr(Ind)); // color by layer
+     Strings.Add('70'+EOL+'10');          // not closed
+     Strings.Add('66'+EOL+'1');           // vertices follow
      for J:=0 to NParams do begin
         P:=Value(Params[J-1]);
         P.Y:=-P.Y;
         Strings.Add('0'+EOL+'VERTEX');
         Strings.Add('8'+EOL+LayerName);
         Strings.Add('10'+EOL+FloatToDec(P.X,4));
-        Strings.Add('20'+EOL+FloatToDec(P.Y,4));
-        Strings.Add('30'+EOL+FloatToDec(P.Z,4));
-        Strings.Add('70'+EOL+'32');    // 3D polyline mesh vertex
+        Strings.Add('20'+EOL+FloatToDec(P.z,4));
+        Strings.Add('30'+EOL+FloatToDec(P.y,4));
+        Strings.Add('70'+EOL+'32'); // 3D polyline mesh vertex
      end;
      Strings.Add('0'+EOL+'SEQEND');
   end;
@@ -5022,12 +4710,12 @@ begin
    Setlength(FDerivatives,0);
    Setlength(FParameters,0);
    FTotalLength:=0.0;
-   FNoPoints:=0;
+   nS:=0;
    inherited Clear;
    Build:=False;
    Setlength(FPoints,0);
    FCapacity:=0;
-   FNoPoints:=0;
+   nS:=0;
    FFragments:=100;
    FShowCurvature:=false;
    FCurvatureScale:=0.10;
@@ -5036,20 +4724,13 @@ begin
 end;
 
 function TFreeSpline.Value( Parameter:Real ):Vector;
-var Lo,Hi   : integer;
-    K       : Integer;
-    H,a,b   : Real;
-begin
-   Result:=Zero;
-   if FNoPoints<2 then exit;
+var Lo,Hi,K: Integer; H,a,b: Real;
+begin Result:=Zero;
+   if nS<2 then exit;
    if not FBuild then Rebuild;
-   if FNoPoints<2 then exit;
-   if FNoPoints=2 then begin
-      Lo:=0;
-      Hi:=1;
-   end else begin
-      Lo:=0;
-      Hi:=FNoPoints-1;
+   if nS<2 then exit;
+   if nS=2 then begin Lo:=0; Hi:=1;
+   end else begin Lo:=0; Hi:=nS-1;
       repeat
          K:=(Lo+Hi) div 2;
          if FParameters[K]<Parameter then Lo:=K
@@ -5062,7 +4743,10 @@ begin
    end else begin
       A:=(FParameters[Hi]-Parameter)/H;
       B:=(Parameter-FParameters[Lo])/H;
-      Result:=A*FPoints[Lo]+B*FPoints[Hi]+H*H*((A*A*A-A)*FDerivatives[Lo]+(B*B*B-B)*(Fderivatives[Hi]))/6.0;
+      Result:=A*FPoints[Lo]
+            + B*FPoints[Hi]
+            + H*H*( (A*A*A-A)*FDerivatives[Lo]
+            + (B*B*B-B)*(Fderivatives[Hi]) )/6.0;
    end;
 end;
 {
@@ -5204,7 +4888,7 @@ procedure TFreeNURBSurface.DeleteRow(Row:Integer);
 var I:Integer;
 begin
    for I:=Row+1 to Rowcount-1 do
-      Move(FControlpoints[I][0],FControlpoints[I-1][0],(Colcount)*SizeOf(Vector));
+     Move(FControlpoints[I][0],FControlpoints[I-1][0],(Colcount)*SizeOf(Vector));
    Dec(FRowCount);
    Build:=False;
 end;
@@ -5262,10 +4946,9 @@ begin
 end;
 
 procedure TFreeNURBSurface.InsertRowKnot(V:Real);
-var Index      : Integer;
-    I,J,k,N,X  : Integer;
-    NewPoints  : TFreeCoordinateGrid;
-    Alpha      : RealArray;
+var Index,I,J,k,N,X: Integer;
+    NewPoints: TFreeCoordinateGrid;
+    Alpha: RealArray;
 begin
 
    if Length(FRowKnots)=0 then SetDefaultRowKnotvector;
@@ -5543,14 +5226,14 @@ begin
       end;
    end else Result:=FCurve.DistanceToCursor(X,Y,Viewport);
    if Owner.DrawMirror then begin
-      for I:=1 to FCurve.NumberOfPoints do begin
+      for I:=1 to FCurve.nS do begin
          V1:=FCurve.Point[I-1];
          V1.Y:=-V1.Y;
          FCurve.Point[I-1]:=V1;
       end;
       Tmp:=FCurve.DistanceToCursor(X,Y,Viewport);
       if Tmp<Result then Result:=Tmp;
-      for I:=1 to FCurve.NumberOfPoints do begin
+      for I:=1 to FCurve.nS do begin
          V1:=FCurve.Point[I-1];
          V1.Y:=-V1.Y;
          FCurve.Point[I-1]:=V1;
@@ -5570,7 +5253,7 @@ var Sel   : Boolean;
     P3D,Normal: Vector;
     C,T: Real;
 begin
-   if FCurve.NumberOfPoints>1 then begin
+   if FCurve.nS>1 then begin
       FCurve.Color:=Color;
       Sel:=Selected;
       FCurve.ShowCurvature:=(Sel) and (Owner.FShowCurvature);
@@ -5641,13 +5324,13 @@ begin
          end;
       end else FCurve.Draw(Viewport);
       if Owner.DrawMirror then begin
-         for I:=1 to FCurve.NumberOfPoints do begin
+         for I:=1 to FCurve.nS do begin
             P3D:=FCurve.Point[I-1];
             P3D.Y:=-P3D.Y;
             FCurve.Point[I-1]:=P3D;
          end;
          FCurve.Draw(Viewport);
-         for I:=1 to FCurve.NumberOfPoints do begin
+         for I:=1 to FCurve.nS do begin
             P3D:=FCurve.Point[I-1]; P3D.Y:=-P3D.Y;
                  FCurve.Point[I-1]:=P3D;
          end;
@@ -5729,7 +5412,7 @@ procedure TFreeSubdivisionControlCurve.SaveToDXF(Strings:TStringList);
 var Layer : string;
 begin
    Layer:='Control_curves';
-   FCurve.Fragments:=FCurve.NumberOfPoints;
+   FCurve.Fragments:=FCurve.nS;
    FCurve.SaveToDXF(Strings,Layer,Owner.DrawMirror);
 end;
 {
@@ -5753,12 +5436,10 @@ function TFreeSubdivisionLayer.FGetLayerIndex:Integer;
    begin Result:=Owner.FLayers.IndexOf(self); end;
 
 function TFreeSubdivisionLayer.FGetSurfaceProperties:TLayerProperties;
-var I,J,K : Integer;
-    Child : TFreeSubdivisionFace;
-
+var I,J,K: Integer;
+    Child: TFreeSubdivisionFace;
     procedure ProcessTriangle(P1,P2,P3:Vector);
-    var Center: Vector;
-        ax,ay,az,Area: Real;
+    var Center: Vector; ax,ay,az,Area: Real;
     begin
        Center:=(P1+P2+P3)/3.0;
        ax:=0.5*((P1.y-P2.y)*(P1.z+P2.z)+(P2.y-P3.y)*(P2.z+P3.z)+
@@ -6053,21 +5734,14 @@ begin
 end;
 
 procedure TFreeSubdivisionLayer.Extents( var Min,Max:Vector );
-var I    : Integer;
-    Face : TFreeSubdivisionControlface;
-    P    : Vector;
+var I: Integer; Face: TFreeSubdivisionControlface; P: Vector;
 begin
-   if Visible then for I:=1 to Count do begin
-      Face:=Items[I-1];
+   if Visible then for I:=1 to Count do begin Face:=Items[I-1];
       MinMax(Face.Min,Min,Max);
       MinMax(Face.Max,Min,Max);
       if (Symmetric) and (Owner.DrawMirror) then begin
-         P:=Face.Min;
-         P.Y:=-P.Y;
-         MinMax(P,Min,Max);
-         P:=Face.Max;
-         P.Y:=-P.Y;
-         MinMax(P,Min,Max);
+         P:=Face.Min; P.Y:=-P.Y; MinMax(P,Min,Max);
+         P:=Face.Max; P.Y:=-P.Y; MinMax(P,Min,Max);
       end;
    end;
 end;
@@ -6148,15 +5822,14 @@ begin
 end;
 
 procedure TFreeSubdivisionLayer.SaveToDXF(Strings:TStringList);
-var Layers        : TFasterList;
-    Assembled     : TFreeFaceArray;
-    NAssembled,I,J,K,Cols,Rows: Integer;
-    AssFace       : TFreeFaceGrid;
-    Face          : TFreeSubdivisionControlFace;
-    Grid          : TFreeSubdivisionGrid;
-    P             : Vector;
-    DXFName       : string;
-
+var Layers   : TFasterList;
+    Assembled: TFreeFaceArray;
+    NAssembled,I,J,K,Cols,Rows,Board: Integer;
+    AssFace: TFreeFaceGrid;
+    Face   : TFreeSubdivisionControlFace;
+    Grid   : TFreeSubdivisionGrid;
+    P      : Vector;
+    DXFName: string;
 begin
    if visible then begin
       Layers:=TFasterList.Create;
@@ -6172,26 +5845,9 @@ begin
                Owner.ConvertToGrid(AssFace,Cols,Rows,Grid);
                if (Cols>0) and (Rows>0) then begin
                   DXFName:=DXFLayerName;
-                  Strings.Add('0'+EOL+'POLYLINE');
-                  Strings.Add('8'+EOL+DXFName);
-                  Strings.Add('62'+EOL+IntToStr(FindDXFColorIndex(color)));
-                  Strings.Add('66'+EOL+'1');
-                  Strings.Add('70'+EOL+'16');
-                  Strings.Add('71'+EOL+IntToStr(Rows));
-                  Strings.Add('72'+EOL+IntToStr(Cols));
-                  for J:=1 to Rows do begin
-                     for K:=1 to Cols do begin
-                        P:=Grid[J-1][K-1].FCoordinate;
-                        Strings.Add('0'+EOL+'VERTEX');
-                        Strings.Add('8'+EOL+DXFName);
-                        Strings.Add('10'+EOL+FloatToDec(P.X,4));
-                        Strings.Add('20'+EOL+FloatToDec(P.Y,4));
-                        Strings.Add('30'+EOL+FloatToDec(P.Z,4));
-                        Strings.Add('70'+EOL+'64');    // polygon mesh vertex
-                     end;
-                  end;
-                  Strings.add('0'+EOL+'SEQEND');
-                  if (Symmetric) and (Owner.DrawMirror) then begin
+                  for Board:=0 to 1 do begin
+                     if Board=1 then
+                     if (not Owner.DrawMirror) or (not Symmetric) then break;
                      Strings.Add('0'+EOL+'POLYLINE');
                      Strings.Add('8'+EOL+DXFName);
                      Strings.Add('62'+EOL+IntToStr(FindDXFColorIndex(color)));
@@ -6199,18 +5855,17 @@ begin
                      Strings.Add('70'+EOL+'16');
                      Strings.Add('71'+EOL+IntToStr(Rows));
                      Strings.Add('72'+EOL+IntToStr(Cols));
-                     for J:=1 to Rows do begin
-                        for K:=1 to Cols do begin
-                           P:=Grid[J-1][K-1].FCoordinate;
-                           Strings.Add('0'+EOL+'VERTEX');
-                           Strings.Add('8'+EOL+DXFName);
-                           Strings.Add('10'+EOL+FloatToDec(P.X,4));
-                           Strings.Add('20'+EOL+FloatToDec(-P.Y,4));
-                           Strings.Add('30'+EOL+FloatToDec(P.Z,4));
-                           Strings.Add('70'+EOL+'64');    // polygon mesh vertex
-                        end;
-                     end;
-                     Strings.add('0'+EOL+'SEQEND');
+                     for J:=1 to Rows do
+                     for K:=1 to Cols do begin
+                         P:=Grid[J-1][K-1].FCoordinate;
+                         if Board=1 then P.Y:=-P.Y;
+                         Strings.Add('0'+EOL+'VERTEX');
+                         Strings.Add('8'+EOL+DXFName);
+                         Strings.Add('10'+EOL+FloatToDec(P.X,4));
+                         Strings.Add('20'+EOL+FloatToDec(P.z,4));
+                         Strings.Add('30'+EOL+FloatToDec(P.y,4));
+                         Strings.Add('70'+EOL+'64');     // polygon mesh vertex
+                     end; Strings.add('0'+EOL+'SEQEND');
                   end;
                end else begin
                   for J:=1 to AssFace.NRows do begin
@@ -6225,7 +5880,7 @@ begin
                Face.SaveToDXF(Strings);
             end;
          end;
-      end;     Layers.Destroy;
+      end; Layers.Destroy;
    end;
 end;
 
@@ -8230,14 +7885,13 @@ end;
 
 procedure TFreeSubdivisionControlFace.Draw( Viewport:TFreeViewport );
 Type TIntData = record P: Vector; DotProd: Real; end;
-var I,J,K,Na,Nb,Capacity,Index: Integer;
+var I,J,K,Na,Nb,Capacity,Index,Board: Integer; Min,Max,Tmp, lEps: Real;
     Edge : TFreeSubdivisionEdge;
     Child: TFreeSubdivisionFace;
     Point: TFreeSubdivisionPoint;
-    P1,P2,P3,Camera: Vector;
-    R,G,B, Ru,Gu,Bu, Au, Alpha: Byte;      Back:Boolean;
-    Min,Max,Tmp,C1,C2,C3: Real;
-    Above,Below: VectorArray;
+    P1,P2,P3,Camera: Vector; Above,Below: VectorArray;
+    R,G,B, Ru,Gu,Bu, Au, Alpha,
+    R1,G1, R2,G2, R3,G3: Byte; Back: Boolean; // развёртка перецвета Gauss'иана
     Intersections: array of TIntData;
     Points: TFasterList;
 
@@ -8269,7 +7923,7 @@ var I,J,K,Na,Nb,Capacity,Index: Integer;
      const Width=0.02;
      var d1,d2,d3,Mindp,Maxdp: Real;
         Eye,Vz,P1,P2,P3,N1,N2,N3: Vector;
-        I,J,Npts,NInt,Lo,Hi: Integer;
+        I,J,Npts,NInt,Lo,Hi,Board: Integer;
         Pts: VectorArray;
         procedure Add( P:Vector; Dp:Real );
         begin
@@ -8310,90 +7964,46 @@ var I,J,K,Na,Nb,Capacity,Index: Integer;
               end;
               Add(P,Dp);
            end else Add(P,Dp);
-        end;{Process}
+        end;
     begin
-       NInt:=0;
        P1:=Point1.FCoordinate;      if Right then P1.y:=-P1.y;
        P2:=Point2.FCoordinate;      if Right then P2.y:=-P2.y;
        P3:=Point3.FCoordinate;      if Right then P3.y:=-P3.y;
        Vz:=UnifiedNormal( P1,P2,P3 );
-       if Point1.VertexType in [svRegular,svDart] then N1:=Point1.Normal
-                                                  else N1:=Vz;
-       if Point2.VertexType in [svRegular,svDart] then N2:=Point2.Normal
-                                                  else N2:=Vz;
-       if Point3.VertexType in [svRegular,svDart] then N3:=Point3.Normal
-                                                  else N3:=Vz;
-       Eye:=Normalize(Camera-P1); d1:=Dotproduct(Eye,N1); if d1<0 then d1:=-d1;
-       Eye:=Normalize(Camera-P2); d2:=Dotproduct(Eye,N2); if d2<0 then d2:=-d2;
-       Eye:=Normalize(Camera-P3); d3:=Dotproduct(Eye,N3); if d3<0 then d3:=-d3;
-       MindP:=d1;
-       MaxDp:=d1;
-       if d2<Mindp then Mindp:=d2;
-       if d2>Maxdp then Maxdp:=d2;
-       if d3<Mindp then Mindp:=d3;
-       if d3>Maxdp then Maxdp:=d3;
-       Lo:=Trunc(MinDp/Width);
-       if Lo<0 then Lo:=0;
-       Hi:=trunc(MaxDp/Width);
-       if Hi>Round(1/Width) then Hi:=Round(1/Width);
-       if Lo=Hi then begin
-         if not odd(Lo) then Viewport.ShadeTriFace(P1,P2,P3,R,G,B,Alpha)
-                        else Viewport.ShadeTriFace(P1,P2,P3,Zr,Zg,Zb,Alpha);
-       end else begin
-          Add(P1,d1);
-          Process(P2,d2);
-          Process(P3,d3);
-          Process(P1,d1);
-          Setlength(Pts,NInt);
-          for I:=Lo to Hi+1 do begin NPts:=0;
-            for J:=1 to NInt-1 do begin
-               if ((Intersections[J-1].DotProd>=(I-1)*Width)
-               or (abs(Intersections[J-1].DotProd-(I-1)*Width)<1e-6))
-               and ((Intersections[J-1].DotProd<=I*Width)
-               or (abs(Intersections[J-1].DotProd-I*Width)<1e-6) )then begin
-                  inc(Npts);
-                  Pts[NPts-1]:=Intersections[J-1].P;
-               end;
-            end;
-            for J:=3 to NPts do begin
-               if odd(I)
-               then Viewport.ShadeTriFace(Pts[0],Pts[J-2],Pts[J-1],R,G,B,Alpha)
-               else Viewport.ShadeTriFace(Pts[0],Pts[J-2],Pts[J-1],Zr,Zg,Zb,Alpha);
-            end;
-         end;
-      end;
-      if (Owner.DrawMirror) and (Layer.Symmetric) then begin
-         P1.Y:=-P1.Y;
-         P2.Y:=-P2.Y;
-         P3.Y:=-P3.Y;
-         N1.Y:=-N1.Y;
-         N2.Y:=-N2.Y;
-         N3.Y:=-N3.Y;
-         NInt:=0;
-         Eye:=Normalize(Camera-P1); d1:=Dotproduct(Eye,N1); if d1<0 then d1:=-d1;
-         Eye:=Normalize(Camera-P2); d2:=Dotproduct(Eye,N2); if d2<0 then d2:=-d2;
-         Eye:=Normalize(Camera-P3); d3:=Dotproduct(Eye,N3); if d3<0 then d3:=-d3;
-         MindP:=d1;
-         MaxDp:=d1;
-         if d2<Mindp then Mindp:=d2;
-         if d2>Maxdp then Maxdp:=d2;
-         if d3<Mindp then Mindp:=d3;
-         if d3>Maxdp then Maxdp:=d3;
-
-         Lo:=Trunc(MinDp/Width);
-         if Lo<0 then Lo:=0;
-         Hi:=trunc(MaxDp/Width);
-         if Hi>Round(1/Width) then Hi:=Round(1/Width);
-         if Lo=Hi then begin
-            if not odd(Lo) then Viewport.ShadeTriFace(P1,P2,P3,R,G,B,Alpha)
-                           else Viewport.ShadeTriFace(P1,P2,P3,Zr,Zg,Zb,Alpha);
-         end else begin
-            Add(P1,d1);
-            Process(P2,d2);
-            Process(P3,d3);
-            Process(P1,d1);
-            Setlength(Pts,NInt);
-            for I:=Lo to Hi+1 do begin NPts:=0;
+       if Point1.VertexType in [svRegular,svDart] then N1:=Point1.Normal else N1:=Vz;
+       if Point2.VertexType in [svRegular,svDart] then N2:=Point2.Normal else N2:=Vz;
+       if Point3.VertexType in [svRegular,svDart] then N3:=Point3.Normal else N3:=Vz;
+       for Board:=0 to 1 do begin
+          if (Board=1) then
+          if (Owner.DrawMirror) and (Layer.Symmetric) then begin
+             P1.Y:=-P1.Y; N1.Y:=-N1.Y;
+             P2.Y:=-P2.Y; N2.Y:=-N2.Y;
+             P3.Y:=-P3.Y; N3.Y:=-N3.Y;
+          end else break;
+          NInt:=0;
+          Eye:=Normalize(Camera-P1); d1:=Dotproduct(Eye,N1); if d1<0 then d1:=-d1;
+          Eye:=Normalize(Camera-P2); d2:=Dotproduct(Eye,N2); if d2<0 then d2:=-d2;
+          Eye:=Normalize(Camera-P3); d3:=Dotproduct(Eye,N3); if d3<0 then d3:=-d3;
+          MindP:=d1;
+          MaxDp:=d1;
+          if d2<Mindp then Mindp:=d2;
+          if d2>Maxdp then Maxdp:=d2;
+          if d3<Mindp then Mindp:=d3;
+          if d3>Maxdp then Maxdp:=d3;
+          Lo:=Trunc(MinDp/Width);
+          if Lo<0 then Lo:=0;
+          Hi:=trunc(MaxDp/Width);
+          if Hi>Round(1/Width) then Hi:=Round(1/Width);
+          if Lo=Hi then begin
+             if not odd(Lo) then Viewport.ShadeTriFace(P1,P2,P3,R,G,B,Alpha)
+                            else Viewport.ShadeTriFace(P1,P2,P3,Zr,Zg,Zb,Alpha);
+          end else begin
+             Add(P1,d1);
+             Process(P2,d2);
+             Process(P3,d3);
+             Process(P1,d1);
+             Setlength(Pts,NInt);
+             for I:=Lo to Hi+1 do begin NPts:=0;
                for J:=1 to NInt-1 do begin
                   if ((Intersections[J-1].DotProd>=(I-1)*Width)
                   or (abs(Intersections[J-1].DotProd-(I-1)*Width)<1e-6))
@@ -8404,14 +8014,14 @@ var I,J,K,Na,Nb,Capacity,Index: Integer;
                   end;
                end;
                for J:=3 to NPts do begin
-                  if odd(I) then Viewport.ShadeTriFace(Pts[0],Pts[J-2],Pts[J-1],R,G,B,Alpha)
-                            else Viewport.ShadeTriFace(Pts[0],Pts[J-2],Pts[J-1],Zr,Zg,Zb,Alpha);
+                  if odd(I)
+                  then Viewport.ShadeTriFace(Pts[0],Pts[J-2],Pts[J-1],R,G,B,Alpha)
+                  else Viewport.ShadeTriFace(Pts[0],Pts[J-2],Pts[J-1],Zr,Zg,Zb,Alpha);
                end;
             end;
          end;
-      end;
-    end;{ZebraStripe}
-
+       end;
+    end;
 begin
    if Viewport.ViewportMode<>vmWireframe then begin
       R:=GetRValue( Layer.Color );
@@ -8442,28 +8052,14 @@ begin
                P1:=Child.Point[0].Coordinate;  // веер от начальной точки
                P2:=Child.Point[J-1].Coordinate;
                P3:=Child.Point[J].Coordinate;  // Check if clipping is required
-
                if Back then begin P1.y:=-P1.y; P2.y:=-P2.y; P3.y:=-P3.y; end;
-
-               Min:=Owner.WaterlinePlane.a*P1.x+Owner.WaterlinePlane.b*P1.y+Owner.WaterlinePlane.c*P1.z+Owner.WaterlinePlane.d;
-               Max:=Min;
-               Tmp:=Owner.WaterlinePlane.a*P2.x+Owner.WaterlinePlane.b*P2.y+Owner.WaterlinePlane.c*P2.z+Owner.WaterlinePlane.d;
-               if Tmp<Min then Min:=Tmp else if Tmp>Max then Max:=Tmp;
-               Tmp:=Owner.WaterlinePlane.a*P3.x+Owner.WaterlinePlane.b*P3.y+Owner.WaterlinePlane.c*P3.z+Owner.WaterlinePlane.d;
-               if Tmp<Min then Min:=Tmp else if Tmp>Max then Max:=Tmp;
-               if Max<=0.0 then begin               // entirely below the plane
-                  Viewport.ShadeTriFace(P1,P2,P3,Ru,Gu,Bu,Alpha);
-               end else if Min>=0.0 then begin      // entirely above the plane
-                  Viewport.ShadeTriFace(P1,P2,P3,R,G,B,Alpha);
-               end else begin                   // pierces water, clip triangle
-                  ClipTriangle(P1,P2,P3,Owner.WaterlinePlane,Na,Nb,Above,Below);
-                  for K:=3 to Na do Viewport.ShadeTriFace(Above[0],Above[K-2],Above[K-1],R,G,B,Alpha);
-                  for K:=3 to Nb do Viewport.ShadeTriFace(Below[0],Below[K-2],Below[K-1],Ru,Gu,Bu,Alpha);
-               end;
-               if (Owner.DrawMirror) and (Layer.Symmetric) then begin
-                  P1.Y:=-P1.Y;
-                  P2.Y:=-P2.Y;
-                  P3.Y:=-P3.Y;                 // Check if clipping is required
+               for Board:=0 to 1 do begin
+                  if Board=1 then
+                  if Owner.DrawMirror and Layer.Symmetric then begin
+                     P1.Y:=-P1.Y;
+                     P2.Y:=-P2.Y;
+                     P3.Y:=-P3.Y;              // Check if clipping is required
+                  end else break;
                   Min:=Owner.WaterlinePlane.a*P1.x
                      + Owner.WaterlinePlane.b*P1.y
                      + Owner.WaterlinePlane.c*P1.z
@@ -8474,7 +8070,10 @@ begin
                      + Owner.WaterlinePlane.c*P2.z
                      + Owner.WaterlinePlane.d;
                   if Tmp<Min then Min:=Tmp else if Tmp>Max then Max:=Tmp;
-                  Tmp:=Owner.WaterlinePlane.a*P3.x+Owner.WaterlinePlane.b*P3.y+Owner.WaterlinePlane.c*P3.z+Owner.WaterlinePlane.d;
+                  Tmp:=Owner.WaterlinePlane.a*P3.x
+                     + Owner.WaterlinePlane.b*P3.y
+                     + Owner.WaterlinePlane.c*P3.z
+                     + Owner.WaterlinePlane.d;
                   if Tmp<Min then Min:=Tmp else if Tmp>Max then Max:=Tmp;
                   if Max<=0.0 then begin            // entirely below the plane
                      Viewport.ShadeTriFace(P1,P2,P3,Ru,Gu,Bu,Alpha);
@@ -8508,7 +8107,7 @@ begin
             end;
          end;
          if capacity<0 then exit;
-      end else begin
+      end else begin lEps:=exp( -9-Ord( Ship.Precision ) );
          for I:=1 to ChildCount do begin     // == Developed Patch
             Child:=Self.Child[I-1];
             Back := (not Owner.DrawMirror) and (ViewPort.ViewType=fvBodyPlan)
@@ -8519,18 +8118,18 @@ begin
                P3:=Child.Point[J].Coordinate;
                if Viewport.ViewportMode<>vmShade then begin
                   Index:=Owner.FPoints.SortedIndexOf(Child.Point[0]);
-                  C1:=Owner.FGausCurvature[index];
+                  if abs(Owner.FGausCurvature[index])<lEps then begin R1:=64; G1:=255 end else begin R1:=255; G1:=64 end;
                   Index:=Owner.FPoints.SortedIndexOf(Child.Point[J-1]);
-                  C2:=Owner.FGausCurvature[index];
+                  if abs(Owner.FGausCurvature[index])<lEps then begin R2:=64; G2:=255 end else begin R2:=255; G2:=64 end;
                   Index:=Owner.FPoints.SortedIndexOf(Child.Point[J]);
-                  C3:=Owner.FGausCurvature[index];
+                  if abs(Owner.FGausCurvature[index])<lEps then begin R3:=64; G3:=255 end else begin R3:=255; G3:=64 end;
                   if Back then begin P1.Y:=-P1.y; P2.Y:=-P2.y; P3.Y:=-P3.y; end;
-                  Viewport.ShadeTriangle(P1,P2,P3,C1,C2,C3);
+                  Viewport.ShadeTriangles( P1,P2,P3, R1,G1,G1,R2,G2,G2,R3,G3,G3 );
                   if (Owner.DrawMirror) and (Layer.Symmetric) then begin
                      P1.Y:=-P1.Y;
                      P2.Y:=-P2.Y;
                      P3.Y:=-P3.Y;
-                     Viewport.ShadeTriangle(P1,P2,P3,C1,C2,C3);
+                     Viewport.ShadeTriangles( P1,P2,P3, R1,G1,G1,R2,G2,G2,R3,G3,G3 );
                   end;
                end else begin
                   Viewport.ShadeTriFace(P1,P2,P3,R,G,B,Alpha);
@@ -8563,9 +8162,6 @@ begin
          Edge:=FControlEdges[I-1];
          Edge.Draw(Owner.DrawMirror and Layer.Symmetric,Viewport);
       end;
-
-//-   end;
-
       if (Selected) and (Owner.ShowNormals) then begin          // Draw nornals
                            // First assemble all points within this controlface
          Points:=TFasterList.Create;
@@ -8606,13 +8202,6 @@ var I,J,Index: Integer;
           if Curvature>0 then Result:=0.5+0.5*Power(Curvature/MaxCurvature,contrast)
                          else Result:=0.5-0.5*Power(Curvature/MinCurvature,contrast);
           Result:=1-result;
-          {
-          if (Result<0.2) then Result:=0.10 else
-             if (Result>=0.2) and (Result<0.4) then Result:=0.3 else
-                if (Result>=0.4) and (Result<0.6) then Result:=0.50 else
-                   if (Result>=0.6) and (Result<0.8) then Result:=0.8 else
-                      if (Result>=0.8) then Result:=1.0;
-          }
        end;
     end;
 begin
@@ -8789,7 +8378,7 @@ begin
 end;
 
 procedure TFreeSubdivisionControlFace.SaveToDXF(Strings:TStringList);
-var I,J,K,Cols,Rows,ColorIndex: Integer;
+var I,J,K,Cols,Rows,ColorIndex,Board: Integer;
     Child      : TFreeSubdivisionFace;
     LayerName  : string;
     P          : Vector;
@@ -8797,6 +8386,7 @@ var I,J,K,Cols,Rows,ColorIndex: Integer;
     FaceData   : TFreeFaceGrid;
 begin
    LayerName:=self.Layer.Name;
+// LayerName:=ConvertEncoding( LayerName,'utf8','cp1251' );
    ColorIndex:=FindDXFColorIndex(Layer.Color);
    if NumberOfpoints=4 then begin     // create one polymesh for all childfaces
       FaceData.NCols:=1;
@@ -8805,7 +8395,10 @@ begin
       Setlength(FaceData.Faces[0],FaceData.NCols);
       FaceData.Faces[0][0]:=Self;
       Owner.ConvertToGrid(FaceData,Cols,Rows,Grid);
-      if (Rows>0) and (Cols>0) then begin
+      if (Rows>0) and (Cols>0) then // begin
+      for Board:=0 to 1 do begin
+         if Board=1 then
+         if (not Owner.DrawMirror) or (not Layer.Symmetric) then break;
          Strings.Add('0'+EOL+'POLYLINE');
          Strings.Add('8'+EOL+LayerName);
          Strings.Add('62'+EOL+IntToStr(ColorIndex));
@@ -8813,38 +8406,17 @@ begin
          Strings.Add('70'+EOL+'16');
          Strings.Add('71'+EOL+IntToStr(Cols));
          Strings.Add('72'+EOL+IntToStr(Rows));
-         for I:=1 to Rows do begin
-            for J:=1 to Cols do begin
-               P:=Grid[I-1][J-1].FCoordinate;
-               Strings.Add('0'+EOL+'VERTEX');
-               Strings.Add('8'+EOL+LayerName);
-               Strings.Add('10'+EOL+FloatToDec(P.X,4));
-               Strings.Add('20'+EOL+FloatToDec(P.Y,4));
-               Strings.Add('30'+EOL+FloatToDec(P.Z,4));
-               Strings.Add('70'+EOL+'64');    // polygon mesh vertex
-            end;
-         end;
-         Strings.add('0'+EOL+'SEQEND');
-         if (Layer.Symmetric) and (Owner.DrawMirror) then begin
-            Strings.Add('0'+EOL+'POLYLINE');
-            Strings.Add('8'+EOL+LayerName);
-            Strings.Add('62'+EOL+IntToStr(ColorIndex));
-            Strings.Add('66'+EOL+'1');
-            Strings.Add('70'+EOL+'16');
-            Strings.Add('71'+EOL+IntToStr(Cols));
-            Strings.Add('72'+EOL+IntToStr(Rows));
-            for I:=1 to Rows do begin
-               for J:=1 to Cols do begin
-                  P:=Grid[I-1][J-1].FCoordinate;
-                  Strings.Add('0'+EOL+'VERTEX');
-                  Strings.Add('8'+EOL+LayerName);
-                  Strings.Add('10'+EOL+FloatToDec(P.X,4));
-                  Strings.Add('20'+EOL+FloatToDec(-P.Y,4));
-                  Strings.Add('30'+EOL+FloatToDec(P.Z,4));
-                  Strings.Add('70'+EOL+'64');    // polygon mesh vertex
-               end;
-            end;  Strings.add('0'+EOL+'SEQEND');
-         end;
+         for I:=1 to Rows do
+         for J:=1 to Cols do begin
+             P:=Grid[I-1][J-1].FCoordinate;
+             if Board=1 then P.Y:=-P.Y;
+             Strings.Add('0'+EOL+'VERTEX');
+             Strings.Add('8'+EOL+LayerName);
+             Strings.Add('10'+EOL+FloatToDec(P.X,4));
+             Strings.Add('20'+EOL+FloatToDec(P.z,4));
+             Strings.Add('30'+EOL+FloatToDec(P.y,4));
+             Strings.Add('70'+EOL+'64');                 // polygon mesh vertex
+         end; Strings.add('0'+EOL+'SEQEND');
       end;
    end else begin                           // send all child faces as 3D faces
       for J:=1 to ChildCount do begin
@@ -8855,13 +8427,13 @@ begin
          for K:=1 to Child.NumberOfpoints do begin
             P:=Child.Point[K-1].Coordinate;
             Strings.Add(IntToStr(10+K-1)+EOL+FloatToDec(P.X,4));
-            Strings.Add(IntToStr(20+K-1)+EOL+FloatToDec(P.Y,4));
-            Strings.Add(IntToStr(30+K-1)+EOL+FloatToDec(P.Z,4));
+            Strings.Add(IntToStr(20+K-1)+EOL+FloatToDec(P.z,4));
+            Strings.Add(IntToStr(30+K-1)+EOL+FloatToDec(P.y,4));
          end;
          if Child.NumberOfpoints=3 then begin     // 4th point is same as third
             Strings.Add(IntToStr(13)+EOL+FloatToDec(P.X,4));
-            Strings.Add(IntToStr(23)+EOL+FloatToDec(P.Y,4));
-            Strings.Add(IntToStr(33)+EOL+FloatToDec(P.Z,4));
+            Strings.Add(IntToStr(23)+EOL+FloatToDec(P.z,4));
+            Strings.Add(IntToStr(33)+EOL+FloatToDec(P.y,4));
          end;
          if (Layer.Symmetric) and (Owner.DrawMirror) then  begin // send starboard side also
             Strings.Add('0'+EOL+'3DFACE');
@@ -8871,13 +8443,13 @@ begin
                P:=Child.Point[K-1].Coordinate;
                P.Y:=-P.Y;
                Strings.Add(IntToStr(10+K-1)+EOL+FloatToDec(P.X,4));
-               Strings.Add(IntToStr(20+K-1)+EOL+FloatToDec(P.Y,4));
-               Strings.Add(IntToStr(30+K-1)+EOL+FloatToDec(P.Z,4));
+               Strings.Add(IntToStr(20+K-1)+EOL+FloatToDec(P.z,4));
+               Strings.Add(IntToStr(30+K-1)+EOL+FloatToDec(P.y,4));
             end;
             if Child.NumberOfpoints=3 then begin  // 4th point is same as third
                Strings.Add(IntToStr(13)+EOL+FloatToDec(P.X,4));
-               Strings.Add(IntToStr(23)+EOL+FloatToDec(P.Y,4));
-               Strings.Add(IntToStr(33)+EOL+FloatToDec(P.Z,4));
+               Strings.Add(IntToStr(23)+EOL+FloatToDec(P.z,4));
+               Strings.Add(IntToStr(33)+EOL+FloatToDec(P.y,4));
             end;
          end;
       end;
@@ -8898,12 +8470,10 @@ begin
 end;
 
 procedure TFreeSubdivisionControlFace.Subdivide
-    ( Owner: TFreeSubdivisionSurface;
-      ControlFace: Boolean;
-      VertexPoints,EdgePoints,FacePoints,InteriorEdges,ControlEdges,Dest: TFasterList );
-var TmpList,Tmp: TFasterList;
-    I: Integer;
-    Face: TFreeSubdivisionFace;
+( Owner: TFreeSubdivisionSurface;
+  ControlFace: Boolean;
+  VertexPoints,EdgePoints,FacePoints,InteriorEdges,ControlEdges,Dest: TFasterList );
+var TmpList,Tmp: TFasterList; I: Integer; Face: TFreeSubdivisionFace;
 begin
    FControlEdges.Clear;
    if FChildren.Count=0 then begin
@@ -8940,7 +8510,6 @@ var ToDoList : TFasterList;
     I        : Integer;
     Face     : TFreeSubdivisionControlface;
     Prev     : TCursor;
-
     procedure FindAttachedFaces(List:TFasterList;Face:TFreeSubdivisionControlFace);
     var I,J,Index: Integer;
         P1,P2  : TFreeSubdivisionPoint;
@@ -8962,15 +8531,15 @@ var ToDoList : TFasterList;
              end;
           end; P1:=p2;
        end;
-    end;{FindAttachedFaces}
+    end;
 begin
    Prev:=screen.Cursor;
    Screen.Cursor:=crHourglass;
    ToDoList:=TFasterList.Create;
    ToDoList.capacity:=Layer.Count;
-   for I:=1 to Layer.Count do begin
-      Face:=Layer.Items[I-1];
-      if (Face<>self) and (Face.Selected<>self.Selected) then ToDoList.Add(Layer.Items[I-1]);
+   for I:=1 to Layer.Count do begin Face:=Layer.Items[I-1];
+      if (Face<>self) and (Face.Selected<>self.Selected)
+         then ToDoList.Add(Layer.Items[I-1]);
    end;
    ToDoList.Sort;
    FindAttachedFaces(ToDoList,self);
@@ -8980,88 +8549,76 @@ end;
 {
    TFreeSubdivisionSurface
 }
-function TFreeSubdivisionSurface.AddControlPoint(P:Vector):TFreeSubdivisionControlPoint;
-var I       : Integer;
-//  MaxError: Real;
-    Edge    : TFreeSubdivisionEdge;
-    Point   : TFreeSubdivisionControlPoint;
-   function NewPoint(P:Vector):TFreeSubdivisionControlPoint;
-   begin
-      Result:=TFreeSubdivisionControlPoint.Create(self);
+function TFreeSubdivisionSurface.AddControlPoint
+  ( P:Vector ): TFreeSubdivisionControlPoint;
+begin Result:=TFreeSubdivisionControlPoint.Create( self );
       Result.FCoordinate:=P;
-      FControlPoints.Add(Result);
-   end;{NewPoint}
-begin Result:=NIL;                               //  Result:=NewPoint(P); exit;
-                                                 //  MaxError:=1e-18; // 5;
-   for I:=1 to NumberOfControlEdges do begin
-      Edge:=FControlEdges[I-1];
-      if Edge.FFaces.Count<=1 then begin                       // boundary edge
-         if P=Edge.FStartpoint.FCoordinate then begin                        // if Sqr(P-Edge.FStartpoint.FCoordinate)<=MaxError then begin
-            Result:=Edge.FStartpoint as TFreeSubdivisionControlPoint;
-            break;
+      FControlPoints.Add( Result );
+end;
+(*
+function TFreeSubdivisionSurface.AddControlPoint
+  ( P:Vector ): TFreeSubdivisionControlPoint;
+var I: Integer;
+//  MaxError: Real;                                   // MaxError:=1e-18; // 5;
+    Edge: TFreeSubdivisionEdge;
+    Point: TFreeSubdivisionControlPoint;
+   function NewPoint( P:Vector ):TFreeSubdivisionControlPoint;
+   begin Result:=TFreeSubdivisionControlPoint.Create( self );
+         Result.FCoordinate:=P;
+         FControlPoints.Add( Result );
+   end;
+begin Result:=NIL;                                 Result:=NewPoint(P); exit;
+   for I:=1 to NumberOfControlEdges do begin Edge:=FControlEdges[I-1];
+      if Edge.FFaces.Count<=1 then begin                     // boundary edge
+         if P=Edge.FStartpoint.FCoordinate then begin       // Sqr(.)<=MaxError
+            Result:=Edge.FStartpoint as TFreeSubdivisionControlPoint; break;
          end else
-         if P=Edge.FEndpoint.FCoordinate then begin                          // if Sqr(P-Edge.FEndpoint.FCoordinate)<=MaxError then begin
-            Result:=Edge.FEndpoint as TFreeSubdivisionControlPoint;
-            break;
+         if P=Edge.FEndpoint.FCoordinate then begin         // Sqr(.)<=MaxError
+            Result:=Edge.FEndpoint as TFreeSubdivisionControlPoint; break;
          end;
       end;
    end;
    if Result=nil then begin               // Search controlpoints without edges
-      for I:=1 to FControlPoints.Count do begin
-         Point:=ControlPoint[I-1];
+      for I:=1 to FControlPoints.Count do begin Point:=ControlPoint[I-1];
          if Point.NumberOfEdges=0 then begin
-            if P=Point.FCoordinate then begin                                // if Sqr(P-Point.FCoordinate)<=MaxError then begin
-               Result:=Point;
-               break;
+            if P=Point.FCoordinate then begin                // Sqr()<=MaxError
+               Result:=Point; break;
             end;
          end;
       end;
    end;
    if Result=nil then Result:=NewPoint(P);
 end;
-
-procedure TFreeSubdivisionSurface.AddControlPoint(P:TFreeSubdivisionControlPoint);
-begin
-   if FControlPoints.IndexOf(P)=-1 then begin
-      FControlPoints.Add(P);
-      P.FOwner:=self;
-   end;
-   Build:=False;
-end;
-
+*)
+procedure TFreeSubdivisionSurface.AddControlPoint( P:TFreeSubdivisionControlPoint );
+    begin if FControlPoints.IndexOf(P)=-1 then
+          begin FControlPoints.Add(P); P.FOwner:=self; end;
+          Build:=False;
+    end;
 // Adds a new controlpoint at 0,0,0 without checking other points
 function TFreeSubdivisionSurface.AddControlPoint:TFreeSubdivisionControlPoint;
-begin
-   Result:=TFreeSubdivisionControlPoint.Create(self);
-   Result.FCoordinate:=ZERO;
-   FControlPoints.Add(Result);
-end;
-
+   begin Result:=TFreeSubdivisionControlPoint.Create(self);
+         Result.FCoordinate:=ZERO;
+         FControlPoints.Add(Result);
+   end;
 function TFreeSubdivisionSurface.AddNewLayer:TFreeSubdivisionLayer;
-begin
-   Result:=TFreeSubdivisionLayer.Create(Self);
-   FLayers.Add(Result);
-   Result.FLayerID:=FRequestNewLayerID;
-   ActiveLayer:=Result;
-   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-end;{TFreeSubdivisionSurface.AddNewLayer}
+   begin
+      Result:=TFreeSubdivisionLayer.Create(Self);
+      FLayers.Add(Result);
+      Result.FLayerID:=FRequestNewLayerID;
+      ActiveLayer:=Result;
+      if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+   end;
 
 // Tries to assemble quads into as few as possible rectangular patches
 procedure TFreeSubdivisionSurface.AssembleFacesToPatches(Layers:TFasterList;Mode:TFreeAssembleMode;var AssembledPatches:TFreeFaceArray;var NAssembled:Integer);
-var ToDoList   : TFasterlist;
-    DoneList   : TFasterlist;
-    Current    : TFasterlist;
-    I          : integer;
-    Capacity   : Integer;
+var ToDoList,DoneList,Current: TFasterlist;
+    I,Capacity,ErrInd: Integer;
     Face       : TFreeSubdivisionControlFace;
     Layer      : TFreeSubdivisionLayer;
-    ErrInd     : Integer;
-
     function GetFace(P1,P2,P3,P4:TFreeSubdivisionPoint):TFreeSubdivisionControlFace;
-    var I    : Integer;
-        Face : TFreeSubdivisionFace;
-    begin
-       Result:=nil;
+    var I: Integer; Face : TFreeSubdivisionFace;
+    begin Result:=nil;
        for I:=1 to P1.NumberOfFaces do begin
           Face:=P1.Face[I-1];
           if (P2.IndexOfFace(Face)<>-1)
@@ -9070,8 +8627,7 @@ var ToDoList   : TFasterlist;
              Result:=Face as TFreeSubdivisionControlFace; exit;
           end;
        end;
-    end;{GetFace}
-
+    end;
     procedure FindAttachedFaces(List:TFasterlist;Face:TFreeSubdivisionControlFace);
     var I,J,Index  : integer;
         P1,P2  : TFreeSubdivisionPoint;
@@ -9085,8 +8641,7 @@ var ToDoList   : TFasterlist;
              if not Edge.Crease then begin
                 for J:=1 to Edge.NumberOfFaces do if Edge.Face[J-1]<>Face then begin
                    Index:=ToDoList.IndexOf(Edge.Face[J-1]);
-                   if Index<>-1 then
-                   begin
+                   if Index<>-1 then begin
                       List.Add(Edge.Face[J-1]);
                       ToDoList.Delete(Index);
                       FindAttachedFaces(List,Edge.Face[J-1] as TFreeSubdivisionControlFace);
@@ -9095,8 +8650,7 @@ var ToDoList   : TFasterlist;
              end;
           end; P1:=p2;
        end;
-    end;{FindAttachedFaces}
-
+    end;
     procedure AssembleFaces(CtrlFaces:TFasterList;var Assembled:TFreeFaceArray;var NAssembled:Integer);
     { Type TPointRow=record NPoints:Integer; Points: array of TFreeSubdivisionPoint; end;
           TPointGrid=record NRows,RowCapacity,ColCapacity: Integer; Rows: array of TPointRow; end;
@@ -9107,10 +8661,9 @@ var ToDoList   : TFasterlist;
         NewFace   : TFreeFaceGrid;
         CheckFaces: TFasterList; // temporary list with all controlfaces that is used to check if a crease vertex is
                                  // regular (depends on which side of the crease edge is being processed)
-
         function FindCornerFace:TFreesubdivisionControlFace;
         var I,J,K,NFaces: Integer;
-            Face,Face2 : TFreeSubdivisionControlFace;
+            Face,Face2: TFreeSubdivisionControlFace;
             P: TFreeSubdivisionPoint;
         begin
            Result:=nil;
@@ -9128,40 +8681,28 @@ var ToDoList   : TFasterlist;
                        inc(NFaces);
                        break;
                     end;
-                 end;
-                 if NFaces=1 then Result:=Face;
-                 inc(J);
-              end;
-              inc(I);
-           end;
-           if Result=nil then Result:=Ctrlfaces[CtrlFaces.Count-1]
-        end;{FindCornerFace}
-
+                 end; if NFaces=1 then Result:=Face; inc(J);
+              end;                                   inc(I);
+           end; if Result=nil then Result:=Ctrlfaces[CtrlFaces.Count-1]
+        end;
         procedure AddFace(Face:TFreeFaceGrid);
-        begin
-           if NAssembled=Capacity then begin
-              inc(Capacity,50);
-              setlength(Assembled,Capacity);
-           end;
+        begin if NAssembled=Capacity then begin inc(Capacity,50);
+                                          setlength(Assembled,Capacity); end;
            inc(NAssembled);
            Assembled[NAssembled-1]:=Face;
-        end;{AddFace}
-
+        end;
         procedure DoAssemble(var Grid:TFreeSubdivisionGrid;var Cols,Rows:Integer;Faces:TFasterList);
         var SearchBottom,SearchTop,SearchLeft,SearchRight,DataOK: Boolean;
             Counter,Index,I,J,NFaces: Integer;
-            Edge1,Edge2    : TFreeSubdivisionEdge;
-            Face           : TFreeSubdivisionFace;
-            TmpFaces       : array of TFreeSubdivisionFace;
-
+            Edge1,Edge2: TFreeSubdivisionEdge;
+            Face       : TFreeSubdivisionFace;
+            TmpFaces: array of TFreeSubdivisionFace;
             function ValidFace(Face:TFreeSubdivisionface):Boolean;
             var I,J,N,Index: Integer; Tmp: TFreeSubdivisionFace;
-            begin
-               Result:=False;
+            begin Result:=False;
                if Face.NumberOfpoints=4 then begin
                   Index:=Faces.SortedIndexOf(Face);
-                  if Index<>-1 then begin
-                     Result:=True;
+                  if Index<>-1 then begin Result:=True;
                      for I:=1 to NFaces do if TmpFaces[I-1]=face then begin
                         result:=false;
                         exit;
@@ -9177,7 +8718,6 @@ var ToDoList   : TFasterlist;
                   end;
                end;
             end;{ValidFace}
-
         begin
            Counter:=0;
            SearchBottom:=True;
@@ -9185,8 +8725,7 @@ var ToDoList   : TFasterlist;
            SearchRight:=True;
            SearchLeft:=True;
 
-           if Mode=amNURBS then
-           begin
+           if Mode=amNURBS then begin
               if not Grid[0][0].IsRegularNURBSPoint(CheckFaces) then begin
                  SearchLeft:=False;
                  SearchTop:=False;
@@ -9204,7 +8743,6 @@ var ToDoList   : TFasterlist;
                  SearchTop:=False;
               end;
            end;
-
            while ((SearchBottom)
              or (SearchTop)
              or (SearchRight)
@@ -10302,8 +9840,7 @@ begin
       and ( FacePoints[2]<>FacePoints[0] )
       then AddControlFace( FacePoints,True,Self.Layer[0] );
     end;
-  end;
-//  Self.IsLoading:=false;
+  end;                                        //  Self.IsLoading:=false;
   SetLength( Vindex,0 );
   CPoints.Free;
   FacePoints.Free;
@@ -10523,13 +10060,8 @@ var I,J,K,N,M,ArrayLength,NoPoints,NSegments,SegmCapacity: Integer;
     Segments   : array of TSegment;
     StartP,EndP: IntersectionData;
     Segment    : TSegment;
-//  Skip       : Boolean;
-//  CenterPlane: Boolean;
-//  InPlane    : Boolean;
-//  Size       : Integer;
-//  AbsSide1   : Real;
-//  AbsSide2   : Real;
-//  Copy       : TFreeSpline;
+//  Skip,CenterPlane,InPlane: Boolean;  Size: Integer;
+//  AbsSide1,AbsSide2: Real;            Copy: TFreeSpline;
 begin
    // first assemble all edges belonging to this set of faces
    Edges:=TFasterlist.Create;
@@ -10663,9 +10195,9 @@ begin
          Destination.Add(Spline);
          Segment:=Segments[NSegments-1];
          Spline.Add(Segment.StartP.Point);
-         Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.StartP.Knuckle;
+         Spline.Knuckle[Spline.nS-1]:=Segment.StartP.Knuckle;
          Spline.Add(Segment.EndP.Point);
-         Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.EndP.Knuckle;
+         Spline.Knuckle[Spline.nS-1]:=Segment.EndP.Knuckle;
          StartP:=Segment.StartP;
          EndP:=Segment.EndP;
          dec(NSegments);
@@ -10677,17 +10209,17 @@ begin
          if (EndP.Edge=Segment.StartP.Edge) then begin
             AddEdge:=Sqr(EndP.Point-Segment.StartP.Point)<1e-8;
             if AddEdge then begin
-               Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.StartP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
+               Spline.Knuckle[Spline.nS-1]:=Segment.StartP.Knuckle or Spline.Knuckle[Spline.nS-1];
                Spline.Add(Segment.EndP.Point);
-               Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.EndP.Knuckle;
+               Spline.Knuckle[Spline.nS-1]:=Segment.EndP.Knuckle;
                EndP:=Segment.EndP;
             end;
          end else if (EndP.Edge=Segment.EndP.Edge) then begin
             AddEdge:=Sqr(EndP.Point-Segment.EndP.Point)<1e-8;
             if AddEdge then begin
-               Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.EndP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
+               Spline.Knuckle[Spline.nS-1]:=Segment.EndP.Knuckle or Spline.Knuckle[Spline.nS-1];
                Spline.Add(Segment.StartP.Point);
-               Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.StartP.Knuckle;
+               Spline.Knuckle[Spline.nS-1]:=Segment.StartP.Knuckle;
                EndP:=Segment.StartP;
             end;
          end else if (StartP.Edge=Segment.StartP.Edge) then begin
@@ -10717,16 +10249,16 @@ begin
             then begin
                AddEdge:=Sqr(EndP.Point-Segment.StartP.Point)<1e-8;
                if AddEdge then begin
-                  Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.StartP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
+                  Spline.Knuckle[Spline.nS-1]:=Segment.StartP.Knuckle or Spline.Knuckle[Spline.nS-1];
                   Spline.Add(Segment.EndP.Point);
-                  Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.EndP.Knuckle;
+                  Spline.Knuckle[Spline.nS-1]:=Segment.EndP.Knuckle;
                   EndP:=Segment.EndP;
                end else begin
                   AddEdge:=Sqr(EndP.Point-Segment.EndP.Point)<1e-8;
                   if AddEdge then begin
-                     Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.EndP.Knuckle or Spline.Knuckle[Spline.NumberOfPoints-1];
+                     Spline.Knuckle[Spline.nS-1]:=Segment.EndP.Knuckle or Spline.Knuckle[Spline.nS-1];
                      Spline.Add(Segment.StartP.Point);
-                     Spline.Knuckle[Spline.NumberOfPoints-1]:=Segment.StartP.Knuckle;
+                     Spline.Knuckle[Spline.nS-1]:=Segment.StartP.Knuckle;
                      EndP:=Segment.StartP;
                   end else begin
                      AddEdge:=Sqr(StartP.Point-Segment.StartP.Point)<1e-8;
@@ -10759,10 +10291,10 @@ begin
    end;
    if Destination.Count>1 then begin
       Destination.Capacity:=Destination.Count;
-      JoinSplineSegments(0.01,False,Destination);
+      JoinSplineSegments( 0.01,False,Destination );
       for I:=Destination.Count downto 1 do begin // Remove tiny fragments of very small length
          Spline:=Destination[I-1];
-         if Spline.NumberOfPoints>1 then begin
+         if Spline.nS>1 then begin
             Parameter:=Sqr(Spline.Min-Spline.Max);
             if Parameter<1e-3 then begin
                Spline.Destroy;
@@ -11098,8 +10630,9 @@ begin
       if FacePoints.IndexOf(Grid[I-1,J-2])=-1 then FacePoints.Add(Grid[I-1,J-2]);
       if FacePoints.IndexOf(Grid[I-2,J-2])=-1 then FacePoints.Add(Grid[I-2,J-2]);
       if FacePoints.IndexOf(Grid[I-2,J-1])=-1 then FacePoints.Add(Grid[I-2,J-1]);
-      if FacePoints.Count>=3 then if Layer<>nil then AddControlFace(FacePoints,True,Layer)
-                                                else AddControlFace(FacePoints,True);
+      if FacePoints.Count>=3 then if Layer<>nil
+         then AddControlFace(FacePoints,True,Layer)
+         else AddControlFace(FacePoints,True);
    end;                                                     // set crease edges
    for I:=2 to Cols do begin
       Edge:=EdgeExists(Grid[0][I-2],Grid[0][I-1]);
@@ -11120,8 +10653,7 @@ begin
 end;
 
 procedure TFreeSubdivisionSurface.Initialize(PointStartIndex,EdgeStartIndex,FaceStartIndex:Integer);
-var I : Integer;
-    Edge:TFreeSubdivisionEdge;
+var I:Integer; Edge:TFreeSubdivisionEdge;
 begin                                              // Identify all border edges
    if EdgeStartIndex<=NumberOfControlEdges then
    for I:=EdgeStartIndex to NumberOfControlEdges do begin
@@ -11293,12 +10825,12 @@ begin                      // Try to isolate individual (closed) sets of edges
 end;
 
 procedure TFreeSubdivisionSurface.LoadBinary(Source:TFreeFileBuffer);
-var I,N     : Integer;
-    Point   : TFreeSubdivisionControlPoint;
-    Edge    : TFreeSubdivisionControlEdge;
-    Face    : TFreeSubdivisionControlFace;
-    Curve   : TFreeSubdivisionControlCurve;
-    Layer   : TFreeSubdivisionLayer;
+var I,N: Integer;
+    Point: TFreeSubdivisionControlPoint;
+    Edge : TFreeSubdivisionControlEdge;
+    Face : TFreeSubdivisionControlFace;
+    Curve: TFreeSubdivisionControlCurve;
+    Layer: TFreeSubdivisionLayer;
 begin                                                   // First load layerdata
    Source.LoadInteger(N);
    if N<>0 then begin                // Delete current layers and load new ones
@@ -11309,8 +10841,8 @@ begin                                                   // First load layerdata
          Layer:=AddNewLayer;
          Layer.LoadBinary(Source);
       end;
-   end else begin     // No layers in the file, so keep the current default one
-            end;
+   end; // else begin    No layers in the file, so keep the current default one
+        //    end;
    if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
    // Read index of active layer
    Source.LoadInteger(N);
@@ -11355,14 +10887,12 @@ begin                                                   // First load layerdata
 end;
 
 procedure TFreeSubdivisionSurface.LoadFromStream(var LineNr:Integer;Strings:TStringList);
-var Str    : string;
-    I,N     : Integer;
-    Point   : TFreeSubdivisionControlPoint;
-    Edge    : TFreeSubdivisionControlEdge;
-    Face    : TFreeSubdivisionControlFace;
-    Layer   : TFreeSubdivisionLayer;
-begin
-   // First read layerdata
+var Str: string; I,N: Integer;
+    Point: TFreeSubdivisionControlPoint;
+    Edge : TFreeSubdivisionControlEdge;
+    Face : TFreeSubdivisionControlFace;
+    Layer: TFreeSubdivisionLayer;
+begin                                                   // First read layerdata
    Inc(LineNr);
    Str:=Strings[LineNr];
    N:=GetInteger(Str);
@@ -11374,8 +10904,8 @@ begin
          Layer:=AddNewLayer;
          Layer.LoadFromStream(LineNr,Strings);
       end;
-   end else begin     // No layers in the file, so keep the current default one
-            end;
+   end; // else begin    No layers in the file, so keep the current default one
+        //      end;
    if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
    // Read index of active layer
    Inc(LineNr);
@@ -11418,7 +10948,7 @@ procedure TFreeSubdivisionSurface.LoadVRMLFile(Filename:string);
 var VRMLList      : TVRMLList;
     I,J,K,N,Index : Integer;
     Data          : TFasterList;
-    CoordInfo     : TVRMLCoordinate3;
+    CoordInfo     : TVRMLCoordinate3;              V3Point:Vector;
     FaceInfo      : TVRMLIndexedFaceSet;
     Face          : TIntArray;
     Layer         : TFreeSubdivisionLayer;
@@ -11430,25 +10960,23 @@ begin
       VRMLList.LoadFromFile(Filename);
       Data:=VRMLList.ExtractFaceSetData;
       if Data<>nil then begin Clear;
-//    try
          AddedCtrlPts:=TFasterList.Create;
-         AddedCtrlPts.Capacity:=Data.Count;      // Assemble coordinate sets
-         for I:=1 to Data.Count do begin
-            FaceInfo:=Data[I-1];
-            if AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates)=-1 then AddedCtrlPts.AddSorted(FaceInfo.Coordinates);
+         AddedCtrlPts.Capacity:=Data.Count;         // Assemble coordinate sets
+         for I:=1 to Data.Count do begin FaceInfo:=Data[I-1];
+            if AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates)=-1 then
+               AddedCtrlPts.AddSorted(FaceInfo.Coordinates);
          end;
-         for I:=1 to AddedCtrlPts.Count do begin // now add actual controlPoints
+         for I:=1 to AddedCtrlPts.Count do begin// now add actual controlPoints
             CoordInfo:=AddedCtrlPts[I-1];
             Points:=TFasterList.Create;
             Points.Capacity:=CoordInfo.Count;
             AddedCtrlPts.Objects[I-1]:=points;
             for J:=1 to CoordInfo.Count do
-               Points.Add(AddControlPoint(CoordInfo.Point[J-1]));
+               Points.Add( AddControlPoint(CoordInfo.Point[J-1]) );
          end;
-         FacePoints:=TFasterList.Create;                 // Add controlfaces
-         for I:=1 to Data.Count do begin
-            FaceInfo:=Data[I-1];
-            Index:=AddedCtrlPts.SortedIndexOf(FaceInfo.Coordinates);
+         FacePoints:=TFasterList.Create;                    // Add controlfaces
+         for I:=1 to Data.Count do begin FaceInfo:=Data[I-1];
+            Index:=AddedCtrlPts.SortedIndexOf( FaceInfo.Coordinates );
             if Index<>-1 then begin
                Points:=AddedCtrlPts.Objects[Index];
                Layer:=AddNewLayer;
@@ -11457,14 +10985,15 @@ begin
                   if Face<>nil then begin
                      N:=length(Face);
                      FacePoints.Clear;
-                     for K:=1 to N do begin
-                        Index:=face[K-1];
+                     for K:=1 to N do begin Index:=face[K-1];
                         if (Index>=0) and (Index<Points.Count) then begin
                            CtrPoint:=Points[index];
-                           if FacePoints.IndexOf(CtrPoint)=-1 then FacePoints.Add(CtrPoint);
+                           if FacePoints.IndexOf(CtrPoint)=-1 then
+                              FacePoints.Add(CtrPoint);
                         end;
                      end;
-                     if FacePoints.Count>2 then AddControlFace(FacePoints,True,Layer);
+                     if FacePoints.Count>2 then
+                        AddControlFace(FacePoints,True,Layer);
                   end;
                end;
             end;
@@ -11476,7 +11005,8 @@ begin
          end;
          AddedCtrlPts.Destroy;
          for I:=NumberOfLayers downto 1 do begin      // delete empty layers
-            if (self.Layer[I-1].Count=0) and (NumberOfLayers>1) then self.Layer[I-1].Delete;
+            if (self.Layer[I-1].Count=0) and (NumberOfLayers>1)
+            then self.Layer[I-1].Delete;
          end;
          ActiveLayer:=self.Layer[NumberOfLayers-1];
          build:=false;

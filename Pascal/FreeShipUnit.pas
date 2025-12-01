@@ -1,11 +1,9 @@
-
 unit FreeShipUnit;
-interface   // do WIndows-specific code here
-uses Forms, // this declaration must be at the start, before the FreeGeometry unit
-     SysUtils,
-     Controls, LazFileUtils, //LazUTF8,
-     Windows,  iniFiles, Dialogs,  Classes,
-     Graphics, FreeGeometry,FreeFileBuffer, FreeMatrices,
+interface uses // do WIndows-specific code here
+     Forms,SysUtils, // this declaration must be at the start, before the FreeGeometry unit
+     Controls,LazFileUtils, //LazUTF8,
+     Windows,iniFiles,Dialogs,Classes,
+     Graphics,FreeGeometry,FreeFileBuffer,FreeMatrices,
      FasterList,FreeTypes,FreeLanguageSupport,FreeVersionUnit,FreeControlPointFrm;
   // FREE!ship uses British imperial format, eg 1 long ton=2240 lbs
 const FreeShipExtention='.ftm'; // Default extention for hull model files
@@ -13,50 +11,47 @@ const FreeShipExtention='.ftm'; // Default extention for hull model files
       Threshold        = 3;     // The distance that the cursor has to be moved before a controlpoint starts moving
       FontheightFactor = 140;   // used for calculating fontheight
 type
-  // TFreeHydrostaticType         = (fhShort,fhExtensive);                        // Determines how calculations are performed: short, extensive etc.
-  // TFreeHydrostaticsMode        = (fhSingleCalculation,fhMultipleCalculations); // Used when creating hydrostatic reports
-     TFreeHydrostaticsCalculation = (hcAll,hcVolume,hcMainframe,hcWaterline,hcSAC,hcLateralArea);
-     TFreeHydrostaticsCalculate   = set of TFreeHydrostaticsCalculation;          // Set with all calculations to be performed
-     TFreeShip                    = class;                                        // to be declared later
-     TFreeIntersection            = class;
-     TFreeHydrostaticError        = (feNothingSubmerged,feMakingWater,feNotEnoughBuoyancy); // Errors that may occur when calculating hydrostatics
-     TFreeHydrostaticErrors       = set of TFreeHydrostaticError;
-     TFreeHydrostaticCoeff        = (fcProjectSettings,fcActualData);
+  // TFreeHydrostaticType        = (fhShort,fhExtensive);                        // Determines how calculations are performed: short, extensive etc.
+  // TFreeHydrostaticsMode       = (fhSingleCalculation,fhMultipleCalculations); // Used when creating hydrostatic reports
+     TFreeHydrostaticsCalculation= (hcAll,hcVolume,hcMainframe,hcWaterline,hcSAC,hcLateralArea);
+     TFreeHydrostaticsCalculate  = set of TFreeHydrostaticsCalculation;          // Set with all calculations to be performed
+     TFreeShip                   = class;                                        // to be declared later
+     TFreeIntersection           = class;
+     TFreeHydrostaticError       = (feNothingSubmerged,feMakingWater,feNotEnoughBuoyancy); // Errors that may occur when calculating hydrostatics
+     TFreeHydrostaticErrors      = set of TFreeHydrostaticError;
+     TFreeHydrostaticCoeff       = (fcProjectSettings,fcActualData);
 
 TFreeHydrostaticsData = record
-   ModelMin,ModelMax,            // Min/max coordinates under given heelingangle and trim
-   WlMin,WlMax,                  // Min/max coordinates of the waterline
-   SubMin,SubMax   : Vector;  // Min/max extents of the submerged body
-   WaterlinePlane  : Plate;
-   AbsoluteDraft   : Real; // Depth of the lowest point of the hull beneath the waterplane
-                                 // The following properties are always calculated
-   Volume          : Real; // Displaced volume of the hull
-   Displacement    : Real; // Displacement
-   CenterOfBuoyancy: Vector;  // Center of gravity of displaced volume
-   LCBPerc         : Real;
-   LengthWaterline : Real;
-   BeamWaterline   : Real;
-   BlockCoefficient: Real; // BlockCoefficient
-   WettedSurface   : Real;
-   Leak            : Vector;  // Coordinate encountered where the ship is making water
-   // Mainframe properties
-   Mainframearea       : Real;
-   MainFrameCOG        : Vector;
-   MainframeCoeff      : Real; // Waterplane properties
-   Waterplanearea      : Real;
-   WaterplaneCOG       : Vector;
-   WaterplaneEntranceAngle,
-   WaterplaneCoeff     : Real;
+   ModelMin,ModelMax,  // Min/max coordinates under given heelingangle and trim
+   WlMin,WlMax,        // Min/max coordinates of the waterline
+   SubMin,SubMax: Vector; // Min/max extents of the submerged body
+   WaterlinePlane: Plate;
+   AbsoluteDraft, // Depth of the lowest point of the hull beneath the waterplane
+                  // The following properties are always calculated
+   Volume,        // Displaced volume of the hull
+   Displacement: Real; // Displacement
+   CenterOfBuoyancy: Vector; // Center of gravity of displaced volume
+   LCBPerc,
+   LengthWaterline,
+   BeamWaterline,
+   BlockCoefficient, // BlockCoefficient
+   WettedSurface: Real;
+   Leak: Vector; // Coordinate encountered where the ship is making water
+   Mainframearea: Real; // Mainframe properties
+   MainFrameCOG,
+   WaterplaneCOG,
+   LateralCOG: Vector;
+   MainframeCoeff,
+   Waterplanearea,
+   WaterplaneEntranceAngle, // Waterplane properties
+   WaterplaneCoeff: Real;
    WaterplaneMomInertia: Place; // Stability data
-   KMtransverse        : Real;
-   KMlongitudinal      : Real; // Lateral area and center
-   LateralArea         : Real;
-   LateralCOG          : Vector;  // Prismatic coefficient
-   PrismCoefficient    : Real; // Prismatic coefficient
+   KMtransverse,
+   KMlongitudinal,       // Lateral area and center
+   LateralArea,
+   PrismCoefficient,     // Prismatic coefficient
    VertPrismCoefficient: Real; // Sectional areas
    SAC: array of Place;
-   Weight_:Real;
-   CenterOfGravity_:Vector;
 end;
 {
   TFreeUndoObject is an object class for undoing actions.
@@ -78,8 +73,8 @@ private
 public
    procedure Accept;
    constructor Create(Owner:TFreeShip);
-   procedure Delete;
    destructor Destroy; override;
+   procedure Delete;
    procedure Restore;
    property Memory  : integer read FGetMemory; // calculates the amount of bytes used for each undo object
    property Owner   : TFreeShip read FOwner;
@@ -157,22 +152,20 @@ public
    procedure   AddData(Strings:TStringlist); // Mode:TFreeHydrostaticsMode;Separator:char);
    procedure   AddHeader(Strings:TStringlist);
    Procedure   AddFooter(Strings:TStringlist); // Mode:TFreeHydrostaticsMode );
-   procedure   CalculateGravity;
-// procedure   Face_MoveZAuto;
 // function    Balance(Displacement:Real;FreeToTrim:Boolean;var Output:TFreeCrosscurvesData):boolean;
    procedure   Calculate; // The actual calculation of the hydrostatics finds place in this procedure
-   property    Calculated           : Boolean read FCalculated write FSetCalculated;
-   property    Calculations         : TFreeHydrostaticsCalculate read FCalculations write FCalculations;
-   property    Data                 : TFreeHydrostaticsData read FData;
-   property    Draft                : Real read FDraft write FSetDraft;
-// property    Errors               : TFreeHydrostaticErrors read FErrors; write FSetErrors;
-// property    ErrorString          : String read FGetErrorString;
-   property    HeelingAngle         : Real read FHeelingAngle write FSetHeelingAngle;
-// property    HydrostaticType      : TFreeHydrostaticType read FHydrostaticType write FSetHydrostaticType; // Determines how calculations are performed: short, extensive etc.
-   property    Owner                : TFreeShip read FOwner;
-   property    Trim                 : Real read FTrim write FSetTrim;
-   property    TrimAngle            : Real read FGetTrimAngle;
-   property    WaterlinePlane       : Plate read FGetWlPlane;
+   property    Calculated     : Boolean read FCalculated write FSetCalculated;
+   property    Calculations   : TFreeHydrostaticsCalculate read FCalculations write FCalculations;
+   property    Data           : TFreeHydrostaticsData read FData;
+   property    Draft          : Real read FDraft write FSetDraft;
+// property    Errors         : TFreeHydrostaticErrors read FErrors; write FSetErrors;
+// property    ErrorString    : String read FGetErrorString;
+   property    HeelingAngle   : Real read FHeelingAngle write FSetHeelingAngle;
+// property    HydrostaticType: TFreeHydrostaticType read FHydrostaticType write FSetHydrostaticType; // Determines how calculations are performed: short, extensive etc.
+   property    Owner          : TFreeShip read FOwner;
+   property    Trim           : Real read FTrim write FSetTrim;
+   property    TrimAngle      : Real read FGetTrimAngle;
+   property    WaterlinePlane : Plate read FGetWlPlane;
 end;
 {
     TFreeIntersection is a list of curves calculated from the intersection
@@ -182,43 +175,45 @@ end;
 }
 TFreeIntersection = class
 private
-   FOwner: TFreeShip;
    FItems: TFasterList;
    FPlane: Plate;
-   FBuilt,FShowCurvature: Boolean;
-   function    FGetColor: TColor;
-   function    FGetPlane: Plate;
-   function    FGetCount: integer;
-   function    FGetDescription: string;
-   function    FGetItem(Index:integer):TFreeSpline;
-   procedure   FSetBuilt(Val:Boolean);
+   FBuilt {,FShowCurvature}: Boolean;
+   function FGetColor: TColor;
+   function FGetPlane: Plate;
+   function FGetCount: integer;
+   function FGetDescription: string;
+   function FGetItem(Index:integer):TFreeSpline;
+   procedure FSetBuilt(Val:Boolean);
 public
+   Ship: TFreeShip;
+   ShowCurvature,
    UseHydrostaticsSurfacesOnly: boolean; // used for lateral area, mainframe and waterplane properties
    IntersectionType: TFreeIntersectionType;
-   procedure   Add(Item:TFreeSpline);
-   procedure   CalculateArea(Plane:Plate;var Area:Real;var COG:Vector;var MomentOfInertia:Place);
-   procedure   Clear;
-   constructor Create(Owner:TFreeShip);
-   procedure   CreateStarboardPart; // Create the starboardhalf of the ship, for use in hydrostatic calculations
-   procedure   Delete(Redraw:Boolean);
-   procedure   DeleteItem(Item:TFreeSpline);
-   destructor  Destroy;                                                       override;
-   procedure   Draw(Viewport:TFreeViewport);
-   procedure   DrawAll;
-   procedure   Extents(Var Min,Max:Vector);
-   procedure   LoadBinary(Source:TFreeFileBuffer);
-   procedure   Rebuild;
-   procedure   SaveToDXF(Strings:TStringList);
-   procedure   SaveBinary(Destination:TFreeFileBuffer);
-   property    Built: Boolean read FBuilt write FSetBuilt;
-   property    Color: TColor read FGetColor;
-   property    Count: integer read FGetCount;
-   property    Description: string read FGetDescription;
-   property    Items[index:integer]: TFreeSpline read FGetItem;
-   property    Owner: TFreeShip read FOwner;
-   property    Plane: Plate read FGetPlane write FPlane;
-   property    ShowCurvature: Boolean read FShowCurvature write FShowCurvature;
-// property    UseHydrostaticsSurfacesOnly:boolean read FUseHydrostaticsSurfacesOnly write FUseHydrostaticsSurfacesOnly;
+   constructor Create( Owner:TFreeShip );
+   destructor Destroy; override;
+   function ReConnect: VectorArray; // перестройка сопряжений по 1-му фрагменту
+   procedure ReBuild;
+   procedure Clear;
+   procedure Add( Item:TFreeSpline );
+   procedure CalculateArea(Plane:Plate;var Area:Real;var COG:Vector;var MomentOfInertia:Place);
+   procedure CreateStarboardPart; // Create the starboardhalf of the ship, for use in hydrostatic calculations
+   procedure Delete( Redraw:Boolean );
+   procedure DeleteItem(Item:TFreeSpline);
+   procedure Draw(Viewport:TFreeViewport);
+   procedure DrawAll;
+   procedure Extents(Var Min,Max:Vector);
+   procedure LoadBinary(Source:TFreeFileBuffer);
+   procedure SaveToDXF(Strings:TStringList);
+   procedure SaveBinary(Destination:TFreeFileBuffer);
+   property Built: Boolean read FBuilt write FSetBuilt;
+   property Color: TColor read FGetColor;
+   property Count: integer read FGetCount;
+   property Description: string read FGetDescription;
+   property Items[index:integer]: TFreeSpline read FGetItem;
+   property Plane: Plate read FGetPlane write FPlane;
+// property Owner: TFreeShip read FOwner;
+// property ShowCurvature: Boolean read FShowCurvature write FShowCurvature;
+// property UseHydrostaticsSurfacesOnly:boolean read FUseHydrostaticsSurfacesOnly write FUseHydrostaticsSurfacesOnly;
 end;
 {
   TFreeMarker
@@ -353,6 +348,7 @@ public
    Ship: TFreeShip;
    constructor Create( Owner:TFreeShip );
    destructor Destroy; override;
+   procedure Drawing;     // автоматическое формирование теоретических контуров
    procedure File_Export_Aurora_Experiments; // Теория корабля и штормовой вычислительный эксперимент
    procedure File_Load; overload; virtual; // Load a FREE!ship file by showing an opendialog
    procedure File_Load(filename:string); reintroduce; overload; // Loads the given filename quietly
@@ -360,46 +356,41 @@ public
    function File_SaveAs: Boolean; // Ask for filename and save as FREE!ship file
    function File_SaveCheck:word;  // с запроосом необходимости -> mrOk,mrNo,mrCancel
    procedure Flowline_Add(Source:Place;View:TFreeviewType);
-   procedure AddToRecentFiles(Filename:String);                            // Takes a filename and adds it to the list with recent files
-   procedure BackgroundImage_Delete(Viewport:TFreeViewport);               // Delete the backgrundimage associated with this view
-   procedure BackgroundImage_Open(Viewport:TFreeViewport);                 // browse for and open a backgroundimage
-   function  CreateRedoObject:TFreeUndoObject;                             // Creates redo data before an undo is done
+   procedure AddToRecentFiles(Filename:String); // Takes a filename and adds it to the list with recent files
+   procedure BackgroundImage_Delete(Viewport:TFreeViewport); // Delete the backgrundimage associated with this view
+   procedure BackgroundImage_Open(Viewport:TFreeViewport); // browse for and open a backgroundimage
+   function  CreateRedoObject:TFreeUndoObject; // Creates redo data before an undo is done
    function  CreateUndoObject(UndoText:String;Accept:Boolean):TFreeUndoObject;// Creates undodata just prior to modifications
-   procedure Curve_Add;                  // Add a new controlcurve
-   procedure Edge_Collapse;              // Remove an edge by replacing the two connected faces by one controlface
-   procedure Edge_Connect;               // Create a new edge by connection two controlpoints belonging to the same controlface
-   procedure Edge_Crease;                // Switch selected edges between normal or crease edges (knuckle lines)
-   procedure Edge_Extrude;               // Create new controlfaces by extruding selected boundary edges (eg edges with only 1 controlface connected to it)
-   procedure Edge_Split;                 // Create new controlpoints by splitting an controledge into two.
+   procedure Curve_Add;          // Add a new controlcurve
+   procedure Edge_Collapse;      // Remove an edge by replacing the two connected faces by one controlface
+   procedure Edge_Connect;       // Create a new edge by connection two controlpoints belonging to the same controlface
+   procedure Edge_Crease;        // Switch selected edges between normal or crease edges (knuckle lines)
+   procedure Edge_Extrude;       // Create new controlfaces by extruding selected boundary edges (eg edges with only 1 controlface connected to it)
+   procedure Edge_Split;         // Create new controlpoints by splitting an controledge into two.
    procedure Face_Assemble;
-   procedure Face_DeleteNegative;        // Deletes all faces on the starboardside of the hull
-   procedure Face_Flip;                  // Inverts the normal-direction of all selected controlfaces
-   procedure Face_MirrorPlane;           // Mirrors all selected faces in a 3D plane
-   procedure Face_New;                   // Creates a new controlface from the currently selected controlpoints
-   procedure Face_Rotate;                // Rotate selected faces around the X,Y and/or Z axis
-   procedure Face_Scale;                 // Scale selected faces
-   procedure Face_Move;                  // Move selected faces in X,Y and Z direction
-   procedure File_ExportArchimedes;      // Exports stations to Archimedes or ArchimedesMB
-   procedure File_ExportCoordinates;     // export the coordinates of all controlpoints to a textfile
+   procedure Face_DeleteNegative; // Deletes all faces on the starboardside of the hull
+   procedure Face_Flip;          // Inverts the normal-direction of all selected controlfaces
+   procedure Face_MirrorPlane;   // Mirrors all selected faces in a 3D plane
+   procedure Face_New;           // Creates a new controlface from the currently selected controlpoints
+   procedure Face_Rotate;        // Rotate selected faces around the X,Y and/or Z axis
+   procedure Face_Scale;         // Scale selected faces
+   procedure Face_Move;          // Move selected faces in X,Y and Z direction
+   procedure File_ExportArchimedes; // Exports stations to Archimedes or ArchimedesMB
+   procedure File_ExportCoordinates; // export the coordinates of all controlpoints to a textfile
    procedure File_ExportDXF_2DPolylines; // Export all intersections to an individual DXF file as 2D polylines
    procedure File_ExportDXF_3DPolylines; // Export all lines to a 3D DXF model as polylines
-   procedure File_ExportDXF_Faces;       // Export all faces to a 3D DXF model
-//#procedure File_ExportFEF;             // Save to a Freeship Exchange Format (FEF) file
-   procedure File_ExportGHS;             // Save ordinates to the GHS file format
-   procedure File_ExportPart;            // Save part of the geometry to a file
-   procedure File_ExportIGES;            // Save NURBS patches to an IGES file
-// procedure File_Export_Michlet;        // Creates a file to be read by the CFD program Michlet
-// procedure File_Import_MichletWaves;
-   procedure File_ImportObj;             // Import the model as a Wavefront Technologies.Obj file
-   procedure File_ExportObj;             // Saves the model as a wavefront .Obj file
-   procedure File_ExportOffsets;         // Exports all intersections to a textfile as 3D points
-   procedure File_ImportSTL;             // Imoprt the surface to a Standard Triangle STL file
+   procedure File_ExportDXF_Faces; // Export all faces to a 3D DXF model
+   procedure File_ExportGHS;     // Save ordinates to the GHS file format
+   procedure File_ExportPart;    // Save part of the geometry to a file
+   procedure File_ExportIGES;    // Save NURBS patches to an IGES file
+   procedure File_ImportObj;     // Import the model as a Wavefront Technologies.Obj file
+   procedure File_ExportObj;     // Saves the model as a wavefront .Obj file
+   procedure File_ExportOffsets; // Exports all intersections to a textfile as 3D points
+   procedure File_ImportSTL;     // Imoprt the surface to a Standard Triangle STL file
    procedure File_ImportSTLbin( FileName: String );
    procedure File_ImportSTLtext( FileName: String );
-   procedure File_ExportSTL;             // Export the surface to a STL file
-   procedure File_ImportCarene;          // imports a Carene XYZ file and creates a multichine boat with developable surfaces
-   procedure File_ImportChines;          // Import chines from a textfile and fit a surface through them
-//#procedure File_ImportFEF;             // Import a Freeship Exchange Format (FEF) file
+   procedure File_ExportSTL;     // Export the surface to a STL file
+   procedure File_ImportCarene;  // imports a Carene XYZ file and creates a multichine boat with developable surfaces
    procedure File_ImportHull; overload;virtual; // Imports a file created with Carlssons's Hulls program
    procedure File_ImportHull(Filename:string;Quiet:Boolean);reintroduce;overload; // Imports a file created with Carlssons's Hulls program
    procedure File_ImportPart;    // Import a partfile and add it to the current geometry
@@ -407,43 +398,39 @@ public
    procedure File_ImportSurface; // Imports a number of curves and fits a surface
    Procedure File_ImportVRML;    // Import a VRML 1.0 file
    function  Hydrostatics_Calculate(Draft,AngleOfHeel,Trim:Real):TFreeHydrostaticCalc;// Creates and calculates a hydrostatics calculation
-//#procedure Hydrostatics_Dialog;      // Opens the hydrostatics dialog and calculates hydrostatic data for a range of inputdata
-//#procedure Hydrostatics_Crosscurves; // Opens the dialog to calculate crosscurves
-   procedure ImportFrames;             // Loads a bodyplane and tries to fit a surface to it
+   procedure ImportFrames;       // Loads a bodyplane and tries to fit a surface to it
    function  Intersection_Add(IntType:TFreeIntersectionType;Distance:Real):TFreeIntersection;// Add a new intersection at the specified location
    procedure Intersection_AddToList(Intersection:TFreeIntersection); // Adds an intersection to the appropriate list
-   procedure Intersection_Dialog;              // Pops up the dialog in whcih to add or delete stations, buttocks and waterlines
-   procedure Layer_AutoGroup;                  // All connected patches surrounded by crease edges are grouped together into a new layer
-   procedure Layer_Develop;                    // Developes all developable layers
-   procedure Layer_Dialog;                     // Show layer dialog window
+   procedure Intersection_Dialog; // Pops up the dialog in whcih to add or delete stations, buttocks and waterlines
+   procedure Layer_AutoGroup;    // All connected patches surrounded by crease edges are grouped together into a new layer
+   procedure Layer_Develop;      // Developes all developable layers
+   procedure Layer_Dialog;       // Show layer dialog window
    procedure Layer_DeleteEmpty(Quiet:Boolean); // Delete all layers that are empty from the model
-   function  Layer_New:TFreeSubdivisionLayer;  // Add a new empty layer
-   procedure Marker_Add(Marker:TFreeMarker);   // Adds a marker to the list with markers
-   procedure Marker_Delete;                    // Delete all markers from the model
-   procedure Marker_Import;                    // Import markers from a textfile
-   procedure Model_Check(ShowResult:Boolean);  // Checks the surface for inconsistent normal directions and leaks
-   function  Model_New:Boolean;                // Start a new model (with a predefined surface)
-   procedure Model_LackenbyTransformation;     // Affine hullform transformation according to Lackenby
+   function  Layer_New:TFreeSubdivisionLayer; // Add a new empty layer
+   procedure Marker_Add(Marker:TFreeMarker); // Adds a marker to the list with markers
+   procedure Marker_Delete;      // Delete all markers from the model
+   procedure Marker_Import;      // Import markers from a textfile
+   procedure Model_Check(ShowResult:Boolean); // Checks the surface for inconsistent normal directions and leaks
+   function  Model_New:Boolean;  // Start a new model (with a predefined surface)
+   procedure Model_LackenbyTransformation; // Affine hullform transformation according to Lackenby
    procedure Model_Scale(ScaleVector:Vector;OverrideLock,AdjustMarkers:Boolean); // Scale the entire model and all equivalent data such as stations etc.
-   procedure Point_Collapse;                   // Merge two selected edges by removing their common controlpoint.
-   procedure Point_RemoveUnused;               // removes any unused points from the model
-   procedure Point_InsertPlane;                // Finds all intersection of VISIBLE edges and a 3D plane, and inserts a point on each of these edges
-   procedure Point_IntersectLayer;             // Calculates the intersection points of two layers
-   procedure Point_Lock;                       // Locks all selected points
+   procedure Point_Collapse;     // Merge two selected edges by removing their common controlpoint.
+   procedure Point_RemoveUnused; // removes any unused points from the model
+   procedure Point_InsertPlane;  // Finds all intersection of VISIBLE edges and a 3D plane, and inserts a point on each of these edges
+   procedure Point_IntersectLayer; // Calculates the intersection points of two layers
+   procedure Point_Lock;       // Locks all selected points
    function  Point_New:TFreeSubdivisionControlPoint; // Add a new point to the model with no edges/faces attached
-   procedure Point_ProjectStraightLine;        // Project all selected points onto a straight line through the first and last selected points
-   procedure Point_Unlock;                     // Unlocks all selected locked points
-   procedure Point_UnlockAll;                  // Unlocks all points
-   function  ProceedWhenLockedPoints:Boolean;  // Function that shows a warning when certain edit commands are invoked and the model contains locked points
-   procedure Redo;                             // Restores the state of the model as it was after the previous undone
-// procedure Resistance_Delft;                 // Calculate resistance of yachts according to Delft systematic yacht series
-// procedure Resistance_Kaper;                 // Calculate resistance of slender hulls (canoes) according to John Winters
-   procedure Selection_Clear;                  // Deselect all selected items at once
-   procedure Selection_Delete;                 // Delete all selected items
-   procedure Selection_SelectAll;              // Select all visible items
-   procedure Undo;                             // Restores the state of the model as it was before the last modification
-   procedure Undo_Clear;                       // Clear the undo history
-   procedure Undo_ShowHistory;                 // Show the undo history
+   procedure Point_ProjectStraightLine; // Project all selected points onto a straight line through the first and last selected points
+   procedure Point_Unlock;     // Unlocks all selected locked points
+   procedure Point_UnlockAll;  // Unlocks all points
+   function  ProceedWhenLockedPoints:Boolean; // Function that shows a warning when certain edit commands are invoked and the model contains locked points
+   procedure Redo;             // Restores the state of the model as it was after the previous undone
+   procedure Selection_Clear;  // Deselect all selected items at once
+   procedure Selection_Delete; // Delete all selected items
+   procedure Selection_SelectAll; // Select all visible items
+   procedure Undo;             // Restores the state of the model as it was before the last modification
+   procedure Undo_Clear;       // Clear the undo history
+   procedure Undo_ShowHistory; // Show the undo history
    property  RecentFiles: TStringList read FRecentFiles;
    property  RecentFile[index:integer]: string read FGetRecentFile; // retrieve a filename from the recently used file list
    property  RecentFileCount: integer read FGetRecentFileCount; // The number of files in the recently used file list
@@ -454,8 +441,8 @@ end;
 TApplicationScope=(asMachine,asUser);
 TFreePreferences=class(TPersistent)
 private
-  FViewportColor: TColor;  // Half width of controlpoints
-  FIntersectionLineWidth,  //  in pixels when drawn on screen Colors
+  FViewportColor: TColor; // Half width of controlpoints
+  FIntersectionLineWidth, //  in pixels when drawn on screen Colors
   FControlEdgeLineWidth,
   FInteriorEdgeLineWidth,
   FAuxEdgeLineWidth,
@@ -523,7 +510,6 @@ end;
 }
 TFreeProjectSettings=class
 private
-//FMainparticularsHasBeenset: boolean; // Flag to check if the main particulars have been set before hydrostatic calculationss are being performed
   FDisableModelCheck: boolean; // Disable the automatic checking of the surface
   FProjectAppendageCoefficient,
   FProjectBeam,FProjectDraft,FProjectLength,
@@ -582,7 +568,6 @@ public
   property Hydrostatics_DraftStep:Real   read FDraftStep write FSetDraftStep;
   property Hydrostatics_Trim: Real       read FTrim write FSetTrim;
   property DisableModelCheck: boolean read FDisableModelCheck write FSetDisableModelCheck;
-// property MainparticularsHasBeenset: boolean read FMainparticularsHasBeenset;
   property ProjectAppendageCoefficient: Real read FProjectAppendageCoefficient write FSetProjectAppendageCoefficient;
   property ProjectBeam: Real read FProjectBeam write FSetProjectBeam;
   property ProjectCoefficients: TFreeHydrostaticCoeff read FFreeHydrostaticCoefficients write FSetFreeHydrostaticCoefficients;
@@ -604,46 +589,46 @@ end;
 }
 TFreeShip = class(TComponent)
 private
-   FViewports                 : TFasterList;                  // List containing all viewports associated with the hullform
-   FPrecision                 : TFreePrecisionType;
-   FFileVersion               : TFreeFileVersion;
-   FEditMode                  : TFreeEditMode;                // The component has different edit-modes which determine how the program responds to mouse-events
-   FPreferences               : TFreePreferences;
-   FActiveControlPoint        : TFreeSubdivisionControlPoint; // The last selected controlpoint (still selected)
-   FFileChanged               : boolean;                      // Flag to keep track of modifications to the file
-   FSurface                   : TFreeSubdivisionSurface;
-   FFilename                  : string;                       // Filename of the current project;
-   FEdit                      : TFreeEdit;                    // Containerclass for all editing commands
-   FStations                  : TFasterList;
-   FButtocks                  : TFasterList;
-   FWaterlines                : TFasterList;
-   FDiagonals                 : TFasterList;
-   FMarkers                   : TFasterList;
-   FBackgroundImages          : TFasterList;
-   FFlowLines                 : TFasterList;
-   FSelectedFlowlines         : TFasterList;
-   FSelectedMarkers           : TFasterList;
-   FVisibility                : TFreeVisibility;
-   FOnFileChanged             : TNotifyEvent;
-   FOnUpdateUndoData          : TNotifyEvent;
-   FOnUpdateRecentFileList    : TNotifyEvent;
-   FOnChangeCursorIncrement   : TNotifyEvent;
-   FOnUpdateGeometryInfo      : TNotifyEvent; // This event is raised whenever items are added or deleted from the surface
-   FFreeLinesplanFrme         : TFrame;
-   FFilenameSet               : Boolean; // Flag to determine if the filename already has been set
+   FViewports,    // List containing all viewports associated with the hullform
+   FStations,
+   FButtocks,
+   FWaterlines,
+   FDiagonals,
+   FMarkers,
+   FBackgroundImages,
+   FFlowLines,
+   FSelectedFlowlines,
+   FSelectedMarkers   : TFasterList;
+   FPrecision         : TFreePrecisionType;
+   FFileVersion       : TFreeFileVersion;
+   FEditMode          : TFreeEditMode; // The component has different edit-modes which determine how the program responds to mouse-events
+   FPreferences       : TFreePreferences;
+   FActiveControlPoint: TFreeSubdivisionControlPoint; // The last selected controlpoint (still selected)
+   FFileChanged       : boolean;       // Flag to keep track of modifications to the file
+   FSurface           : TFreeSubdivisionSurface;
+   FFilename          : string;        // Filename of the current project;
+   FEdit              : TFreeEdit;     // Containerclass for all editing commands
+   FVisibility        : TFreeVisibility;
+   FOnFileChanged,
+   FOnUpdateUndoData,
+   FOnUpdateRecentFileList,
+   FOnChangeCursorIncrement,
+   FOnUpdateGeometryInfo: TNotifyEvent; // This event is raised whenever items are added or deleted from the surface
+   FFreeLinesplanFrme      : TFrame;
+   FFilenameSet            : Boolean; // Flag to determine if the filename already has been set
    // The folowing private variables are for moving controlpoints with the mouse
-   FCurrentlyMoving           : boolean;
-   FPointHasBeenMoved         : boolean;
-//#FStopAskingForFileVersion  : Boolean;
-   FPrevCursorPosition        : TPoint;
-   FControlpointForm          : TFreeControlPointForm; // form for manual adjustment of controlpoints
-   FIntersectionDialog        : TForm;                 // Dialog containing intersectionlines
-   FProjectSettings           : TFreeProjectSettings;
-   FHydrostaticCalculations   : TFasterList;          // List containing all hydrostatic calculations
-   FUndoObjects               : TFasterList;
-   FUndoPosition              : Integer;              // Index of the current undo object
-   FPreviousUndoPosition      : Integer;
-   procedure FBuildValidFrameTable(Destination:TFasterList;CloseAtDeck:Boolean); // Assembles all stations and builds a 2D bodyplan for export to other calculating programs
+   FCurrentlyMoving,
+   FPointHasBeenMoved      : boolean;
+   FPrevCursorPosition     : TPoint;
+   FControlpointForm       : TFreeControlPointForm; // form for manual adjustment of controlpoints
+   FIntersectionDialog     : TForm;   // Dialog containing intersectionlines
+   FProjectSettings        : TFreeProjectSettings;
+   FHydrostaticCalculations: TFasterList; // List containing all hydrostatic calculations
+   FUndoObjects            : TFasterList;
+   FUndoPosition,          // Index of the current undo object
+   FPreviousUndoPosition   : Integer;
+   // Assembles all stations and builds a 2D bodyplan for export to other calculating programs
+   procedure FBuildValidFrameTable(Destination:TFasterList;CloseAtDeck:Boolean);
    function  FGetActiveLayer:TFreeSubdivisionlayer;
    function  FGetBackgroundImage(Index:Integer):TFreeBackgroundImageData;
    function  FGetBuild:Boolean;
@@ -733,7 +718,7 @@ public
    procedure MouseUp(Viewport:TFreeViewport;Shift:TShiftState;X,Y:integer);
    procedure SelectPointsInFrame( Viewport: TfreeViewport; rect: TRect );
 
-   property  nV                                   : integer read FGetNumberOfViewports;
+   property  nV: integer read FGetNumberOfViewports;
    property  ActiveControlPoint                   : TFreeSubdivisionControlPoint read FActiveControlPoint write FSetActiveControlPoint;
    property  ActiveLayer                          : TFreeSubdivisionLayer read FGetActiveLayer write FSetActiveLayer;
    property  BackgroundImage[index:Integer]       : TFreeBackgroundImageData read FGetBackgroundImage;
@@ -777,7 +762,6 @@ public
    property  SelectedFlowline[index:integer]      : TFreeFlowline read FGetSelectedFlowline;
    property  SelectedMarker[index:integer]        : TFreeMarker read FGetSelectedMarker;
    property  Station[index:integer]               : TFreeIntersection read FGetStation;
-//#property  StopAskingForFileVersion : boolean read FStopAskingForFileVersion write FStopAskingForFileVersion;
    property  UndoCount                : integer read FGetUndoCount;
    property  UndoMemory               : integer read FGetUndoMemory; // amount of memory used by all undoobjects
    property  UndoObject[index:integer]: TFreeUndoObject read FGetUndoObject;
@@ -1030,8 +1014,8 @@ begin
       FOwner.Viewport[I-1].BackgroundImage.AssignData(FImageData,AssignedView,FOrigin,FScale,FTransparent,FTransparentColor,FBlendingValue,FQuality,FTolerance,False);
    end;
 end;
-
-{  TFreeIntersection is a list of curves calculated from the intersection
+{
+   TFreeIntersection is a list of curves calculated from the intersection
    of a ship hull (represented by a subdivision surface) and a plane.
    This plane can be a orthogonal plane (eg. stations, waterlines, buttocks)
    or a freely oriented 3D plane (sent)
@@ -1043,44 +1027,42 @@ begin
    if Index<>-1 then FItems.Delete(index);
    Item.Destroy;
 end;
-
 function TFreeIntersection.FGetColor:TColor;
 begin
+   with Ship do
    Case IntersectionType of
-      fiStation   : Result:=Owner.Preferences.StationColor;
-      fiButtock   : Result:=Owner.Preferences.ButtockColor;
-      fiWaterline : Result:=Owner.Preferences.WaterlineColor;
-      fiDiagonal  : Result:=Owner.Preferences.DiagonalColor;
-      else Result:=clWhite;
+      fiStation  : Result:=Preferences.StationColor;
+      fiButtock  : Result:=Preferences.ButtockColor;
+      fiWaterline: Result:=Preferences.WaterlineColor;
+      fiDiagonal : Result:=Preferences.DiagonalColor;
+              else Result:=clWhite;
    end;
 end;
-
 function TFreeIntersection.FGetPlane:Plate;
    begin Result:=FPlane; end;
 function TFreeIntersection.FGetCount:integer;
-begin
-   if self=nil then result:=0
-               else Result:=FItems.Count;
-end;
-
+   begin if self=nil then result:=0
+                     else Result:=FItems.Count;
+   end;
 function TFreeIntersection.FGetDescription:string;
 begin
    Case IntersectionType of
-      fiStation : Result:=Userstring(58);
-      fiButtock : Result:=Userstring(59);
-      fiWaterline : Result:=Userstring(60);
+      fiStation  : Result:=Userstring(58);
+      fiButtock  : Result:=Userstring(59);
+      fiWaterline: Result:=Userstring(60);
       fiDiagonal : Result:=Userstring(61);
-      else Result:='Free';
+              else Result:='Free';
    end;
-   if IntersectionType=fiDiagonal then Result:=Result+#32+FloatToStrF(-FPLane.d/FPlane.c,ffFixed,7,3)
-                                  else Result:=Result+#32+FloatToStrF(-FPLane.d,ffFixed,7,3);
+   if IntersectionType=fiDiagonal
+      then Result:=Result+#32+FloatToDec( -FPLane.d/FPlane.c,3 )
+      else Result:=Result+#32+FloatToDec( -FPLane.d,3 );
 end;
 
 function TFreeIntersection.FGetItem(Index:integer):TFreeSpline;
    begin Result:=FItems.Items[Index]; end;
 
 procedure TFreeIntersection.FSetBuilt(Val:Boolean);
-var I : integer;
+var I: integer;
 begin
    if not Val then begin
       for I:=1 to Count do Items[I-1].Destroy;
@@ -1088,49 +1070,29 @@ begin
    end;
    FBuilt:=Val;
 end;
-
 procedure TFreeIntersection.Add(Item:TFreeSpline);
-begin
-   FItems.Add(Item);
-end;{TFreeIntersection.Add}
+    begin FItems.Add(Item); end;
 
 procedure TFreeIntersection.CalculateArea(Plane:Plate;var Area:Real;var COG:Vector;var MomentOfInertia:Place);
-var I       : Integer;
-    TmpArea : Real;
-    TmpCOG  : Vector;
-    MomI    : Vector;
-
-   procedure CalculateSplineArea(Spline:TFreeSpline;var SplineArea:Real;Var SplineCOG,MomInertia:Vector);
-   var ClosedSpline     : Boolean;
-       IntersectionData : TFreeIntersectionData;
-       Parameters       : RealArray;
-       I,J,NoPoints     : Integer;
+var I: Integer; TmpArea: Real; TmpCOG,MomI: Vector;
+   procedure CalculateSplineArea
+   ( Spline:TFreeSpline;var SplineArea:Real;Var SplineCOG,MomInertia:Vector );
+   var ClosedSpline: Boolean;
+       IntersectionData: TFreeIntersectionData;
+       Parameters: RealArray;
+       I,J,NoPoints: Integer;
        T1,T2,T,Side,DeltaA: Real;
        P: Vector;
        P1,P2,C,MomI: Place;
-
        function ProjectTo2D(P:Vector):Place;
        begin
           Case IntersectionType of
-             fiStation  : begin
-                             Result.X:=P.Y;
-                             Result.Y:=P.Z;
-                          end;
-             fiButtock  : begin
-                             Result.X:=P.X;
-                             Result.Y:=P.Z;
-                          end;
-             fiWaterline: begin
-                             Result.X:=P.X;
-                             Result.Y:=P.Y;
-                          end;
-             else begin
-               Result.X:=0.0;
-               Result.Y:=0.0;
-             end;
+             fiStation:   begin Result.X:=P.Y; Result.Y:=P.Z; end;
+             fiButtock:   begin Result.X:=P.X; Result.Y:=P.Z; end;
+             fiWaterline: begin Result.X:=P.X; Result.Y:=P.Y; end;
+                     else begin Result.X:=0.0; Result.Y:=0.0; end;
           end;
-       end;{ProjectTo2D}
-
+       end;
    begin
       SplineArea:=0.0;
       SplineCOG:=ZERO;
@@ -1138,10 +1100,10 @@ var I       : Integer;
       C.X:=0.0;
       C.Y:=0.0;
       MomI:=C;
-      ClosedSpline:=Abs(Spline.Point[0]-Spline.Point[Spline.NumberOfPoints-1])<1e-4;
+      ClosedSpline:=Abs(Spline.Point[0]-Spline.Point[Spline.nS-1])<1e-4;
       if not ClosedSpline then begin                          // make it closed
          Spline.Add(Spline.Point[0]);
-         Spline.Knuckle[Spline.NumberOfPoints-2]:=True;
+         Spline.Knuckle[Spline.nS-2]:=True;
       end;
       Spline.Fragments:=500;
       NoPoints:=2;
@@ -1244,12 +1206,12 @@ begin
    if (Count=0) or (Area=0) then begin
       COG:=ZERO;
       Case IntersectionType of
-           fiStation    : COG.X:=-FPlane.d;
-           fiButtock    : COG.Y:=-FPlane.d;
-           fiWaterline  : COG.Z:=-FPlane.d;
+           fiStation  : COG.X:=-FPlane.d;
+           fiButtock  : COG.Y:=-FPlane.d;
+           fiWaterline: COG.Z:=-FPlane.d;
       end;
    end;
-end;{TFreeIntersection.CalculateArea}
+end;
 
 procedure TFreeIntersection.Clear;
 var I : integer;
@@ -1257,31 +1219,25 @@ begin
    for I:=1 to Count do Items[I-1].Destroy;
    FItems.Clear;
    FBuilt:=False;
-   FShowCurvature:=False;
+   ShowCurvature:=False;
    UseHydrostaticsSurfacesOnly:=False
-end;{TFreeIntersection.Clear}
+end;
 
 constructor TFreeIntersection.Create(Owner:TFreeShip);
-begin
-   inherited Create;
-   FOwner:=Owner;
-   FItems:=TFasterList.Create;
-   Clear;
-end;{TFreeIntersection.Create}
+      begin inherited Create; Ship:=Owner; FItems:=TFasterList.Create; Clear;
+      end;
 
 // Create the starboardhalf of the ship, for use in hydrostatic calculations
+
 procedure TFreeIntersection.CreateStarboardPart;
-var I,J: integer;
-    Spline: TFreeSpline;
-    P1,P2: Vector;
-    Area,DeltaA: Real;
-begin
-   if self.IntersectionType<>fiButtock then begin // Copy all present splines and mirror the y-coordinate
+var I,J: integer; Spline: TFreeSpline; P1,P2: Vector; Area,DeltaA: Real;
+begin                  // Copy all present splines and mirror the y-coordinate
+   if self.IntersectionType<>fiButtock then begin
       FItems.Capacity:=FItems.Count*2;
       for I:=Count downto 1 do begin
          Spline:=TFreeSpline.Create;
          Spline.Assign(Items[I-1]);
-         for J:=1 to Spline.NumberOfPoints do begin
+         for J:=1 to Spline.nS do begin
             P1:=Spline.Point[J-1];
             P1.Y:=-P1.Y;
             Spline.Point[J-1]:=P1;
@@ -1293,13 +1249,13 @@ begin
    for I:=Count downto 1 do begin
       Spline:=Items[I-1];
       Area:=0; DeltaA:=0;
-      P1:=Spline.Point[Spline.NumberOfPoints-1];
+      P1:=Spline.Point[Spline.nS-1];
       for J:=0 to 500 do begin
          P2:=Spline.Value(J/500);
          Case IntersectionType of
-            fiStation   : DeltaA:=0.5*(P2.Y+P1.Y)*(P2.Z-P1.Z);
-            fiButtock   : DeltaA:=0.5*(P2.X+P1.X)*(P2.Z-P1.Z);
-            fiWaterline : DeltaA:=0.5*(P2.X+P1.X)*(P2.Y-P1.Y);
+            fiStation  : DeltaA:=0.5*(P2.Y+P1.Y)*(P2.Z-P1.Z);
+            fiButtock  : DeltaA:=0.5*(P2.X+P1.X)*(P2.Z-P1.Z);
+            fiWaterline: DeltaA:=0.5*(P2.X+P1.X)*(P2.Y-P1.Y);
          // else Raise exception.Create(Userstring(66)+'!');
          end;
          Area:=Area+DeltaA;
@@ -1323,41 +1279,37 @@ var Index : integer;
 begin
    Case IntersectionType of
       fiStation : begin
-                     Index:=Owner.FStations.IndexOf(self);
-                     if Index<>-1 then begin
-                        Owner.FStations.Delete(Index);
-                        Owner.FileChanged:=True;
-                        if Redraw then Owner.Redraw;
-                        Destroy;
-                     end;
-                  end;
+         Index:=Ship.FStations.IndexOf(self);
+         if Index<>-1 then begin
+            Ship.FStations.Delete(Index);
+            Ship.FileChanged:=True;
+            if Redraw then Ship.Redraw;
+            Destroy;
+         end end;
       fiButtock : begin
-                     Index:=Owner.FButtocks.IndexOf(self);
-                     if Index<>-1 then begin
-                        Owner.FButtocks.Delete(Index);
-                        Owner.FileChanged:=True;
-                        if Redraw then Owner.Redraw;
-                        Destroy;
-                     end;
-                  end;
+         Index:=Ship.FButtocks.IndexOf(self);
+         if Index<>-1 then begin
+            Ship.FButtocks.Delete(Index);
+            Ship.FileChanged:=True;
+            if Redraw then Ship.Redraw;
+            Destroy;
+         end end;
       fiWaterline: begin
-                     Index:=Owner.FWaterlines.IndexOf(self);
-                     if Index<>-1 then begin
-                        Owner.FWaterlines.Delete(Index);
-                        Owner.FileChanged:=True;
-                        if Redraw then Owner.Redraw;
-                        Destroy;
-                     end;
-                  end;
+         Index:=Ship.FWaterlines.IndexOf(self);
+         if Index<>-1 then begin
+            Ship.FWaterlines.Delete(Index);
+            Ship.FileChanged:=True;
+            if Redraw then Ship.Redraw;
+            Destroy;
+         end end;
       fiDiagonal : begin
-                     Index:=Owner.FDiagonals.IndexOf(self);
-                     if Index<>-1 then begin
-                        Owner.FDiagonals.Delete(Index);
-                        Owner.FileChanged:=True;
-                        if Redraw then Owner.Redraw;
-                        Destroy;
-                     end;
-                  end;
+         Index:=Ship.FDiagonals.IndexOf(self);
+         if Index<>-1 then begin
+            Ship.FDiagonals.Delete(Index);
+            Ship.FileChanged:=True;
+            if Redraw then Ship.Redraw;
+            Destroy;
+         end end;
    end;
 end;
 
@@ -1387,9 +1339,9 @@ begin
          if IntersectionType=fiWaterline then if Viewport.ViewType in [fvProfile,fvBodyplan] then Spline.PenStyle:=psDot;
          if Spline.PenStyle=psDot then Spline.Color:=clSilver;
 
-         Spline.CurvatureColor:=Owner.Preferences.CurvaturePlotColor;
-         Spline.CurvatureScale:=Owner.Visibility.CurvatureScale;
-         Spline.ShowCurvature:=(Owner.Visibility.ShowCurvature) and (ShowCurvature);;
+         Spline.CurvatureColor:=Ship.Preferences.CurvaturePlotColor;
+         Spline.CurvatureScale:=Ship.Visibility.CurvatureScale;
+         Spline.ShowCurvature:=(Ship.Visibility.ShowCurvature) and (ShowCurvature);;
          if Spline.ShowCurvature then Spline.Fragments:=800
                                  else Spline.Fragments:=600;
 
@@ -1399,8 +1351,8 @@ begin
          DrawIt:=IntersectionType in [fiButtock,fiWaterline,fiDiagonal];
          if IntersectionType=fiStation then
             Drawit:=(Viewport.ViewType<>fvBodyplan)
-                or (Owner.Visibility.ModelView=mvBoth)
-                or (Spline.Max.X>=Owner.ProjectSettings.MidleFrame );
+                or (Ship.Visibility.ModelView=mvBoth)
+                or (Spline.Max.X>=Ship.ProjectSettings.MidleFrame );
          {
          if IntersectionType=fiStation then begin
             P:=Spline.Value(0.0);
@@ -1448,9 +1400,9 @@ begin
          end;
 
          DrawIt:=False;
-         if (Owner.Visibility.ModelView=mvBoth) then DrawIt:=True
+         if (Ship.Visibility.ModelView=mvBoth) then DrawIt:=True
             else if (Viewport.ViewType=fvBodyplan)
-                 and (Spline.Max.X<=Owner.ProjectSettings.MidleFrame) then DrawIt:=True;
+                 and (Spline.Max.X<=Ship.ProjectSettings.MidleFrame) then DrawIt:=True;
          if DrawIt then begin                           // Draw starboard side
             for J:=0 to Spline.Fragments do begin
                if Spline.ShowCurvature then begin
@@ -1492,13 +1444,13 @@ begin
          Spline.Fragments:=250;
          P:=Spline.Value(0.0);
          DrawIt:=(Viewport.ViewType=fvBodyplan)
-             and (P2.x<Owner.ProjectSettings.MidleFrame );
+             and (P2.x<Ship.ProjectSettings.MidleFrame );
          if DrawIt then P.y:=-P.y;
          for J:=1 to Spline.Fragments do begin
             P2:=Spline.Value(J/Spline.Fragments); if DrawIt then P2.y:=-P2.y;
             Viewport.DrawLineToZBuffer(P,P2,R,G,B); P:=P2;
          end;
-         if Owner.Visibility.ModelView=mvBoth then begin // Draw starboardside as well
+         if Ship.Visibility.ModelView=mvBoth then begin // Draw starboardside as well
             P:=Spline.Value(0.0);
             P.Y:=-P.Y;
             for J:=1 to Spline.Fragments do begin
@@ -1512,11 +1464,8 @@ begin
    end;
 end;
 
-procedure TFreeIntersection.DrawAll;
-var I : integer;
-begin
-   for I:=1 to Owner.nV do Draw(Owner.Viewport[I-1]);
-end;
+procedure TFreeIntersection.DrawAll; Var I: integer;
+    begin for I:=1 to Ship.nV do Draw(Ship.Viewport[I-1]); end;
 
 procedure TFreeIntersection.Extents(Var Min,Max:Vector);
 var I    : integer;
@@ -1533,9 +1482,9 @@ var I,J,M,N : integer;
 begin
    Source.LoadInteger(I);
    IntersectionType:=TFreeIntersectionType(I);
-   if Owner.FileVersion>=fv191 then begin
-      Source.LoadBoolean(FShowCurvature);
-   end else FShowCurvature:=False;
+   if Ship.FileVersion>=fv191 then begin
+      Source.LoadBoolean(ShowCurvature);
+   end else ShowCurvature:=False;
    Source.LoadT3DPlane(FPlane);
    Source.LoadBoolean(FBuilt);
    Source.LoadInteger(N);
@@ -1546,7 +1495,7 @@ begin
       Source.LoadInteger(M);                  // Read actual 3D coordinates
       Spline.Capacity:=M;
       for J:=1 to M do begin
-         if Owner.FileVersion>=fv160 then begin
+         if Ship.FileVersion>=fv160 then begin
             if IntersectionType=fiStation then begin
                P.X:=-FPlane.d;
                Source.LoadTFloatType(P.Y);
@@ -1568,31 +1517,58 @@ begin
    end;
 end;
 
-procedure TFreeIntersection.Rebuild;
+procedure TFreeIntersection.ReBuild;
 var I:Integer;
-begin                                     // Force to destroy all current Items
-   Built:=false;
-   Owner.Surface.IntersectPlane(Plane,UseHydrostaticsSurfacesOnly,FItems);
-   // Use a low simplification factor to remove only points that are (nearly) on a line
-   if Owner.ProjectSettings.ProjectSimplifyIntersections then
-            for I:=1 to Count do self.Items[I-1].Simplify(2.0);
+begin Built:=false;                       // Force to destroy all current Items
+   Ship.Surface.IntersectPlane( Plane,UseHydrostaticsSurfacesOnly,FItems );
+// Use a low simplification factor to remove only points that are (nearly) on a line
+   if Ship.ProjectSettings.ProjectSimplifyIntersections then
+      for I:=1 to Count do self.Items[I-1].Simplify( 2.0 );
    Built:=true;
+end;
+
+Function TFreeIntersection.ReConnect: VectorArray; // настройка к первому фрагменту образцу
+Var V,First,Last: Vector; D: Real; I,ii,J,jj,K,Id,N: Integer;
+    W: TFreeSpline; A: VectorArray;
+begin N:=Items[0].nS;
+  SetLength( A,N ); move( Items[0].FPoints,A,sizeof( Vector )*N );
+  if Count<2 then begin Result:=A; exit end;
+  First:=A[0];
+  Last:=A[N-1];
+
+  for K:=1 to Count-1 do begin I:=K; J:=0; Id:=1;
+     D:=abs( Last-Items[I].Point[J] );
+     for ii:=K to Count-1 do
+     if Items[ii].nS>1 then begin jj:=0;
+        while jj<Items[ii].nS do begin
+           V:=Items[ii].Point[jj];
+           if (ii<>K) or (jj>0) then
+           if abs( Last-V )<D then begin D:=abs( Last-V ); I:=ii; J:=jj; Id:=1; end;
+           if abs( First-V )<D then begin D:=abs( First-V ); I:=ii; J:=jj; Id:=-1; end;
+           jj+=Items[ii].nS-1;
+        end;
+      end;
+      if Id<0 then begin
+         W:=Items[I]; for ii:=I downto 1 do FItems.Items[ii]:=Items[ii-1];
+         FItems.Items[0]:=W; if J<>0 then {Revert( FItems.Items );} First:=Items[0].Point[0];
+      end;
+   end;
 end;
 
 procedure TFreeIntersection.SaveBinary( Destination:TFreeFileBuffer );
 var I,J: integer; Spline: TFreeSpline; P: Vector;
 begin
    Destination.Add(Ord(IntersectionType));
-   if Owner.FileVersion>=fv191 then Destination.Add(FShowCurvature);
+   if Ship.FileVersion>=fv191 then Destination.Add(ShowCurvature);
    Destination.Add(FPlane);
    Destination.Add(FBuilt);
    Destination.Add(Count);
    for I:=1 to Count do begin
       Spline:=Items[I-1];
-      Destination.Add(Spline.NumberOfPoints);
-      for J:=1 to Spline.NumberOfPoints do begin
+      Destination.Add(Spline.nS);
+      for J:=1 to Spline.nS do begin
          P:=Spline.Point[J-1];
-         if Owner.FileVersion>=fv160 then begin
+         if Ship.FileVersion>=fv160 then begin
             Case IntersectionType of
                fiStation: begin
                    Destination.Add(P.Y);
@@ -1671,14 +1647,14 @@ begin
       end;
    end else Result:=inherited DistanceToCursor(X,Y,Viewport);
    if Owner.Visibility.ModelView=mvBoth then begin
-      for I:=1 to NumberOfPoints do begin
+      for I:=1 to nS do begin
          V1:=Point[I-1];
          V1.Y:=-V1.Y;
          Point[I-1]:=V1;
       end;
       Tmp:=inherited DistanceToCursor(X,Y,Viewport);
       if Tmp<Result then Result:=Tmp;
-      for I:=1 to NumberOfPoints do begin
+      for I:=1 to nS do begin
          V1:=Point[I-1];
          V1.Y:=-V1.Y;
          Point[I-1]:=V1;
@@ -1771,7 +1747,7 @@ begin
             Viewport.Canvas.Pen.Style:=Penstyle;
             Viewport.Canvas.Polyline(PArray1);
          end;
-         for I:=1 to NumberOfPoints do begin
+         for I:=1 to nS do begin
             P3D:=Point[I-1];
             if P3D.X<Owner.ProjectSettings.MidleFrame then P3D.Y:=-P3D.Y;
             Pt:=Viewport.Project(P3D);
@@ -1782,7 +1758,7 @@ begin
          end;
       end else begin
          inherited Draw(Viewport);
-         for I:=1 to NumberOfPoints do  begin
+         for I:=1 to nS do  begin
             Pt:=Viewport.Project(Point[I-1]);
             Viewport.Canvas.MoveTo(Pt.X-Size,Pt.Y-Size);
             Viewport.Canvas.LineTo(Pt.X+Size,Pt.Y+Size);
@@ -1900,13 +1876,13 @@ begin
       end;
    end else Result:=FFlowline.DistanceToCursor(X,Y,Viewport);
    if Owner.Visibility.ModelView=mvBoth then begin
-      for I:=1 to FFlowline.NumberOfPoints do begin
+      for I:=1 to FFlowline.nS do begin
          V1:=FFlowline.Point[I-1]; V1.Y:=-V1.Y;
              FFlowline.Point[I-1]:=V1;
       end;
       Tmp:=FFlowline.DistanceToCursor(X,Y,Viewport);
       if Tmp<Result then Result:=Tmp;
-      for I:=1 to FFlowline.NumberOfPoints do begin
+      for I:=1 to FFlowline.nS do begin
          V1:=FFlowline.Point[I-1];
          V1.Y:=-V1.Y;
          FFlowline.Point[I-1]:=V1;
@@ -1927,7 +1903,7 @@ begin
    if not build then rebuild;
    FFlowline.Color:=Color;
    FFlowline.Fragments:=600;
-   if (FFlowline.NumberOfPoints>0)
+   if (FFlowline.nS>0)
 // and (Viewport.ViewportMode=vmWireframe)
    then begin                                           // draw flowline source
       P3D:=FFlowline.Point[0];
@@ -1987,13 +1963,13 @@ begin
    end else begin
       FFlowline.Draw(Viewport);
       if Owner.Visibility.ModelView=mvBoth then begin
-         for I:=1 to FFlowline.NumberOfPoints do begin
+         for I:=1 to FFlowline.nS do begin
             P3D:=FFlowline.Point[I-1];
             P3D.Y:=-P3D.Y;
             FFlowline.Point[I-1]:=P3D;
          end;
          FFlowline.Draw(Viewport);
-         for I:=1 to FFlowline.NumberOfPoints do begin
+         for I:=1 to FFlowline.nS do begin
             P3D:=FFlowline.Point[I-1];
             P3D.Y:=-P3D.Y;
             FFlowline.Point[I-1]:=P3D;
@@ -2020,7 +1996,7 @@ begin
       Source.LoadVector(P);
       Source.LoadBoolean(K);
       FFlowline.Add(P);
-      FFlowline.Knuckle[FFlowline.NumberOfPoints-1]:=K;
+      FFlowline.Knuckle[FFlowline.nS-1]:=K;
    end;
 end;{TFreeFlowline.LoadBinary}
 
@@ -2324,31 +2300,31 @@ begin                                                 // clear any present data
             else Valid:=ProcessTriangle(Triangles[index],Skip1,Skip2,Intersection,Direction,Index);
             inc(Iteration);
          until (not valid) or (index=-1) or (Iteration>5000);
-         While FFlowline.NumberOfPoints>1 do begin
-            if (FFlowline.Point[FFlowline.NumberOfPoints-1].Z>WlHeight)
-            and (FFlowline.Point[FFlowline.NumberOfPoints-2].Z>WlHeight)
+         While FFlowline.nS>1 do begin
+            if (FFlowline.Point[FFlowline.nS-1].Z>WlHeight)
+            and (FFlowline.Point[FFlowline.nS-2].Z>WlHeight)
             then begin
-               FFlowline.DeletePoint(FFlowline.NumberOfPoints-1);
+               FFlowline.DeletePoint(FFlowline.nS-1);
             end else
-            if (FFlowline.Point[FFlowline.NumberOfPoints-1].Z>WlHeight)
-            and (FFlowline.Point[FFlowline.NumberOfPoints-2].Z<WlHeight)
+            if (FFlowline.Point[FFlowline.nS-1].Z>WlHeight)
+            and (FFlowline.Point[FFlowline.nS-2].Z<WlHeight)
             then begin
-               Endpoint.X:=FFlowline.Point[FFlowline.NumberOfPoints-2].X
-                        +( FFlowline.Point[FFlowline.NumberOfPoints-1].X
-                          -FFlowline.Point[FFlowline.NumberOfPoints-2].X )
+               Endpoint.X:=FFlowline.Point[FFlowline.nS-2].X
+                        +( FFlowline.Point[FFlowline.nS-1].X
+                          -FFlowline.Point[FFlowline.nS-2].X )
                         *( WlHeight
-                          -FFlowline.Point[FFlowline.NumberOfPoints-2].Z )
-                        /( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
-                          -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
-               Endpoint.Y:=FFlowline.Point[FFlowline.NumberOfPoints-2].Y
-                        +( FFlowline.Point[FFlowline.NumberOfPoints-1].Y
-                          -FFlowline.Point[FFlowline.NumberOfPoints-2].Y )
+                          -FFlowline.Point[FFlowline.nS-2].Z )
+                        /( FFlowline.Point[FFlowline.nS-1].Z
+                          -FFlowline.Point[FFlowline.nS-2].Z );
+               Endpoint.Y:=FFlowline.Point[FFlowline.nS-2].Y
+                        +( FFlowline.Point[FFlowline.nS-1].Y
+                          -FFlowline.Point[FFlowline.nS-2].Y )
                         *( WlHeight
-                          -FFlowline.Point[FFlowline.NumberOfPoints-2].Z )
-                        /( FFlowline.Point[FFlowline.NumberOfPoints-1].Z
-                          -FFlowline.Point[FFlowline.NumberOfPoints-2].Z );
+                          -FFlowline.Point[FFlowline.nS-2].Z )
+                        /( FFlowline.Point[FFlowline.nS-1].Z
+                          -FFlowline.Point[FFlowline.nS-2].Z );
                EndPoint.Z:=wlHeight;
-               FFlowline.Point[FFlowline.NumberOfPoints-1]:=EndPoint;
+               FFlowline.Point[FFlowline.nS-1]:=EndPoint;
             end else break;
          end;
       end;  Points.Destroy;
@@ -2365,8 +2341,8 @@ begin
    Destination.Add(Ord(FProjectionView));
    Destination.Add(FBuild);
    Destination.Add(Selected);
-   Destination.Add(FFlowline.NumberOfPoints);
-   for I:=1 to FFlowline.NumberOfPoints do begin
+   Destination.Add(FFlowline.nS);
+   for I:=1 to FFlowline.nS do begin
       Destination.Add(FFlowline.Point[I-1]);
       Destination.Add(FFlowline.Knuckle[I-1]);
    end;
@@ -2719,7 +2695,7 @@ begin
    end;
    Dialog:=TOpenDialog.Create(Viewport);
    Dialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   Dialog.Filter:='All files (*.jpg;*.bmp)|*.jpg; *.bmp|Jpeg images (*.jpg)|*.jpg|Bitmap files (*.bmp)|*.bmp|';
+   Dialog.Filter:='All files [*.jpg;*.bmp]|*.jpg; *.bmp|Jpeg images [*.jpg]|*.jpg|Bitmap files [*.bmp]|*.bmp|';
    Dialog.Options:=[ofHideReadOnly];
    if Dialog.Execute then begin
       if Data=nil then begin
@@ -3270,7 +3246,7 @@ begin
             then if Ship.AdjustMarkers then begin
                for I:=1 to Ship.NumberofMarkers do begin
                   Marker:=Ship.Marker[I-1];
-                   for J:=1 to Marker.NumberOfPoints
+                   for J:=1 to Marker.nS
                    do Marker.Point[J-1]:=RotateVector(Marker.Point[J-1],SinX,CosX,SinY,CosY,SinZ,CosZ);
                end;
             end;
@@ -3425,7 +3401,7 @@ begin
 {              for I:=0 to Ship.NumberOfFlowlines-1 do with Ship.Flowline[I] do begin
                  FProjectionPoint.X := FProjectionPoint.X + Translate.X;
                  FProjectionPoint.Y := FProjectionPoint.Y + Translate.Z;
-                 for J:=0 to FFlowline.NumberOfPoints-1 do begin
+                 for J:=0 to FFlowline.nS-1 do begin
                    P:=FFlowline.Point[J]; P+=Translate; FFlowline.Point[J]:=P;
                  end; ReBuild;
                end;                                // Refresh controlpoint data
@@ -3433,7 +3409,7 @@ begin
                if Ship.AdjustMarkers then                     // Update markers
                for I:=1 to Ship.NumberofMarkers do begin
                   Marker:=Ship.Marker[I-1];
-                  for J:=1 to Marker.NumberOfPoints do begin
+                  for J:=1 to Marker.nS do begin
                      Marker.Point[J-1]:=Marker.Point[J-1]+Translate;
                   end;
                end;
@@ -3442,7 +3418,7 @@ begin
             for I:=0 to Ship.NumberOfFlowlines-1 do with Ship.Flowline[I] do begin
               FProjectionPoint.X := FProjectionPoint.X + Translate.X;
               FProjectionPoint.Y := FProjectionPoint.Y + Translate.Z;
-              for J:=0 to FFlowline.NumberOfPoints-1 do begin
+              for J:=0 to FFlowline.nS-1 do begin
                 P:=FFlowline.Point[J]; P+=Translate; FFlowline.Point[J]:=P;
               end; // или так? = FFlowline.ReBuild;
             end;
@@ -3504,7 +3480,7 @@ begin
    Flowline.FProjectionPoint:=Source;
    Flowline.FProjectionView:=View;
    Flowline.Rebuild;
-   if Flowline.FFlowLine.NumberOfPoints>0 then begin
+   if Flowline.FFlowLine.nS>0 then begin
       Ship.FileChanged:=True;
       Undo.Accept;
       Ship.Redraw;
@@ -3701,8 +3677,7 @@ end;
 
 // Delete all layers that are empty from the model
 procedure TFreeEdit.Layer_DeleteEmpty;
-var I,N   : integer;
-    Undo  : TFreeUndoObject;
+var I,N: integer; Undo: TFreeUndoObject;
 begin
    N:=0;
    if Quiet then Undo:=nil
@@ -3775,25 +3750,23 @@ var OpenDialog : TOpenDialog;
     Answer     : word;
 
     procedure Import(Markers:TFasterList);
-    var I      : Integer;
-        Marker : TFreeMarker;
+    var I: Integer; Marker: TFreeMarker;
     begin
-      for I:=1 to Markers.Count do
-      begin
+      for I:=1 to Markers.Count do begin
          Marker:=Markers[I-1];
          Marker_Add(Marker);
       end;
       Ship.FileChanged:=True;
       Ship.Visibility.ShowMarkers:=True;
-      for I:=1 to Ship.nV do if Ship.Viewport[I-1].Zoom=1.0 then Ship.Viewport[I-1].ZoomExtents
-                                                                             else Ship.Viewport[I-1].Refresh;
+      for I:=1 to Ship.nV
+       do if Ship.Viewport[I-1].Zoom=1.0 then Ship.Viewport[I-1].ZoomExtents
+                                         else Ship.Viewport[I-1].Refresh;
       Ship.Redraw;
     end;{import}
-
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   OpenDialog.Filter:='Text files (*.txt)|*.txt';
+   OpenDialog.Filter:='Text files [*.txt]|*.txt';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       assignFile(FFile,ChangeFileExt(Opendialog.FileName,'.txt'));
@@ -3819,12 +3792,12 @@ begin
                      Marker.Add(P);
                      Str:=#32;
                   end else if Str='' then begin
-                     if Marker.NumberOfPoints>1 then Markers.Add(Marker)
+                     if Marker.nS>1 then Markers.Add(Marker)
                                                 else Marker.Destroy;
                      Marker:=TFreeMarker.Create;
                   end;
                until (Str='EOF') or (EOF(FFile));
-               if Marker.NumberOfPoints>1 then Markers.Add(Marker)
+               if Marker.nS>1 then Markers.Add(Marker)
                                           else Marker.Destroy;
 //          except
 //             ShowMessage(Userstring(132)+#32+IntToStr(LineNr));
@@ -4103,8 +4076,7 @@ var Dialog     : TFreeLackenbyDialog;
     Undo       : TFreeUndoObject;
     I,UndoIndex: Integer;
     Modified   : Boolean;
-begin          //# if not Ship.ProjectSettings.FMainparticularsHasBeenset then
-               //#    begin ShowMessage( Userstring(96) ); exit; end;
+begin
    Dialog:=TFreeLackenbyDialog.Create(Ship);
    ShowTranslatedValues(Dialog);
    Undo:=CreateUndoObject(Userstring(159),false);
@@ -4152,7 +4124,7 @@ begin
    // Update markers
    if AdjustMarkers then for I:=1 to Ship.NumberOfMarkers do begin
       Marker:=Ship.Marker[I-1];
-      for j:=1 to Marker.NumberOfPoints do begin
+      for j:=1 to Marker.nS do begin
          P:=Marker.Point[J-1];
          P.X:=P.X*Scalevector.X;
          P.Y:=P.Y*Scalevector.Y;
@@ -4647,13 +4619,10 @@ begin Result:=FWaterlines[index];
 end;
 
 // Assembles all stations and builds a 2D bodyplan for export to other calculating programs
+
 procedure TFreeShip.FBuildValidFrameTable(Destination:TFasterList;CloseAtDeck:Boolean);
-var I,J           : integer;
-    Intersection  : TFreeIntersection;
-    Spline        : TFreeSpline;
-    Min           : Real;
-    P             : Vector;
-    TmpList       : TFasterList;
+var I,J: integer; Min: Real; P: Vector;
+    Intersection: TFreeIntersection; Spline: TFreeSpline; TmpList: TFasterList;
 begin
    Min:=0.0;
    for I:=1 to NumberOfStations do begin
@@ -4666,15 +4635,15 @@ begin
          if Spline.Value(0.0).Z>Spline.Value(1.0).Z then // If not then reverse the points
             Spline.InvertDirection;
          TmpList.Add(Spline);
-      end;                                         // Take all segments and join into one
+      end;                               // Take all segments and join into one
       if TmpList.Count>1 then JoinSplineSegments(0.01,True,TmpList);
       for J:=1 to TmpList.Count do begin Spline:=TmpList[J-1];
          if CloseAtDeck then begin
-            if Spline.Point[Spline.NumberOfPoints-1].Y<>0.0 then begin
-               P:=Spline.Point[Spline.NumberOfPoints-1];
+            if Spline.Point[Spline.nS-1].Y<>0.0 then begin
+               P:=Spline.Point[Spline.nS-1];
                P.Y:=0.0;
                Spline.Add(P);
-               Spline.Knuckle[Spline.NumberOfPoints-2]:=True;
+               Spline.Knuckle[Spline.nS-2]:=True;
             end;
          end;
          Destination.Add(Spline);
@@ -4687,7 +4656,7 @@ begin
    // of all stations is on the baseline z=0.0
    if Min<>0.0 then for I:=1 to Destination.Count do begin
       Spline:=Destination[I-1];
-      for J:=1 to Spline.NumberOfPoints do begin
+      for J:=1 to Spline.nS do begin
          P:=Spline.Point[J-1];
          P.Z:=P.Z-Min;
          Spline.Point[J-1]:=P;
@@ -4912,16 +4881,14 @@ begin                                                    // Initialize all data
    for I:=1 to NumberOfHydrostaticCalculations do HydrostaticCalculation[I-1].Calculated:=false;
    FDiagonals.Clear;
    FProjectSettings.Clear;
-   FFilenameSet:=False;
-//## FStopAskingForFileVersion:=False;
-   // Delete backgroundimages
+   FFilenameSet:=False;                              // Delete backgroundimages
    for I:=1 to NumberofBackgroundImages do BackgroundImage[I-1].Destroy;
    FBackGroundImages.Clear;                                  // Clear flowlines
    for I:=1 to NumberOfFlowlines do Flowline[I-1].Destroy;
    FFlowlines.clear;
    FSelectedFlowlines.Clear;
-   if not (csDestroying in componentState) then begin // remove backgroundimages from viewports
-      Pt.X:=0;
+   if not (csDestroying in componentState) then begin
+      Pt.X:=0;                        // remove backgroundimages from viewports
       Pt.Y:=0;
       for I:=1 to nV do
          Viewport[I-1].BackgroundImage.AssignData(nil,fvPerspective,Pt,1.0,False,clBlack,255,100,3,True);
@@ -4969,7 +4936,7 @@ end;
 
 procedure TFreeShip.Draw;
 var I: integer;
-begin       // Redraws model to all viewports by re-initializing all viewports
+begin        // Redraws model to all viewports by re-initializing all viewports
    for I:=1 to nV do Viewport[I-1].ZoomExtents;
    if LinesplanFrame<>nil then begin
       TFreeLinesplanframe(LinesplanFrame).Viewport.ZoomExtents;
@@ -5099,9 +5066,8 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
              Width:=Viewport.Canvas.TextWidth(Str);
 //           Viewport.Canvas.TextOut(Pt1.X,Pt1.Y-Height,Str);
              Viewport.Canvas.TextOut(Pt2.X{-Width},Pt2.Y-Height,str);
-             // Draw dwl
 //##         if ProjectSettings.FMainparticularsHasBeenset then
-             begin
+             begin                                                  // Draw dwl
                 P1:=Min;
                 P2:=Max;
                 Position:=Surface.Min.Z+ProjectSettings.FProjectDraft;
@@ -5340,7 +5306,7 @@ begin
             end;
             Curve.Color:=Preferences.HydrostaticsFontColor;
             Curve.Draw(Viewport);
-            for I:=1 to Curve.NumberOfPoints do begin
+            for I:=1 to Curve.nS do begin
                P:=Curve.Point[I-1];
                Pt:=Viewport.Project(P);
                Size:=round(Sqrt(Viewport.Zoom)*3);

@@ -1,6 +1,9 @@
 {
+   included in FreeShipUnit
+
    FreePreferences
    Container class for all program settings
+
 }
 const iniFileName='FreeShip.ini';
 const G='Graphic';

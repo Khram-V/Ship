@@ -216,7 +216,7 @@ begin
          Spline:=TFreeSpline.Create;
          Spline.Assign(Station.Items[J-1]);
          if Spline.Max.X<=FFreeship.ProjectSettings.MidleFrame then begin
-            for K:=1 to Spline.NumberOfPoints do begin
+            for K:=1 to Spline.nS do begin
                P:=Spline.Point[K-1];
                P.Y:=-P.Y;
                Spline.Point[K-1]:=P;
@@ -685,7 +685,7 @@ begin
    end;
    for I:=1 to FOriginalStations.Count do begin
       Spline:=FOriginalStations[I-1];
-      if Spline.NumberOfPoints>0 then begin
+      if Spline.nS>0 then begin
          if First then begin
             Min:=Spline.Min;
             Max:=Spline.Max;
@@ -770,12 +770,12 @@ begin
          end;
       end;
    end;
-   if FOriginalSectionalAreaCurve.NumberOfPoints>0 then begin
+   if FOriginalSectionalAreaCurve.nS>0 then begin
       if First then begin
          Min:=FOriginalSectionalAreaCurve.Min;
          Max:=FOriginalSectionalAreaCurve.Max;
       end else FOriginalSectionalAreaCurve.Extents(Min,Max);
-      if FNewSectionalAreaCurve.NumberOfPoints>0 then FNewSectionalAreaCurve.Extents(Min,Max);
+      if FNewSectionalAreaCurve.nS>0 then FNewSectionalAreaCurve.Extents(Min,Max);
       for I:=1 to FOriginalWaterline.Count do begin
          Spline:=ForiginalWaterline[I-1];
          Spline.Extents(Min,Max);
@@ -798,7 +798,7 @@ var Pt      : TPoint;
     Face    : TFreeSubdivisionControlface;
 begin
    if FFreeship<>nil then
-   if FOriginalSectionalAreaCurve.NumberOfPoints>0 then begin // Skip translation
+   if FOriginalSectionalAreaCurve.nS>0 then begin // Skip translation
       TopView.FontName:=UFont; //'Arial';                          // End skip translation
       TopView.FontSize:=7;
       TopView.FontColor:=clBlack;
@@ -835,7 +835,7 @@ begin
       FOriginalSectionalAreaCurve.ShowCurvature:=False;
       FOriginalSectionalAreaCurve.Fragments:=400;
       FOriginalSectionalAreaCurve.Draw(TopView);
-      if FOriginalSectionalAreaCurve.NumberOfPoints>0 then begin
+      if FOriginalSectionalAreaCurve.nS>0 then begin
          Pt:=TopView.Project(FOriginalSectionalAreaCurve.Value(0.5));
          TopView.Canvas.TextOut(Pt.X,Pt.Y,'SAC');
       end;
@@ -845,7 +845,7 @@ begin
          Spline.ShowCurvature:=False;
          Spline.Fragments:=400;
          Spline.Draw(TopView);
-         if Spline.NumberOfPoints>0 then begin
+         if Spline.nS>0 then begin
             Pt:=TopView.Project(Spline.Value(0.5));
             TopView.Canvas.TextOut(Pt.X,Pt.Y,'DWL');
          end;

@@ -443,6 +443,30 @@ end
       ImageIndex = 1
       OnExecute = ExitProgramExecute
     end
+    object ImportPart: TAction
+      Category = 'Import'
+      Caption = 'Часть корпуса(дельная вещь.Part)'
+      Hint = 'Считывание ранее приготовленного фрагмента корпуса'
+      OnExecute = ImportPartExecute
+    end
+    object ImportBodyplan: TAction
+      Category = 'Import'
+      Caption = 'Таблица плазовых ординат'
+      Hint = 'Считывание ординат и оконечностей корпуса (.txt).'
+      OnExecute = ImportBodyplanExecute
+    end
+    object ImportSurface: TAction
+      Category = 'Import'
+      Caption = 'Поверхность+Chines (.txt)'
+      Hint = 'Считывание пространственных контуров для формирования гладкой обшивки'
+      OnExecute = ImportSurfaceExecute
+    end
+    object ImportOBJ: TAction
+      Category = 'Import'
+      Caption = 'Wavefront Technologies (OBJ)'
+      Hint = 'Wavefront Technologies for Advanced Visualizer animation'
+      OnExecute = ImportOBJExecute
+    end
     object ImportSTL: TAction
       Category = 'Import'
       Caption = 'Stereolithography (STL)'
@@ -452,8 +476,15 @@ end
     object ImportVRML: TAction
       Category = 'Import'
       Caption = 'Virtual Reality (VRML)'
-      Hint = 'Импорт модели из Virtual Reality Modeling Language.'
+      Hint = 'Импорт обшивки корпуса из Virtual Reality Modeling Language.'
       OnExecute = ImportVRMLExecute
+    end
+    object ImportHullFile: TAction
+      Category = 'Import'
+      Caption = 'Carlson Hulls...'
+      Hint = 'Импорт файлов созданных в Carlson Hulls...'
+      ImageIndex = 28
+      OnExecute = ImportHullFileExecute
     end
     object ImportCarene: TAction
       Category = 'Import'
@@ -462,16 +493,37 @@ end
       ImageIndex = 35
       OnExecute = ImportCareneExecute
     end
-    object ExportSTL: TAction
+    object ImportPolyCad: TAction
+      Category = 'Import'
+      Caption = 'PolyCad.geo '
+      Hint = 'B-Spline поверхности (ShipLines,YachtLines) из PolyCAD Маркуса Боул'
+      ImageIndex = 53
+      OnExecute = ImportPolyCadExecute
+    end
+    object ExportPart: TAction
       Category = 'Export'
-      Caption = 'STL...'
-      Hint = 'Запись треугольников Stereolithography (STL)'
-      OnExecute = ExportSTLExecute
+      Caption = 'Часть корпуса (.Part)...'
+      Hint = 'Сохранение выбранного фрагмента корпуса'
+      OnExecute = ExportPartExecute
+    end
+    object ExportIGES: TAction
+      Category = 'Export'
+      Caption = 'Экспорт в IGES текст'
+      Hint = 'Initial Graphics Exchange Specification (IGES)'
+      ImageIndex = 60
+      OnExecute = ExportIGESExecute
+    end
+    object ExportDXFFaces: TAction
+      Category = 'Export'
+      Caption = 'Модель.DXF с обшивкой'
+      Hint = 'Сохранение поверхностей числовой модели в AutoCad.dxf'
+      ImageIndex = 27
+      OnExecute = ExportDXFFacesExecute
     end
     object ExportDXF2DPolylines: TAction
       Category = 'Export'
       Caption = 'Листы DXF проекций...'
-      Hint = 'Сохранение контуров раздельными листами.dxf'
+      Hint = 'Сохранение теоретических контуров раздельными листами.dxf'
       ImageIndex = 27
       OnExecute = ExportDXF2DPolylinesExecute
     end
@@ -482,18 +534,43 @@ end
       ImageIndex = 27
       OnExecute = ExportDXF3DPolylinesExecute
     end
-    object ExportDXFFaces: TAction
+    object ExportObj: TAction
       Category = 'Export'
-      Caption = 'Модель.DXF с обшивкой'
-      Hint = 'Сохранение модели в AutoCad.dxf'
-      ImageIndex = 27
-      OnExecute = ExportDXFFacesExecute
+      Caption = 'Wavefront Technologies (OBJ)'
+      Hint = 'Wavefront Technologies Advanced Visualizer.'
+      OnExecute = ExportObjExecute
+    end
+    object ExportSTL: TAction
+      Category = 'Export'
+      Caption = 'StereoLithography (STL)...'
+      Hint = 'Запись треугольников Standard Tessellation Language (мозаичный)'
+      OnExecute = ExportSTLExecute
     end
     object ExportCoordinates: TAction
       Category = 'Export'
-      Caption = 'Координаты.txt'
-      Hint = 'Сохраняются ординаты штевней и шпангоутов.'
+      Caption = 'Плазовые координаты.txt'
+      Hint = 'Сохраняются ординаты штевней и шпангоутов'
       OnExecute = ExportCoordinatesExecute
+    end
+    object ExportOffsets: TAction
+      Category = 'Export'
+      Caption = 'Расчётные теоретические контуры'
+      Hint = 'Ординаты теоретического чертежа и контрольные контуры'
+      OnExecute = ExportOffsetsExecute
+    end
+    object ExportArchimedes: TAction
+      Category = 'Export'
+      Caption = 'Archimedes...'
+      Hint = 'Export stations to Arcimedes'
+      ImageIndex = 26
+      OnExecute = ExportArchimedesExecute
+    end
+    object ExportGHS: TAction
+      Category = 'Export'
+      Caption = 'GHS...'
+      Hint = 'Запись шпангоутов в GHS формате для типовых расчётов гидростатики (Creative Systems, Inc.)'
+      ImageIndex = 54
+      OnExecute = ExportGHSExecute
     end
     object ShowControlNet: TAction
       Category = 'Visibility'
@@ -802,18 +879,6 @@ end
       Hint = 'Работа со списком выполненных команд для выборолчного восстановления'
       OnExecute = ShowUndoHistoryExecute
     end
-    object ImportOBJ: TAction
-      Category = 'Import'
-      Caption = 'Wavefront (OBJ)'
-      Hint = 'Wavefront Technologies for Advanced Visualizer animation.'
-      OnExecute = ImportOBJExecute
-    end
-    object ExportObj: TAction
-      Category = 'Export'
-      Caption = 'Wavefront (Obj)'
-      Hint = 'Wavefront Technologies Advanced Visualizer.'
-      OnExecute = ExportObjExecute
-    end
     object InvertFace: TAction
       Category = 'Face'
       Caption = 'Обращение нормалей'
@@ -827,24 +892,6 @@ end
       Hint = 'Настройки параметров программного комплекса Free!Ship.'
       OnExecute = PreferencesExecute
     end
-    object ImportBodyplan: TAction
-      Category = 'Import'
-      Caption = 'Ординаты корпуса...'
-      Hint = 'Считывание ординат и оконечностей корпуса (.txt).'
-      OnExecute = ImportBodyplanExecute
-    end
-    object ImportHullFile: TAction
-      Category = 'Import'
-      Caption = 'Carlson Hulls...'
-      Hint = 'Импорт файлов созданных в Carlson Hulls...'
-      ImageIndex = 28
-      OnExecute = ImportHullFileExecute
-    end
-    object ExportOffsets: TAction
-      Caption = 'Ординаты в T7-смещениях...'
-      Hint = 'Ординаты теоретического чертежа и контрольные контуры'
-      OnExecute = ExportOffsetsExecute
-    end
     object AddPoint: TAction
       Category = 'Point'
       Caption = 'Добавить точку'
@@ -855,13 +902,6 @@ end
       Caption = 'Развёртки обшивки'
       Hint = 'Плоские фигуры для раскроя листов обшивки.'
       OnExecute = DevelopLayersExecute
-    end
-    object ExportArchimedes: TAction
-      Category = 'Export'
-      Caption = 'Archimedes...'
-      Hint = 'Export stations to Arcimedes'
-      ImageIndex = 26
-      OnExecute = ExportArchimedesExecute
     end
     object ShowLinesplan: TAction
       Category = 'Project'
@@ -891,12 +931,6 @@ end
       ImageIndex = 37
       OnExecute = DeleteMarkersExecute
     end
-    object ImportSurface: TAction
-      Category = 'Import'
-      Caption = 'Поверхность...'
-      Hint = 'Считывание продольных пространственных контуров для формирования гладкой обшивки'
-      OnExecute = ImportSurfaceExecute
-    end
     object FileSave: TAction
       Category = 'File'
       Caption = 'Сохранить'
@@ -904,12 +938,6 @@ end
       ImageIndex = 5
       ShortCut = 16467
       OnExecute = FileSaveExecute
-    end
-    object ImportChines: TAction
-      Category = 'Import'
-      Caption = 'Линии сломов Chines...'
-      Hint = 'Импорт cкуловых контуров Chines (линий слома борта).'
-      OnExecute = ImportChinesExecute
     end
     object ShowControlCurves: TAction
       Category = 'Visibility'
@@ -967,25 +995,6 @@ end
       ImageIndex = 48
       OnExecute = PointAlignExecute
     end
-    object ExportIGES: TAction
-      Category = 'Export'
-      Caption = 'экспорт в IGES'
-      Hint = 'Initial Graphics Exchange Specification (IGES)'
-      ImageIndex = 60
-      OnExecute = ExportIGESExecute
-    end
-    object ExportPart: TAction
-      Category = 'Export'
-      Caption = 'Часть корпуса (.Part)...'
-      Hint = 'Сохранение выбранного фрагмента корпуса'
-      OnExecute = ExportPartExecute
-    end
-    object ImportPart: TAction
-      Category = 'Import'
-      Caption = 'Часть корпуса (.Part)...'
-      Hint = 'Считывание ранее приготовленного фрагмента корпуса'
-      OnExecute = ImportPartExecute
-    end
     object LayerIntersection: TAction
       Category = 'Point'
       Caption = 'Пересечение слоёв...'
@@ -993,25 +1002,11 @@ end
       ImageIndex = 51
       OnExecute = LayerIntersectionExecute
     end
-    object ImportPolyCad: TAction
-      Category = 'Import'
-      Caption = 'PolyCad.geo '
-      Hint = 'B-Spline поверхности (ShipLines,YachtLines) из PolyCAD Маркуса Боул'
-      ImageIndex = 53
-      OnExecute = ImportPolyCadExecute
-    end
     object RemoveUnusedPoints: TAction
       Category = 'Tools'
       Caption = 'Вычистка лишних точек'
       Hint = 'Сброс всех точек, не включеных в структуру слоёв цифровой модели.'
       OnExecute = RemoveUnusedPointsExecute
-    end
-    object ExportGHS: TAction
-      Category = 'Export'
-      Caption = 'GHS...'
-      Hint = 'Запись шпангоутов в GHS формате для типовых расчётов гидростатики (Creative Systems, Inc.)'
-      ImageIndex = 54
-      OnExecute = ExportGHSExecute
     end
     object ShowFlowlines: TAction
       Category = 'Visibility'
@@ -1571,26 +1566,26 @@ end
         object Part2: TMenuItem
           Action = ImportPart
         end
-        object Carlssonhulfile1: TMenuItem
-          Action = ImportHullFile
-        end
         object Surface1: TMenuItem
           Action = ImportSurface
         end
-        object Chines1: TMenuItem
-          Action = ImportChines
-        end
-        object Carenefile1: TMenuItem
-          Action = ImportCarene
-        end
-        object MenuImportSTL: TMenuItem
-          Action = ImportSTL
+        object Bodyplan: TMenuItem
+          Action = ImportBodyplan
         end
         object ImportObj1: TMenuItem
           Action = ImportObj
         end
+        object MenuImportSTL: TMenuItem
+          Action = ImportSTL
+        end
         object VRML1: TMenuItem
           Action = ImportVRML
+        end
+        object Carlssonhulfile1: TMenuItem
+          Action = ImportHullFile
+        end
+        object Carenefile1: TMenuItem
+          Action = ImportCarene
         end
         object PolyCad1: TMenuItem
           Action = ImportPolyCad

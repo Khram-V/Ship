@@ -1,6 +1,8 @@
-//
-///*** Detect Minimal File Version depneding on features used
-//
+{
+  included in FreeShipUnit
+}
+//*** Detect Minimal File Version depneding on features used
+
 function TFreeShip.DetectMinFileVersion( isText: boolean ): TFreeFileVersion;
 var I: integer;      // 160 => если с картинкой - и хотелось бы никак не меньше
 begin result:=fv165; // в оригинале ошибка на версии 165 = всё должно быть выше
@@ -93,21 +95,20 @@ begin Result:=false;
   AddToRecentFiles( Ship.FileName );
 end;
 
-const FileFilter = 'Free!Ship (*.ftm *.fbm *.fef)|*.ftm;*.fbm;*.fef'
-                  +'|         <source types> (*.ftm)|*.ftm'
-                  +'|            <binary files> (*.fbm)|*.fbm'
-                  +'|    <обменный вид> (*.fef)|*.fef| All files (*.*)|*.*';
+const FileFilter = 'Free!Ship [*.ftm *.fbm *.fef]|*.ftm;*.fbm;*.fef'
+                  +'|         <source types> [*.ftm]|*.ftm'
+                  +'|            <binary files> [*.fbm]|*.fbm'
+                  +'|    <обменный вид> [*.fef]|*.fef| All files [*.*]|*.*';
 
 function TFreeEdit.File_SaveAs: boolean; var SaveDialog: TSaveDialog;
 begin result:=false;
    SaveDialog:=TSaveDialog.Create( Ship );
-   SaveDialog.InitialDir:=Ship.Preferences.SaveDirectory; //+ConfigDirectory
+   SaveDialog.InitialDir:=Ship.Preferences.SaveDirectory;
    Savedialog.FileName:=ExtractFilename( Ship.Filename );
    SaveDialog.Filter:=FileFilter;
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin WestPoint;
-      Ship.Preferences.SaveDirectory:=ExtractFilePath( SaveDialog.FileName );
-//    if CurrentVersion>Ship.FileVersion then Ship.StopAskingForFileVersion:=False;
+      Ship.Preferences.SaveDirectory:=SaveDialog.InitialDir;
       Ship.Filename:=Savedialog.Filename;
       Ship.FilenameSet:=True;
       Result:=File_Save;
@@ -118,15 +119,16 @@ end;
 
 procedure TFreeEdit.File_Load; var Answer: word; OpenDialog: TOpenDialog;
 begin
-  Ship.Edit.Selection_Clear;                        ///***  Selection_Clear
+  Ship.Edit.Selection_Clear; ///*** Selection_Clear
   OpenDialog:=TOpenDialog.Create( Ship );
-  OpenDialog.InitialDir:=Ship.Preferences.OpenDirectory; //+ConfigDirectory
+  OpenDialog.InitialDir:=Ship.Preferences.OpenDirectory; //+ ConfigDirectory
   OpenDialog.Filter:=FileFilter;
   Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
      Answer:=Ship.Edit.File_SaveCheck;
      if (Answer=mrCancel) or Ship.FileChanged then exit;
      File_Load( Opendialog.FileName );           // Load everything into memory
+     Ship.Preferences.OpenDirectory:=OpenDialog.InitialDir;
   end;
   Opendialog.Destroy;
 end;
@@ -134,7 +136,7 @@ end;
 procedure TFreeEdit.File_Load( FileName: String );
 var Source: TFreeFileBuffer; I,LineNR: Integer; Str: String;
     Strings: TStringList=nil;
-begin Strings:=nil;
+begin Source:=nil; Strings:=nil;
   if ExtractFileExt( FileName )=''
      then FileName:=ChangeFileExt( FileName,FreeShipExtention );
   Str:=LowerCase( ExtractFileExt( FileName ) );
@@ -144,7 +146,7 @@ begin Strings:=nil;
        begin WriteLN( '...нет ftm,fbm или fef' ); exit; end;
   Ship.Clear;
   Ship.Filename:=FileName;
-  if Strings<>nil then begin
+  if Strings<>nil then begin   // обменный формат из начальных версий Free!Ship
     Strings.LoadFromFile( Filename );
     LineNr:=-1;                 // Read general information and mainparticulars
     inc(LineNr); Ship.ProjectSettings.FProjectName:=Strings[LineNr];
@@ -164,23 +166,15 @@ begin Strings:=nil;
     Ship.FPrecision:=TFreePrecisionType(I);
     Ship.Surface.ImportFEFFile(Strings,LineNr);
     Strings.Destroy;
-//  Ship.Build:=False;
-//  Ship.RebuildModel;
-    if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
+    Drawing;
   end else begin
     Source.LoadFromFile( FileName );
     Ship.LoadProject( Source );
     FreeAndNil( Source );
   end;
-//if FileExistsUTF8( FreeShip.Filename ) then
-//# Ship.FileIsReadOnly:=( FileGetAttr( FileName ) and faReadOnly )<>0;
   Ship.FilenameSet:=True;
-//# Ship.StopAskingForFileVersion:=False;
-//# Ship.ModelIsLoaded:=True;
-//  Application.ProcessMessages;
   with Ship do begin
-    ZoomFitAllViewports;
-//  Surface.Rebuild;
+    ZoomFitAllViewports; // Surface.Rebuild;
     for I:=0 to NumberofBackgroundImages-1 do BackgroundImage[I].UpdateViews;
     Draw;
   end;
@@ -195,9 +189,7 @@ begin Strings:=nil;
 end;
 
 Procedure TFreeShip.LoadProject( Source:TFreeFileBuffer );        // LoadBinary
-var PrevCursor  : TCursor;
-    I,N         : Integer;
-    Str         : String;                                         // WW:Real;
+var PrevCursor: TCursor; I,N: Integer; Str: String;               // WW:Real;
     Data        : TFreeBackgroundImageData;
     Intersection: TFreeIntersection;
     Flowline    : TFreeFlowline;
@@ -208,7 +200,6 @@ begin    // Remember the filename because it will be erased by the clear method
    FFilename:=Str;
    PrevCursor:=Screen.Cursor;
    Screen.Cursor:=crHourGlass;
-// try
    Source.Reset;
    Source.Encoding:=Preferences.FbmEncoding;
    Source.LoadString(Str);
@@ -223,29 +214,29 @@ begin    // Remember the filename because it will be erased by the clear method
          FPrecision:=TFreePrecisionType(I);
          Visibility.LoadBinary(Source);
          ProjectSettings.LoadBinary(Source,nil);
-         Surface.LoadBinary(Source);   // Load actual subdivision-surface data.
-         Source.LoadInteger(N);        // Load stations
+         Surface.LoadBinary(Source); // Load actual subdivision-surface data.
+         Source.LoadInteger(N);      // Load stations
          FStations.Capacity:=N;
          for I:=1 to N do begin
              Intersection:=TFreeIntersection.Create(self);
              FStations.Add(Intersection);
              Intersection.LoadBinary(Source);
          end;
-         Source.LoadInteger(N);                              // Load Buttocks
+         Source.LoadInteger(N);      // Load Buttocks
          FButtocks.Capacity:=N;
          for I:=1 to N do begin
              Intersection:=TFreeIntersection.Create(self);
              FButtocks.Add(Intersection);
              Intersection.LoadBinary(Source);
          end;
-         Source.LoadInteger(N);                              // Load Waterlines
+         Source.LoadInteger(N);      // Load Waterlines
          FWaterlines.Capacity:=N;
          for I:=1 to N do begin
              Intersection:=TFreeIntersection.Create(self);
              FWaterlines.Add(Intersection);
              Intersection.LoadBinary(Source);
          end;
-         if FileVersion>=fv180 then begin                    // Load Diagonals
+         if FileVersion>=fv180 then begin // Load Diagonals
             Source.LoadInteger(N);
             FDiagonals.Capacity:=N;
             for I:=1 to N do begin
@@ -253,7 +244,7 @@ begin    // Remember the filename because it will be erased by the clear method
                 FDiagonals.Add(Intersection);
                 Intersection.LoadBinary(Source);
             end;
-            if FileVersion>=fv191 then begin                 // Load markers
+            if FileVersion>=fv191 then begin // Load markers
                Source.LoadInteger(N);
                FMarkers.Capacity:=N;
                for I:=1 to N do begin
@@ -288,7 +279,6 @@ begin    // Remember the filename because it will be erased by the clear method
       FileVersion:=fv260;
       WriteLn( '.' );
    end else ShowMessage( Userstring(189) );
-
    FileChanged:=False;
    Surface.DesiredSubdivisionLevel:=Ord(Precision)+1;
 // Surface.Rebuild;
@@ -296,6 +286,34 @@ begin    // Remember the filename because it will be erased by the clear method
 // for I:=1 to NumberofBackgroundImages do BackgroundImage[I-1].UpdateViews;
    if Assigned(OnUpdateGeometryInfo) then OnUpdateGeometryInfo(self);
 end;
+
+// автоматическое формирование теоретических контуров
+
+procedure TFreeEdit.Drawing;
+Var D,DD:Real; I: Integer;
+begin with Ship.ProjectSettings do begin
+   dd:=AxisStep( (Ship.Surface.Max.X-Ship.Surface.Min.X)/5.75 ); // шаг шпации
+   I:=round( Ship.Surface.Min.X/dd+0.5 );
+   repeat Intersection_Add( fiStation,I*dd ); inc( I );         // и шпангоуты
+   until I*dd>=Ship.Surface.Max.X;
+   dd:=AxisStep( ProjectBeam/1.75 ); I:=0;                      // Батоксы
+   repeat Intersection_Add( fiButtock,I*dd ); inc( I ); until I*dd>=ProjectBeam-dd/4;
+   dd:=AxisStep( Ship.Surface.Max.Z-Ship.Surface.Min.Z );       // Ватерлинии
+   I:=round( Ship.Surface.Min.Z/dd+0.51 );
+   repeat Intersection_Add( fiWaterline,I*dd ); inc( I );
+   until I*dd>=Ship.Surface.Max.Z-dd*0.25;
+   D:=round( ProjectDraft/dd/2+0.51 );              // по паре на обе стороны =
+   for I:=0 to 4 do Intersection_Add( fiDiagonal,D+(I-2)*dd ); // пять рыбин
+   SavePreview:=false;                              // без предпросмотра
+   Ship.FileChanged:=True;
+   Ship.Visibility.ModelView:=mvBoth;               // на оба борта
+   Ship.Visibility.ShowControlNet:=false;           // без выделения узлов
+   Ship.Visibility.ShowInteriorEdges:=True;         // внутрення разбивка рёбер
+   Ship.ProjectSettings.SavePreview:=false;
+   if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
+   // Ship.Build:=False;
+   // Ship.RebuildModel;
+end end;
 //
 //    Выбор корабельной эпохи:
 //
@@ -439,14 +457,14 @@ const
      ( x: 0.16;  y: 0.48 ; z: 2     ),     //         0 1
      ( x: 0.16;  y: 0.533; z: 3.451 ) ),   //         1 1
    ( ( x: 0.38;  y: 0    ; z: 0     ),     // 2       1 1
-     ( x: 0.37;  y: 0.3  ; z: 0.4   ),     //         0 1
-     ( x: 0.36;  y: 0.45 ; z: 0.8   ),     //         0 1
-     ( x: 0.36;  y: 0.49 ; z: 2     ),     //         0 1
+     ( x: 0.37;  y: 0.3  ; z: 0.3   ),     //         0 1
+     ( x: 0.36;  y: 0.45 ; z: 0.6   ),     //         0 1
+     ( x: 0.36;  y: 0.5  ; z: 2     ),     //         0 1
      ( x: 0.36;  y: 0.533; z: 3.399 ) ),   //         1 1
    ( ( x: 0.56;  y: 0    ; z: 0     ),     // 3       1 1
-     ( x: 0.55;  y: 0.32 ; z: 0.2   ),     //         0 1
+     ( x: 0.55;  y: 0.3  ; z: 0.2   ),     //         0 1
      ( x: 0.55;  y: 0.48;  z: 0.6   ),     //         0 1
-     ( x: 0.55;  y: 0.5  ; z: 2     ),     //         0 1
+     ( x: 0.55;  y: 0.51 ; z: 2     ),     //         0 1
      ( x: 0.55;  y: 0.533; z: 3.461 ) ),   //         1 1
    ( ( x: 0.78;  y: 0    ; z:-0.2   ),     // 4       1 1
      ( x: 0.77;  y: 0.04 ; z: 0.25  ),     //         0 1
@@ -558,34 +576,14 @@ begin
       end;
       Ship.Precision:=fpMedium;
       Ship.Surface.Initialize(1,1,1);
-      Ship.ActiveLayer.Name:='Обводы корпуса';
+      Ship.ActiveLayer.Name:=Userstring(179); // Обводы и общекорабельная архитектура
       // Collapse stempoint to mage the grid irregular in order to demonstrate subdivision-surface capabilities
       if StemPoint<>nil then if StemPoint.VertexType=svCorner then stempoint.VertexType:=svCrease;
+      TrvSplines.Destroy;
       Ship.Build:=False;
-
-      dd:=AxisStep( (Ship.Surface.Max.X-Ship.Surface.Min.X)/7.5 );// шаг шпации
-      I:=round( Ship.Surface.Min.X/dd+0.5 );
-      repeat Intersection_Add( fiStation,I*dd ); inc( I );       // и шпангоуты
-       until I*dd>=Ship.Surface.Max.X;
-      dd:=AxisStep( B/1.75 ); I:=0;                                  // Батоксы
-      repeat Intersection_Add( fiButtock,I*dd ); inc( I ); until I*dd>=B-dd/4;
-
-      dd:=AxisStep( Ship.Surface.Max.Z-Ship.Surface.Min.Z );      // Ватерлинии
-      I:=round( Ship.Surface.Min.Z/dd+0.51 );
-      repeat Intersection_Add( fiWaterline,I*dd ); inc( I );
-       until I*dd>=Ship.Surface.Max.Z-dd*0.25;
-      D:=round( D/dd+0.51 );                        // по паре на обе стороны =
-      for I:=0 to 4 do Intersection_Add( fiDiagonal,D+(I-2)*dd ); // пять рыбин
-
-      Ship.FileChanged:=True;
-      Ship.Visibility.ModelView:=mvBoth;
-      Ship.Visibility.ShowControlNet:=false;
-      Ship.ProjectSettings.SavePreview:=false;
-      if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
-
+      Drawing;
       Ship.draw;
       Result:=true;
-      TrvSplines.Destroy;
 //      Ship.ZoomFitAllViewports;
 //      Ship.ReDraw;
    end;

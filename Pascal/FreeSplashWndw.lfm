@@ -19,7 +19,7 @@ object FreeSplashWindow: TFreeSplashWindow
     Width = 400
     Align = alTop
     BorderSpacing.Left = 20
-    Caption = 'Free!Ship-2.6'
+    Caption = '«Free!Ship»-2.6'
     Font.Color = clTeal
     Font.Height = -20
     Font.Name = 'Times'
@@ -28,7 +28,7 @@ object FreeSplashWindow: TFreeSplashWindow
     ParentFont = False
   end
   object LabelC: TLabel
-    Top = 24
+    Top = 30
     Align = alTop
     BorderSpacing.Left = 20
     ParentColor = False

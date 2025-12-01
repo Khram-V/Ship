@@ -1,5 +1,6 @@
-
-{ included in FreeGometry.pas }
+{
+  included in FreeGometry.pas 
+}
 
 function AreaStr(Units: TFreeUnitType): String;
 begin if Units=fuImperial then Result:=UserString(465)  //Result:='ft^2 '
@@ -285,18 +286,14 @@ begin Result:=((P.X >= Pmin.X) and (P.Y >= Pmin.Y) and (P.Z >= Pmin.Z))
           and ((P.X <= Pmax.X) and (P.Y <= Pmax.Y) and (P.Z <= Pmax.Z));
 end;
 
-function PointInTriangle(P,A,B,C:Vector):Boolean;
 // This function calculates if a point lies inside a triangle
 // assuming it lies on the plane determined by the triangle
-   function SameSide(p1,p2,a,b:Vector):Boolean;
-   var Cp1,Cp2,P,BA: Vector; Dp: Real;
-   begin BA:=B-A;
-         P:=P1-A; Cp1:=BA*P;
-         P:=P2-A; CP2:=BA*P;
-         Dp:=DotProduct( Cp1,Cp2 );
-         if abs( Dp )<1e-5 then Dp:=0.0; // Dp-1+1;
-         Result:=Dp>=0.0;
-   end;
+
+function PointInTriangle( P,A,B,C:Vector ):Boolean;
+   function SameSide( P1,P2,A,B: Vector ):Boolean; var BA: Vector; Dp: Real;
+   begin BA:=B-A; Dp:=DotProduct( BA*(P1-A),BA*(P2-A) );
+          if abs( Dp )<1e-5 then Dp:=0.0;   //? Dp-1+1;
+          Result:=Dp>=0.0; end;
 begin Result:=SameSide(P,A,B,C) and SameSide(P,B,A,C) and SameSide(P,C,A,B);
 end;
 
@@ -321,6 +318,60 @@ end;
 function PoundsToNewton(InpLbs: Real): Real;
    begin Result:=InpLbs*Lbs*9.81; end;
 }
+function ConvertCoordinate(Coord: String; OldCoord: Real):Real;
+{
+  parses input "Coord" and and returns the new value of a coordinate
+  if first character of input is (RelIdentifier - currently '@')
+     then the input value is added to the old value "OldCoord".
+  if the first character of the value is '-',
+     then the remainder is treated as a negative value
+  if the remainding value contains ONE '-'
+     then the part after that '-' is considered as a fraction of a unit
+     The size of the fraction is const. "InchFractions"
+}
+var myString: String;
+    myFactor,myOldValue,myWholeFeet,myWholeInch,myFracInch: Real;
+    myFracPos: Integer;
+const RelIdentifier: String='@'; InchFractions: Real=8;
+begin
+     myString:=Coord;
+     myFactor:=1.0;
+     myOldValue:=OldCoord;
+     myWholeFeet:=0.0;
+     myWholeInch:=0.0;
+     myFracInch:=0.0;
+  if LeftStr(myString,1)=RelIdentifier then begin // get rid of the '@'
+     myString:=MidStr(myString,2,255);
+     if Pos(RelIdentifier,myString)>0 then myString:='0'; // make sure not to have another '@' (and a 0 doesn't hurt)
+  end else myOldValue:=0; // we have a new value now, so don't add the old one!
+  if LeftStr( myString,1 )='-' then begin               // get rid of the minus
+    myFactor:=-1.0;
+    myString:=MidStr(myString,2,255);
+  end;
+  myFracPos:=Pos('-', myString);
+  if myFracPos>0 then begin     // check whether we have imperial input format
+    if myFracPos>1 then begin   // check whether there is an whole feet value
+      myWholeFeet:=StrToFloat(LeftStr(myString,myFracPos-1));
+      myString:=MidStr(myString,myFracPos+1,255);
+    end;
+    myFracPos:=Pos('-', myString); // is there a second "-", i.e. do we have also fractional inches?
+    if myFracPos>0 then begin
+      if myFracPos>1 then begin  // check whether there is an whole inch value
+        myWholeInch:=StrToFloat(LeftStr(myString, myFracPos-1));
+        myString:=MidStr(myString,myFracPos,255);
+      end; // new: check whether there is a + or a - to add or subtract a half fraction
+      myString:= MidStr(myString,2,255);
+      if (RightStr(myString,1)='-') then begin
+          myFracInch:=StrToFloat(LeftStr(myString,Pos('-',myString)-1))-0.5;
+      end else
+      if (RightStr(myString,1)='+') then begin
+          myFracInch:=StrToFloat(LeftStr(myString,Pos('+',myString)-1))+0.5;
+      end else myFracInch:=StrToFloat(myString);   // end new
+    end else myWholeInch:=StrToFloat(myString);      // no fractional inches
+  end else myWholeFeet:=StrToFloat(myString);       // no imperial input format
+  Result:=myOldValue+myFactor*(myWholeFeet+myWholeInch/12+myFracInch/(12*InchFractions));
+end;
+
 function ProjectPointOnPlane(P: Vector; Plane: Plate): Vector; // Projects a point on a plane
 var R,Q: Real;
 begin Q:=Sqr(Plane.a)+Sqr(Plane.b)+Sqr(Plane.c);
@@ -335,71 +386,69 @@ end;
 Function ProjectPointOnLine( P,P1,P2: Vector ):Vector;
   var V1,V2: Vector; L: Real;
 begin V1:=P-P1; V2:=P2-P1; L:=Sqr( V2 );
-   if L>1e-12 then Result:=P1+(DotProduct( V1,V2 )/L)*V2
-              else Result:=P;
+   if L>1e-12 then Result:=P1+(DotProduct( V1,V2 )/L)*V2 else Result:=P;
 end;
+
 // This procedure takes a lot of linesegments
-// and tries to connect them into as few as possible splines
+//      and tries to connect them into as few as possible splines
+
 procedure JoinSplineSegments
-( JoinError:Real;ForceToOneSegment:Boolean;List:TFasterList );
+( JoinError:Real; ForceToOneSegment:Boolean; List:TFasterList );
 { type TSegmentRecord = record Length: Real; COG: Vector; end;
        TSegmentdata   = array[0..0] of TSegmentRecord;
        PSegmentdata   = ^TSegmentdata; }
 var I,J,MatchIndex: Integer;
     Fixed,Match,Nearest: TFreeSpline;
-    D1,D2,D3,D4,NearestDist,Min: Real;
-    FixedClosed,
-    MatchClosed: Boolean;
-    function Minimum(D1,D2,D3,D4:Real):Real;
+    D1,D2,D3,D4,NearestDist,Min:Real;
+    FixedClosed,MatchClosed: Boolean;
+    function Minimum( D1,D2,D3,D4:Real ):Real;
     begin                Result:=D1;
        if D2<Result then Result:=D2;
        if D3<Result then Result:=D3;
        if D4<Result then Result:=D4;
     end;
-begin I:=1;                            // First remove any single linesegments;
-   while I<List.Count do begin
+begin I:=1; // First remove any single linesegments;
+   while I<=List.Count do begin
       Fixed:=List.Items[I-1];
-      if Fixed.NumberOfPoints>1
-         then FixedClosed:=Sqr(Fixed.Point[0]-Fixed.Point[Fixed.NumberOfPoints-1])<1e-10
+      if Fixed.nS>1
+         then FixedClosed:=Sqr(Fixed.Point[0]-Fixed.Point[Fixed.nS-1])<1e-10
          else FixedClosed:=False;
-      if (Fixed.NumberOfPoints>1) and (Not FixedClosed) then begin
+      if (Fixed.nS>1) and (Not FixedClosed) then begin
          NearestDist:=1e30;
          Nearest:=nil;
          MatchIndex:=-1;
-         for J:=1 to List.Count do if I<>J then begin
-            Match:=List.Items[J-1];
-            if Match.NumberOfPoints>1
-               then MatchClosed:=Sqr(Match.Point[0]-Match.Point[Match.NumberOfPoints-1])<1e-10
+         for J:=1 to List.Count do if I<>J then begin Match:=List.Items[J-1];
+            if Match.nS>1
+               then MatchClosed:=Sqr(Match.Point[0]-Match.Point[Match.nS-1])<1e-10
                else MatchClosed:=False;
-            if (Match.NumberOfPoints>1) and (Not MatchClosed) then begin
+            if (Match.nS>1) and (Not MatchClosed) then begin
                D1:=Sqr(Fixed.Point[0]-Match.Point[0]);
-               D2:=Sqr(Fixed.Point[0]-Match.Point[Match.NumberOfPoints-1]);
-               D3:=Sqr(Fixed.Point[Fixed.NumberOfPoints-1]-Match.Point[0]);
-               D4:=Sqr(Fixed.Point[Fixed.NumberOfPoints-1]-Match.Point[Match.NumberOfPoints-1]);
-               Min:=Minimum(D1,D2,D3,D4);
+               D2:=Sqr(Fixed.Point[0]-Match.Point[Match.nS-1]);
+               D3:=Sqr(Fixed.Point[Fixed.nS-1]-Match.Point[0]);
+               D4:=Sqr(Fixed.Point[Fixed.nS-1]-Match.Point[Match.nS-1]);
+               Min:=Minimum( D1,D2,D3,D4 );
                if Min<NearestDist then begin
                   NearestDist:=Min;
                   Nearest:=Match;
                   MatchIndex:=J;
-                  if Min<1e-5 then break;
+                  if Min<1e-10 then break;
                end;
             end;
          end;
-         if Nearest<>nil then begin
-            Match:=Nearest;
+         if Nearest<>nil then begin Match:=Nearest;
             D1:=Sqr(Fixed.Point[0]-Match.Point[0]);
-            D2:=Sqr(Fixed.Point[0]-Match.Point[Match.NumberOfPoints-1]);
-            D3:=Sqr(Fixed.Point[Fixed.NumberOfPoints-1]-Match.Point[0]);
-            D4:=Sqr(Fixed.Point[Fixed.NumberOfPoints-1]-Match.Point[Match.NumberOfPoints-1]);
-            Min:=Minimum(D1,D2,D3,D4);
+            D2:=Sqr(Fixed.Point[0]-Match.Point[Match.nS-1]);
+            D3:=Sqr(Fixed.Point[Fixed.nS-1]-Match.Point[0]);
+            D4:=Sqr(Fixed.Point[Fixed.nS-1]-Match.Point[Match.nS-1]);
+            Min:=Minimum( D1,D2,D3,D4 );
             if (Min<JoinError) or (ForceToOneSegment) then begin // The splines do touch each other on one of their ends
-               Fixed.Capacity:=Fixed.Capacity+Match.NumberOfPoints; // Increase capacity of fixed spline
-               if Min=D1 then Fixed.InsertSpline(0,True,True,Match) else // Case 1
-               if Min=D2 then Fixed.InsertSpline(0,False,True,Match) else // Case 2
-               if Min=D3 then Fixed.InsertSpline(Fixed.NumberOfPoints,False,True,Match) else // Case 3
-               if Min=D4 then Fixed.InsertSpline(Fixed.NumberOfPoints,True,True,Match) else // Case 4
-                         ShowMessage('Error in comparing minimum values.');
-               List.Delete(MatchIndex-1);        // Destroy the matching spline
+               Fixed.Capacity:=Fixed.Capacity+Match.nS;          // Increase capacity of fixed spline
+               if Min=D1 then Fixed.InsertSpline( 0,      True, False,Match) else // Case 1
+               if Min=D2 then Fixed.InsertSpline( 0,      False,False,Match) else // Case 2
+               if Min=D3 then Fixed.InsertSpline(Fixed.nS,False,False,Match) else // Case 3
+               if Min=D4 then Fixed.InsertSpline(Fixed.nS,True, False,Match)      // Case 4
+                  ;// else ShowMessage( 'Error in comparing minimum values.' );
+               List.Delete( MatchIndex-1 );      // Destroy the matching spline
                Match.Destroy;
                I:=0; // Reset match index to start searching for a new matching spline
             end;
@@ -411,54 +460,11 @@ end;
 function RandomColor:TColor; const B = 40;
 begin Result:=RGB(B+Random(255-B),B+Random(255-B),B+Random(255-B));
 end;
-(*
-Function RotateAroundPoint(P:Vector;Center:Vector;sinhx,coshx,sinhy,coshy,sinhz,coshz:Real):Vector;
-var P1: Vector; r11,r12,r13,r21,r22,r23,r31,r32,r33: Real;
-begin                                               // Translate back to origin
-   P1:=P-Center; // P1.x:=P.x-Center.x; P1.y:=P.y-Center.y; P1.z:=P.z-Center.z;
-   r11:= coshy * coshz;                                          // Do rotation
-   r12:= coshy * sinhz;
-   r13:= -sinhy;
-   r21:=  sinhx * sinhy * coshz  - coshx * sinhz;
-   r22:=  sinhx * sinhy * sinhz  + coshx * coshz;
-   r23:=  sinhx * coshy;
-   r31:=  coshx * sinhy * coshz  + sinhx * sinhz;
-   r32:=  coshx * sinhy * sinhz  - sinhx * coshz;
-   r33:=  coshx * coshy;
-   Result.x:= P1.x * r11 + P1.y * r12 + P1.z * r13;
-   Result.y:= P1.x * r21 + P1.y * r22 + P1.z * r23;
-   Result.z:= P1.x * r31 + P1.y * r32 + P1.z * r33; // Translate back to centre again
-   Result:=Result+Center;
-end;
 
-// Function to rotate a point around a iVect
-function RotatePointAroundVector(Point,StartPoint,Endpoint: Vector): Vector;
-var
-  sinhx,coshx: Real;
-  sinhy,coshy: Real;
-  yz,xyz: Real;
-  P1,P2: Vector;
-begin
-  Result:=ZERO;
-  yz:=hypot( Endpoint.y,Endpoint.z );                                           //sqrt(Endpoint.y*Endpoint.y+Endpoint.z*Endpoint.z);
-  if (Endpoint.z=0) and (Endpoint.y=0) then begin sinhx:=0; coshx:=1; end
-          else begin sinhx:=-Endpoint.y/yz; coshx:=Endpoint.z/yz; end;
-  xyz:=Abs( Endpoint );                                                         // sqrt(Endpoint.x*Endpoint.x+Endpoint.y*Endpoint.y+Endpoint.z*Endpoint.z);
-  if xyz=0 then begin Result:=Point; exit; end
-             else begin sinhy:=Endpoint.x/xyz; coshy:=yz/xyz;  end;
-  P1:=Point-StartPoint;                                  // Translate to origin
-  P2.X:=P1.x*coshy+P1.z*sinhy;                          // Rotate around Y-axis
-  P2.Y:=P1.Y;
-  P2.Z:=-P1.x*sinhy+P1.z*coshy;
-  P1.x:=P2.x;                                           // Rotate around X-axis
-  P1.y:=P2.y*coshx-P2.z*sinhx;
-  P1.z:=P2.y*sinhx+P2.z*coshx;
-  Result:=P1+StartPoint;                      // Translate back to centre again
-end;
-*)
 // Rotates a Vector around the origin
-function RotateVector(P0: Vector;
-  sinx,cosx,siny,cosy,sinz,cosz: Real): Vector;
+
+function RotateVector
+( P0: Vector; sinx,cosx,siny,cosy,sinz,cosz: Real ): Vector;
 var r11,r12,r13,r21,r22,r23,r31,r32,r33: Real;
 begin // Do rotation
   r11:=cosy*cosz;
@@ -475,7 +481,7 @@ begin // Do rotation
   Result.z:=P0.x*r31+P0.y*r32+P0.z*r33;
 end;
 
-function SetPlane(a,b,c,d: Real): Plate;
+function SetPlane( a,b,c,d: Real ): Plate;
 begin Result.a:=a;
       Result.b:=b;
       Result.c:=c;
@@ -561,9 +567,29 @@ begin
   B:=Adjust( Blue );
 end;
 
+// find nearest IGES color corresponding to a windows color
+
+function FindIGSColorIndex( Color:TColor ):integer;
+const IGSLayerColors: array[0..8] of TColor =
+//  ( 0,clBlack,clRed,clGreen,clBlue,clYellow,clFuchsia,clAqua,clWhite );
+    ( 0,clWhite,clRed,clGreen,clBlue,clYellow,clAqua,clFuchsia,clBlack );
+var R,G,B,R1,G1,B1,I,Dist,Tmp:Integer;
+begin Result:=0;
+   R:=GetRValue( Color );
+   G:=GetGValue( Color );
+   B:=GetBValue( Color ); Dist:=256*256+1; // 512^2
+   for I:=1 to 8 do begin
+      R1:=abs( R-GetRValue( IGSLayerColors[I] ) );
+      G1:=abs( G-GetGValue( IGSLayerColors[I] ) );
+      B1:=abs( B-GetBValue( IGSLayerColors[I] ) );
+      Tmp:=R1*R1 + G1*G1 + B1*B1;
+      if Tmp<=Dist then begin Dist:=Tmp; Result:=I; end;
+   end;
+end;
+
 // find nearest DXF color corresponding to a windows color
 
-function FindDXFColorIndex(Color:TColor):integer;
+function FindDXFColorIndex( Color:TColor ):integer;
 const DXFLayerColors: array[1..255] of TColor =
      ($0000FF, $00FFFF, $00FF00, $FFFF00, $FF0000, $FF00FF, $000000, $808080, $C0C0C0, $0000FF,
       $7F7FFF, $0000A5, $5252A5, $00007F, $3F3F7F, $00004C, $26264C, $000026, $131326, $003FFF,
@@ -609,4 +635,14 @@ begin
       end;
    end;
 end;
+{
+///###???
+function Truncate( Value:Real; Maxlength:integer ): String;
+begin Result:=FloatToStrF(Value,ffFixed,10,Maxlength);
+      while Result[Length(Result)]='0' do Delete(Result,Length(Result),1);
+      if Length(Result)<MaxLength then Result:=Result+'0' else
+      if Result[Length(Result)] in ['.',','] then Result:=Result+'0';
+end;
+}
+
 

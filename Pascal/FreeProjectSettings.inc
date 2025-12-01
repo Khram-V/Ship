@@ -1,9 +1,11 @@
-
 {
-  TFreeProjectSettings
-   Container class for project settings for each project
-    such as mainparticulars,waterdensity etc.
+   included in FreeShipUnit
 }
+//
+//  TFreeProjectSettings
+//    Container class for project settings for each project
+//                such as mainparticulars,waterdensity etc.
+
 procedure TFreeProjectSettings.FSetFreeHydrostaticCoefficients
           ( val: TFreeHydrostaticCoeff );
 var I: integer;
@@ -131,7 +133,6 @@ begin
   FProjectWaterTemper:=15.;
   FProjectAppendageCoefficient:=1.0;
 // Default 1.0,typical values for ships to cpmpensate for appendices and shellplate=1.0005;
-// FMainparticularsHasBeenset:=False;
   FProjectShadeUnderwaterShip:=True;
 // Shades the underwaterpart of the hull in a different color
   ProjectUnderWaterColor:=Ship.Preferences.UnderWaterColor;

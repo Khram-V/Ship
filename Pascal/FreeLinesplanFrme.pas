@@ -120,7 +120,7 @@ begin                                         Min3D:=iVect(0); Max3D:=Min3D;
       Plane.d:=-Diagonal.Plane.d;
       if not Diagonal.Built then Diagonal.Rebuild;
       for J:=1 to Diagonal.Count do begin Spline:=Diagonal.Items[J-1];
-        for k:=1 to Spline.NumberOfPoints do begin P:=Spline.Point[K-1];
+        for k:=1 to Spline.nS do begin P:=Spline.Point[K-1];
           Tmp:=abs( Plane.A*P.x+Plane.B*P.y+Plane.C*P.z+Plane.D );
           if Tmp>FDiagonalWidth then FDiagonalWidth:=Tmp;
         end;
@@ -383,7 +383,6 @@ var I,J,N,K,Steps,PenwidthFactor: Integer; Str: string;
          for J:=3 to NAbove do AddTriangle(AbovePoints[0],AbovePoints[J-2],AbovePoints[J-1],Color,Above,Symmetric);
       end;
    end;
-
    procedure SortTriangles(var Triangles:TriangleArray;SortType:byte);// Sorttype 1=X, 2=Y, 3=Z
       procedure QuickSort(L,R:Integer);
       var I, J : Integer;
@@ -1104,9 +1103,9 @@ var SaveDialog: TSaveDialog;
         Params : RealArray;
     begin
       NParams:=0;
-      Setlength( Params,Spline.NumberOfPoints ); // count number of knucklepoints
+      Setlength( Params,Spline.nS ); // count number of knucklepoints
       if not Spline.Build then Spline.Rebuild;
-      for I:=2 to Spline.NumberOfPoints-1 do begin
+      for I:=2 to Spline.nS-1 do begin
          if Spline.Knuckle[I-1] then begin
             Params[NParams]:=Spline.Parameter[I-1];
             inc(NParams);
@@ -1253,7 +1252,7 @@ begin
    SaveDialog:=TSaveDialog.Create(Owner);
    SaveDialog.InitialDir:=Freeship.Preferences.ExportDirectory;
    SaveDialog.FileName:=ChangeFileExt(Str,'');
-   SaveDialog.Filter:='Autocad dxf file (*.dxf)|*.dxf';
+   SaveDialog.Filter:='Autocad dxf file [*.dxf]|*.dxf';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin
       Freeship.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);

@@ -1,4 +1,6 @@
 {
+  included in FreeShipUnit
+
   1 = © Aurora.Vsl-штормовой вычислительный эксперимент
   2 = WaveFront.Obj
   3 - Standard triangle.Stl
@@ -10,86 +12,67 @@
 //
 procedure TFreeEdit.File_Export_Aurora_Experiments;
 var
-  Str: String;
+  Str,Aft,Bow: String;
   Strings: TStringList;
-  Procedure Str2( A,B: Real ); begin Str:=Str+'  '+FloatToDec(A,5)+' '+FloatToDec(B,5); end;
-  Procedure Str3( X,Y,Z: Real ); begin Str:=Str+'  '+FloatToDec(X,5)+' '+FloatToDec(Y,5)+' '+FloatToDec(Z,5); end;
-//Procedure Str2( A,B: Real ); begin Str:=Str+' '+FloatTypetoStr(A)+' '+FloatTypetoStr(B); end;
-//Procedure Str3( X,Y,Z: Real ); begin Str:=Str+' '+FloatTypetoStr(X)+' '+FloatTypetoStr(Y)+' '+FloatTypetoStr(Z); end;
+  Min,Max: Vector;
 
-  Procedure StemStern( Dir:boolean ); // Dir=true - форштевень, иначе - ахтерштевень
-    var I,J,K,M,N: Integer; z1:Real;
-  begin Str:='';
-    for I:=0 to Ship.NumberofButtocks-1 do        // поиск нулевого батокса
-    with Ship.Buttock[I] do begin
-//    if not Built then Rebuild;
-      if Count>1 then                     // батокс для диаметрильной плоскости
-      if abs( Items[0].Point[0].Y )<1e-4 then
-      begin z1:=Items[0].Point[0].Z;         // батокс диаметральной плоскости
-        for J:=0 to Count-1 do begin M:=0;   // однако он составлен из обрезков
-          N:=Items[J].NumberOfPoints-1;      // выбор конкретного огрызка
-          if N>0 then for K:=0 to N do       // хотя бы две точки - не менее
-          if Items[J].Point[K].Z<=z1 then    // сдвиг начальной точки вниз
-             begin z1:=Items[J].Point[K].Z; M:=K; end;
-(*#?#*)   if Dir then begin Str:=' '+InttoStr( M+1 );
-             for K:=M downto 0 do with Items[J].Point[K] do Str2( Z,X );
-//           if Z>=z1 then begin Str2( Z,X ); z1:=Z; end else break;
-          end else begin Str:=' '+InttoStr( N-M+1 );
-             for K:=M to N do with Items[J].Point[K] do Str2( Z,X );
-//           if Z>=z1 then begin Str2( Z,X ); z1:=Z; end else break;
+  Procedure Str2( A,B: Real ); begin Str:=Str+'  '+FloatToDec(A,5)+' '+FloatToDec(B,5); end;
+  Procedure StemStern; //( Dir:boolean );// Dir=true - форштевень, 0 - ахтерштевень
+    var I,{J,}K,M,{N,}Jn,Jx:Integer; Y,Zn,Zx:Real; // W: TFasterList; //TFreeIntersection;
+  begin K:=0; Bow:=' 0'; Aft:=' 0';
+    if Ship.NumberofButtocks<1 then exit; // подстройка со сбросом в начало списка
+    for I:=0 to Ship.NumberofButtocks-1 do     // поиск нулевого батокса
+    with Ship.Buttock[I] do                    // if not Built then Rebuild;
+    if I=0 then Y:=abs( Items[0].Point[0].Y ) else
+    if Y>abs( Items[0].Point[0].Y ) then
+       begin K:=I; Y:=abs( Items[0].Point[0].Y ) end; // K -> ближайший к ДП
+//  if I<>K then begin W:=Ship.Buttock[0].FItems;
+//                        Ship.Buttock[0].FItems:=Ship.Buttock[K].FItems;
+//                        Ship.Buttock[K].FItems:=W end;
+    with Ship.Buttock[K] do begin ReBuild; // Extents( Min,Max );
+       JoinSplineSegments(0,True,FItems);  // слияние ДП-батокса в один контур
+       with Items[0] do begin
+          for I:=0 to Ns-1 do
+          if I=0 then begin Zn:=Point[I].z; Zx:=Zn; Jn:=0; Jx:=0 end else begin
+             if Zx<Point[I].z then begin Zx:=Point[I].z; Jx:=I end; // x - max
+             if Zn>Point[I].z then begin Zn:=Point[I].z; Jn:=I end; // n - min
           end;
-        end;         break; // выход с первым же отрезком без полной пересборки
-      end;
+          if Point[Jn].x>Point[(Jn+1) mod Ns].x
+             then begin Items[0].InvertDirection; Jn:=Ns-Jn-1; Jx:=Ns-Jx-1 end;
+     //// ахтерштевень
+          M:=Jn-Jx; if M<0 then M+=Ns; Str:=' '+InttoStr( M ); I:=Jn;
+//          while I<>Jx do begin Str2(Point[I].Z,Point[I].X);
+//                I:=(I+Ns-1) mod Ns; end;
+          for I:=0 to M-1 do Str2(Point[(Jn+Ns-I) mod Ns].Z,Point[(Jn+Ns-I) mod Ns].X);
+          Aft:=Str;
+     //// форштевень
+          M:=Jx-Jn+1; if M<0 then M+=Ns; Str:=' '+InttoStr( M ); I:=Jn;
+//          repeat Str2(Point[I].Z,Point[I].X); I:=(I+1) mod Ns;
+//          until I=Jx;  !!#= Jx+1
+          for I:=0 to M-1 do Str2(Point[(I+Jn) mod Ns].Z,Point[(I+Jn) mod Ns].X);
+          Bow:=Str;
+       end;
     end;
-    if Str='' then Strings.Add( EOL+' 0' ) else Strings.Add( Str );
-    //
-    //                            ...и всё-таки батокс следует записать особо
-    if Dir and (Ship.NumberofButtocks>0) then begin
-      Strings.Add( EOL+'Buttocs['+IntToStr( Ship.NumberofButtocks )+'] of Centerline' );
-      for I:=0 to Ship.NumberofButtocks-1 do      // поиск нулевого батокса
-      with Ship.Buttock[I] do begin Str:='';
-      // if not Built then Rebuild;
-         if Count>0 then                   // батокс для диаметрильной плоскости
-         for J:=0 to Count-1 do begin
-            if abs( Items[J].Point[0].Y )<1e-4 then begin
-            N:=Items[J].NumberOfPoints;
-            Str:=' '+InttoStr( N )+' ('+FloatToDec(Items[J].Point[0].Y,5)+') ';
-            for K:=0 to N-1 do with Items[J].Point[K] do Str2( Z,X );
-            Strings.Add( Str );
-          end;
-        end;
-      end;
-    end;
-  end;
-  procedure SendSpline( Spline:TFreespline );
-  var J,N: integer; //P: Vector;
-  begin N:=Spline.NumberOfPoints-1;
-     Str:=format( ' %3d ',[N+1] );
-     if Spline.Point[0].Z<=Spline.Point[N].Z
-        then for J:=0 to N do with Spline.Point[J] do Str3( X,Y,Z )
-        else for J:=N downto 0 do with Spline.Point[J] do Str3( X,Y,Z );
-     Strings.Add( Str );
   end;
 var I,J,K,N: integer;
     Title,S: String; P0,PN: Vector; Dis: boolean;
     Dialog: TSaveDialog;
-//  T3: Vector=(X:0;Y:0;Z:0);
-    EdgePointLists: TFasterList; // TFasterListTFreeSubdivisionPoint;
-    Points: TFasterList;         // TFreeSubdivisionPoint;
-    Point: TFreeSubdivisionPoint;
-//? Frame: TFreeCoordinateGrid;
+//    EdgePointLists: TFasterList; // TFasterListTFreeSubdivisionPoint;
+//    Points: TFasterList;         // TFreeSubdivisionPoint;
+//    Point: TFreeSubdivisionPoint;
 begin
-  Title:=ExtractFilename( Ship.FileName ); Dis:=True;
-  Dialog:=TSaveDialog.Create( Ship );
-  Dialog.InitialDir:=Ship.Preferences.ExportDirectory;
-  Dialog.FileName:=ChangeFileExt( Title,'.vsl');
-  Dialog.Filter:='Aurora+Hull Vessel (*.vsl)|*.vsl';
-  dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
-
-  if Dialog.Execute then begin WestPoint;
-    //Ship.Preferences.ExportDirectory:=Dialog.InitialDir;
+     Title:=ExtractFilename( Ship.FileName ); Dis:=True;
+     Dialog:=TSaveDialog.Create( Ship );
+     Dialog.InitialDir:=Ship.Preferences.ExportDirectory;
+     Dialog.FileName:=ChangeFileExt( Title,'.vsl');
+     Dialog.Filter:='Aurora+Hull Vessel [*.vsl]|*.vsl';
+     Dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
+  if Dialog.Execute then begin
+    WestPoint;
+    Ship.Extents( Min,Max );
+    Ship.Preferences.ExportDirectory:=Dialog.InitialDir;
     Strings:=TStringList.Create;
-    with Ship.FProjectSettings do                        //  RawByteString
+    with Ship.FProjectSettings do                              // RawByteString
     Strings.Add( '; FREE!Ship'+EOL+';'
             +EOL+'; File Name: '+Title
             +EOL+'; Name     : '+ProjectName
@@ -100,62 +83,66 @@ begin
             +EOL+#30+' < '+ExtractFilename( Dialog.FileName )+' > '
             +EOL+InttoStr( Ship.NumberofStations )
             +' '+InttoStr( Ship.NumberofStations div 2 )
-            +EOL+FloatToStrF( FProjectLength,ffGeneral,6,1)
-            +' '+FloatToStrF( FProjectBeam,ffGeneral,6,1)
-            +' '+FloatToStrF( FProjectDraft,ffGeneral,6,1)+EOL );
-
-    //  Ship.Preferences.ExportDirectory:=ExtractFilePath( Dialog.FileName );
-    //  T3.Z:=Ship.FProjectSettings.FProjectDraft;
-
-    StemStern( false );                    // первые две строки для ахтерштевня
+            +EOL+FloatToDec( FProjectLength,5)
+            +' '+FloatToDec( FProjectBeam, 5)
+            +' '+FloatToDec( FProjectDraft,5)
+            +' '+FloatToDec( Min.z,5 )+EOL );
+    StemStern;                             // первые две строки для ахтерштевня
+    Strings.Add( Aft );
     Strings.Add( ' 0'+EOL );
     for I:=0 to Ship.NumberofStations-1 do
-    with Ship.Station[I] do begin
-    // if not Built then Rebuild;
-       N:=0;                     // суммарное количество точек на всех отрезках
-       if Count>0 then P0:=Items[0].Point[0]; PN:=P0;
+    with Ship.Station[I] do begin ReBuild;     // if not Built then Rebuild;
+       JoinSplineSegments( 0,True,FItems );    // слияние сплайна в один контур
+       N:=0;                 // под суммарное количество точек на всех отрезках
+       if Count>0 then P0:=Items[0].Point[0] else exit; PN:=P0;
        for J:=0 to Count-1 do with Items[J] do
-       if NumberOfPoints>1 then begin
-          N+=NumberOfPoints;
+      {if Ns>1 then } begin N+=Ns;
           if J=0 then P0:=Point[0];
-          if J=Count-1 then PN:=Point[NumberOfPoints-1];
-       end;                                                   // Z-положительно
-       Dis:=(P0.Z<PN.Z) or (P0.Y<1e-6) or (P0.Y<=PN.Y);
-       Title:=format( '%3d %-4.4g',[N,Items[0].Point[0].X] ); S:='';
+          if J=Count-1 then PN:=Point[Ns-1];
+       end;                 // Z-положительно
+//     Dis:=(P0.Z<PN.Z) { or (P0.Y<1e-6) } or (P0.Y<=PN.Y);
+       Dis:=(P0.Z<PN.Z) or ((P0.Z=PN.Z) and (P0.Y<=PN.Y));
+//     Title:=format( '%3d %-4.4g',[N,Items[0].Point[0].X] ); S:='';
+       Title:=' '+InttoStr( N )+' '+FloattoDec( Items[0].Point[0].X,5 ); S:='';
        for J:=0 to Count-1 do with Items[J] do
-       if NumberOfPoints>1 then begin
-          N:=NumberOfPoints-1; Str:=''; // ещё и сортировки только и не хватало
+      {if nS>1 then } begin
+          N:=nS-1; Str:='';             // ещё и сортировки только и не хватало
           if Point[N].Z>=Point[0].Z                  // == может быть на палубе
              then begin for K:=0 to N do with Point[K] do Str2( Z,Y ); end
              else begin for K:=N downto 0 do with Point[K] do Str2( Z,Y ); end;
-         if J=0 then S:=Str else begin if Dis then S:=S+Str else S:=Str+S; end;
+          if J=0 then S:=Str else begin if Dis then S:=S+Str else S:=Str+S; end;
        end;
-       Strings.Add( Title+S );
+       Strings.Add( Title+S+'  ←'+inttostr(Count)+'→' );
     end;
     Strings.Add( EOL+' 0' );          // форштевень в завершение и в заключение
-    StemStern( true );                // еще и все контрольные точки и контуры
-    if Ship.NumberOfControlCurves>0 then begin
-       Strings.Add( EOL+'ContorlCurves['+IntToStr(Ship.NumberOfControlCurves)+']' );
-       for I:=0 to Ship.NumberOfControlCurves-1 do
-                SendSpline( Ship.ControlCurve[I].Curve );
-    end;
-    EdgePointLists:=TFasterList.Create;                // TFreeSubdivisionPoint
-    Ship.Surface.ExtractAllEdgeLoops( EdgePointLists );
-    if EdgePointLists.Count>1 then begin
-       Strings.Add( EOL+'EdgePoints['+IntToStr( EdgePointLists.Count )+']' );
-       for I:=0 to EdgePointLists.Count-1 do begin
-          Points:=EdgePointLists[I];
-          N:=Points.Count-1;
-          Str:=format( ' %3d ',[N+1] );        // ' '+IntToStr( Points.Count );
-          if TFreeSubdivisionPoint(Points[0]).Coordinate.Z<=TFreeSubdivisionPoint(Points[N]).Coordinate.Z
-          then for J:=0 to N do with TFreeSubdivisionPoint(Points[J]).Coordinate do Str3( X,Y,Z )      //:=Str+format( ' %1.5g %1.5g %1.5g ',[X,Y,Z] )
-          else for J:=N downto 0 do with TFreeSubdivisionPoint(Points[J]).Coordinate do Str3( X,Y,Z ); //:=Str+format( ' %1.5g %1.5g %1.5g ',[X,Y,Z] );
-          Strings.Add( Str );
-          Points.Destroy;
-       end;
+    Strings.Add( Bow );
+    with Ship.FProjectSettings do
+    Strings.Add( EOL+' Длина:  '+FloattoDec( Min.X,3 )
+                          +' ÷ '+FloattoDec( Max.X,3 )
+                         +' ≈≥ '+FloattoDec( FProjectLength,3 )
+                +EOL+' Ширина: '+FloattoDec( Min.Y,3 )
+                          +' ÷ '+FloattoDec( Max.Y,3 )
+                         +' ≈≥ '+FloattoDec( FProjectBeam,3 )
+                +EOL+' Высота: '+FloattoDec( Min.Z,3 )
+                          +' ÷ '+FloattoDec( Max.Z,3 )
+                         +' ≈≥ '+FloattoDec( FProjectDraft,3 )+EOL );
+    //                             ...и всё-таки батокс следует прописать особо
+    if Ship.NumberofButtocks>0 then begin
+      Strings.Add(' Батокс из ['+IntToStr(Ship.NumberofButtocks)+'] у ДП <CenterLine>');
+      for I:=0 to Ship.NumberofButtocks-1 do       // поиск нулевого батокса
+      with Ship.Buttock[I] do begin Str:='';      // if not Built then Rebuild;
+         if Count>0 then                  // батокс для диаметрильной плоскости
+         for J:=0 to Count-1 do
+         if abs(Items[J].Point[0].Y)<1e-4 then begin  // достаточно приближёных
+            N:=Items[J].nS;
+            Str:=' '+InttoStr( N )+' ('+FloatToDec(Items[J].Point[0].Y,5)+') ';
+            if Count>1 then Str:=Str+'  ←'+inttostr(J+1)+'→ '; // разбой кривой
+            for K:=0 to N-1 do with Items[J].Point[K] do Str2( Z,X );
+            Strings.Add( Str );
+         end;
+      end;
     end;
     Strings.SaveToFile( ChangeFileExt( Dialog.FileName,'.vsl' ) );
-    EdgePointLists.Destroy;
     Strings.Destroy;   // writeln( Dialog.InitialDir+' -=> '+Dialog.filename );
   end;
   Dialog.Destroy;
@@ -171,7 +158,7 @@ var
 begin
   OpenDialog:=TOpenDialog.Create(Ship);
   OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-  OpenDialog.Filter:='StereoLitography STL (*.stl)|*.stl';
+  OpenDialog.Filter:='StereoLitography STL [*.stl]|*.stl';
   if OpenDialog.Execute then begin
     Answer:=Ship.Edit.File_SaveCheck;
     if (Answer=mrCancel) or Ship.FileChanged
@@ -263,7 +250,7 @@ var
   STLrecord: packed record
       normalX,  normalY,  normalZ,
     vertex1_X,vertex1_Y,vertex1_Z,       // для Зумвальта,т.к.
-    vertex2_X,vertex2_Y,vertex2_Z,       // другого файла провреки
+    vertex2_X,vertex2_Y,vertex2_Z,       // другого файла проверки
     vertex3_X,vertex3_Y,vertex3_Z: Real; // тогда не находилось
     unused: uint16;
   end;
@@ -323,8 +310,8 @@ var
   Strings: TStringList;
 begin
    OpenDialog:=TOpenDialog.Create( Ship );
-   OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory; //+ConfigDirectory
-   OpenDialog.Filter:='WaveFront OBJ (*.obj)|*.obj';
+   OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;  //+ConfigDirectory
+   OpenDialog.Filter:='WaveFront Technology [*.obj]|*.obj';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       Answer:=Ship.Edit.File_SaveCheck;
@@ -336,8 +323,7 @@ begin
       Ship.Clear;
       Strings:=TStringList.Create;
       Strings.LoadFromFile( ChangeFileExt( OpenDialog.FileName,'.obj' ) );
-      Ship.Surface.ImportObjFile( Strings );
-//      Ship.ModelIsLoaded:=True;
+      Ship.Surface.ImportObjFile( Strings );       // Ship.ModelIsLoaded:=True;
       Ship.FileName:=ChangeFileExt( Opendialog.FileName,'' );
       Ship.RebuildModel;
       Ship.FileChanged:=True;
@@ -356,7 +342,7 @@ begin
    SaveDialog:=TSaveDialog.Create(Ship);
    SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
    SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'.obj');
-   SaveDialog.Filter:='Wavefront file (*.Obj)|*.Obj|Controlnet to wavefront file (*.obj)|*.obj';
+   SaveDialog.Filter:='Wavefront file [*.Obj]|*.Obj|Controlnet to wavefront file [*.obj]|*.obj';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin
       Ship.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
@@ -376,7 +362,7 @@ type TMinMax = record MinZ,MaxZ:Real; end;
 //    1. All stations have multiplicity of 1
 //    2. All stations are defined from bottom to top
 var OpenDialog    : TOpenDialog;
-    I,J,K,Nr,Index,NoStations,NoPoints: integer;
+    I,J,K,{Nr,} Index,NoStations,NoPoints: integer;
     Frames,Points: TFasterList;
     FFile: TextFile;
     Spline,NewSpline: TFreeSpline;
@@ -392,47 +378,35 @@ var OpenDialog    : TOpenDialog;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=ExtractFilepath(Application.ExeName);
-   OpenDialog.Filter:='3D text file (*.Txt)|*.txt';
+   OpenDialog.Filter:='3D text file [*.Txt]|*.txt';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       Frames:=TFasterList.Create;
-      Case OpenDialog.FilterIndex of
-         1 :begin   // 3D textfile containing stations, waterlines and buttocks
-               AssignFile(FFile,Opendialog.FileName);
-               {$I-}Reset(FFile);{$I+}
-               if IOResult=0 then begin
-                  K:=0;
-                  Nr:=0;
-                  inc(Nr);
-                  Readln(FFile,NoStations);
-                  for I:=1 to NoStations do begin
-                     inc(Nr);
-                     readln(FFile);            // Skip description of this line
-                     inc(Nr);
-                     readln(FFile,NoPoints);
-                     Spline:=TFreeSpline.Create;
-                     Spline.Capacity:=NoPoints;
-                     ValidStation:=NoPoints>1;
-                     for J:=1 to Nopoints do begin
-//                   try
-                        inc(Nr);
-                        Read(FFile,P.X,P.Y,P.Z);
-                        if not EOLN(FFile) then Readln(FFile,K) else begin
-                           K:=0;
-                           Readln(FFile);
-                        end;
-//                   except
-//                         Showmessage(Userstring(132)+#32+IntToStr(Nr));
-//                   end;
-                        Spline.Add(P);
-                        if J>1 then ValidStation:=abs(P.X-Spline.Point[0].X)<1e-4;
-                        if (K=1) and (J<>1) and (J<>NoPoints) then Spline.Knuckle[J-1]:=True;
-                     end;
-                     if ValidStation then Frames.Add(Spline)
-                                     else Spline.Destroy;
-                  end; CloseFile(FFile);
-               end; // else ShowMessage(Userstring(132));
-            end;
+//    Case OpenDialog.FilterIndex of
+//       1 :begin   // 3D textfile containing stations, waterlines and buttocks
+      if OpenDialog.FilterIndex=1 then begin
+         AssignFile(FFile,Opendialog.FileName);
+         {$I-}Reset(FFile);{$I+}
+         if IOResult=0 then begin K:=0;        // Nr:=1;
+            Readln(FFile,NoStations);
+            for I:=1 to NoStations do begin    // inc(Nr);
+               readln(FFile);                  // Skip description of this line
+               readln(FFile,NoPoints);         // inc(Nr);
+               Spline:=TFreeSpline.Create;
+               Spline.Capacity:=NoPoints;
+               ValidStation:=NoPoints>1;
+               for J:=1 to Nopoints do begin   // inc(Nr);
+                  Read(FFile,P.X,P.Y,P.Z);
+                  if not EOLN(FFile) then Readln(FFile,K)
+                                     else begin K:=0; Readln(FFile); end;
+                  Spline.Add(P);
+            //#?? if J>1 then ValidStation:=abs( P.X-Spline.Point[0].X )<1e-4;
+                  if (K=1) and (J<>1) and (J<>NoPoints) then Spline.Knuckle[J-1]:=True;
+               end;
+               if ValidStation then Frames.Add(Spline)
+                               else Spline.Destroy;
+            end; CloseFile(FFile);
+         end; // else ShowMessage(Userstring(132));
       end;
       if Frames.Count>1 then begin
          Ship.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
@@ -450,17 +424,17 @@ begin
          for I:=1 to Frames.Count do begin
             Spline:=Frames[I-1];
             MinMaxData[I-1].MinZ:=Spline.Point[0].Z;
-            MinMaxData[I-1].MaxZ:=Spline.Point[Spline.NumberOfPoints-1].Z;
+            MinMaxData[I-1].MaxZ:=Spline.Point[Spline.nS-1].Z;
             if I=1 then begin
                MinZ:=Spline.Point[0].Z;
                MaxZ:=MinZ;
             end;
             if Spline.Point[0].Z<MinZ then MinZ:=Spline.Point[0].Z;
-            if Spline.Point[Spline.NumberOfPoints-1].Z>MaxZ then MaxZ:=Spline.Point[Spline.NumberOfPoints-1].Z;
+            if Spline.Point[Spline.nS-1].Z>MaxZ then MaxZ:=Spline.Point[Spline.nS-1].Z;
             Marker:=TFreeMarker.Create;
             Marker_Add(Marker);
-            Marker.Capacity:=Spline.NumberOfPoints;
-            for J:=1 to Spline.NumberOfPoints do begin
+            Marker.Capacity:=Spline.nS;
+            for J:=1 to Spline.nS do begin
                Marker.Add(Spline.Point[J-1]);
                Marker.Knuckle[J-1]:=Spline.Knuckle[J-1];
             end;
@@ -474,11 +448,11 @@ begin
                Spline.Insert(0,P);
                Spline.Knuckle[1]:=True;
             end;                                              // extend upwards
-            if Spline.Point[Spline.NumberOfPoints-1].Z<MaxZ then begin
-               P:=Spline.Point[Spline.NumberOfPoints-1];
+            if Spline.Point[Spline.nS-1].Z<MaxZ then begin
+               P:=Spline.Point[Spline.nS-1];
                P.Z:=MaxZ;
                Spline.Add(P);
-               Spline.Knuckle[Spline.NumberOfPoints-2]:=True;
+               Spline.Knuckle[Spline.nS-2]:=True;
             end;
          end;
          NoPoints:=10; // resample all stations to a user defined number of points
@@ -493,9 +467,9 @@ begin
                P:=Spline.Value((J-1)/(NoPoints-1));
                NewSpline.Add(P);
             end;                           // correct for any present knuckles
-            for J:=1 to Spline.NumberOfPoints do if Spline.Knuckle[J-1] then begin
+            for J:=1 to Spline.nS do if Spline.Knuckle[J-1] then begin
                Index:=0;          // find the nearest point on resampled spline
-               for K:=2 to NewSpline.NumberOfPoints-1 do
+               for K:=2 to NewSpline.nS-1 do
                if Sqr( Spline.Point[J-1]-NewSpline.Point[K-1] )<Sqr( Spline.Point[J-1]-NewSpline.Point[index] )
                  then Index:=K-1;              // replace by the old coordinate
                NewSpline.Point[index]:=Spline.Point[J-1];
@@ -503,8 +477,8 @@ begin
             end;                                 // Delete the old station and
             Spline.Destroy;                     // replace by the resampled one
             Frames[I-1]:=NewSpline; // Add the controlpoints to the subdivision surface
-            Setlength(ControlPoints[I-1],NewSpline.NumberOfPoints);
-            for J:=1 to NewSpline.NumberOfPoints
+            Setlength(ControlPoints[I-1],NewSpline.nS);
+            for J:=1 to NewSpline.nS
              do ControlPoints[I-1][J-1]:=Ship.Surface.AddControlPoint(NewSpline.Point[J-1]);
          end;                                       // Add the new controlfaces
          Points:=TfasterList.Create;
@@ -601,7 +575,7 @@ begin
    OpenDialog.Destroy;
 end;
 
-// Imports a number of curves and fits a surface;
+// Imports a number of curves and fits a surface - Поверхность
 
 procedure TFreeEdit.File_ImportSurface;
 var OpenDialog: TOpenDialog;
@@ -621,49 +595,41 @@ var OpenDialog: TOpenDialog;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   OpenDialog.Filter:='3D text file (*.Txt)|*.txt';
+   OpenDialog.Filter:='3D text file [*.Txt]|*.txt';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       UnitType:=TFreeUnitType(0);
       Curves:=TFasterList.Create;
-      Case OpenDialog.FilterIndex of
-         1 :begin // 3D textfile containing a number of curves to be interpolated
-               AssignFile(FFile,Opendialog.FileName);
-               {$I-}Reset(FFile);{$I+}
-               if IOResult=0 then begin
-//                Nr:=0;
-//                try
-                     // first read unit information; 0=metric, 1=imperial
-                     readln(FFile,I);
-                     if I in [0,1] then UnitType:=TFreeUnitType(I)
-                                   else ShowMessage(Userstring(108));
-                     Spline:=TFreeSpline.Create;
-                     repeat
-                        Readln(FFile,Str);
-                        repeat
-                           I:=Pos(#9,Str);
-                           if I<>0 then str[I]:=#32;
-                        until I=0;
-//                      inc(Nr);
-                        Str:=Trim(Uppercase(Str));
-                        if (Str<>'') and (Str<>'EOF') then begin
-                           P:=GetVector( Str );
-                           Spline.Add(P);
-                           Str:=#32;
-                        end else if Str='' then begin
-                           if Spline.NumberOfPoints>1 then Curves.Add(Spline)
-                                                      else Spline.Destroy;
-                           Spline:=TFreeSpline.Create;
-                        end;
-                     until (Str='EOF') or (EOF(FFile));
-                     if Spline.NumberOfPoints>1 then Curves.Add(Spline)
-                                                else Spline.Destroy;
-//                except
-//                   ShowMessage(Userstring(132)+#32+IntToStr(Nr));
-//                end;
-                  CloseFile(FFile);
-               end; // else ShowMessage(Userstring(132));
-            end;
+      if OpenDialog.FilterIndex=1 then begin // 3D textfile containing a number
+         AssignFile(FFile,Opendialog.FileName); // of curves to be interpolated
+         {$I-}Reset(FFile);{$I+}
+         if IOResult=0 then begin
+//          Nr:=0;
+//          try
+            readln(FFile,I); // first read unit information; 0=metric, 1=imperial
+            if I in [0,1] then UnitType:=TFreeUnitType(I)
+                           else ShowMessage(Userstring(108));
+            Spline:=TFreeSpline.Create;
+            repeat
+               Readln(FFile,Str);
+               repeat I:=Pos(#9,Str); if I<>0 then str[I]:=#32; until I=0;
+//             inc(Nr);
+               Str:=Trim(Uppercase(Str));
+               if (Str<>'') and (Str<>'EOF') then begin
+                  Spline.Add( GetVector( Str ) );
+               end else if Str='' then begin
+                  if Spline.nS>1 then Curves.Add(Spline)
+                                             else Spline.Destroy;
+                  Spline:=TFreeSpline.Create;
+               end;
+            until (Str='EOF') or (EOF(FFile));
+            if Spline.nS>1 then Curves.Add(Spline)
+                                       else Spline.Destroy;
+//          except
+//            ShowMessage(Userstring(132)+#32+IntToStr(Nr));
+//          end;
+            CloseFile(FFile);
+         end; // else ShowMessage(Userstring(132));
       end;
       if Curves.Count>1 then begin
          PrevCursor:=Screen.Cursor;
@@ -672,133 +638,128 @@ begin
          Ship.Clear;
          Ship.ProjectSettings.ProjectUnits:=UnitType;
          Ship.Filename:=Opendialog.FileName;
-//       try
-            Cols:=Curves.Count;
-            Cols:=StrToInt(InputBox('',Userstring(137)+':',IntToStr(Cols)));
-            if Cols<3 then Cols:=3;
-            Rows:=10;
-            Rows:=StrToInt(InputBox('',Userstring(138)+':',IntToStr(Rows)));
-            if Rows<3 then Rows:=3; // Build number of desired longitudinal curves
-            LongCurves:=TFasterList.Create;
-            for I:=1 to Rows do begin
-               NewSpline:=TFreeSpline.Create;
-               LongCurves.Add(NewSpline);
-               Newspline.Capacity:=Curves.Count;
-               for J:=1 to Curves.Count do begin
-                  Spline:=Curves[J-1];
-                  Newspline.Add(Spline.Value((I-1)/(Rows-1)));
-               end;
+//      try
+         Cols:=Curves.Count;
+         Cols:=StrToInt(InputBox('',Userstring(137)+':',IntToStr(Cols)));
+         if Cols<3 then Cols:=3;
+         Rows:=10;
+         Rows:=StrToInt(InputBox('',Userstring(138)+':',IntToStr(Rows)));
+         if Rows<3 then Rows:=3; // Build number of desired longitudinal curves
+         LongCurves:=TFasterList.Create;
+         for I:=1 to Rows do begin
+            NewSpline:=TFreeSpline.Create;
+            LongCurves.Add(NewSpline);
+            Newspline.Capacity:=Curves.Count;
+            for J:=1 to Curves.Count do begin
+               Spline:=Curves[J-1];
+               Newspline.Add(Spline.Value((I-1)/(Rows-1)));
             end;
-            for I:=1 to Curves.Count do begin
-               Spline:=Curves[I-1];
-               Marker:=TFreeMarker.Create;
-               Marker.Capacity:=Spline.NumberOfPoints;
-               for J:=1 to Spline.NumberOfPoints do Marker.Add(Spline.Point[J-1]);
-               Marker_Add(Marker);
-               Spline.Destroy;
-            end;
-            Curves.Destroy;            // build matrix for column interpolation
-            Matrix:=TFreeMatrix.Create;
-            Matrix.SetSize(Cols,Cols);
-            Matrix.Fill(0.0);
-            Matrix.Value[0,0]:=1.0;
-            for I:=2 to Cols-1 do begin
-               Matrix.Value[I-1,I-2]:=1/6;
-               Matrix.Value[I-1,I-1]:=2/3;
-               Matrix.Value[I-1,I  ]:=1/6;
-            end;
-            Matrix.Value[Cols-1,Cols-1]:=1.0;
-            Colmatrix:=Matrix.Invert;
+         end;
+         for I:=1 to Curves.Count do begin
+            Spline:=Curves[I-1];
+            Marker:=TFreeMarker.Create;
+            Marker.Capacity:=Spline.nS;
+            for J:=1 to Spline.nS do Marker.Add(Spline.Point[J-1]);
+            Marker_Add(Marker);
+            Spline.Destroy;
+         end;
+         Curves.Destroy;            // build matrix for column interpolation
+         Matrix:=TFreeMatrix.Create;
+         Matrix.SetSize(Cols,Cols);
+         Matrix.Fill(0.0);
+         Matrix.Value[0,0]:=1.0;
+         for I:=2 to Cols-1 do begin
+            Matrix.Value[I-1,I-2]:=1/6;
+            Matrix.Value[I-1,I-1]:=2/3;
+            Matrix.Value[I-1,I  ]:=1/6;
+         end;
+         Matrix.Value[Cols-1,Cols-1]:=1.0;
+         Colmatrix:=Matrix.Invert;
 
-            Matrix.SetSize(Rows,Rows);
-            Matrix.Fill(0.0);
-            Matrix.Value[0,0]:=1.0;
-            for I:=2 to Rows-1 do begin
-               Matrix.Value[I-1,I-2]:=1/6;
-               Matrix.Value[I-1,I-1]:=2/3;
-               Matrix.Value[I-1,I  ]:=1/6;
+         Matrix.SetSize(Rows,Rows);
+         Matrix.Fill(0.0);
+         Matrix.Value[0,0]:=1.0;
+         for I:=2 to Rows-1 do begin
+            Matrix.Value[I-1,I-2]:=1/6;
+            Matrix.Value[I-1,I-1]:=2/3;
+            Matrix.Value[I-1,I  ]:=1/6;
+         end;
+         Matrix.Value[Rows-1,Rows-1]:=1.0;                  // Invert matrix
+         Rowmatrix:=Matrix.Invert;
+         Matrix.Destroy;                         // build initial point grid
+         Setlength(Points,Rows);
+         for I:=1 to Rows do begin
+            setlength(Points[I-1],Cols);
+            Spline:=LongCurves[I-1];
+            OrgPts:=TFreeMatrix.Create;
+            OrgPts.SetSize(3,Cols);
+            for J:=1 to Cols do begin
+               P:=Spline.Value((J-1)/(Cols-1));
+               OrgPts.Value[J-1,0]:=P.X;
+               OrgPts.Value[J-1,1]:=P.Y;
+               OrgPts.Value[J-1,2]:=P.Z;
             end;
-            Matrix.Value[Rows-1,Rows-1]:=1.0;                  // Invert matrix
-            Rowmatrix:=Matrix.Invert;
-            Matrix.Destroy;                         // build initial point grid
-            Setlength(Points,Rows);
-            for I:=1 to Rows do begin
-               setlength(Points[I-1],Cols);
-               Spline:=LongCurves[I-1];
-               OrgPts:=TFreeMatrix.Create;
-               OrgPts.SetSize(3,Cols);
-               for J:=1 to Cols do begin
-                  P:=Spline.Value((J-1)/(Cols-1));
-                  OrgPts.Value[J-1,0]:=P.X;
-                  OrgPts.Value[J-1,1]:=P.Y;
-                  OrgPts.Value[J-1,2]:=P.Z;
-               end;
-               NewPts:=ColMatrix.Multiply(OrgPts);
-               for J:=1 to Cols do begin
-                  P.X:=NewPts.Value[J-1,0];
-                  P.Y:=NewPts.Value[J-1,1];
-                  if (OrgPts.Value[J-1,1]>=0.0) and (P.Y<0.0) then P.Y:=0.0;
-                  P.Z:=NewPts.Value[J-1,2];
-                  Points[I-1][J-1]:=P;
-               end;
-               OrgPts.Destroy;
-               NewPts.Destroy;
+            NewPts:=ColMatrix.Multiply(OrgPts);
+            for J:=1 to Cols do begin
+               P.X:=NewPts.Value[J-1,0];
+               P.Y:=NewPts.Value[J-1,1];
+               if (OrgPts.Value[J-1,1]>=0.0) and (P.Y<0.0) then P.Y:=0.0;
+               P.Z:=NewPts.Value[J-1,2];
+               Points[I-1][J-1]:=P;
             end;
-            ColMatrix.Destroy;
-            for I:=1 to Cols do begin                       // interpolate rows
-               OrgPts:=TFreeMatrix.Create;
-               OrgPts.SetSize(3,Rows);
-               for J:=1 to Rows do begin
-                  P:=Points[J-1][I-1];
-                  OrgPts.Value[J-1,0]:=P.X;
-                  OrgPts.Value[J-1,1]:=P.Y;
-                  OrgPts.Value[J-1,2]:=P.Z;
-               end;
-               NewPts:=RowMatrix.Multiply(OrgPts);
-               for J:=1 to Rows do begin
-                  P.X:=NewPts.Value[J-1,0];
-                  P.Y:=NewPts.Value[J-1,1];
-                  if (OrgPts.Value[J-1,1]>=0.0) and (P.Y<0.0) then P.Y:=0.0;
-                  P.Z:=NewPts.Value[J-1,2];
-                  Points[J-1][I-1]:=P;
-               end;
-               OrgPts.Destroy;
-               NewPts.Destroy;
+            OrgPts.Destroy;
+            NewPts.Destroy;
+         end;
+         ColMatrix.Destroy;
+         for I:=1 to Cols do begin                       // interpolate rows
+            OrgPts:=TFreeMatrix.Create;
+            OrgPts.SetSize(3,Rows);
+            for J:=1 to Rows do begin
+               P:=Points[J-1][I-1];
+               OrgPts.Value[J-1,0]:=P.X;
+               OrgPts.Value[J-1,1]:=P.Y;
+               OrgPts.Value[J-1,2]:=P.Z;
             end;
-            RowMatrix.Destroy;
-            for I:=1 to LongCurves.Count do begin        // delete long. curves
-               Spline:=LongCurves[I-1];
-               Spline.Destroy;
+            NewPts:=RowMatrix.Multiply(OrgPts);
+            for J:=1 to Rows do begin
+               P.X:=NewPts.Value[J-1,0];
+               P.Y:=NewPts.Value[J-1,1];
+               if (OrgPts.Value[J-1,1]>=0.0) and (P.Y<0.0) then P.Y:=0.0;
+               P.Z:=NewPts.Value[J-1,2];
+               Points[J-1][I-1]:=P;
             end;
-            LongCurves.Destroy;
-            Setlength(ControlPoints,Rows);             // import actual surface
-            for I:=1 to Rows do begin
-               Setlength(ControlPoints[I-1],Cols);
-               for J:=1 to Cols do begin
-                  ControlPoints[I-1][J-1]:=TFreesubdivisionControlPoint.Create(Ship.Surface);
-                  Ship.Surface.AddControlPoint(ControlPoints[I-1][J-1]);
-                  ControlPoints[I-1][J-1].Coordinate:=Points[I-1][J-1];
-                //ControlPoints[I-1][J-1]:=FreeShip.Surface.AddControlPoint(Points[I-1][J-1]);
-               end;
+            OrgPts.Destroy;
+            NewPts.Destroy;
+         end;
+         RowMatrix.Destroy;
+         for I:=1 to LongCurves.Count do begin        // delete long. curves
+            Spline:=LongCurves[I-1];
+            Spline.Destroy;
+         end;
+         LongCurves.Destroy;
+         Setlength(ControlPoints,Rows);             // import actual surface
+         for I:=1 to Rows do begin
+            Setlength(ControlPoints[I-1],Cols);
+            for J:=1 to Cols do begin
+               ControlPoints[I-1][J-1]:=TFreesubdivisionControlPoint.Create(Ship.Surface);
+               Ship.Surface.AddControlPoint(ControlPoints[I-1][J-1]);
+               ControlPoints[I-1][J-1].Coordinate:=Points[I-1][J-1];
+             //ControlPoints[I-1][J-1]:=FreeShip.Surface.AddControlPoint(Points[I-1][J-1]);
             end;
-            Pts:=TFasterList.Create;
-            for I:=2 to Rows do begin
-               for J:=2 to Cols do begin
-                  Pts.Clear;
-                  P1:=ControlPoints[I-2][J-2];
-                  Pts.Add(P1);
-                  P1:=ControlPoints[I-2][J-1];
-                  if Pts.IndexOf(P1)=-1 then Pts.Add(P1);
-                  P1:=ControlPoints[I-1][J-1];
-                  if Pts.IndexOf(P1)=-1 then Pts.Add(P1);
-                  P1:=ControlPoints[I-1][J-2];
-                  if Pts.IndexOf(P1)=-1 then Pts.Add(P1);
-                  if Pts.Count>2 then Ship.Surface.AddControlFace(Pts,True);
-               end;
-            end;
-            Pts.Destroy;
-            Ship.FileChanged:=True;
-//       finally
+         end;
+         Pts:=TFasterList.Create;
+         for I:=2 to Rows do
+         for J:=2 to Cols do begin
+            Pts.Clear;
+            P1:=ControlPoints[I-2][J-2]; Pts.Add(P1);
+            P1:=ControlPoints[I-2][J-1]; if Pts.IndexOf(P1)=-1 then Pts.Add(P1);
+            P1:=ControlPoints[I-1][J-1]; if Pts.IndexOf(P1)=-1 then Pts.Add(P1);
+            P1:=ControlPoints[I-1][J-2]; if Pts.IndexOf(P1)=-1 then Pts.Add(P1);
+            if Pts.Count>2 then Ship.Surface.AddControlFace(Pts,True);
+         end;
+         Pts.Destroy;
+         Ship.FileChanged:=True;
+//      finally
          if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
          Screen.Cursor:=PrevCursor;
 //      end;
@@ -813,24 +774,20 @@ end;
 procedure TFreeEdit.File_ExportArchimedes;
 var Frames     : TFasterList;
     Frame      : TFreeSpline;
-    Tmp,Str    : widestring;
+    Tmp,Str    : string;
     I,J,Np     : integer;
     P          : Vector;
     SaveDialog : TSaveDialog;
     ffile      : textfile;
     Strings    : TStringList;
 begin
-   //if not Ship.ProjectSettings.FMainparticularsHasBeenset then begin
-   //   ShowMessage(Userstring(95));
-   //   exit;
-   //end;
    Frames:=TFasterList.Create;
    Ship.FBuildValidFrameTable(Frames,True);
    if Frames.Count>0 then begin
       SaveDialog:=TSaveDialog.Create(Ship);
       SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
       SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'');
-      SaveDialog.Filter:='ArchimedesMB multi body hull data(*.hll)|*.hll|Archimedes single body hull data(*.app)|*.app';
+      SaveDialog.Filter:='ArchimedesMB multi body hull data[*.hll]|*.hll|Archimedes single body hull data[*.app]|*.app';
       SaveDialog.FilterIndex:=1;
       Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
       if SaveDialog.Execute then begin
@@ -838,34 +795,27 @@ begin
          if SaveDialog.FilterIndex=2 then begin       // Single body Archimedes
             assignfile(ffile,ChangeFileExt(SaveDialog.FileName,'.app'));
             rewrite(FFile);
-            Write(FFile,'***********************************************************'+#10);
-            Write(FFile,'** Appendage Hydrostatics Generator Version 1.0.1        **'+#10);
-            Write(FFile,'** Copyright : John A. MacSween - 2000                   **'+#10);
-            Write(FFile,'** Please visit the website for updates and new versions **'+#10);
-            Write(FFile,'**                          www.naval-architecture.co.uk **'+#10);
-            Write(FFile,'** File generated with FREE!ship                         **'+#10);
-            Write(FFile,'***********************************************************'+#10);
-            // Hull name
-            Write(FFile,'APPENDAGE_NAME'+#10);
-            if Ship.ProjectSettings.ProjectName<>'' then Tmp:=Ship.ProjectSettings.ProjectName
-                                    else Tmp:=ChangeFileExt(ExtractFilename(Ship.Filename),'');
-            Write(FFile,Tmp+#10);
-            // Aft perpendicular
+            Write(FFile,'** Appendage Hydrostatics Generator Version 1.0.1'+#10);
+            Write(FFile,'** Copyright : John A.MacSween-2000'+#10);
+            Write(FFile,'** www.naval-architecture.co.uk'+#10);
+            Write(FFile,'** File generated with FREE!ship'+#10);
+            Write(FFile,'APPENDAGE_NAME'+#10);                     // Hull name
+            if Ship.ProjectSettings.ProjectName<>''
+               then Tmp:=Ship.ProjectSettings.ProjectName
+               else Tmp:=ChangeFileExt(ExtractFilename(Ship.Filename),'');
+            Write(FFile,Tmp+#10);                          // Aft perpendicular
             Write(FFile,'AP'+#10);
-            Write(FFile,'0.0'+#10);
-            // Forward perpendicular
+            Write(FFile,'0.0'+#10);                    // Forward perpendicular
             Write(FFile,'FP'+#10);
             Write(FFile,FloatToDec(Ship.ProjectSettings.ProjectLength,4)+#10);
-            // Water density
-            Write(FFile,'DENSITY'+#10);
+            Write(FFile,'DENSITY'+#10);                        // Water density
             write(FFile,FloatToDec(Ship.ProjectSettings.ProjectWaterDensity,3)+#10);
-            // Now send the frames
-            Write(FFile,'NUMBER_OF_FRAMES'+#10);
+            Write(FFile,'NUMBER_OF_FRAMES'+#10);         // Now send the frames
             write(FFile,IntToStr(Frames.Count)+#10);
             Write(FFile,'***START_OF_FRAME_INFORMATION***'+#10);
             for I:=1 to Frames.Count do begin
                Frame:=Frames[I-1];
-               Np:=Frame.NumberOfPoints;
+               Np:=Frame.nS;
                Write(FFile,'FRAME_INDEX: '+IntToStr(I-1)+#10);
                Write(FFile,'FRAME_NAME'+#10);
                Write(FFile,'Frame @ Y= '+FloatToStrF(0.5*(Frame.Min.X+Frame.Max.X),ffFixed,7,4)+#10);
@@ -874,18 +824,15 @@ begin
                Write(FFile,'NUMBER_OF_COORDINATES'+#10);
                write(FFile,IntToStr(2*Np-1)+#10);
                Write(FFile,'***START_OF_ORDINATES***'+#10);
-
                // First send the starboard side
-               for J:=Np downto 1 do begin
-                  //P:=Frame.Value((J-1)/(Np-1));
+               for J:=Np downto 1 do begin      //P:=Frame.Value((J-1)/(Np-1));
                   P:=Frame.Point[J-1];
                   P.Y:=-P.Y;
                   Write(FFile,FloatToDec(P.Y,4)+#10);
                   Write(FFile,FloatToDec(P.Z,4)+#10);
                end;
                // then port side
-               for J:=2 to Np do begin
-                  //P:=Frame.Value((J-1)/(Np-1));
+               for J:=2 to Np do begin          //P:=Frame.Value((J-1)/(Np-1));
                   P:=Frame.Point[J-1];
                   Write(FFile,FloatToDec(P.Y,4)+#10);
                   Write(FFile,FloatToDec(P.Z,4)+#10);
@@ -896,21 +843,18 @@ begin
             Write(FFile,'***END_OF_FILE***'+#10);
             closefile(FFile);
          end else begin
-            // Multi body ArchimedesMB
-            Strings:=TStringList.Create;
-            // Add file version info
-            Strings.Add(' <?xml version="1.0" encoding="UTF-8" ?>');
-            // Start hull
-            Strings.Add('<HULL>');
-            // Hull name
-            Strings.Add('<HULL_NAME>');
+            Strings:=TStringList.Create;             // Multi body ArchimedesMB
+            Strings.Add(' <?xml version="1.0" encoding="UTF-8" ?>'); // Add file version info
+            Strings.Add('<HULL>');                                // Start hull
+            Strings.Add('<HULL_NAME>');                            // Hull name
             if Ship.ProjectSettings.ProjectName<>''
                then Str:=Ship.ProjectSettings.ProjectName
                else Str:=ChangeFileExt(ExtractFilename(Ship.Filename),'');
             Strings.Add(Str);
             Strings.Add('</HULL_NAME>');
             // Water density
-            Strings.Add('<DENSITY>'+#32+FloatToDec(Ship.ProjectSettings.ProjectWaterDensity,3)+#32+'</DENSITY>');
+            Strings.Add('<DENSITY>'+#32+FloatToDec(Ship.ProjectSettings.ProjectWaterDensity,3)
+                                   +#32+'</DENSITY>');
             // Aft perpendicular
             Strings.Add('<AP> 0.0 </AP>');
             // Forward perpendicular
@@ -931,10 +875,9 @@ begin
             Strings.Add('<APPENDAGE_COLOUR> 0 </APPENDAGE_COLOUR>');
             // Now send the frames
             Strings.Add('<SECTION_COUNT>'+#32+IntToStr(Frames.Count)+#32+'</SECTION_COUNT>');
-            for I:=1 to Frames.Count do
-            begin
+            for I:=1 to Frames.Count do begin
                Frame:=Frames[I-1];
-               Np:=2*Frame.NumberOfPoints+1;
+               Np:=2*Frame.nS+1;
                Strings.Add('<SECTION>');
                Strings.Add('<SECTION_NAME>');
                Strings.Add(FloatToStrF(0.5*(Frame.Min.X+Frame.Max.X),ffFixed,7,4));
@@ -942,16 +885,12 @@ begin
                Strings.Add('<YCOORD>'+#32+FloatToStrF(0.5*(Frame.Min.X+Frame.Max.X),ffFixed,7,4)+#32+'</YCOORD>');
                Strings.Add('<OFFSET_COUNT>'+#32+IntToStr(2*Np-1)+#32+'</OFFSET_COUNT>');
                Strings.Add('<OFFSETS>');
-               // First send the starboard side
-               for J:=Np downto 1 do
-               begin
+               for J:=Np downto 1 do begin     // First send the starboard side
                   P:=Frame.Value((J-1)/(Np-1));
                   P.Y:=-P.Y;
                   Strings.Add(FloatToDec(P.Y,4)+#32+FloatToDec(P.Z,4));
                end;
-               // then port side
-               for J:=2 to Np do
-               begin
+               for J:=2 to Np do begin                        // then port side
                   P:=Frame.Value((J-1)/(Np-1));
                   Strings.Add(FloatToDec(P.Y,4)+#32+FloatToDec(P.Z,4));
                end;
@@ -987,7 +926,7 @@ begin
    SaveDialog:=TSaveDialog.Create(Ship);
    SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
    SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'');
-   SaveDialog.Filter:='Text file(*.txt)|*.txt';
+   SaveDialog.Filter:='Text file [*.txt]|*.txt';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin
       Assignfile(FFile,ChangeFileExt(SaveDialog.FileName,'.txt'));
@@ -1004,9 +943,9 @@ begin
          }
          for I:=1 to Ship.Surface.NumberOfPoints do begin
             Point:=Ship.Surface.Point[I-1];
-            Writeln(FFile,MakeLength(Point.Coordinate.X,6,12),#32,
-                          MakeLength(Point.Coordinate.Y,6,12),#32,
-                          MakeLength(Point.Coordinate.Z,6,12));
+            Writeln( FFile,MakeLength(Point.Coordinate.X,5,12),#32,
+                           MakeLength(Point.Coordinate.Y,5,12),#32,
+                           MakeLength(Point.Coordinate.Z,5,12) );
          end;
          CloseFile(FFile);
       end else ShowMessage( Userstring(97) );
@@ -1014,29 +953,27 @@ begin
    SaveDialog.Destroy;
 end;
 
-procedure TFreeIntersection.SaveToDXF(Strings:TStringList);
-var I      : integer;
-    Layer  : string;
-    Spline : TFreeSpline;
+procedure TFreeIntersection.SaveToDXF( Strings:TStringList );
+var I: integer; Layer: string; Spline: TFreeSpline;
 begin
    if not built then Rebuild;
    for I:=1 to count do begin
       Spline:=Items[I-1];
       Case IntersectionType of
-         fiStation   : layer:=Userstring(62);
-         fiButtock   : layer:=Userstring(63);
-         fiWaterline : layer:=Userstring(64);
-         fiDiagonal  : layer:=Userstring(65);
-         else Layer:='Layer_0';
+         fiStation  : layer:='Stations';   // Userstring(62);
+         fiButtock  : layer:='Buttocks';   // Userstring(63);
+         fiWaterline: layer:='Waterlines'; // Userstring(64);
+         fiDiagonal : layer:='Diagonals';  // Userstring(65);
+                 else Layer:='Layer_X';
       end;
-      case Owner.Precision of
-         fpLow      : Spline.Fragments:=50;
-         fpMedium   : Spline.Fragments:=100;
-         fpHigh     : Spline.Fragments:=150;
-         fpVeryHigh : Spline.Fragments:=500;
+      case Ship.Precision of
+         fpLow     : Spline.Fragments:=50;
+         fpMedium  : Spline.Fragments:=100;
+         fpHigh    : Spline.Fragments:=150;
+         fpVeryHigh: Spline.Fragments:=500;
          else Spline.Fragments:=100;
       end;
-      Spline.SaveToDXF(Strings,Layer,Owner.Visibility.ModelView=mvBoth);
+      Spline.SaveToDXF(Strings,Layer,Ship.Visibility.ModelView=mvBoth);
    end;
 end;
 
@@ -1050,119 +987,105 @@ var I          : integer;
     Filename   : string;
     Intersections:TFasterList;
 
-    procedure CreateDXFData(Intersection:TFreeIntersection;Stringlist:TStringList;Scale:Real;var Filename:string);
-     var I,N    :Integer;
-         Layername:string;
-         procedure SaveSpline(Spline:TFreeSpline;Strings:TStringList;IntersectionType:TFreeIntersectiontype);
-         var NParams,Cap: Integer;
-             Params  : RealArray;
-             I,Ind   : Integer;
-             Length,T: Real;
-             P1,P2   : Vector;
-         begin
-            Ind:=FindDXFColorIndex(Spline.Color);
-            NParams:=0;
-            Setlength(Params,Spline.NumberOfPoints);
-            // count number of knucklepoints
-            if not Spline.Build then Spline.Rebuild;
-            for I:=2 to Spline.NumberOfPoints-1 do begin
-               if Spline.Knuckle[I-1] then begin
-                  Params[NParams]:=Spline.Parameter[I-1];
-                  inc(NParams);
+  procedure CreateDXFData(Intersection:TFreeIntersection;Stringlist:TStringList;Scale:Real;var Filename:string);
+   var I,N:Integer;
+       Layername:string;
+       procedure SaveSpline(Spline:TFreeSpline;Strings:TStringList;IntersectionType:TFreeIntersectiontype);
+       var NParams,Cap,I,Ind: Integer;
+           Length,T: Real;
+           Params: RealArray;
+           P1,P2: Vector;
+       begin
+          Ind:=FindDXFColorIndex(Spline.Color);
+          NParams:=0;
+          Setlength(Params,Spline.nS);
+          if not Spline.Build then Spline.Rebuild; // count number
+          for I:=2 to Spline.nS-1 do              // of knucklepoints
+           if Spline.Knuckle[I-1] then begin
+              Params[NParams]:=Spline.Parameter[I-1];
+              inc(NParams);
+          end;
+          Length:=0.0;          // Calculate the length of the spline
+          P1:=Spline.Value(0.0);
+          for I:=1 to 150 do begin
+             P2:=Spline.Value(I/150);
+             Length:=Length+Abs(P1-P2);
+             P1:=P2;
+          end;
+          Length:=Length*ScaleFactor;
+          if length>0 then begin
+             N:=Round(Length/(SegLength));
+             if N<2*Spline.nS then N:=2*Spline.nS;
+             if N>3500 then N:=3500;
+             Spline.Fragments:=N;
+             Cap:=NParams+100;
+             Setlength(Params,Cap);
+             inc(Nparams);
+             Params[NParams-1]:=0.0;
+             inc(Nparams);
+             Params[NParams-1]:=1.0;
+             for I:=1 to Spline.Fragments do begin
+                T:=Spline.ChordlengthApproximation(I*SegLength/Length);
+                if NParams>=Cap then begin
+                   inc(Cap,50);
+                   Setlength(Params,Cap);
+                end;
+                inc(NParams);
+                Params[NParams-1]:=T;
+             end;
+             ArraySort( Params,NParams );            // now export the actual
+             Strings.Add('0'+EOL+'POLYLINE');        //     calculated points
+             Strings.Add('8'+EOL+LayerName);                     // layername
+             Strings.Add('62'+EOL+IntToStr(Ind));           // color by layer
+             Strings.Add('66'+EOL+'1');                    // vertices follow
+             for I:=1 to NParams do begin
+                P1:=Spline.Value(Params[I-1]);
+                Strings.Add('0'+EOL+'VERTEX');
+                Strings.Add('8'+EOL+LayerName);
+                Case IntersectionType of
+                  fiStation: begin
+                     Strings.Add('10'+EOL+FloatToDec(Scale*P1.Y,5));
+                     Strings.Add('20'+EOL+FloatToDec(Scale*P1.Z,5)); end;
+                  fiButtock: begin
+                     Strings.Add('10'+EOL+FloatToDec(Scale*P1.X,5));
+                     Strings.Add('20'+EOL+FloatToDec(Scale*P1.Z,5)); end;
+                  fiWaterline: begin
+                     Strings.Add('10'+EOL+FloatToDec(Scale*P1.X,5));
+                     Strings.Add('20'+EOL+FloatToDec(Scale*P1.Y,5)); end;
                end;
-            end;
-            // Calculate the length of the spline
-            Length:=0.0;
-            P1:=Spline.Value(0.0);
-            for I:=1 to 150 do begin
-               P2:=Spline.Value(I/150);
-               Length:=Length+Abs(P1-P2);
-               P1:=P2;
-            end;
-            Length:=Length*ScaleFactor;
-            if length>0 then begin
-               N:=Round(Length/(SegLength));
-               if N<2*Spline.NumberOfPoints then N:=2*Spline.NumberOfPoints;
-               if N>3500 then N:=3500;
-               Spline.Fragments:=N;
-               Cap:=NParams+100;
-               Setlength(Params,Cap);
-               inc(Nparams);
-               Params[NParams-1]:=0.0;
-               inc(Nparams);
-               Params[NParams-1]:=1.0;
-               for I:=1 to Spline.Fragments do begin
-                  T:=Spline.ChordlengthApproximation(I*SegLength/Length);
-                  if NParams>=Cap then begin
-                     inc(Cap,50);
-                     Setlength(Params,Cap);
-                  end;
-                  inc(NParams);
-                  Params[NParams-1]:=T;
-               end;
-               ArraySort( Params,NParams );
-               // now export the actual calculated points
-               Strings.Add('0'+EOL+'POLYLINE');
-               Strings.Add('8'+EOL+LayerName);   // layername
-               Strings.Add('62'+EOL+IntToStr(Ind));  // color by layer
-               Strings.Add('66'+EOL+'1');    // vertices follow
-               for I:=1 to NParams do begin
-                  P1:=Spline.Value(Params[I-1]);
-                  Strings.Add('0'+EOL+'VERTEX');
-                  Strings.Add('8'+EOL+LayerName);
-                  Case IntersectionType of
-                     fiStation    : begin
-                                       Strings.Add('10'+EOL+FloatToDec(Scale*P1.Y,5));
-                                       Strings.Add('20'+EOL+FloatToDec(Scale*P1.Z,5));
-                                    end;
-                     fiButtock    : begin
-                                       Strings.Add('10'+EOL+FloatToDec(Scale*P1.X,5));
-                                       Strings.Add('20'+EOL+FloatToDec(Scale*P1.Z,5));
-                                    end;
-                     fiWaterline  : begin
-                                       Strings.Add('10'+EOL+FloatToDec(Scale*P1.X,5));
-                                       Strings.Add('20'+EOL+FloatToDec(Scale*P1.Y,5));
-                                    end;
-                  end;
-               end;
-               Strings.Add('0'+EOL+'SEQEND');
-               if (Intersectiontype in [fiStation,fiWaterline])
-               and (Ship.Visibility.ModelView=mvBoth) then begin
-                  // send the other half
-                  Strings.Add('0'+EOL+'POLYLINE');
-                  Strings.Add('8'+EOL+LayerName);       // layername
-                  Strings.Add('62'+EOL+IntToStr(Ind));  // color by layer
-                  Strings.Add('66'+EOL+'1');            // vertices follow
-                  for I:=1 to NParams do begin
-                     P1:=Spline.Value(Params[I-1]);
-                     Strings.Add('0'+EOL+'VERTEX');
-                     Strings.Add('8'+EOL+LayerName);
-                     Case IntersectionType of
-                        fiStation: begin
-                                     Strings.Add('10'+EOL+FloatToDec(Scale*-P1.Y,5));
-                                     Strings.Add('20'+EOL+FloatToDec(Scale*P1.Z,5));
-                                   end;
-                        fiWaterline: begin
-                                     Strings.Add('10'+EOL+FloatToDec(Scale*P1.X,5));
-                                     Strings.Add('20'+EOL+FloatToDec(Scale*-P1.Y,5));
-                                   end;
-                     end;
-                  end;
-                  Strings.Add('0'+EOL+'SEQEND');
-               end;
-            end;
-         end;{SaveSpline}
-
+             end;
+             Strings.Add('0'+EOL+'SEQEND');
+             if (Intersectiontype in [fiStation,fiWaterline])
+             and (Ship.Visibility.ModelView=mvBoth) then begin
+                Strings.Add('0'+EOL+'POLYLINE');      // send the other half
+                Strings.Add('8'+EOL+LayerName);       // layername
+                Strings.Add('62'+EOL+IntToStr(Ind));  // color by layer
+                Strings.Add('66'+EOL+'1');            // vertices follow
+                for I:=1 to NParams do begin
+                   P1:=Spline.Value(Params[I-1]);
+                   Strings.Add('0'+EOL+'VERTEX');
+                   Strings.Add('8'+EOL+LayerName);
+                   Case IntersectionType of
+                      fiStation: begin
+                        Strings.Add('10'+EOL+FloatToDec(Scale*-P1.Y,5));
+                        Strings.Add('20'+EOL+FloatToDec(Scale*P1.Z,5)); end;
+                      fiWaterline: begin
+                        Strings.Add('10'+EOL+FloatToDec(Scale*P1.X,5));
+                        Strings.Add('20'+EOL+FloatToDec(Scale*-P1.Y,5)); end;
+                   end;
+                end;    Strings.Add('0'+EOL+'SEQEND');
+             end;
+          end;
+       end;
     begin
        if not Intersection.Built then Intersection.Rebuild;
-       if intersection.Count>0 then
-       begin
+       if intersection.Count>0 then begin
          Case Intersection.IntersectionType of
-            fiStation  :begin Layername:=Userstring(62); end;
-            fiButtock  :begin Layername:=Userstring(63); end;
-            fiWaterline:begin Layername:=Userstring(64); end;
-            fiDiagonal :begin Layername:=Userstring(65); end;
-            else begin ShowMessage( Userstring(66)+'!' ); exit; end;
+            fiStation  : Layername:='Stations';   {Userstring(62);}
+            fiButtock  : Layername:='Buttocks';   {Userstring(63);}
+            fiWaterline: Layername:='Waterlines'; {Userstring(64);}
+            fiDiagonal : Layername:='Diagonals';  {Userstring(65);} else exit;
+         // else begin ShowMessage( Userstring(66)+'!' ); exit; end;
          end;
          Filename:=Ship.Preferences.ExportDirectory+Intersection.Description+'.dxf';
          for I:=1 to Intersection.Count do begin
@@ -1177,13 +1100,11 @@ begin
    Dialog.ExportDirectory:=Ship.Preferences.ExportDirectory;
    If Ship.ProjectSettings.ProjectUnits=fuMetric then Dialog.ComboBox1.ItemIndex:=0 else
       If Ship.ProjectSettings.ProjectUnits=fuImperial then Dialog.ComboBox1.ItemIndex:=3;
-
    if Dialog.Execute then begin
       Ship.Preferences.ExportDirectory:=Dialog.ExportDirectory;
       if Length(Ship.Preferences.ExportDirectory)>0 then
       if Ship.Preferences.ExportDirectory[Length(Ship.Preferences.ExportDirectory)]<>'\'
       then Ship.Preferences.ExportDirectory:=Ship.Preferences.ExportDirectory+'\';
-
       ScaleFactor:=1.0;
       SegLength:=Dialog.SegmentLength;
       If Ship.ProjectSettings.ProjectUnits=fuMetric then begin
@@ -1206,83 +1127,79 @@ begin
       Strings:=TStringList.Create;
       PrevCursor:=Screen.Cursor;
       Screen.Cursor:=crHourGlass;
-//    try
-         if Dialog.CheckBox1.Checked then begin
-            // send each intersection to an individual dxf file
-            Intersections:=TFasterList.Create;
-            if Ship.Visibility.ShowStations then Intersections.AddList(Ship.FStations);
-            if Ship.Visibility.ShowButtocks then Intersections.AddList(Ship.FButtocks);
-            if Ship.Visibility.ShowWaterlines then Intersections.AddList(Ship.FWaterlines);
-            for I:=1 to Intersections.Count do begin
-               Strings.Clear;
-               Strings.Add('0'+EOL+'SECTION');
-               Strings.Add('2'+EOL+'ENTITIES');
-               CreateDXFData(Intersections[I-1],Strings,ScaleFactor,Filename);
-               Strings.Add('0'+EOL+'ENDSEC');
-               Strings.Add('0'+EOL+'EOF');
-               Strings.SaveToFile(Filename);
-            end;
-            Intersections.Destroy;
-         end else begin
-            if (Ship.Visibility.ShowStations)
-            and (Ship.NumberofStations>0) then begin
-               Strings.Clear;
-               Strings.Add('0'+EOL+'SECTION');
-               Strings.Add('2'+EOL+'ENTITIES');
-               for I:=1 to Ship.NumberofStations do CreateDXFData(Ship.Station[I-1],Strings,ScaleFactor,Filename);
-               Strings.Add('0'+EOL+'ENDSEC');
-               Strings.Add('0'+EOL+'EOF');
-               Filename:=Ship.Preferences.ExportDirectory+'stations.dxf';
-               Strings.SaveToFile(Filename);
-            end;
-            if (Ship.Visibility.ShowButtocks)
-            and (Ship.NumberofButtocks>0) then begin
-               Strings.Clear;
-               Strings.Add('0'+EOL+'SECTION');
-               Strings.Add('2'+EOL+'ENTITIES');
-               for I:=1 to Ship.NumberofButtocks do CreateDXFData(Ship.Buttock[I-1],Strings,ScaleFactor,Filename);
-               Strings.Add('0'+EOL+'ENDSEC');
-               Strings.Add('0'+EOL+'EOF');
-               Filename:=Ship.Preferences.ExportDirectory+'buttocks.dxf';
-               Strings.SaveToFile(Filename);
-            end;
-            if (Ship.Visibility.ShowWaterlines)
-            and (Ship.NumberofWaterlines>0) then begin
-               Strings.Clear;
-               Strings.Add('0'+EOL+'SECTION');
-               Strings.Add('2'+EOL+'ENTITIES');
-               for I:=1 to Ship.NumberofWaterlines do CreateDXFData(Ship.Waterline[I-1],Strings,ScaleFactor,Filename);
-               Strings.Add('0'+EOL+'ENDSEC');
-               Strings.Add('0'+EOL+'EOF');
-               Filename:=Ship.Preferences.ExportDirectory+'waterlines.dxf';
-               Strings.SaveToFile(Filename);
-            end;
+      if Dialog.CheckBox1.Checked then begin
+      // send each intersection to an individual dxf file
+         Intersections:=TFasterList.Create;
+         if Ship.Visibility.ShowStations then Intersections.AddList(Ship.FStations);
+         if Ship.Visibility.ShowButtocks then Intersections.AddList(Ship.FButtocks);
+         if Ship.Visibility.ShowWaterlines then Intersections.AddList(Ship.FWaterlines);
+         for I:=1 to Intersections.Count do begin
+            Strings.Clear;
+            Strings.Add('0'+EOL+'SECTION');
+            Strings.Add('2'+EOL+'ENTITIES');
+            CreateDXFData(Intersections[I-1],Strings,ScaleFactor,Filename);
+            Strings.Add('0'+EOL+'ENDSEC');
+            Strings.Add('0'+EOL+'EOF');
+            Strings.SaveToFile(Filename);
          end;
-//    finally
+         Intersections.Destroy;
+      end else begin
+         if (Ship.Visibility.ShowStations)
+         and (Ship.NumberofStations>0) then begin
+            Strings.Clear;
+            Strings.Add('0'+EOL+'SECTION');
+            Strings.Add('2'+EOL+'ENTITIES');
+            for I:=1 to Ship.NumberofStations do CreateDXFData(Ship.Station[I-1],Strings,ScaleFactor,Filename);
+            Strings.Add('0'+EOL+'ENDSEC');
+            Strings.Add('0'+EOL+'EOF');
+            Filename:=Ship.Preferences.ExportDirectory+'stations.dxf';
+            Strings.SaveToFile(Filename);
+         end;
+         if (Ship.Visibility.ShowButtocks)
+         and (Ship.NumberofButtocks>0) then begin
+            Strings.Clear;
+            Strings.Add('0'+EOL+'SECTION');
+            Strings.Add('2'+EOL+'ENTITIES');
+            for I:=1 to Ship.NumberofButtocks do CreateDXFData(Ship.Buttock[I-1],Strings,ScaleFactor,Filename);
+            Strings.Add('0'+EOL+'ENDSEC');
+            Strings.Add('0'+EOL+'EOF');
+            Filename:=Ship.Preferences.ExportDirectory+'buttocks.dxf';
+            Strings.SaveToFile(Filename);
+         end;
+         if (Ship.Visibility.ShowWaterlines)
+         and (Ship.NumberofWaterlines>0) then begin
+            Strings.Clear;
+            Strings.Add('0'+EOL+'SECTION');
+            Strings.Add('2'+EOL+'ENTITIES');
+            for I:=1 to Ship.NumberofWaterlines do CreateDXFData(Ship.Waterline[I-1],Strings,ScaleFactor,Filename);
+            Strings.Add('0'+EOL+'ENDSEC');
+            Strings.Add('0'+EOL+'EOF');
+            Filename:=Ship.Preferences.ExportDirectory+'waterlines.dxf';
+            Strings.SaveToFile(Filename);
+         end;
+      end;
       Strings.Destroy;
       Screen.Cursor:=PrevCursor;
-//    end;
    end;
    Dialog.Destroy;
-end;{TFreeEdit.File_ExportDXF_2DPolylines}
+end;
 
 // Export all lines to a 3D DXF model as polylines
+
 procedure TFreeEdit.File_ExportDXF_3DPolylines;
-var I,J,ind : integer;
-    Strings : TStringList;
-    Dialog  : TSaveDialog;
-    Edges   : TFasterList;
-    Points  : TFasterList;
-    Point   : TFreeSubdivisionPoint;
+var I,J,ind: integer;
+    Strings: TStringList;
+    Dialog: TSaveDialog;
+    Edges,Points: TFasterList;
+    Point: TFreeSubdivisionPoint;
     Layername:string;
 begin
    Dialog:=TSaveDialog.Create(Ship);
    Dialog.InitialDir:=Ship.Preferences.ExportDirectory;
    Dialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'.dxf');
-   Dialog.Filter:='Autocad dxf file (*.dxf)|*.dxf';
+   Dialog.Filter:='Autocad dxf file [*.dxf]|*.dxf';
    dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
-   if Dialog.Execute then
-   begin
+   if Dialog.Execute then begin
       Ship.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
       Strings:=TStringList.Create;
       Strings.Add('0'+EOL+'SECTION');
@@ -1292,50 +1209,44 @@ begin
       if Ship.Visibility.ShowWaterlines then for I:=1 to Ship.NumberofWaterlines do Ship.Waterline[I-1].SaveToDXF(Strings);
       if Ship.Visibility.ShowDiagonals then for I:=1 to Ship.NumberofDiagonals do Ship.Diagonal[I-1].SaveToDXF(Strings);
       if Ship.Visibility.ShowControlCurves then for I:=1 to Ship.NumberofControlCurves do Ship.ControlCurve[I-1].SaveToDXF(Strings);
-
       Edges:=TFasterList.Create;
       Ship.Surface.ExtractAllEdgeLoops(Edges);
-      Layername:='Edges';
+      Layername:='Board Edges';
       ind:=FindDXFColorIndex(Ship.Preferences.EdgeColor);
-      for I:=1 to Edges.Count do
-      begin
+      for I:=1 to Edges.Count do begin
          Points:=Edges[I-1];
          Strings.Add('0'+EOL+'POLYLINE');
-         Strings.Add('8'+EOL+LayerName);   // layername
-         Strings.Add('62'+EOL+IntToStr(Ind));  // color by layer
-         Strings.Add('70'+EOL+'10');   // not closed
-         Strings.Add('66'+EOL+'1');    // vertices follow
-         for J:=1 to Points.Count do
-         begin
+         Strings.Add('8'+EOL+LayerName);      // layername
+         Strings.Add('62'+EOL+IntToStr(Ind)); // color by layer
+         Strings.Add('70'+EOL+'10');          // not closed
+         Strings.Add('66'+EOL+'1');           // vertices follow
+         for J:=1 to Points.Count do begin
             Point:=Points[J-1];
             Strings.Add('0'+EOL+'VERTEX');
             Strings.Add('8'+EOL+LayerName);
             Strings.Add('10'+EOL+FloatToDec(Point.Coordinate.X,4));
-            Strings.Add('20'+EOL+FloatToDec(Point.Coordinate.Y,4));
-            Strings.Add('30'+EOL+FloatToDec(Point.Coordinate.Z,4));
-            Strings.Add('70'+EOL+'32');    // 3D polyline mesh vertex
+            Strings.Add('20'+EOL+FloatToDec(Point.Coordinate.z,4));
+            Strings.Add('30'+EOL+FloatToDec(Point.Coordinate.y,4));
+            Strings.Add('70'+EOL+'32'); // 3D polyline mesh vertex
          end;
          Strings.Add('0'+EOL+'SEQEND');
-         if Ship.Visibility.ModelView=mvBoth then
-         begin
+         if Ship.Visibility.ModelView=mvBoth then begin
             Strings.Add('0'+EOL+'POLYLINE');
-            Strings.Add('8'+EOL+LayerName);   // layername
-            Strings.Add('62'+EOL+IntToStr(Ind));  // color by layer
-            Strings.Add('70'+EOL+'10');   // not closed
-            Strings.Add('66'+EOL+'1');    // vertices follow
-            for J:=1 to Points.Count do
-            begin
+            Strings.Add('8'+EOL+LayerName);      // layername
+            Strings.Add('62'+EOL+IntToStr(Ind)); // color by layer
+            Strings.Add('70'+EOL+'10');          // not closed
+            Strings.Add('66'+EOL+'1');           // vertices follow
+            for J:=1 to Points.Count do begin
                Point:=Points[J-1];
                Strings.Add('0'+EOL+'VERTEX');
                Strings.Add('8'+EOL+LayerName);
                Strings.Add('10'+EOL+FloatToDec(Point.Coordinate.X,4));
-               Strings.Add('20'+EOL+FloatToDec(-Point.Coordinate.Y,4));
-               Strings.Add('30'+EOL+FloatToDec(Point.Coordinate.Z,4));
-               Strings.Add('70'+EOL+'32');    // 3D polyline mesh vertex
+               Strings.Add('20'+EOL+FloatToDec(Point.Coordinate.z,4));
+               Strings.Add('30'+EOL+FloatToDec(-Point.Coordinate.y,4));
+               Strings.Add('70'+EOL+'32'); // 3D polyline mesh vertex
             end;
-            Strings.Add('0'+EOL+'SEQEND');
-         end;
-         Points.Destroy;
+               Strings.Add('0'+EOL+'SEQEND');
+         end;  Points.Destroy;
       end;
       Edges.Destroy;
       Strings.Add('0'+EOL+'ENDSEC');
@@ -1356,27 +1267,20 @@ begin
    Dialog:=TSaveDialog.Create(Ship);
    Dialog.InitialDir:=Ship.Preferences.ExportDirectory;
    Dialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'.dxf');
-   Dialog.Filter:='Autocad dxf file (*.dxf)|*.dxf';
+   Dialog.Filter:='Autocad dxf file [*.dxf]|*.dxf';
    dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if Dialog.Execute then begin
       Prev:=Screen.Cursor;
       Screen.Cursor:=crHourglass;
-//    try
-         Ship.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
-         Strings:=TStringList.Create;
-         Strings.Add('0'+EOL+'SECTION');
-         Strings.Add('2'+EOL+'ENTITIES');
-         for I:=1 to Ship.Surface.NumberOfLayers do Ship.Surface.Layer[I-1].SaveToDXF(Strings);
-         Strings.Add('0'+EOL+'ENDSEC');
-         Strings.Add('0'+EOL+'EOF');
-//       try
-            Strings.SaveToFile( ChangeFileExt(Dialog.FileName,'.dxf') );
-//       except
-//          ShowMessage('Could not access '+ChangeFileExt(Dialog.FileName,'.dxf'));
-//       end;
-//    finally
-         Screen.Cursor:=Prev;
-//    end;
+      Ship.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
+      Strings:=TStringList.Create;
+      Strings.Add('0'+EOL+'SECTION');
+      Strings.Add('2'+EOL+'ENTITIES');
+      for I:=1 to Ship.Surface.NumberOfLayers do Ship.Surface.Layer[I-1].SaveToDXF(Strings);
+      Strings.Add('0'+EOL+'ENDSEC');
+      Strings.Add('0'+EOL+'EOF');
+      Strings.SaveToFile( ChangeFileExt(Dialog.FileName,'.dxf') );
+      Screen.Cursor:=Prev;
       Strings.Destroy;
    end;
    Dialog.Destroy;
@@ -1385,7 +1289,7 @@ end;
 // Save ordinates to the GHS file format
 
 procedure TFreeEdit.File_ExportGHS;
-var I,J        : integer;
+var I,J,NParams: integer;
     Section    : TFreeSpline;
     SaveDialog : TSaveDialog;
     Strings    : TStringList;
@@ -1394,23 +1298,17 @@ var I,J        : integer;
     Frames     : TFasterList;
     Str        : string;
     P          : Vector;
-    NParams    : Integer;
     Params     : RealArray;
 begin
-   //if not Ship.ProjectSettings.FMainparticularsHasBeenset then begin
-   //   ShowMessage( Userstring(95) );
-   //   exit;
-   //end;
    SaveDialog:=TSaveDialog.Create(Ship);
    SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
    Str:=ChangeFileExt(ExtractFilename(Ship.Filename),'.GF');
-   // no spaces allowed in filename
    repeat
-      I:=Pos(#32,Str);
+      I:=Pos(#32,Str);                         // no spaces allowed in filename
       if I<>0 then Delete(Str,I,1);
    until I=0;
    Savedialog.FileName:=Str;
-   SaveDialog.Filter:='GHS files (*.Gf)|*.Gf';
+   SaveDialog.Filter:='GHS files [*.Gf]|*.Gf';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if not SaveDialog.Execute then begin
       Savedialog.Destroy;
@@ -1443,21 +1341,21 @@ begin
       Strings.Add(IntToStr(Frames.Count)); // Number of sections
       for I:=Frames.Count downto 1 do begin
          Section:=Frames[I-1];
-         if Section.NumberOfPoints>0 then begin
-            if section.Point[Section.NumberOfPoints-1].Y>0 then begin
-               Section.Knuckle[Section.NumberOfPoints-1]:=true;
-               Section.Add(Section.Point[Section.NumberOfPoints-1]);
+         if Section.nS>0 then begin
+            if section.Point[Section.nS-1].Y>0 then begin
+               Section.Knuckle[Section.nS-1]:=true;
+               Section.Add(Section.Point[Section.nS-1]);
             end;
          end;
          NParams:=0;
-         Setlength(Params,Section.NumberOfPoints); // count number of knucklepoints
-         for J:=2 to Section.NumberOfPoints-1 do begin
+         Setlength(Params,Section.nS); // count number of knucklepoints
+         for J:=2 to Section.nS-1 do begin
             if Section.Knuckle[J-1] then begin
                Params[NParams]:=Section.Parameter[J-1];
                inc(NParams);
             end;
          end;
-         if Section.NumberOfPoints>100 then begin
+         if Section.nS>100 then begin
             Section.Fragments:=100;
             Setlength(Params,NParams+Section.Fragments);
             for J:=1 to Section.Fragments do begin
@@ -1465,8 +1363,8 @@ begin
                inc(NParams);
             end;
          end else begin
-            Setlength(Params,NParams+Section.NumberOfPoints);
-            for J:=1 to Section.NumberOfPoints do begin
+            Setlength(Params,NParams+Section.nS);
+            for J:=1 to Section.nS do begin
                Params[NParams]:=Section.Parameter[J-1];
                inc(NParams);
             end;
@@ -1534,21 +1432,20 @@ begin
 end;
 
 // Save NURBS patches to an IGES file
+
 procedure TFreeEdit.File_ExportIGES;
-const MinimizeFaces  = True;
-      SendTriangles  = False; // true;
+const // MinimizeFaces  = True;
+         SendTriangles  = True; // было = False;
 var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
     ColorIndices: array of Integer;
-    Dialog      : TSaveDialog;
+    Dialog: TSaveDialog;
     Layers,CheckFaces: TFasterlist;
-    Layer    : TFreeSubdivisionLayer;
-    FaceData : TFreeFaceGrid;
+    Layer: TFreeSubdivisionLayer;
     Assembled: TFreeFaceArray;
-    IGESList : TFreeIGESList;
-    Grid     : TFreeSubdivisionGrid;
-    CtrlFace : TFreeSubdivisionControlFace;
-    Face     : TFreeSubdivisionFace;
-    Prev     : TCursor;
+    IGESList: TFreeIGESList;
+    Grid: TFreeSubdivisionGrid;        FaceData: TFreeFaceGrid;
+    CtrlFace: TFreeSubdivisionControlFace; Face: TFreeSubdivisionFace;
+    Prev: TCursor;
 
     function FindFourtPoint(P1,P2,p3:TFreeSubdivisionPoint):TFreeSubdivisionPoint;
     var Face  : TFreeSubdivisionFace;
@@ -1588,11 +1485,10 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
        if Edge<>nil then if not Edge.Crease then begin
           for I:=1 to Edge.NumberOfFaces do begin
              Face:=Edge.Face[I-1];
-             if (Face.IndexOfPoint(P1)=-1) or
-                (Face.IndexOfPoint(P2)=-1) or
-                (Face.IndexOfPoint(P3)=-1) or
-                (Face.IndexOfPoint(P4)=-1) then
-             begin
+             if (Face.IndexOfPoint(P1)=-1)
+             or (Face.IndexOfPoint(P2)=-1)
+             or (Face.IndexOfPoint(P3)=-1)
+             or (Face.IndexOfPoint(P4)=-1) then begin
                 Index:=Face.IndexOfPoint(P3);
                 if Index<>-1 then begin
                    Index:=(Index+1) mod Face.NumberOfpoints;
@@ -1628,7 +1524,6 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
     begin // Initialize grid
       Cols:=0;
       Rows:=0;
-
       Points:=TFasterList.Create;
       Faces:=TFasterList.Create;
       for I:=1 to Face.ChildCount do begin
@@ -1646,10 +1541,7 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
          N:=0;
          for J:=1 to P.NumberOfFaces do
             if Faces.SortedIndexOf(P.Face[J-1])<>-1 then inc(N);
-         if N=3 then begin
-            InteriorPoint:=P;
-            break;
-         end;
+         if N=3 then begin InteriorPoint:=P; break; end;
       end;
       if Interiorpoint<>nil then begin
          Cols:=3;
@@ -1659,7 +1551,6 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
             Setlength(Grid[I-1],Cols);
             for J:=1 to Cols do Grid[I-1][J-1]:=nil;
          end;
-
          Grid[1][1]:=InteriorPoint;
          Child:=Face.Child[2];
          Index:=Child.IndexOfPoint(InteriorPoint);
@@ -1668,7 +1559,6 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
          Grid[0][1]:=Child.Point[(index+3) mod 4];
          FindOpposingPoints(Grid[0][0],Grid[0][1],Grid[1][1],Grid[1][0],Grid[0][2],Grid[1][2]);
          FindOpposingPoints(Grid[0][1],Grid[1][1],Grid[1][0],Grid[0][0],Grid[2][1],Grid[2][0]);
-
          Grid[2][2]:=Grid[2][1];
        { for I:=1 to Rows do
             for J:=1 to cols do if grid[I-1][j-1]=nil then
@@ -1751,7 +1641,7 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
                NURB.Point[J,I]:=Grid[I-1][J-1].Coordinate;
             end;
          end;
-         if SendTriangles then begin // check for special triangle case
+         if SendTriangles then begin         // check for special triangle case
             if (Grid[Rows-1][Cols-1]=Grid[Rows-1][Cols-2]) and
                (Grid[Rows-1][Cols-1]=Grid[Rows-2][Cols-1]) then
             begin
@@ -1823,12 +1713,11 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
             NURB2.RowCount:=Nurb2.RowCapacity;
             NURB2.ColDegree:=Nurb.ColDegree;
             NURB2.RowDegree:=Nurb.RowDegree;
-            for I:=Nurb.ColCount downto 1 do begin
-               for J:=Nurb.RowCount downto 1 do begin
-                  P:=NURB.Point[I-1,J-1];
-                  P.Y:=-P.Y;
-                  NURB2.Point[NURB2.Colcount-I,Nurb2.RowCount-J]:=P;
-               end;
+            for I:=Nurb.ColCount downto 1 do
+            for J:=Nurb.RowCount downto 1 do begin
+                P:=NURB.Point[I-1,J-1];
+                P.Y:=-P.Y;
+                NURB2.Point[NURB2.Colcount-I,Nurb2.RowCount-J]:=P;
             end;
             NURB2.SetDefaultColKnotvector;
             NURB2.SetDefaultRowKnotvector;
@@ -1844,7 +1733,7 @@ begin
    Dialog:=TSaveDialog.Create(Ship);
    Dialog.InitialDir:=Ship.Preferences.ExportDirectory;
    Dialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'.igs');
-   Dialog.Filter:='IGES files (*.igs)|*.igs';
+   Dialog.Filter:='IGES files [*.igs,*.iges]|*.igs; *.iges';
    dialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if Dialog.Execute then begin
       Prev:=Screen.Cursor;
@@ -1859,19 +1748,19 @@ begin
       IGESList.IGESUnits:=Ship.ProjectSettings.ProjectUnits;
       IGESList.SystemID:='Free!Ship'+#32+VersionString(CurrentVersion);
       IGESList.FileCreatedBy:=Ship.ProjectSettings.ProjectFileCreatedBy;
-      IGESList.FileName:=Dialog.FileName;
-      // Build color table
+      IGESList.FileName:=Dialog.FileName;                  // Build color table
       Layers:=TFasterList.Create;
       for I:=1 to Ship.NumberOfLayers do
       if (Ship.Layer[I-1].Visible)
-      and (Ship.Layer[I-1].Count>0) then Layers.Add(Ship.Layer[I-1]);
+      and (Ship.Layer[I-1].Count>0) then Layers.Add( Ship.Layer[I-1] );
       Layers.Sort;
-      Setlength(ColorIndices,Layers.Count);
+      Setlength( ColorIndices,Layers.Count );
       for I:=1 to Layers.Count do begin
-         Layer:=Layers[I-1];
-         ColorIndices[I-1]:=IGESList.Add_Entity_314(Layer.Color);
+        Layer:=Layers[I-1];
+         ColorIndices[I-1]:=FindIGSColorIndex( Layer.Color );
+                            //IGESList.Add_Entity_314( Layer.Color );
       end;
-      if MinimizeFaces then begin
+(*    if MinimizeFaces then begin  ///###
          Ship.Surface.AssembleFacesToPatches(Layers,amNURBS,Assembled,NAssembled);
          CheckFaces:=TFasterList.Create;
          for I:=1 to NAssembled do begin
@@ -1897,8 +1786,8 @@ begin
                   then ColorIndex:=ColorIndices[Layers.SortedIndexOf(Ctrlface.Layer)]
                   else Colorindex:=0;
                   if (CtrlFace.NumberOfpoints=3) and (SendTriangles) then begin
-                     AssembleTriangle(Cols,Rows,Grid,CtrlFace);
-                     if (Cols>0) and (Rows>0) then ProcessGrid(Cols,Rows,Grid,ColorIndex);
+                     AssembleTriangle( Cols,Rows,Grid,CtrlFace );
+                     if (Cols>0) and (Rows>0)then ProcessGrid( Cols,Rows,Grid,ColorIndex );
                   end else begin
                      Cols:=2;
                      Rows:=2;
@@ -1918,8 +1807,8 @@ begin
             end;
          end;
          CheckFaces.Destroy;
-      end else begin
-         for I:=1 to Ship.Surface.NumberOfControlFaces do begin
+     end else begin
+*)       for I:=1 to Ship.Surface.NumberOfControlFaces do begin
             CtrlFace:=Ship.Surface.ControlFace[I-1];
             if Layers.SortedIndexOf(Ctrlface.Layer)<>-1
                then ColorIndex:=ColorIndices[Layers.SortedIndexOf(Ctrlface.Layer)]
@@ -1948,7 +1837,8 @@ begin
                end;
             end;
          end;
-      end;
+//    end;
+
       if NSurfaces>0 then begin
          IGESList.SaveToFile(ChangeFileExt(Dialog.Filename,'.igs'));
          ShowMessage('Exported '+IntToStr(NSurfaces)+' surfaces.');
@@ -1966,26 +1856,21 @@ end;
 
 // Exports all intersections to a textfile as 3D points
 procedure TFreeEdit.File_ExportOffsets;
-var SaveDialog : TSaveDialog;
-    Strings    : TStringlist;
-    I          : integer;
+var SaveDialog: TSaveDialog; Strings: TStringlist; I: integer;
     procedure SendSpline(Spline:TFreespline);
-    var J      : integer;
-        Str    : string;
-        P      : Vector;
+    var J: integer; Str: string; P: Vector;
     begin
-      for J:=1 to Spline.NumberOfPoints do begin
+      for J:=1 to Spline.nS do begin
          P:=Spline.Point[J-1];
-         Str:='        '+MakeLength(P.X,4,10)+#32+MakeLength(P.Y,4,10)+#32+MakeLength(P.Z,4,10);
+         Str:='        '+MakeLength(P.X,5,10)
+                    +#32+MakeLength(P.Y,5,10)
+                    +#32+MakeLength(P.Z,5,10);
          if Spline.Knuckle[J-1] then Str:=Str+'    KNUCKLE';
          Strings.Add(Str);
       end;
-    end;{SendSpline}
-
+    end;
     procedure SendIntersection(Intersection:TFreeIntersection);
-    var I      : integer;
-        Str    : string;
-        Spline : TFreeSpline;
+    var I: integer; Str: string; Spline: TFreeSpline;
     begin
        if not Intersection.Built then Intersection.Rebuild;
        if Intersection.Count>0 then begin
@@ -1998,12 +1883,12 @@ var SaveDialog : TSaveDialog;
              SendSpline(Spline);
           end;
        end;
-    end;{SendIntersection}
+    end;
 begin
    SaveDialog:=TSaveDialog.Create(Ship);
    SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
    SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'.txt');
-   SaveDialog.Filter:='Offsets as 3D points (*.Txt)|*.txt';
+   SaveDialog.Filter:='Offsets as 3D points [*.Txt]|*.txt';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then
    begin
@@ -2063,7 +1948,7 @@ begin
    SaveDialog:=TSaveDialog.Create(Ship);
    SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
    SaveDialog.FileName:=ChangeFileExt(ExtractFilename(Ship.FileName),'.stl');
-   SaveDialog.Filter:='STL file (*.stl)|*.stl';
+   SaveDialog.Filter:='STL file [*.stl]|*.stl';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin
       Ship.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
@@ -2102,7 +1987,7 @@ var OpenDialog : TOpenDialog;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   OpenDialog.Filter:='Carene XYZ files (*.xyz)|*.xyz';
+   OpenDialog.Filter:='Carene XYZ files [*.xyz]|*.xyz';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       Answer:=Ship.Edit.File_SaveCheck;
@@ -2152,74 +2037,15 @@ begin
    OpenDialog.Destroy;
 end;
 
-// Import chines from a textfile and fit a surface through them
-procedure TFreeEdit.File_ImportChines;
-var OpenDialog: TOpenDialog;
-    Answer: Word;
-    Str: string;
-    I: integer;
-    P: Vector;
-    FFile: TextFile;
-    Chines: TFasterList;
-    Spline: TFreeSpline;
-begin
-   OpenDialog:=TOpenDialog.Create(Ship);
-   OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   OpenDialog.Filter:='Text files (*.txt)|*.txt';
-   Opendialog.Options:=[ofHideReadOnly];
-   if OpenDialog.Execute then begin
-      Answer:=Ship.Edit.File_SaveCheck;
-      if (Answer=mrCancel) or Ship.FileChanged
-         then begin OpenDialog.Destroy; exit; end;
-      CreateUndoObject(Userstring(107),True);
-      Ship.Clear;
-      assignFile(FFile,ChangeFileExt(Opendialog.FileName,'.txt'));
-      {$I-}Reset(FFile);{$I+}
-      if IOResult=0 then begin
-         Ship.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
-         Chines:=TFasterList.Create;
-      // first read unit information; 0=metric, 1=imperial
-         readln(FFile,I);
-         if I in [0,1] then Ship.ProjectSettings.ProjectUnits:=TFreeUnitType(I)
-                       else ShowMessage(Userstring(108));
-         Spline:=TFreeSpline.Create;
-         repeat
-            Readln(FFile,Str);
-            repeat
-               i:=Pos(#9,Str);
-               if I<>0 then str[I]:=#32;
-            until I=0;
-            Str:=Trim(Uppercase(Str));
-            if (Str<>'') and (Str<>'EOF') then begin
-               P:=GetVector( Str );
-               Spline.Add(P);
-               Str:=#32;
-            end else if Str='' then begin
-               if Spline.NumberOfPoints>1 then Chines.Add(Spline)
-                                          else Spline.Destroy;
-               Spline:=TFreeSpline.Create;
-            end;
-         until (Str='EOF') or (EOF(FFile));
-         if Spline.NumberOfPoints>1 then Chines.Add(Spline)
-                                    else Spline.Destroy;
-         Ship.ImportChines(8,Chines);
-         Chines.Destroy;
-         CloseFile(FFile);
-         Ship.Filename:=ChangeFileExt(Opendialog.FileName,'.fbm');
-         if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
-      end else ShowMessage(Userstring(106));
-   end;
-   OpenDialog.Destroy;
-end;
-
 // Imports a file created with Carlssons's Hulls program
+
 procedure TFreeEdit.File_ImportHull;
 var OpenDialog : TOpenDialog;
     Answer     : Word;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   OpenDialog.Filter:='Carlsson Hull files (*.hul)|*.hul';
+   OpenDialog.Filter:='Carlsson Hull files [*.hul]|*.hul';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       Answer:=Ship.Edit.File_SaveCheck;
@@ -2326,6 +2152,7 @@ begin
 end;
 
 // Import a partfile and add it to the current geometry
+
 procedure TFreeEdit.File_ImportPart;
 var OpenDialog    : TOpenDialog;
     PartFile      : TFreeFileBuffer;
@@ -2345,7 +2172,7 @@ var OpenDialog    : TOpenDialog;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   OpenDialog.Filter:='Free!Ship geometry part (*.Part)|*.part';
+   OpenDialog.Filter:='Free!Ship geometry part [*.Part]|*.part';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       PartFile:=TFreeFileBuffer.Create;
@@ -2356,7 +2183,7 @@ begin
       Partfile.LoadString(Str);
       if Str='FREE!ship partfile' then begin                // Load fileversion
          Partfile.LoadInteger(I);
-         if I<=Ord(CurrentVersion) then begin
+//       if I<=Ord(CurrentVersion) then begin
             PrevCursor:=Screen.Cursor;
             Screen.Cursor:=crHourglass;
 //          try
@@ -2461,7 +2288,7 @@ begin
                Ship.FileChanged:=True;
                if assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(Ship);
             end;
-         end; // else ShowMessage(UserString(113));
+//       end else ShowMessage(UserString(113));
       end else ShowMessage(Userstring(114));
       if not Changed then Undo.Delete;
       Partfile.Destroy;
@@ -2470,7 +2297,9 @@ begin
 end;
 
 // Imports a PolyCad file
-procedure TFreeEdit.File_ImportPolycad;
+
+procedure TFreeEdit.File_ImportPolycad; begin ShowMessage( 'Временно исключено' ) end;
+(*
 var OpenDialog : TOpenDialog;
     Answer     : Word;
     PrevCursor : TCursor;
@@ -2506,7 +2335,7 @@ var OpenDialog : TOpenDialog;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   OpenDialog.Filter:='PolyCad files (*.geo)|*.geo';
+   OpenDialog.Filter:='PolyCad files [*.geo]|*.geo';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       Answer:=Ship.Edit.File_SaveCheck;
@@ -2515,13 +2344,10 @@ begin
       PrevCursor:=Screen.Cursor;
       Screen.Cursor:=crHourglass;
       Strings:=TStringList.Create;
-//    try
-         Strings.LoadFromFile(OpenDialog.FileName);
-         // delete empty strings
+         Strings.LoadFromFile(OpenDialog.FileName);     // delete empty strings
          for I:=Strings.Count downto 1 do
              if Strings[I-1]='' then Strings.Delete(I-1);
-         // count number of BSpline surfaces
-         NSurfaces:=0;
+         NSurfaces:=0;                      // count number of BSpline surfaces
          for I:=1 to strings.Count do
           if (pos('[TBSplineSurface]',Strings[I-1])<>0) or
              (pos('[TShipLines]',Strings[I-1])<>0) or
@@ -2556,26 +2382,19 @@ begin
                   for J:=1 to 12 do NextLine;
                end else if (pos('[TShipLines]',Strings[I-1])<>0) then begin
                   NextLine;
-                  // Read length
-                  Str:=NextLine;
+                  Str:=NextLine;                                 // Read length
                   Ship.ProjectSettings.ProjectLength:=GetFloat(Str);
-                  // read beam
-                  Str:=NextLine;
+                  Str:=NextLine;                                   // read beam
                   Ship.ProjectSettings.ProjectBeam:=GetFloat(Str);
-                  // skip depth
-                  NextLine;
-                  // Read draft
-                  Str:=NextLine;
+                  NextLine;                                       // skip depth
+                  Str:=NextLine;                                  // Read draft
                   Ship.ProjectSettings.ProjectDraft:=GetFloat(Str);
-//                Ship.ProjectSettings.FMainparticularsHasBeenset:=True;
+               // Ship.ProjectSettings.FMainparticularsHasBeenset:=True;
                   for J:=1 to 22 do NextLine;
                end;
-
                NextLine;            // skip OrderU=
                NextLine;            // skip OrderV=
-
-               // Read number of columns
-               Str:=NextLine;
+               Str:=NextLine;                         // Read number of columns
                Cols:=GetInteger(Str);                    // Read number of rows
                Str:=NextLine;
                Rows:=GetInteger(Str);
@@ -2656,11 +2475,9 @@ begin
                                     end;
                                  end;
                               end;
-                           end;
-                           if abort then break;
+                           end; if abort then break;
                         end;
-                     end;
-                     break;
+                     end; break;
                   end;
                end;
                Ship.Precision:=fpMedium;
@@ -2670,16 +2487,16 @@ begin
                Ship.FileChanged:=true;
             end else ShowMessage(UserString(123));
          end else    ShowMessage(UserString(124));
-//    finally
       Strings.Destroy;
       if Assigned(Ship.OnUpdateGeometryInfo) then Ship.OnUpdateGeometryInfo(self);
       Screen.Cursor:=PrevCursor;
-//    end;
    end;
    OpenDialog.Destroy;
-end;{TFreeEdit.File_ImportPolycad}
+end;
+*)
 
 // Load a VRML file
+
 Procedure TFreeEdit.File_ImportVRML;
 var OpenDialog : TOpenDialog;
     Answer     : Word;
@@ -2687,7 +2504,7 @@ var OpenDialog : TOpenDialog;
 begin
    OpenDialog:=TOpenDialog.Create(Ship);
    OpenDialog.InitialDir:=Ship.Preferences.ImportDirectory;
-   OpenDialog.Filter:='VRML files (*.wrl)|*.wrl';
+   OpenDialog.Filter:='VRML files [*.wrl,*.vrml]|*.wrl; *.vrml';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
       Answer:=Ship.Edit.File_SaveCheck;
@@ -2733,7 +2550,7 @@ begin
    SaveDialog:=TSaveDialog.Create(Owner);
    SaveDialog.InitialDir:=Preferences.ExportDirectory;
    SaveDialog.FileName:=ChangeFileExt(ExtractFilename(FileName),'.part');
-   SaveDialog.Filter:='Free!Ship geometry part (*.Part)|*.part';
+   SaveDialog.Filter:='Free!Ship geometry part [*.Part]|*.part';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin
       Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
@@ -2851,160 +2668,149 @@ var I,J        : integer;
     Marker     : TFreeMarker;
     Matrix,Inv,OrgPts,NewPts: TFreeMatrix;
 begin
-// try
-      for I:=1 to Chines.Count-1 do begin
-         if I<=Surface.NumberOfLayers then Layer:=Surface.Layer[I-1]
-                                      else Layer:=Surface.AddNewLayer;
-         Layer.Name:=Userstring(186)+#32+IntToStr(I);
-         Layer.Developable:=True;
-      end;                 // add special layer to close the hull at centerline
-      Layer:=Surface.AddNewLayer;
-      Layer.Name:=Userstring(187);
-      Setlength(Points,Np);                                 // Prepare matrices
-      Matrix:=TFreeMatrix.Create;
-      Matrix.SetSize(Np,Np);
-      Matrix.Fill(0.0);
-      Matrix.Value[0,0]:=1.0;
-      for I:=2 to Np-1 do begin
-         Matrix.Value[I-1,I-2]:=1/6;
-         Matrix.Value[I-1,I-1]:=2/3;
-         Matrix.Value[I-1,I  ]:=1/6;
+   for I:=1 to Chines.Count-1 do begin
+      if I<=Surface.NumberOfLayers then Layer:=Surface.Layer[I-1]
+                                   else Layer:=Surface.AddNewLayer;
+      Layer.Name:='Strake '+IntToStr(I);      // Userstring(186)+#32 = "Полоса"
+      Layer.Developable:=True;
+   end;                 // add special layer to close the hull at centerline
+   Layer:=Surface.AddNewLayer;
+   Layer.Name:=Userstring(187);
+   Setlength(Points,Np);                           // Prepare matrices
+   Matrix:=TFreeMatrix.Create;
+   Matrix.SetSize(Np,Np);
+   Matrix.Fill(0.0);
+   Matrix.Value[0,0]:=1.0;
+   for I:=2 to Np-1 do begin
+      Matrix.Value[I-1,I-2]:=1/6;
+      Matrix.Value[I-1,I-1]:=2/3;
+      Matrix.Value[I-1,I  ]:=1/6;
+   end;
+   Matrix.Value[Np-1,Np-1]:=1.0;                   // Invert matrix
+   Inv:=Matrix.Invert;
+   Matrix.Destroy;
+   OrgPts:=TFreeMatrix.Create;
+   OrgPts.SetSize(3,Np);
+   for I:=1 to Np do Setlength(Points[I-1],Chines.Count);
+   for I:=1 to Chines.Count do begin
+      Spline:=Chines[I-1];
+      OrgPts.Fill(0.0);
+      for J:=1 to Np do begin
+         P:=Spline.Value((J-1)/(Np-1));
+         OrgPts.Value[J-1,0]:=P.X;
+         OrgPts.Value[J-1,1]:=P.Y;
+         OrgPts.Value[J-1,2]:=P.Z;
+      end;                                         // calculate new points
+      NewPts:=Inv.Multiply(OrgPts);
+      for J:=1 to Np do begin
+         P.X:=NewPts.Value[J-1,0];
+         P.Y:=NewPts.Value[J-1,1];
+         if P.Y<0 then P.Y:=0;
+         P.Z:=NewPts.Value[J-1,2];
+         if (I=1) and (J=1) then begin Min:=P; Max:=Min; end
+                            else MinMax( P,Min,Max );
+         Points[J-1][I-1]:=Surface.AddControlPoint(P);
       end;
-      Matrix.Value[Np-1,Np-1]:=1.0;                            // Invert matrix
-      Inv:=Matrix.Invert;
-      Matrix.Destroy;
-
-      OrgPts:=TFreeMatrix.Create;
-      OrgPts.SetSize(3,Np);
-
-      for I:=1 to Np do Setlength(Points[I-1],Chines.Count);
-      for I:=1 to Chines.Count do begin
-         Spline:=Chines[I-1];
-         OrgPts.Fill(0.0);
-         for J:=1 to Np do begin
-            P:=Spline.Value((J-1)/(Np-1));
-            OrgPts.Value[J-1,0]:=P.X;
-            OrgPts.Value[J-1,1]:=P.Y;
-            OrgPts.Value[J-1,2]:=P.Z;
-         end;
-         // calculate new points
-         NewPts:=Inv.Multiply(OrgPts);
-         for J:=1 to Np do begin
-            P.X:=NewPts.Value[J-1,0];
-            P.Y:=NewPts.Value[J-1,1];
-            if P.Y<0 then P.Y:=0;
-            P.Z:=NewPts.Value[J-1,2];
-            if (I=1) and (J=1) then begin
-               Min:=P;
-               Max:=Min;
-            end else MinMax(P,Min,Max);
-            Points[J-1][I-1]:=Surface.AddControlPoint(P);
-         end;
-         NewPts.Destroy;
+      NewPts.Destroy;
+   end;
+   OrgPts.Destroy;                                 // Delete inverted matrix
+   Inv.Destroy;                                    // Add chines as markers
+   for I:=1 to Chines.Count do begin
+      Spline:=Chines[I-1];
+      Marker:=TFreeMarker.Create;
+      Marker.FOwner:=self;
+      Edit.Marker_Add(Marker);
+      for J:=1 to Spline.nS do begin
+         Marker.Add(Spline.Point[J-1]);
+         Marker.Knuckle[J-1]:=Spline.Knuckle[J-1];
       end;
-      OrgPts.Destroy;                                 // Delete inverted matrix
-      Inv.Destroy;                                    // Add chines as markers
-      for I:=1 to Chines.Count do begin
-         Spline:=Chines[I-1];
-         Marker:=TFreeMarker.Create;
-         Marker.FOwner:=self;
-         Edit.Marker_Add(Marker);
-         for J:=1 to Spline.NumberOfPoints do begin
-            Marker.Add(Spline.Point[J-1]);
-            Marker.Knuckle[J-1]:=Spline.Knuckle[J-1];
-         end;
-      end;                                                // Setup controlfaces
-      Pts:=TFasterlist.Create;
-      for I:=2 to Np do
-      for J:=2 to Chines.Count do begin Pts.Clear;
-        Point:=Points[I-1][J-1]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
-        Point:=Points[I-2][J-1]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
-        Point:=Points[I-2][J-2]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
-        Point:=Points[I-1][J-2]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
-        if Pts.Count>2 then Surface.AddControlFace(Pts,True,Surface.Layer[J-2]);
-      end;
-      for I:=2 to Np do begin
-         for J:=1 to Chines.Count do begin
+   end;                                                // Setup controlfaces
+   Pts:=TFasterlist.Create;
+   for I:=2 to Np do
+   for J:=2 to Chines.Count do begin Pts.Clear;
+     Point:=Points[I-1][J-1]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
+     Point:=Points[I-2][J-1]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
+     Point:=Points[I-2][J-2]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
+     Point:=Points[I-1][J-2]; if Pts.IndexOf(Point)=-1 then Pts.Add(Point);
+     if Pts.Count>2 then Surface.AddControlFace(Pts,True,Surface.Layer[J-2]);
+   end;
+   for I:=2 to Np do
+   for J:=1 to Chines.Count do begin
+      Edge:=Surface.EdgeExists(Points[I-2][J-1],Points[I-1][J-1]) as TFreeSubdivisionControlEdge;
+      if Edge<>nil then Edge.Crease:=True;
+   end;                                                 // Add controlcurves
+   for J:=1 to Chines.Count do begin
+      Curve:=TFreeSubdivisionControlCurve.Create(Surface);
+      Surface.AddControlCurve(Curve);
+      for I:=1 to Np do begin Curve.AddPoint(Points[I-1][J-1]);
+         if I>1 then begin
             Edge:=Surface.EdgeExists(Points[I-2][J-1],Points[I-1][J-1]) as TFreeSubdivisionControlEdge;
-            if Edge<>nil then Edge.Crease:=True;
+           if Edge<>nil then Edge.Curve:=Curve;
          end;
       end;
-      // Add controlcurves
-      for J:=1 to Chines.Count do begin
-         Curve:=TFreeSubdivisionControlCurve.Create(Surface);
-         Surface.AddControlCurve(Curve);
-         for I:=1 to Np do begin
-            Curve.AddPoint(Points[I-1][J-1]);
-            if I>1 then begin
-               Edge:=Surface.EdgeExists(Points[I-2][J-1],Points[I-1][J-1]) as TFreeSubdivisionControlEdge;
-               if Edge<>nil then Edge.Curve:=Curve;
-            end;
+   end;
+   // Check for stem, keel and stern points to be closed
+   Pts.Clear;                                                 // first stern
+   for I:=Chines.Count downto 2 do Pts.Add(Points[Np-1][I-1]);  // then keel
+   for I:=Np downto 1 do Pts.Add(Points[I-1][0]);        // and finally stem
+   for I:=2 to Chines.Count do Pts.Add(Points[0][I-1]);
+   Pts2:=TFasterList.Create;
+   for I:=1 to Pts.Count do begin
+      Point:=Pts[I-1];
+      P:=Point.Coordinate;
+      if P.Y<>0.0 then begin
+         P.Y:=0;
+         Point:=Surface.AddControlPoint(P);
+         if Point.Coordinate.Y<>0.0 then Point.Coordinate:=P;
+         Pts2.Add(Point);
+      end else Pts2.Add(Point);
+   end;
+   Tmp:=TFasterList.Create;
+   for I:=2 to Pts.Count do begin Tmp.Clear;
+      if Tmp.IndexOf(Pts2[I-1])=-1 then Tmp.Add(Pts2[I-1]);
+      if Tmp.IndexOf(Pts2[I-2])=-1 then Tmp.Add(Pts2[I-2]);
+      if Tmp.IndexOf(Pts[I-2]) =-1 then Tmp.Add(Pts[I-2]);
+      if Tmp.IndexOf(Pts[I-1]) =-1 then Tmp.Add(Pts[I-1]);
+      if Tmp.Count>2 then Surface.AddControlFace(Tmp,False,Layer);
+   end;
+// Now check if there are any edges on the bottom panel that are created
+// by extruding the bottom points and whose crease properties are set to true.
+// This causes undesired knuckle in the bottompanel
+   {
+   for I:=Np-1 downto 2 do begin
+      Point:=Points[I-1][0];
+      if Point.Coordinate.Y>0 then begin
+         for J:=1 to point.NumberOfEdges do begin
+            Edge:=Point.Edge[J-1] as TFreeSubdivisionControlEdge;
+            if ((Edge.Crease) and (Edge.StartPoint=Point)
+            and (abs(Edge.EndPoint.Coordinate.Y)<1e-5))
+            or ((Edge.Crease) and (Edge.EndPoint=Point)
+            and (abs(Edge.StartPoint.Coordinate.Y)<1e-5)) then Edge.Crease:=False;
          end;
       end;
-      // Check for stem, keel and stern points to be closed
-      Pts.Clear;                                                 // first stern
-      for I:=Chines.Count downto 2 do Pts.Add(Points[Np-1][I-1]);  // then keel
-      for I:=Np downto 1 do Pts.Add(Points[I-1][0]);        // and finally stem
-      for I:=2 to Chines.Count do Pts.Add(Points[0][I-1]);
-      Pts2:=TFasterList.Create;
-      for I:=1 to Pts.Count do begin
-         Point:=Pts[I-1];
-         P:=Point.Coordinate;
-         if P.Y<>0.0 then begin
-            P.Y:=0;
-            Point:=Surface.AddControlPoint(P);
-            if Point.Coordinate.Y<>0.0 then Point.Coordinate:=P;
-            Pts2.Add(Point);
-         end else Pts2.Add(Point);
-      end;
-      Tmp:=TFasterList.Create;
-      for I:=2 to Pts.Count do begin Tmp.Clear;
-         if Tmp.IndexOf(Pts2[I-1])=-1 then Tmp.Add(Pts2[I-1]);
-         if Tmp.IndexOf(Pts2[I-2])=-1 then Tmp.Add(Pts2[I-2]);
-         if Tmp.IndexOf(Pts[I-2]) =-1 then Tmp.Add(Pts[I-2]);
-         if Tmp.IndexOf(Pts[I-1]) =-1 then Tmp.Add(Pts[I-1]);
-         if Tmp.Count>2 then Surface.AddControlFace(Tmp,False,Layer);
-      end;
-   // Now check if there are any edges on the bottom panel that are created by extruding the
-   // bottom points and whose crease properties are set to true. This causes undesired knuckle in the bottompanel
-      {
-      for I:=Np-1 downto 2 do begin
-         Point:=Points[I-1][0];
-         if Point.Coordinate.Y>0 then begin
-            for J:=1 to point.NumberOfEdges do begin
-               Edge:=Point.Edge[J-1] as TFreeSubdivisionControlEdge;
-               if ((Edge.Crease) and (Edge.StartPoint=Point) and (abs(Edge.EndPoint.Coordinate.Y)<1e-5)) or
-                  ((Edge.Crease) and (Edge.EndPoint=Point) and (abs(Edge.StartPoint.Coordinate.Y)<1e-5)) then Edge.Crease:=False;
-            end;
-         end;
-      end;
-      }
-      // set transom as knuckle
-      for J:=2 to Chines.Count do begin
-         Edge:=Surface.EdgeExists(Points[Np-1][J-2],Points[Np-1][J-1]) as TFreeSubdivisionControlEdge;
-         if Edge<>nil then Edge.Crease:=true;
-      end;
-      // Delete unused layers;
-      Edit.Layer_DeleteEmpty(True);
-      // delete unused controlpoints
-      for I:=Surface.NumberOfControlPoints downto 1 do if Surface.ControlPoint[I-1].NumberOfFaces=0 then Surface.ControlPoint[I-1].Delete;
-      Tmp.Destroy;
-      Pts2.Destroy;
-      Pts.Destroy;
-// finally
-      Extents(Min,Max);
-      //ProjectSettings.ProjectWaterDensity:=1.0;
-      ProjectSettings.ProjectBeam:=2*Max.Y;
-      ProjectSettings.ProjectLength:=Max.X-Min.X;
-      ProjectSettings.ProjectDraft:=1.0;
-      Build:=False;
-      Precision:=fpHigh;
-      Draw;
-      FileChanged:=true;
-      for I:=1 to Chines.Count do begin
-         Spline:=Chines[I-1];
-         Spline.Destroy;
-      end;
-//   end;
+   end;
+   }
+   // set transom as knuckle
+   for J:=2 to Chines.Count do begin
+      Edge:=Surface.EdgeExists(Points[Np-1][J-2],Points[Np-1][J-1]) as TFreeSubdivisionControlEdge;
+      if Edge<>nil then Edge.Crease:=true;
+   end;                             // Delete unused layers;
+   Edit.Layer_DeleteEmpty(True);    // delete unused controlpoints
+   for I:=Surface.NumberOfControlPoints downto 1 do if Surface.ControlPoint[I-1].NumberOfFaces=0 then Surface.ControlPoint[I-1].Delete;
+   Tmp.Destroy;
+   Pts2.Destroy;
+   Pts.Destroy;
+   Extents(Min,Max);               // ProjectSettings.ProjectWaterDensity:=1.0;
+   ProjectSettings.ProjectBeam:=2*Max.Y;
+   ProjectSettings.ProjectLength:=Max.X-Min.X;
+   ProjectSettings.ProjectDraft:=Max.Z/2;
+   Build:=False;
+   Precision:=fpHigh;
+   Draw;
+   FileChanged:=true;
+   for I:=1 to Chines.Count do begin
+      Spline:=Chines[I-1];
+      Spline.Destroy;
+   end;
 end;
 

@@ -31,7 +31,9 @@ public
    procedure Exchange( Index1,Index2: Integer );
    procedure Delete(Index: Integer);
    procedure Insert(Index: Integer; Item: Pointer);
+   Procedure Swap( I,J: Integer );
    procedure Sort;
+   procedure Revert;
    function IndexOf(Item: Pointer): Integer;           // normal TList function
    function SortedIndexOf(Item: Pointer): Integer;
    property Count: Integer read FCount;
@@ -249,14 +251,15 @@ begin
    if FSorted then FSorted:=False;
    Inc(FCount);
 end;
+
+Procedure TFasterList.Swap( I,J: Integer ); var Tmp: Pointer;
+begin Tmp:=FList[I]; FList[I]:=FList[J]; FList[J]:=Tmp;
+  if FUseUserdata then
+     begin Tmp:=FData[I]; FData[I]:=FData[J]; FData[J]:=Tmp; end;
+end;
 procedure TFasterList.Sort;
    procedure QuickSort( L,R:Integer );
    var I,J: Integer; Val: Pointer;
-     Procedure Swap( I,J: Integer ); var Tmp: Pointer;
-     begin Tmp:=FList[I]; FList[I]:=FList[J]; FList[J]:=Tmp;
-       if FUseUserdata then
-          begin Tmp:=FData[I]; FData[I]:=FData[J]; FData[J]:=Tmp; end;
-     end;
    begin I:=L; J:=R; Val:=FList[(L+R) div 2];
       repeat
          While FList[I]<Val do Inc(I);
@@ -267,11 +270,13 @@ procedure TFasterList.Sort;
       if I<R then QuickSort( I,R );
    end;
 begin
-   if (FCount>1) then {and not (FSorted) then} begin
-      QuickSort( 0,FCount-1 );
-      FSorted:=True;
-   end;
+   if (FCount>1) then {and not (FSorted) then}
+      begin QuickSort( 0,FCount-1 ); FSorted:=True; end;
 end;
+
+procedure TFasterList.Revert; Var I:Integer;
+    begin for I:=0 to Count div 2 do Swap( I,Count-I-1 ); FSorted:=false; end;
+
 function TFasterList.SortedIndexOf( Item: Pointer ): Integer;
 var MemAddr,MidVal: Pointer; L,H,Mid: Integer;
 begin

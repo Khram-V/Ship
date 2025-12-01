@@ -1,4 +1,6 @@
 
+{ included in Main.pas }
+
 // Creates 4 different views on the hullform
 // BevelWidth - ширина границы/рамки
 // BevelInner, BevelOuter - соответственно внутренняя и внешняя граница/рамка

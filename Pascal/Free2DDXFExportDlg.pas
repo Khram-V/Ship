@@ -1,9 +1,8 @@
 
 unit Free2DDXFExportDlg;
 
-interface
-
-uses Windows,
+interface uses
+     Windows,
      SysUtils,
      Controls,
      Forms,
@@ -43,14 +42,13 @@ type TDXFExport2DDialog = class(TForm)
   public
      function BrowseForFolder(Const browseTitle: PAnsiChar;initialFolder: String = ''): String;
      function Execute:Boolean;
-     property ExportDirectory   : string read FGetExportDirectory write FSetExportDirectory;
-     property SegmentLength     : Real read FGetSegmentLength write FSetSegmentLength;
+     property ExportDirectory: string read FGetExportDirectory write FSetExportDirectory;
+     property SegmentLength: Real read FGetSegmentLength write FSetSegmentLength;
 end;
 
 var DXFExport2DDialog:TDXFExport2DDialog;
 
-implementation
-uses FreeLanguageSupport;
+implementation uses FreeLanguageSupport;
 
 {$R *.LFM}
 
@@ -63,7 +61,6 @@ begin
    if uMsg = BFFM_INITIALIZED then SendMessage(Wnd,BFFM_SETSELECTION,1,Integer(@lg_StartFolder[1]));
    result := 0;
 end;{BrowseForFolderCallBack}
-
 (*
    This function allows the user to browse for a folder
    Arguments:-

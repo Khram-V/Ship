@@ -1,5 +1,6 @@
-
 {
+   included in FreeShipUnit
+
    TFreeHydrostaticCalc is an object class for hydrostatic calculations.
    Each calculation has it's own draft, trim and angle of heel.
    Multiple calculations can be stored and then send to a report.
@@ -308,7 +309,7 @@ begin                                                  // Initial setup of data
       FData.WaterplaneEntranceAngle:=0;
       for J:=1 to Waterplane.Count do begin
          Spline:=Waterplane.Items[J-1]; // Rotate all the points back to a horizontal plane
-         for K:=1 to Spline.NumberOfPoints do begin
+         for K:=1 to Spline.nS do begin
             P1:=Spline.Point[K-1];
             P2:=RotatePoint(P1);
             Spline.Point[K-1]:=P2;
@@ -421,33 +422,6 @@ begin
     Dialog.ShowModal;
     FreeAndNil(Strings);
     FreeAndNil(Dialog);
-end;
-
-///////////// Calculate Gravity Weight and CoG
-procedure TFreeHydrostaticCalc.CalculateGravity;
-var I,N: integer; Properties,Total: TLayerProperties;
-begin
-  if not Owner.Build then exit;
-  N:=0;
-  Total.Weight:=0;
-  Total.SurfaceCenterOfGravity:=Zero;;
-  for I:=1 to Owner.NumberOfLayers do if Owner.Layer[I-1].Count>0 then Inc(N);
-  if N > 0 then
-  for I:=1 to Owner.NumberOfLayers do
-  if Owner.Layer[I-1].Count>0 then begin
-    Properties:=Owner.Layer[I-1].SurfaceProperties;
-    Properties.SurfaceCenterOfGravity.Z:=Properties.SurfaceCenterOfGravity.Z-FData.ModelMin.Z;
-    if Owner.ProjectSettings.ProjectUnits=fuImperial
-        then Properties.Weight:=Properties.Weight/(12*2240)
-        else Properties.Weight:=Properties.Weight/1000;
-    Total.SurfaceArea:=Total.SurfaceArea+Properties.SurfaceArea;
-    Total.Weight:=Total.Weight+Properties.Weight;
-    Total.SurfaceCenterOfGravity += Properties.Weight*Properties.SurfaceCenterOfGravity;
-  end;
-  if N>=1 then // if more then 1 layer is added,then show the properties of all layers together
-  if Total.Weight<>0 then Total.SurfaceCenterOfGravity/=Total.Weight;
-  FData.Weight_:=Total.Weight;                                     ////  Weight
-  FData.CenterOfGravity_:=Total.SurfaceCenterOfGravity;
 end;
 
 // Add calculated data to a stringlist to either show in a report or save to disc
@@ -650,7 +624,7 @@ begin
     end;
   end;
   N:=Length(FData.SAC);                            // Add sectional Area data
-  if N > 0 then begin
+  if N>0 then begin
     Strings.Add('');
     Strings.Add(UserString(38)+':');
     Strings.Add('');
@@ -662,13 +636,11 @@ begin
     II:=1;
     if (FData.SubMin.X<0) or (FData.SubMin.X>Fdata.Sac[0].X) then II:=2;
     for I:=II to N-1 do begin
-      Strings.Add(' │ '+Makelength(FData.Sac[I-1].X,3,9)
-                 +' │ '+Makelength(Fdata.Sac[I-1].Y,3,8)+' │ ');
-    end;
+    Strings.Add(' │ '+Makelength(FData.Sac[I-1].X,3,9)
+               +' │ '+Makelength(Fdata.Sac[I-1].Y,3,8)+' │ '); end;
     Strings.Add(' │ '+Makelength(FData.SubMax.X,3,9)+' │ '+Makelength(0.,3,8)+' │ ');
     Strings.Add(' └───────────┴──────────┘');
   end;
-
   StartDraft:=Owner.ProjectSettings.Hydrostatics_Startdraft;
   EndDraft:=Owner.ProjectSettings.Hydrostatics_Enddraft;
   DraftStep:=Owner.ProjectSettings.Hydrostatics_DraftStep;
@@ -707,7 +679,8 @@ begin
   Strings.Add('W   : '+Userstring(10));   // S
   Strings.Add('Zm  : '+Userstring(26));   // KMt
   Strings.Add('ZM  : '+Userstring(27));   // KMl
-  Strings.Add( '' );
+  Strings.Add('><  : '+Userstring(1673)); // ϑ(x)крен ψ(y)дифферент χ(z)рыскание
+  Strings.Add( '' );                      //     roll     trim          yaw
   Strings.Add('┌─────┬─────┬──────┬─────┬───────┬───────┬──────┬─────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┐');
   Strings.Add('│  T  │ δd  │ Lwl  │ Bwl │  V    │  Δ    │  Xc  │ Zc  │  δ   │  Sm  │  β   │  S   │  α   │  Xf  │  φ   │  W   │  Zm  │  ZM  │');
   Strings.Add('│  м  │  м  │  м   │  м  │  м³   │  т    │  м   │ м   │  —   │  м²  │  —   │  м²  │  —   │  м   │  —   │  м²  │  м   │  м   │');

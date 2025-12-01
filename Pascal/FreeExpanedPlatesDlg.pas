@@ -563,7 +563,7 @@ begin
    Str:=ChangeFileExt(ExtractFilename(FFreeship.FileName),'');
    Str:=Str+'_developments.dxf';
    SaveDialog.FileName:=Str;
-   SaveDialog.Filter:='AutoCad dxf files (*.dxf)|*.dxf';
+   SaveDialog.Filter:='AutoCad dxf files [*.dxf]|*.dxf';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin
       FFreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
@@ -722,7 +722,7 @@ begin
    Str:=ChangeFileExt(ExtractFilename(FFreeship.FileName),'');
    Str:=Str+'_developments.txt';
    SaveDialog.FileName:=Str;
-   SaveDialog.Filter:='Coordinates to text file (*.txt)|*.txt';
+   SaveDialog.Filter:='Coordinates to text file [*.txt]|*.txt';
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
    if SaveDialog.Execute then begin
       FFreeShip.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);

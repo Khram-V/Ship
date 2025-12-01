@@ -9,7 +9,7 @@ interface uses Windows,
 type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit~~TCustomForm}
     ActionList1: TActionList;
     MenuImages : TImageList;
-    MainMenu1  : TMainMenu;              //  WindowMenu: TMenuItem;
+    MainMenu1  : TMainMenu;
     HintBar    : TStatusBar;
     LayerBox,PrecisionBox: TComboBox;
     ToolBar    : TToolBar;
@@ -29,7 +29,6 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit~~TCustomForm}
     IntersectionDialog: TAction; Intersections1   : TMenuItem;
     ShowHydrostatics  : TAction; Hydrostatics1    : TMenuItem;
     DesignHydrostatics: TAction; Calculations1    : TMenuItem;
- // HydrostaticsDialog: TAction; Hydrostatics2    : TMenuItem;
     SplitSectionDialog: TAction; miSetSplitSection: TMenuItem;
     CascadeWindow     : TAction; Cascade1         : TMenuItem;
     TileWindow        : TAction; Tile1            : TMenuItem;
@@ -103,8 +102,8 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit~~TCustomForm}
     IncreaseCurvatureScale: TAction; Incrcurvaturescale1: TMenuItem;
     DecreaseCurvatureScale: TAction; Decrcurvaturescale1: TMenuItem;
     FileSave: TAction;          Save2: TMenuItem;
-    ImportChines: TAction;      Chines1: TMenuItem;
-    ImportBodyplan: TAction;    Curve1: TMenuItem;
+    ImportBodyplan: TAction;    Bodyplan: TMenuItem;
+                                Curve1: TMenuItem;
     ShowControlCurves: TAction; Controlcurves1: TMenuItem;
     NewCurve: TAction;          AddCurve1: TMenuItem;
     ExportCoordinates: TAction; Coordinates1: TMenuItem;
@@ -135,8 +134,8 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit~~TCustomForm}
     ShowFlowlines:TAction;      Flowlines1: TMenuItem;
     SelectAll:    TAction;      Selectall1: TMenuItem;
     ImportSTL:    TAction;      MenuImportSTL:TMenuItem;
-    ExportSTL:    TAction;      STL1:       TMenuItem;
-                    {N1,}N2,N3,N4,N5,N6,N7: TMenuItem;
+    ExportSTL:    TAction;      STL1,N2,N3,N4,N5,N6,N7: TMenuItem;
+
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -146,7 +145,6 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit~~TCustomForm}
     procedure IntersectionDialogExecute(Sender: TObject);
     procedure DesignHydrostaticsExecute(Sender: TObject);
     procedure SpinEditFontSizeChange(Sender: TObject);
-//  procedure HydrostaticsDialogExecute(Sender: TObject);
     procedure ShowHydrostaticsExecute(Sender: TObject);
     procedure ExitProgramExecute(Sender: TObject);
     procedure ShowControlNetExecute(Sender: TObject);
@@ -187,7 +185,6 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit~~TCustomForm}
     procedure ImportObjExecute(Sender: TObject);
     procedure ImportHullFileExecute(Sender: TObject);
     procedure ImportSurfaceExecute(Sender: TObject);
-    procedure ImportChinesExecute(Sender: TObject);
     procedure ImportBodyplanExecute(Sender: TObject);
     procedure ExportDXF3DPolylinesExecute(Sender: TObject);
     procedure ExportDXFFacesExecute(Sender: TObject);
@@ -296,7 +293,6 @@ begin
       OnUpdateRecentFileList :=FreeShipUpdateRecentFileList;
       OnUpdateUndoData       :=FreeShipUpdateUndoData;
       Precision:=fpLow;
-   // ModelInitallyLoaded:=false;
    end;
 end;
 
@@ -358,7 +354,6 @@ begin With Ship do begin
    For I:=1 to NumberOfLayers do if Layer[I-1].Count>0 then inc(NLayers); // File menu
    FileSaveas.Enabled:=(Surface.NumberOfControlPoints>0) or (FileChanged) or (FilenameSet);
    FileSave.Enabled:=(FileSaveas.Enabled) and (FilenameSet);
-// ImportMichletWaves1.Enabled:=(nV>0) and (Surface.NumberOfControlFaces>1);
 // ExportFEF.Enabled:=Surface.NumberOfControlPoints>0;
    ExportObj.Enabled:=Surface.NumberOfControlFaces>0;
    ExportSTL.Enabled:=Surface.NumberOfControlFaces>0;
@@ -376,7 +371,6 @@ begin With Ship do begin
                           NumberofDiagonals+NumberOfControlCurves>0;
    ExportArchimedes.Enabled:=NumberofStations>0;
    ExportGHS.Enabled:=NumberofStations>0;
-// ExportMichlet.Enabled:=(Freeship.Surface.NumberOfControlFaces>0) and (Freeship.ProjectSettings.MainparticularsHasBeenset);
    RecentFiles.Enabled:=RecentFiles.Count>0;
    ExportCoordinates.Enabled:=Surface.NumberOfControlPoints>0;
    ExportPart.Enabled:=(Surface.NumberOfControlFaces>0);
@@ -409,7 +403,6 @@ begin With Ship do begin
       DevelopLayers.Enabled:=True;
       break;
    end;
-// KeelRudderWizard.Enabled:=nV>0;
    DeleteMarkers.Enabled:=NumberofMarkers>0;
 // Calculations
    DesignHydrostatics.Enabled:=Surface.NumberOfControlFaces>0;
@@ -430,14 +423,12 @@ begin With Ship do begin
    DeleteEmptyLayers.Enabled:=False;
    for I:=1 to NumberOfLayers do
    if (Layer[I-1].Count=0) and (NumberOfLayers>0) then begin
-      DeleteEmptyLayers.Enabled:=True;
-      break;
+      DeleteEmptyLayers.Enabled:=True; break;
    end;
    RemoveUnusedPoints.Enabled:=False;
    for I:=1 to Surface.NumberOfControlPoints do
    if Surface.ControlPoint[I-1].NumberOfFaces=0 then begin
-      RemoveUnusedPoints.Enabled:=True;
-      break;
+      RemoveUnusedPoints.Enabled:=True; break;
    end;
    InvertFace.Enabled:=NumberOfSelectedControlFaces>0;
    ShowStations.Enabled:=NumberofStations>0;
@@ -459,7 +450,7 @@ begin With Ship do begin
    ShowControlCurves.Checked:=Visibility.ShowControlCurves;
    ShowControlCurves.Enabled:=Surface.NumberOfControlCurves>0;
    ShowHydrostatics.Checked:=Visibility.ShowHydrostaticData;
-//   ShowHydrostatics.Enabled:=(Surface.NumberOfControlFaces>2) and (ProjectSettings.MainparticularsHasBeenset);
+// ShowHydrostatics.Enabled:=(Surface.NumberOfControlFaces>2) and (ProjectSettings.MainparticularsHasBeenset);
    ShowFlowlines.Checked:=Visibility.ShowFlowlines;
    ShowFlowlines.Enabled:=NumberOfFlowLines>0;
    NewFace.Enabled:=NumberOfSelectedControlPoints>2;
@@ -477,12 +468,12 @@ begin With Ship do begin
       Undo.Caption:=Userstring(290);
    end;
    Undo.Enabled:=(UndoCount>0) and (UndoPosition>0);
-   //if Undo.Enabled then Undo.Caption:='Undo '+UndoObject[Undoposition-1].Undotext
-   //                else Undo.Caption:='Undo';
+// if Undo.Enabled then Undo.Caption:='Undo '+UndoObject[Undoposition-1].Undotext
+//                 else Undo.Caption:='Undo';
    Redo.Enabled:=(UndoCount>0) and (UndoPosition<UndoCount);
-//   if Redo.Enabled then Redo.Caption:='Redo '+UndoObject[Undoposition].Undotext
-//                   else Undo.Caption:='Redo';
-   // End Skip translation
+// if Redo.Enabled then Redo.Caption:='Redo '+UndoObject[Undoposition].Undotext
+//                 else Undo.Caption:='Redo';
+// End Skip translation
    Undohistory1.Enabled:=UndoCount>0;
    Self.ClearUndo.Enabled:=UndoCount>0;
    PointsLock.Enabled:=(NumberOfSelectedControlPoints>0)
@@ -639,19 +630,14 @@ procedure TMainForm.ShowWaterlinesExecute(Sender: TObject);
     end;
 procedure TMainForm.NewFaceExecute(Sender: TObject);
     begin Ship.Edit.Face_New; UpdateMenu; end;
-
 procedure TMainForm.IntersectionDialogExecute(Sender: TObject);
     begin Ship.Edit.Intersection_Dialog; UpdateMenu; end;
-
 procedure TMainForm.DesignHydrostaticsExecute(Sender: TObject);
 var Calculation: TFreeHydrostaticCalc;
 begin Calculation:=Ship.Edit.Hydrostatics_Calculate
-       ( Ship.ProjectSettings.ProjectDraft,0.0,0.0 );
+         ( Ship.ProjectSettings.ProjectDraft,0.0,0.0 );
       if Calculation<>nil then FreeAndNil( Calculation );
 end;
-//procedure TMainForm.HydrostaticsDialogExecute(Sender: TObject);
-//    begin Ship.Edit.Hydrostatics_Dialog; end;
-
 procedure TMainForm.EdgeExtrudeExecute(Sender: TObject);
     begin Ship.Edit.Edge_Extrude; UpdateMenu; end;
 procedure TMainForm.About1Click(Sender: TObject);   // Show splash screen again
@@ -810,12 +796,6 @@ procedure TMainForm.DecreaseCurvatureScaleExecute(Sender: TObject);
     begin Ship.Visibility.DecreaseCurvatureScale; end;
 procedure TMainForm.FileSaveExecute(Sender: TObject);
     begin Ship.Edit.File_Save; UpdateMenu; end;
-procedure TMainForm.ImportChinesExecute(Sender: TObject);
-    begin Ship.Edit.File_ImportChines;
-          FOpenHullWindows;
-          SetCaption;
-          UpdateMenu;
-    end;
 procedure TMainForm.ShowControlCurvesExecute(Sender: TObject);
 begin
    Ship.Visibility.ShowControlCurves:=not Ship.Visibility.ShowControlCurves;
