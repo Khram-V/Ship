@@ -1,7 +1,7 @@
 object FreeLackenbyDialog: TFreeLackenbyDialog
   Left = 189
   Top = 71
-  BorderIcons = [biSystemMenu]
+  BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'Трансформация корпуса по Lackenby'
   ClientHeight = 511

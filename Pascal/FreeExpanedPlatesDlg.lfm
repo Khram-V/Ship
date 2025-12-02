@@ -6,13 +6,13 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
   ClientHeight = 990
   ClientWidth = 1284
   Color = clBtnFace
-  BorderIcons = [biSystemMenu]
+  BorderIcons = []
   BorderStyle = bsSingle
   DesignTimePPI = 192
   Font.Color = clWindowText
   Font.Height = -11
   Position = poDefault
-  Caption = 'Развёртка поверхностей бортовой обшивки'
+  Caption = 'Развёртка на плоскость поверхностей бортовой обшивки'
   LCLVersion = '4.2.0.0'
   object Splitter1: TSplitter
     Left = 924

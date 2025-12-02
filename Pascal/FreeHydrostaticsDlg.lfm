@@ -3,8 +3,8 @@ object FreeHydrostaticsDialog: TFreeHydrostaticsDialog
   Height = 572
   Top = 196
   Width = 1060
-  BorderIcons = [biSystemMenu]
-  Caption = 'Проектные характеристики корпуса.'
+  BorderIcons = []
+  Caption = 'Проектные и гидростатические характеристики обводов корпуса.'
   ClientHeight = 572
   ClientWidth = 1060
   Position = poOwnerFormCenter

@@ -49,18 +49,19 @@ end;
 var DXFExport2DDialog:TDXFExport2DDialog;
 
 implementation uses FreeLanguageSupport;
-
 {$R *.LFM}
 
 var lg_StartFolder: String;
 
 // Call back function used to set the initial browse directory.
 
-function BrowseForFolderCallBack(Wnd: HWND; uMsg: UINT;lParam, lpData: LPARAM): Integer stdcall;
+function BrowseForFolderCallBack
+( Wnd: HWND; uMsg: UINT;lParam, lpData: LPARAM ): Integer stdcall;
 begin
-   if uMsg = BFFM_INITIALIZED then SendMessage(Wnd,BFFM_SETSELECTION,1,Integer(@lg_StartFolder[1]));
+   if uMsg = BFFM_INITIALIZED then
+      SendMessage( Wnd,BFFM_SETSELECTION,1,Integer(@lg_StartFolder[1]) );
    result := 0;
-end;{BrowseForFolderCallBack}
+end;
 (*
    This function allows the user to browse for a folder
    Arguments:-
@@ -70,11 +71,12 @@ end;{BrowseForFolderCallBack}
    Returns: The empty string if no folder was selected (i.e. if the
             user clicked cancel), otherwise the full folder path.
 *)
-function TDXFExport2DDialog.BrowseForFolder(Const browseTitle: PAnsiChar;initialFolder: String=''): String;
-var browse_info   : TBrowseInfo;
-    folder        : array[0..MAX_PATH] of char;
-    find_context  : PItemIDList;
-    I             : Integer;
+function TDXFExport2DDialog.BrowseForFolder
+( Const browseTitle: PAnsiChar;initialFolder: String=''): String;
+var browse_info: TBrowseInfo;
+    folder: array[0..MAX_PATH] of char;
+    find_context: PItemIDList;
+    I: Integer;
 begin
    FillChar(browse_info,SizeOf(browse_info),#0);
    lg_StartFolder := initialFolder;
@@ -85,8 +87,7 @@ begin
    if initialFolder<>'' then browse_info.lpfn := BrowseForFolderCallBack;
    find_context := SHBrowseForFolder(browse_info);
    if Assigned(find_context) then begin
-      if SHGetPathFromIDList(find_context,folder) then begin
-         result:='';
+      if SHGetPathFromIDList(find_context,folder) then begin Result:='';
          for I:=1 to length(Folder) do begin
             if Folder[I-1]=#0 then break else Result:=result+Folder[I-1];
          end;
@@ -94,7 +95,6 @@ begin
       GlobalFreePtr(find_context);
   end else result := '';
 end;
-
 function TDXFExport2DDialog.FGetExportDirectory:string;
    begin Result:=Edit3.Text; end;
 procedure TDXFExport2DDialog.FSetExportDirectory(val:string);
@@ -107,14 +107,10 @@ procedure TDXFExport2DDialog.FSetUnits; var Str:String;
     begin Str:=ComboBox1.Text; Label3.Caption:=Str;end;
 function TDXFExport2DDialog.Execute:Boolean;
    begin FSetUnits; Showmodal; Result:=ModalResult=mrOk; end;
-
-procedure TDXFExport2DDialog.SpeedButton1Click(Sender: TObject);
-var Tmp:string;
-begin
-   Tmp:=BrowseForFolder(PAnsichar(Userstring(209)+':'),ExportDirectory);
-   if DirectoryExists(Tmp) then self.ExportDirectory:=Tmp;
-end;
-
+procedure TDXFExport2DDialog.SpeedButton1Click(Sender: TObject); var Tmp:string;
+    begin Tmp:=BrowseForFolder(PAnsichar(Userstring(209)+':'),ExportDirectory);
+          if DirectoryExists(Tmp) then self.ExportDirectory:=Tmp;
+    end;
 procedure TDXFExport2DDialog.BitBtn1Click(Sender: TObject);
     begin ModalResult:=mrOk; end;
 procedure TDXFExport2DDialog.BitBtn2Click(Sender: TObject);

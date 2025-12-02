@@ -201,7 +201,9 @@
       <Unit>
         <Filename Value="Pascal\Free2DDXFExportDlg.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="DXFExport2DDialog"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="Pascal\FreeShipUnit.pas"/>

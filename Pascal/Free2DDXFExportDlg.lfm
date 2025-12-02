@@ -1,57 +1,59 @@
 object DXFExport2DDialog: TDXFExport2DDialog
-  Left = 387
-  Top = 107
+  Left = 331
+  Height = 155
+  Top = 211
+  Width = 400
+  BorderIcons = []
   BorderStyle = bsDialog
-  Caption = 'Export intersections to DXF as 2D polylines.'
-  ClientHeight = 172
-  ClientWidth = 376
+  Caption = 'Запись теоретических контуров в листах формата AutoCAD.dxf'
+  ClientHeight = 155
+  ClientWidth = 400
   Color = clBtnFace
-  Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -12
   Font.Name = 'MS Sans Serif'
-  Font.Style = []
   FormStyle = fsStayOnTop
   PopupMode = pmAuto
-  OldCreateOrder = True
   Position = poOwnerFormCenter
-  PixelsPerInch = 96
-  TextHeight = 13
+  LCLVersion = '4.4.0.0'
   object Panel2: TPanel
     Left = 0
+    Height = 120
     Top = 22
-    Width = 376
-    Height = 137
+    Width = 400
     Align = alClient
     BevelOuter = bvLowered
+    ClientHeight = 120
+    ClientWidth = 400
+    ParentBackground = False
     TabOrder = 0
     object Label3: TLabel
-      Left = 316
-      Top = 64
-      Width = 32
+      Left = 344
       Height = 13
-      Caption = '[pixels]'
+      Top = 64
+      Width = 14
+      Caption = '[м]'
     end
     object Label1: TLabel
       Left = 5
-      Top = 68
-      Width = 131
       Height = 13
-      Caption = 'Max length of line segments'
+      Top = 68
+      Width = 140
+      Caption = 'Максимальная длина отрезка в контурах'
     end
     object Label7: TLabel
-      Left = 5
-      Top = 16
-      Width = 73
+      Left = 6
       Height = 13
-      Caption = 'Export directory'
+      Top = 16
+      Width = 107
+      Caption = 'Директория записей'
     end
     object SpeedButton1: TSpeedButton
-      Left = 350
+      Left = 376
+      Height = 22
+      Hint = 'Выбор директории для группы листов DXF-файлов'
       Top = 8
       Width = 23
-      Height = 22
-      Hint = 'Browse for the export directory'
       Glyph.Data = {
         F6000000424DF600000000000000760000002800000010000000100000000100
         04000000000080000000130B0000130B00001000000010000000000000000084
@@ -62,83 +64,86 @@ object DXFExport2DDialog: TDXFExport2DDialog
         2222043434343402222203430000000222222000222222220002222222222222
         2002222222220222020222222222200022222222222222222222
       }
-      ParentShowHint = False
       ShowHint = True
+      ParentShowHint = False
       OnClick = SpeedButton1Click
     end
     object Label4: TLabel
       Left = 6
+      Height = 13
       Top = 42
       Width = 55
-      Height = 13
-      Caption = 'Export units'
+      Caption = 'Единицы измерения'
     end
     object Edit1: TFloatSpinEdit
-      Left = 232
+      Left = 280
       Height = 21
       Top = 60
-      Width = 80
+      Width = 64
       Alignment = taRightJustify
       Constraints.MinWidth = 64
       DecimalPlaces = 3
-      Value = 0.1
       Increment = 0.1
       MaxValue = 100
       MinValue = -100
       TabOrder = 2
+      Value = 0.1
     end
     object Edit3: TEdit
-      Left = 120
+      Left = 144
+      Height = 21
       Top = 8
       Width = 232
-      Height = 21
       Color = clBtnFace
       ReadOnly = True
       TabOrder = 0
       Text = 'Name'
     end
     object ComboBox1: TComboBox
-      Left = 232
-      Top = 34
-      Width = 145
+      Left = 280
       Height = 21
+      Top = 34
+      Width = 96
       ItemHeight = 13
       ItemIndex = 0
-      TabOrder = 1
-      Text = 'Meters'
-      OnChange = ComboBox1Change
       Items.Strings = (
-        'Meters'
-        'Centimeters'
-        'Millimeters'
-        'Feet'
-        'Inch'
+        'Метр'
+        'Сантиметр'
+        'Милиметр'
+        'Фут'
+        'Дюйм'
       )
+      TabOrder = 1
+      Text = 'Метр'
+      OnChange = ComboBox1Change
     end
     object CheckBox1: TCheckBox
-      Left = 6
-      Top = 94
-      Width = 149
+      Left = 5
       Height = 17
+      Top = 94
+      Width = 117
       Alignment = taLeftJustify
-      Caption = 'Create individual files'
+      Caption = 'Раздельные файлы с каждым контуром'
       TabOrder = 3
     end
   end
   object Panel1: TPanel
     Left = 0
-    Top = 0
-    Width = 376
     Height = 22
+    Top = 0
+    Width = 400
     Align = alTop
     BevelOuter = bvNone
+    ClientHeight = 22
+    ClientWidth = 400
+    ParentBackground = False
     TabOrder = 1
     object BitBtn1: TSpeedButton
-      Left = 250
-      Top = 1
-      Width = 60
+      Left = 256
       Height = 19
-      Caption = 'OK'
+      Top = 1
+      Width = 68
+      Caption = '&Есть!'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -162,11 +167,11 @@ object DXFExport2DDialog: TDXFExport2DDialog
       OnClick = BitBtn1Click
     end
     object BitBtn2: TSpeedButton
-      Left = 312
-      Top = 1
-      Width = 60
+      Left = 320
       Height = 19
-      Caption = 'Cancel'
+      Top = 1
+      Width = 72
+      Caption = '&Отмена'
       Flat = True
       Glyph.Data = {
         DE010000424DDE01000000000000760000002800000024000000120000000100
@@ -192,16 +197,17 @@ object DXFExport2DDialog: TDXFExport2DDialog
   end
   object Panel3: TPanel
     Left = 0
-    Top = 159
-    Width = 376
     Height = 13
+    Top = 142
+    Width = 400
     Align = alBottom
     BevelOuter = bvNone
+    ParentBackground = False
     TabOrder = 2
   end
   object SaveDialog: TSaveDialog
     Options = [ofOverwritePrompt, ofHideReadOnly, ofPathMustExist, ofEnableSizing]
-    Left = 306
-    Top = 68
+    Left = 208
+    Top = 56
   end
 end

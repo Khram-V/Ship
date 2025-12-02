@@ -1890,7 +1890,7 @@ begin
    end;
 end;
 
-procedure TFreeFlowline.Draw(Viewport:TFreeViewport);
+procedure TFreeFlowline.Draw( Viewport:TFreeViewport );
 var I,J,Scale,Size,NParam,Fragm: Integer;
     Plane   : Plate;
     Output  : TFreeIntersectionData;
@@ -1903,10 +1903,8 @@ begin
    if not build then rebuild;
    FFlowline.Color:=Color;
    FFlowline.Fragments:=600;
-   if (FFlowline.nS>0)
-// and (Viewport.ViewportMode=vmWireframe)
-   then begin                                           // draw flowline source
-      P3D:=FFlowline.Point[0];
+   if (FFlowline.nS>0) and (Viewport.ViewportMode=vmWireframe) then begin
+      P3D:=FFlowline.Point[0];                          // draw flowline source
       if (Viewport.ViewType=fvBodyplan)
       and (Owner.Visibility.ModelView<>mvBoth)
       and (P3D.X<Owner.ProjectSettings.MidleFrame)
@@ -1922,8 +1920,7 @@ begin
       Viewport.Canvas.Ellipse(Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size);
       if Owner.Visibility.ModelView=mvBoth then begin
          P3D.Y:=-P3D.Y;
-         Pt:=Viewport.Project(P3D);
-         // Draw entire circle in white;
+         Pt:=Viewport.Project(P3D);             // Draw entire circle in white;
          Viewport.Canvas.Ellipse(Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size);
       end;
    end;
@@ -1931,14 +1928,13 @@ begin
    and (Owner.Visibility.ModelView<>mvBoth) then begin
       Plane:=SetPlane(1.0,0.0,0.0,-Owner.ProjectSettings.MidleFrame);
       NParam:=2;
-      Setlength(Param,NParam);
+      Setlength( Param,NParam );
       Param[0]:=0.0;
       Param[1]:=1.0;
       if FFlowline.IntersectPlane(Plane,Output) then begin
          Setlength(Param,NParam+Output.NumberOfIntersections);
          for I:=1 to Output.NumberOfIntersections do begin
-            Param[NParam]:=Output.Parameters[I-1];
-            inc(NParam);
+            Param[NParam]:=Output.Parameters[I-1]; inc(NParam);
          end;
          ArraySort( Param,NParam );
       end;
@@ -1948,7 +1944,7 @@ begin
                                                    else scale:=1;
          Fragm:=Round((Param[I-1]-Param[I-2])*FFlowline.Fragments);
          if Fragm<10 then Fragm:=10;
-         SetLength(PArray1,Fragm);
+         SetLength( PArray1,Fragm );
          for J:=1 to Fragm do begin
             T:=Param[I-2]+(Param[I-1]-Param[I-2])*(J-1)/(Fragm-1);
             P3D:=FFlowline.Value(T);
@@ -1976,7 +1972,7 @@ begin
          end;
       end;
    end;
-end;{TFreeFlowline.Draw}
+end;
 
 procedure TFreeFlowline.LoadBinary(Source:TFreeFileBuffer);
 var I,N : Integer;

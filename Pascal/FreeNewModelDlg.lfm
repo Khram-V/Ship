@@ -4,9 +4,9 @@ object FreeNewModelDialog: TFreeNewModelDialog
   Top = 256
   Width = 300
   AutoSize = True
-  BorderIcons = [biSystemMenu]
+  BorderIcons = []
   BorderStyle = bsSingle
-  Caption = 'Аналитические обводы корпуса'
+  Caption = 'Аналитические обводы исторических кораблей'
   FormStyle = fsStayOnTop
   ClientHeight = 303
   ClientWidth = 300
