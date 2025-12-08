@@ -654,6 +654,8 @@ public
    property  Visible             : boolean read FVisible write FSetVisible;
  end;
 
+///  SubdivisionPoint
+
 TFreeSubdivisionPoint = class(TFreeSubdivisionBase)
 private
    FFaces,FEdges: TFasterList;
@@ -673,15 +675,15 @@ private
    function FGetLimitPoint:Vector;
    procedure FSetCoordinate(Val:Vector); virtual;
 public
+   constructor Create(Owner:TFreeSubdivisionSurface); override;
+   destructor  Destroy; override;
+   procedure   Clear;
    procedure   AddEdge(Edge:TFreeSubdivisionEdge);
    procedure   AddFace(Face:TFreeSubdivisionFace);
    function    Averaging:Vector;
    function    CalculateVertexPoint:TFreeSubdivisionPoint; virtual;
-   procedure   Clear;
-   constructor Create(Owner:TFreeSubdivisionSurface); override;
    procedure   DeleteEdge(Edge:TFreeSubdivisionEdge);
    procedure   DeleteFace(Face:TFreeSubdivisionFace);
-   destructor  Destroy; override;
    function    IndexOfFace(Face:TFreeSubdivisionFace):Integer;
    function    IsRegularNURBSPoint(Faces:TFasterList):Boolean;
    property    Coordinate         : Vector read FGetCoordinate write FSetCoordinate;
@@ -712,61 +714,58 @@ private
    procedure FSetSelected(val:Boolean);
    procedure FSetCoordinate(Val:Vector); override;
 public
-   procedure   Collapse;
    constructor Create(Owner:TFreeSubdivisionSurface); override;
-   function FGetIndex:Integer; override;
-   function    DistanceToCursor(X,Y:Integer;Viewport:TFreeViewport):integer;
-   procedure   Delete;
-   procedure   Draw(Viewport:TFreeViewport);
-   procedure   LoadBinary(Source:TFreeFileBuffer);
-   procedure   LoadFromStream(var LineNr:Integer;Strings:TStringList);
-   procedure   SaveBinary(Destination:TFreeFileBuffer);
-   procedure   SaveToStream(Strings:TStringlist);
-   property    Color   : TColor read FGetColor;
-   property    IsLeak  : Boolean read FGetIsLeak;
-   property    Locked  : Boolean read FLocked write FSetLocked;
-   property    Selected: boolean read FGetSelected write FSetSelected;     // Property to see if this point has been selected by the user
-   property    Visible : Boolean read FGetVisible;
+   procedure  Collapse;
+   function  FGetIndex:Integer; override;
+   function  DistanceToCursor(X,Y:Integer;Viewport:TFreeViewport):integer;
+   procedure SelDeletePoint;
+   procedure Draw(Viewport:TFreeViewport);
+   procedure LoadBinary(Source:TFreeFileBuffer);
+   procedure LoadFromStream(var LineNr:Integer;Strings:TStringList);
+   procedure SaveBinary(Destination:TFreeFileBuffer);
+   procedure SaveToStream(Strings:TStringlist);
+   property  Color   : TColor read FGetColor;
+   property  IsLeak  : Boolean read FGetIsLeak;
+   property  Locked  : Boolean read FLocked write FSetLocked;
+   property  Selected: boolean read FGetSelected write FSetSelected;     // Property to see if this point has been selected by the user
+   property  Visible : Boolean read FGetVisible;
  end;
-{
-   TFreeSubdivisionEdge
-}
+
+/// TFreeSubdivisionEdge
+
 TFreeSubdivisionEdge = class(TFreeSubdivisionBase)
 private
-   FStartpoint : TFreeSubdivisionPoint;
-   FEndpoint   : TFreeSubdivisionPoint;
-   FFaces      : TFasterList;
-   FCrease     : Boolean;
+   FFaces: TFasterList;
+   FCrease: Boolean;
    FControlEdge: Boolean;
-   FCurve: TFreeSubdivisionControlCurve;
-   function  FGetIndex:Integer;                                         virtual;
-   function  FGetIsBoundaryEdge:Boolean;                                virtual;
+   function  FGetIndex:Integer; virtual;
+   function  FGetIsBoundaryEdge:Boolean; virtual;
    function  FGetFace(Index:Integer):TFreeSubdivisionFace;
    function  FGetNumberOfFaces:Integer;
-   procedure FSetCrease(Val:Boolean);                                   virtual;
+   procedure FSetCrease(Val:Boolean); virtual;
    function  FGetPreviousEdge:TFreeSubdivisionEdge;
    function  FGetNextEdge:TFreeSubdivisionEdge;
 public
-   procedure   AddFace(Face:TFreeSubdivisionFace);
-   procedure   Assign(Edge:TFreeSubdivisionEdge);                       virtual;
-   function    CalculateEdgePoint:TFreeSubdivisionPoint;
+   Curve     : TFreeSubdivisionControlCurve;
+   Startpoint: TFreeSubdivisionPoint;
+   Endpoint  : TFreeSubdivisionPoint;
+   constructor Create(Owner:TFreeSubdivisionSurface); override;
+   destructor  Destroy; //virtual;
    procedure   Clear;
-   constructor Create(Owner:TFreeSubdivisionSurface);                   override;
+   procedure   AddFace(Face:TFreeSubdivisionFace);
+   procedure   Assign(Edge:TFreeSubdivisionEdge); virtual;
+   function    CalculateEdgePoint:TFreeSubdivisionPoint;
    procedure   DeleteFace(Face:TFreeSubdivisionFace);
-   destructor  Destroy;                                                 override;
    function    DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TFreeViewport):integer;virtual;
-   procedure   Draw(DrawMirror:Boolean;Viewport:TFreeViewport);         virtual;
+   procedure   Draw(DrawMirror:Boolean;Viewport:TFreeViewport); virtual;
    procedure   SwapData;
-   property    Crease             : Boolean read FCrease write FSetCrease;
-   property    Curve              : TFreeSubdivisionControlCurve read FCurve write FCurve;
-   property    EdgeIndex          : integer read FGetIndex;
-   property    EndPoint           : TFreeSubdivisionPoint read FEndPoint write FEndPoint;
+   property    Crease       : Boolean read FCrease write FSetCrease;
+   property    EdgeIndex    : integer read FGetIndex;
    property    Face[index:integer]: TFreeSubdivisionFace read FGetFace;
-   property    IsBoundaryEdge     : Boolean read FGetIsBoundaryEdge;
-   property    NextEdge           : TFreeSubdivisionEdge read FGetNextEdge;
-   property    NumberOfFaces      : integer read FGetNumberOfFaces;
-   property    PreviousEdge       : TFreeSubdivisionEdge read FGetPreviousEdge;
-   property    StartPoint         : TFreeSubdivisionPoint read FStartPoint write FStartPoint;
+   property    IsBoundaryEdge: Boolean read FGetIsBoundaryEdge;
+   property    NextEdge     : TFreeSubdivisionEdge read FGetNextEdge;
+   property    NumberOfFaces: integer read FGetNumberOfFaces;
+   property    PreviousEdge : TFreeSubdivisionEdge read FGetPreviousEdge;
  end;
 {
    TFreesubdivisionControlEdge
@@ -774,26 +773,27 @@ public
 TFreesubdivisionControlEdge= class(TFreeSubdivisionEdge)
 private
    function  FGetColor:TColor;
-   function  FGetIndex:Integer;                                         override;
-   function  FGetIsBoundaryEdge:Boolean;                                override;
+   function  FGetIndex:Integer; override;
+   function  FGetIsBoundaryEdge:Boolean; override;
    procedure FSetSelected(val:Boolean);
    function  FGetSelected:Boolean;
    function  FGetVisible:Boolean;
 public
-   procedure   Collapse;
-   constructor Create(Owner:TFreeSubdivisionSurface);                   override;
-   procedure   Delete;
-   function    DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TFreeViewport):integer;override;
-   procedure   Draw(DrawMirror:Boolean;Viewport:TFreeViewport);         override;
-   function    InsertControlPoint(P:Vector):TFreeSubdivisionControlpoint;
-   procedure   LoadBinary(Source:TFreeFileBuffer);
-   procedure   LoadFromStream(var LineNr:Integer;Strings:TStringList);
-   procedure   SaveBinary(Destination:TFreeFileBuffer);
-   procedure   SaveToStream(Strings:TStringlist);
-   procedure   Trace;
-   property    Color   : TColor read FGetColor;
-   property    Selected: boolean read FGetSelected write FSetSelected; // Property to see if this edge has been selected by the user
-   property    Visible : Boolean read FGetVisible;
+   constructor Create(Owner:TFreeSubdivisionSurface); override;
+   destructor Destroy; //override;
+   procedure Collapse;
+   procedure SelDeleteEdge;
+   function  DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TFreeViewport):integer;override;
+   procedure Draw(DrawMirror:Boolean;Viewport:TFreeViewport); override;
+   function  InsertControlPoint(P:Vector):TFreeSubdivisionControlpoint;
+   procedure LoadBinary(Source:TFreeFileBuffer);
+   procedure LoadFromStream(var LineNr:Integer;Strings:TStringList);
+   procedure SaveBinary(Destination:TFreeFileBuffer);
+   procedure SaveToStream(Strings:TStringlist);
+   procedure Trace;
+   property  Color: TColor read FGetColor;
+   property  Selected: boolean read FGetSelected write FSetSelected; // Property to see if this edge has been selected by the user
+   property  Visible: Boolean read FGetVisible;
  end;
 
 TFreeSubdivisionFace = class(TFreeSubdivisionBase)
@@ -805,11 +805,11 @@ private
    function FGetNumberOfPoints:Integer;
    function FGetPoint(Index:Integer):TFreeSubdivisionPoint;
 public
+   constructor Create(Owner:TFreeSubdivisionSurface); override;
+   destructor  Destroy; virtual;
+   procedure   Clear; virtual;
    procedure   AddPoint(Point:TFreeSubdivisionPoint);
    function    CalculateFacePoint:TFreeSubdivisionPoint;
-   procedure   Clear; virtual;
-   constructor Create(Owner:TFreeSubdivisionSurface); override;
-   destructor  Destroy; override;
    procedure   FlipNormal; // Inverts the point ordering of the face
    function    IndexOfPoint(P:TFreeSubdivisionPoint):Integer;
    procedure   Subdivide(Owner:TFreeSubdivisionSurface;ControlFace:Boolean;VertexPoints,EdgePoints,FacePoints,InteriorEdges,ControlEdges,Dest:TFasterList);virtual;
@@ -839,13 +839,13 @@ private
    procedure FSetLayer(Val:TFreeSubdivisionLayer);
    procedure FSetSelected(val:Boolean);
 public
-   procedure   CalcExtents;
-   procedure   Clear; override;
-   procedure   ClearChildren;
    constructor Create(Owner:TFreeSubdivisionSurface); override;
-   function    DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TFreeViewport):integer;
-   procedure   Delete;
    destructor  Destroy; override;
+   procedure   Clear; override;
+   procedure   CalcExtents;
+   procedure   ClearChildren;
+   function    DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TFreeViewport):integer;
+   procedure   SelDeleteFace;
    procedure   Draw(Viewport:TFreeViewport); overload; virtual;
    procedure   Draw(Viewport:TFreeViewport;MinCurvature,MaxCurvature:Real); reintroduce;overload;
    function    InsertEdge(P1,P2:TFreeSubdivisionControlPoint):TFreesubdivisionControlEdge;
@@ -859,7 +859,8 @@ public
                ( Owner:TFreeSubdivisionSurface; ControlFace:Boolean;
                  VertexPoints,EdgePoints,FacePoints,InteriorEdges,ControlEdges,Dest:TFasterList
                ); override;
-   procedure   Trace;                                       // select all controlfaces connected to the current one that belong to the same layer and are not separated by a crease edge
+   procedure   Trace; // select all controlfaces connected to the current one
+        // that belong to the same layer and are not separated by a crease edge
 // property    Color: TColor read FGetColor;
    property    ControlEdge[index:Integer]: TFreeSubdivisionEdge read FGetControlEdge;
    property    ControlEdgeCount: Integer read FGetControlEdgeCount;
@@ -1070,7 +1071,6 @@ function  ConvertCoordinate(Coord: String; OldCoord: Real):Real;// converts a st
 function  DisplacementToVolume(Displ,Density,AppCoeff:Real;Units:TFreeUnitType):Real; // Converts a displacement to volume
 function  DensityStr(Units:TFreeUnitType):String; // Returns a string value with the density units
 Function  DistanceToLine(P1,P2:TPoint;X,Y:Integer;var Parameter:Real):Real;
-//Function  DistancePointToPlane(P:Vector;Plane:Plate):Real;
 function  DotProduct( const U,V : Vector ) : Real;
 procedure FillColor(Parameter:Real;var R,G,B:Byte);
 function  InertiaStr(Units:TFreeUnitType):String; // Returns a string value with the moment of inertia units
@@ -1080,16 +1080,14 @@ Function  Lines3DIntersect(P1,P2,P3,P4:Vector;var Param:Real;var Int:Vector):Boo
 function  LengthStr(Units:TFreeUnitType):String; // Returns a string value with the length units
 function  MakeLength(value:Real;Decimals,DesLength:integer):string;overload;
 function  MakeLength(value:String;DesLength:integer):string;overload;
-procedure MinMax(P:Vector;var Min,Max:Vector);
+procedure MinMax( P:Vector;var Min,Max:Vector );
 function  Midpoint(P1,P2:Vector):Vector; // Calculate the mid-point between P1 and P2
 function  MirrorPlane( P:Vector; Plane:Plate ):Vector; // mirror a point in a plane
-function  Normalize(const P:Vector):Vector;
 function  NumberOfDecimals(Value:Real):Integer; // Finds out with how many decimals a number should be presented
 function  PlaneIntersectsBox(Min,Max:Vector;Plane:Plate):Boolean;// Function to determine if a plane intersects a bounding box
 function  PlanePointNormal(P,Normal:Vector):Plate; // Calculates the plane with a given normal N through point P
 function  PlanePPP(P1,P2,P3:Vector):Plate; // Create a plane defined by three points
 function  PointInTriangle(P,A,B,C:Vector):Boolean; // This function calculates if a point lies inside a triangle assuming it lies on the plane determined by the triangle
-//function  PoundsToNewton(InpLbs:Real):Real; // converts pounds to Newton
 Function  ProjectPointOnLine(P,P1,P2:Vector):Vector; // Projects point  P on the linesegment through P1 and P2
 function  ProjectPointOnPlane(P:Vector;Plane:Plate):Vector;// Projects a point on to a plane
 function  RandomColor:TColor;                        // create a random color
@@ -1098,19 +1096,20 @@ function  SetPlane(a,b,c,d:Real):Plate;
 function  VolStr(Units:TFreeUnitType):String; // Returns a string value with the volume units
 function  VolumeToDisplacement(Volume,Density,AppCoeff:Real;Units:TFreeUnitType):Real; // Converts a volume to displacement
 function  WeightStr(Units:TFreeUnitType):String; // Returns a string value with the weight units
+function  Normalize(const P:Vector):Vector;
 Function  UnifiedNormal(const P1,P2,P3:Vector):Vector; // calculate the normal of a plane defined by points P1,P2,P3 and scale to unit-length
 function LenMMStr(Units: TFreeUnitType): String;
 function FindDXFColorIndex(Color:TColor):integer; // find nearest DXF color corresponding to a windows color
 function FindIGSColorIndex(Color:TColor):integer;
+//function PoundsToNewton(InpLbs:Real):Real;       // converts pounds to Newton
 
 procedure Register;
 
 implementation
-
 {$R Cursors.res}   // nice cursors with antialiasing - {$R ViewportCursors.res}
 
-uses FreeShipUnit, FreeLanguageSupport, VRMLUnit, FreeBackgroundBlendingDlg;
-
+uses { Main, }
+     FreeShipUnit,FreeLanguageSupport,VRMLUnit,FreeBackgroundBlendingDlg;
 {$I FreeGeometry_Functions}
 
 const crRotate    = 1; // Rotation cursor
@@ -1119,11 +1118,11 @@ const crRotate    = 1; // Rotation cursor
       crSetScale  = 4; // Cursor used when setting the scale of a background image
       crTranspCol = 5; // Cursor used when setting the transparent color of a background image
 {
- TFreeAlphaBuffer
- Alpha-buffer class used in the shading algorithm
+   TFreeAlphaBuffer
+        Alpha-buffer class used in the shading algorithm
 }
 procedure TFreeAlphaBuffer.AddPixelData( X,Y:Integer; R,G,B,Alpha:Byte; Z:Real );
-var Data:TAlphaBlendData;
+var Data: TAlphaBlendData;
 begin
    if (X>=0) and (X<FWidth) and (Y>=0) and (Y<FHeight) then begin
      if Y<FFirstRow then FFirstRow:=Y else
@@ -1131,8 +1130,8 @@ begin
      if X<FBuffer[Y].First then FBuffer[Y].First:=X else
         if X>FBuffer[Y].Last then FBuffer[Y].Last:=X;
      if FBuffer[Y].Pixels[X].Number>=FBuffer[Y].Pixels[X].Capacity then begin
-       inc(FBuffer[Y].Pixels[X].Capacity,4);
-       setlength(FBuffer[Y].Pixels[X].Data,FBuffer[Y].Pixels[X].Capacity);
+        inc(FBuffer[Y].Pixels[X].Capacity,4);
+        setlength(FBuffer[Y].Pixels[X].Data,FBuffer[Y].Pixels[X].Capacity);
      end;
      Data.R:=R;
      Data.G:=G;
@@ -1144,8 +1143,7 @@ begin
    end;
 end;
 
-procedure TFreeAlphaBuffer.Initialize;
-var I,J : Integer;
+procedure TFreeAlphaBuffer.Initialize; Var I,J : Integer;
 begin
    if (FWidth<>FViewport.FDestinationWidth)
    or (FHeight<>FViewport.FDestinationheight) then begin
@@ -1293,14 +1291,12 @@ begin
    FAlpha:=255;
    FTolerance:=5;
 end;
-
 procedure TFreeBackgroundImage.FSetAlpha(val:Byte);
 begin
    if val<>FAlpha then begin FAlpha:=val;
       if (FVisible) and (FBitmap<>nil) then FOwner.Refresh;
    end;
 end;
-
 procedure TFreeBackgroundImage.FSetOrigin(val:TPoint);
 begin
    if (Val.X<>Forigin.X) or (Val.Y<>FOrigin.Y) then begin
@@ -1311,7 +1307,6 @@ begin
              Owner.FOnChangeBackgroundImage(Owner);
    end;
 end;
-
 procedure TFreeBackgroundImage.FSetTolerance(val:Byte);
 begin
    if Val<>FTolerance then begin
@@ -1322,7 +1317,6 @@ begin
             Owner.FOnChangeBackgroundImage(Owner);
    end;
 end;
-
 procedure TFreeBackgroundImage.FSetTransparent(val:Boolean);
 begin
    if Val<>FTransparent then begin
@@ -1333,7 +1327,6 @@ begin
              Owner.FOnChangeBackgroundImage(Owner);
    end;
 end;
-
 procedure TFreeBackgroundImage.FSetTransparentColor(val:TColor);
 begin
    if Val<>FTransparentColor then begin
@@ -1347,7 +1340,6 @@ begin
              Owner.FOnChangeBackgroundImage(Owner);
    end;
 end;
-
 procedure TFreeBackgroundImage.FSetVisible(val:Boolean);
 begin
    if val<>FVisible then begin FVisible:=val;
@@ -1357,7 +1349,6 @@ begin
             Owner.FOnChangeBackgroundImage( Owner );
    end;
 end;
-
 constructor TFreeBackgroundImage.Create(Viewport:TFreeViewport);
       begin Inherited Create; FOwner:=Viewport; FBitmap:=nil; Clear; end;
 destructor TFreeBackgroundImage.Destroy;
@@ -1377,7 +1368,7 @@ begin
          RedGreenBlue( Owner.Color,Rb,Gb,Bb );
          RedGreenBlue( FTransparentColor,Rt,Gt,Bt );
          TmpVal:=255-Alpha;
-{$omp parallel for private(I,J)}
+// {$omp parallel for private(I,J)}
          for I:=0 to Owner.Height-1 do
          for J:=0 to Owner.Width-1 do begin
             RedGreenBlue( Tcolor( Img.Pixels[J,I] ),R,G,B );
@@ -1490,7 +1481,6 @@ begin
    end else Alpha:=Old;
    Dialog.Destroy;
 end;
-
 {
    TFreeViewport
    This is a 3D drawingcanvas.
@@ -1736,7 +1726,7 @@ begin
         else FViewportmode:=vmWireFrame;
 }                                       // Load next cursors from resource file
    Screen.Cursors[crRotate]   :=LoadCursor(hInstance,'ROTATE'     ); // = 1 ROTATEVIEWPORT
-   Screen.Cursors[crPan]      :=crDrag;                              // = 2 PANVIEWPORT
+   Screen.Cursors[crPan]      :=DWord( crDrag );                      // = 2 PANVIEWPORT
    Screen.Cursors[crSetOrigin]:=LoadCursor(hInstance,'SETORIGIN'  ); // = 3 SETORIGIN
    Screen.Cursors[crSetScale] :=LoadCursor(hInstance,'SETSCALE'   ); // = 4 SETSCALE
    Screen.Cursors[crTranspCol]:=LoadCursor(hInstance,'COLORPICKER'); // = 5 TRANSPARENTCOLOR
@@ -1747,7 +1737,7 @@ begin
                   crColorPicker }
    FontName:=UFont;           //'Consolas'; // 'Times New Roman'; // 'Courier';
    FontColor:=clNavy;                       // clOlive; // clWhite;
-   FontSize:=8;
+   FontSize:=Ship.Preferences.FontSize;
    Invalidate;
 end;
 
@@ -2928,7 +2918,7 @@ var I,J,K,S,E,Index,Cap,Na,Nb,r,g,b: Integer;
    end;
 
    procedure Swap(var P1,P2:Vector);
-        var Tmp:Vector; begin Tmp:=P1; P1:=P2; P2:=Tmp; end;{Swap}
+        var Tmp:Vector; begin Tmp:=P1; P1:=P2; P2:=Tmp; end;
    procedure DrawDimension(P1,P2:Vector);
    var Tmp: Integer; P: Vector; Pt: TPoint; Str: string;
    begin
@@ -3086,8 +3076,8 @@ begin
       for I:=1 to FBoundaryEdges.Count do begin
          Edge:=FBoundaryEdges[I-1];
          if (not FMirror)
-         or (FMirror and (abs(Edge.FStartPoint.Coordinate.Y)>1e-3)
-                     and (abs(Edge.FEndPoint.Coordinate.Y)>1e-3)) then begin
+         or (FMirror and (abs(Edge.StartPoint.Coordinate.Y)>1e-3)
+                     and (abs(Edge.EndPoint.Coordinate.Y)>1e-3)) then begin
             S:=FPoints.SortedIndexOf(Edge.StartPoint);
             E:=FPoints.SortedIndexOf(Edge.EndPoint);
             if (S<>-1) and (E<>-1) then begin
@@ -3329,10 +3319,8 @@ var I,J,Col,Index: integer;
     Layer: String;
     Source,Dest:TFasterList;
 
-    procedure ExportSpline(Spline:TFreeSpline;Layername:string);
-    var I,Col  : Integer;
-        P2D    : Place;
-        P3D    : Vector;
+   procedure ExportSpline(Spline:TFreeSpline;Layername:string);
+    var I,Col: Integer; P2D: Place; P3D: Vector;
     begin
        Col:=FindDXFColorIndex(Spline.Color);
        Strings.Add('0'+EOL+'POLYLINE');
@@ -3351,8 +3339,7 @@ var I,J,Col,Index: integer;
           Strings.Add('20'+EOL+FloatToDec(P3D.Y,4));
        end;
        Strings.Add('0'+EOL+'SEQEND');
-    end;{ExportSpline}
-
+    end;
 begin                                             // Extract edges as polylines
    Source:=TFasterList.Create;
    Source.AddList(FBoundaryEdges);
@@ -3478,7 +3465,7 @@ var I,J,K,N,BestIndex,ErrorIndex: Integer;
       Tmp:=(P2.X-P1.X)*(P3.Y-P2.Y)-(P2.Y-P1.Y)*(P3.X-P2.X);
       if Tmp>=0.0 then Result:=poCCW else
          if Tmp<0 then Result:=poCW;
-   end;{Crossproduct}
+   end;
 
    // Calculates the third point of a triangle when the length of its
    // three sides and two coordinates are known
@@ -3623,12 +3610,12 @@ var I,J,K,N,BestIndex,ErrorIndex: Integer;
             ProcessTriangle(P1,P2,P3,Index1,Index2,index3);
          end;
       end;
-   end;{Unroll2D}
+   end;
 
    function TriangleArea(P1,P2,P3:Place):Real;
    begin
       Result:=0.5*((P1.x-P2.x)*(P1.y+P2.y)+(P2.x-P3.x)*(P2.y+P3.y)+(P3.x-P1.x)*(P3.y+P1.y));
-   end;{TriangleArea}
+   end;
 
    procedure ProcessFaces(Seedface:TFreeSubdivisionFace;var MaxError:Real;var ErrorIndex:Integer);
    var I,J,k,S,E,P,Index: Integer;
@@ -3643,7 +3630,6 @@ var I,J,K,N,BestIndex,ErrorIndex: Integer;
       TotalError:=0.0;
       FMaxAreaError:=0.0;
       FTotalAreaError:=0.0;
-
       ErrorIndex:=-1;
       Setlength(F2DCoordinates,FPoints.Count);
       Setlength(Processed,FPoints.Count);
@@ -3654,7 +3640,7 @@ var I,J,K,N,BestIndex,ErrorIndex: Integer;
          F2DCoordinates[I-1].X:=0.0;
          F2DCoordinates[I-1].Y:=0.0;
       end;
-      ToDoList:=TFasterList.Create;       // Assemble all faces to be developed in a list
+      ToDoList:=TFasterList.Create; // Assemble all faces to be developed in a list
       ToDoList.AddList(FFaces);
       ToDoList.Sort;
       FDoneList.Clear;
@@ -3722,7 +3708,7 @@ var I,J,K,N,BestIndex,ErrorIndex: Integer;
          end;
       end;
       MaxError:=MaxError+abs(FTotalAreaError);
-   end;{ProcessFaces}
+   end;
 
 begin
    // first assemble all points, edges and faces used
@@ -4397,15 +4383,13 @@ begin
    Normal:=Normalize( vdotv*acc-vdota*vel1 );
 end;
 
-procedure TFreeSpline.DeletePoint(Index:Integer);
-var I : integer;
+procedure TFreeSpline.DeletePoint( Index:Integer ); var I: integer;
 begin
-   if nS>0 then begin dec(nS);
+   if Index<nS then if nS>0 then begin dec(nS);
       for I:=Index to nS-1 do begin
          FPoints[I]:=FPoints[I+1];
          FKnuckles[I]:=FKnuckles[I+1];
-      end;
-      Build:=false;
+      end; Build:=false;
    end;
 end;
 
@@ -4878,7 +4862,8 @@ procedure TFreeNURBSurface.DeleteColumn(Col:Integer);
 var I:Integer;
 begin
    for I:=1 to Rowcount do begin
-      Move(FControlpoints[I-1][Col+1],FControlpoints[I-1][Col],(Colcount-Col-1)*SizeOf(Vector));
+      Move( FControlpoints[I-1][Col+1],
+            FControlpoints[I-1][Col],(Colcount-Col-1)*SizeOf(Vector));
    end;
    Dec(FColCount);
    Build:=False;
@@ -5081,61 +5066,55 @@ begin
 end;
 
 procedure TFreeSubdivisionControlCurve.Delete;
-var Index : Integer;
-    I     : Integer;
-    P1,P2 : TFreeSubdivisionPoint;
-    Edge  : TFreeSubdivisionEdge;
+var Index,I: Integer; P1,P2: TFreeSubdivisionPoint; Edge: TFreeSubdivisionEdge;
 begin
    Index:=Owner.FSelectedControlCurves.IndexOf(self);
    if Index<>-1 then Owner.FSelectedControlCurves.Delete(Index);
    Index:=Owner.FControlCurves.IndexOf(self);
    if Index<>-1 then Owner.FControlCurves.Delete(Index);
-   // Remove references from control edges
-   for I:=2 to FControlPoints.Count do
-   begin
+   for I:=2 to FControlPoints.Count do begin // Remove references from control edges
       P1:=FControlPoints[I-2];
       P2:=FControlPoints[I-1];
-      Edge:=Owner.EdgeExists(P1,P2);
-      if Edge<>nil then Edge.FCurve:=nil;
+      Edge:=Owner.EdgeExists( P1,P2 );
+      if Edge<>nil then Edge.Curve:=nil;
    end;
    FControlPoints.Clear;
-   // Remove references from subdivided edges
-   for I:=2 to FSubdividedPoints.Count do
-   begin
+   for I:=2 to FSubdividedPoints.Count do begin // Remove references from subdivided edges
       P1:=FSubdividedPoints[I-2];
       P2:=FSubdividedPoints[I-1];
       Edge:=Owner.EdgeExists(P1,P2);
-      if Edge<>nil then Edge.FCurve:=nil;
+      if Edge<>nil then Edge.Curve:=nil;
    end;
    FSubdividedPoints.Clear;
    Destroy;
 end;
 
 procedure TFreeSubdivisionControlCurve.DeleteEdge(Edge:TFreeSubdivisionControlEdge);
-var I,J     : Integer;
-    P1,P2   : TFreeSubdivisionPoint;
-    AnEdge  : TFreeSubdivisionEdge;
+var I,J: Integer;
+    P1,P2: TFreeSubdivisionPoint;
+    AnEdge: TFreeSubdivisionEdge;
     NewCurve: TFreeSubdivisionControlCurve;
     DelCurve: Boolean;
 begin
    DelCurve:=False;
    I:=2;
    While I<=FControlPoints.Count do begin
-      if ((FControlPoints[I-2]=Edge.FStartPoint) and (FControlPoints[I-1]=Edge.EndPoint))
-      or ((FControlPoints[I-2]=Edge.EndPoint) and (FControlPoints[I-1]=Edge.FStartPoint))
-      then begin
+      if ((FControlPoints[I-2]=Edge.StartPoint)
+      and (FControlPoints[I-1]=Edge.EndPoint))
+      or ((FControlPoints[I-2]=Edge.EndPoint)
+      and (FControlPoints[I-1]=Edge.StartPoint)) then begin
          // Remove references to this curve from control edges
          for J:=2 to FControlPoints.Count do begin
             P1:=FControlPoints[J-2];
             P2:=FControlPoints[J-1];
             AnEdge:=Owner.EdgeExists(P1,P2);
-            if AnEdge<>nil then AnEdge.FCurve:=nil;
+            if AnEdge<>nil then AnEdge.Curve:=nil;
          end;                        // Remove references from subdivided edges
          if Build then for J:=2 to FSubdividedPoints.Count do begin
             P1:=FSubdividedPoints[J-2];
             P2:=FSubdividedPoints[J-1];
             AnEdge:=Owner.EdgeExists(P1,P2);
-            if AnEdge<>nil then AnEdge.FCurve:=nil;
+            if AnEdge<>nil then AnEdge.Curve:=nil;
          end;
          FSubdividedPoints.Clear;
          if I-2>0 then begin                           // build first new curve
@@ -5148,11 +5127,9 @@ begin
                NewCurve.FControlPoints.Add(P2);
                if J>0 then begin
                   AnEdge:=Owner.EdgeExists(P1,P2);
-                  if AnEdge<>nil then AnEdge.FCurve:=NewCurve;
-               end;
-               P1:=P2;
-            end;
-            NewCurve.Selected:=Selected;
+                  if AnEdge<>nil then AnEdge.Curve:=NewCurve;
+               end; P1:=P2;
+            end; NewCurve.Selected:=Selected;
          end;
          if I-1<FControlPoints.Count-1 then begin     // build second new curve
             NewCurve:=TFreeSubdivisionControlCurve.Create(Owner);
@@ -5164,14 +5141,11 @@ begin
                NewCurve.FControlPoints.Add(P2);
                if J>I-1 then begin
                   AnEdge:=Owner.EdgeExists(P1,P2);
-                  if AnEdge<>nil then AnEdge.FCurve:=NewCurve;
-               end;
-               P1:=P2;
-            end;
-            NewCurve.Selected:=Selected;
+                  if AnEdge<>nil then AnEdge.Curve:=NewCurve;
+               end; P1:=P2;
+            end; NewCurve.Selected:=Selected;
          end;
-         DelCurve:=True;
-         break;
+         DelCurve:=True; break;
       end;
       inc(I);
    end;
@@ -5183,7 +5157,6 @@ begin
       if J<>-1 then Owner.FControlCurves.Delete(J);
       Destroy;
    end;
-
 end;
 
 destructor TFreeSubdivisionControlCurve.Destroy;
@@ -5377,7 +5350,7 @@ begin
       FControlPoints.Add(P2);
       if I>1 then begin
          Edge:=Owner.EdgeExists(P1,P2);
-         if Edge<>nil then Edge.FCurve:=self;
+         if Edge<>nil then Edge.Curve:=self;
       end;
       P1:=P2;
    end;
@@ -5595,15 +5568,15 @@ begin
             L:=3;
             while (L<=Child.NumberOfpoints) and (not IntFound) do begin
                Plane:=PlanePPP(Child.Point[0].Coordinate,Child.Point[L-2].Coordinate,Child.Point[L-1].Coordinate);
-               S1:=Plane.a*Edge.FStartpoint.FCoordinate.X+Plane.b*Edge.FStartpoint.FCoordinate.Y+Plane.c*Edge.FStartpoint.FCoordinate.Z+Plane.d;
-               S2:=Plane.a*Edge.FEndpoint.FCoordinate.X+Plane.b*Edge.FEndpoint.FCoordinate.Y+Plane.c*Edge.FEndpoint.FCoordinate.Z+Plane.d;
+               S1:=Plane.a*Edge.Startpoint.FCoordinate.X+Plane.b*Edge.Startpoint.FCoordinate.Y+Plane.c*Edge.Startpoint.FCoordinate.Z+Plane.d;
+               S2:=Plane.a*Edge.Endpoint.FCoordinate.X+Plane.b*Edge.Endpoint.FCoordinate.Y+Plane.c*Edge.Endpoint.FCoordinate.Z+Plane.d;
                if ((S1<0) and (S2>0)) or ((S1>0) and (S2<0)) then begin
                   // Edge intersects the plane, does it lie in the triangle?
                   if S1=S2 then T:=0.5
                            else T:=-s1/(s2-s1);
-                  P3D.X:=Edge.FStartpoint.FCoordinate.X+T*(Edge.FEndpoint.FCoordinate.X-Edge.FStartpoint.FCoordinate.X);
-                  P3D.Y:=Edge.FStartpoint.FCoordinate.Y+T*(Edge.FEndpoint.FCoordinate.Y-Edge.FStartpoint.FCoordinate.Y);
-                  P3D.Z:=Edge.FStartpoint.FCoordinate.Z+T*(Edge.FEndpoint.FCoordinate.Z-Edge.FStartpoint.FCoordinate.Z);
+                  P3D.X:=Edge.Startpoint.FCoordinate.X+T*(Edge.Endpoint.FCoordinate.X-Edge.Startpoint.FCoordinate.X);
+                  P3D.Y:=Edge.Startpoint.FCoordinate.Y+T*(Edge.Endpoint.FCoordinate.Y-Edge.Startpoint.FCoordinate.Y);
+                  P3D.Z:=Edge.Startpoint.FCoordinate.Z+T*(Edge.Endpoint.FCoordinate.Z-Edge.Startpoint.FCoordinate.Z);
                   if PointInTriangle(P3D,Child.Point[0].Coordinate,Child.Point[L-2].Coordinate,Child.Point[L-1].Coordinate)
                   then begin          // Yes, we have a valid intersection here
                      P:=Edge.InsertControlPoint(P3D);
@@ -5674,11 +5647,9 @@ begin
    FAlphaBlend:=255;
 end;
 
-function TFreeSubdivisionLayer.Delete:Boolean;
-var I,Index: Integer;
-begin
-   Result:=True;
-   for I:=Count downto 1 do Items[I-1].Delete;
+function TFreeSubdivisionLayer.Delete:Boolean; var I,Index: Integer;
+begin Result:=True;
+   for I:=Count downto 1 do Items[I-1].SelDeleteFace;
    if Owner.FActiveLayer=self then Owner.FActiveLayer:=nil;
    Index:=LayerIndex;
    if Index<>-1 then Owner.FLayers.Delete(Index);
@@ -5688,7 +5659,7 @@ begin
 end;
 
 procedure TFreeSubdivisionLayer.DeleteControlFace(ControlFace:TFreeSubdivisionControlFace);
-var Index : Integer;
+var Index: Integer;
 begin
    Index:=FPatches.IndexOf(ControlFace);
    if index<>-1 then FPatches.Delete(Index);
@@ -5702,9 +5673,7 @@ begin
 end;
 
 procedure TFreeSubdivisionLayer.Draw(Viewport:TFreeViewport);
-var I,J  : Integer;
-    Face : TFreeSubdivisionControlface;
-    Edge : TFreeSubdivisionEdge;
+var I,J: Integer; Face: TFreeSubdivisionControlface; Edge: TFreeSubdivisionEdge;
 begin
    if Visible and (Count>0) then begin
       if Viewport.ViewportMode<>vmWireframe then begin             // vmShade++
@@ -5783,27 +5752,18 @@ end;
 procedure TFreeSubdivisionLayer.LoadFromStream(var LineNr:Integer;Strings:TStringList);
 var Str: string;
 begin
-   // read description
-   inc(LineNr);
-   FDescription:=Strings[LineNr];
-   // read Layer identification
-   inc(LineNr);
-   Str:=Strings[LineNr];
+   inc(LineNr); FDescription:=Strings[LineNr]; // read description
+   inc(LineNr); Str:=Strings[LineNr];          // read Layer identification
    FLayerID:=GetInteger(Str);
    if FLayerID>Owner.FLastusedLayerID then Owner.FLastusedLayerID:=FLayerID;
-   // read color
-   FColor:=GetInteger(Str);
-   // read visible
-   FVisible:=GetBoolean(Str);
+   FColor:=GetInteger(Str);                    // read color
+   FVisible:=GetBoolean(Str);                  // read visible
    FSymmetric:=GetBoolean(Str);
-   // read developability
-   if Str<>'' then FDevelopable:=GetBoolean(Str)
+   if Str<>'' then FDevelopable:=GetBoolean(Str) // read developability
               else FDevelopable:=False;
-   // read calc. intersections flag
-   if Str<>'' then FUseForIntersections:=GetBoolean(Str)
+   if Str<>'' then FUseForIntersections:=GetBoolean(Str) // read calc. intersections flag
               else FUseForIntersections:=True;
-   // read use in hydrostatics flag
-   if Str<>'' then FUseInHydrostatics:=GetBoolean(Str)
+   if Str<>'' then FUseInHydrostatics:=GetBoolean(Str) // read use in hydrostatics flag
               else FUseInHydrostatics:=True;
 end;
 
@@ -5890,8 +5850,7 @@ begin
    Destination.Add(FDescription);
    Destination.Add(FLayerID);
    C:=(Cardinal(FColor) and $FFFFFF)+(Cardinal(255-FAlphaBlend) shl 24);
-   Destination.Add( Integer( C ) );
-// Destination.Add(FColor);
+   Destination.Add( Integer( C ) );               //~~ Destination.Add(FColor);
    Destination.Add(FVisible);
    Destination.Add(FSymmetric);
    Destination.Add(FDevelopable);
@@ -5930,11 +5889,10 @@ var ToDoList,DoneList,Current: TFasterList;
     Face       : TFreeSubdivisionControlFace;
     Patch,Copy : TFreeDevelopedPatch;
     Str        : string;
-
     procedure FindAttachedFaces(List:TFasterList;Face:TFreeSubdivisionControlFace);
     var I,J,Index: Integer;
-        P1,P2  : TFreeSubdivisionPoint;
-        Edge   : TFreeSubdivisionEdge;
+        P1,P2: TFreeSubdivisionPoint;
+        Edge: TFreeSubdivisionEdge;
     begin
        P1:=Face.Point[Face.NumberOfPoints-1];
        for I:=1 to Face.NumberOfpoints do begin
@@ -5989,57 +5947,29 @@ begin
    ToDoList.Destroy;
    DoneList.Destroy;
 end;
-
 {
   TFreeSubdivisionPoint
 }
 function TFreeSubdivisionPoint.FGetEdge(Index:Integer):TFreeSubdivisionEdge;
-begin
-   Result:=FEdges[Index];
-end;
-
+   begin Result:=FEdges[Index]; end;
 function TFreeSubdivisionPoint.FGetCoordinate:Vector;
-begin
-   Result:=FCoordinate;
-end;
+   begin Result:=FCoordinate; end;
 
 function TFreeSubdivisionPoint.FGetCurvature:Real;
-var I,Index,PrevIndex,NextIndex: Integer;
-    Prev,Next: TFreeSubdivisionPoint;
-    Face     : TFreeSubdivisionface;
-    Sigma,Tmp: Real;
-
+ var I,Index,PrevIndex,NextIndex: Integer;
+     Prev,Next: TFreeSubdivisionPoint;
+     Face     : TFreeSubdivisionface;
+     Sigma,Tmp: Real;
    function Angle_VV_3D(P1,P2,P3:Vector):Real;
-   var V1X,V1Y,V1Z,
-       V2X,V2Y,V2Z,L: Real;
-   begin
-      V1X:=P1.X-P2.X;
-      V1Y:=P1.Y-P2.Y;
-      V1Z:=P1.Z-P2.Z;
-      V2X:=P3.X-P2.X;
-      V2Y:=P3.Y-P2.Y;
-      V2Z:=P3.Z-P2.Z;
-      L:=Sqrt((V1X*V1X)+(V1Y*V1Y)+(V1Z*V1Z));
-      if L<>0 then begin
-         V1X:=V1X/L;
-         V1Y:=V1Y/L;
-         V1Z:=V1Z/L;
-      end;
-      L:=Sqrt((V2X*V2X)+(V2Y*V2Y)+(V2Z*V2Z));
-      if L<>0 then begin
-         V2X:=V2X/L;
-         V2Y:=V2Y/L;
-         V2Z:=V2Z/L;
-      end;
-      L:=(V1X*V2X)+(V1Y*V2Y)+(V1Z*V2Z);
-      if L<-1 then L:=-1 else if L>1 then L:=1;
-      Result:=ArcCos(L);
-   end;{Angle_VV_3D}
-
-begin
-   Result:=0.0;
+     var V1,V2: Vector; L: Real;
+   begin V1:=P1-P2; L:=abs( V1 ); if L<>0 then V1/=L;
+         V2:=P3-P2; L:=abs( V2 ); if L<>0 then V2/=L;
+         L:=DotProduct( V1,V2 );  if L<-1 then L:=-1 else if L>1 then L:=1;
+         Result:=ArcCos( L );
+   end;
+begin Result:=0.0;
    for I:=1 to FEdges.Count do If Edge[I-1].NumberOfFaces<2 then exit;
-//   if VertexType in [svRegular,svDart] then
+   if VertexType in [svRegular,svDart] then
    begin
       Sigma:=0;
       for I:=1 to NumberOfFaces do begin
@@ -6097,7 +6027,7 @@ end;
 function TFreeSubdivisionPoint.FGetNumberOfCurves:Integer;
 var I:Integer;
 begin Result:=0;
-      for I:=1 to NumberOfEdges do if Edge[I-1].FCurve<>nil then inc(Result);
+      for I:=1 to NumberOfEdges do if Edge[I-1].Curve<>nil then inc(Result);
 end;
 function TFreeSubdivisionPoint.FGetNumberOfEdges:integer;
    begin Result:=FEdges.Count; end;
@@ -6211,8 +6141,8 @@ begin
          for I:=1 to FEdges.Count do begin
             Edge:=FEdges[I-1];
             if (Edge.FFaces.Count=1) or (Edge.FCrease) then begin
-               if Edge.FStartpoint=self then P:=Edge.FEndpoint
-                                        else P:=Edge.FStartpoint;
+               if Edge.Startpoint=self then P:=Edge.Endpoint
+                                       else P:=Edge.Startpoint;
                Result+=0.25*P.FCoordinate;
             end;
          end;
@@ -6258,64 +6188,45 @@ begin
 end;
 
 function TFreeSubdivisionPoint.CalculateVertexPoint:TFreeSubdivisionPoint;
-var Point   : Vector;
-    Edge    : TFreeSubdivisionEdge;
-    I       : Integer;
-begin
-   Point:=FCoordinate;
+  var Point: Vector; Edge: TFreeSubdivisionEdge; I: Integer;
+begin Point:=FCoordinate;
    Result:=TFreeSubdivisionPoint.Create(Owner);
    Result.FVertexType:=FVertexType;
    Result.FCoordinate:=Point;
-   for I:=1 to Fedges.Count do begin
-      Edge:=FEdges[I-1];
-      if Edge.FCurve<>nil then
-         Edge.FCurve.ReplaceVertexPoint(Self,Result);
+   for I:=0 to Fedges.Count-1 do begin Edge:=FEdges[I];
+      if Edge.Curve<>nil then Edge.Curve.ReplaceVertexPoint(Self,Result);
    end;
 end;
 
 procedure TFreeSubdivisionPoint.Clear;
 begin
-   Fillchar(FCoordinate,SizeOf(Vector),0);
+   FCoordinate:=Zero; // Fillchar(FCoordinate,SizeOf(Vector),0);
    FFaces.Clear;
    FEdges.Clear;
    FVertexType:=svRegular;
 end;
-
 constructor TFreeSubdivisionPoint.Create(Owner:TFreeSubdivisionSurface);
-begin
-   inherited Create(Owner);
-   FFaces:=TFasterList.Create;
-   FEdges:=TFasterList.Create;
-   Clear;
-end;
-
+      begin inherited Create(Owner);
+            FFaces:=TFasterList.Create;
+            FEdges:=TFasterList.Create; Clear;
+      end;
 procedure TFreeSubdivisionPoint.DeleteEdge(Edge:TFreeSubdivisionEdge);
-var Index:Integer;
-begin
-   index:=FEdges.IndexOf(Edge);
-   if Index<>-1 then FEdges.Delete(Index);
+      var Index:Integer;
+    begin index:=FEdges.IndexOf(Edge);
+       if Index<>-1 then FEdges.Delete(Index);
 end;
-
 procedure TFreeSubdivisionPoint.DeleteFace(Face:TFreeSubdivisionFace);
-var Index:Integer;
-begin
-   index:=FFaces.IndexOf(Face);
-   if Index<>-1 then FFaces.Delete(Index);
-end;
-
+      var Index:Integer;
+    begin index:=FFaces.IndexOf(Face);
+       if Index<>-1 then FFaces.Delete(Index);
+    end;
 destructor TFreeSubdivisionPoint.Destroy;
-begin
-   Clear;
-   FFaces.Destroy;
-   FFaces:=nil;
-   FEdges.Destroy;
-   Fedges:=nil;
-   inherited Destroy;
+begin Clear;
+      FFaces.Destroy; FFaces:=nil;
+      FEdges.Destroy; Fedges:=nil; inherited Destroy;
 end;
-
 function TFreeSubdivisionPoint.IndexOfFace(Face:TFreeSubdivisionFace):Integer;
    begin Result:=FFaces.IndexOf(Face); end;
-
 {
     TFreeSubdivisionControlPoint
 }
@@ -6362,8 +6273,8 @@ begin
    // Points with no faces connected also!
    if not Result then Result:=(Selected) or (NumberOfFaces=0);
    if (not Result) and (Owner.NumberOfControlCurves>0) then begin
-      For I:=1 to NumberOfEdges do if Edge[I-1].FCurve<>nil then begin
-         if Edge[I-1].FCurve.Selected then begin
+      For I:=1 to NumberOfEdges do if Edge[I-1].Curve<>nil then begin
+         if Edge[I-1].Curve.Selected then begin
             Result:=true;
             break;
          end;
@@ -6395,19 +6306,18 @@ begin
 end;
 
 procedure TFreeSubdivisionControlPoint.Collapse;
-var I,J     : Integer;
-    Face    : TFreeSubdivisionControlFace;
+var I,J: Integer;
+    Face: TFreeSubdivisionControlFace;
     Edge1,Edge2: TFreesubdivisionControlEdge;
     Edges,Points,Sorted,Checklist:TFasterList;
-    P1,P2   : TFreeSubdivisionControlPoint;
+    P1,P2: TFreeSubdivisionControlPoint;
     Crease,EdgeCollapse:Boolean;
 begin
    if NumberOfFaces<=2 then begin
       Selected:=False;
       P1:=nil;
       P2:=nil;
-      // This is possibly a point on a boundary edge,
-      // check for this special case
+   // This is possibly a point on a boundary edge, check for this special case
       Edge1:=nil;
       Edge2:=nil;
       for i:=1 to NumberOfEdges do if Edge[I-1].NumberOfFaces=1 then begin
@@ -6423,11 +6333,13 @@ begin
       if NumberOfEdges=2 then begin
          EdgeCollapse:=True;
          Edge1:=FEdges[0];
-         if Edge1.FStartpoint=self then P1:=Edge1.FEndpoint as TFreeSubdivisionControlPoint
-                                   else P1:=Edge1.FStartpoint as TFreeSubdivisionControlPoint;
+         if Edge1.Startpoint=self
+            then P1:=Edge1.Endpoint as TFreeSubdivisionControlPoint
+            else P1:=Edge1.Startpoint as TFreeSubdivisionControlPoint;
          Edge2:=FEdges[1];
-         if Edge2.FStartpoint=self then P2:=Edge2.FEndpoint as TFreeSubdivisionControlPoint
-                                   else P2:=Edge2.FStartpoint as TFreeSubdivisionControlPoint;
+         if Edge2.Startpoint=self
+            then P2:=Edge2.Endpoint as TFreeSubdivisionControlPoint
+            else P2:=Edge2.Startpoint as TFreeSubdivisionControlPoint;
          Crease:=Edge1.Crease or Edge2.Crease;
       end else begin
          Crease:=False;
@@ -6439,7 +6351,7 @@ begin
          for J:=1 to Face.FPoints.Count do if Face.FPoints[J-1]<>self then Points.Add(Face.FPoints[J-1]);
          FOwner.AddControlFace(Points,False,Face.Layer);
          Points.Destroy;
-         Face.Delete;
+         Face.SelDeleteFace;
       end;
       if EdgeCollapse then begin
          Edge1:=FOwner.EdgeExists(P1,P2) as TFreesubdivisionControlEdge;
@@ -6486,12 +6398,10 @@ begin
                   }  P1:=P2;
                   end;
                end;
-            end;
-            Points.Destroy;
-         end;
-         Sorted.Destroy;
+            end; Points.Destroy;
+         end;   Sorted.Destroy;
       end else Edges.Destroy;
-      delete;
+      SelDeletePoint;
       for i:=Checklist.Count downto 1 do begin
          P1:=Checklist[I-1];
          if (P1.NumberOfFaces>1) and (P1.NumberOfEdges=2) then P1.Collapse;
@@ -6501,25 +6411,16 @@ begin
 end;
 
 constructor TFreeSubdivisionControlPoint.Create(Owner:TFreeSubdivisionSurface);
-begin
-   inherited Create(Owner);
-end;
+      begin inherited Create(Owner); end;
 
-procedure TFreeSubdivisionControlPoint.Delete;
-var Index:Integer;
-    Edge :TFreesubdivisionControlEdge;
-begin                                                 // delete from selection;
-   Selected:=False;
-   if FEdges.Count>0 then begin
-      Index:=Owner.FControlPoints.IndexOf(Self);
-      if Index<>-1 then Owner.FControlPoints.Delete(index);
-      while FEdges<>nil do begin //.Count>0 do
-         Edge:=self.Edge[NumberOfEdges-1] as TFreesubdivisionControlEdge;
-         Edge.Delete;
-      end;
-   end else begin
-      Index:=Owner.FControlPoints.IndexOf(Self);
-      if Index<>-1 then Owner.FControlPoints.Delete(index);
+procedure TFreeSubdivisionControlPoint.SelDeletePoint;
+var Index,I:Integer; Edg: TFreesubdivisionControlEdge;
+begin Selected:=False;
+   Index:=Owner.FControlPoints.IndexOf( Self );        // delete from selection
+   if Index<>-1 then begin
+      Owner.FControlPoints.Delete( Index );
+      if FEdges<>nil then
+         while FEdges.Count>0 do (Edge[0] as TFreesubdivisionControlEdge).SelDeleteEdge;
       Destroy;
    end;
 end;
@@ -6528,63 +6429,64 @@ procedure TFreeSubdivisionControlPoint.Draw(Viewport:TFreeViewport);
 var P: TPoint; Pz: TShadePoint; I: Integer; P3D: Vector;
 begin
    if Viewport.ViewportMode<>vmWireframe then begin P3D:=FCoordinate;
-      if Viewport.ViewType=fvBodyplan then if P3D.X<=Owner.MainframeLocation then P3D.Y:=-P3D.Y;
+      if Viewport.ViewType=fvBodyplan then
+        if P3D.X<=Owner.MainframeLocation then P3D.Y:=-P3D.Y;
       P:=Viewport.Project(P3D);
       Pz:=Viewport.ProjectToZBuffer(1.002*ZBufferScaleFactor,P3D);
       // Check if the point lies within the viewport's drawingcanvas boundaries
       if (Pz.X>=0) and (Pz.Y>=0)
       and (Pz.X<Viewport.ClientWidth)
-      and (Pz.Y<Viewport.ClientHeight) then begin // Compare to Z buffer to check visibility;
-         if Pz.Z>=Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X] then begin // yes, the point is visible
-            Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X]:=Pz.Z;
-            if Viewport.Canvas.Pen.Width<>1 then Viewport.Canvas.Pen.Width:=1;
-            Viewport.PenColor:=Color;
-            Viewport.BrushStyle:=bsClear;
-            Viewport.PenStyle:=psSolid;
-            for I:=1 to Owner.ControlPointSize do Viewport.Canvas.Rectangle(Pz.X-I,Pz.Y-I,Pz.X+I,Pz.Y+I);
-         end;
-      end;
-   end else begin
-      with Viewport.Canvas do begin
-         P3D:=FCoordinate;
-         if Viewport.ViewType=fvBodyplan then if P3D.X<=Owner.MainframeLocation then P3D.Y:=-P3D.Y;
-         P:=Viewport.Project(P3D);
-         if Pen.Width<>1 then Pen.Width:=1;
+      and (Pz.Y<Viewport.ClientHeight) then // Compare to Z buffer to check visibility;
+      if Pz.Z>=Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X] then begin // yes, the point is visible
+         Viewport.ZBuffer.FBuffer[Pz.Y][Pz.X]:=Pz.Z;
+         if Viewport.Canvas.Pen.Width<>1 then Viewport.Canvas.Pen.Width:=1;
          Viewport.PenColor:=Color;
-         if Brush.Style<>bsClear then Brush.Style:=bsClear;
-         if Selected then begin     //FInitializeCanvas(Viewport,1,Color,Mode);
-            for I:=1 to Owner.ControlPointSize do Viewport.Canvas.Rectangle(P.X-I,P.Y-I,P.X+I,P.Y+I);
-            Viewport.Canvas.Rectangle(P.X-Owner.ControlPointSize-2,P.Y-Owner.ControlPointSize-2,P.X+Owner.ControlPointSize+2,P.Y+Owner.ControlPointSize+2);
-         end else begin
-            for I:=1 to Owner.ControlPointSize do Viewport.Canvas.Rectangle(P.X-I,P.Y-I,P.X+I,P.Y+I);
-         end;
+         Viewport.BrushStyle:=bsClear;
+         Viewport.PenStyle:=psSolid;
+         for I:=1 to Owner.ControlPointSize
+           do Viewport.Canvas.Rectangle( Pz.X-I,Pz.Y-I,Pz.X+I,Pz.Y+I );
+      end;
+   end else with Viewport.Canvas do begin P3D:=FCoordinate;
+      if Viewport.ViewType=fvBodyplan then
+         if P3D.X<=Owner.MainframeLocation then P3D.Y:=-P3D.Y;
+      P:=Viewport.Project(P3D);
+      if Pen.Width<>1 then Pen.Width:=1;
+      Viewport.PenColor:=Color;
+      if Brush.Style<>bsClear then Brush.Style:=bsClear;
+      if Selected then begin        //FInitializeCanvas(Viewport,1,Color,Mode);
+         for I:=1 to Owner.ControlPointSize
+           do Viewport.Canvas.Rectangle(P.X-I,P.Y-I,P.X+I,P.Y+I);
+         Viewport.Canvas.Rectangle( P.X-Owner.ControlPointSize-2,
+                                    P.Y-Owner.ControlPointSize-2,
+                                    P.X+Owner.ControlPointSize+2,
+                                    P.Y+Owner.ControlPointSize+2 );
+      end else begin
+         for I:=1 to Owner.ControlPointSize
+           do Viewport.Canvas.Rectangle( P.X-I,P.Y-I,P.X+I,P.Y+I );
       end;
    end;
 end;
 
 function TFreeSubdivisionControlPoint.DistanceToCursor(X,Y:Integer;Viewport:TFreeViewport):integer;
-var Pt: TPoint;
-    P : Vector;
+var Pt: TPoint; P: Vector;
 begin                    // Check if cursor position lies within the boundaries
    P:=FCoordinate;
    if (Viewport.ViewType=fvBodyplan) and (P.X<=Owner.MainframeLocation) then P.Y:=-P.Y;
    Pt:=Viewport.Project(P);
    if (Pt.X>=0) and (Pt.X<=Viewport.Width)
    and (Pt.Y>=0) and (Pt.Y<=Viewport.Height) then Result:=Round( hypot(Pt.X-X,Pt.Y-Y) )
-                                             else Result:=1000000;
+                                             else Result:=100000;
 end;
 
 procedure TFreeSubdivisionControlPoint.LoadBinary(Source:TFreeFileBuffer);
-var I    : Integer;
-    Sel  : Boolean;
+var I: Integer; Sel: Boolean;
 begin
    Source.LoadVector(FCoordinate);
    Source.LoadInteger(I);
    FVertextype:=TFreeVertexType(I);
    Source.LoadBoolean(Sel);
    if Sel then Selected:=True;
-   if Source.Version>=fv198 then
-      Source.LoadBoolean(FLocked);
+   if Source.Version>=fv198 then Source.LoadBoolean(FLocked);
 end;
 
 procedure TFreeSubdivisionControlPoint.LoadFromStream(var LineNr:Integer;Strings:TStringList);
@@ -6593,12 +6495,10 @@ begin                                                            // FCoordinate
    Inc(LineNr);
    Str:=Strings[LineNr];
    FCoordinate:=GetVector(Str);                                  // FVertexType
-   if Str<>'' then begin
-      I:=GetInteger(Str);
+   if Str<>'' then begin I:=GetInteger(Str);
       FVertextype:=TFreeVertexType(I);
-      if Str<>'' then begin
-         Sel:=GetBoolean(Str);
-         if sel then Selected:=True;
+      if Str<>'' then begin Sel:=GetBoolean(Str);
+         if Sel then Selected:=True;
       end;
    end else FVertextype:=TFreeVertexType(0);
 end;
@@ -6646,32 +6546,32 @@ begin
    if (Val<>FCrease) then begin
       FCrease:=Val;
       N:=0;
-      for I:=1 to FStartPoint.FEdges.Count do begin
-         Edge:=FStartPoint.FEdges[I-1];
+      for I:=1 to StartPoint.FEdges.Count do begin
+         Edge:=StartPoint.FEdges[I-1];
          if Edge.Crease then Inc(N);
       end;
-      if FStartpoint.VertexType=svCorner then begin
-         if (FStartPoint.NumberOfFaces>1) and (N=2) then FStartpoint.VertexType:=svCrease; 
+      if Startpoint.VertexType=svCorner then begin
+         if (StartPoint.NumberOfFaces>1) and (N=2) then Startpoint.VertexType:=svCrease;
       end else begin
-         if N=0 then FStartpoint.VertexType:=svRegular else
-          if N=1 then FStartpoint.VertexType:=svDart else
-           if N=2 then FStartpoint.VertexType:=svCrease else
-            if N>2 then FStartpoint.VertexType:=svCorner;
+         if N=0 then Startpoint.VertexType:=svRegular else
+          if N=1 then Startpoint.VertexType:=svDart else
+           if N=2 then Startpoint.VertexType:=svCrease else
+            if N>2 then Startpoint.VertexType:=svCorner;
       end;
       N:=0;
-      for I:=1 to FEndPoint.FEdges.Count do begin
-         Edge:=FEndPoint.FEdges[I-1];
+      for I:=1 to EndPoint.FEdges.Count do begin
+         Edge:=EndPoint.FEdges[I-1];
          if Edge.Crease then Inc(N);
       end;
-      if FEndpoint.VertexType=svCorner then begin
-         if (FEndPoint.NumberOfFaces>1) and (N=2) then FEndpoint.VertexType:=svCrease;
+      if Endpoint.VertexType=svCorner then begin
+         if (EndPoint.NumberOfFaces>1) and (N=2) then Endpoint.VertexType:=svCrease;
       end else begin
-         if N=0 then FEndpoint.VertexType:=svRegular else
-          if N=1 then FEndpoint.VertexType:=svDart else
-           if N=2 then FEndpoint.VertexType:=svCrease else
-            if N>2 then FEndpoint.VertexType:=svCorner;
+         if N=0 then Endpoint.VertexType:=svRegular else
+          if N=1 then Endpoint.VertexType:=svDart else
+           if N=2 then Endpoint.VertexType:=svCrease else
+            if N>2 then Endpoint.VertexType:=svCorner;
       end;
-      FStartPoint.FOwner.Build:=false;
+      StartPoint.FOwner.Build:=false;
    end;
 end;
 
@@ -6747,30 +6647,26 @@ end;
 function TFreeSubdivisionEdge.CalculateEdgePoint:TFreeSubdivisionPoint;
 var Point: Vector;
 begin
-   Point:=0.5*(FStartpoint.FCoordinate+FEndpoint.FCoordinate);
-   Result:=TFreeSubdivisionPoint.Create(FStartPoint.Owner);
+   Point:=0.5*(Startpoint.FCoordinate+Endpoint.FCoordinate);
+   Result:=TFreeSubdivisionPoint.Create(StartPoint.Owner);
    if FCrease then Result.FVertexType:=svCrease;
-   if FCurve<>nil then FCurve.InsertEdgePoint(FStartPoint,FEndPoint,Result);
+   if Curve<>nil then Curve.InsertEdgePoint(StartPoint,EndPoint,Result);
    Result.FCoordinate:=Point;
 end;
 
 procedure TFreeSubdivisionEdge.Clear;
 begin
-   FStartpoint:=nil;
-   FEndpoint:=nil;
-   FCurve:=nil;
+   Startpoint:=nil;
+   Endpoint:=nil;
+   Curve:=nil;
    FFaces.Clear;
    FCrease:=False;
    FControlEdge:=False;
 end;
 
-procedure TFreeSubdivisionEdge.SwapData;
-var Tmp:TFreeSubdivisionPoint;
-begin
-   Tmp:=FStartpoint;
-   FStartpoint:=FEndpoint;
-   FEndpoint:=Tmp;
-end;
+procedure TFreeSubdivisionEdge.SwapData; var Tmp:TFreeSubdivisionPoint;
+    begin Tmp:=Startpoint; Startpoint:=Endpoint; Endpoint:=Tmp;
+    end;
 
 constructor TFreeSubdivisionEdge.Create(Owner:TFreeSubdivisionSurface);
 begin
@@ -6781,34 +6677,31 @@ end;
 
 procedure TFreeSubdivisionEdge.DeleteFace(Face:TFreeSubdivisionFace);
 var Index:Integer;
-begin
-   Index:=FFaces.IndexOf(Face);
-   if Index<>-1 then begin
-      FFaces.Delete(Index);
+begin Index:=FFaces.IndexOf(Face);
+   if Index<>-1 then begin FFaces.Delete(Index);
       if FFaces.Count=1 then Crease:=true else
          if FFaces.Count=0 then Crease:=False;
    end;
 end;
 
 destructor TFreeSubdivisionEdge.Destroy;
-begin
-   if self=nil then exit;
-   Clear;
-   FFaces.Destroy;
-   Inherited Destroy;
-end;
+     begin {if self=nil then exit;} Clear;
+           FFaces.Destroy; FFaces:=nil;
+           Inherited Destroy;
+     end;
+destructor TFreeSubdivisionControlEdge.Destroy; begin Inherited Destroy; end;
 
 function TFreeSubdivisionEdge.DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TFreeViewport):integer;
-var Pt,Pt1,Pt2 : TPoint;
-    P1,P2,M    : Vector;
-    Param      : Real;
-    Tmp        : Integer;
+var Pt1,Pt2: TPoint;
+    P1,P2,M: Vector;
+    Param: Real;
+    Tmp: Integer;
 begin
    P:=ZERO;              // Check if cursor position lies within the boundaries
    Result:=10000;
    if Viewport.ViewType=fvBodyplan then begin
       P1:=StartPoint.FCoordinate;
-      P2:=FEndPoint.FCoordinate;
+      P2:=EndPoint.FCoordinate;
       if ((P1.X<Owner.MainframeLocation) and (P2.X>Owner.MainframeLocation))
       or ((P1.X>Owner.MainframeLocation) and (P2.X<Owner.MainframeLocation))
       then begin
@@ -6861,8 +6754,8 @@ begin
          end;
       end;
    end else begin
-      Pt.X:=X;
-      Pt.Y:=Y;
+//    Pt.X:=X;
+//    Pt.Y:=Y;
       Pt1:=Viewport.Project(StartPoint.Coordinate);
       Pt2:=Viewport.Project(EndPoint.Coordinate);
       Result:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
@@ -6970,27 +6863,17 @@ function TFreesubdivisionControlEdge.FGetSelected:Boolean;
 
 function TFreesubdivisionControlEdge.FGetVisible:Boolean;
 var I: Integer; CFace: TFreeSubdivisionControlFace;
-begin
-   // meant for controledges only.
-   // a controledge is visible if at least one of it's
-   // neighbouring controlfaces belongs to a visible layer
-   Result:=False;
-   if Owner.ShowControlNet then begin
-      for I:=1 to FFaces.Count
-      do if Face[I-1] is TFreeSubdivisionControlFace then begin
-         CFace:=FFaces[I-1];
-         if CFace.Layer<>nil then begin
-            if CFace.Layer.Visible then begin
-               Result:=True;
-               exit;
-            end;
-         end;
-      end;
-   end;
-   // Finally check if the edge is selected.
-   // Selected edges must be visible at all times
+begin  // meant for controledges only. a controledge is visible if at least one
+   Result:=False; // of it's neighbouring controlfaces belongs to visible layer
+   if Owner.ShowControlNet then
+   for I:=1 to FFaces.Count do
+   if Face[I-1] is TFreeSubdivisionControlFace then begin CFace:=FFaces[I-1];
+      if CFace.Layer<>nil then
+      if CFace.Layer.Visible then begin Result:=True; exit; end;
+   end;                           // Finally check if the edge is selected.
+                                 // Selected edges must be visible at all times
    if not Result then Result:=Selected;
-   if (not Result) and (FCurve<>nil) then Result:=FCurve.Selected;
+   if (not Result) and (Curve<>nil) then Result:=Curve.Selected;
 end;
 
 procedure TFreesubdivisionControlEdge.Collapse;
@@ -7007,7 +6890,7 @@ begin
    if (Face[0] is TFreeSubdivisionControlFace)
    and (Face[1] is TFreeSubdivisionControlFace) then begin
       if (StartPoint.NumberOfEdges>2) and (EndPoint.NumberOfEdges>2) then begin
-         if FCurve<>nil then FCurve.DeleteEdge(self);
+         if Curve<>nil then Curve.DeleteEdge(self);
          if selected then Selected:=False;
          S:=Startpoint as TFreeSubdivisionControlPoint;
          E:=Endpoint as TFreeSubdivisionControlPoint;
@@ -7019,10 +6902,8 @@ begin
          P1:=Face1.Point[Face1.NumberOfPoints-1];
          for I:=1 to Face1.NumberOfPoints do begin
             P2:=Face1.Point[I-1];
-            if ((P1=FStartPoint)
-            and (P2=FEndpoint))
-            or ((P2=FStartPoint)
-            and (P1=FEndpoint)) then begin
+            if ((P1=StartPoint) and (P2=Endpoint))
+            or ((P2=StartPoint) and (P1=Endpoint)) then begin
                Ind1:=Face2.IndexOfPoint(P2);
                Ind2:=(Ind1+1) mod Face2.NumberOfPoints;// select the next index
                if Face2.Point[ind2]=P1 then begin// Direction is OK, do nothing
@@ -7032,19 +6913,18 @@ begin
                break;
             end else P1:=P2;
          end;
-
          Layer:=Face1.Layer;
          // Remove the controlfaces from the layers which they belong to
          Face1.Layer.DeleteControlFace(Face1);
          Face2.Layer.DeleteControlFace(Face2);
-         Ind1:=Face1.FPoints.IndexOf(FStartPoint);
-         Ind2:=Face1.FPoints.IndexOf(FEndPoint);
+         Ind1:=Face1.FPoints.IndexOf(StartPoint);
+         Ind2:=Face1.FPoints.IndexOf(EndPoint);
          if (Ind2<Ind1) and (abs(Ind2-Ind1)=1) then Swap(Ind1,Ind2);
-         Ind3:=Face2.FPoints.IndexOf(FStartPoint);
-         Ind4:=Face2.FPoints.IndexOf(FEndPoint);
+         Ind3:=Face2.FPoints.IndexOf(StartPoint);
+         Ind4:=Face2.FPoints.IndexOf(EndPoint);
          if (Ind4<Ind3) and (abs(Ind4-Ind3)=1) then Swap(Ind3,Ind4);
-         if (Ind1=0) and (Ind2=Face1.NumberOfpoints-1) and
-            (Ind3=0) and (Ind4=Face2.NumberOfpoints-1) then begin
+         if (Ind1=0) and (Ind2=Face1.NumberOfpoints-1)
+         and (Ind3=0) and (Ind4=Face2.NumberOfpoints-1) then begin
             Swap(Ind1,Ind2);
             Swap(Ind3,Ind4);
          end;
@@ -7055,32 +6935,24 @@ begin
          // Remove all references to Face2
          for I:=1 to Face2.NumberOfpoints do Face2.Point[I-1].DeleteFace(Face2);
          // Add the new face                                        f
-
-         NewFace:=TFreeSubdivisionControlFace.Create(Owner);
+         NewFace:=TFreeSubdivisionControlFace.Create( Owner );
          NewFace.FLayer:=layer;
          Owner.FControlFaces.Add(NewFace);
-         for I:=0 to Ind1 do begin
-            if NewFace.FPoints.IndexOf(Face1.Point[I])=-1 then
-               NewFace.AddPoint(Face1.Point[I]);
-         end;
-         begin
-            for I:=Ind4 to Face2.NumberOfpoints-1 do begin
-               if NewFace.FPoints.IndexOf(Face2.Point[I])=-1 then
-                  NewFace.AddPoint(Face2.Point[I]);
-            end;
-            for I:=0 to Ind3 do begin
-               if NewFace.FPoints.IndexOf(Face2.Point[I])=-1 then
-                  NewFace.AddPoint(Face2.Point[I]);
-            end;
-         end;
-         for I:=Ind2 to Face1.NumberOfpoints-1 do begin
-            if NewFace.FPoints.IndexOf(Face1.Point[I])=-1 then begin
-               NewFace.AddPoint(Face1.Point[I]);
-            end;
-         end;
+         for I:=0 to Ind1 do
+          if NewFace.FPoints.IndexOf(Face1.Point[I])=-1 then
+             NewFace.AddPoint(Face1.Point[I]);
+         for I:=Ind4 to Face2.NumberOfpoints-1 do
+          if NewFace.FPoints.IndexOf(Face2.Point[I])=-1 then
+             NewFace.AddPoint(Face2.Point[I]);
+         for I:=0 to Ind3 do
+          if NewFace.FPoints.IndexOf(Face2.Point[I])=-1 then
+             NewFace.AddPoint(Face2.Point[I]);
+         for I:=Ind2 to Face1.NumberOfpoints-1 do
+          if NewFace.FPoints.IndexOf(Face1.Point[I])=-1 then
+             NewFace.AddPoint(Face1.Point[I]);
          // Check if all appropriate points are added
          if Newface.NumberOfpoints<>Face1.NumberOfpoints+Face2.NumberOfpoints-2 then
-         ShowMessage(Userstring(200)+#32+IntToStr(self.EdgeIndex));
+            ShowMessage(Userstring(200)+#32+IntToStr(self.EdgeIndex));
 
          P1:=NewFace.Point[Newface.NumberOfPoints-1];
          for I:=1 to Newface.NumberOfPoints do begin
@@ -7095,8 +6967,7 @@ begin
                if Edge.NumberOfFaces<2 then Edge.Crease:=True;
             end;
             P1:=p2;
-         end;
-         // connect the new face to a layer
+         end;                                // connect the new face to a layer
          Layer.AddControlFace(NewFace);
          if Crease then Crease:=false;
          StartPoint.DeleteEdge(self);
@@ -7108,8 +6979,7 @@ begin
          Ind1:=Owner.FControlFaces.IndexOf(Face2);
          if Ind1<>-1 then Owner.FControlFaces.Delete(Ind1);
          Face1.Destroy;
-         face2.Destroy;
-         // check if startpoint and endpoint can be collapsed aswell
+         Face2.Destroy; // check if startpoint and endpoint can be collapsed aswell
          if (S.NumberOfFaces>1) and (S.NumberOfEdges=2) then S.Collapse;
          if (E.NumberOfFaces>1) and (E.NumberOfEdges=2) then E.Collapse;
          Owner.Build:=False;
@@ -7121,86 +6991,61 @@ end;
 constructor TFreesubdivisionControlEdge.Create(Owner:TFreeSubdivisionSurface);
       begin Inherited Create(Owner); end;
 
-procedure TFreesubdivisionControlEdge.Delete;
-var I,Index: Integer;
-    Face   : TFreeSubdivisionControlFace;
-    Point  : TFreeSubdivisionControlPoint;
-begin                                                 // delete from selection;
-   Selected:=False;
-   if FCurve<>nil then FCurve.DeleteEdge(self);
-   Index:=Owner.FControlEdges.IndexOf(self);
-   if Index<>-1 then begin
-      Owner.FControlEdges.Delete(index);
-      for I:=FFaces.Count downto 1 do begin
-         Face:=FFaces[I-1];
-         Face.Delete;
-      end;                        // Remove endpoint from startpoint neighbours
-      EndPoint.DeleteEdge(self);
-      if EndPoint.NumberOfEdges=0 then begin
-         Point:=Endpoint as TFreeSubdivisionControlPoint;
-         Point.Delete;
-      end;                        // Remove startpoint from endpoint neighbours
-      StartPoint.DeleteEdge(self);
-      if StartPoint.NumberOfEdges=0 then begin
-         Point:=StartPoint as TFreeSubdivisionControlPoint;
-         Point.Delete;
-      end;
+procedure TFreesubdivisionControlEdge.SelDeleteEdge;
+var I: Integer;
+begin  Selected:=False;                                // delete from selection
+   if Curve<>nil then Curve.DeleteEdge( self );
+        I:=Owner.FControlEdges.IndexOf( self );
+   if I<>-1 then begin Owner.FControlEdges.Delete( I );
+      for I:=FFaces.Count-1 downto 0 do
+        (Face[I] as TFreeSubdivisionControlFace).selDeleteFace;
+      EndPoint.DeleteEdge(self);  // Remove endpoint from startpoint neighbours
+      if EndPoint.NumberOfEdges=0 then
+        (Endpoint as TFreeSubdivisionControlPoint).selDeletePoint;
+      StartPoint.DeleteEdge(self);// Remove startpoint from endpoint neighbours
+      if StartPoint.NumberOfEdges=0 then
+        (StartPoint as TFreeSubdivisionControlPoint).selDeletePoint;
       Destroy;
    end;
 end;
 
-function TFreesubdivisionControlEdge.DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TFreeViewport):integer;
-var Pt,Pt1,Pt2 : TPoint;
-    P1,P2,M    : Vector;
-    Param      : Real;
-    Tmp        : Integer;
+function TFreesubdivisionControlEdge.DistanceToCursor
+  ( X,Y:Integer; var P:Vector; Viewport:TFreeViewport ):Integer;
+var Pt1,Pt2: TPoint; P1,P2,M: Vector; Param: Real; Tmp: Integer;
 begin                    // Check if cursor position lies within the boundaries
-   P:=ZERO;
+   P:=Zero;
    Result:=10000;
    if Viewport.ViewType=fvBodyplan then begin
       P1:=StartPoint.FCoordinate;
-      P2:=FEndPoint.FCoordinate;
-      if (((P1.X<Owner.MainframeLocation)
-      and (P2.X>Owner.MainframeLocation))
-      or ((P1.X>Owner.MainframeLocation)
-      and (P2.X<Owner.MainframeLocation)))
-      and (not Owner.DrawMirror) then begin
-         if P2.X-P1.X<>0 then M:=Interpolate(P1,P2,(Owner.MainframeLocation-P1.X)/(P2.X-P1.X))
-                         else M:=MidPoint(P1,P2);
+      P2:=EndPoint.FCoordinate;
+      if(((P1.X<Owner.MainframeLocation) and (P2.X>Owner.MainframeLocation))
+      or ((P1.X>Owner.MainframeLocation) and (P2.X<Owner.MainframeLocation)))
+       and (not Owner.DrawMirror) then begin
+         if P2.X-P1.X<>0
+          then M:=Interpolate(P1,P2,(Owner.MainframeLocation-P1.X)/(P2.X-P1.X))
+           else M:=MidPoint(P1,P2);
          if P1.X<=Owner.MainframeLocation then begin        // P2 lies on port
             Pt1:=Viewport.Project(P2);
             Pt2:=Viewport.Project(M);
             Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
-            if Tmp<Result then begin
-               Result:=Tmp;
-               P:=Interpolate(P2,M,Param);
-            end;                                        // P1 lies on starboard
-            P1.Y:=-P1.Y;
+            if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P2,M,Param); end;
+            P1.Y:=-P1.Y;                                // P1 lies on starboard
             M.Y:=-M.Y;
             Pt1:=Viewport.Project(P1);
             Pt2:=Viewport.Project(M);
             Tmp:=Round( DistanceToLine( Pt1,Pt2,X,Y,Param ) );
-            if Tmp<Result then begin
-               Result:=Tmp;
-               P:=Interpolate(P1,M,Param);
-            end;
+            if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P1,M,Param); end;
          end else begin                                      // P1 lies on port
             Pt1:=Viewport.Project(P1);
             Pt2:=Viewport.Project(M);
             Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
-            if Tmp<Result then begin
-               Result:=Tmp;
-               P:=Interpolate(P1,M,Param);
-            end;                                        // P2 lies on starboard
-            P2.Y:=-P2.Y;
+            if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P1,M,Param); end;
+            P2.Y:=-P2.Y;                                // P2 lies on starboard
             M.Y:=-M.Y;
             Pt1:=Viewport.Project(P2);
             Pt2:=Viewport.Project(M);
             Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
-            if Tmp<Result then begin
-               Result:=Tmp;
-               P:=Interpolate(P2,M,Param);
-            end;
+            if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P2,M,Param); end;
          end;
       end else begin
          if P1.X<=Owner.MainframeLocation then P1.Y:=-P1.Y;
@@ -7208,14 +7053,11 @@ begin                    // Check if cursor position lies within the boundaries
          Pt1:=Viewport.Project(P1);
          Pt2:=Viewport.Project(P2);
          Tmp:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
-         if Tmp<Result then begin
-            Result:=Tmp;
-            P:=Interpolate(P1,P2,Param);
-         end;
+         if Tmp<Result then begin Result:=Tmp; P:=Interpolate(P1,P2,Param); end;
       end;
    end else begin
-      Pt.X:=X;
-      Pt.Y:=Y;
+//    Pt.X:=X;
+//    Pt.Y:=Y;
       Pt1:=Viewport.Project(StartPoint.Coordinate);
       Pt2:=Viewport.Project(EndPoint.Coordinate);
       Result:=Round(DistanceToLine(Pt1,Pt2,X,Y,Param));
@@ -7289,14 +7131,15 @@ var I,I1,I2: Integer;
 begin
    Result:=TFreeSubdivisionControlpoint.Create(FOwner);
    Result.FCoordinate:=P;
-   if FCurve<>nil then begin        // insert the new point in the controlcurve
-      FCurve.InsertControlPoint(TFreeSubdivisionControlPoint(FStartPoint),TFreeSubdivisionControlPoint(FEndPoint),Result);
+   if Curve<>nil then begin        // insert the new point in the controlcurve
+      Curve.InsertControlPoint(TFreeSubdivisionControlPoint(StartPoint),
+                               TFreeSubdivisionControlPoint(EndPoint),Result);
    end;
    FOwner.FControlPoints.Add(Result);
    for I:=1 to NumberOfFaces do begin
       Face:=FFaces[I-1];
-      I1:=Face.FPoints.IndexOf(FStartPoint);
-      I2:=Face.FPoints.IndexOf(FEndPoint);
+      I1:=Face.FPoints.IndexOf(StartPoint);
+      I2:=Face.FPoints.IndexOf(EndPoint);
       if (I1<>-1) and (I2<>-1) then begin
          if (I2=I1+1) then Face.FPoints.Insert(I2,Result) else
          if (I1=I2+1) then Face.FPoints.Insert(I1,Result) else
@@ -7305,28 +7148,27 @@ begin
          Result.AddFace(Face);
       end;
    end;
-   FEndpoint.DeleteEdge(self);
-   Edge:=FOwner.AddControlEdge(Result,FEndPoint);
+   Endpoint.DeleteEdge(self);
+   Edge:=FOwner.AddControlEdge(Result,EndPoint);
    Edge.FCrease:=FCrease;
-   Edge.FCurve:=FCurve;
+   Edge.Curve:=Curve;
    if FCrease then Result.FVertexType:=svCrease;
    for I:=1 to NumberOffaces do Edge.AddFace(FFaces[I-1]);
-   FEndPoint:=Result;
+   EndPoint:=Result;
    Result.AddEdge(self);
 end;
 
 procedure TFreesubdivisionControlEdge.LoadBinary(Source:TFreeFileBuffer);
-var Index   : Integer;
-    Sel     : Boolean;
+var Index: Integer; Sel: Boolean;
 begin                                                        // Read startpoint
    Source.LoadInteger(Index);
    if Index=-1 then Index:=0;
-   if Index<>-1 then begin FStartPoint:=Owner.FControlPoints[Index];
-                           FStartPoint.FEdges.Add(Self); end;  // Read endpoint
+   if Index<>-1 then begin StartPoint:=Owner.FControlPoints[Index];
+                           StartPoint.FEdges.Add(Self); end;  // Read endpoint
    Source.LoadInteger(Index);
    if Index=-1 then Index:=0;
-   if Index<>-1 then begin FEndPoint:=Owner.FControlPoints[Index];
-                           FEndPoint.FEdges.Add(Self); end;
+   if Index<>-1 then begin EndPoint:=Owner.FControlPoints[Index];
+                           EndPoint.FEdges.Add(Self); end;
    Source.LoadBoolean(FCrease);
    Source.LoadBoolean(Sel);
    if Sel then selected:=True;
@@ -7342,14 +7184,14 @@ begin
    Index:=GetInteger(Str);
    if index=-1 then index:=0;
    if Index<>-1 then begin
-      FStartPoint:=Owner.FControlPoints[Index];
-      FStartPoint.FEdges.Add(Self);
+      StartPoint:=Owner.FControlPoints[Index];
+      StartPoint.FEdges.Add(Self);
    end;                                                            // FEndpoint
    Index:=GetInteger(Str);
    if index=-1 then index:=0;
    if Index<>-1 then begin
-      FEndPoint:=Owner.FControlPoints[Index];
-      FEndPoint.FEdges.Add(Self);
+      EndPoint:=Owner.FControlPoints[Index];
+      EndPoint.FEdges.Add(Self);
    end;                                                              // FCrease
    FCrease:=GetInteger(Str)=1;
    if Str<>'' then begin // Flag to indicate that this edge was selected when the model was saved (for undo-purposes)
@@ -7359,15 +7201,15 @@ begin
 end;
 procedure TFreesubdivisionControlEdge.SaveBinary(Destination:TFreeFileBuffer);
 begin
-   Destination.Add(Owner.FControlPoints.SortedIndexOf(FStartpoint));
-   Destination.Add(Owner.FControlPoints.SortedIndexOf(FEndpoint));
+   Destination.Add(Owner.FControlPoints.SortedIndexOf(Startpoint));
+   Destination.Add(Owner.FControlPoints.SortedIndexOf(Endpoint));
    Destination.Add(FCrease);
    Destination.Add(Selected);
 end;
 procedure TFreesubdivisionControlEdge.SaveToStream(Strings:TStringlist);
 begin
-   Strings.Add(IntToStr(Owner.FControlPoints.SortedIndexOf(FStartpoint))+#32+
-               IntToStr(Owner.FControlPoints.SortedIndexOf(FEndpoint))+#32+
+   Strings.Add(IntToStr(Owner.FControlPoints.SortedIndexOf(Startpoint))+#32+
+               IntToStr(Owner.FControlPoints.SortedIndexOf(Endpoint))+#32+
                IntToStr(Ord(FCrease))+#32+BoolToStr(Selected));
 end;
 procedure TFreesubdivisionControlEdge.Trace;
@@ -7541,20 +7383,20 @@ var NewFace: TFreeSubdivisionFace;
           NewEdge:=Owner.EdgeExists(P1,P2);
           if NewEdge=nil then begin
             NewEdge:=TFreeSubdivisionEdge.Create(Owner);
-            NewEdge.FStartpoint:=P1;
-            NewEdge.FEndpoint:=P2;
+            NewEdge.Startpoint:=P1;
+            NewEdge.Endpoint:=P2;
             NewEdge.FFaces.Capacity:=2;
-            NewEdge.FStartpoint.FEdges.Add(NewEdge);
-            NewEdge.FEndpoint.FEdges.Add(NewEdge);
+            NewEdge.Startpoint.FEdges.Add(NewEdge);
+            NewEdge.Endpoint.FEdges.Add(NewEdge);
             NewEdge.FControlEdge:=ControlEdge;
             NewEdge.FCrease:=Crease;
             if NewEdge.FControlEdge then ControlEdges.Add(NewEdge)
                                     else InteriorEdges.Add(NewEdge);
           end else if NewEdge.FControlEdge then ControlEdges.Add(NewEdge);
-          if NewEdge.FControlEdge then NewEdge.FCurve:=Curve;
+          if NewEdge.FControlEdge then NewEdge.Curve:=Curve;
        end else Showmessage('Error in TFreeSubdivisionFace.Subdivide');
        NewEdge.FFaces.Add(NewFace);
-    end;{EdgeCheck}
+    end;
 begin
    if (NumberOfPoints<>3)
    or (Owner.FSubdivisionMode=fmCatmullClark) then begin
@@ -7567,36 +7409,34 @@ begin
 
          Index:=(I-1) mod 4;
          TmpIndex:=VertexPoints.SortedIndexOf(P2);
-         Pts[Index]:=VertexPoints.Objects[TmpIndex]; // P2.FNewLocation;
+         Pts[Index]:=VertexPoints.Objects[TmpIndex];  // P2.FNewLocation;
          P2Point:=Pts[Index];
          Index:=(Index+1) mod 4;
          TmpIndex:=EdgePoints.SortedIndexOf(CurrEdge);
-         Pts[index]:=EdgePoints.Objects[TmpIndex]; // CurrEdge.FNewLocation;
+         Pts[index]:=EdgePoints.Objects[TmpIndex];    // CurrEdge.FNewLocation;
          CurrEdgePoint:=Pts[index];
          Index:=(Index+1) mod 4;
          TmpIndex:=FacePoints.SortedIndexOf(self);
-         Pts[index]:=FacePoints.Objects[TmpIndex]; // self.FNewLocation;
+         Pts[index]:=FacePoints.Objects[TmpIndex];    // self.FNewLocation;
          NewLocation:=Pts[index];
          Index:=(Index+1) mod 4;
          TmpIndex:=EdgePoints.SortedIndexOf(PrevEdge);
-         Pts[index]:=Edgepoints.Objects[TmpIndex]; // PrevEdge.FNewLocation;
+         Pts[index]:=Edgepoints.Objects[TmpIndex];    // PrevEdge.FNewLocation;
          PrevEdgePoint:=Pts[index];
-         // add the new face
-         NewFace:=TFreeSubdivisionFace.Create(Owner);
+
+         NewFace:=TFreeSubdivisionFace.Create(Owner);       // add the new face
          Dest.Add(NewFace);
 //       try
-            EdgeCheck(PrevEdgePoint,P2Point,PrevEdge.Crease,PrevEdge.FControlEdge or ControlFace,PrevEdge.FCurve);
-            EdgeCheck(P2Point,CurrEdgePoint,CurrEdge.Crease,CurrEdge.FControlEdge or ControlFace,CurrEdge.FCurve);
+            EdgeCheck(PrevEdgePoint,P2Point,PrevEdge.Crease,PrevEdge.FControlEdge or ControlFace,PrevEdge.Curve);
+            EdgeCheck(P2Point,CurrEdgePoint,CurrEdge.Crease,CurrEdge.FControlEdge or ControlFace,CurrEdge.Curve);
             EdgeCheck(CurrEdgePoint,NewLocation,False,False,nil);
             EdgeCheck(PrevEdgePoint,NewLocation,False,False,nil);
-//       except
-         {
-            EdgeCheck(PrevEdgePoint,P2Point,PrevEdge.Crease,PrevEdge.FControlEdge or ControlFace,PrevEdge.FCurve);
-            EdgeCheck(P2Point,CurrEdgePoint,CurrEdge.Crease,CurrEdge.FControlEdge or ControlFace,CurrEdge.FCurve);
+{        except
+            EdgeCheck(PrevEdgePoint,P2Point,PrevEdge.Crease,PrevEdge.FControlEdge or ControlFace,PrevEdge.Curve);
+            EdgeCheck(P2Point,CurrEdgePoint,CurrEdge.Crease,CurrEdge.FControlEdge or ControlFace,CurrEdge.Curve);
             EdgeCheck(CurrEdgePoint,NewLocation,False,False,nil);
             EdgeCheck(PrevEdgePoint,NewLocation,False,False,nil);
-         }
-//       end;
+         end; }
          NewFace.FPoints.Capacity:=4;
          for J:=1 to 4 do begin                       // Add new face to points
             Pts[J-1].FFaces.Add(NewFace);
@@ -7604,8 +7444,8 @@ begin
          end;
       end;
    end else if NumberOfPoints=3 then begin
-      // Special case, quadrisect triancle by connecting all three edge points
-      // first the three surrounding triangles
+                      // Special case, quadrisect triancle by connecting all
+                     // three edge points first the three surrounding triangles
       for I:=1 to FPoints.Count do begin
          P2:=FPoints[I-1];
          Index:=(I-2+FPoints.Count) mod FPoints.Count;
@@ -7615,18 +7455,18 @@ begin
 
          Index:=0;
          TmpIndex:=EdgePoints.SortedIndexOf(PrevEdge);
-         Pts[Index]:=EdgePoints.Objects[tmpindex];// PrevEdge.FNewLocation;
+         Pts[Index]:=EdgePoints.Objects[tmpindex];    // PrevEdge.FNewLocation;
          Index:=1;
          TmpIndex:=VertexPoints.SortedIndexOf(P2);
-         Pts[index]:=VertexPoints.Objects[Tmpindex];// P2.FNewLocation;
+         Pts[index]:=VertexPoints.Objects[Tmpindex];  // P2.FNewLocation;
          Index:=2;
          TmpIndex:=EdgePoints.SortedIndexOf(CurrEdge);
-         Pts[index]:=Edgepoints.Objects[Tmpindex];// CurrEdge.FNewLocation;
-         // add the new face
-         NewFace:=TFreeSubdivisionFace.Create(Owner);
+         Pts[index]:=Edgepoints.Objects[Tmpindex];    // CurrEdge.FNewLocation;
+
+         NewFace:=TFreeSubdivisionFace.Create(Owner); // add the new face
          Dest.Add(NewFace);
-         EdgeCheck(Pts[0],Pts[1],PrevEdge.Crease,PrevEdge.FControlEdge or ControlFace,PrevEdge.FCurve);
-         EdgeCheck(Pts[1],Pts[2],CurrEdge.Crease,CurrEdge.FControlEdge or ControlFace,CurrEdge.FCurve);
+         EdgeCheck(Pts[0],Pts[1],PrevEdge.Crease,PrevEdge.FControlEdge or ControlFace,PrevEdge.Curve);
+         EdgeCheck(Pts[1],Pts[2],CurrEdge.Crease,CurrEdge.FControlEdge or ControlFace,CurrEdge.Curve);
          EdgeCheck(Pts[2],Pts[0],False,False,nil);
          NewFace.FPoints.Capacity:=3;
          for J:=1 to 3 do begin                       // Add new face to points
@@ -7641,7 +7481,7 @@ begin
          PrevEdge:=Owner.EdgeExists(P2,FPoints[Index]);
          TmpIndex:=EdgePoints.SortedIndexOf(PrevEdge);
          Pts[I-1]:=EdgePoints.Objects[TmpIndex];      // PrevEdge.FNewLocation;
-      end;                                                  // add the new face
+      end;                                            // add the new face
       NewFace:=TFreeSubdivisionFace.Create(Owner);
       Dest.Add(NewFace);
       EdgeCheck(Pts[0],Pts[1],False,False,nil);
@@ -7770,7 +7610,7 @@ begin
       for I:=1 to FEdges.Count do begin
          Edge:=FEdges[I-1];
          P1:=Edge.Startpoint.Coordinate;
-         P2:=Edge.FEndpoint.Coordinate;
+         P2:=Edge.Endpoint.Coordinate;
 
          if (Viewport.ViewType=fvBodyplan) and (not Owner.DrawMirror) then begin
             if ((P1.X<Owner.MainframeLocation) and (P2.X>Owner.MainframeLocation))
@@ -7847,27 +7687,22 @@ begin
    end;
 end;
 
-procedure TFreeSubdivisionControlFace.Delete;
+procedure TFreeSubdivisionControlFace.SelDeleteFace;
 var I,Index: Integer;
-    Edge   : TFreesubdivisionControlEdge;
-    P1,P2  : TFreeSubdivisionPoint;
-begin                                                 // delete from selection;
-   Selected:=false;                                   // remove from layer
-   Layer:=nil;
-   Index:=Owner.FControlFaces.IndexOf(Self);
+    P1,P2: TFreeSubdivisionPoint;
+    Edg: TFreesubdivisionControlEdge;
+begin
+   Selected:=false;                                    // delete from selection
+   Layer:=nil;                                         // remove from layer
+   Index:=Owner.FControlFaces.IndexOf( Self );         // ## ??
    if Index<>-1 then begin
       Owner.FControlFaces.Delete(Index);
-      P1:=Point[NumberOfPoints-1];
-      P1.DeleteFace(Self);
-      for I:=1 to NumberOfPoints do begin
-         P2:=Point[I-1];
-         Edge:=Owner.EdgeExists(P1,P2) as TFreesubdivisionControlEdge;
-         P2.DeleteFace(Self);
-         if Edge<>nil then begin
-            Edge.DeleteFace(Self);
-            if Edge.NumberOfFaces=0 then Edge.Delete;
-         end;
-         P1:=P2;
+      P1:=Point[NumberOfPoints-1];                     // P1.DeleteFace(Self);
+      for I:=0 to NumberOfPoints-1 do begin P2:=Point[I]; P2.DeleteFace(Self);
+         Edg:=Owner.EdgeExists( P1,P2 ) as TFreesubdivisionControlEdge;
+         if Edg<>nil then begin Edg.DeleteFace( Self );
+           if Edg.NumberOfFaces=0 then Edg.SelDeleteEdge;
+         end; P1:=P2;
       end;
    end;
    Owner.Build:=False;
@@ -7876,11 +7711,10 @@ begin                                                 // delete from selection;
 end;
 
 destructor TFreeSubdivisionControlFace.Destroy;
-begin
-   Inherited Destroy;
-   FEdges.Destroy;
-   FControlEdges.Destroy;
-   FChildren.Destroy;
+begin Inherited Destroy;
+      FEdges.Destroy;
+      FControlEdges.Destroy;
+      FChildren.Destroy;
 end;
 
 procedure TFreeSubdivisionControlFace.Draw( Viewport:TFreeViewport );
@@ -8040,9 +7874,9 @@ begin
          Gu:=GetGValue(Owner.UnderWaterColor);
          Bu:=GetBValue(Owner.UnderWaterColor);
          Au:=Owner.UnderWaterColorAlpha;
-         Ru:=(R*(255-Au)+ Ru*Au) div 255;
-         Gu:=(G*(255-Au)+ Gu*Au) div 255;
-         Bu:=(B*(255-Au)+ Bu*Au) div 255;
+         Ru:=( R*(255-Au) + Ru*Au ) div 255;
+         Gu:=( G*(255-Au) + Gu*Au ) div 255;
+         Bu:=( B*(255-Au) + Bu*Au ) div 255;
          Setlength(Above,6);
          setlength(Below,6);
          for I:=1 to ChildCount do begin Child:=Self.Child[I-1];
@@ -8261,7 +8095,7 @@ begin
          end;
          if Pts.Count>2 then Owner.AddControlFace(Pts,False,Layer);
          Pts.Destroy;
-         Delete;
+         SelDeleteFace;
       end;
       Result:=Fowner.EdgeExists(P1,P2) as TFreesubdivisionControlEdge;
       if Result<>nil then Result.Crease:=False;
@@ -8457,8 +8291,7 @@ begin
 end;
 
 procedure TFreeSubdivisionControlFace.SaveToStream(Strings:TStringlist);
-var Str     : string;
-    I,Index : Integer;
+var Str: string; I,Index: Integer;
 begin
    Str:=IntToStr(NumberOfPoints);
    for I:=1 to NumberOfPoints do
@@ -8548,20 +8381,20 @@ begin
 end;
 {
    TFreeSubdivisionSurface
-}
+~~
 function TFreeSubdivisionSurface.AddControlPoint
   ( P:Vector ): TFreeSubdivisionControlPoint;
 begin Result:=TFreeSubdivisionControlPoint.Create( self );
       Result.FCoordinate:=P;
       FControlPoints.Add( Result );
 end;
-(*
+}
 function TFreeSubdivisionSurface.AddControlPoint
   ( P:Vector ): TFreeSubdivisionControlPoint;
+const MaxError=1e-18; // 5;
 var I: Integer;
-//  MaxError: Real;                                   // MaxError:=1e-18; // 5;
-    Edge: TFreeSubdivisionEdge;
-    Point: TFreeSubdivisionControlPoint;
+   Edge: TFreeSubdivisionEdge;
+   Point: TFreeSubdivisionControlPoint;
    function NewPoint( P:Vector ):TFreeSubdivisionControlPoint;
    begin Result:=TFreeSubdivisionControlPoint.Create( self );
          Result.FCoordinate:=P;
@@ -8570,26 +8403,23 @@ var I: Integer;
 begin Result:=NIL;                                 Result:=NewPoint(P); exit;
    for I:=1 to NumberOfControlEdges do begin Edge:=FControlEdges[I-1];
       if Edge.FFaces.Count<=1 then begin                     // boundary edge
-         if P=Edge.FStartpoint.FCoordinate then begin       // Sqr(.)<=MaxError
-            Result:=Edge.FStartpoint as TFreeSubdivisionControlPoint; break;
+         if sqr( P-Edge.Startpoint.FCoordinate )<=MaxError then begin
+            Result:=Edge.Startpoint as TFreeSubdivisionControlPoint; break;
          end else
-         if P=Edge.FEndpoint.FCoordinate then begin         // Sqr(.)<=MaxError
-            Result:=Edge.FEndpoint as TFreeSubdivisionControlPoint; break;
+         if sqr( P-Edge.Endpoint.FCoordinate )<=MaxError then begin
+            Result:=Edge.Endpoint as TFreeSubdivisionControlPoint; break;
          end;
       end;
    end;
-   if Result=nil then begin               // Search controlpoints without edges
-      for I:=1 to FControlPoints.Count do begin Point:=ControlPoint[I-1];
-         if Point.NumberOfEdges=0 then begin
-            if P=Point.FCoordinate then begin                // Sqr()<=MaxError
-               Result:=Point; break;
-            end;
-         end;
-      end;
+   if Result=nil then                     // Search controlpoints without edges
+   for I:=1 to FControlPoints.Count do begin Point:=ControlPoint[I-1];
+      if Point.NumberOfEdges=0 then
+      if sqr( P-Point.FCoordinate )<=MaxError then
+         begin Result:=Point; break; end;
    end;
    if Result=nil then Result:=NewPoint(P);
 end;
-*)
+
 procedure TFreeSubdivisionSurface.AddControlPoint( P:TFreeSubdivisionControlPoint );
     begin if FControlPoints.IndexOf(P)=-1 then
           begin FControlPoints.Add(P); P.FOwner:=self; end;
@@ -8611,27 +8441,31 @@ function TFreeSubdivisionSurface.AddNewLayer:TFreeSubdivisionLayer;
    end;
 
 // Tries to assemble quads into as few as possible rectangular patches
-procedure TFreeSubdivisionSurface.AssembleFacesToPatches(Layers:TFasterList;Mode:TFreeAssembleMode;var AssembledPatches:TFreeFaceArray;var NAssembled:Integer);
+
+procedure TFreeSubdivisionSurface.AssembleFacesToPatches
+(     Layers:TFasterList;
+      Mode:TFreeAssembleMode;
+  var AssembledPatches:TFreeFaceArray;
+  var NAssembled:Integer );
 var ToDoList,DoneList,Current: TFasterlist;
     I,Capacity,ErrInd: Integer;
-    Face       : TFreeSubdivisionControlFace;
-    Layer      : TFreeSubdivisionLayer;
+    Face: TFreeSubdivisionControlFace;
+    Layer: TFreeSubdivisionLayer;
     function GetFace(P1,P2,P3,P4:TFreeSubdivisionPoint):TFreeSubdivisionControlFace;
-    var I: Integer; Face : TFreeSubdivisionFace;
+    var I: Integer; Face: TFreeSubdivisionFace;
     begin Result:=nil;
-       for I:=1 to P1.NumberOfFaces do begin
-          Face:=P1.Face[I-1];
+       for I:=1 to P1.NumberOfFaces do begin Face:=P1.Face[I-1];
           if (P2.IndexOfFace(Face)<>-1)
-          and (P3.IndexOfFace(Face)<>-1)
-          and (P4.IndexOfFace(Face)<>-1) then begin
-             Result:=Face as TFreeSubdivisionControlFace; exit;
+          and(P3.IndexOfFace(Face)<>-1)
+          and(P4.IndexOfFace(Face)<>-1) then begin
+              Result:=Face as TFreeSubdivisionControlFace; exit;
           end;
        end;
     end;
     procedure FindAttachedFaces(List:TFasterlist;Face:TFreeSubdivisionControlFace);
-    var I,J,Index  : integer;
-        P1,P2  : TFreeSubdivisionPoint;
-        Edge   : TFreeSubdivisionEdge;
+    var I,J,Index: integer;
+        P1,P2: TFreeSubdivisionPoint;
+        Edge: TFreeSubdivisionEdge;
     begin
        P1:=Face.Point[Face.NumberOfPoints-1];
        for I:=1 to Face.NumberOfpoints do begin
@@ -8656,9 +8490,9 @@ var ToDoList,DoneList,Current: TFasterlist;
           TPointGrid=record NRows,RowCapacity,ColCapacity: Integer; Rows: array of TPointRow; end;
     }
     var I,J,Index,NCols,NRows: Integer;
-        Face      : TFreeSubdivisionControlFace;
-        Grid      : TFreeSubdivisionGrid;
-        NewFace   : TFreeFaceGrid;
+        Face: TFreeSubdivisionControlFace;
+        Grid: TFreeSubdivisionGrid;
+        NewFace: TFreeFaceGrid;
         CheckFaces: TFasterList; // temporary list with all controlfaces that is used to check if a crease vertex is
                                  // regular (depends on which side of the crease edge is being processed)
         function FindCornerFace:TFreesubdivisionControlFace;
@@ -8717,14 +8551,13 @@ var ToDoList,DoneList,Current: TFasterlist;
                      end;
                   end;
                end;
-            end;{ValidFace}
+            end;
         begin
            Counter:=0;
            SearchBottom:=True;
            SearchTop:=True;
            SearchRight:=True;
            SearchLeft:=True;
-
            if Mode=amNURBS then begin
               if not Grid[0][0].IsRegularNURBSPoint(CheckFaces) then begin
                  SearchLeft:=False;
@@ -8773,7 +8606,6 @@ var ToDoList,DoneList,Current: TFasterlist;
                       Face:=TmpFaces[I-1];
                       Index:=Faces.SortedIndexOf(Face);
                       if Index<>-1 then Faces.Delete(index);
-
                       Index:=Face.IndexOfPoint(Grid[Rows-1][I]);
                       Index:=(Index+1) mod Face.NumberOfpoints;
                       if Face.Point[index]=Grid[Rows-1][I-1] then begin
@@ -9020,8 +8852,7 @@ var ToDoList,DoneList,Current: TFasterlist;
                  end;
               end;
            end;
-        end;{DoAssemble}
-
+        end;
     begin
        CtrlFaces.Sort;
        CheckFaces:=TFasterList.Create;
@@ -9070,66 +8901,59 @@ var ToDoList,DoneList,Current: TFasterlist;
           end; //++//++// else Raise Exception.Create('No valid cornerface found!');
        end;
        Checkfaces.Destroy;
-    end;{AssembleFaces}
-
+    end;
 begin
    ToDoList:=TFasterlist.Create;
    DoneList:=TFasterlist.Create;
    NAssembled:=0;
-// try
-      // use all visible faces
-      for I:=1 to Layers.Count do begin
-         Layer:=Layers[I-1];
-         if Layer.Visible then begin
-            ToDoList.Capacity:=ToDoList.Count+Layer.Count;
-            ToDoList.AddList(Layer.FPatches);
-         end;
+   for I:=1 to Layers.Count do begin                   // use all visible faces
+      Layer:=Layers[I-1];
+      if Layer.Visible then begin
+         ToDoList.Capacity:=ToDoList.Count+Layer.Count;
+         ToDoList.AddList(Layer.FPatches);
       end;
-      if ToDoList.Count>0 then begin
-         while ToDoList.Count>0 do begin
-            Face:=ToDoList[ToDoList.Count-1];
-            ToDoList.Delete(ToDoList.Count-1);
-            Current:=TFasterlist.Create;
-            Current.Add(Face);
-            FindAttachedFaces(Current,Face);
-            DoneList.Add(Current);
-         end;
-         Capacity:=50;
-         setlength(AssembledPatches,Capacity);
-         // Assign all groups to different layers
-         for I:=1 to DoneList.Count do begin
-            Current:=DoneList[I-1];
-            if Current.Count>0 then AssembleFaces(Current,AssembledPatches,NAssembled);
-            Current.Destroy;
-         end;
+   end;
+   if ToDoList.Count>0 then begin
+      while ToDoList.Count>0 do begin
+         Face:=ToDoList[ToDoList.Count-1];
+         ToDoList.Delete(ToDoList.Count-1);
+         Current:=TFasterlist.Create;
+         Current.Add(Face);
+         FindAttachedFaces(Current,Face);
+         DoneList.Add(Current);
       end;
-      ToDoList.Destroy;
-// finally
-      DoneList.Destroy;
-// end;
+      Capacity:=50;
+      setlength(AssembledPatches,Capacity);
+      for I:=1 to DoneList.Count do begin // Assign all groups to different layers
+         Current:=DoneList[I-1];
+         if Current.Count>0 then AssembleFaces(Current,AssembledPatches,NAssembled);
+         Current.Destroy;
+      end;
+   end;
+   ToDoList.Destroy;
+   DoneList.Destroy;
 end;
 
 // Calculate Gauss. curvature in each point of the mesh and store it in a array
+
 procedure TFreeSubdivisionSurface.CalculateGaussCurvature;
 var I: Integer; Point: TFreeSubdivisionPoint;
 begin
    if not build then Rebuild;
-   setlength(FGausCurvature,FPoints.Count);
+   SetLength( FGausCurvature,FPoints.Count );
    FPoints.Sort;
    FMinGaussCurvature:=0.0;
    FMaxGaussCurvature:=0.0;
-   for I:=1 to FPoints.Count do begin
-      Point:=FPoints[I-1];
-      FGausCurvature[I-1]:=Point.Curvature;
-      if I=1 then begin
-         FMinGaussCurvature:=FGausCurvature[I-1];
-         FMaxGaussCurvature:=FGausCurvature[I-1];
+   for I:=0 to FPoints.Count-1 do begin
+      Point:=FPoints[I];
+      FGausCurvature[I]:=Point.Curvature;
+      if I=0 then begin FMinGaussCurvature:=FGausCurvature[I];
+                        FMaxGaussCurvature:=FGausCurvature[I];
       end;
-      if FGausCurvature[I-1]<FMinGaussCurvature then FMinGaussCurvature:=FGausCurvature[I-1];
-      if FGausCurvature[I-1]>FMaxGaussCurvature then FMaxGaussCurvature:=FGausCurvature[I-1];
+      if FGausCurvature[I]<FMinGaussCurvature then FMinGaussCurvature:=FGausCurvature[I];
+      if FGausCurvature[I]>FMaxGaussCurvature then FMaxGaussCurvature:=FGausCurvature[I];
    end;
 end;
-
 function TFreeSubdivisionSurface.FGetControlPoint(Index:Integer):TFreeSubdivisionControlPoint;
    begin Result:=TObject(FControlpoints[index]) as TFreeSubdivisionControlPoint; end;
 function TFreeSubdivisionSurface.FGetControlEdge(Index:Integer):TFreesubdivisionControlEdge;
@@ -9140,12 +8964,9 @@ function TFreeSubdivisionSurface.FGetControlFace(Index:Integer):TFreeSubdivision
    begin Result:=TObject(FControlFaces[index]) as TFreeSubdivisionControlFace; end;
 function TFreeSubdivisionSurface.FGetGaussCurvatureCalculated:boolean;
    begin Result:=Build and (length(FGausCurvature)=FPoints.Count); end;
-
 function TFreeSubdivisionSurface.FGetLayer(Index:Integer):TFreeSubdivisionLayer;
-begin { if (Index>=0) and (Index<Flayers.Count) then } Result:=FLayers[index];
-      //+//+// else begin Raise Exception.Create('Invalid layer index!'); end;
-end;
-
+   begin Result:=FLayers[(Index+Flayers.Count) mod Flayers.Count];
+   end;
 function TFreeSubdivisionSurface.FGetNumberOfControlPoints:Integer;
    begin Result:=FControlPoints.Count; end;
 function TFreeSubdivisionSurface.FGetNumberOfControlEdges:Integer;
@@ -9386,8 +9207,8 @@ begin
          Edge:=EdgeExists(P1,P2) as TFreesubdivisionControlEdge;
          if Edge=nil then begin
             Edge:=TFreesubdivisionControlEdge.Create(Self);
-            Edge.FStartpoint:=P1;
-            Edge.FEndpoint:=P2;
+            Edge.Startpoint:=P1;
+            Edge.Endpoint:=P2;
             Edge.FControlEdge:=True;
             P1.FEdges.Add(Edge);
             P2.FEdges.Add(Edge);
@@ -9505,7 +9326,7 @@ var CtrlFace   : TFreeSubdivisionControlFace;
                      end;
                   end;
                end;
-            end;{ValidFace}
+            end;
         begin
            Counter:=0;
            SearchBottom:=True;
@@ -9698,7 +9519,7 @@ var CtrlFace   : TFreeSubdivisionControlFace;
                  end else SearchLeft:=False;
               end;
            end;
-        end;{DoAssemble}
+        end;
 begin
    Cols:=0;
    Rows:=0;
@@ -10166,8 +9987,7 @@ begin
             K:=2;
             while K<=NoPoints do begin
                if IntArray[K-1].Edge=IntArray[K-2].Edge then begin
-                  if Sqr(IntArray[K-1].Point-IntArray[K-2].Point)<1e-8 then
-                  begin
+                  if Sqr(IntArray[K-1].Point-IntArray[K-2].Point)<1e-8 then begin
                      Move(IntArray[K-1],IntArray[K-2],(NoPoints-K+1)*SizeOf(Vector));
                      dec(NoPoints);
                   end else inc(K);
@@ -10175,8 +9995,7 @@ begin
             end;
             for K:=2 to NoPoints do begin
                inc(NSegments);
-               if NSegments>SegmCapacity then
-               begin
+               if NSegments>SegmCapacity then begin
                   inc(SegmCapacity,50);
                   Setlength(Segments,SegmCapacity);
                end;
@@ -10242,10 +10061,10 @@ begin
             // special case, edge lies entirely in plane
             // perform more extensive test to check whether the two edges
             // are possibly connected
-            if (StartP.Edge.FStartpoint.FEdges.IndexOf(Segment.StartP.Edge)<>-1)
-            or (StartP.Edge.FEndpoint.FEdges.IndexOf(Segment.StartP.Edge)<>-1)
-            or (EndP.Edge.FStartpoint.FEdges.IndexOf(Segment.StartP.Edge)<>-1)
-            or (EndP.Edge.FEndpoint.FEdges.IndexOf(Segment.StartP.Edge)<>-1)
+            if (StartP.Edge.Startpoint.FEdges.IndexOf(Segment.StartP.Edge)<>-1)
+            or (StartP.Edge.Endpoint.FEdges.IndexOf(Segment.StartP.Edge)<>-1)
+            or (EndP.Edge.Startpoint.FEdges.IndexOf(Segment.StartP.Edge)<>-1)
+            or (EndP.Edge.Endpoint.FEdges.IndexOf(Segment.StartP.Edge)<>-1)
             then begin
                AddEdge:=Sqr(EndP.Point-Segment.StartP.Point)<1e-8;
                if AddEdge then begin
@@ -10390,16 +10209,16 @@ begin Result:=nil;
    if P1.FEdges.Count<=P2.FEdges.Count then begin
       for I:=1 to P1.FEdges.Count do begin
          Edge:=P1.FEdges[I-1];
-         if ((Edge.FStartpoint=P1) and (Edge.FEndpoint=P2))
-         or ((Edge.FStartpoint=P2) and (Edge.FEndpoint=P1)) then begin
+         if ((Edge.Startpoint=P1) and (Edge.Endpoint=P2))
+         or ((Edge.Startpoint=P2) and (Edge.Endpoint=P1)) then begin
             Result:=Edge;
             exit;
          end;
       end;
    end else for I:=1 to P2.FEdges.Count do begin
       Edge:=P2.FEdges[I-1];
-      if ((Edge.FStartpoint=P1) and (Edge.FEndpoint=P2))
-      or ((Edge.FStartpoint=P2) and (Edge.FEndpoint=P1)) then begin
+      if ((Edge.Startpoint=P1) and (Edge.Endpoint=P2))
+      or ((Edge.Startpoint=P2) and (Edge.Endpoint=P1)) then begin
          Result:=Edge;
          exit;
       end;
@@ -10421,8 +10240,7 @@ begin
       Edge:=SourceList[SourceList.Count-1];
       SourceList.Delete(SourceList.Count-1);
       Loop:=TFasterList.Create;
-      Loop.Add(Edge);
-      // trace edge to back
+      Loop.Add(Edge);                                     // trace edge to back
       repeat
          NextEdge:=Edge.PreviousEdge;
          if NextEdge<>nil then begin
@@ -10456,26 +10274,20 @@ end;
 // extracts all points that are used by the faces in the selectedfaces list
 // only points completely surrounded by faces in the faces list are extracted
 procedure TFreeSubdivisionSurface.ExtractPointsFromFaces(SelectedFaces,Points:TFasterList;var LockedPoints:Integer);
-var I,J,K,N : Integer;
-    Face    : TFreeSubdivisionface;
-    P       : TFreeSubdivisionControlPoint;
-    OK      : Boolean;
+var I,J,K,N: Integer; OK: Boolean;
+    Face: TFreeSubdivisionface;
+    P: TFreeSubdivisionControlPoint;
 begin
    Points.Capacity:=4*SelectedFaces.Count;
    SelectedFaces.Sort;
    LockedPoints:=0;
-   for I:=1 to SelectedFaces.Count do begin
-      Face:=SelectedFaces[I-1];
+   for I:=1 to SelectedFaces.Count do begin Face:=SelectedFaces[I-1];
       for J:=1 to Face.NumberOfpoints do begin
          P:=Face.Point[J-1] as TFreeSubdivisionControlPoint;
-         if Points.SortedIndexOf(P)=-1 then begin
-            OK:=True;
+         if Points.SortedIndexOf(P)=-1 then begin OK:=True;
             for K:=1 to P.NumberOfFaces do begin
-               N:=SelectedFaces.SortedIndexOf(P.Face[K-1]);
-               if N=-1 then begin
-                  OK:=False;
-                  break;
-               end;
+               N:=SelectedFaces.SortedIndexOf( P.Face[K-1] );
+               if N=-1 then begin OK:=False; break; end;
             end;
             if OK then begin
                Points.AddSorted(P);
@@ -10554,7 +10366,6 @@ begin                                                 // Read layer information
       Layer.FVisible:=GetBoolean(Str);
       Layer.FDevelopable:=GetBoolean(Str);
       Layer.FSymmetric:=GetBoolean(Str);
-      Layer.FSymmetric:=True;
       Layer.FUseForIntersections:=GetBoolean(Str);
       Layer.FUseInHydrostatics:=GetBoolean(Str);
       Layer.FShowInLinesplan:=GetBoolean(Str);
@@ -10768,10 +10579,8 @@ begin
                         Edge.Curve:=Curve;
                   end;
                end;
-            end;
-         Points.Destroy;
-         end;
-         SortedEdges.Destroy;
+            end; Points.Destroy;
+         end;   SortedEdges.Destroy;
       end else Points.Destroy;
       Edges.Destroy;
       Build:=False;
@@ -10791,22 +10600,22 @@ begin                      // Try to isolate individual (closed) sets of edges
       FindMore:=True;
       TmpEdges.Clear;
       TmpEdges.Add(Edge);
-      while (Source.Count>0) and (FindMore) do begin
-         FindMore:=False;
+      while (Source.Count>0) and (FindMore) do begin FindMore:=False;
          for I:=1 to Source.Count do begin
             Edge2:=Source[I-1];                             // compare at start
             Edge:=TmpEdges[0];
-            if (Edge2.FStartpoint=Edge.FStartpoint) or (Edge2.FStartpoint=Edge.FEndpoint)
-            or (Edge2.FEndpoint=Edge.FStartpoint) or (Edge2.FEndpoint=Edge.FEndpoint)
-            then begin
+            if (Edge2.Startpoint=Edge.Startpoint)
+            or (Edge2.Startpoint=Edge.Endpoint)
+            or (Edge2.Endpoint=Edge.Startpoint)
+            or (Edge2.Endpoint=Edge.Endpoint) then begin
                TmpEdges.Insert(0,Edge2);
                Source.Delete(I-1);
                Findmore:=true;
                break;
             end else begin
                Edge:=TmpEdges[Tmpedges.Count-1];
-               if (Edge2.FStartpoint=Edge.FStartpoint) or (Edge2.FStartpoint=Edge.FEndpoint)
-               or (Edge2.FEndpoint=Edge.FStartpoint) or (Edge2.FEndpoint=Edge.FEndpoint)
+               if (Edge2.Startpoint=Edge.Startpoint) or (Edge2.Startpoint=Edge.Endpoint)
+               or (Edge2.Endpoint=Edge.Startpoint) or (Edge2.Endpoint=Edge.Endpoint)
                then begin
                   TmpEdges.Add(Edge2);
                   Source.Delete(I-1);
@@ -10841,15 +10650,12 @@ begin                                                   // First load layerdata
          Layer:=AddNewLayer;
          Layer.LoadBinary(Source);
       end;
-   end; // else begin    No layers in the file, so keep the current default one
-        //    end;
+   end; // else          No layers in the file, so keep the current default one
    if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   // Read index of active layer
-   Source.LoadInteger(N);
+   Source.LoadInteger(N);                         // Read index of active layer
    ActiveLayer:=self.Layer[N];
    if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
-   // Read controlpoints
-   Source.LoadInteger(N);
+   Source.LoadInteger(N);                        // Read controlpoints
    FControlPoints.Capacity:=N;
    for I:=1 to N do begin
       Point:=TFreeSubdivisionControlPoint.Create(self);
@@ -10904,11 +10710,9 @@ begin                                                   // First read layerdata
          Layer:=AddNewLayer;
          Layer.LoadFromStream(LineNr,Strings);
       end;
-   end; // else begin    No layers in the file, so keep the current default one
-        //      end;
+   end; // else          No layers in the file, so keep the current default one
    if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   // Read index of active layer
-   Inc(LineNr);
+   Inc(LineNr);                                   // Read index of active layer
    Str:=Strings[LineNr];
    N:=GetInteger(Str);
    ActiveLayer:=self.Layer[N];
@@ -10945,15 +10749,14 @@ begin                                                   // First read layerdata
 end;
 
 procedure TFreeSubdivisionSurface.LoadVRMLFile(Filename:string);
-var VRMLList      : TVRMLList;
-    I,J,K,N,Index : Integer;
-    Data          : TFasterList;
-    CoordInfo     : TVRMLCoordinate3;              V3Point:Vector;
-    FaceInfo      : TVRMLIndexedFaceSet;
-    Face          : TIntArray;
-    Layer         : TFreeSubdivisionLayer;
-    Points,FacePoints,AddedCtrlPts: TFasterList;
-    CtrPoint      : TFreeSubdivisionControlpoint;
+var VRMLList: TVRMLList;
+    I,J,K,N,Index: Integer;
+    Data,Points,FacePoints,AddedCtrlPts: TFasterList;
+    CoordInfo: TVRMLCoordinate3;                        // V3Point:Vector;
+    FaceInfo: TVRMLIndexedFaceSet;
+    Face: TIntArray;
+    Layer: TFreeSubdivisionLayer;
+    CtrPoint: TFreeSubdivisionControlpoint;
 begin
    if FileExistsUTF8(Filename) then begin
       VRMLList:=TVRMLList.Create;
@@ -10980,11 +10783,8 @@ begin
             if Index<>-1 then begin
                Points:=AddedCtrlPts.Objects[Index];
                Layer:=AddNewLayer;
-               for J:=1 to FaceInfo.Count do begin
-                  Face:=FaceInfo.Face[J-1];
-                  if Face<>nil then begin
-                     N:=length(Face);
-                     FacePoints.Clear;
+               for J:=1 to FaceInfo.Count do begin Face:=FaceInfo.Face[J-1];
+                  if Face<>nil then begin N:=length(Face); FacePoints.Clear;
                      for K:=1 to N do begin Index:=face[K-1];
                         if (Index>=0) and (Index<Points.Count) then begin
                            CtrPoint:=Points[index];
@@ -11057,7 +10857,8 @@ begin
             Point:=Curve.FSubdividedPoints[J-1];
             Curve.FCurve.Add(Point.Coordinate);
             if (J>1) and (J<Curve.FSubdividedPoints.Count) then begin
-               if Point.VertexType=svCorner then Curve.FCurve.Knuckle[J-1]:=True
+               if Point.VertexType=svCorner
+               then Curve.FCurve.Knuckle[J-1]:=True
                else begin
                   Edge1:=EdgeExists(Curve.FSubdividedPoints[J-2],Curve.FSubdividedPoints[J-1]);
                   Edge2:=EdgeExists(Curve.FSubdividedPoints[J-1],Curve.FSubdividedPoints[J]);
@@ -11104,16 +10905,13 @@ begin                                                   // First save layerdata
    for I:=1 to NumberOfControlFaces do ControlFace[I-1].SaveBinary(Destination);
 end;
 
-procedure TFreeSubdivisionSurface.SaveToStream(Strings:TStringlist);
-var I     : Integer;
+procedure TFreeSubdivisionSurface.SaveToStream( Strings:TStringlist );
+var I: Integer;
 begin
-   // First save layerdata
-   Strings.Add(IntToStr(NumberOfLayers));
+   Strings.Add(IntToStr(NumberOfLayers));               // First save layerdata
    for I:=1 to NumberOfLayers do Layer[I-1].SaveToStream(Strings);
-   // Save index of active layer
-   Strings.Add(IntToStr(ActiveLayer.LayerIndex));
-   // first sort controlpoints for faster acces of function (Indexof())
-   FControlPoints.Sort;
+   Strings.Add(IntToStr(ActiveLayer.LayerIndex)); // Save index of active layer
+   FControlPoints.Sort; // first sort controlpoints for faster acces of function (Indexof())
    Strings.Add(IntToStr(NumberOfControlPoints));
    for I:=1 to NumberOfControlPoints do ControlPoint[I-1].SaveToStream(Strings);
    Strings.Add(IntToStr(NumberOfControlEdges));
@@ -11129,44 +10927,29 @@ begin
   if item is TFreeSubdivisionControlFace then FSelectedControlFaces.Add(item as TFreeSubdivisionControlFace);
   if item is TFreeSubdivisionControlEdge then FSelectedControlEdges.Add(item as TFreeSubdivisionControlEdge);
   if item is TFreeSubdivisionControlCurve then FSelectedControlCurves.Add(item as TFreeSubdivisionControlCurve);
-//if item is TFreeSubdivisionControlPointGroup then FSelectedControlPointGroups.Add(item as TFreeSubdivisionControlPointGroup);
-//ExecuteOnSelectItem(item);
 end;
 
-procedure TFreeSubdivisionSurface.Selection_Delete;
-var I : Integer;
-begin  // First controlcurves, then faces, edges and finally points!
+procedure TFreeSubdivisionSurface.Selection_Delete; var I: Integer;
+begin             // First controlcurves, then faces, edges and finally points!
    I:=NumberOfSelectedControlCurves;
-   while I>=1 do begin
-      SelectedControlCurve[I-1].Delete;
-      dec(I);
+   while I>=1 do begin SelectedControlCurve[I-1].Delete; dec(I);
       if I>NumberOfSelectedControlCurves then I:=NumberOfSelectedControlCurves;
    end;
    I:=self.NumberOfSelectedControlFaces;
-   while I>=1 do begin
-      SelectedControlFace[I-1].Delete;
-      dec(I);
+   while I>=1 do begin SelectedControlFace[I-1].SelDeleteFace; dec(I);
       if I>NumberOfSelectedControlFaces then I:=NumberOfSelectedControlFaces;
    end;
    I:=self.NumberOfSelectedControlEdges;
-   while I>=1 do begin
-      SelectedControlEdge[I-1].Delete;
-      dec(I);
-      if I>NumberOfSelectedControlEdges then begin
-         // Security check ==> if an edge is deleted from one isolated patch (with all edges only attached
-         // to the current face), the patch will become degenerate and therefore the patch (and the other
-         // edges) will be deleted, and NumberOfSelectedControlEdges may become smaller than index I
-         I:=NumberOfSelectedControlEdges;
-      end;
+   while I>=1 do begin SelectedControlEdge[I-1].SelDeleteEdge; dec(I);
+      if I>NumberOfSelectedControlEdges then I:=NumberOfSelectedControlEdges;
    end;
    I:=self.NumberOfSelectedControlPoints;
    while I>=1 do begin
-      if not SelectedControlPoint[I-1].Locked then SelectedControlPoint[I-1].Delete;
-      dec(I);
-      if I>NumberOfSelectedControlPoints then begin            // Same as above
-         I:=NumberOfSelectedControlPoints;
-      end;
-   end; Build:=False;
+      if not SelectedControlPoint[I-1].Locked
+         then SelectedControlPoint[I-1].SelDeletePoint; dec( I );
+      if I>NumberOfSelectedControlPoints then I:=NumberOfSelectedControlPoints;
+   end;
+   Build:=False;
 end;
 
 procedure TFreeSubdivisionSurface.SortEdges(Edges:TFasterList);
@@ -11175,22 +10958,22 @@ begin
    if Edges.Count<=1 then exit else begin Edge1:=Edges[0];
       for J:=2 to Edges.Count do begin Edge2:=Edges[J-1];
          if J=2 then begin
-            if (Edge1.FStartPoint=Edge2.FStartPoint) then begin
+            if (Edge1.StartPoint=Edge2.StartPoint) then begin
                Edge1.SwapData;
-            end else if (Edge1.FStartPoint=Edge2.FEndPoint) then begin
+            end else if (Edge1.StartPoint=Edge2.EndPoint) then begin
                Edge1.SwapData;
                Edge2.SwapData;
-            end else if (Edge1.FEndPoint=Edge2.FStartPoint) then begin
-            end else if (Edge1.FEndPoint=Edge2.FEndPoint) then begin
+            end else if (Edge1.EndPoint=Edge2.StartPoint) then begin
+            end else if (Edge1.EndPoint=Edge2.EndPoint) then begin
                Edge2.SwapData;
             end;
          end else begin
-            if (Edge1.FEndPoint=Edge2.FEndPoint) then Edge2.SwapData;
-            if (Edge1.FEndPoint=Edge2.FStartPoint) then begin
-               Edge2.SwapData;
-               Edge2.SwapData;
+            if (Edge1.EndPoint=Edge2.EndPoint) then Edge2.SwapData;
+            if (Edge1.EndPoint=Edge2.StartPoint) then begin
+                Edge2.SwapData;
+                Edge2.SwapData;
             end;
-         end;  Edge1:=Edge2;
+         end;   Edge1:=Edge2;
       end;
    end;
 end;
@@ -11202,8 +10985,7 @@ begin
       Points:=TFasterList.Create;
       Points.Capacity:=Edges.Count+1;
       SortEdges(Edges);
-      for I:=1 to Edges.Count do begin
-         Edge:=Edges[I-1];
+      for I:=1 to Edges.Count do begin Edge:=Edges[I-1];
          if I=1 then Points.Add(Edge.StartPoint);
          //if Edge.EndPoint<>Points[0] then Points.Add(Edge.EndPoint);
          Points.Add(Edge.EndPoint);
@@ -11213,32 +10995,24 @@ end;
 
 procedure TFreeSubdivisionSurface.SubDivide;
 {type TQuadData = record
-                  P:array[1..4] of TFreeSubdivisionPoint;
-                  Crease1,Crease2:Boolean;
-                end; }
-var I,J,Number    : Integer;
-    CtrlFace      : TFreeSubdivisionControlFace;
-    Edge          : TFreeSubdivisionEdge;
-    Point         : TFreeSubdivisionPoint;
-    TmpPoints     : VectorArray;
-   {NewPointList,}NewEdgeList,VertexPoints,FacePoints,EdgePoints: TFasterList;
+         P:array[1..4] of TFreeSubdivisionPoint;
+         Crease1,Crease2:Boolean;
+      end; }
+var I,J,Number: Integer; TmpPoints: VectorArray;
+    CtrlFace: TFreeSubdivisionControlFace;
+    Edge: TFreeSubdivisionEdge;
+    Point: TFreeSubdivisionPoint;
+    NewEdgeList,VertexPoints,FacePoints,EdgePoints: TFasterList;
 begin
    if NumberOfControlFaces<1 then exit;
    inc(FCurrentSubdivisionLevel,1);
-//   NewPointList:=TFasterList.Create;
-//   NewPointlist.Capacity:=2*NumberOfPoints;
    NewEdgeList:=TFasterList.Create;
    I:=Round(Power(2,FCurrentSubdivisionLevel));
    NewEdgelist.Capacity:=NumberOfControlEdges*I;
    Number:=NumberOfFaces;
-
-   // Create the list with new facepoints and a reference to the original face
-   FacePoints:=TFasterList.Create;
-   // Create the list with new edgepoints and a reference to the original edge
-   EdgePoints:=TFasterList.Create;
-   // Create the list with new vertexpoints and a reference to the original vertex
-   VertexPoints:=TFasterList.Create;
-
+   FacePoints:=TFasterList.Create;  // list facepoints and a reference face
+   EdgePoints:=TFasterList.Create;  // list edgepoints and a reference edge
+   VertexPoints:=TFasterList.Create;// list vertexpoints and a reference vertex
    if Number=0 then begin
       FacePoints.Capacity:=NumberOfControlFaces;
       for I:=1 to NumberOfControlFaces do begin
@@ -11247,37 +11021,31 @@ begin
       end;
    end else begin
       FacePoints.Capacity:=4*NumberOfControlFaces;
-      for I:=1 to NumberOfControlFaces do begin
-         CtrlFace:=ControlFace[I-1];
+      for I:=1 to NumberOfControlFaces do begin CtrlFace:=ControlFace[I-1];
          for J:=1 to CtrlFace.Childcount do FacePoints.AddObject(CtrlFace.Child[J-1],CtrlFace.Child[J-1].CalculateFacePoint);
          for J:=1 to CtrlFace.Edgecount do EdgePoints.AddObject(CtrlFace.Edge[J-1],CtrlFace.Edge[J-1].CalculateEdgePoint);
       end;
    end;
-   // Calculate other edgepoints
-   EdgePoints.Capacity:=EdgePoints.Count+NumberOfEdges;
+   EdgePoints.Capacity:=EdgePoints.Count+NumberOfEdges; // Calculate other edgepoints
    for I:=1 to NumberOfEdges do EdgePoints.AddObject(self.Edge[I-1],self.Edge[I-1].CalculateEdgePoint);
-   // Calculate vertexpoints
-   VertexPoints.Capacity:=VertexPoints.Count+NumberOfPoints;
+   VertexPoints.Capacity:=VertexPoints.Count+NumberOfPoints; // Calculate vertexpoints
    for I:=1 to NumberOfpoints do VertexPoints.AddObject(Self.Point[I-1],Self.Point[I-1].CalculateVertexPoint);
-   // Sort the new points for faster acces
    VertexPoints.Sort;
-   EdgePoints.Sort;
+   EdgePoints.Sort;                     // Sort the new points for faster acces
    FacePoints.Sort;
-
    // finally create the refined mesh over the newly create vertexpoints, edgepoints and facepoints
    for I:=1 to NumberOfControlFaces do begin
       CtrlFace:=ControlFace[I-1];
       CtrlFace.Subdivide(Self,True,VertexPoints,EdgePoints,FacePoints,nil,NewEdgeList,nil);
    end;
-   for I:=1 to FEdges.Count do begin             // cleanup old mesh
+   for I:=1 to FEdges.Count do begin                        // cleanup old mesh
       Edge:=FEdges[I-1];
       Edge.Destroy;
    end;
    FEdges.Destroy;
    FEdges:=NewEdgeList;
    for I:=1 to FPoints.Count do begin Point:=FPoints[I-1]; Point.Destroy; end;
-   // Add all new points int the point-list
-   FPoints.Clear;
+   FPoints.Clear;                      // Add all new points int the point-list
    FPoints.Capacity:=VertexPoints.Count+EdgePoints.Count+FacePoints.Count;
    for I:=1 to VertexPoints.Count do if VertexPoints.Objects[I-1]<>nil then FPoints.Add(VertexPoints.Objects[I-1]);
    for I:=1 to EdgePoints.Count do if EdgePoints.Objects[I-1]<>nil then FPoints.Add(EdgePoints.Objects[I-1]);

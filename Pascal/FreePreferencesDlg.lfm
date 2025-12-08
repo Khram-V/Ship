@@ -899,7 +899,7 @@ object FreePreferencesDialog: TFreePreferencesDialog
               MinValue = 3
               ParentFont = False
               TabOrder = 1
-              Value = 3
+              Value = 8
               OnChange = SpinEdit1Change
             end
           end

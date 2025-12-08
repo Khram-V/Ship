@@ -293,6 +293,7 @@ begin
       OnUpdateRecentFileList :=FreeShipUpdateRecentFileList;
       OnUpdateUndoData       :=FreeShipUpdateUndoData;
       Precision:=fpLow;
+      SpinEditFontSize.value:=Ship.Preferences.FontSize;
    end;
 end;
 
@@ -507,9 +508,9 @@ procedure TMainForm.NewWindowExecute(Sender: TObject);
 procedure TMainForm.FreeShipFileChanged(Sender: TObject);
     begin SetCaption; end;
 procedure TMainForm.PrecisionBoxChange(Sender: TObject);
-begin Ship.Precision:=TFreePrecisionType( PrecisionBox.ItemIndex );
-      UpdateMenu;
-end;
+    begin Ship.Precision:=TFreePrecisionType( PrecisionBox.ItemIndex );
+          UpdateMenu;
+    end;
 procedure TMainForm.FileSaveasExecute(Sender: TObject);
     begin Ship.Edit.File_SaveAs; UpdateMenu; SetCaption; end;
 procedure TMainForm.LayerAutoGroupExecute(Sender: TObject);
@@ -633,11 +634,11 @@ procedure TMainForm.NewFaceExecute(Sender: TObject);
 procedure TMainForm.IntersectionDialogExecute(Sender: TObject);
     begin Ship.Edit.Intersection_Dialog; UpdateMenu; end;
 procedure TMainForm.DesignHydrostaticsExecute(Sender: TObject);
-var Calculation: TFreeHydrostaticCalc;
-begin Calculation:=Ship.Edit.Hydrostatics_Calculate
-         ( Ship.ProjectSettings.ProjectDraft,0.0,0.0 );
-      if Calculation<>nil then FreeAndNil( Calculation );
-end;
+      var Calculation: TFreeHydrostaticCalc;
+    begin Calculation:=Ship.Edit.Hydrostatics_Calculate
+          ( Ship.ProjectSettings.ProjectDraft,0.0,0.0 );
+          if Calculation<>nil then FreeAndNil( Calculation );
+    end;
 procedure TMainForm.EdgeExtrudeExecute(Sender: TObject);
     begin Ship.Edit.Edge_Extrude; UpdateMenu; end;
 procedure TMainForm.About1Click(Sender: TObject);   // Show splash screen again
@@ -658,16 +659,13 @@ procedure TMainForm.ShowNormalsExecute(Sender: TObject);
     end;
 procedure TMainForm.ExportAuroraHullVslExecute(Sender: TObject);
     begin Ship.Edit.File_Export_Aurora_Experiments; UpdateMenu; end;
-
 procedure TMainForm.ImportOBJExecute(Sender: TObject);
-    begin Ship.Edit.File_ImportOBJ;
-          FOpenHullWindows; SetCaption; UpdateMenu;
-end;
+    begin Ship.Edit.File_ImportOBJ; FOpenHullWindows; SetCaption; UpdateMenu;
+    end;
 procedure TMainForm.ExportObjExecute(Sender: TObject);
     begin Ship.Edit.File_ExportObj; UpdateMenu; end;
 procedure TMainForm.ImportSTLExecute(Sender: TObject);
-    begin Ship.Edit.File_ImportSTL;
-          FOpenHullWindows; SetCaption; UpdateMenu;
+    begin Ship.Edit.File_ImportSTL; FOpenHullWindows; SetCaption; UpdateMenu;
     end;
 procedure TMainForm.ImportVRMLExecute(Sender: TObject);
     begin Ship.Edit.File_ImportVRML; FOpenHullWindows; UpdateMenu; end;
@@ -678,45 +676,38 @@ procedure TMainForm.RotateModelExecute(Sender: TObject);
 procedure TMainForm.ScaleModelExecute(Sender: TObject);
     begin Ship.Edit.Face_Scale; UpdateMenu; end;
 procedure TMainForm.ShowGridExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowGrid:=not Ship.Visibility.ShowGrid;
-   UpdateMenu;
-end;
+    begin Ship.Visibility.ShowGrid:=not Ship.Visibility.ShowGrid; UpdateMenu;
+    end;
 procedure TMainForm.UndoExecute(Sender: TObject);
     begin Ship.Edit.Undo; UpdateMenu; SetCaption; end;
+
 // Update undo memory usage
 procedure TMainForm.FreeShipUpdateUndoData(Sender: TObject);
 var Memory : Integer;
 begin
-   Memory:=Trunc(Ship.UndoMemory/1024);
+   Memory:=Trunc( Ship.UndoMemory/1024 );
    if Memory<1024 then Panel2.Caption:=Userstring(283)+' : '+IntToStr(Memory)+' Kb.'
                   else Panel2.Caption:=Userstring(283)+' : '+FloatToDec(Memory/1024,3)+' Mb.';
    Undo.Enabled:=Ship.UndoCount>0;
    SetCaption;
    UpdateMenu;
 end;
-
 procedure TMainForm.InvertFaceExecute(Sender: TObject);
     begin Ship.Edit.Face_Flip; UpdateMenu; end;
 procedure TMainForm.PreferencesExecute(Sender: TObject);
     begin Ship.Preferences.Edit; UpdateMenu; end;
 procedure TMainForm.ImportBodyplanExecute(Sender: TObject);
-begin
-   Ship.Edit.ImportFrames;
-   FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
-end;
+    begin Ship.Edit.ImportFrames;
+          FOpenHullWindows;
+          SetCaption;
+          UpdateMenu;
+    end;
 procedure TMainForm.ExportDXF3DPolylinesExecute(Sender: TObject);
     begin Ship.Edit.File_ExportDXF_3DPolylines; UpdateMenu; end;
 procedure TMainForm.ExportDXFFacesExecute(Sender: TObject);
     begin Ship.Edit.File_ExportDXF_Faces; UpdateMenu; end;
 procedure TMainForm.ImportHullFileExecute(Sender: TObject);
-begin
-   Ship.Edit.File_ImportHull;
-   FOpenHullWindows;
-   UpdateMenu;
-end;
+    begin Ship.Edit.File_ImportHull; FOpenHullWindows; UpdateMenu; end;
 procedure TMainForm.ExportOffsetsExecute(Sender: TObject);
     begin Ship.Edit.File_ExportOffsets; UpdateMenu; end;
 procedure TMainForm.MoveModelExecute(Sender: TObject);
@@ -746,13 +737,10 @@ begin
       FreeLinesplanForm:=Form;
       WindowMenu;
 end end;
-
 procedure TMainForm.ShowDiagonalsExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowDiagonals:=not Ship.Visibility.ShowDiagonals;
-   UpdateMenu;
-end;
-
+    begin Ship.Visibility.ShowDiagonals:=not Ship.Visibility.ShowDiagonals;
+          UpdateMenu;
+    end;
 procedure TMainForm.FreeShipUpdateRecentFileList(Sender: TObject);
 var I: Integer; Item: TMenuItem;
 begin                                                  // delete old menu items
@@ -766,30 +754,21 @@ begin                                                  // delete old menu items
    UpdateMenu;
 end;
 procedure TMainForm.ImportCareneExecute(Sender: TObject);
-begin
-   Ship.Edit.File_ImportCarene;
-   FOpenHullWindows;
-   UpdateMenu;
-end;
+    begin Ship.Edit.File_ImportCarene; FOpenHullWindows; UpdateMenu; end;
 procedure TMainForm.ShowMarkersExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowMarkers:=not Ship.Visibility.ShowMarkers;
-   UpdateMenu;
-end;
+    begin Ship.Visibility.ShowMarkers:=not Ship.Visibility.ShowMarkers;
+          UpdateMenu;
+    end;
 procedure TMainForm.DeleteMarkersExecute(Sender: TObject);
     begin Ship.Edit.Marker_Delete; UpdateMenu; end;
 procedure TMainForm.ImportSurfaceExecute(Sender: TObject);
-begin
-   Ship.Edit.File_ImportSurface;
-   FOpenHullWindows;
-   SetCaption;
-   UpdateMenu;
-end;
+    begin Ship.Edit.File_ImportSurface; FOpenHullWindows; SetCaption;
+          UpdateMenu;
+    end;
 procedure TMainForm.ShowcurvatureExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowCurvature:=not Ship.Visibility.ShowCurvature;
-   UpdateMenu;
-end;
+    begin Ship.Visibility.ShowCurvature:=not Ship.Visibility.ShowCurvature;
+          UpdateMenu;
+    end;
 procedure TMainForm.IncreaseCurvatureScaleExecute(Sender: TObject);
     begin Ship.Visibility.IncreaseCurvatureScale; end;
 procedure TMainForm.DecreaseCurvatureScaleExecute(Sender: TObject);
@@ -797,10 +776,9 @@ procedure TMainForm.DecreaseCurvatureScaleExecute(Sender: TObject);
 procedure TMainForm.FileSaveExecute(Sender: TObject);
     begin Ship.Edit.File_Save; UpdateMenu; end;
 procedure TMainForm.ShowControlCurvesExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowControlCurves:=not Ship.Visibility.ShowControlCurves;
-   UpdateMenu;
-end;
+    begin Ship.Visibility.ShowControlCurves:=not Ship.Visibility.ShowControlCurves;
+          UpdateMenu;
+    end;
 procedure TMainForm.NewCurveExecute(Sender: TObject);
     begin Ship.Edit.Curve_Add; UpdateMenu; end;
 procedure TMainForm.ExportCoordinatesExecute(Sender: TObject);
@@ -889,15 +867,13 @@ procedure TMainForm.RemoveUnusedPointsExecute(Sender: TObject);
 procedure TMainForm.ExportGHSExecute(Sender: TObject);
     begin Ship.Edit.File_ExportGHS; UpdateMenu; end;
 procedure TMainForm.ShowFlowlinesExecute(Sender: TObject);
-begin
-   Ship.Visibility.ShowFlowlines:=not Ship.Visibility.ShowFlowlines;
-   updatemenu;
-end;
+    begin Ship.Visibility.ShowFlowlines:=not Ship.Visibility.ShowFlowlines;
+          updatemenu;
+    end;
 procedure TMainForm.SelectAllExecute(Sender: TObject);
     begin Ship.Edit.Selection_SelectAll; UpdateMenu; end;
 procedure TMainForm.ExportSTLExecute(Sender: TObject);
     begin Ship.Edit.File_ExportSTL; UpdateMenu; end;
-
 procedure TMainForm.OnSplitSectionLocationChange(Sender: TObject; aV: Real);
     begin Ship.ProjectSettings.MidleFrame:=aV;
           Ship.FileChanged:=True;
@@ -926,7 +902,6 @@ procedure TMainForm.ShowHydrostaticsExecute(Sender: TObject);
 begin With Ship.Visibility do ShowHydrostaticData:=not ShowHydrostaticData;
       updatemenu;
 end;
-
 
 end.
 

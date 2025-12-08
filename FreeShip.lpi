@@ -5,15 +5,14 @@
     <PathDelim Value="\"/>
     <General>
       <Flags>
+        <SaveOnlyProjectUnits Value="True"/>
         <MainUnitHasUsesSectionForAllUnits Value="False"/>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <MainUnitHasScaledStatement Value="False"/>
         <LRSInOutputDirectory Value="False"/>
-        <SaveJumpHistory Value="False"/>
-        <SaveFoldState Value="False"/>
       </Flags>
-      <SessionStorage Value="None"/>
+      <SessionStorage Value="InProjectDir"/>
       <AutoCreateForms Value="False"/>
       <Title Value="FreeShip"/>
       <UseAppBundle Value="False"/>
@@ -294,6 +293,7 @@
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
       <Optimizations>
         <OptimizationLevel Value="3"/>
       </Optimizations>
@@ -312,6 +312,7 @@
       <Verbosity>
         <ShowLineNum Value="True"/>
         <ShowCond Value="True"/>
+        <ShowExecInfo Value="True"/>
         <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
       </Verbosity>
       <WriteFPCLogo Value="False"/>
@@ -322,8 +323,7 @@
         <IgnoredMessages idx2042="True"/>
       </CompilerMessages>
       <CustomOptions Value="-Sh
--Xs
--CF64"/>
+-Xs"/>
       <ExecuteBefore>
         <CompileReasons Compile="False" Build="False" Run="False"/>
       </ExecuteBefore>

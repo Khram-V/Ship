@@ -29,11 +29,8 @@ procedure TFreePreferences.Edit;
 var Dialog: TFreePreferencesDialog;
     Dir,Lang: String;
     I: integer;
-//const DS=DirectorySeparator;
-  procedure Browse( Dir: String );
-  var SearchRec: TSearchRec;
-    procedure Add( FileName:String );
-    var Tmp: String; I: integer; Found: boolean;
+  procedure Browse( Dir: String ); var SearchRec: TSearchRec;
+    procedure Add( FileName:String ); var Tmp:String; I:integer; Found:boolean;
     begin
       Tmp:=ChangeFileExt( ExtractFilename( Filename ),'' ); found:=False;
       for I:=1 to Dialog.ComboBox1.Items.Count do
@@ -41,7 +38,7 @@ var Dialog: TFreePreferencesDialog;
           Found:=True; break;
         end;
       if not found then Dialog.Combobox1.Items.Add( Tmp );
-    end; {Add}
+    end;
   begin
     if Dir[Length(Dir)]<>'\' then Dir:=Dir+'\';
     if FindFirstUTF8(Dir+'*.ini',faAnyfile,SearchRec)=0 then begin
@@ -51,7 +48,7 @@ var Dialog: TFreePreferencesDialog;
         if Uppercase(ExtractFileExt(SearchRec.Name))='.INI' then Add(Searchrec.Name);
       FindCloseUTF8(SearchRec);
     end;
-  end; {Browse}
+  end;
 begin
   Dialog:=TFreePreferencesDialog.Create( Ship );
   ShowTranslatedValues( Dialog );
@@ -88,12 +85,10 @@ begin
     ControlCurveColor:=Dialog.Panel24.Color;
     HydrostaticsFontColor:= Dialog.Panel25.Color;
     ZebraStripeColor    :=Dialog.Panel26.Color;
-
     UnderWaterColorAlpha:=Dialog.seSubmergedSurfaceOpacity.Value*255 div 100;
     PointSize:=Dialog.SpinEdit1.Value;
     FontSize:=Dialog.seFontSize.Value;
     Lang:=Dialog.Combobox1.Text;
-
     LanguagesDirectory:=OnlyName( Dialog.EditLanguagesDir.Text );
     ManualsDirectory  :=OnlyName( Dialog.EditManualsDir.Text );
     OpenDirectory     :=OnlyName( Dialog.EditOpenDir.Text );
@@ -109,10 +104,8 @@ begin
         if Application.Components[I-1] is TCustomForm
            then ShowTranslatedValues( Application.Components[I-1] );
         with Application.MainForm as TMainForm do
-         for I:=1 to Ship.nV do
-            ShowTranslatedValues( Ship.ViewPort[I-1] );
-         if Ship.LinesplanFrame<>nil then
-            ShowTranslatedValues( Ship.LinesplanFrame );
+         for I:=1 to Ship.nV do ShowTranslatedValues( Ship.ViewPort[I-1] );
+         if Ship.LinesplanFrame<>nil then ShowTranslatedValues( Ship.LinesplanFrame );
        end; // else FLanguage:=Lang;
     end;
     FbmEncoding:=string( Dialog.ComboBoxEncoding.Items.Objects[Dialog.ComboBoxEncoding.ItemIndex] );
@@ -150,7 +143,6 @@ begin
   ExportDirectory   :=params.ReadString(D,'ExportDirectory',ExportDirectory);
   LanguagesDirectory:=params.ReadString(D,'LanguagesDirectory',LanguagesDirectory);
   ManualsDirectory  :=params.ReadString(D,'ManualsDirectory',ManualsDirectory);
-
   PointSize        :=params.ReadInteger(G,'PointSize',PointSize);
   FontSize         :=params.ReadInteger(G,'FontSize',FontSize);
   StationColor      :=params.ReadColor (G,'StationColor',StationColor);
@@ -226,7 +218,7 @@ end;
 procedure TFreePreferences.SetDefaults;
 begin
   PointSize:=2;
-  FontSize :=8;
+  FontSize :=8; //12;
   Language :='Russian';
   FbmEncoding:='cp1251';
   MaxUndoMemory:=64;

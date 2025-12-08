@@ -27,7 +27,7 @@ type                                                 { TFreePreferencesDialog }
     BitBtnResetDirs,BitBtnResetColors,
     BitBtn1,BitBtn2,SpeedButton9,SpeedButton14,SpeedButton15,
     SpeedButton16,SpeedButton17,SpeedButtonLanguagesDir:       TSpeedButton;
-    SpinEdit1,seSubmergedSurfaceOpacity,seFontSize,FreeNumInput1: TSpinEdit;
+    SpinEdit1,seFontSize,seSubmergedSurfaceOpacity,FreeNumInput1: TSpinEdit;
     TabSheet1,TabSheet2,TabSheet3:                                TTabSheet;
     ComboBox1,ComboBoxEncoding:                                   TComboBox;
     SelectDirectoryDialog1:                          TSelectDirectoryDialog;
@@ -136,6 +136,8 @@ begin
   Updatedata;
   FConfigChanged:=False;
   Showmodal;
+  FFreeship.Preferences.PointSize:=SpinEdit1.Value;
+  FFreeship.Preferences.FontSize:=seFontSize.Value;
   Result:=ModalResult=mrOk;
 end;
 

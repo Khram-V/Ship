@@ -138,7 +138,7 @@ var Source: TFreeFileBuffer; I,LineNR: Integer; Str: String;
     Strings: TStringList=nil;
 begin Source:=nil; Strings:=nil;
   if ExtractFileExt( FileName )=''
-     then FileName:=ChangeFileExt( FileName,FreeShipExtention );
+                then FileName:=ChangeFileExt( FileName,FreeShipExtention );
   Str:=LowerCase( ExtractFileExt( FileName ) );
   if Str='.fbm' then Source:=TFreeFileBuffer.Create else
   if Str='.ftm' then Source:=TFreeTextBuffer.Create else
@@ -303,7 +303,7 @@ begin with Ship.ProjectSettings do begin
    repeat Intersection_Add( fiWaterline,I*dd ); inc( I );
    until I*dd>=Ship.Surface.Max.Z-dd*0.25;
    D:=round( ProjectDraft/dd/2+0.51 );              // по паре на обе стороны =
-   for I:=0 to 4 do Intersection_Add( fiDiagonal,D+(I-2)*dd ); // пять рыбин
+   for I:=0 to 5 do Intersection_Add( fiDiagonal,D+(I+1)*dd ); // шесть рыбин
    SavePreview:=false;                              // без предпросмотра
    Ship.FileChanged:=True;
    Ship.Visibility.ModelView:=mvBoth;               // на оба борта
@@ -506,29 +506,26 @@ begin
       Ship.Clear;
       with Ship.ProjectSettings do begin                       // «Free!Ship»
         case FreeNewModelDialog.ShipBox.ItemIndex of
-          0: begin Ship.FileName:=File_A;
-                   FProjectName:=Name_A;
-                   FProjectComment:=Comm_A; end;
-          1: begin Ship.FileName:=File_B;
-                   FProjectName:=Name_B;
-                   FProjectComment:=Comm_B; end;
-          2: begin Ship.FileName:=File_C;
-                   FProjectName:=Name_C;
-                   FProjectComment:=Comm_C; end;
+          0: begin Ship.FileName:=File_A; FProjectName:=Name_A;
+                                          FProjectComment:=Comm_A; end;
+          1: begin Ship.FileName:=File_B; FProjectName:=Name_B;
+                                          FProjectComment:=Comm_B; end;
+          2: begin Ship.FileName:=File_C; FProjectName:=Name_C;
+                                          FProjectComment:=Comm_C; end;
         end;
         FProjectName:='«'+ChangeFileExt(ExtractFilename(Ship.FileName),'')+'». '+FProjectName;
         FProjectDesigner:='Подсекция штормовой мореходности, Научно-инженерное общество корабелов им.А.Н.Крылова';
         FProjectFileCreatedBy:='©'+TimeString+' Free!Ship example'; //, № '+inttostr( FreeNewModelDialog.ShipBox.ItemIndex+1); // FormatDateTime('YYYY-MM-DD_hh:nn',Now );
         ProjectLength:=L;
         ProjectBeam:=B;
-        ProjectDraft:=D*2;
+        if FreeNewModelDialog.ShipBox.ItemIndex=2 then ProjectDraft:=D*2.5
+                                                  else ProjectDraft:=D*2;
         ProjectUnderWaterColorAlpha:=128;
         ProjectUnits:=TFreeUnitType(FreeNewModelDialog.ComboBox1.ItemIndex);
       End;
       TrvSplines:=TFasterList.Create;
       StemPoint:=nil;      // First create tmp. splines in transverse direction
-      for I:=0 to 6 do begin
-         Spline1:=TFreeSpline.Create;
+      for I:=0 to 6 do begin Spline1:=TFreeSpline.Create;
          for J:=0 to 4 do begin
             case FreeNewModelDialog.ShipBox.ItemIndex of
               0: P:=Ship_A[I,J];
@@ -577,8 +574,8 @@ begin
       Ship.Precision:=fpMedium;
       Ship.Surface.Initialize(1,1,1);
       Ship.ActiveLayer.Name:=Userstring(179); // Обводы и общекорабельная архитектура
-      // Collapse stempoint to mage the grid irregular in order to demonstrate subdivision-surface capabilities
-      if StemPoint<>nil then if StemPoint.VertexType=svCorner then stempoint.VertexType:=svCrease;
+      if StemPoint<>nil then
+        if StemPoint.VertexType=svCorner then stempoint.VertexType:=svCrease;
       TrvSplines.Destroy;
       Ship.Build:=False;
       Drawing;

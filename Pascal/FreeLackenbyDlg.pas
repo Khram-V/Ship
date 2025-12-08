@@ -275,7 +275,7 @@ var Point         : TFreeSubdivisionControlPoint;
        Prop.A:=Prop.Cp*(1-2*Prop.LCB)-Prop.p*(1-Prop.Cp);
        Prop.B:=(Prop.Cp*(2*Prop.LCB-3*Prop.k*Prop.k-Prop.p*(1-2*Prop.LCB))/Prop.A);
        Prop.C:=(Prop.B*(1-Prop.Cp)-Prop.Cp*(1-2*Prop.LCB))/(1-Prop.P);
-    end;{InitializeData}
+    end;
 
 begin
    Succeeded:=False;
@@ -791,11 +791,9 @@ begin
 end;
 
 procedure TFreeLackenbyDialog.TopViewRedraw(Sender: TObject);
-var Pt      : TPoint;
-    I,J,K   : Integer;
-    Spline  : TFreeSpline;
-    Layer   : TFreeSubdivisionLayer;
-    Face    : TFreeSubdivisionControlface;
+var Pt: TPoint; I,J,K: Integer; Spline: TFreeSpline;
+    Layer: TFreeSubdivisionLayer;
+    Face: TFreeSubdivisionControlface;
 begin
    if FFreeship<>nil then
    if FOriginalSectionalAreaCurve.nS>0 then begin // Skip translation
@@ -803,7 +801,6 @@ begin
       TopView.FontSize:=7;
       TopView.FontColor:=clBlack;
       TopView.BrushStyle:=bsClear;
-
       Topview.PenColor:=clDkGray;
       for I:=1 to FFreeship.NumberOfLayers do begin
          Layer:=FFreeship.Layer[I-1];

@@ -14,17 +14,18 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Image1Click(Sender: TObject);
-  private
-    FCounter: integer;
+//private
+//  FCounter: integer;
   end;
-
 var FreeSplashWindow: TFreeSplashWindow;
+Var FCounter: Integer=100;
 
 implementation
 {$R *.lfm}
-
 procedure TFreeSplashWindow.TimerTimer( Sender: TObject );
-    begin inc(FCounter,Timer.Interval); if FCounter>1000 then Close; end;
+    begin dec( FCounter,Timer.Interval );
+            if FCounter<=0 then begin FCounter:=3000; Close end;
+    end;
 procedure TFreeSplashWindow.FormClose(Sender: TObject;var Action: TCloseAction);
     begin Timer.Enabled:=False; Release; end;
 procedure TFreeSplashWindow.Image1Click(Sender: TObject);
@@ -38,7 +39,6 @@ begin
    +#10+'License: '+#9+#9+#9+'GPL v2+'
    +#10+'© 2005, Martijn van Engeland, DelftShip: Marine software developer, Netherlands'
    +#10+'© 2024… НТО Крылова, о.Сахалин: Штормовая мореходность корабля, ‏יְרוּשָׁלַיִם';
-  FCounter:=0;
   Timer.Enabled:=True;
 end;
 

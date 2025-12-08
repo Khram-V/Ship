@@ -186,7 +186,7 @@ begin
     Screen.Cursor:=PrevCursor;
   end;
   FreeAndNil(OpenDialog);
-end;{TFreeEdit.File_ImportSTL}
+end;
 
 procedure TFreeEdit.File_ImportSTLtext( FileName: String );
 var
@@ -556,7 +556,7 @@ begin
       // Delete all controlpoints beneath the contourline and above the deckline
          for J:=1 to Points.Count do begin
             P1:=Points[J-1];
-            if Ship.Surface.PointExists(P1) then P1.Delete;
+            if Ship.Surface.PointExists(P1) then P1.SelDeletePoint;
          end;
          for I:=1 to Ship.Surface.NumberOfControlPoints do
            if Ship.Surface.ControlPoint[I-1].NumberOfFaces=1 then
@@ -1255,7 +1255,7 @@ begin
       Strings.Destroy;
    end;
    Dialog.Destroy;
-end;{TFreeEdit.File_ExportDXF_3DPolylines}
+end;
 
 // Export all faces to a 3D DXF model
 procedure TFreeEdit.File_ExportDXF_Faces;
@@ -1514,7 +1514,7 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
              end;
           end;
        end;
-    end;{FindOpposingPoints}
+    end;
 
     procedure AssembleTriangle(var Cols,Rows:Integer;var Grid:TFreeSubdivisionGrid;Face:TFreeSubdivisionControlface);
     var I,J,N, Index: Integer;
@@ -1567,11 +1567,10 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
       end; // else ShowMessage( Userstring(99) );
       Faces.Destroy;
       Points.Destroy;
-    end;{AssembleTriangle}
+    end;
 
     procedure ProcessGrid(Cols,Rows:Integer;Grid:TFreeSubdivisionGrid;ColorInd:Integer);
-    // convert grid to a NURB
-    var NURB,NURB2: TFreeNURBsurface;
+    var NURB,NURB2: TFreeNURBsurface;           // convert grid to a NURB
         I,J       : Integer;
         BottomRow,TopRow,LeftColumn,RightColumn: array of TFreeSubdivisionPoint;
         BottomLeft,BottomRight,TopLeft,TopRight: TFreeSubdivisionPoint;
@@ -1589,7 +1588,7 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
            P4:=PhantomPoint(P5,P6);
            P7:=PhantomPoint(P8,P9);
            Result:=20*P5 - 4*P2 - P3 - 4*P4 - 4*P6 - P7 - 4*P8 -P9;
-        end;{CornerPoint}
+        end;
 
     begin
       if (Cols>0) and (Rows>0) then begin
@@ -1728,7 +1727,7 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
          inc(NSurfaces);
          NURB.Destroy;
       end;
-    end;{ProcessGrid}
+    end;
 begin
    Dialog:=TSaveDialog.Create(Ship);
    Dialog.InitialDir:=Ship.Preferences.ExportDirectory;
@@ -1943,7 +1942,7 @@ var SaveDialog : TSaveDialog;
        writeln(FFile,'      vertex '+FloatToDec(P3.Coordinate.X,4)+#32+FloatToDec(P3.Coordinate.Y,4)+#32+FloatToDec(P3.Coordinate.Z,4));
        writeln(FFile,'    endloop');
        Writeln(FFile,'  endfacet');
-    end;{Addfacet}
+    end;
 begin
    SaveDialog:=TSaveDialog.Create(Ship);
    SaveDialog.InitialDir:=Ship.Preferences.ExportDirectory;
@@ -2796,7 +2795,9 @@ begin
       if Edge<>nil then Edge.Crease:=true;
    end;                             // Delete unused layers;
    Edit.Layer_DeleteEmpty(True);    // delete unused controlpoints
-   for I:=Surface.NumberOfControlPoints downto 1 do if Surface.ControlPoint[I-1].NumberOfFaces=0 then Surface.ControlPoint[I-1].Delete;
+   for I:=Surface.NumberOfControlPoints downto 1 do
+    if Surface.ControlPoint[I-1].NumberOfFaces=0 then
+       Surface.ControlPoint[I-1].SelDeletePoint;
    Tmp.Destroy;
    Pts2.Destroy;
    Pts.Destroy;

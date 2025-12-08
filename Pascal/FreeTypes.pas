@@ -2,15 +2,14 @@ unit FreeTypes;
 {$mode objfpc}{$H+}
 Interface Uses SysUtils,Math;
 Const
-  UFont = 'Times New Roman';
   Radian = 57.295779513082320876798154814105; // 180/π = °\rad
   Foot = 0.3048;
   Lbs  = 0.4535924;
   WeightConversionFactor=(1000/Lbs)/((1/Foot)*(1/Foot)*(1/Foot));
   EOL  = #13#10;
 Type
-// Real = Float;  { желательно всё привести к единому числовому представлению }
-  RealArray = array of Real;        // single; // double; // extended;
+  Real = Double;  { желательно всё привести к единому числовому представлению }
+  RealArray = array of Real;  // Single=32b; // Real=double; // Float=extended;
   Vector = record X,Y,Z:Real; end;  // 3D coordinate type
   VectorArray = array of Vector;
   Plate = record a,b,c,d:Real; end; // 3D plane: a*x+b*y+c*z-d=0.0
@@ -22,6 +21,7 @@ Type
   TFreeEditMode  =( emSelectItems ); //,emAddPoint,emAddFlowLine ); // The program responds differnt to mouse actions depending on the editmode of the component
 
 const ZERO: Vector=( X:0.0;Y:0.0;Z:0.0 );
+      UFont: String='Times New Roman'; // 'Serif';
 
   operator <>( const A,B: Vector ): boolean;
   operator = ( const A,B: Vector ): boolean;
@@ -198,12 +198,10 @@ begin J:=1; K:=1; L:=Length( S );       // вычистка лишних про�
     SetLength( S,J-1 );
     Result:=S;
 end;
-
 Function I2S( Value: Integer ): String;
 begin if abs( Value )>=$4000 then Result:='$'+IntToHex( Value,4 )
                              else Result:=IntToStr( Value );
 end;
-
 {$if 0}
 procedure ArraySort( var FloatArray: RealArray; var N: Integer );
   var I,J: Integer;  tempValue: Real;           { пузырьковая сортировка }
@@ -237,7 +235,6 @@ begin                                              // begin procedure ArraySort
      begin Move(A[I-1],A[I-2],(N-I+1)*SizeOf(Real)); Dec(N); end else Inc(I);
 end;
 {$endif}
-
 procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКСТРАПОЛЯЦИЯ ФУНКЦИИ Y(X)
 ( XX: Real;               // аргумент поиска
   N: integer;             // наверное,длина массива

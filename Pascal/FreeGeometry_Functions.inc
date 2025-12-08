@@ -522,7 +522,7 @@ var Blue,Green,Red,wavelength: Real;
            Result:=Round(255*Power(Color,0.8));
            //if result<0 then result:=0 else if result>255 then result:=255;
          end;
-  end;{Adjust}
+  end;
 begin
   Parameter:=1-Parameter;
   wavelength:=420+Parameter*280;
