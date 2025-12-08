@@ -236,154 +236,154 @@ object FreeExpanedplatesDialog: TFreeExpanedplatesDialog
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    object ToolButton20: TToolButton
+    object TB20: TToolButton
       Left = 5
       Top = 2
       Action = RotateCCW90
     end
-    object ToolButton1: TToolButton
+    object TB1: TToolButton
       Left = 51
       Top = 2
       Action = RotateCCW5
     end
-    object ToolButton11: TToolButton
+    object TB11: TToolButton
       Left = 97
       Top = 2
       Action = RotateCCW1
     end
-    object ToolButton10: TToolButton
+    object TB10: TToolButton
       Left = 143
       Height = 44
       Top = 2
       ImageIndex = 6
       Style = tbsSeparator
     end
-    object ToolButton12: TToolButton
+    object TB12: TToolButton
       Left = 159
       Top = 2
       Action = RotateCW1
     end
-    object ToolButton2: TToolButton
+    object TB2: TToolButton
       Left = 205
       Top = 2
       Action = RotateCW5
     end
-    object ToolButton3: TToolButton
+    object TB3: TToolButton
       Left = 251
       Top = 2
       Action = RotateCW90
     end
-    object _ToolButton4: TToolButton
+    object _TB4: TToolButton
       Left = 297
       Height = 44
       Top = 2
       ImageIndex = 5
       Style = tbsSeparator
     end
-    object ToolButton5: TToolButton
+    object TB5: TToolButton
       Left = 313
       Top = 2
       Action = ZoomExtents
     end
-    object ToolButton8: TToolButton
+    object TB8: TToolButton
       Left = 359
       Top = 2
       Action = ZoomIn
     end
-    object ToolButton9: TToolButton
+    object TB9: TToolButton
       Left = 405
       Top = 2
       Action = ZoomOut
     end
-    object _ToolButton6: TToolButton
+    object _TB6: TToolButton
       Left = 451
       Height = 44
       Top = 2
       ImageIndex = 1
       Style = tbsSeparator
     end
-    object ToolButton19: TToolButton
+    object TB19: TToolButton
       Left = 467
       Top = 2
       Action = ShowFillColor
     end
-    object ToolButton4: TToolButton
+    object TB4: TToolButton
       Left = 513
       Top = 2
       Action = ShowSubmergedArea
     end
-    object ToolButton18: TToolButton
+    object TB18: TToolButton
       Left = 559
       Top = 2
       Action = ShowInteriorEdges
     end
-    object ToolButton23: TToolButton
+    object TB23: TToolButton
       Left = 605
       Top = 2
       Action = ShowErrorEdges
     end
-    object ToolButton26: TToolButton
+    object TB26: TToolButton
       Left = 651
       Hint = 'Сетка и размерения на графическом поле'
       Top = 2
       Action = ShowDimensions
     end
-    object ToolButton27: TToolButton
+    object TB27: TToolButton
       Left = 697
       Top = 2
       Action = ShowPartName
     end
-    object ToolButton15: TToolButton
+    object TB15: TToolButton
       Left = 743
       Top = 2
       Action = ShowStations
       Style = tbsCheck
     end
-    object ToolButton16: TToolButton
+    object TB16: TToolButton
       Left = 789
       Top = 2
       Action = ShowButtocks
     end
-    object ToolButton17: TToolButton
+    object TB17: TToolButton
       Left = 835
       Top = 2
       Action = ShowWaterlines
     end
-    object ToolButton24: TToolButton
+    object TB24: TToolButton
       Left = 881
       Top = 2
       Action = ShowDiagonals
     end
-    object _ToolButton14: TToolButton
+    object _TB14: TToolButton
       Left = 927
       Height = 44
       Top = 2
       ImageIndex = 12
       Style = tbsSeparator
     end
-    object ToolButton7: TToolButton
+    object TB7: TToolButton
       Left = 943
       Top = 2
       Action = SaveBitmap
     end
-    object ToolButton13: TToolButton
+    object TB13: TToolButton
       Left = 989
       Top = 2
       Action = ExportDXF
     end
-    object ToolButton6: TToolButton
+    object TB6: TToolButton
       Left = 1035
       Top = 2
       Action = ExportTextFile
     end
-    object _ToolButton21: TToolButton
+    object _TB21: TToolButton
       Left = 1081
       Height = 44
       Top = 2
       ImageIndex = 12
       Style = tbsSeparator
     end
-    object ToolButton22: TToolButton
+    object TB22: TToolButton
       Left = 1097
       Hint = 'Закрыть лист чертежей'
       Top = 2

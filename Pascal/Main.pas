@@ -16,15 +16,10 @@ type TMainForm = class(TForm) {FreeShip:TFreeShip;->Ship:ShipUnit~~TCustomForm}
     ColorDialog: TColorDialog;
     SpinEditFontSize: TSpinEdit;         //!!! нет единого управления шрифтами
     StatusBar,Panel1,Panel2,Panel3,Panel4: TPanel;
-    ToolButton1,ToolButton2,ToolButton3,ToolButton4,ToolButton5,ToolButton6,
-    ToolButton7,ToolButton8,ToolButton9,ToolButton10,ToolButton11,ToolButton12,
-    ToolButton13,ToolButton14,ToolButton15,ToolButton16,ToolButton17,ToolButton18,
-    ToolButton19,ToolButton20,ToolButton21,ToolButton22,ToolButton23,ToolButton24,
-    ToolButton25,ToolButton26,ToolButton27,ToolButton28,ToolButton29,ToolButton30,
-    ToolButton31,ToolButton32,ToolButton33,ToolButton34,ToolButton35,ToolButton36,
-    ToolButton37,ToolButton38,ToolButton39,ToolButton40,ToolButton41,ToolButton42,
-    ToolButton43,ToolButton44,ToolButton45,ToolButton46,ToolButton47,ToolButton48,
-                                      ShowBuildCurve,tbMiddleFrame: TToolButton;
+    TB1,TB2,TB3,TB4,TB5,TB6,TB7,TB8,TB9,TB10,TB11,TB12,TB13,TB14,TB15,TB16,
+    TB17,TB18,TB19,TB20,TB21,TB22,TB23,TB24,TB25,TB26,TB27,TB28,TB29,TB30,TB31,
+    TB32,TB33,TB34,TB35,TB36,TB37,TB38,TB39,TB40,TB41,TB42,TB43,TB44,TB45,TB46,
+                             TB47,TB48,ShowBuildCurve,tbMiddleFrame: TToolButton;
     ExportAurora      : TAction; AuroraHullVsl    : TMenuItem;
     IntersectionDialog: TAction; Intersections1   : TMenuItem;
     ShowHydrostatics  : TAction; Hydrostatics1    : TMenuItem;

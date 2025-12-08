@@ -271,21 +271,21 @@ object FreeLayerDialog: TFreeLayerDialog
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    object ToolButton20: TToolButton
+    object TB20: TToolButton
       Left = 5
       Hint = 'Создание нового чистого графического слоя'
       Top = 2
       ImageIndex = 1
-      OnClick = ToolButton20Click
+      OnClick = TB20Click
     end
-    object ToolButton3: TToolButton
+    object TB3: TToolButton
       Left = 28
       Hint = 'Удаление из модели всех пустых слоёв'
       Top = 2
       ImageIndex = 2
-      OnClick = ToolButton3Click
+      OnClick = TB3Click
     end
-    object _ToolButton2: TToolButton
+    object _TB2: TToolButton
       Left = 51
       Height = 22
       Top = 2
@@ -308,20 +308,20 @@ object FreeLayerDialog: TFreeLayerDialog
       ImageIndex = 4
       OnClick = MoveDownClick
     end
-    object _ToolButton4: TToolButton
+    object _TB4: TToolButton
       Left = 105
       Height = 22
       Top = 2
       ImageIndex = 1
       Style = tbsSeparator
     end
-    object ToolButton1: TToolButton
+    object TB1: TToolButton
       Left = 113
       Hint = 'Закрыть список графических слоёв'
       Top = 2
       Caption = 'Done'
       ImageIndex = 0
-      OnClick = ToolButton1Click
+      OnClick = TB1Click
     end
   end
   object MenuImages: TImageList

@@ -98,27 +98,27 @@ object MainForm: TMainForm
     ParentShowHint = True
     ShowHint = True
     TabOrder = 1
-    object ToolButton20: TToolButton
+    object TB20: TToolButton
       Left = 2
       Top = 1
       Action = NewModel
     end
-    object ToolButton1: TToolButton
+    object TB1: TToolButton
       Left = 33
       Top = 1
       Action = LoadFile
     end
-    object ToolButton38: TToolButton
+    object TB38: TToolButton
       Left = 56
       Top = 1
       Action = FileSave
     end
-    object ToolButton3: TToolButton
+    object TB3: TToolButton
       Left = 79
       Top = 1
       Action = ExitProgram
     end
-    object ToolButton4: TToolButton
+    object TB4: TToolButton
       Left = 102
       Height = 22
       Top = 1
@@ -143,14 +143,14 @@ object MainForm: TMainForm
       Text = 'Средняя'
       OnChange = PrecisionBoxChange
     end
-    object ToolButton7: TToolButton
+    object TB7: TToolButton
       Left = 185
       Height = 22
       Top = 1
       ImageIndex = 7
       Style = tbsSeparator
     end
-    object ToolButton26: TToolButton
+    object TB26: TToolButton
       Left = 475
       Top = 1
       Action = IntersectionDialog
@@ -160,53 +160,53 @@ object MainForm: TMainForm
       Top = 1
       Action = SplitSectionDialog
     end
-    object ToolButton8: TToolButton
+    object TB8: TToolButton
       Left = 193
       Top = 1
       Action = ShowControlNet
     end
-    object ToolButton2: TToolButton
+    object TB2: TToolButton
       Left = 216
       Top = 1
       Action = ShowControlCurves
     end
-    object ToolButton9: TToolButton
+    object TB9: TToolButton
       Left = 239
       Top = 1
       Action = ShowInteriorEdges
     end
-    object ToolButton10: TToolButton
+    object TB10: TToolButton
       Left = 262
       Top = 1
       Action = BothSides
     end
-    object ToolButton31: TToolButton
+    object TB31: TToolButton
       Left = 285
       Top = 1
       Action = ShowGrid
     end
-    object ToolButton21: TToolButton
+    object TB21: TToolButton
       Left = 308
       Top = 1
       Action = ShowStations
       AllowAllUp = True
     end
-    object ToolButton22: TToolButton
+    object TB22: TToolButton
       Left = 331
       Top = 1
       Action = ShowButtocks
     end
-    object ToolButton23: TToolButton
+    object TB23: TToolButton
       Left = 354
       Top = 1
       Action = ShowWaterlines
     end
-    object ToolButton35: TToolButton
+    object TB35: TToolButton
       Left = 377
       Top = 1
       Action = ShowDiagonals
     end
-    object ToolButton48: TToolButton
+    object TB48: TToolButton
       Left = 400
       Top = 1
       Action = ShowFlowlines
@@ -230,22 +230,22 @@ object SpinEditFontSize: TSpinEdit
   Value = 8
   OnChange = SpinEditFontSizeChange
 end
-    object ToolButton30: TToolButton
+    object TB30: TToolButton
       Left = 423
       Top = 1
       Action = ShowNormals
     end
-    object ToolButton37: TToolButton
+    object TB37: TToolButton
       Left = 446
       Top = 1
       Action = Showcurvature
     end
-    object ToolButton36: TToolButton
+    object TB36: TToolButton
       Left = 469
       Top = 1
       Action = ShowMarkers
     end
-    object ToolButton12: TToolButton
+    object TB12: TToolButton
       Left = 25
       Height = 22
       Top = 1
@@ -253,22 +253,22 @@ end
       Style = tbsSeparator
       Wrap = True
     end
-    object ToolButton5: TToolButton
+    object TB5: TToolButton
       Left = 492
       Top = 1
       Action = NewLayer
     end
-    object ToolButton34: TToolButton
+    object TB34: TToolButton
       Left = 515
       Top = 1
       Action = DeleteEmptyLayers
     end
-    object ToolButton33: TToolButton
+    object TB33: TToolButton
       Left = 538
       Top = 1
       Action = LayerDialog
     end
-    object ToolButton6: TToolButton
+    object TB6: TToolButton
       Left = 561
       Top = 1
       Action = LayerAutoGroup
@@ -295,122 +295,122 @@ end
       TabOrder = 2
       OnClick = Panel1Click
     end
-    object ToolButton11: TToolButton
+    object TB11: TToolButton
       Left = 775
       Height = 22
       Top = 1
       ImageIndex = 7
       Style = tbsSeparator
     end
-    object ToolButton15: TToolButton
+    object TB15: TToolButton
       Left = 783
       Top = 1
       Action = Delete
     end
-    object ToolButton14: TToolButton
+    object TB14: TToolButton
       Left = 806
       Height = 22
       Top = 1
       ImageIndex = 10
       Style = tbsSeparator
     end
-    object ToolButton45: TToolButton
+    object TB45: TToolButton
       Left = 814
       Top = 1
       Action = PointAlign
     end
-    object ToolButton18: TToolButton
+    object TB18: TToolButton
       Left = 837
       Top = 1
       Action = PointCollapse
     end
-    object ToolButton41: TToolButton
+    object TB41: TToolButton
       Left = 860
       Top = 1
       Action = InsertPlane
     end
-    object ToolButton47: TToolButton
+    object TB47: TToolButton
       Left = 883
       Top = 1
       Action = LayerIntersection
     end
-    object ToolButton42: TToolButton
+    object TB42: TToolButton
       Left = 906
       Top = 1
       Action = PointsLock
     end
-    object ToolButton43: TToolButton
+    object TB43: TToolButton
       Left = 929
       Top = 1
       Action = PointsUnlock
     end
-    object ToolButton44: TToolButton
+    object TB44: TToolButton
       Left = 952
       Top = 1
       Action = PointsUnlockAll
     end
-    object ToolButton19: TToolButton
+    object TB19: TToolButton
       Left = 975
       Height = 22
       Top = 1
       ImageIndex = 12
       Style = tbsSeparator
     end
-    object ToolButton27: TToolButton
+    object TB27: TToolButton
       Left = 983
       Top = 1
       Action = EdgeExtrude
     end
-    object ToolButton29: TToolButton
+    object TB29: TToolButton
       Left = 1006
       Top = 1
       Action = EdgeSplit
     end
-    object ToolButton13: TToolButton
+    object TB13: TToolButton
       Left = 1029
       Top = 1
       Action = EdgeCollapse
     end
-    object ToolButton16: TToolButton
+    object TB16: TToolButton
       Left = 1052
       Top = 1
       Action = NewEdge
     end
-    object ToolButton17: TToolButton
+    object TB17: TToolButton
       Left = 1075
       Top = 1
       Action = EdgeCrease
     end
-    object ToolButton25: TToolButton
+    object TB25: TToolButton
       Left = 1098
       Height = 22
       Top = 1
       ImageIndex = 19
       Style = tbsSeparator
     end
-    object ToolButton40: TToolButton
+    object TB40: TToolButton
       Left = 1106
       Top = 1
       Action = NewCurve
     end
-    object ToolButton39: TToolButton
+    object TB39: TToolButton
       Left = 1129
       Height = 22
       Top = 1
       ImageIndex = 15
       Style = tbsSeparator
     end
-    object ToolButton24: TToolButton
+    object TB24: TToolButton
       Left = 1137
       Top = 1
       Action = NewFace
     end
-    object ToolButton32: TToolButton
+    object TB32: TToolButton
       Left = 1160
       Top = 1
       Action = InvertFace
     end
-    object ToolButton28: TToolButton
+    object TB28: TToolButton
       Left = 1183
       Height = 22
       Top = 1

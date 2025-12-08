@@ -1,15 +1,10 @@
 unit FreeLayerDlg;
-interface
-uses SysUtils,
-     Classes,
-     Controls,
-     StdCtrls,
-     ExtCtrls,
-     Forms,
-     CheckLst,
-     Dialogs,
-     ComCtrls,
-     FreeTypes,FreeShipUnit,FreeGeometry;
+interface uses
+     SysUtils, Classes,
+     Controls, StdCtrls,
+     ExtCtrls, Forms,
+     CheckLst, Dialogs,
+     ComCtrls, FreeTypes,FreeShipUnit,FreeGeometry;
 type
   TFreeLayerDialog  = class(TForm)
      GroupBox1: TGroupBox;
@@ -23,8 +18,7 @@ type
      Edit1,Edit2,Edit3: TEdit;
      Label1,_Label1,Label2,Label3,Label4,_Label4,Label5,_Label6,
      Label7,Label8,Label9,_Label10,_Label11,_Label12: TLabel;
-     ToolButton1,_ToolButton2,ToolButton3,_ToolButton4,ToolButton20,
-                                      MoveUp,MoveDown: TToolButton;
+     TB1,_TB2,TB3,_TB4,TB20,MoveUp,MoveDown: TToolButton;
      procedure LayerBoxClick(Sender: TObject);
      procedure LayerBoxDblClick(Sender: TObject);
      procedure Edit1Change(Sender: TObject);
@@ -34,9 +28,9 @@ type
      procedure CheckBox3Click(Sender: TObject);
      procedure CheckBox4Click(Sender: TObject);
      procedure CheckBox5Click(Sender: TObject);
-     procedure ToolButton20Click(Sender: TObject);
-     procedure ToolButton1Click(Sender: TObject);
-     procedure ToolButton3Click(Sender: TObject);
+     procedure TB20Click(Sender: TObject);
+     procedure TB1Click(Sender: TObject);
+     procedure TB3Click(Sender: TObject);
      procedure Edit2KeyPress(Sender: TObject; var Key: Char);
      procedure Edit3KeyPress(Sender: TObject; var Key: Char);
      procedure Edit2Exit(Sender: TObject);
@@ -68,7 +62,7 @@ var I,N : INteger;
 begin
    N:=0;
    for I:=1 to FFreeship.NumberOfLayers do if FFreeship.Layer[I-1].Count=0 then inc(N);
-   Toolbutton3.Enabled:=(N>0) and (N<FFreeship.NumberOfLayers);
+   TB3.Enabled:=(N>0) and (N<FFreeship.NumberOfLayers);
    MoveUp.Enabled:=False;
    MoveDown.Enabled:=False;
    if (FFreeship.NumberOfLayers>1) and (SelectedLayer<>nil) then
@@ -201,7 +195,7 @@ begin
    end;
 end;
 
-procedure TFreeLayerDialog.ToolButton20Click(Sender: TObject);
+procedure TFreeLayerDialog.TB20Click(Sender: TObject);
 var N:         Integer;
     NewLayer:  TFreeSubdivisionLayer;
     LayVis:    Boolean;
@@ -218,10 +212,10 @@ begin
    UpdateMenu;
 end;
 
-procedure TFreeLayerDialog.ToolButton1Click(Sender: TObject);
+procedure TFreeLayerDialog.TB1Click(Sender: TObject);
     begin Modalresult:=mrOK; end;
 
-procedure TFreeLayerDialog.ToolButton3Click(Sender: TObject);
+procedure TFreeLayerDialog.TB3Click(Sender: TObject);
 var noFeedback: Boolean;
 begin
 // delete the emtpy layers, set a new active layer:

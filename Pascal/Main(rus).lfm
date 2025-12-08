@@ -194,30 +194,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 3
       Transparent = True
-      object ToolButtonOpenFile: TToolButton
-        Tag = 1
-        Left = 3
-        Top = 0
-        Action = LoadFile
-      end
-      object ToolButton38: TToolButton
-        Tag = 2
-        Left = 27
-        Top = 0
-        Action = FileSave
-      end
-      object ToolButtonUndo: TToolButton
-        Tag = 3
-        Left = 51
-        Top = 0
-        Action = Undo
-      end
-      object ToolButtonRedo: TToolButton
-        Tag = 4
-        Left = 75
-        Top = 0
-        Action = Redo
-      end
     end
     object ToolBarVisibility: TToolBar
       Left = 107
@@ -236,104 +212,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 0
       Transparent = True
-      object ToolButton8: TToolButton
-        Left = 4
-        Top = 0
-        Action = ShowControlNet
-      end
-      object ToolButton2: TToolButton
-        Tag = 4
-        Left = 100
-        Top = 0
-        Action = ShowControlCurves
-      end
-      object ToolButton9: TToolButton
-        Tag = 2
-        Left = 52
-        Top = 0
-        Action = ShowInteriorEdges
-      end
-      object ToolButton10: TToolButton
-        Tag = 11
-        Left = 292
-        Top = 0
-        Action = BothSides
-      end
-      object ToolButton31: TToolButton
-        Tag = 14
-        Left = 340
-        Top = 0
-        Action = ShowGrid
-      end
-      object ToolButton21: TToolButton
-        Tag = 9
-        Left = 244
-        Top = 0
-        Action = ShowStations
-        AllowAllUp = True
-      end
-      object ToolButton22: TToolButton
-        Tag = 7
-        Left = 172
-        Top = 0
-        Action = ShowButtocks
-      end
-      object ToolButton23: TToolButton
-        Tag = 8
-        Left = 220
-        Top = 0
-        Action = ShowWaterlines
-      end
-      object ToolButton35: TToolButton
-        Tag = 10
-        Left = 268
-        Top = 0
-        Action = ShowDiagonals
-      end
-      object ToolButton46: TToolButton
-        Tag = 13
-        Left = 316
-        Top = 0
-        Action = ShowHydrostatics
-      end
-      object ToolButton48: TToolButton
-        Tag = 12
-        Left = 196
-        Top = 0
-        Action = ShowFlowlines
-      end
-      object ToolButton30: TToolButton
-        Tag = 3
-        Left = 76
-        Top = 0
-        Action = ShowNormals
-      end
-      object ToolButton37: TToolButton
-        Tag = 5
-        Left = 124
-        Top = 0
-        Action = Showcurvature
-      end
-      object ToolButton36: TToolButton
-        Tag = 6
-        Left = 148
-        Top = 0
-        Action = ShowMarkers
-      end
-      object tbShowFreeObjects: TToolButton
-        Tag = 1
-        Left = 28
-        Top = 0
-        Action = ShowFreeObjects
-        Marked = True
-        Style = tbsCheck
-      end
-      object ToolButton39: TToolButton
-        Tag = 17
-        Left = 468
-        Top = 0
-        Action = SplitSectionDialog
-      end
     end
     object ToolBarLayers: TToolBar
       Left = 599
@@ -350,41 +228,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 1
       Transparent = True
-      object ToolButton5: TToolButton
-        Left = 3
-        Top = 0
-        Action = NewLayer
-      end
-      object ToolButton34: TToolButton
-        Tag = 1
-        Left = 27
-        Top = 0
-        Action = DeleteEmptyLayers
-      end
-      object ToolButton33: TToolButton
-        Tag = 2
-        Left = 51
-        Top = 0
-        Action = LayerDialog
-      end
-      object ToolButton1: TToolButton
-        Tag = 4
-        Left = 75
-        Top = 0
-        Action = LayerVisibilityDialog
-      end
-      object ToolButton26: TToolButton
-        Tag = 6
-        Left = 99
-        Top = 0
-        Action = IntersectionDialog
-      end
-      object ToolButton6: TToolButton
-        Tag = 7
-        Left = 123
-        Top = 0
-        Action = LayerAutoGroup
-      end
     end
     object ToolBarPoints: TToolBar
       Left = 903
@@ -402,47 +245,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 2
       Transparent = True
-      object ToolButton45: TToolButton
-        Left = 3
-        Top = 0
-        Action = PointAlign
-      end
-      object ToolButton18: TToolButton
-        Tag = 1
-        Left = 27
-        Top = 0
-        Action = PointCollapse
-      end
-      object ToolButton42: TToolButton
-        Tag = 2
-        Left = 51
-        Top = 0
-        Action = PointsLock
-      end
-      object ToolButton43: TToolButton
-        Tag = 3
-        Left = 75
-        Top = 0
-        Action = PointsUnlock
-      end
-      object ToolButton44: TToolButton
-        Tag = 4
-        Left = 99
-        Top = 0
-        Action = PointsUnlockAll
-      end
-      object ToolButton41: TToolButton
-        Tag = 5
-        Left = 123
-        Top = 0
-        Action = InsertPlane
-      end
-      object ToolButton47: TToolButton
-        Tag = 6
-        Left = 147
-        Top = 0
-        Action = LayerIntersection
-      end
     end
     object ToolBarEdges: TToolBar
       Left = 1075
@@ -460,35 +262,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 4
       Transparent = True
-      object ToolButton27: TToolButton
-        Left = 3
-        Top = 0
-        Action = EdgeExtrude
-      end
-      object ToolButton17: TToolButton
-        Tag = 1
-        Left = 27
-        Top = 0
-        Action = EdgeCrease
-      end
-      object ToolButton29: TToolButton
-        Tag = 2
-        Left = 51
-        Top = 0
-        Action = EdgeSplit
-      end
-      object ToolButton16: TToolButton
-        Tag = 3
-        Left = 75
-        Top = 0
-        Action = NewEdge
-      end
-      object ToolButton13: TToolButton
-        Tag = 4
-        Left = 99
-        Top = 0
-        Action = EdgeCollapse
-      end
     end
     object ToolBarFaces: TToolBar
       Left = 1202
@@ -504,17 +277,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 6
       Transparent = True
-      object ToolButton24: TToolButton
-        Left = 3
-        Top = 0
-        Action = NewFace
-      end
-      object ToolButton32: TToolButton
-        Tag = 1
-        Left = 27
-        Top = 0
-        Action = InvertFace
-      end
     end
     object ToolBarCurves: TToolBar
       Left = 1254
@@ -532,12 +294,6 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 5
       Transparent = True
-      object ToolButton40: TToolButton
-        Left = 3
-        Top = 0
-        Action = NewCurve
-        AutoSize = True
-      end
       object HintBar: TStatusBar
         Left = 30
         Height = 23

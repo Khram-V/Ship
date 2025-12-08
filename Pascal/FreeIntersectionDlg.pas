@@ -13,8 +13,7 @@ type
      Panel1: TPanel;
      ListBox: TCheckListBox;
      ToolBar1: TToolBar;
-     ToolButton1,ToolButton2,ToolButton3,ToolButton4,ToolButton5,ToolButton6,
-     ToolButton7,ToolButton13,ToolButton14,ToolButton21: TToolButton;
+     TB1,TB2,TB3,TB4,TB5,TB6, TB7,TB13,TB14,TB21: TToolButton;
      ViewStations,ViewButtocks,ViewWaterlines,ViewDiagonals,
      CloseDialog,AddOne,AddRange,DeleteAll: TAction;
      procedure ListBoxKeyDown(Sender: TObject; var Key: Word;Shift: TShiftState);

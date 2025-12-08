@@ -29,7 +29,7 @@ object FreeLinesplanForm: TFreeLinesplanForm
     end
     inherited ToolBar1: TToolBar
       Width = 820
-      inherited ToolButton19: TToolButton
+      inherited TB19: TToolButton
         AllowAllUp = True
       end
     end

@@ -12,7 +12,6 @@ object FreeLinesplanFrame: TFreeLinesplanFrame
     Top = 0
     Width = 1000
     AutoSize = True
-    Caption = 'ToolBar1'
     Color = clBtnFace
     Images = MenuImages
     Indent = 5
@@ -20,63 +19,62 @@ object FreeLinesplanFrame: TFreeLinesplanFrame
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
-    object ToolButton5: TToolButton
+    object TB5: TToolButton
       Left = 5
       Top = 2
       Action = ZoomExtents
     end
-    object ToolButton8: TToolButton
+    object TB8: TToolButton
       Left = 28
       Top = 2
       Action = ZoomIn
     end
-    object ToolButton9: TToolButton
+    object TB9: TToolButton
       Left = 51
       Top = 2
       Action = ZoomOut
     end
-    object ToolButton6: TToolButton
+    object TB6: TToolButton
       Left = 74
       Height = 22
       Top = 2
-      Caption = 'ToolButton6'
       ImageIndex = 1
       Style = tbsSeparator
     end
-    object ToolButton19: TToolButton
+    object TB19: TToolButton
       Left = 82
       Top = 2
       Action = ShowFillColor
     end
-    object ToolButton2: TToolButton
+    object TB2: TToolButton
       Left = 105
       Top = 2
       Action = UseLights
     end
-    object ToolButton3: TToolButton
+    object TB3: TToolButton
       Left = 128
       Top = 2
       Action = ShowMonochrome
     end
-    object ToolButton4: TToolButton
+    object TB4: TToolButton
       Left = 151
       Top = 2
       Action = MirrorPlanView
     end
-    object ToolButton14: TToolButton
+    object TB14: TToolButton
       Left = 174
       Height = 22
       Top = 2
       ImageIndex = 12
       Style = tbsSeparator
     end
-    object ToolButton7: TToolButton
+    object TB7: TToolButton
       Left = 227
       Top = 2
       Action = SaveBitmap
       AutoSize = True
     end
-    object ToolButton13: TToolButton
+    object TB13: TToolButton
       Left = 182
       Top = 2
       Action = ExportDXF

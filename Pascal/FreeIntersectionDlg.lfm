@@ -51,56 +51,56 @@ object FreeIntersectionDialog: TFreeIntersectionDialog
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    object ToolButton1: TToolButton
+    object TB1: TToolButton
       Left = 5
       Top = 2
       Action = ViewStations
     end
-    object ToolButton2: TToolButton
+    object TB2: TToolButton
       Left = 28
       Top = 2
       Action = ViewButtocks
     end
-    object ToolButton3: TToolButton
+    object TB3: TToolButton
       Left = 51
       Top = 2
       Action = ViewWaterlines
     end
-    object ToolButton4: TToolButton
+    object TB4: TToolButton
       Left = 74
       Top = 2
       Action = ViewDiagonals
     end
-    object ToolButton14: TToolButton
+    object TB14: TToolButton
       Left = 97
       Height = 22
       Top = 2
       ImageIndex = 12
       Style = tbsSeparator
     end
-    object ToolButton7: TToolButton
+    object TB7: TToolButton
       Left = 105
       Top = 2
       Action = AddOne
     end
-    object ToolButton13: TToolButton
+    object TB13: TToolButton
       Left = 128
       Top = 2
       Action = AddRange
     end
-    object ToolButton6: TToolButton
+    object TB6: TToolButton
       Left = 151
       Top = 2
       Action = DeleteAll
     end
-    object ToolButton21: TToolButton
+    object TB21: TToolButton
       Left = 174
       Height = 22
       Top = 2
       ImageIndex = 12
       Style = tbsSeparator
     end
-    object ToolButton5: TToolButton
+    object TB5: TToolButton
       Left = 182
       Top = 2
       Action = CloseDialog

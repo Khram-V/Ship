@@ -21,9 +21,7 @@ type TLinesplanView   = (lvProfile,lvAftBody,lvFrontBody,lvPlan);
         Font: TSpinEdit;
         MenuImages: TImageList;
         ToolBar1: TToolBar;
-        ToolButton1,ToolButton2,ToolButton3,ToolButton4,ToolButton5,ToolButton6,
-        ToolButton7,ToolButton8ToolButton9,ToolButton14,ToolButton13,ToolButton19:
-                                                                     TToolButton;
+        TB1,TB2,TB3,TB4,TB5,TB6,TB7,TB8,TB9,TB14,TB13,TB19: TToolButton;
         procedure SpinEdit1Change(Sender: TObject);
         procedure ViewportRequestExtents(Sender: TObject; var Min,Max: Vector);
         procedure ViewportRedraw( Sender: TObject );
