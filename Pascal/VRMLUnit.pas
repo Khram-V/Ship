@@ -1,7 +1,7 @@
 unit VRMLUnit;
 interface uses
      LazFileUtils,Classes,SysUtils,Dialogs,
-     Graphics,FreeTypes,FreeGeometry,FasterList;
+     Graphics,STypes,Geometry,FasterList;
 type 
 TIntArray = array of integer;
 TVRMLFileType = (ftVRML1,ftVRML2);
@@ -36,7 +36,7 @@ private
    FCapacity,FCount: Integer;
    FFaceSets: TFasterList;
    FCoordinates: VectorArray;
-   function FGetNumberOfFacesets:Integer;
+   function FGetNoFacesets:Integer;
    function FGetPoint(Index:INteger):Vector;
    procedure FSetCapacity(val:Integer);
 public
@@ -48,7 +48,7 @@ public
    procedure Load(var LineNr:Integer;Strings:TStringList);override;
    property Count: Integer read FCount;
    property Capacity: Integer read FCapacity write FSetCapacity;
-   property NumberOfFaceSets: Integer read FGetNumberOfFacesets;
+   property NoFaceSets: Integer read FGetNoFacesets;
    property Point[index:Integer]: Vector read FGetPoint;
 end;
 TVRMLIndexedFaceSet = class(TVRMLobject)
@@ -85,7 +85,7 @@ public
    property Items[index:Integer]: TVRMLObject read FGetItems;
 end;
 
-implementation Uses FreeLanguageSupport;
+implementation Uses LanguageSupport;
 
 procedure ProcessString( Input: ansistring; var output: TStringList );
  var Tmp: TStringArray; I: integer;
@@ -95,13 +95,13 @@ end;
 
 procedure LoadNextObject
 ( strings: TStringList;
-  var LineNr,NumberOfObjects: integer;
+  var LineNr,NoObjects: integer;
   var Objectname: AnsiString;
   Dest: TStringList );
 var Index,Level,L: integer; Tmp,Str: AnsiString; Ch:char; Done: boolean;
 begin
   Str:=''; Dest.Clear; Level:=0; Done:=False; Objectname:='';
-  NumberOfObjects:=0;
+  NoObjects:=0;
   while (LineNr<Strings.Count) and (not Done) do begin
     Index:=1; Tmp:=Strings[LineNr]; L:=Length(Tmp);
     while Index<=L do begin Ch:=Tmp[index];
@@ -112,7 +112,7 @@ begin
       end;
       if ch='[' then begin if level<>0 then Str:=Str+Ch; Inc(level); end else
       if Ch=']' then begin Dec(Level); if Level=0 then begin Done:=True; break; end else Str:=Str+Ch; end else
-      if Ch='{' then begin Inc(NumberOfObjects); if Level<>0 then Str:=Str+Ch; Inc(Level); end else
+      if Ch='{' then begin Inc(NoObjects); if Level<>0 then Str:=Str+Ch; Inc(Level); end else
       if Ch='}' then begin Dec(Level); if Level=0 then begin Done:=True; break; end else Str:=Str+Ch; end else
       if Level<>0 then Str:=Str+Ch;
       Inc( Index );
@@ -131,7 +131,7 @@ begin
   Objectname:=Trim( Objectname );
   if not Done then begin
      Done:=(Objectname='') and (Dest.Count=0);
-     if NumberOfObjects=0 then Done:=True;
+     if NoObjects=0 then Done:=True;
      if not done then WriteLn( Userstring(115) );
   end;
 end;
@@ -218,7 +218,7 @@ begin
 end;
 
 // # VRML Material #
-function TVRMLCoordinate3.FGetNumberOfFacesets:Integer;
+function TVRMLCoordinate3.FGetNoFacesets:Integer;
    begin Result:=FFaceSets.Count; end;
 
 function TVRMLCoordinate3.FGetPoint(Index:Integer):Vector;

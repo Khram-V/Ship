@@ -1,0 +1,447 @@
+object HullWindow: THullWindow
+  Left = 1489
+  Height = 562
+  Top = 604
+  Width = 860
+  ClientHeight = 562
+  ClientWidth = 860
+  Color = clBtnFace
+  DesignTimePPI = 192
+  Font.Color = clWindowText
+  Font.Height = -12
+  Position = poDefault
+  ShowHint = True
+  LCLVersion = '4.2.0.0'
+  Visible = True
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
+  object ScrollBar1: TScrollBar
+    Left = 0
+    Height = 8
+    Top = 546
+    Width = 860
+    Align = alBottom
+    LargeChange = 5
+    Max = 180
+    Min = -180
+    PageSize = 0
+    Position = 20
+    TabOrder = 0
+  end
+  object ScrollBar2: TScrollBar
+    Left = 844
+    Height = 546
+    Top = 0
+    Width = 8
+    Align = alRight
+    Kind = sbVertical
+    Max = 180
+    Min = -180
+    PageSize = 0
+    Position = 20
+    TabOrder = 1
+  end
+  object Viewport: TViewport
+    Left = 0
+    Top = 0
+    Width = 420
+    Height = 246
+    Cursor = crCross
+    Angle = -30
+    Align = alClient
+    Margin = 1
+    BackgroundImage.Alpha = 255
+    BackgroundImage.Tolerance = 5
+    BackgroundImage.Transparent = False
+    BackgroundImage.TransparentColor = clBlack
+    BackgroundImage.Visible = True
+    CameraType = ftStandard
+    Color = 10461087
+    Elevation = 20
+    HorScrollbar = ScrollBar1
+    PopupMenu = PopupMenu
+    VertScrollbar = ScrollBar2
+    ViewType = fvPerspective
+    ViewportMode = vmWireFrame
+    OnChangeBackground = ViewportChangeBackground
+    OnChangeViewType = ViewportChangeViewType
+    OnKeyPress = ViewportKeyPress
+    OnKeyUp = ViewportKeyUp
+    OnMouseDown = ViewportMouseDown
+    OnMouseUp = ViewportMouseUp
+    OnMouseMove = ViewportMouseMove
+    OnMouseLeave = ViewportMouseLeave
+    OnRedraw = ViewportRedraw
+    OnRequestBackgroundImage = ViewportRequestBackgroundImage
+    OnRequestExtents = ViewportRequestExtents
+  end
+  object PopupMenu: TPopupMenu
+    Images = Images
+    AutoPopup = False
+    OnPopup = PopupMenuPopup
+    Left = 100
+    Top = 32
+    object Deselectall1: TMenuItem
+      Action = DeselectAll
+    end
+    object View1: TMenuItem
+      Caption = 'Проекция'
+      Hint = 'Выбор проекции теоретического чертежа: корпус, бок, полуширота, аксонометрия'
+      ImageIndex = 2
+      object Bodyplan1: TMenuItem
+        Action = ViewBodyPlan
+      end
+      object Profile1: TMenuItem
+        Action = ViewProfile
+      end
+      object Planview1: TMenuItem
+        Action = ViewPlan
+      end
+      object Perspective1: TMenuItem
+        Action = ViewPerspective
+      end
+    end
+    object Zoom1: TMenuItem
+      Caption = 'Масштаб'
+      Hint = 'Размерения изображения относительно листа чертёжной проекции.'
+      object ZoomIn1: TMenuItem
+        Action = ZoomIn
+      end
+      object Zoomout1: TMenuItem
+        Action = ZoomOut
+      end
+      object All1: TMenuItem
+        Action = ZoomExtents
+      end
+    end
+    object Camera1: TMenuItem
+      Caption = 'Объектив'
+      Hint = 'Настойка дистанции для прорисовки перспективной проекции в аксонометрии.'
+      ImageIndex = 0
+      object Widelens28mm1: TMenuItem
+        Action = WideLens
+      end
+      object Standard50mm1: TMenuItem
+        Action = StandardLens
+      end
+      object Shorttelelens90mm1: TMenuItem
+        Action = ShortTeleLens
+      end
+      object Mediumtelelens130mm1: TMenuItem
+        Action = MediumTeleLens
+      end
+      object Longtelelens200mm1: TMenuItem
+        Action = LongTeleLens
+      end
+    end
+    object Mode1: TMenuItem
+      Caption = 'Изображение'
+      Hint = 'Выбор метода пространственного построения и прорисовки цифровой модели корпуса корабля.'
+      object Wireframe1: TMenuItem
+        Action = ShowWireFrame
+      end
+      object Shade1: TMenuItem
+        Action = ShowFlatShade
+      end
+      object Gausscurvature1: TMenuItem
+        Action = ShowGaussCurvature
+      end
+      object Zebrashading1: TMenuItem
+        Action = ShadeZebra
+      end
+      object Developablitycheck1: TMenuItem
+        Action = ShowDevelopablity
+      end
+    end
+    object Backgroundimage2: TMenuItem
+      Caption = 'Фоновый чертёж'
+      Hint = 'Выбор и настройка фоновой подложки для ручной оцифровки бумажной версии старого чертежа.'
+      ImageIndex = 7
+      object Visible1: TMenuItem
+        Action = BackgroundVisible
+      end
+      object Clear1: TMenuItem
+        Action = Backgroundclear
+      end
+      object Backgroundimage1: TMenuItem
+        Action = ImportBackGround
+      end
+      object Export1: TMenuItem
+        Action = BackgroundExport
+      end
+      object Origin1: TMenuItem
+        Action = BackgroundOrigin
+      end
+      object Setscale1: TMenuItem
+        Action = BackgroundScale
+      end
+      object ransparentcolor1: TMenuItem
+        Action = BackgroundTransparentColor
+      end
+      object Tolerance1: TMenuItem
+        Action = BackgroundTolerance
+      end
+      object Blending1: TMenuItem
+        Action = BackgroundBlending
+      end
+    end
+    object Saveimage1: TMenuItem
+      Action = SaveAsBitmap
+    end
+  end
+  object ActionList1: TActionList
+    Images = Images
+    Left = 32
+    Top = 32
+    object WideLens: TAction
+      Category = 'Camera'
+      Caption = 'широкий обзор     28 мм.'
+      OnExecute = WideLensExecute
+    end
+    object StandardLens: TAction
+      Category = 'Camera'
+      Caption = 'штатный фокус     50 мм.'
+      OnExecute = StandardLensExecute
+    end
+    object ShortTeleLens: TAction
+      Category = 'Camera'
+      Caption = 'средняя дальность 90 мм.'
+      OnExecute = ShortTeleLensExecute
+    end
+    object MediumTeleLens: TAction
+      Category = 'Camera'
+      Caption = 'удалённый вид     130 мм.'
+      OnExecute = MediumTeleLensExecute
+    end
+    object LongTeleLens: TAction
+      Category = 'Camera'
+      Caption = 'длинный фокус    200 мм.'
+      OnExecute = LongTeleLensExecute
+    end
+    object ViewBodyPlan: TAction
+      Category = 'View'
+      Caption = 'Корпус'
+      ShortCut = 16433
+      OnExecute = ViewBodyPlanExecute
+    end
+    object ViewProfile: TAction
+      Category = 'View'
+      Caption = 'Бок'
+      ShortCut = 16434
+      OnExecute = ViewProfileExecute
+    end
+    object ViewPlan: TAction
+      Category = 'View'
+      Caption = 'Полуширота'
+      ShortCut = 16435
+      OnExecute = ViewPlanExecute
+    end
+    object ViewPerspective: TAction
+      Category = 'View'
+      Caption = 'Аксонометрия'
+      ShortCut = 16436
+      OnExecute = ViewPerspectiveExecute
+    end
+    object ZoomIn: TAction
+      Category = 'Zoom'
+      Caption = 'Приблизить'
+      ImageIndex = 5
+      ShortCut = 16457
+      OnExecute = ZoomInExecute
+    end
+    object ZoomExtents: TAction
+      Category = 'Zoom'
+      Caption = 'Вместить в лист'
+      ImageIndex = 4
+      ShortCut = 16449
+      OnExecute = ZoomExtentsExecute
+    end
+    object ZoomOut: TAction
+      Category = 'Zoom'
+      Caption = 'Отдалить'
+      ImageIndex = 6
+      ShortCut = 16463
+      OnExecute = ZoomOutExecute
+    end
+    object DeselectAll: TAction
+      Caption = 'Отменить весь выбор  Esc'
+      Hint = 'Сброс активности всех выбранных элементов и возврат к исходному режиму редактирования.'
+      OnExecute = DeselectAllExecute
+    end
+    object ShowWireFrame: TAction
+      Category = 'Mode'
+      Caption = 'Контурные прорисовки'
+      Hint = 'Изображение в теоретических контурах для редактирования.'
+      ShortCut = 16471
+      OnExecute = ShowWireFrameExecute
+    end
+    object ShowFlatShade: TAction
+      Category = 'Mode'
+      Caption = 'Освещённая раскраска'
+      Hint = 'Раскраска исходными цветами со светотеневыми оттенками.'
+      ShortCut = 16454
+      OnExecute = ShowFlatShadeExecute
+    end
+    object ShadeZebra: TAction
+      Category = 'Mode'
+      Caption = 'Полосовое отражение'
+      Hint = 'Освещённая зеркальная поверхность с полосовыми отражениями'
+      ShortCut = 16453
+      OnExecute = ShadeZebraExecute
+    end
+    object ShowGaussCurvature: TAction
+      Category = 'Mode'
+      Caption = 'Гаусовы искривления'
+      Hint = 'Выделение фрагментов обшивки без прогибов и седловатестей.'
+      ShortCut = 16455
+      OnExecute = ShowGaussCurvatureExecute
+    end
+    object ShowDevelopablity: TAction
+      Category = 'Mode'
+      Caption = 'Развёртываемость листов'
+      Hint = 'Выделение фрагментов обшивки, развёртывающихся на плоскоски.'
+      ShortCut = 16452
+      OnExecute = ShowDevelopablityExecute
+    end
+    object SaveAsBitmap: TAction
+      Caption = 'Сохранить в растре'
+      Hint = 'Сохранение одного листа с изображением проекции в растре .png'
+      OnExecute = SaveAsBitmapExecute
+    end
+    object ImportBackGround: TAction
+      Category = 'Background'
+      Caption = 'Считать фоновый растр'
+      Hint = 'Выбор растра и установка фонового чертежа для ручной оцифровки.'
+      ImageIndex = 9
+      OnExecute = ImportBackGroundExecute
+    end
+    object BackgroundOrigin: TAction
+      Category = 'Background'
+      Caption = 'Перемещение подложки'
+      Hint = 'Перемещение фонового чертежа по листу проекции.'
+      OnExecute = BackgroundOriginExecute
+    end
+    object BackgroundScale: TAction
+      Category = 'Background'
+      Caption = 'Масштабирование '
+      Hint = 'Приведение фоновоой точки в позицию нового массштаба от нуля координат'
+      OnExecute = BackgroundScaleExecute
+    end
+    object BackgroundTransparentColor: TAction
+      Category = 'Background'
+      Caption = 'Прозрачный цвет'
+      Hint = 'Назначение чисто прозрачного цвета для фонового изображения.'
+      OnExecute = BackgroundTransparentColorExecute
+    end
+    object Backgroundclear: TAction
+      Category = 'Background'
+      Caption = 'Очистить'
+      Hint = 'Безвозвратно удалить фоновое изображение'
+      OnExecute = BackgroundclearExecute
+    end
+    object BackgroundBlending: TAction
+      Category = 'Background'
+      Caption = 'Blending'
+      OnExecute = BackgroundBlendingExecute
+    end
+    object BackgroundExport: TAction
+      Category = 'Background'
+      Caption = 'Сохранить фон'
+      Hint = 'Пересохранение оригинального фонового чертежа.'
+      ImageIndex = 8
+      OnExecute = BackgroundExportExecute
+    end
+    object BackgroundTolerance: TAction
+      Category = 'Background'
+      Caption = 'Полоса прозрачности'
+      Hint = 'Интервал близкой фоновой расцветки, приводимая к полной прозрачности.'
+      OnExecute = BackgroundToleranceExecute
+    end
+    object BackgroundVisible: TAction
+      Category = 'Background'
+      Caption = 'Показать/скрыть'
+      Hint = 'Показать или вренно скрыть фоновый рисунок'
+      OnExecute = BackgroundVisibleExecute
+    end
+  end
+  object Images: TImageList
+    Left = 164
+    Top = 36
+    Bitmap = {
+      4C7A0A0000001000000010000000ED0800000000000078DAED5A6B5055D715BE
+      0996A94CA73A62AD040A63CAC36A080815D488A0444022F29408F800798829E1
+      1141442394974844ADB450A22005C1264379C92380263D466D6CF111AB58DBA9
+      8F6A6B6B754C7474B4FEF9BAD78673B9F7DC73CEBD5774DA695D33DFCCB97BAF
+      6FEDB5D75E6BEFB3CF5C8DC674E9EB13505929C0DDFD17D03C85A4A70B888B13
+      E0E838CF2C7E6DAD002F2F01656502F2F3F3B17BB73BD2D2D28CDAE8EA12B06F
+      9F80E86801BDBD02FAFAFA919A1A0D4170476CEC9BE8EEEEC6B66D82AC9D2347
+      0424250988881070F8F0B0CEFEFDFB9197670FC08FD97546696929F343809F9F
+      C06C8DDAD9BE5DC0A24502AAABF56DCBF1070604B4B6D23803686A6A4255D547
+      484E16D0D666E85748881BEEDF9FCFF90F1FFA308EBD56A7BABA9A3D3BC3C6C6
+      49312E8B173B72AE889010EB31F3C7EAFF58E337D6F51B6BFE3CCFFC7D56F563
+      6AFD1E1EF80CDD5D03F8716E2BA2967C80D0C58508F6DB84373CE39191BA075D
+      87FA30D07F4496FB49EF617C50FC2BC485562139A61EE9092D1C1181DB101E50
+      8210FFAD085E9887BCEC9FA0A7E71348B9455BEBB132ECE7488B6FC18EC24F51
+      B3FB384766522BE2A3EA387FF1FC4C78B9C7202BBD586B837CA67189FBEE08B7
+      B77D089F7FFA670EB29191F4319B4F39B7B1C02B199EAE91DC0F9A0BCD977C4E
+      D3E19E3A791D7FBDFE357E7FE66F5A1B99491F711B013EEFC17B562C66CD0C45
+      477B178FD59AC85ABC97D286DA9FFE065F7C7E1537AE7D85870FFE8533BFBD81
+      F35FDEC4C70D6790BFA107B1A13FE33EBCF1C304BCE612841F25EFE0714E89F9
+      A51E7FE8DCDFF1F5578F54F93407975717B0E7782DBFA2F83334D50D62F08BBF
+      E04F7FF8272E9EFF073A5BCEA3ECFD01242CAFC5B2370BE037279571A338DFCE
+      C615B3DDDE4678602992DE3E80ECD47694171C46E387BF43EBC12F398A37F521
+      794533E2C2AAF0D6C2CDF0999DC8B90EB61EF8EE6447F87AAF43906F0E2283CA
+      B036BA0139EF74A08871441077655835E3E669632FF2274DF81EB66C68E66B1A
+      B860038FEFAAF00F9118DDC8E744181E579F4B98FA1D17AC5FBB0D9D1DBD98CF
+      E2416B426B43F1897EAB82C78A403EEB728316BE0BBFB96BE13C6D01DBA33A78
+      0E6CCCDA811F38FA63CEAC38AE1BB42087DB2188F315B9ABA3CB385FCC9FE17D
+      A21B294999DC06E9CD99B592AF1181F2C4799A0F6F271E41377F47F79A6EEE07
+      E9536C44D8DBCE82EDD4997CBEE4B35CFD8842FE504EBE93B81D8E0E73F18D71
+      DFC4CB2F8FE371A65889F395F24A4A4A40A2B46F50BF1AD4B84C20075DAE025F
+      575FCF175D1B6ADC115D55BFA47CD1BED25C656CC872D5E2A6145FD19E5C4C94
+      EC18F357D7B6921F3ACF30050A7381B990CE41A6CF14E88EAD91E4A481AED4AE
+      34EEBABFA57A927EA9FFC672DE207775796AEBADD6A626A6E41E64A4BFBFDF28
+      94C4D5D515515151EC1D3099233131D1008B162DC2D2A54B0DB8870E1D426161
+      217B47BC0F5B5B5BDCB87143768C65CB96E1E2C58B06ED3B77EE446363238282
+      8270EEDC39F8FAFACAF2274E9C28DBBE7EFD7A5CBE7C993F47444460F3E6CD28
+      2F2FD7E2F8F1E31C14B6DCDC5C3DFFEEDCB983B973E7EAD99B32650A7B376EE5
+      A8AAAAE2FD84F4F4744C9B360D1616165ADD93274FC2C9C989BD173FE4C8CACA
+      42454585F6B7BDBD3DAE5EBDCA63575C5C8C19AF7B69F72FF2C9DBDB1B2E2E2E
+      46111D1D0DA719EE484ECBE57C8A13B55DB87001B76FDF360AF27B4D72169C5C
+      66703ECDCDECDA7FC902F5F5F55ABECB4C4F5454351AE0FCC53FE2EEDDBB1CB5
+      4D1DBC4DF392256A6B6B796C8CF18BCB2B915F52C1515EB95FCBA71C232EE507
+      E5DCD3EC5D3636369C4B42B99C91958D7DB50DAAF00F08E25C7F7F7FBDB38FEC
+      384D7F1D536D5F55853836DD21A442F9634ADD4A6B57B449F94535656C4F211D
+      D2D58DC5F4E9D371F4E85193EF24A44B1C715C73B8BA36D47CA6F87A78787028
+      ED9772DC070F1E60D7AE5D625E73A1676AA33E637E91DE8103070CF4A88DFA8C
+      F13D3D3D1575682ECF9B1F1E1E8E6BD7AE19E8511BF519E3D39EE9E3E3A3B72E
+      F44CED7276E5DE9F884FFAE21942CFC67293B85656563CAF681CC2A953A738D4
+      C6D5B51B171767561E8AB53096FC1D6BFD3C83FA5595F6F6767E6E90EE840913
+      10161686478F1E99E46B5B5B1BF6EEDDCBF7A6C78F1FF3F3B2A5A5859F85376F
+      DE54B5417B22ED7357AE5C19D11B5DC3BABA3A949595719B72DC868606242525
+      F133592783F5740F1E3C88949414593ECD31323252C215312CB76EDD82B5B5B5
+      2C7FF6ECD9080E0E863E4F0AC3FB8328A1A1A1888D8D551D9FCE444B4B4BC5BD
+      6FC58A15923EFDF9D33BC3F2E5CB65F9434343A039D03BD0BD7BF70CE2DFD9D9
+      C9CF507A1F508A9F985FD9D9D97CCD694D68DDF6ECD9C3F7C14B972E1970293F
+      020202B4DC2D5BB670FD9C9C1CBE1E090909C8C8C8E07924E5523C46F63E8E91
+      335E2B4F9E3C51CDB7C0C0402D97BE139A5A8BC78E1DC3BC79F3B4DC9E9E1EB3
+      F6829A9A1A2D97E2FE34DFF5D6AD5BC7E3A4790EF2DF53FFA3F274F5AF2FA6D6
+      3F4B75C8C1B4FA97D6EED3D6BFA1985FFFFA627EFD8FCA8BFAFFFFA97F1304CF
+      024A22ED973E1BB3216D57E2CB8D652ADF9C7635DFE5C632D627ED578A9731BE
+      39B1958EA56443EEB792AFA6C4CF1C3D63B9A3D46F4A9C74DAC75203FF2BF2A2
+      FEFF83F5EF15E805CD4C0D264F9E0C2B372BB82E76C592254B86EF783387FB55
+      EBDF8D61B3869F618EA58E28FA75114E9F3ECDBFE1523BEF57AB7FD63F2E5FC3
+      DE0BDDF919BD7AF56AFEED927E533BF5ABD63FEBFF7691061393D973D428E837
+      B54BF9063164FD9E31E351505060006AD7E5CBC680F54FF29E249B3BD42ECE5F
+      B1FECDE0CBD6FF44C67750E0B376EA572B3E5A5F4B6B4BD0B70B29A89DE7C78B
+      FA7F71FE2BF09BD9FDCE9ABD374F61A8696EC6E0E0A01ECE9E3DAB5AFFD66E6E
+      C863CFEF33D854542082DDA91C183C190218ECECEC54EB5F975FC190C150CE50
+      C090C360C7FAD5E2EFCCFA2B4738310CE37D7DF17D0F0FD8304C60B0183F5EFB
+      1D58842E7F3CE3A711F7FA7568E8EEB1752B34F41D528A4D9BE0C0EE08746FD1
+      AD7FF26F0DDD65E2E3A1C9CC94E76EDC88D7626270E2C409C3FAA73BE4AA55D0
+      D0FF81E4B86C1F730E0911B9F2F5C7E6A879E515597CCBC949F6AE25CABF0198
+      9D1311
+    }
+  end
+end
