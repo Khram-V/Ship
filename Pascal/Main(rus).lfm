@@ -326,13 +326,13 @@ object MainForm: TMainForm
     object ExportFEF: TAction
       Category = 'Export'
       Caption = 'обменный фоормат.FEF...'
-      Hint = 'Сохранение в формате .FEF (Freeship Exchange Format).'
+      Hint = 'Сохранение в формате .FEF (ship Exchange Format).'
       OnExecute = ExportFEFExecute
     end
     object ImportFEF: TAction
       Category = 'Import'
       Caption = 'восстановить из.FEF'
-      Hint = 'Выбрать корпус из .FEF (Freeship Exchange Format).'
+      Hint = 'Выбрать корпус из .FEF (ship Exchange Format).'
       OnExecute = ImportFEFExecute
     end
 -------------------------------------
@@ -369,8 +369,8 @@ object MainForm: TMainForm
       OnExecute = Help1Click
     end
     object AboutAction: TAction
-      Caption = 'О Free!Ship'
-      Hint = 'Авторская справка разработчиков программы Free!Ship'
+      Caption = 'О free!Ship'
+      Hint = 'Авторская справка разработчиков программы free!Ship'
       ImageIndex = 65
       OnExecute = About1Click
     end
@@ -436,12 +436,12 @@ object MainForm: TMainForm
       Hint = 'Установка новой свободной точки по смещению от активной избранной.'
       OnExecute = PointExtrudeExecute
     end
-    object ShowFreeObjects: TAction
+    object ShowObjects: TAction
       Category = 'Visibility'
       Caption = 'Свободные элементы'
       Hint = 'Объекты, не включённые в структуру слоёв цифровой модели'
       ImageIndex = 61
-      OnExecute = ShowFreeObjectsExecute
+      OnExecute = ShowObjectsExecute
     end
     object LayerVisibilityDialog: TAction
       Category = 'Layer'

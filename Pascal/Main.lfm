@@ -3,17 +3,16 @@ object MainForm: TMainForm
   Height = 989
   Top = 0
   Width = 1920
-  FormStyle = fsNormal
   ClientHeight = 989
   ClientWidth = 1920
   Color = 6908265
   Font.Color = clWindowText
-  Font.Name = 'Times New Roman'
   Font.Height = -11
+  Font.Name = 'Times New Roman'
   Menu = MainMenu1
   Position = poDefault
   ShowHint = True
-  LCLVersion = '4.2.0.0'
+  LCLVersion = '4.4.0.0'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -21,7 +20,7 @@ object MainForm: TMainForm
   object StatusBar: TPanel
     Left = 0
     Height = 18
-    Top = 962
+    Top = 971
     Width = 1920
     Align = alBottom
     BevelOuter = bvLowered
@@ -69,14 +68,15 @@ object MainForm: TMainForm
       OnClick = Panel3Click
     end
     object HintBar: TStatusBar
-      Left = 444
+      Left = 721
       Height = 16
       Top = 1
       Width = 1600
-      Color = $FFFFF0
       Align = alLeft
       AutoHint = True
+      Color = 16777200
       Panels = <>
+      ParentColor = False
       ParentShowHint = False
       SimpleText = ' ...'
       ShowHint = True
@@ -84,9 +84,9 @@ object MainForm: TMainForm
   end
   object ToolBar: TToolBar
     Left = 0
-    Height = 23
+    Height = 24
     Top = 0
-    Width = 1227
+    Width = 1920
     AutoSize = True
     Caption = 'ToolBar'
     Color = clBtnFace
@@ -95,7 +95,7 @@ object MainForm: TMainForm
     Images = MenuImages
     Indent = 2
     ParentColor = False
-    ParentShowHint = True
+    ParentShowHint = False
     ShowHint = True
     TabOrder = 1
     object TB20: TToolButton
@@ -127,11 +127,11 @@ object MainForm: TMainForm
     end
     object PrecisionBox: TComboBox
       Left = 110
-      Height = 21
+      Height = 22
       Hint = 'Частота сетки сплайновых аппроксимаций'
       Top = 1
       Width = 75
-      ItemHeight = 13
+      ItemHeight = 14
       ItemIndex = 1
       Items.Strings = (
         'Редкая'
@@ -151,14 +151,14 @@ object MainForm: TMainForm
       Style = tbsSeparator
     end
     object TB26: TToolButton
-      Left = 475
+      Left = 551
       Top = 1
-      Action = IntersectionDialog
+      Action = FramesDialog
     end
     object tbMiddleFrame: TToolButton
-      Left = 485
+      Left = 574
       Top = 1
-      Action = SplitSectionDialog
+      Action = MidelDialog
     end
     object TB8: TToolButton
       Left = 193
@@ -212,36 +212,36 @@ object MainForm: TMainForm
       Action = ShowFlowlines
     end
     object ShowBuildCurve: TToolButton
-      Left = 412
+      Left = 423
       Top = 1
       Action = ShowHydrostatics
     end
-object SpinEditFontSize: TSpinEdit
-  Left = 418
-  Height = 21
-  Hint = 'Высота букв в надписях на чертежах'
-  Top = 1
-  Width = 36
-  Constraints.MinWidth = 36
-  MaxValue = 20
-  MinValue = 3
-  ParentFont = False
-  TabOrder = 0
-  Value = 8
-  OnChange = SpinEditFontSizeChange
-end
+    object SpinEditFontSize: TSpinEdit
+      Left = 446
+      Height = 23
+      Hint = 'Высота букв в надписях на чертежах'
+      Top = 1
+      Width = 36
+      Constraints.MinWidth = 36
+      MaxValue = 20
+      MinValue = 3
+      ParentFont = False
+      TabOrder = 3
+      Value = 8
+      OnChange = SpinEditFontSizeChange
+    end
     object TB30: TToolButton
-      Left = 423
+      Left = 482
       Top = 1
       Action = ShowNormals
     end
     object TB37: TToolButton
-      Left = 446
+      Left = 505
       Top = 1
       Action = Showcurvature
     end
     object TB36: TToolButton
-      Left = 469
+      Left = 528
       Top = 1
       Action = ShowMarkers
     end
@@ -254,38 +254,39 @@ end
       Wrap = True
     end
     object TB5: TToolButton
-      Left = 492
+      Left = 597
       Top = 1
       Action = NewLayer
     end
     object TB34: TToolButton
-      Left = 515
+      Left = 620
       Top = 1
       Action = DeleteEmptyLayers
     end
     object TB33: TToolButton
-      Left = 538
+      Left = 643
       Top = 1
       Action = LayerDialog
     end
     object TB6: TToolButton
-      Left = 561
+      Left = 666
       Top = 1
       Action = LayerAutoGroup
     end
     object LayerBox: TComboBox
-      Left = 584
-      Height = 21
+      Left = 689
+      Height = 22
       Hint = 'Изменить активный, или собрать всё выделенное в ином слое'
       Top = 1
       Width = 145
-      ItemHeight = 13
+      DropDownCount = 24
+      ItemHeight = 14
       Style = csDropDownList
       TabOrder = 0
       OnChange = LayerBoxChange
     end
     object Panel1: TPanel
-      Left = 729
+      Left = 834
       Height = 22
       Hint = 'Изменить цвет активного слоя'
       Top = 1
@@ -296,122 +297,122 @@ end
       OnClick = Panel1Click
     end
     object TB11: TToolButton
-      Left = 775
+      Left = 857
       Height = 22
       Top = 1
       ImageIndex = 7
       Style = tbsSeparator
     end
     object TB15: TToolButton
-      Left = 783
+      Left = 865
       Top = 1
       Action = Delete
     end
     object TB14: TToolButton
-      Left = 806
+      Left = 888
       Height = 22
       Top = 1
       ImageIndex = 10
       Style = tbsSeparator
     end
     object TB45: TToolButton
-      Left = 814
+      Left = 896
       Top = 1
       Action = PointAlign
     end
     object TB18: TToolButton
-      Left = 837
+      Left = 919
       Top = 1
       Action = PointCollapse
     end
     object TB41: TToolButton
-      Left = 860
+      Left = 942
       Top = 1
       Action = InsertPlane
     end
     object TB47: TToolButton
-      Left = 883
+      Left = 965
       Top = 1
       Action = LayerIntersection
     end
     object TB42: TToolButton
-      Left = 906
+      Left = 988
       Top = 1
       Action = PointsLock
     end
     object TB43: TToolButton
-      Left = 929
+      Left = 1011
       Top = 1
       Action = PointsUnlock
     end
     object TB44: TToolButton
-      Left = 952
+      Left = 1034
       Top = 1
       Action = PointsUnlockAll
     end
     object TB19: TToolButton
-      Left = 975
+      Left = 1057
       Height = 22
       Top = 1
       ImageIndex = 12
       Style = tbsSeparator
     end
     object TB27: TToolButton
-      Left = 983
+      Left = 1065
       Top = 1
       Action = EdgeExtrude
     end
     object TB29: TToolButton
-      Left = 1006
+      Left = 1088
       Top = 1
       Action = EdgeSplit
     end
     object TB13: TToolButton
-      Left = 1029
+      Left = 1111
       Top = 1
       Action = EdgeCollapse
     end
     object TB16: TToolButton
-      Left = 1052
+      Left = 1134
       Top = 1
       Action = NewEdge
     end
     object TB17: TToolButton
-      Left = 1075
+      Left = 1157
       Top = 1
       Action = EdgeCrease
     end
     object TB25: TToolButton
-      Left = 1098
+      Left = 1180
       Height = 22
       Top = 1
       ImageIndex = 19
       Style = tbsSeparator
     end
     object TB40: TToolButton
-      Left = 1106
+      Left = 1188
       Top = 1
       Action = NewCurve
     end
     object TB39: TToolButton
-      Left = 1129
+      Left = 1211
       Height = 22
       Top = 1
       ImageIndex = 15
       Style = tbsSeparator
     end
     object TB24: TToolButton
-      Left = 1137
+      Left = 1219
       Top = 1
       Action = NewFace
     end
     object TB32: TToolButton
-      Left = 1160
+      Left = 1242
       Top = 1
       Action = InvertFace
     end
     object TB28: TToolButton
-      Left = 1183
+      Left = 1265
       Height = 22
       Top = 1
       ImageIndex = 15
@@ -439,7 +440,7 @@ end
     object ExitProgram: TAction
       Category = 'File'
       Caption = 'Выход'
-      Hint = 'Завершить FreeShip'
+      Hint = 'Завершаем работу?'
       ImageIndex = 1
       OnExecute = ExitProgramExecute
     end
@@ -685,12 +686,6 @@ end
       ImageIndex = 11
       OnExecute = EdgeCreaseExecute
     end
-    object DeselectAll: TAction
-      Category = 'Edit'
-      Caption = 'Отмена выбора'
-      Hint = 'Отмена активности для всех выбранных элементов.'
-      OnExecute = DeselectAllExecute
-    end
     object PointCollapse: TAction
       Category = 'Point'
       Caption = 'Сброс углового узла'
@@ -763,14 +758,14 @@ end
       ImageIndex = 18
       OnExecute = NewFaceExecute
     end
-    object IntersectionDialog: TAction
+    object FramesDialog: TAction
       Category = 'Edit'
       Caption = 'Теоретические контуры...'
       Hint = 'Установка линий теоретического чертежа: шпангоуты, ватерлинии, батоксы и рыбины'
       ImageIndex = 14
       OnExecute = IntersectionDialogExecute
     end
-    object DesignHydrostatics: TAction
+    object ActHydrostatics: TAction
       Category = 'Calculate'
       Caption = 'Размерения и обводы корпуса'
       Hint = 'Главные размерения и гидростатические расчёты по корпусу.'
@@ -787,7 +782,7 @@ end
     object EdgeSplit: TAction
       Category = 'Edge'
       Caption = 'Разделение ребра пополам'
-      Hint = 'Create new controlpoints by splitting an controledge into two.'
+      Hint = 'Разделение ребра пополам с установкой нового среднего узла'
       ImageIndex = 20
       OnExecute = EdgeSplitExecute
     end
@@ -889,7 +884,7 @@ end
     object Preferences: TAction
       Category = 'Project'
       Caption = 'Настройки'
-      Hint = 'Настройки параметров программного комплекса Free!Ship.'
+      Hint = 'Настройки параметров программного комплекса'
       OnExecute = PreferencesExecute
     end
     object AddPoint: TAction
@@ -905,7 +900,7 @@ end
     end
     object ShowLinesplan: TAction
       Category = 'Project'
-      Caption = 'Теоретические чертёжи'
+      Caption = 'Теоретические чертежи'
       Hint = 'Формирование листа с традиционным теоретическим чертежом.'
       ImageIndex = 31
       OnExecute = ShowLinesplanExecute
@@ -947,7 +942,7 @@ end
       OnExecute = ShowControlCurvesExecute
     end
     object NewCurve: TAction
-      Category = 'Curve'
+      Category = 'Edge'
       Caption = 'Новая кривая линия'
       Hint = 'Построить новый контур по выбранным рёбрам'
       ImageIndex = 41
@@ -998,7 +993,7 @@ end
     object LayerIntersection: TAction
       Category = 'Point'
       Caption = 'Пересечение слоёв...'
-      Hint = 'Поиск и устоновка опорных точек на линии пересечения поверхностей'
+      Hint = 'Поиск и установка опорных точек на линии пересечения поверхностей'
       ImageIndex = 51
       OnExecute = LayerIntersectionExecute
     end
@@ -1015,7 +1010,7 @@ end
       ImageIndex = 55
       OnExecute = ShowFlowlinesExecute
     end
-    object SplitSectionDialog: TAction
+    object MidelDialog: TAction
       Category = 'Visibility'
       Caption = 'Мидельшпангоут'
       Hint = 'Установить местоположение мидельшпангоута (для проекции "корпус").'
@@ -1027,8 +1022,13 @@ end
       Caption = 'Выбрать всё сразу'
       Hint = 'Выбор для корректировки сразу всех графических объектов.'
       ImageIndex = 58
-      ShortCut = 16449
       OnExecute = SelectAllExecute
+    end
+    object DeselectAll: TAction
+      Category = 'Edit'
+      Caption = 'Отмена выбора'
+      Hint = 'Отмена активности для всех выбранных элементов.'
+      OnExecute = DeselectAllExecute
     end
   end
   object MenuImages: TImageList
@@ -1573,7 +1573,7 @@ end
           Action = ImportBodyplan
         end
         object ImportObj1: TMenuItem
-          Action = ImportObj
+          Action = ImportOBJ
         end
         object MenuImportSTL: TMenuItem
           Action = ImportSTL
@@ -1716,7 +1716,7 @@ end
     end
     object Edge1: TMenuItem
       Caption = 'Ребро'
-      Hint = 'Операции с рёбрами и граничными кромками.'
+      Hint = 'Операции с рёбрами, граничными кромками и сборками контурных кривых'
       object Extrude1: TMenuItem
         Action = EdgeExtrude
       end
@@ -1732,10 +1732,6 @@ end
       object Crease1: TMenuItem
         Action = EdgeCrease
       end
-    end
-    object Curve1: TMenuItem
-      Caption = 'Кривые'
-      Hint = 'Работа со сборками контурных кривых'
       object AddCurve1: TMenuItem
         Action = NewCurve
       end
@@ -1857,7 +1853,7 @@ end
         end
       end
     end
-    object ransform1: TMenuItem
+    object Transform1: TMenuItem
       Caption = 'Трансформация'
       Hint = 'Геометрическое перестроение размерений или положения корпуса...'
       object Scale3D1: TMenuItem
@@ -1878,12 +1874,12 @@ end
     end
     object Calculations1: TMenuItem
       Caption = 'Вычисления'
-       Hint = 'Информационные геометрические и гидростатические расчёты.'
+      Hint = 'Информационные геометрические и гидростатические расчёты.'
       object Intersections1: TMenuItem
-        Action = IntersectionDialog
+        Action = FramesDialog
       end
       object Hydrostatics1: TMenuItem
-        Action = DesignHydrostatics
+        Action = ActHydrostatics
       end
     end
     object Window1: TMenuItem

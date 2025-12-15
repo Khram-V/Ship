@@ -3,9 +3,9 @@ setorigin   CURSOR "setorigin.cur"
 setscale    CURSOR "setscale.cur"
 colorpicker CURSOR "colorpicker.cur"
 
-// setpoint    CURSOR "Images\\setpoint.cur"
-// setline     CURSOR "Images\\setline.cur"
-// setspline   CURSOR "Images\\setspline.cur"
+// setpoint    CURSOR "setpoint.cur"
+// setline     CURSOR "setline.cur"
+// setspline   CURSOR "setspline.cur"
 
-// FreeShip    ICON   "Images\\FreeShip.ico"
+// Ship        ICON   "Images\\Ship.ico"
 // smallcross  CURSOR "Images\\smallcross.cur"

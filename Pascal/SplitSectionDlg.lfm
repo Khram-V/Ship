@@ -1,0 +1,117 @@
+object SplitSectionDialog: TSplitSectionDialog
+  Left = 522
+  Height = 81
+  Top = 273
+  Width = 600
+  BorderIcons = []
+  BorderStyle = bsSingle
+  Caption = 'Выбор местоположения ξ мидельшпангоута'
+  ClientHeight = 81
+  ClientWidth = 600
+  FormStyle = fsStayOnTop
+  PopupMode = pmAuto
+  LCLVersion = '4.2.0.0'
+  OnShow = FormShow
+  object TopPanel: TPanel
+    Left = 0
+    Height = 34
+    Top = 0
+    Width = 600
+    Align = alTop
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 34
+    ClientWidth = 600
+    TabOrder = 0
+    object BitBtn1: TBitBtn
+      Left = 541
+      Height = 26
+      Top = 4
+      Width = 55
+      Align = alRight
+      AutoSize = True
+      BorderSpacing.Around = 4
+      Caption = '&Есть!'
+      ModalResult = 11
+      TabOrder = 0
+      OnClick = BitBtn1Click
+    end
+    object fseMiF: TFloatSpinEdit
+      Left = 4
+      Height = 26
+      Top = 4
+      Width = 140
+      Align = alLeft
+      Alignment = taRightJustify
+      BorderSpacing.Around = 4
+      Constraints.MinWidth = 120
+      DecimalPlaces = 4
+      Increment = 0.1
+      MaxValue = 1000
+      MinValue = -1000
+      TabOrder = 1
+      OnChange = fseMifChange
+      OnEditingDone = fseMifEditingDone
+      OnKeyDown = fseMifKeyDown
+      OnMouseDown = fseMifMouseDown
+      OnMouseWheel = fseMifMouseWheel
+    end
+    object Panel1: TPanel
+      Left = 148
+      Height = 34
+      Top = 0
+      Width = 389
+      Align = alClient
+      BevelOuter = bvNone
+      ClientHeight = 34
+      ClientWidth = 389
+      TabOrder = 2
+      object SpeedButton1: TSpeedButton
+        Left = 2
+        Height = 26
+        Hint = 'Середина размерений по оконечностям'
+        Top = 4
+        Width = 30
+        Align = alLeft
+        BorderSpacing.Left = 2
+        BorderSpacing.Top = 4
+        BorderSpacing.Right = 2
+        BorderSpacing.Bottom = 4
+        Images = MainForm.MenuImages
+        ImageIndex = 64
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = SpeedButton1Click
+      end
+      object SpeedButton3: TSpeedButton
+        Left = 34
+        Height = 26
+        Hint = 'Относительно центра величины'
+        Top = 4
+        Width = 30
+        Align = alLeft
+        BorderSpacing.Left = 2
+        BorderSpacing.Top = 4
+        BorderSpacing.Right = 2
+        BorderSpacing.Bottom = 4
+        Images = MainForm.MenuImages
+        ImageIndex = 49
+        ShowHint = True
+        ParentShowHint = False
+        OnClick = SpeedButton3Click
+      end
+    end
+  end
+  object tbMif: TTrackBar
+    Left = 10
+    Height = 46
+    Top = 44
+    Width = 580
+    Position = 0
+    TabStop = False
+    OnChange = tbMifChange
+    Align = alTop
+    BorderSpacing.Around = 10
+    TabOrder = 1
+  end
+end

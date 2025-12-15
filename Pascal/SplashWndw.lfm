@@ -1,0 +1,32 @@
+object SplashWindow: TSplashWindow
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = 'Числовая модель корпуса корабля'
+  FormStyle = fsSystemStayOnTop
+  AutoSize = True
+  Position = poScreenCenter
+  OnClose = FormClose
+  OnShow = FormShow
+  object LabelTitle: TLabel
+    Align = alTop
+    BorderSpacing.Left = 20
+    Caption = '«·free!Ship·» ≈ 2.6'
+    Font.Color = clTeal
+    Font.Height = -20
+    Font.Name = 'Times'
+    Font.Style = [fsBold]
+    ParentColor = False
+    ParentFont = False
+  end
+  object LabelC: TLabel
+    Top = 30
+    Align = alTop
+    BorderSpacing.Left = 20
+    ParentColor = False
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = TimerTimer
+  end
+end

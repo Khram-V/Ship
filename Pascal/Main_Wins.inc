@@ -7,22 +7,22 @@
 //  - определяют стиль рамки (вдавленная, выступающая)
 //  - используется для создания псевдо-3D-эффектов.
 
-procedure TMainForm.AddWindow( Win: TFreeHullWindow );
+procedure TMainForm.AddWindow( Win: THullWindow );
     begin if Windows.IndexOf( Win )=-1 then Windows.Add( Win );
              WindowMenu;
     end;
-procedure TMainForm.DelWindow( Win: TFreeHullWindow ); Var I:Integer;
+procedure TMainForm.DelWindow( Win: THullWindow ); Var I:Integer;
     begin I:=Windows.IndexOf( Win ); if I<>-1 then Windows.Delete( I );
              WindowMenu;
     end;
 
 procedure TMainForm.NewOneWindow;
-var HullformWindow :TFreeHullWindow; W,H: Integer;
+var HullformWindow :THullWindow; W,H: Integer;
 begin                       // Application.OnException:=CustomExceptionHandler;
    W:=(10*ClientWidth) div 12;
    H:=(10*ClientHeight) div 12;
-   HullformWindow:=TFreeHullWindow.Create( self );         // open a new window
-   HullformWindow.Ship:=Ship;         // Connect viewport to freeship component
+   HullformWindow:=THullWindow.Create( self );         // open a new window
+   HullformWindow.St:=St;         // Connect viewport to ship component
    AddWindow( HullFormWindow );
    HullformWindow.PopUpParent:=Self;  // !!!
    HullformWindow.SetBounds( Left+W div 12,Top+75+H div 12, W,H-75 );
@@ -36,6 +36,26 @@ begin                       // Application.OnException:=CustomExceptionHandler;
    WindowMenu;
 end;
 
+
+procedure TMainForm.NewLinesPlane;
+//var Form: TLinesplanFrame;
+begin
+   if LinesplanFrame<>nil then with LinesplanFrame do begin
+      WindowState:=wsNormal;
+      BringToFront;
+   end else begin
+      LinesplanFrame:=TLinesplanFrame.Create( self );
+      LinesplanFrame.PopUpParent:=Self;
+      LinesplanFrame.FormStyle:=fsNormal;
+      LinesplanFrame.BorderStyle:=bsSizeable;
+      ShowTranslatedValues( LinesplanFrame) ;
+      LinesplanFrame.Ship:=St;
+      LinesplanFrame.Viewport.ZoomExtents;
+      LinesplanFrame.UpdateMenu;
+      WindowMenu;
+end end;
+
+
 const S: array [0..3,0..3] of single
  = ( ( 0.7,  0,0.3,0.5 )    //  корпус
    , (   0,  0,0.7,0.5 )    //  бок
@@ -43,17 +63,17 @@ const S: array [0..3,0..3] of single
    , ( 0.7,0.5,0.3,0.5 ) ); //  перспектива
 
 procedure TMainForm.FOpenHullWindows;
-var HullformWindow: TFreeHullWindow; I,J,W,H,L,T: Integer; R: TRect;
+var HullformWindow: THullWindow; I,J,W,H,L,T: Integer; R: TRect;
 begin  W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+75; //73;
-   if Ship.nV=0 then
+   if St.nV=0 then
    for I:=3 downto 0 do begin                          // open a new window
-      HullformWindow:=TFreeHullWindow.Create(self); // Connect viewport to freeship component
-      HullformWindow.Ship:=Ship;
+      HullformWindow:=THullWindow.Create(self); // Connect viewport to ship component
+      HullformWindow.St:=St;
       AddWindow( HullFormWindow );
       HullformWindow.PopUpParent:=Self;
 //    PopupMode:=pmExplicit; =pmAuto; =pmNone;
       with HullformWindow do begin
-         Viewport.ViewType:=TFreeViewType( I );
+         Viewport.ViewType:=TViewType( I );
          J:=ord( ViewPort.ViewType );  // fvBodyplan,fvProfile,fvPlan,fvPerspective
          R.Left  :=Round( S[J][0]*W )+L;
          R.Top   :=Round( S[J][1]*H )+T;
@@ -83,7 +103,7 @@ procedure TMainForm.TileView;
 Var R: Trect; I,J,LU,RU,LD,RD,W,H,L,T: Integer;         // Количество наложений
 begin LU:=0; RU:=0; LD:=0; RD:=0; W:=ClientWidth; H:=ClientHeight-72; L:=Left; T:=Top+73;
    for I:=0 to Windows.Count-1 do
-   with TFreeHullWindow( Windows[I] ) do begin
+   with THullWindow( Windows[I] ) do begin
       WindowState:=wsNormal;
       J:=ord(ViewPort.ViewType);   // fvBodyplan,fvProfile,fvPlan,fvPerspective
       R.Left  :=Round( S[J][0]*W )+L;
@@ -113,7 +133,7 @@ begin
    W0:=ClientWidth;     W:=Round( 0.75*W0 ); J:=0;
    H0:=ClientHeight-72; H:=Round( 0.75*H0 ); L:=Left; T:=Top+73;
    for I:=0 to Windows.Count-1 do
-   with TFreeHullWindow( Windows[I] ) do begin
+   with THullWindow( Windows[I] ) do begin
       WindowState:=wsNormal;
       SetBounds( L+J,T+J,W,H );
       ViewPort.Invalidate;
@@ -126,27 +146,27 @@ end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 var Answer:word;
-begin if Ship.FileChanged then begin
+begin if St.FileChanged then begin
         Answer:=MessageDlg(Userstring(103)+EOL+Userstring(282)+'?',mtWarning,[mbYes,mbNo],0);
         CanClose:=Answer=mrYes;
 end; end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
-begin Ship.Preferences.Save;
-      Ship.OnChangeActiveLayer:=nil;
-      Ship.OnChangeLayerData:=nil;
-      Ship.OnSelectItem:=nil;
+begin St.Preferences.Save;
+      St.OnChangeActiveLayer:=nil;
+      St.OnChangeLayerData:=nil;
+      St.OnSelectItem:=nil;
 end;
 
 procedure TMainForm.CascadeWindowExecute( Sender: TObject );
-    begin if Ship.nV=0 then FOpenHullWindows; CascadeView; end;
+    begin if St.nV=0 then FOpenHullWindows; CascadeView; end;
 procedure TMainForm.TileWindowExecute( Sender: TObject );
-    begin if Ship.nV=0 then FOpenHullWindows else TileView;
+    begin if St.nV=0 then FOpenHullWindows else TileView;
     end;
 procedure TMainForm.BothSidesExecute( Sender: TObject );
-    begin if Ship.Visibility.ModelView=mvBoth
-             then Ship.Visibility.ModelView:=mvPort
-             else Ship.Visibility.ModelView:=mvBoth; UpdateMenu;
+    begin if St.Visibility.ModelView=mvBoth
+             then St.Visibility.ModelView:=mvPort
+             else St.Visibility.ModelView:=mvBoth; UpdateMenu;
     end;
 
 var AI: Array of TmenuItem = nil; // пополняемый статичесчкий массив строк меню
@@ -156,31 +176,30 @@ procedure TMainForm.WinClick( Sender: TObject );
   var MI: TmenuItem; I: Integer;
 begin mi:=Sender as TMenuItem;
    for I:=0 to Windows.Count-1 do
-    if MI=AI[I] then with TFreeHullWindow( Windows[I] ) do begin
+    if MI=AI[I] then with THullWindow( Windows[I] ) do begin
        WindowState:=wsNormal;
        BringToFront; exit
     end;
-    if Ship.LinesplanFrame<>nil then
-    if FreeLinesplanForm<>nil then if MI=AI[Windows.Count] then
-    with FreeLinesplanForm do begin
+    if LinesplanFrame<>nil then if MI=AI[Windows.Count] then
+    with LinesplanFrame do begin
        WindowState:=wsNormal; // Resizing( wsNormal ) ~ nV
        BringToFront;
 end end;
 
 procedure TMainForm.WindowMenu; Var I,N:Integer;
-begin With Ship do begin N:=Windows.Count;
+begin With St do begin N:=Windows.Count;
    if LinesplanFrame<>nil then inc( N );
    if AI=nil then begin if N>0 then Window1.AddSeparator;  // сначала отделение
    end else if NI>0 then for I:=NI-1 downto 0             // без старой менюшки
          do begin Window1.Remove( AI[I] ); AI[I].Free end;
    if N>0 then begin setLength( AI,N );
-      for I:=0 to Windows.Count-1 do with TFreeHullWindow( Windows[I] ) do begin
+      for I:=0 to Windows.Count-1 do with THullWindow( Windows[I] ) do begin
          AI[I]:=TMenuItem.Create( Window1 );
          AI[I].Caption:=Caption;
          AI[I].onClick:=WinClick;
       end;
       if LinesplanFrame<>nil then begin
-         AI[N-1]:=TMenuItem.Create( Window1 );    // FreeLinesplanForm.Caption;
+         AI[N-1]:=TMenuItem.Create( Window1 );    // LinesplanForm.Caption;
          AI[N-1].Caption:=ShowLinesplan.Caption;  //   'Теоретические чертежи';
          AI[N-1].onClick:=WinClick;
       end;
