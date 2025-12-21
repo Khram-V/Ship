@@ -59,7 +59,7 @@ end;
 
 function SEdit.File_Save: boolean;
 var Str: String; Strings: TStringList=nil; Destination: TFileBuffer;
-begin Result:=false;
+begin Result:=false; Strings:=nil;
   if not St.FilenameSet // or St.FileIsReadOnl
     then begin St.FilenameSet:=false; result:=File_SaveAs; exit; end;
   DeleteFileUTF8( St.Filename+'.bak' );
@@ -185,8 +185,8 @@ begin Source:=nil; Strings:=nil;
   St.FileChanged:=False;
 end;
 
-Procedure TShip.LoadProject( Source:TFileBuffer );        // LoadBinary
-var PrevCursor: TCursor; I,N: Integer; Str: String;               // WW:Real;
+Procedure TShip.LoadProject( Source:TFileBuffer );                // LoadBinary
+var PrevCursor: TCursor; I,N: Integer; Str: String;
     Data        : TBackgroundImageData;
     Intersection: TIntersection;
     Flowline    : TFlowline;
@@ -523,9 +523,11 @@ begin
         ProjectBeam:=B;
         if NewModelDialog.ShipBox.ItemIndex=2 then ProjectDraft:=D*2.5
                                                   else ProjectDraft:=D*2;
-        ProjectUnderWaterColorAlpha:=128;
         ProjectUnits:=TUnitType(NewModelDialog.ComboBox1.ItemIndex);
       End;
+      Sp.UAlfa:=64;
+      Sp.UColor:=clGreen;
+      Sp.UColorIs:=true;
       TrvSplines:=TFasterList.Create;
       StemPoint:=nil;      // First create tmp. splines in transverse direction
       for I:=0 to 6 do begin Spline1:=TSpline.Create;

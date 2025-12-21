@@ -1072,18 +1072,18 @@ object PreferencesDialog: TPreferencesDialog
                 ParentShowHint = False
                 ShowHint = True
               end
-              object seSubmergedSurfaceOpacity: TSpinEdit
+              object SubmergedOpacity: TSpinEdit
                 Left = 176
                 Height = 23
-                Hint = '0 - чисто смыто,  255 = полный окрас'
+                Hint = '0 - чисто прозрачно,  100% = полный окрас'
                 Top = 130
                 Width = 60
                 Constraints.MinWidth = 60
                 ParentShowHint = False
                 ShowHint = True
                 TabOrder = 6
-                Value = 100
-                OnChange = seSubmergedSurfaceOpacityChange
+                Value = 25
+                OnChange = SubmergedOpacityChange
               end
               object Label23: TLabel
                 Left = 10

@@ -1208,7 +1208,7 @@ begin
       Edges:=TFasterList.Create;
       St.Surface.ExtractAllEdgeLoops(Edges);
       Layername:='Board Edges';
-      ind:=FindDXFColorIndex(St.Preferences.EdgeColor);
+      ind:=FindDXFColorIndex(Sp.Edge);
       for I:=1 to Edges.Count do begin
          Points:=Edges[I-1];
          Strings.Add('0'+EOL+'POLYLINE');

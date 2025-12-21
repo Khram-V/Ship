@@ -1,5 +1,5 @@
 program Ship;
-uses Interfaces,SysUtils,Forms,Math,
+uses Interfaces,Math,Forms,SysUtils,
   Main       in 'Pascal\Main.pas'       {MainForm},
   SplashWndw in 'Pascal\SplashWndw.pas' {SplashWindow},
   ShipUnit   in 'Pascal\ShipUnit.pas'   {ShipUnit},
@@ -7,11 +7,11 @@ uses Interfaces,SysUtils,Forms,Math,
   LanguageSupport;                      // #226+#149+#169 + #10='╩'
 {$R *.res}
 begin
-   WriteLn( 'free!Ship <числовая модель>.[ftm,fbm,fef]'+#10
+   WriteLn( 'FREEShip <числовая модель>.[ftm,fbm,fef]'+#10
       +#10+'Compiled at '+{$I %DATE%}+' '+{$I %TIME%}
-      +#10+'Pascal версия: '+{$I %FPCVERSION%}
-      +#10+'Назначение CPU\OS: '+{$I %FPCTARGETCPU%}+' \ '+{$I %FPCTARGETOS%}
-      +#10+'free!Ship ver.2.6.2.0 { от 1 до 5 }'+#10 );
+      +#10+'CPU\OS: '+{$I %FPCTARGETCPU%}+' \ '+{$I %FPCTARGETOS%}
+      +#10+'Pascal: '+{$I %FPCVERSION%}
+      +#10+'free!Ship v.2.6.2 { от 1.65 до 5 }'+#10 );
    Application.Initialize;
    SplashWindow:=TSplashWindow.Create( Application );
    SplashWindow.Show;

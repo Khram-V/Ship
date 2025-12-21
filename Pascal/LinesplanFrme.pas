@@ -544,9 +544,8 @@ begin
       if (ship.Layer[I-1].ShowInLinesplan)
       and (ship.Layer[I-1].Visible) then begin
          Layer:=ship.Surface.Layer[I-1];
-         if ship.ProjectSettings.ProjectShadeUnderwaterShip
-            then SubmColor:=ship.ProjectSettings.ProjectUnderWaterColor
-            else SubmColor:=Layer.Color;
+         if Sp.UColorIs then SubmColor:=Sp.UColor
+                        else SubmColor:=Layer.Color;
          for j:=1 to Layer.Count do begin
             Face:=Layer.Items[J-1];
             Done:=False;
@@ -719,7 +718,7 @@ begin
       Viewport.PenStyle:=psSolid;
       if ShowMonochrome.Checked
          then Viewport.PenColor:=clBlack
-         else Viewport.PenColor:=ship.Preferences.CreaseColor;
+         else Viewport.PenColor:=Sp.Crease;
       for I:=1 to Ship.NoLayers do begin
          Layer:=Ship.Layer[I-1];
          if Layer.ShowInLinesplan then for J:=1 to Layer.Count do begin
@@ -735,13 +734,13 @@ begin
    Viewport.SetPenWidth(PenwidthFactor);
    Mainframe:=ship.ProjectSettings.MidleFrame;
    if ShowMonochrome.Checked then Viewport.PenColor:=clBlack   // Draw stations
-                             else Viewport.PenColor:=ship.Preferences.StationColor;
+                             else Viewport.PenColor:=Sp.Station;
    for i:=1 to ship.NoStations do DrawIntersection(ship.Station[I-1],[lvAftBody,lvFrontBody],psSolid);
    if ShowMonochrome.Checked then Viewport.PenColor:=clBlack   // Draw Buttocks
-                             else Viewport.PenColor:=ship.Preferences.ButtockColor;
+                             else Viewport.PenColor:=Sp.Buttock;
    for i:=1 to ship.NoButtocks do DrawIntersection(ship.Buttock[I-1],[lvProfile],psSolid);
    if ShowMonochrome.Checked then Viewport.PenColor:=clBlack // Draw Waterlines
-                             else Viewport.PenColor:=ship.Preferences.WaterlineColor;
+                             else Viewport.PenColor:=Sp.Waterline;
    for i:=1 to ship.NoWaterlines do DrawIntersection(ship.Waterline[I-1],[lvPlan],psSolid);
    Viewport.PenWidth:=PenwidthFactor;                         // Draw diagonals
    for I:=1 to ship.NoDiagonals do begin
@@ -754,7 +753,7 @@ begin
       for J:=1 to Diagonal.Count do begin Viewport.SetPenWidth(1);
          if ShowMonochrome.Checked
             then Viewport.PenColor:=clBlack
-            else Viewport.PenColor:=ship.Preferences.DiagonalColor;
+            else Viewport.PenColor:=Sp.Diagonal;
          Spline:=Diagonal.Items[J-1];
          Setlength( Pts,Steps+1 );
          Min:=0;
@@ -1149,51 +1148,50 @@ begin
       // PROFILE VIEW
       Space:=CalculateSpace(0.5*textspace,FMin3D.X,FMax3D.X);
       // draw baseline
-      AddLine(iVect(FMin3D.X-Space,FMin3D.Z,0),iVect(FMax3D.X+Space,FMin3D.Z,0),[lvProfile],Userstring(184),ship.Preferences.GridColor);
+      AddLine(iVect(FMin3D.X-Space,FMin3D.Z,0),iVect(FMax3D.X+Space,FMin3D.Z,0),[lvProfile],Userstring(184),Sp.Grid);
       // draw dwl
       AddLine(iVect(FMin3D.X-Space,0,FMin3D.Z+ship.ProjectSettings.ProjectDraft),
               iVect(FMax3D.X+Space,0,FMin3D.Z+ship.ProjectSettings.ProjectDraft),[lvProfile],Userstring(185),clRed);
       for I:=1 to ship.NoWaterlines do begin
          Tmp:=-ship.Waterline[I-1].Plane.D;
          AddLine(iVect(FMin3D.X-Space,0,Tmp),
-                 iVect(FMax3D.X+Space,0,Tmp),[lvProfile],'wlgrid',ship.Preferences.GridColor);
+                 iVect(FMax3D.X+Space,0,Tmp),[lvProfile],'wlgrid',Sp.Grid);
       end;
       Space:=CalculateSpace(textspace,FMin3D.Z,FMax3D.Z);
       for I:=1 to ship.NoStations do begin
          Tmp:=-ship.Station[I-1].Plane.D;
-         AddLine(iVect(Tmp,0,FMin3D.Z-space),iVect(Tmp,0,FMax3D.Z+space),[lvProfile],'stationgrid',ship.Preferences.GridColor);
+         AddLine(iVect(Tmp,0,FMin3D.Z-space),iVect(Tmp,0,FMax3D.Z+space),[lvProfile],'stationgrid',Sp.Grid);
       end;
       // draw buttocks
-      for I:=1 to ship.NoButtocks do AddIntersection(ship.Buttock[I-1],[lvProfile],'buttocks',ship.Preferences.ButtockColor);
+      for I:=1 to ship.NoButtocks do AddIntersection(ship.Buttock[I-1],[lvProfile],'buttocks',Sp.Buttock);
       // Add knuckle lines
       for I:=1 to Edges.Count do begin
          Points:=Edges[I-1];
-         AddEdgeLoop(Points,[lvProfile],'Knuckle_lines',ship.Preferences.CreaseColor);
+         AddEdgeLoop(Points,[lvProfile],'Knuckle_lines',Sp.Crease);
       end;
 
       // AFT VIEW OF BODYPLAN
       Space:=CalculateSpace(0.5*textspace,-FMax3D.Y,FMax3D.Y);
       // draw baseline
-      AddLine(iVect(0.0,-FMax3D.Y-Space,0.0),iVect(0.0,FMax3D.Y+Space,0.0),[lvAftBody],Userstring(184),ship.Preferences.GridColor);
+      AddLine(iVect(0.0,-FMax3D.Y-Space,0.0),iVect(0.0,FMax3D.Y+Space,0.0),[lvAftBody],Userstring(184),Sp.Grid);
       // draw dwl
       AddLine(iVect(0.0,-FMax3D.Y-Space,FMin3D.Z+ship.ProjectSettings.ProjectDraft),iVect(0.0,FMax3D.Y+Space,FMin3D.Z+ship.ProjectSettings.ProjectDraft),[lvAftBody],Userstring(185),clRed);
       for I:=1 to ship.NoWaterlines do begin
          Tmp:=-ship.Waterline[I-1].Plane.D;
-         AddLine(iVect(0.0,-FMax3D.Y-Space,Tmp),iVect(0.0,FMax3D.Y+Space,Tmp),[lvAftBody],'wlgrid',ship.Preferences.GridColor);
+         AddLine(iVect(0.0,-FMax3D.Y-Space,Tmp),iVect(0.0,FMax3D.Y+Space,Tmp),[lvAftBody],'wlgrid',Sp.Grid);
       end;
       Space:=CalculateSpace(textspace,FMin3D.Z,FMax3D.Z);
       // draw centerline
       AddLine(iVect(0.0,0.0,FMin3D.Z-space),iVect(0.0,0.0,FMax3D.Z+space),[lvAftBody],Userstring(245),clRed);
       for I:=1 to ship.NoButtocks do begin
          Tmp:=-ship.Buttock[I-1].Plane.D;
-         AddLine(iVect(0.0,Tmp,FMin3D.Z-space),iVect(0.0,Tmp,FMax3D.Z+space),[lvAftBody],'buttockgrid',ship.Preferences.GridColor);
-         AddLine(iVect(0.0,-Tmp,FMin3D.Z-space),iVect(0.0,-Tmp,FMax3D.Z+space),[lvAftBody],'buttockgrid',ship.Preferences.GridColor);
+         AddLine(iVect(0.0,Tmp,FMin3D.Z-space),iVect(0.0,Tmp,FMax3D.Z+space),[lvAftBody],'buttockgrid',Sp.Grid);
+         AddLine(iVect(0.0,-Tmp,FMin3D.Z-space),iVect(0.0,-Tmp,FMax3D.Z+space),[lvAftBody],'buttockgrid',Sp.Grid);
       end;
       // draw stations
       for I:=1 to ship.NoStations do
        if -ship.Station[I-1].Plane.d<=Mainframe then
-          AddIntersection( ship.Station[I-1],[lvAftBody],'stations',
-                           ship.Preferences.StationColor );
+          AddIntersection( ship.Station[I-1],[lvAftBody],'stations',Sp.Station );
       // Add knuckle lines
       for I:=1 to Ship.Surface.NoEdges do begin
          Edge:=Ship.Surface.Edge[I-1];
@@ -1202,33 +1200,32 @@ begin
          then begin
             P1:=Edge.StartPoint.Coordinate;
             P2:=Edge.EndPoint.Coordinate;
-            AddLine(P1,P2,[lvAftBody],'Knuckle_lines',ship.Preferences.CreaseColor);
+            AddLine(P1,P2,[lvAftBody],'Knuckle_lines',Sp.Crease);
          end;
       end;
 
       // FRONT VIEW OF BODYPLAN
       Space:=CalculateSpace(0.5*textspace,-FMax3D.Y,FMax3D.Y);
       // draw baseline
-      AddLine(iVect(0.0,-FMax3D.Y-Space,0.0),iVect(0.0,FMax3D.Y+Space,0.0),[lvFrontBody],Userstring(184),ship.Preferences.GridColor);
+      AddLine(iVect(0.0,-FMax3D.Y-Space,0.0),iVect(0.0,FMax3D.Y+Space,0.0),[lvFrontBody],Userstring(184),Sp.Grid);
       // draw dwl
       AddLine(iVect(0.0,-FMax3D.Y-Space,FMin3D.Z+ship.ProjectSettings.ProjectDraft),iVect(0.0,FMax3D.Y+Space,FMin3D.Z+ship.ProjectSettings.ProjectDraft),[lvFrontBody],Userstring(185),clRed);
       for I:=1 to ship.NoWaterlines do begin
          Tmp:=-ship.Waterline[I-1].Plane.D;
-         AddLine(iVect(0.0,-FMax3D.Y-Space,Tmp),iVect(0.0,FMax3D.Y+Space,Tmp),[lvFrontBody],'wlgrid',ship.Preferences.GridColor);
+         AddLine(iVect(0.0,-FMax3D.Y-Space,Tmp),iVect(0.0,FMax3D.Y+Space,Tmp),[lvFrontBody],'wlgrid',Sp.Grid);
       end;
       Space:=CalculateSpace(textspace,FMin3D.Z,FMax3D.Z);
       // draw centerline
       AddLine(iVect(0.0,0.0,FMin3D.Z-space),iVect(0.0,0.0,FMax3D.Z+space),[lvFrontBody],Userstring(245),clRed);
       for I:=1 to ship.NoButtocks do begin
          Tmp:=-ship.Buttock[I-1].Plane.D;
-         AddLine(iVect(0.0,Tmp,FMin3D.Z-space),iVect(0.0,Tmp,FMax3D.Z+space),[lvFrontBody],'buttockgrid',ship.Preferences.GridColor);
-         AddLine(iVect(0.0,-Tmp,FMin3D.Z-space),iVect(0.0,-Tmp,FMax3D.Z+space),[lvFrontBody],'buttockgrid',ship.Preferences.GridColor);
+         AddLine(iVect(0.0,Tmp,FMin3D.Z-space),iVect(0.0,Tmp,FMax3D.Z+space),[lvFrontBody],'buttockgrid',Sp.Grid);
+         AddLine(iVect(0.0,-Tmp,FMin3D.Z-space),iVect(0.0,-Tmp,FMax3D.Z+space),[lvFrontBody],'buttockgrid',Sp.Grid);
       end;
       // draw stations
       for I:=1 to ship.NoStations do
        if -ship.Station[I-1].Plane.d>=Mainframe then
-         AddIntersection( ship.Station[I-1],[lvFrontBody],'stations',
-                          ship.Preferences.StationColor);
+         AddIntersection( ship.Station[I-1],[lvFrontBody],'stations',Sp.Station);
       // Add knuckle lines
       for I:=1 to Ship.Surface.NoEdges do begin
          Edge:=Ship.Surface.Edge[I-1];
@@ -1237,10 +1234,9 @@ begin
          then begin
             P1:=Edge.StartPoint.Coordinate;  P1.Y:=-P1.Y;
             P2:=Edge.EndPoint.Coordinate;    P2.Y:=-P2.Y;
-            AddLine(P1,P2,[lvFrontBody],'Knuckle_lines',ship.Preferences.CreaseColor);
+            AddLine(P1,P2,[lvFrontBody],'Knuckle_lines',Sp.Crease);
          end;
       end;
-
       // PLAN VIEW
       Space:=CalculateSpace(0.5*textspace,FMin3D.X,FMax3D.X);
       // draw centerline
@@ -1249,21 +1245,21 @@ begin
       for I:=1 to ship.NoButtocks do begin
          Tmp:=-ship.Buttock[I-1].Plane.D;
          AddLine(iVect(FMin3D.X-Space,Tmp,0.0),
-                 iVect(FMax3D.X+space,Tmp,0.0),[lvPlan],'buttockgrid',ship.Preferences.GridColor);
+                 iVect(FMax3D.X+space,Tmp,0.0),[lvPlan],'buttockgrid',Sp.Grid);
          if (ship.NoDiagonals=0) and (MirrorPlanView.Checked)
           then AddLine(iVect(FMin3D.X-space,-Tmp,0.0),
-                       iVect(FMax3D.X+space,-Tmp,0.0),[lvPlan],'buttockgrid',ship.Preferences.GridColor);
+                       iVect(FMax3D.X+space,-Tmp,0.0),[lvPlan],'buttockgrid',Sp.Grid);
       end;
       // stations
       Space:=CalculateSpace(textspace,FMin3D.Y,FMax3D.Y);
       for I:=1 to ship.NoStations do begin
          Tmp:=-ship.Station[I-1].Plane.D;
          if (ship.NoDiagonals=0) and (MirrorPlanview.Checked)
-         then AddLine(iVect(Tmp,-FMax3D.Y-space,0),iVect(Tmp,FMax3D.Y+space,0),[lvPlan],'stationgrid',ship.Preferences.GridColor)
-         else AddLine(iVect(Tmp,-FDiagonalWidth-space,0),iVect(Tmp,FMax3D.Y+space,0),[lvPlan],'stationgrid',ship.Preferences.GridColor);
+         then AddLine(iVect(Tmp,-FMax3D.Y-space,0),iVect(Tmp,FMax3D.Y+space,0),[lvPlan],'stationgrid',Sp.Grid)
+         else AddLine(iVect(Tmp,-FDiagonalWidth-space,0),iVect(Tmp,FMax3D.Y+space,0),[lvPlan],'stationgrid',Sp.Grid);
       end;
       // draw waterlines
-      for I:=1 to ship.NoWaterlines do AddIntersection(ship.Waterline[I-1],[lvPLan],'waterlines',ship.Preferences.WaterlineColor);
+      for I:=1 to ship.NoWaterlines do AddIntersection(ship.Waterline[I-1],[lvPLan],'waterlines',Sp.Waterline);
       // draw diagonals
       for I:=1 to ship.NoDiagonals do begin
          Diagonal:=ship.Diagonal[I-1];
@@ -1278,7 +1274,7 @@ begin
             Max:=0;
             Strings.Add('0'+EOL+'POLYLINE');
             Strings.Add('8'+EOL+'Diagonals');   // layername
-            Strings.Add('62'+EOL+IntToStr(FindDXFColorIndex(ship.Preferences.DiagonalColor)));
+            Strings.Add('62'+EOL+IntToStr(FindDXFColorIndex(Sp.Diagonal)));
             Strings.Add('66'+EOL+'1');    // vertices follow
 
             for k:=0 to 100 do begin
@@ -1305,17 +1301,17 @@ begin
             Tmp:=-Diagonal.Plane.d/Diagonal.Plane.c;
             P1:=iVect(0.0,Min*Sin(DegToRad(45)),Tmp-Min*Sin(DegToRad(45)));
             P2:=iVect(0.0,Max*Sin(DegToRad(45)),Tmp-Max*Sin(DegToRad(45)));
-            AddLine(P1,P2,[lvAftBody],'diagonalgrid',ship.Preferences.GridColor);
-            AddLine(P1,P2,[lvFrontBody],'diagonalgrid',ship.Preferences.GridColor);
+            AddLine(P1,P2,[lvAftBody],'diagonalgrid',Sp.Grid);
+            AddLine(P1,P2,[lvFrontBody],'diagonalgrid',Sp.Grid);
             P1.Y:=-P1.Y;
             P2.Y:=-P2.Y;
-            AddLine(P1,P2,[lvAftBody],'diagonalgrid',ship.Preferences.GridColor);
-            AddLine(P1,P2,[lvFrontBody],'diagonalgrid',ship.Preferences.GridColor);
+            AddLine(P1,P2,[lvAftBody],'diagonalgrid',Sp.Grid);
+            AddLine(P1,P2,[lvFrontBody],'diagonalgrid',Sp.Grid);
          end;
       end;
       for I:=1 to Edges.Count do begin                    // Add knuckle lines
          Points:=Edges[I-1];
-         AddEdgeLoop(Points,[lvPlan],'Knuckle_lines',ship.Preferences.CreaseColor);
+         AddEdgeLoop(Points,[lvPlan],'Knuckle_lines',Sp.Crease);
       end;
       for I:=1 to Edges.Count do begin           // Destroy extracted edgeloops
          Points:=Edges[I-1];

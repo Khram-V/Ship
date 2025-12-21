@@ -270,7 +270,7 @@ object ProjectSettingsDialog: TProjectSettingsDialog
                 Width = 80
                 Constraints.MinWidth = 80
                 TabOrder = 1
-                Value = 100
+                Value = 25
               end
               object Label27: TLabel
                 Left = 0

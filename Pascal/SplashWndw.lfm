@@ -22,6 +22,8 @@ object SplashWindow: TSplashWindow
     Top = 30
     Align = alTop
     BorderSpacing.Left = 20
+    BorderSpacing.Bottom = 6
+    BorderSpacing.Right = 6
     ParentColor = False
   end
   object Timer: TTimer

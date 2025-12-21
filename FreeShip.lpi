@@ -39,7 +39,7 @@
     </RequiredPackages>
     <Units>
       <Unit>
-        <Filename Value="FreeShip.pas"/>
+        <Filename Value="FreeShip.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="Ship"/>
       </Unit>
@@ -290,10 +290,6 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="Pascal\Main(rus).lfm"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="Pascal\MirrorPlaneDlg.lfm"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -350,7 +346,7 @@
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
       <Optimizations>
-        <OptimizationLevel Value="3"/>
+        <OptimizationLevel Value="4"/>
       </Optimizations>
       <SmallerCode Value="True"/>
     </CodeGeneration>

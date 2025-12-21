@@ -269,10 +269,8 @@ private
    FShowHydrostMetacentricHeight,
    FShowHydrostLCF,
    FShowFlowlines: Boolean;
-   FCurvatureScale,        // Scalefactor used to increase or decrease the size of the curvature plot
    FCursorIncrement: Real; // Distance added when the active controlpoint is moved withe the arrow keys
    procedure FSetCursorIncrement(val:Real);
-   procedure FSetCurvatureScale(Val:Real);
    procedure FSetShowButtocks(Val:Boolean);
    procedure FSetShowControlNet(Val:Boolean);
    procedure FSetShowCurvature(Val:Boolean);
@@ -290,6 +288,7 @@ private
 public
    constructor Create(Owner:TShip);
    procedure Clear;
+   procedure SetCurvatureScale(Val:Real);
    procedure DecreaseCurvatureScale;
    procedure IncreaseCurvatureScale;
    procedure LoadBinary(Source:TFilebuffer);
@@ -297,7 +296,6 @@ public
    property  Owner: TShip read FOwner write FOwner;
 published
    property CursorIncrement    : Real read FCursorIncrement write FSetCursorIncrement;
-   property CurvatureScale     : Real read FCurvatureScale write FSetCurvatureScale;
    property ModelView          : TModelView read FModelView write FSetModelView;
    property ShowButtocks       : boolean read FShowButtocks write FSetShowButtocks;
    property ShowControlCurves  : boolean read FShowControlCurves write FSetShowControlCurves;
@@ -418,39 +416,16 @@ end;
 TPreferences=class(TPersistent)
 private
   FViewportColor: TColor; // Half width of controlpoints
-  FIntersectionLineWidth, //  in pixels when drawn on screen Colors
-  FControlEdgeLineWidth,
-  FInteriorEdgeLineWidth,
-  FAuxEdgeLineWidth,
-  FHydrostaticLineWidth: integer;
+//  FIntersectionLineWidth, //  in pixels when drawn on screen Colors
+//  FControlEdgeLineWidth,
+//  FInteriorEdgeLineWidth,
+//  FAuxEdgeLineWidth,
+//  FHydrostaticLineWidth: integer;
+
   procedure FSetViewportColor( Val: TColor );
 public
   St: TShip;
   MainForm: TForm;
-  EdgeColor,       // Color of normal edges
-  CreaseColor,     // color of crease edges
-  CreaseEdgeColor, // color of crease control-edges
-  GridColor,       // Color of gridlines
-  GridFontColor,   // Color of font with gridlines
-  CreasePointColor,// Color of crease vertices
-  RegularPointColor,
-  CornerPointColor,// Color of cornerpoints and points with at least 3 crease edges
-  DartPointColor,
-  SelectColor,     // Color of selected items
-  LayerColor,      // Default color for new layers
-  NormalColor,     // color of surface normals
-  LeakPointColor,
-  MarkerColor,
-  CurvaturePlotColor,
-  ControlCurveColor,
-  HydrostaticsFontColor,
-  ZebraStripeColor,
-  StationColor,
-  ButtockColor,
-  WaterlineColor,
-  DiagonalColor,
-  UnderWaterColor:TColor; // Default color used for shading underwaterpart of vessel
-  UnderWaterColorAlpha: byte;
   FbmEncoding, //encoding that is used to convert national strings from/to FBM files
   Language: String;
   ConfigDirectory,   // Default directory where users FreeShip.ini file is stored
@@ -492,7 +467,7 @@ private
   FProjectWaterDensity,FProjectWaterTemper: Real;
   FProjectName,FProjectDesigner,FProjectComment,FProjectFileCreatedBy: String;
   FProjectSimplifyIntersections,
-  FProjectShadeUnderwaterShip,FSavePreview: boolean;
+  FSavePreview: boolean;
   FProjectUnits: TUnitType;
   FHydrostaticCoefficients: THydrostaticCoeff; // General hydrostatics calculation settings
   FStartDraft,FEndDraft,FDraftStep: Real;
@@ -529,8 +504,6 @@ private
   procedure FSetTrim(Val: Real);
 public
   St: TShip;
-  ProjectUnderWaterColor: TColor;
-  ProjectUnderWaterColorAlpha: byte;
   constructor Create( Owner: TShip );
   procedure Clear;
   procedure Edit;        // User input of mainparticulars and project setting
@@ -552,7 +525,6 @@ public
   property ProjectDesigner: String read FProjectDesigner; // write FSetProjectDesigner;
   property ProjectComment: String read FProjectComment;   // write FSetProjectComment;
   property ProjectFileCreatedBy: String read FProjectFileCreatedBy; // write FSetProjectFileCreatedBy;
-  property ProjectShadeUnderwaterShip: boolean read FProjectShadeUnderwaterShip write FSetProjectShadeUnderwaterShip;
   property ProjectSimplifyIntersections: boolean read FProjectSimplifyIntersections write FSetProjectSimplifyIntersections;
   property ProjectUnits: TUnitType read FProjectUnits write FSetProjectUnits;
   property ProjectWaterDensity: Real read FProjectWaterDensity write FSetProjectWaterDensity;
@@ -579,29 +551,27 @@ private
    FEditMode          : TEditMode; // The component has different edit-modes which determine how the program responds to mouse-events
    FPreferences       : TPreferences;
    FActiveControlPoint: SControlPoint; // The last selected controlpoint (still selected)
-   FFileChanged       : boolean;       // Flag to keep track of modifications to the file
+   FFileChanged       : boolean;   // Flag to keep track of modifications to the file
    FSurface           : SSurface;
-   FFilename          : string;        // Filename of the current project;
+   FFilename          : string;    // Filename of the current project;
    FEdit              : SEdit;     // Containerclass for all editing commands
    FVisibility        : TVisibility;
+   FFilenameSet,      // Flag to determine if the filename already has been set
+   FCurrentlyMoving,  // variables are for moving controlpoints with the mouse
+   FPointHasBeenMoved      : boolean;
+   FPrevCursorPosition     : TPoint;
+   FControlpointForm       : TControlPointForm; // form for manual adjustment of controlpoints
+   FIntersectionDialog     : TForm; // Dialog containing intersectionlines
+   FProjectSettings        : TProjectSettings;
+   FHydrostaticCalculations: TFasterList; // List containing all hydrostatic calculations
+   FUndoObjects            : TFasterList;
+   FUndoPosition,FPreviousUndoPosition: Integer; // Index of the current undo object
    FOnFileChanged,
    FOnUpdateUndoData,
    FOnUpdateRecentFileList,
    FOnChangeCursorIncrement,
    FOnUpdateGeometryInfo: TNotifyEvent; // This event is raised whenever items are added or deleted from the surface
-// FLinesplanFrame     : TForm; //Frame;
-   FFilenameSet            : Boolean; // Flag to determine if the filename already has been set
-   // The folowing private variables are for moving controlpoints with the mouse
-   FCurrentlyMoving,
-   FPointHasBeenMoved      : boolean;
-   FPrevCursorPosition     : TPoint;
-   FControlpointForm       : TControlPointForm; // form for manual adjustment of controlpoints
-   FIntersectionDialog     : TForm;   // Dialog containing intersectionlines
-   FProjectSettings        : TProjectSettings;
-   FHydrostaticCalculations: TFasterList; // List containing all hydrostatic calculations
-   FUndoObjects            : TFasterList;
-   FUndoPosition,          // Index of the current undo object
-   FPreviousUndoPosition   : Integer;
+
    // Assembles all stations and builds a 2D bodyplan for export to other calculating programs
    procedure FBuildValidFrameTable(Destination:TFasterList;CloseAtDeck:Boolean);
    function  FGetActiveLayer:Slayer;
@@ -672,7 +642,6 @@ public
    procedure AddViewport(Viewport:TViewport); // Add a viewport to the list of viewports connected to the model
    function  AdjustMarkers:Boolean;
    procedure ClearUndo;
-// procedure CreateOutputHeader(CalcHeader:string;Strings:TStrings);                                      // Creates a header with all relevant project data
    procedure DeleteViewport(Viewport:TViewport); // Delete a viewport from the list of viewports connected to the model
    procedure DrawToViewport(Viewport:TViewport);
    procedure Extents(Var Min,Max:Vector); // calculate the bounding box coordinates of the model
@@ -748,7 +717,6 @@ published
    property  FileChanged            : boolean read FFileChanged write FSetFileChanged;
    property  Filename               : string read FGetFilename write FSetFileName;
    property  FileVersion            : TFileVersion read FFileVersion write FSetFileVersion;
-// property  LinesplanFrame         : TForm {Frame} read FLinesplanFrame write FLinesplanFrame;
    property  OnChangeCursorIncrement: TNotifyEvent read FOnChangeCursorIncrement write FOnChangeCursorIncrement;
    property  OnFileChanged          : TNotifyEvent read FOnFileChanged write FOnFileChanged;
    property  OnUpdateGeometryInfo   : TNotifyEvent read FOnUpdateGeometryInfo write FOnUpdateGeometryInfo;
@@ -773,7 +741,8 @@ procedure Register;
 Var St: TShip;
 
 implementation
-uses Math,Main,
+uses Math,
+     Main,
      IGESUnit,
      IntersectionDlg,
      NewModelDlg,
@@ -1005,10 +974,10 @@ function TIntersection.FGetColor:TColor;
 begin
    with St do
    Case IntersectionType of
-      fiStation  : Result:=Preferences.StationColor;
-      fiButtock  : Result:=Preferences.ButtockColor;
-      fiWaterline: Result:=Preferences.WaterlineColor;
-      fiDiagonal : Result:=Preferences.DiagonalColor;
+      fiStation  : Result:=Sp.Station;
+      fiButtock  : Result:=Sp.Buttock;
+      fiWaterline: Result:=Sp.Waterline;
+      fiDiagonal : Result:=Sp.Diagonal;
               else Result:=clWhite;
    end;
 end;
@@ -1303,13 +1272,9 @@ begin
          if IntersectionType=fiButtock then if Viewport.ViewType in [fvBodyplan,fvPlan] then Spline.PenStyle:=psDot;
          if IntersectionType=fiWaterline then if Viewport.ViewType in [fvProfile,fvBodyplan] then Spline.PenStyle:=psDot;
          if Spline.PenStyle=psDot then Spline.Color:=clSilver;
-
-         Spline.CurvatureColor:=St.Preferences.CurvaturePlotColor;
-         Spline.CurvatureScale:=St.Visibility.CurvatureScale;
          Spline.ShowCurvature:=(St.Visibility.ShowCurvature) and (ShowCurvature);;
          if Spline.ShowCurvature then Spline.Fragments:=800
                                  else Spline.Fragments:=600;
-
          Setlength(Pts,Spline.Fragments+1);
          if Spline.ShowCurvature then Setlength(CPts,Spline.Fragments+1);
          // Draw portside
@@ -1341,7 +1306,7 @@ begin
                if Spline.ShowCurvature then begin
                   Curv:=Spline.Curvature(J/Spline.Fragments,P,N);
                   Pts[J]:=Viewport.Project(P);
-                  P2:=P-(Curv*Spline.CurvatureScale)*N;
+                  P2:=P-(Curv*Sp.CurvatureScale)*N;
                   CPts[J]:=Viewport.Project(P2);
                end else begin
                   P:=Spline.Value(J/Spline.Fragments);
@@ -1350,7 +1315,7 @@ begin
             end;
             if Spline.ShowCurvature then begin
                Viewport.SetPenWidth(1);
-               Viewport.PenColor:=Spline.CurvatureColor;
+               Viewport.PenColor:=Sp.CurvaturePlot;
                Viewport.PenStyle:=psSolid;
                for J:=0 to Spline.Fragments do
                if (J mod 10=0) or (J=0) or (J=Spline.Fragments) then begin
@@ -1375,7 +1340,7 @@ begin
                   N.Y:=-N.Y;
                   P.Y:=-P.Y;
                   Pts[J]:=Viewport.Project(P);
-                  P2:=P-(Curv*Spline.CurvatureScale)*N;
+                  P2:=P-(Curv*Sp.CurvatureScale)*N;
                   CPts[J]:=Viewport.Project(P2);
                end else begin
                   P:=Spline.Value(J/Spline.Fragments);
@@ -1385,7 +1350,7 @@ begin
             end;
             if Spline.ShowCurvature then begin
                Viewport.SetPenWidth(1);
-               Viewport.PenColor:=Spline.CurvatureColor;
+               Viewport.PenColor:=Sp.CurvaturePlot;
                Viewport.PenStyle:=psSolid;
                for J:=0 to Spline.Fragments do
                if (J mod 10=0) or (J=0) or (J=Spline.Fragments) then begin
@@ -1621,8 +1586,8 @@ var I,J,Size,Scale,NParam,Fragm: Integer;
 begin
    if Visible then begin
       if Owner<>nil then begin
-         if Selected then Color:=Owner.Preferences.SelectColor
-                     else Color:=owner.Preferences.MarkerColor;
+         if Selected then Color:=Sp.Select
+                     else Color:=Sp.Marker;
          Size:=Owner.Preferences.PointSize;
       end else begin
          Color:=clLime;
@@ -1660,10 +1625,10 @@ begin
                   P3D.Y:=P3D.Y*Scale;
                   Normal.Y:=Normal.Y*Scale;
                   PArray1[J-1]:=Viewport.Project(P3D);
-                  PArray2[J-1]:=Viewport.Project(P3D-(2.0*C*CurvatureScale)*Normal );
+                  PArray2[J-1]:=Viewport.Project(P3D-(2.0*C*Sp.CurvatureScale)*Normal );
                end;
                Viewport.SetPenWidth(1);
-               Viewport.PenColor:=CurvatureColor;
+               Viewport.PenColor:=Sp.CurvaturePlot;
                for J:=1 to Fragm do
                if (J mod 4=0) or (J=1) or (J=Fragm) then begin
                   Viewport.Canvas.MoveTo(PArray1[J-1].X,PArray1[J-1].Y);
@@ -1728,7 +1693,7 @@ end;
 }
 function TFlowline.FGetColor:TColor;
 begin
-   if Selected then result:=Owner.Preferences.SelectColor
+   if Selected then result:=Sp.Select
 // else if FMethodNew then Result:=clRed
                       else Result:=clAqua; // clBlue;
 end;
@@ -2253,16 +2218,13 @@ end;
    TVisibility
    This object stores all visibility options for the hull
 }
-procedure TVisibility.FSetCurvatureScale(Val:Real);
+procedure TVisibility.SetCurvatureScale( Val:Real );
 var I:Integer;
-begin
-   if abs(Val-FCurvatureScale)>1e-5 then begin
-      FCurvatureScale:=Val;
+begin Sp.CurvatureScale:=Val;
       Owner.FileChanged:=True;
-      For I:=1 to Owner.nV do
+      for I:=1 to Owner.nV do
        if Owner.Viewport[I-1].ViewportMode=vmWireFrame then
           Owner.Viewport[I-1].Refresh
-   end;
 end;
 
 procedure TVisibility.FSetCursorIncrement(val:Real);
@@ -2433,22 +2395,21 @@ begin
    FShowMarkers:=True;
    FShowCurvature:=True;
    FShowControlCurves:=True;
-   FCurvatureScale:=1.0;
    FCursorIncrement:=0.1;
-   FShowHydrostaticData:=True;
-   FShowHydrostDisplacement:=True;
-   FShowHydrostLateralArea:=True;
-   FShowHydrostSectionalAreas:=True;
-   FShowHydrostMetacentricHeight:=False;
+   FShowHydrostaticData:=true;
+   FShowHydrostDisplacement:=true;
+   FShowHydrostLateralArea:=true;
+   FShowHydrostSectionalAreas:=true;
+   FShowHydrostMetacentricHeight:=true;
    FShowHydrostLCF:=True;
    FShowFlowlines:=True;
    if assigned(Owner.FOnChangeCursorIncrement) then Owner.FOnChangeCursorIncrement(self);
 end;
 
 procedure TVisibility.DecreaseCurvatureScale;
-    begin CurvatureScale:=CurvatureScale/1.1; end;
+    begin SetCurvatureScale( Sp.CurvatureScale/1.2 ); end;
 procedure TVisibility.IncreaseCurvatureScale;
-    begin CurvatureScale:=CurvatureScale*1.1; end;
+    begin SetCurvatureScale( Sp.CurvatureScale*1.2 ); end;
 
 procedure TVisibility.LoadBinary(Source:TFilebuffer);
 var I : Integer;
@@ -2466,7 +2427,7 @@ begin
    Source.LoadBoolean(FShowDiagonals);
    Source.LoadBoolean(FShowMarkers);
    Source.LoadBoolean(FShowCurvature);
-   Source.LoadTFloatType(FCurvatureScale);
+   Source.LoadTFloatType(Sp.CurvatureScale);
    if Owner.FileVersion>=fv195 then begin
       Source.LoadBoolean(FShowControlCurves);
       if Owner.FileVersion>=fv210 then begin
@@ -2501,7 +2462,7 @@ begin
    Destination.Add(FShowDiagonals);
    Destination.Add(FShowMarkers);
    Destination.Add(FShowCurvature);
-   Destination.Add(FCurvatureScale);
+   Destination.Add(Sp.CurvatureScale);
    if Owner.FileVersion>=fv195 then begin
       Destination.Add(FShowControlCurves);
       if Owner.FileVersion>=fv210 then begin
@@ -3459,76 +3420,73 @@ var ToDoList,DoneList,Current: TList;
 begin
    ToDoList:=TList.Create;
    DoneList:=TList.Create;
-// try
-      if St.NoSelectedControlFaces>0 then begin // Use only the selected ones
-         ToDoList.Capacity:=ToDoList.Count+St.NoSelectedControlFaces;
-         for I:=1 to St.NoSelectedControlFaces do begin
-            Face:=St.SelectedControlFace[I-1];
-            ToDoList.Add(Face);
-         end;
-      end else begin                                   // use all visible faces
-         for I:=1 to St.NoLayers do begin
-            Layer:=St.Layer[I-1];
-            if Layer.Visible then begin
-               ToDoList.Capacity:=ToDoList.Count+Layer.Count;
-               for J:=1 to Layer.Count do
-                  ToDoList.Add(Layer.Items[J-1]);
-            end;
+   if St.NoSelectedControlFaces>0 then begin      // Use only the selected ones
+      ToDoList.Capacity:=ToDoList.Count+St.NoSelectedControlFaces;
+      for I:=1 to St.NoSelectedControlFaces do begin
+         Face:=St.SelectedControlFace[I-1];
+         ToDoList.Add(Face);
+      end;
+   end else begin                                      // use all visible faces
+      for I:=1 to St.NoLayers do begin
+         Layer:=St.Layer[I-1];
+         if Layer.Visible then begin
+            ToDoList.Capacity:=ToDoList.Count+Layer.Count;
+            for J:=1 to Layer.Count do
+               ToDoList.Add(Layer.Items[J-1]);
          end;
       end;
-      if ToDoList.Count>0 then begin
-         CreateUndoObject(Userstring(139),True);
-         while ToDoList.Count>0 do begin
-            Face:=ToDoList[ToDoList.Count-1];
-            ToDoList.Delete(ToDoList.Count-1);
-            Current:=TList.Create;
-            Current.Add(Face);
-            FindAttachedFaces(Current,Face);
-            DoneList.Add(Current);
-         end;                          // Assign all groups to different layers
-         for I:=1 to DoneList.Count do begin
-            Current:=DoneList[I-1];
-            if Current.Count>0 then begin
-               SameLayer:=True;
-               // check if all selected faces currently belong to the same layer
-               Face:=Current[0];
-               For J:=2 to Current.Count do begin
-                  Face2:=Current[J-1];
-                  if Face2.Layer<>Face.Layer then SameLayer:=False;
-               end;
-               Layer:=nil;
-               if true or SameLayer then begin // yes, all faces belong to the same layer
-                  if Current.Count=Face.Layer.Count then begin
-                     // apparently the same data is selected as in face.layer, do not change layer
-                  end else begin
-                     // a subset of face.layer is selected, copy properties from that layer
-                     Layer:=St.Surface.AddNewLayer;
-                     Layer.AssignProperties(Face.Layer);
-                     Layer.Color:=RandomColor;
-                  end;
-               end else begin                // Faces belong to multiple layers,
-                  Layer:=Layer_New;
+   end;
+   if ToDoList.Count>0 then begin
+      CreateUndoObject(Userstring(139),True);
+      while ToDoList.Count>0 do begin
+         Face:=ToDoList[ToDoList.Count-1];
+         ToDoList.Delete(ToDoList.Count-1);
+         Current:=TList.Create;
+         Current.Add(Face);
+         FindAttachedFaces(Current,Face);
+         DoneList.Add(Current);
+      end;                             // Assign all groups to different layers
+      for I:=1 to DoneList.Count do begin
+         Current:=DoneList[I-1];
+         if Current.Count>0 then begin
+            SameLayer:=True;
+              // check if all selected faces currently belong to the same layer
+            Face:=Current[0];
+            For J:=2 to Current.Count do begin
+               Face2:=Current[J-1];
+               if Face2.Layer<>Face.Layer then SameLayer:=False;
+            end;
+            Layer:=nil;
+            if SameLayer then begin //# yes, all faces belong to the same layer
+               if Current.Count=Face.Layer.Count then begin
+               // apparently the same data is selected as in face.layer, do not change layer
+               end else begin
+               // a subset of face.layer is selected, copy properties from that layer
+                  Layer:=St.Surface.AddNewLayer;
+                  Layer.AssignProperties(Face.Layer);
                   Layer.Color:=RandomColor;
                end;
-               if Layer<>nil then begin
-                  for J:=1 to Current.Count do begin
-                     Face:=Current[J-1];
-                     Face.Layer:=Layer;
-                  end;
+            end else begin                  // Faces belong to multiple layers,
+               Layer:=Layer_New;
+               Layer.Color:=RandomColor;
+            end;
+            if Layer<>nil then begin
+               for J:=1 to Current.Count do begin
+                  Face:=Current[J-1];
+                  Face.Layer:=Layer;
                end;
             end;
-            Current.Destroy;
          end;
-         St.ActiveLayer:=St.Layer[St.NoLayers-1];
-      {  Layer_DeleteEmpty(True);               // Delete empty layers
-      }  St.Redraw;
-         St.FileChanged:=True;
+         Current.Destroy;
       end;
-// finally
-      if assigned(St.OnChangeLayerData) then St.OnChangeLayerData(self);
-      ToDoList.Destroy;
-      DoneList.Destroy;
-// end;
+      St.ActiveLayer:=St.Layer[St.NoLayers-1];
+   {  Layer_DeleteEmpty(True);               // Delete empty layers
+   }  St.Redraw;
+      St.FileChanged:=True;
+   end;
+   if assigned(St.OnChangeLayerData) then St.OnChangeLayerData(self);
+   ToDoList.Destroy;
+   DoneList.Destroy;
 end;
 
 // Develope all developable layers
@@ -3606,7 +3564,7 @@ function SEdit.Layer_New:SLayer;
 begin
    CreateUndoObject(Userstring(142),True);
    Result:=St.Surface.AddNewLayer;
-   Result.Color:=St.Preferences.LayerColor;
+   Result.Color:=Sp.Layer;
    St.FileChanged:=True;
 end;
 
@@ -3771,7 +3729,7 @@ var I,J,InvertedFaces,Inconsistent,NonManifold,DblEdges: Integer;
              end;             P1:=p2;
           end;                inc(I);
        end;
-    end;// FindConnectedFaces
+    end;
 begin
    Undo:=self.CreateUndoObject(Userstring(148),false);
    Changed:=False;
@@ -4724,7 +4682,6 @@ begin
    FFileVersion:=CurrentVersion;
    FActiveControlPoint:=nil;
    FSurface:=SSurface.Create;
-   FSurface.LayerColor:=FPreferences.LayerColor;
    FViewports:=TFasterList.Create;
    FMarkers:=TFasterList.Create;
    FVisibility:=TVisibility.Create(self);
@@ -4846,7 +4803,7 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
       if CompensateHeight then P.Z:=P.Z+FDesignHydrostatics.FData.ModelMin.Z;
       Pt:=Viewport.Project(P);
       Viewport.FontName:=UFont; //'Arial';
-      Viewport.FontColor:=Preferences.HydrostaticsFontColor;
+      Viewport.FontColor:=Sp.HydrostaticsFont;
 //--  size:=Round(Sqrt(Viewport.Zoom)*7);
 //##  size:=Round( Preferences.FontSize*Sqrt( Viewport.Zoom )*0.875 );
       size:=Preferences.FontSize+1;
@@ -4890,9 +4847,9 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
        or DrawButtocks
        or DrawWaterlines
        or DrawDiagonals then begin
-          Viewport.PenColor:=Preferences.GridColor;
+          Viewport.PenColor:=Sp.Grid;
           Viewport.FontName:=UFont; //'Arial';
-          Viewport.FontColor:=Preferences.GridFontColor;   // calculate and set fontheight
+          Viewport.FontColor:=Sp.GridFont;   // calculate and set fontheight
           Viewport.Canvas.Font.Size:=Preferences.FontSize; //###
           Height:=Viewport.Canvas.TextHeight('X');
           Viewport.BrushStyle:=bsClear;                      // draw centerline
@@ -4917,7 +4874,7 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
                Viewport.Canvas.TextOut(Pt2.X,Pt2.Y-Height,Str);
              end;
              Viewport.PenWidth:=1;
-             Viewport.FontColor:=Preferences.GridFontColor;
+             Viewport.FontColor:=Sp.GridFont;
           end;
           if Viewport.Viewtype<>fvPlan then begin
              Viewport.FontColor:=clRed;
@@ -4952,7 +4909,7 @@ var I,Size,LegendHeight,LegendWidth,RectHeight,Nrect,NDecimal: integer;
                 Viewport.Canvas.TextOut(Pt2.X{-Width div 2},Pt2.Y-Height,str);
              end;
              Viewport.PenWidth:=1;
-             Viewport.FontColor:=Preferences.GridFontColor;
+             Viewport.FontColor:=Sp.GridFont;
           end;
           if DrawStations then begin
              P1:=Min;
@@ -5104,33 +5061,16 @@ begin
    Surface.DrawMirror:=Visibility.ModelView=mvBoth;
    Surface.ShowNormals:=Visibility.ShowNormals;
    Surface.ControlPointSize:=Preferences.PointSize;
-   Surface.CreaseColor:=Preferences.CreaseColor;
-   Surface.CreaseEdgeColor:=Preferences.CreaseEdgeColor;
-   Surface.EdgeColor:=Preferences.EdgeColor;
-   Surface.CreasePointColor:=Preferences.CreasePointColor;
-   Surface.RegularPointColor:=Preferences.RegularPointColor;
-   Surface.CornerPointColor:=Preferences.CornerPointColor;
-   Surface.DartPointColor:=Preferences.DartPointColor;
-   Surface.Selectedcolor:=Preferences.SelectColor;
-   Surface.LayerColor:=Preferences.LayerColor;
-   Surface.NormalColor:=Preferences.NormalColor;
-   Surface.LeakColor:=Preferences.LeakPointColor;
-   Surface.CurvatureColor:=Preferences.CurvaturePlotColor;
    Surface.ShowCurvature:=Visibility.ShowCurvature;
-   Surface.CurvatureScale:=Visibility.CurvatureScale;
+// Surface.CurvatureScale:=Visibility.CurvatureScale;
    Surface.ShowControlCurves:=Visibility.ShowControlCurves;
-   Surface.ControlCurveColor:=Preferences.ControlCurveColor;
-   Surface.ZebraColor:=Preferences.ZebraStripeColor;
-   if ProjectSettings.ProjectShadeUnderwaterShip then begin
+   if Sp.UColorIs then begin //.ProjectShadeUnderwaterShip then begin
       Plane.a:=0.0;
       Plane.b:=0.0;
       Plane.c:=1.0;
       Plane.d:=-(FindLowestHydrostaticsPoint+ProjectSettings.ProjectDraft);
       Surface.WaterlinePlane:=Plane;
-      Surface.UnderWaterColor:=ProjectSettings.ProjectUnderWaterColor;
-      Surface.UnderWaterColorAlpha:=ProjectSettings.ProjectUnderWaterColorAlpha;
-      Surface.ShadeUnderWater:=True;
-   end else Surface.ShadeUnderWater:=False;
+   end;
    Surface.Draw(Viewport);
    if (Viewport.Viewtype<>fvPerspective)
    and (Viewport.ViewportMode<>vmWireframe)
@@ -5168,7 +5108,7 @@ begin
            for I:=0 to length( SAC )-1 do
                Curve.Add( iVect( SAC[I].X,0,ModelMin.Z+Tmp*SAC[I].Y ) );
          end;
-         Curve.Color:=Preferences.HydrostaticsFontColor;
+         Curve.Color:=Sp.HydrostaticsFont;
          Curve.Draw(Viewport);
          for I:=1 to Curve.nS do begin
             P:=Curve.Point[I-1];
@@ -5209,7 +5149,7 @@ begin
       Viewport.Canvas.Rectangle(Rect);
       Viewport.FontName:=UFont;
       Viewport.FontSize:=Preferences.FontSize; //8;
-      Viewport.FontColor:=Preferences.GridFontColor;
+      Viewport.FontColor:=Sp.GridFont;
       NDecimal:=3;
       for I:=1 to NRect do begin
          Rect.Bottom:=Rect.Top+RectHeight;

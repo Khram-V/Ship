@@ -225,7 +225,7 @@ begin
    ShowWaterlines.Checked:=Ship.Visibility.ShowWaterlines;
    ShowDiagonals.Checked:=Ship.Visibility.ShowDiagonals;
    ShowInteriorEdges.Checked:=Ship.Visibility.ShowInteriorEdges;
-   ShowSubmergedArea.Checked:=ship.ProjectSettings.ProjectShadeUnderwaterShip;
+   ShowSubmergedArea.Checked:=Sp.UColorIs; //.ProjectSettings.ProjectShadeUnderwaterShip;
    ShowFillColor.Checked:=True;
    ShowErrorEdges.Checked:=False;
    ShowSubmergedArea.Enabled:=ShowFillColor.Checked;

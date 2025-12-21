@@ -348,7 +348,6 @@ begin With St do begin
    For I:=1 to NoLayers do if Layer[I-1].Count>0 then inc(NLayers); // File menu
    FileSaveas.Enabled:=(Surface.NoControlPoints>0) or (FileChanged) or (FilenameSet);
    FileSave.Enabled:=(FileSaveas.Enabled) and (FilenameSet);
-// ExportFEF.Enabled:=Surface.NoControlPoints>0;
    ExportObj.Enabled:=Surface.NoControlFaces>0;
    ExportSTL.Enabled:=Surface.NoControlFaces>0;
    ExportDXF3DPolylines.Enabled:=((NoStations>0) and (Visibility.ShowStations)) or

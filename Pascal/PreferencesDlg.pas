@@ -6,7 +6,7 @@ interface uses
   Controls,Forms,
   Dialogs, StdCtrls,
   Buttons, ExtCtrls,
-  ComCtrls,Spin,Menus, ShipUnit;
+  ComCtrls,Spin,Menus, ShipUnit,STypes;
 type                                                 { TPreferencesDialog }
   TPreferencesDialog=class(TForm)
     EditExportDir,EditImportDir,EditLanguagesDir,
@@ -25,13 +25,13 @@ type                                                 { TPreferencesDialog }
     Panel54,Panel55,Panel56,Panel57,ButtonPanel:                     TPanel;
     BitBtnResetDirs,BitBtnResetColors,
     BitBtn1,BitBtn2,SpeedButton9,SpeedButton14,SpeedButton15,
-    SpeedButton16,SpeedButton17,SpeedButtonLanguagesDir:       TSpeedButton;
-    SpinEdit1,seFontSize,seSubmergedSurfaceOpacity,NumInput1: TSpinEdit;
-    TabSheet1,TabSheet2,TabSheet3:                                TTabSheet;
-    ComboBox1,ComboBoxEncoding:                                   TComboBox;
-    SelectDirectoryDialog1:                          TSelectDirectoryDialog;
-    PageControl1:                                              TPageControl;
-    ColorDialog:                                               TColorDialog;
+    SpeedButton16,SpeedButton17,SpeedButtonLanguagesDir: TSpeedButton;
+    SpinEdit1,seFontSize,SubmergedOpacity,NumInput1: TSpinEdit;
+    TabSheet1,TabSheet2,TabSheet3:       TTabSheet;
+    ComboBox1,ComboBoxEncoding:          TComboBox;
+    SelectDirectoryDialog1: TSelectDirectoryDialog;
+    PageControl1:                     TPageControl;
+    ColorDialog:                      TColorDialog;
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ResetColorsButtonClick(Sender: TObject);
@@ -49,7 +49,7 @@ type                                                 { TPreferencesDialog }
     procedure SpeedButtonLanguagesDirClick(Sender: TObject);
     procedure SpeedButton9Click(Sender: TObject);
     procedure SpinEdit1Change(Sender: TObject);
-    procedure seSubmergedSurfaceOpacityChange(Sender: TObject);
+    procedure SubmergedOpacityChange(Sender: TObject);
   private                                             { Private declarations }
     Fship: TShip;
     FConfigChanged: boolean;
@@ -69,34 +69,35 @@ const rs_Save='Are you sure you want to reset the preferences?'
 implementation
 {$R *.lfm}
 
-procedure TPreferencesDialog.Updatedata;
-var I: integer;
-begin                                                         //  Label Panel Top
-  Panel4.Color:=Fship.Preferences.ViewportColor;          //    1    4    4   'Viewport background'
-  Panel14.Color:=Fship.Preferences.GridColor;             //    12   14   32  'Viewport grid'
-  Panel15.Color:=Fship.Preferences.GridFontColor;         //    3    5    60  'Grid font'
-  Panel2.Color:=Fship.Preferences.LayerColor;             //    2    2    94  'New surfaces'
-  Panel19.Color:=Fship.Preferences.NormalColor;           //   18    19   122 'Surface normals'
-  Panel5.Color:=Fship.Preferences.UnderWaterColor;        //    3    5    150 'Submerged surfaces'
-  seSubmergedSurfaceOpacity.Value:=Fship.Preferences.UnderWaterColorAlpha*100 div 255; // 178 'Submerged surface opacity,%'
-  Panel24.Color:=Fship.Preferences.ControlCurveColor;     //   23    24   220 'Control curves'
-  Panel6.Color:=Fship.Preferences.EdgeColor;              //    4    6    248 'Regular control edges'
-  Panel7.Color:=Fship.Preferences.CreaseEdgeColor;        //    5    17   276 'Crease edges (control)'
-  Panel8.Color:=Fship.Preferences.CreaseColor;            //    6    8    304 'Crease edges (interior)'
-  Panel9.Color:=Fship.Preferences.RegularPointColor;      //    7    9      4 'Regular control points'
-  Panel10.Color:=Fship.Preferences.CreasePointColor;      //    8    10    32 'Crease points'
-  Panel11.Color:=Fship.Preferences.CornerPointColor;      //    9    11    60 'Corner points'
-  Panel12.Color:=Fship.Preferences.DartPointColor;        //   10    12    88 'Dart points'
-  Panel21.Color:=Fship.Preferences.LeakPointColor;        //   20    21   116 'Leak points'
-  Panel13.Color:=Fship.Preferences.SelectColor;           //   11    13   150 'Selected items'
-  Panel23.Color:=Fship.Preferences.CurvaturePlotColor;    //   22    23   178 'Curvature plots'
-  Panel22.Color:=Fship.Preferences.MarkerColor;           //   21    33   206 'Markers'
-  Panel16.Color:=Fship.Preferences.StationColor;          //   14    16   234 'Stations'
-  Panel17.Color:=Fship.Preferences.ButtockColor;          //   15    17   262 'Buttocks'
-  Panel18.Color:=Fship.Preferences.WaterlineColor;        //   16    18   290 'Waterlines'
-  Panel20.Color:=Fship.Preferences.DiagonalColor;         //   19    20   318 'Diagonals'
-  Panel25.Color:=Fship.Preferences.HydrostaticsFontColor; //   24    25   346 'Hydrostatics font color'
-  Panel26.Color:=Fship.Preferences.ZebraStripeColor;      //   25    26   374 'Zebra stripes color'
+procedure TPreferencesDialog.Updatedata; var I: integer;
+begin with Sp do begin             //  Label Panel Top
+  Panel4.Color:=
+  Fship.Preferences.ViewportColor; //    1    4    4   'Viewport background'
+  Panel14.Color:=Grid;             //    12   14   32  'Viewport grid'
+  Panel15.Color:=GridFont;         //    3    5    60  'Grid font'
+  Panel2.Color:=Layer;             //    2    2    94  'New surfaces'
+  Panel19.Color:=Normal;           //   18    19   122 'Surface normals'
+  Panel5.Color:=UColor;            //    3    5    150 'Submerged surfaces'
+  SubmergedOpacity.Value:=Integer(UAlfa)*100 div 255; // 178 'Submerged surface opacity,%'
+  Panel24.Color:=ControlCurve;     //   23    24   220 'Control curves'
+  Panel6.Color:=Edge;              //    4    6    248 'Regular control edges'
+  Panel7.Color:=CreaseEdge;        //    5    17   276 'Crease edges (control)'
+  Panel8.Color:=Crease;            //    6    8    304 'Crease edges (interior)'
+  Panel9.Color:=RegularPoint;      //    7    9      4 'Regular control points'
+  Panel10.Color:=CreasePoint;      //    8    10    32 'Crease points'
+  Panel11.Color:=CornerPoint;      //    9    11    60 'Corner points'
+  Panel12.Color:=DartPoint;        //   10    12    88 'Dart points'
+  Panel21.Color:=LeakPoint;        //   20    21   116 'Leak points'
+  Panel13.Color:=Select;           //   11    13   150 'Selected items'
+  Panel23.Color:=CurvaturePlot;    //   22    23   178 'Curvature plots'
+  Panel22.Color:=Marker;           //   21    33   206 'Markers'
+  Panel16.Color:=Station;          //   14    16   234 'Stations'
+  Panel17.Color:=Buttock;          //   15    17   262 'Buttocks'
+  Panel18.Color:=Waterline;        //   16    18   290 'Waterlines'
+  Panel20.Color:=Diagonal;         //   19    20   318 'Diagonals'
+  Panel25.Color:=HydrostaticsFont; //   24    25   346 'Hydrostatics font color'
+  Panel26.Color:=ZebraStripe;      //   25    26   374 'Zebra stripes color'
+  end;
 { object ColorDialog: TColorDialog
     Color=clBlack
     CustomColors.Strings=(
@@ -205,9 +206,9 @@ end;
 
 procedure TPreferencesDialog.SpinEdit1Change(Sender: TObject);
     begin FConfigChanged:=True; end;
-procedure TPreferencesDialog.seSubmergedSurfaceOpacityChange(Sender: TObject);
+procedure TPreferencesDialog.SubmergedOpacityChange(Sender: TObject);
     begin FConfigChanged:=True;
-      Fship.Preferences.UnderWaterColorAlpha:=(seSubmergedSurfaceOpacity.Value*255) div 100;
+      Sp.UAlfa:=(SubmergedOpacity.Value*255) div 100;
     end;
 procedure TPreferencesDialog.ResetDirsButtonClick(Sender: TObject);
     begin if MessageDlg( rs_Save,mtWarning,[mbYes,mbNo],0 )=mrYes

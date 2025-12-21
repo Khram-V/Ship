@@ -73,8 +73,8 @@ procedure TProjectSettings.FSetUseMidleFrame(Mid: boolean);
           begin FUseMidleFrame:=Mid; St.FileChanged:=True; end;
     end;
 procedure TProjectSettings.FSetProjectShadeUnderwaterShip(Val: boolean);
-    begin if val<>FProjectShadeUnderwaterShip then
-          begin FProjectShadeUnderwaterShip:=Val; St.FileChanged:=True; end;
+    begin if val<>Sp.UColorIs then       //FProjectShadeUnderwaterShip then
+          begin Sp.UColorIs:=Val; St.FileChanged:=True; end;
     end;
 procedure TProjectSettings.FSetProjectSimplifyIntersections(val: boolean);
 var I: integer;
@@ -133,10 +133,8 @@ begin
   FProjectWaterTemper:=15.;
   FProjectAppendageCoefficient:=1.0;
 // Default 1.0,typical values for ships to cpmpensate for appendices and shellplate=1.0005;
-  FProjectShadeUnderwaterShip:=True;
+  Sp.UColorIs:=true;  // FProjectShadeUnderwaterShip:=True;
 // Shades the underwaterpart of the hull in a different color
-  ProjectUnderWaterColor:=St.Preferences.UnderWaterColor;
-  ProjectUnderWaterColorAlpha:=St.Preferences.UnderWaterColorAlpha;
   FProjectUnits:=TUnitType( 0 ); // Default is metric units
   FUseMidleFrame:=True;
   FMidleFrame:=0.0;
@@ -206,9 +204,9 @@ begin
   Dialog.Density:=ProjectWaterDensity;
   Dialog.Temper:=ProjectWaterTemper;
   Dialog.Coefficient:=ProjectAppendageCoefficient;
-  Dialog.cbShadeUnderwater.Checked:=ProjectShadeUnderwaterShip;
-  Dialog.Panel4.Color:=ProjectUnderWaterColor;
-  Dialog.seUnderwaterOpacity.Value:=ProjectUnderWaterColorAlpha*100 div 255;
+  Dialog.cbShadeUnderwater.Checked:=Sp.UColorIs;
+  Dialog.Panel4.Color:=Sp.UColor;
+  Dialog.seUnderwaterOpacity.Value:=Integer( Sp.UAlfa )*100 div 255;
   Dialog.MidleFrame:=MidleFrame;
   Dialog.CheckBox2.Checked:=UseMidleFrame;
   Dialog.CheckBox3.Checked:=DisableModelCheck;
@@ -235,9 +233,9 @@ begin
     ProjectWaterDensity:=Dialog.Density;
     ProjectWaterTemper:=Dialog.Temper;
     ProjectAppendageCoefficient:=Dialog.Coefficient;
-    ProjectShadeUnderwaterShip:=Dialog.cbShadeUnderwater.Checked;
-    ProjectUnderWaterColor:=Dialog.Panel4.Color;
-    ProjectUnderWaterColorAlpha:=Dialog.seUnderwaterOpacity.Value*255 div 100;
+    Sp.UColorIs:=Dialog.cbShadeUnderwater.Checked;
+    Sp.UColor:=Dialog.Panel4.Color;
+    Sp.UAlfa:=Dialog.seUnderwaterOpacity.Value*255 div 100;
     MidleFrame:=Dialog.MidleFrame;
     UseMidleFrame:=Dialog.CheckBox2.Checked;
     DisableModelCheck:=Dialog.CheckBox3.Checked;
@@ -270,11 +268,10 @@ begin
   Source.LoadTFloatType(FProjectWaterDensity);
 { Source.LoadTFloatType(FProjectWaterTemper); }
   Source.LoadTFloatType(FProjectAppendageCoefficient);
-  Source.LoadBoolean(FProjectShadeUnderwaterShip);
-{ Source.LoadTColor( ProjectUnderWaterColor,ProjectUnderWaterColorAlpha ); }
-  Source.LoadInteger( ProjectUnderWaterColor );
-         ProjectUnderWaterColorAlpha:=255-Byte(ProjectUnderWaterColor shr 24);
-         ProjectUnderWaterColor:=ProjectUnderWaterColor and $FFFFFF;
+  Source.LoadBoolean(Sp.UColorIs);
+  Source.LoadInteger( Sp.UColor );
+         Sp.UAlfa:=255-Byte(Sp.UColor shr 24);
+         Sp.UColor:=Sp.UColor and $FFFFFF;
   Source.LoadInteger(I);
 { if St.FileVersion >= fv160 then begin ~~ как бы юолжно быть так, ан нет...}
      FProjectUnits:=TUnitType(I);
@@ -326,7 +323,7 @@ begin
     if St.Fileversion >= fv317 then Source.LoadBoolean(FEnableModelAutoMove);
     if St.Fileversion >= fv332 then Source.LoadBoolean(FEnableBonjeanSAC);
     if St.Fileversion >= fv500 then
-    begin Source.LoadInteger( I ); ProjectUnderWaterColorAlpha:=byte(I); end;
+    begin Source.LoadInteger( I ); Sp.UAlfa:=byte(I); end;
   end;
 end;
 
@@ -343,10 +340,9 @@ begin
     Destination.Add( FProjectWaterDensity );
  // Destination.Add( FProjectWaterTemper );
     Destination.Add( FProjectAppendageCoefficient );
-    Destination.Add( FProjectShadeUnderwaterShip );
-//  Destination.Add( ProjectUnderWaterColor,ProjectUnderWaterColorAlpha );
-    Destination.Add( (ProjectUnderWaterColor and $FFFFFF)
-                  or (TColor(255-ProjectUnderWaterColorAlpha) shl 24) );
+    Destination.Add( Sp.UColorIs ); // FProjectShadeUnderwaterShip );
+    Destination.Add( (Sp.UColor and $FFFFFF)
+                  or (TColor(255-Sp.UAlfa) shl 24) );
     Destination.Add( Ord(FProjectUnits) );
   { if St.FileVersion>=fv160 then begin }
        Destination.Add(FUseMidleFrame);

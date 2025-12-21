@@ -1,6 +1,6 @@
 unit STypes;
 {$mode objfpc}{$H+}
-Interface Uses SysUtils,Math;
+Interface Uses SysUtils,Math,Graphics;
 Const
   Radian = 57.295779513082320876798154814105; // 180/π = °\rad
   Foot = 0.3048;
@@ -19,6 +19,39 @@ Type
   // Different types of intersectionlines, stations, buttocks, waterlines and lines orientated in random planes
   TModelView =( mvPort,mvBoth ); // Show half the hull or the entire hull
   TEditMode  =( emSelectItems ); //,emAddPoint,emAddFlowLine ); // The program responds differnt to mouse actions depending on the editmode of the component
+  ShipInit = Record
+    Edge,       // Color of normal edges
+    Crease,     // color of crease edges
+    CreaseEdge, // color of crease control-edges
+    Grid,       // Color of gridlines
+    GridFont,   // Color of font with gridlines
+    CreasePoint,// Color of crease vertices
+    RegularPoint,
+    CornerPoint,// Color of cornerpoints and points with at least 3 crease edges
+    DartPoint,
+    Select,     // Color of selected items
+    Layer,      // Default color for new layers
+    Normal,     // color of surface normals
+    LeakPoint,
+    Marker,
+    CurvaturePlot,
+    ControlCurve,
+    HydrostaticsFont,
+    ZebraStripe,
+    Station,
+    Buttock,
+    Waterline,
+    Diagonal,
+    UColor: TColor;    // Цветовое затенение смоченной обшивки
+    UColorIs: boolean; // Временно отключение подводного затенения
+    UAlfa: byte;       // Color used for shading the underwater part opaque
+//    IntersectionLW,  //  in pixels when drawn on screen Colors
+//    ControlEdgeLW,
+//    InteriorEdgeLW,
+//    AuxEdgeLW,
+//    HydrostaticLW: integer;
+    CurvatureScale: Real; // переобъявлялось в трёх структурах ...
+  end;
 
 const ZERO: Vector=( X:0.0;Y:0.0;Z:0.0 );
       UFont: String='Times New Roman'; // 'Serif';
@@ -59,6 +92,13 @@ procedure Interpolation   // Линейная ИНТЕРПОЛЯЦИЯ И ЗКС
   X,Y: RealArray;         // собственно аргумент и функция
   var YY: Real );         // результат
 Function TimeString: String;
+
+var Sp: ShipInit;
+{=(
+   UColorIs: true;    // Временно отключение подводного затенения
+   UColor: clGreen;   // Цветовое затенение смоченной обшивки
+   UAlfa: 64;         // Color used for shading the underwater part opaque
+); }
 
 Implementation
 

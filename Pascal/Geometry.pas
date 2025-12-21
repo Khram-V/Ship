@@ -438,10 +438,8 @@ TSpline = class(TEntity)
    nS: Integer; // Actual number of points present
    FShowCurvature,
    FShowPoints: Boolean;
-   FCurvatureColor: TColor;      // Color used for draing the curvature plot
-   FCurvatureScale,              // scale factor used to increase
    FTotalLength: Real;           // or decrease the scale of the curvature plot
-   FPoints,FDerivatives: VectorArray; // Array containing all controlpoints
+   FPoints,FDerivatives: VectorArray;     // Array containing all controlpoints
    FParameters: RealArray;
    FKnuckles: array of boolean;
    procedure FSetCapacity(Val:Integer);
@@ -476,8 +474,6 @@ public
    function    Value( Parameter:Real ):Vector;
    property    Capacity                : Integer read FCapacity write FSetCapacity;
    property    Point[Index:Integer]    : Vector read FGetPoint write FSetPoint;
-   property    CurvatureColor          : TColor read FCurvatureColor write FCurvatureColor;
-   property    CurvatureScale          : Real read FCurvatureScale write FCurvatureScale;
    property    Fragments               : integer read FGetFragments write FSetFragments;
    property    Knuckle[Index:integer]  : Boolean  read FGetKnuckle write FSetKnuckle;
    property    Parameter[Index:integer]: Real read FGetParameter;
@@ -909,7 +905,6 @@ private
    FShowCurvature,
    FShowControlCurves: Boolean;
    FGausCurvature: RealArray; // list with precalculated values of gauss.
-   FCurvatureScale,             // curvature in each point, used for shading
    FMinGaussCurvature,
    FMaxGaussCurvature,
    FMainframeLocation: Real;
@@ -947,23 +942,6 @@ private
    procedure FSeSMode(val:SMode);
 public
    WaterlinePlane: Plate; // This plane is used to clip the hull, and shade the underwatership in a different color
-   UnderWaterColorAlpha: byte;
-   ShadeUnderWater: boolean; // Switch to turn under water shading on or off
-   UnderWaterColor,   // Color used for shading the underwater part
-   CreaseColor,       // color of descendants from creaseedges
-   CreaseEdgeColor,   // Color of crease controledges
-   EdgeColor,         // Color of normal edges (no crease)
-   Selectedcolor,     // Default color for selected items
-   CreasePointColor,  // Color for vertices connected to two creaseedges
-   RegularPointColor, // Color of regular controlpoints
-   CornerPointColor,  // color of cornerpoints
-   DartPointColor,
-   LayerColor,        // Default color for layers;
-   NormalColor,       // color of surface normals
-   LeakColor,         // color of leak points
-   CurvatureColor,    // color of the curvature plot of controlcurves
-   ControlCurveColor,
-   ZebraColor: TColor;
    procedure   AddControlCurve(Curve:SControlCurve);
    function    AddControlEdge(P1,P2:SPoint):SControlEdge;                         overload;virtual;
    function    AddControlFace(Points: VectorArray;NoPoints:Integer):SControlFace;      overload;virtual;
@@ -1020,7 +998,6 @@ public
    property    ControlEdges               : TFasterlist read FCOntrolEdges;
    property    ControlFace[index:Integer] : SControlFace read FGetControlFace;
    property    CurrenSLevel    : byte read FCurrenSLevel;
-   property    CurvatureScale             : Real read FCurvatureScale write FCurvatureScale;
    property    DesiredSubdivisionLevel    : byte read FDesiredSubdivisionLevel write FSetDesiredSubdivisionLevel;
    property    DrawMirror                 : boolean read FDrawMirror write FDrawMirror;
    property    GaussCurvatureCalculated   : boolean read FGetGaussCurvatureCalculated;
@@ -1713,11 +1690,11 @@ begin
    FZBuffer.FViewport:=self;
    FAlphaBuffer:=TAlphaBuffer.Create;
    FAlphaBuffer.FViewport:=self;
-   FLight.Position.X:=50;
-   FLight.Position.Y:=20;
-   FLight.Position.Z:=50; // 2;
-   FLight.Ambient:=75;    // 64;
-   FLight.Luminance:=192; // 140;
+   FLight.Position.X:=30;  // 50;
+   FLight.Position.Y:=120; // 20;
+   FLight.Position.Z:=5;   // 2;
+   FLight.Ambient:=75;     // 64;
+   FLight.Luminance:=192;  // 140;
 {    if ViewType=fvPerspective
         then ViewportMode:=vmShade
         else FViewportmode:=vmWireFrame;
@@ -3012,14 +2989,14 @@ begin
                Point:=Face.Point[J-1];
                s3:=WlPlane.a*Point.Coordinate.x+WlPlane.b*Point.Coordinate.y+WlPlane.c*Point.Coordinate.z+WlPlane.d;
                if s3<MinZ then MinZ:=s3 else if s3>MaxZ then MaxZ:=s3;
-               if MaxZ<=0.0 then begin              // entirely below the plane
-                  DrawTriangle(P1,P2,P3,Owner.Owner.UnderWaterColor);
-               end else if MinZ>=0.0 then begin     // entirely above the plane
+               if MaxZ<=0.0 then begin               // entirely below the plane
+                  DrawTriangle(P1,P2,P3,Sp.UColor );
+               end else if MinZ>=0.0 then begin      // entirely above the plane
                   DrawTriangle(P1,P2,P3,Owner.Color);
                end else begin                   // pierces water, clip triangle
                   ClipTriangle(P1,P2,P3,s1,s2,s3,Na,Nb,Above,Below);
                   for K:=3 to Na do DrawTriangle(Above[0],Above[K-2],Above[K-1],Owner.Color);
-                  for K:=3 to Nb do DrawTriangle(Below[0],Below[K-2],Below[K-1],Owner.Owner.UnderWaterColor);
+                  for K:=3 to Nb do DrawTriangle(Below[0],Below[K-2],Below[K-1],Sp.UColor );
                end;
             end;
          end else begin
@@ -4292,8 +4269,6 @@ begin
    Move(Spline.FKnuckles[0],FKnuckles[0],Spline.nS*SizeOf(Boolean)); // copy knuckles
    nS:=Spline.nS;
    FShowCurvature:=Spline.ShowCurvature;
-   FCurvatureScale:=Spline.FCurvatureScale;
-   FCurvatureColor:=Spline.FCurvatureColor;
    Build:=False;
 end;
 
@@ -4454,10 +4429,10 @@ begin
          for I:=1 to Fragments do begin
             C:=Curvature((I-1)/(Fragments-1),P1,Normal);
             PArray1[I-1]:=Viewport.Project(P1);
-            PArray2[I-1]:=Viewport.Project(P1-(C*2*CurvatureScale)*Normal);
+            PArray2[I-1]:=Viewport.Project(P1-(C*2*Sp.CurvatureScale)*Normal);
          end;
          Viewport.SetPenWidth(1);
-         Viewport.PenColor:=CurvatureColor;
+         Viewport.PenColor:=Sp.CurvaturePlot;
          for I:=1 to Fragments do
          if (I mod 4=0) or (I=1) or (I=Fragments) then begin
             Viewport.Canvas.MoveTo(PArray1[I-1].X,PArray1[I-1].Y);
@@ -4610,7 +4585,7 @@ procedure TSpline.LoadBinary(Source:TFileBuffer);
 var I,N: Integer; P: Vector; K: Boolean;
 begin
    Source.LoadBoolean(FShowCurvature);
-   Source.LoadTFloatType(FCurvatureScale);
+   Source.LoadTFloatType(Sp.CurvatureScale);
    Source.LoadInteger(N); Capacity:=N;
    for I:=1 to N do begin Source.LoadVector(P); Add(P);
                           Source.LoadBoolean(K); Knuckle[I-1]:=K; end;
@@ -4620,7 +4595,7 @@ procedure TSpline.SaveBinary(Destination:TFileBuffer);
 var I:Integer;
 begin
    Destination.Add(FShowCurvature);
-   Destination.Add(FCurvatureScale);
+   Destination.Add(Sp.CurvatureScale);
    Destination.Add(nS);
    for I:=1 to nS do begin
       Destination.Add(Point[I-1]);
@@ -4696,8 +4671,6 @@ begin
    nS:=0;
    FFragments:=100;
    FShowCurvature:=false;
-   FCurvatureScale:=0.10;
-   FCurvatureColor:=clFuchsia;
    FShowPoints:=False;
 end;
 
@@ -5017,8 +4990,8 @@ end;
 
 function SControlCurve.FGetColor:TColor;
 begin
-   if Selected then Result:=Owner.Selectedcolor
-               else Result:=Owner.ControlCurveColor;
+   if Selected then Result:=Sp.Select
+               else Result:=Sp.ControlCurve;
 end;
 
 function SControlCurve.FGetSelected:Boolean;
@@ -5226,8 +5199,6 @@ begin
       FCurve.ShowCurvature:=(Sel) and (Owner.FShowCurvature);
       if FCurve.ShowCurvature then FCurve.Fragments:=600
                               else FCurve.Fragments:=250;
-      FCurve.CurvatureColor:=Owner.CurvatureColor;
-      FCurve.CurvatureScale:=Owner.FCurvatureScale;
       if not Owner.ShowControlNet and (Sel) then
       For I:=2 to FControlPoints.Count do begin
          P1:=FControlPoints[I-2];
@@ -5265,10 +5236,10 @@ begin
                   P3D.Y:=P3D.Y*Scale;
                   Normal.Y:=Normal.Y*Scale;
                   PArray1[J-1]:=Viewport.Project(P3D);
-                  PArray2[J-1]:=Viewport.Project( P3D-(2.0*C*FCurve.CurvatureScale)*Normal );
+                  PArray2[J-1]:=Viewport.Project( P3D-(2.0*C*Sp.CurvatureScale)*Normal );
                end;
                Viewport.SetPenWidth(1);
-               Viewport.PenColor:=FCurve.CurvatureColor;
+               Viewport.PenColor:=Sp.CurvaturePlot;
                for J:=1 to Fragm do
                if (J mod 4=0) or (J=1) or (J=Fragm) then begin
                   Viewport.Canvas.MoveTo(PArray1[J-1].X,PArray1[J-1].Y);
@@ -5628,7 +5599,7 @@ procedure SLayer.Clear;
 begin
    FLayerID:=-1;
    FPatches.Clear;
-   FColor:=Owner.LayerColor;
+   FColor:=Sp.Layer;
    FVisible:=True;
    FDescription:='';
    FSymmetric:=True;
@@ -5682,7 +5653,7 @@ begin
          end;                                 // Draw all interior crease-edges
          Viewport.SetPenWidth(1);
          Viewport.PenStyle:=psSolid;
-         Viewport.PenColor:=Owner.CreaseColor;
+         Viewport.PenColor:=Sp.Crease;
          For I:=1 to Count do begin
             Face:=Items[I-1];
             for J:=1 to Face.FControlEdges.Count do begin
@@ -6226,14 +6197,14 @@ function SPoint.IndexOfFace(Face:SFace):Integer;
 }
 function SControlPoint.FGetColor:TColor;
 begin
-   if Selected then Result:=Owner.Selectedcolor else begin
+   if Selected then Result:=Sp.Select else begin
       if Locked then Result:=clDkGray else begin
-         if IsLeak then Result:=Owner.LeakColor else
+         if IsLeak then Result:=Sp.LeakPoint else
          Case FVertexType of
-            svRegular : Result:=Owner.RegularPointColor;
-            svCorner  : Result:=Owner.CornerPointColor;
-            svDart    : result:=Owner.DartPointColor;
-            svCrease  : result:=Owner.CreasePointColor;
+            svRegular : Result:=Sp.RegularPoint;
+            svCorner  : Result:=Sp.CornerPoint;
+            svDart    : result:=Sp.DartPoint;
+            svCrease  : result:=Sp.CreasePoint;
             else Result:=clRed;
          end;
       end;
@@ -6819,10 +6790,10 @@ end;
 }
 function SControlEdge.FGetColor:TColor;
 begin
-   if Selected then Result:=Owner.Selectedcolor else
+   if Selected then Result:=Sp.Select else
      if NoFaces>2 then Result:=clLime else
-       if Crease then Result:=Owner.CreaseEdgeColor else
-          Result:=Owner.EdgeColor;
+       if Crease then Result:=Sp.CreaseEdge else
+          Result:=Sp.Edge;
 end;
 
 function SControlEdge.FGetIndex:Integer;
@@ -7496,7 +7467,7 @@ function SControlFace.FGetChildCount:Integer;
    begin Result:=FChildren.Count; end;
 {
 function SControlFace.FGetColor:TColor;
-   begin if Selected then Result:=Owner.Selectedcolor
+   begin if Selected then Result:=Sp.Select
                      else Result:=Layer.Color;
    end;
 }
@@ -7855,17 +7826,17 @@ begin
       B:=GetBValue( Layer.Color );
       Alpha:=Layer.AlphaBlend;
       if Self.Selected then begin
-         R:=(R+GetRValue( Owner.SelectedColor )) div 2;   // не оучше ли: div 3
-         G:=(G+GetGValue( Owner.SelectedColor )) div 2;
-         B:=(B+GetBValue( Owner.SelectedColor )) div 2;
+         R:=(R+GetRValue( Sp.Select )) div 2;   // не оучше ли: div 3
+         G:=(G+GetGValue( Sp.Select )) div 2;
+         B:=(B+GetBValue( Sp.Select )) div 2;
       end;
-      if (Owner.ShadeUnderWater)  // Clip all triangles against waterline plane
+      if (Sp.UColorIs)        // Clip all triangles against waterline plane
       and (Viewport.ViewportMode=vmShade)
       and (Layer.UseInHydrostatics) then begin
-         Ru:=GetRValue(Owner.UnderWaterColor);
-         Gu:=GetGValue(Owner.UnderWaterColor);
-         Bu:=GetBValue(Owner.UnderWaterColor);
-         Au:=Owner.UnderWaterColorAlpha;
+         Ru:=GetRValue(Sp.UColor);
+         Gu:=GetGValue(Sp.UColor);
+         Bu:=GetBValue(Sp.UColor);
+         Au:=Sp.UAlfa;
          Ru:=( R*(255-Au) + Ru*Au ) div 255;
          Gu:=( G*(255-Au) + Gu*Au ) div 255;
          Bu:=( B*(255-Au) + Bu*Au ) div 255;
@@ -7915,9 +7886,9 @@ begin
          end;
       end else
       if Viewport.ViewportMode=vmShadeZebra then begin
-         Ru:=GetRValue(Owner.ZebraColor);
-         Gu:=GetGValue(Owner.ZebraColor);
-         Bu:=GetBValue(Owner.ZebraColor);
+         Ru:=GetRValue(Sp.ZebraStripe);
+         Gu:=GetGValue(Sp.ZebraStripe);
+         Bu:=GetBValue(Sp.ZebraStripe);
          Camera:=Viewport.RotatedPointBack(Viewport.FCameraLocation);
          Capacity:=10;
          Setlength(Intersections,Capacity);
@@ -7972,7 +7943,7 @@ begin
    end else begin     // Draw interior edges (not descending from controledges)
       Viewport.PenStyle:=psSolid;
       Viewport.PenWidth:=1;
-      if Selected then Viewport.PenColor:=Owner.Selectedcolor
+      if Selected then Viewport.PenColor:=Sp.Select
                   else Viewport.PenColor:=Layer.Color;
       for I:=1 to FEdges.Count do begin
          Edge:=FEdges[I-1];
@@ -8002,11 +7973,11 @@ begin
             Point:=Points[I-1];
             P1:=Point.Coordinate;
             P2:=Point.Normal;
-            DrawNormal( P1,P2,Owner.NormalColor );
+            DrawNormal( P1,P2,Sp.Normal );
             if (Layer.Symmetric) and (Owner.DrawMirror) then begin
                P1.Y:=-P1.Y;
                P2.Y:=-P2.Y;
-               DrawNormal( P1,P2,Owner.NormalColor );
+               DrawNormal( P1,P2,Sp.Normal );
             end;
          end;  Points.Destroy;
       end;
@@ -9251,7 +9222,7 @@ begin
    FInitialized:=False;
    FDesiredSubdivisionLevel:=1;
    FShowNormals:=True;
-   ShadeUnderWater:=False;
+   Sp.UColorIs:=false;                               // ShadeUnderWater:=False;
    FMainframeLocation:=1e10;
 end;
 
@@ -10116,24 +10087,9 @@ begin
    FSelectedControlFaces:=TFasterList.Create;
    FSelectedControlCurves:=TFasterList.Create;
    FControlPointSize:=4;
-   EdgeColor:=clDkGray;
-   Selectedcolor:=clYellow;
-   CreasePointColor:=clLime;
-   RegularPointColor:=clSilver;
-   CornerPointColor:=clAqua;
-   DartPointColor:=$00C08000;
-   LeakColor:=clRed;
-   LayerColor:=clAqua;
-   CreaseColor:=clBlue;
-   CreaseEdgeColor:=clRed;
-   NormalColor:=clSilver;
-   CurvatureColor:=clWhite;
    FShowCurvature:=True;
-   FCurvatureScale:=0.25;
    FShowControlCurves:=True;
-   ControlCurveColor:=clRed;
    FSubdivisionMode:=fmQuadTriangle;
-   ZebraColor:=clBlack;
    inherited Create;
 end;
 
@@ -10323,9 +10279,9 @@ var Str: string;
          FControlPoints.Add(Result);
    end; }
 begin                                                 // Read layer information
-   Inc(LineNr);
-   Str:=Strings[LineNr];
-   N:=GetInteger(Str);
+   Inc(LineNr);                                Sp.UColor:=clGreen;
+   Str:=Strings[LineNr];                       Sp.UAlfa:=64;
+   N:=GetInteger(Str);                         Sp.UColorIs:=true;
    if N=0 then              ///*** в преобразованиях из Delft есть лишний нолик
       begin Inc( LineNr ); Str:=Strings[LineNr]; N:=GetInteger( Str ); end;
    for I:=1 to N do begin
@@ -10367,6 +10323,7 @@ begin                                                 // Read layer information
    end;                                                    // Read controlFaces
    Inc(LineNr); Str:=Strings[LineNr];
    N:=GetInteger(Str);
+//{$omp parallel for} // private(I,J)}
    for I:=1 to N do begin
       Face:=SControlFace.Create(self);
       FControlFaces.Add(Face);
@@ -10632,7 +10589,7 @@ begin                                                   // First load layerdata
    Source.LoadInteger(N);                         // Read index of active layer
    ActiveLayer:=self.Layer[N];
    if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
-   Source.LoadInteger(N);                        // Read controlpoints
+   Source.LoadInteger(N);                                 // Read controlpoints
    FControlPoints.Capacity:=N;
    for I:=1 to N do begin
       Point:=SControlPoint.Create(self);

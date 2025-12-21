@@ -62,8 +62,8 @@ begin
    ship1.AddViewport(Viewport);
    UndoBox.ItemIndex:=ship.UndoPosition-1;
    Viewport.Color:=ship.Preferences.ViewportColor;
-       ship1.LoadProject(Undo.Undodata);
-       Viewport.ZoomExtents;
+   Ship1.LoadProject( Undo.Undodata );
+   Viewport.ZoomExtents;
    ShowModal;
    Result:=ModalResult=mrOK;
 end;
