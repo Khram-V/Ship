@@ -569,7 +569,7 @@ object MainForm: TMainForm
     object ExportGHS: TAction
       Category = 'Export'
       Caption = 'GHS...'
-      Hint = 'Запись шпангоутов в GHS формате для типовых расчётов гидростатики (Creative Systems, Inc.)'
+      Hint = 'Запись шпангоутов в GHS (Creative Systems, Inc.)'
       ImageIndex = 54
       OnExecute = ExportGHSExecute
     end
@@ -764,13 +764,6 @@ object MainForm: TMainForm
       Hint = 'Установка линий теоретического чертежа: шпангоуты, ватерлинии, батоксы и рыбины'
       ImageIndex = 14
       OnExecute = IntersectionDialogExecute
-    end
-    object ActHydrostatics: TAction
-      Category = 'Calculate'
-      Caption = 'Размерения и обводы корпуса'
-      Hint = 'Главные размерения и гидростатические расчёты по корпусу.'
-      ImageIndex = 67
-      OnExecute = DesignHydrostaticsExecute
     end
     object EdgeExtrude: TAction
       Category = 'Edge'
@@ -1029,6 +1022,28 @@ object MainForm: TMainForm
       Caption = 'Отмена выбора'
       Hint = 'Отмена активности для всех выбранных элементов.'
       OnExecute = DeselectAllExecute
+    end
+    object ActHydrostatics: TAction
+      Category = 'Digest'
+      Caption = 'Размерения и обводы корпуса'
+      Hint = 'Главные размерения и гидростатические расчёты по корпусу.'
+      ImageIndex = 67
+      OnExecute = DesignHydrostaticsExecute
+    end
+    object HelpAction: THelpAction
+      Category = 'Digest'
+      Caption = 'Руководство'
+      Hint = 'Инструкция с описанием программы во внешнем pdf-файле'
+      ImageIndex = 66
+      ShortCut = 112
+      OnExecute = Help1Click
+    end
+    object AboutAction: TAction
+      Category = 'Digest'
+      Caption = 'O free!Ship'
+      Hint = 'Авторы и данные по реализации программы free!Ship'
+      ImageIndex = 65
+      OnExecute = About1Click
     end
   end
   object MenuImages: TImageList
@@ -1829,7 +1844,10 @@ object MainForm: TMainForm
     end
     object Tools1: TMenuItem
       Caption = 'Средства'
-      Hint = 'Специальные инструменты для преобразования цифровой модели корпуса.'
+      Hint = 'Специальный геометрический инструментарий цифровой модели корпуса'
+      object Intersections1: TMenuItem
+        Action = FramesDialog
+      end
       object Analyzesurface1: TMenuItem
         Action = CheckModel
       end
@@ -1872,16 +1890,6 @@ object MainForm: TMainForm
         Action = TransformLackenby
       end
     end
-    object Calculations1: TMenuItem
-      Caption = 'Вычисления'
-      Hint = 'Информационные геометрические и гидростатические расчёты.'
-      object Intersections1: TMenuItem
-        Action = FramesDialog
-      end
-      object Hydrostatics1: TMenuItem
-        Action = ActHydrostatics
-      end
-    end
     object Window1: TMenuItem
       Caption = 'Кульман'
       Hint = 'Добавление или обновление расположения чертёжных проекций.'
@@ -1895,10 +1903,18 @@ object MainForm: TMainForm
         Action = CascadeWindow
       end
     end
-    object About1: TMenuItem
+    object HelpAbout: TMenuItem
       Caption = 'Справка'
-      Hint = 'Информация об авторах и версии сборки'
-      OnClick = About1Click
+      Hint = 'Информация o проекте корабля и программе free!Ship'
+      object HelpContents: TMenuItem
+        Action = HelpAction
+      end
+      object Hydrostatics1: TMenuItem
+        Action = ActHydrostatics
+      end
+      object About1: TMenuItem
+        Action = AboutAction
+      end
     end
   end
   object ColorDialog: TColorDialog

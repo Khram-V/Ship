@@ -1,8 +1,8 @@
 unit Main;
 interface uses Windows,
-    SysUtils,Classes,  Graphics,Controls,
-    Forms,   Menus,    Dialogs, ExtCtrls,
-    ActnList,StdCtrls, ComCtrls,Spin,
+    SysUtils,Classes,  Graphics,Controls, StdActns {HelpAction},
+    Forms,   Menus,    Dialogs, ExtCtrls, DOS,     { exec }
+    ActnList,StdCtrls, ComCtrls,Spin,  // LCLIntf  {OpenDocument},
     LazFileUtils,FasterList,LinesplanFrme,STypes,
     SplitSectionDlg,Geometry,ShipUnit,HullformWindow;
 
@@ -20,10 +20,12 @@ type TMainForm = class(TForm) {Ship:TShip;->St:ShipUnit~~TCustomForm}
     TB17,TB18,TB19,TB20,TB21,TB22,TB23,TB24,TB25,TB26,TB27,TB28,TB29,TB30,TB31,
     TB32,TB33,TB34,TB35,TB36,TB37,TB38,TB39,TB40,TB41,TB42,TB43,TB44,TB45,TB46,
                              TB47,TB48,ShowBuildCurve,tbMiddleFrame: TToolButton;
+    HelpAction   : THelpAction; HelpContents     : TMenuItem;
     ExportAurora     : TAction; AuroraHullVsl    : TMenuItem;
     FramesDialog     : TAction; Intersections1   : TMenuItem;
-    ShowHydrostatics : TAction; Hydrostatics1    : TMenuItem;
-    ActHydrostatics  : TAction; Calculations1    : TMenuItem;
+    ShowHydrostatics : TAction;
+    ActHydrostatics  : TAction; Hydrostatics1    : TMenuItem;
+                                HelpAbout        : TMenuItem;
     MidelDialog      : TAction; miSetSplitSection: TMenuItem;
     CascadeWindow    : TAction; Cascade1         : TMenuItem;
     TileWindow       : TAction; Tile1            : TMenuItem;
@@ -60,7 +62,7 @@ type TMainForm = class(TForm) {Ship:TShip;->St:ShipUnit~~TCustomForm}
     Buttocks1: TMenuItem;       Waterlines1: TMenuItem;
     NewFace: TAction;           New4: TMenuItem;
     EdgeExtrude: TAction;       Extrude1: TMenuItem;
-                                About1: TMenuItem;
+        AboutAction: TAction;       About1: TMenuItem;
     EdgeSplit: TAction;         Split1: TMenuItem;
     EditProjectSettings: TAction; Project1: TMenuItem;
                                 Projectsettings1: TMenuItem;
@@ -171,6 +173,7 @@ type TMainForm = class(TForm) {Ship:TShip;->St:ShipUnit~~TCustomForm}
     procedure NewFaceExecute(Sender: TObject);
     procedure EdgeExtrudeExecute(Sender: TObject);
     procedure About1Click(Sender: TObject);
+    procedure Help1Click(Sender: TObject);
     procedure EdgeSplitExecute(Sender: TObject);
     procedure EditProjectSettingsExecute(Sender: TObject);
     procedure CheckModelExecute(Sender: TObject);
@@ -645,6 +648,39 @@ procedure TMainForm.About1Click(Sender: TObject);   // Show splash screen again
           SplashWindow.Show;
           SplashWindow.Refresh;
     end;
+procedure TMainForm.Help1Click(Sender: TObject);   // begin correction Victor T
+Var Man: String;
+begin
+  Man:=St.Preferences.ManualsDirectory+St.Preferences.Language+'.pdf';
+  if not FileExistsUTF8( Man ) then begin
+     write( Man ); Man:=St.Preferences.ManualsDirectory+'Russian.pdf';
+     write( ' -> ',Man );
+     if not FileExistsUTF8( Man ) then begin writeln( ' not found' ); exit end;
+     writeln;
+  end;
+  Exec( 'cmd','/C '+Man );
+end;
+(* +10 Kb
+procedure TMainForm.Help1Click(Sender: TObject);   // begin correction Victor T
+var FileToFind,FManDirectory,FLang,man : AnsiString;
+begin
+  FLang:=St.Preferences.Language;
+  FManDirectory:=St.Preferences.ManualsDirectory;      //~ConfigDirectory
+  man:=FLang+'.pdf';
+  FileToFind:=FileSearch( FManDirectory+man,FManDirectory );
+  if (FileToFind='') and (FLang<>'English') then begin
+    ShowMessage( man+'" не найден в паке "'+FManDirectory
+      +EOL+'поиск с открытием русского руководства.'); man:='Russian.pdf'
+  end;
+  FileToFind:=FileSearch( FManDirectory+man,FManDirectory );
+  if FileToFind='' then begin
+     ShowMessage('Manual "'+man+'" not found in "'+FManDirectory+'" directory');
+     exit;
+  end;         // ComSpec=C:\WINDOWS\system32\cmd.exe
+  Exec( {GetEnv( 'COMSPEC')} 'cmd','/C '+FileToFind );
+//OpenDocument( FileToFind );
+end;
+*)
 procedure TMainForm.EdgeSplitExecute(Sender: TObject);
     begin St.Edit.Edge_Split; UpdateMenu; end;
 procedure TMainForm.EditProjectSettingsExecute(Sender: TObject);

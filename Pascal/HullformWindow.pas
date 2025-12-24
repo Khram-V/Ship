@@ -362,7 +362,7 @@ end;
 procedure THullWindow.ViewportKeyUp(Sender: TObject; var Key: Word;Shift: TShiftState);
     begin St.KeyUp(Viewport,Key,Shift); end;
 procedure THullWindow.ViewportKeyPress(Sender: TObject; var Key: Char);
-    begin if key=#27 then DeselectAllExecute(self); end;
+    begin if key=#27 then DeselectAllExecute( self ); end;
 procedure THullWindow.ShadeZebraExecute(Sender: TObject);
     begin Viewport.ViewportMode:=vmShadeZebra; UpdateMenu; end;
 procedure THullWindow.ImportBackGroundExecute(Sender: TObject);

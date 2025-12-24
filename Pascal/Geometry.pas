@@ -2058,6 +2058,7 @@ procedure TViewport.Resize;
 (*
 procedure TViewport.KeyPress(var Key: Char);
 begin inherited;
+   if key=#112 then MainForm.Help1Click( Self ) else  // 112=F1 VK_F1
    if key in ['a','A'] then ZoomExtents else
    if key in ['i','I'] then ZoomIn else
    if key in ['o','O'] then ZoomOut; // else
