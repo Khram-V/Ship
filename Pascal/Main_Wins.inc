@@ -1,8 +1,33 @@
 
 { included in Main.pas }
 
-// Creates 4 different views on the hullform
-// BevelWidth - ширина границы/рамки
+procedure TMainForm.FormCreate( Sender: TObject );
+begin
+   Windows:=TFasterList.Create;
+//   WindowState:=wsNormal;
+//   ClientWidth:=1280;
+//   ClientHeight:=768;
+//   FormStyle:=fsNormal;
+   Color:=clWindow;
+   SetWindowLong( (Self as TForm).Handle,GWL_EXSTYLE,
+   GetWindowLong( (Self as TForm).Handle, GWL_EXSTYLE) or WS_EX_LAYERED );
+   SetLayeredWindowAttributes( (Self as TForm).Handle,Color,228,LWA_ALPHA ); // LWA_COLORKEY );//
+   St:=TShip.Create( self );
+   With St do begin              // ShipUnit оригинал воссоздания новых моделей
+      MainForm:=self;
+      FileChanged:=true;
+      Filename:='Example_Ship';
+      OnChangeCursorIncrement:=ShipChangeCursorIncrement;
+      OnFileChanged          :=ShipFileChanged;
+      OnUpdateGeometryInfo   :=ShipUpdateGeometryInfo;
+      OnUpdateRecentFileList :=ShipUpdateRecentFileList;
+      OnUpdateUndoData       :=ShipUpdateUndoData;
+      Precision:=fpLow;
+      SpinEditFontSize.value:=St.Preferences.FontSize;
+   end;
+end;
+
+// BevelWidth - ширина границы/рамки ? никак не срабатывает
 // BevelInner, BevelOuter - соответственно внутренняя и внешняя граница/рамка
 //  - определяют стиль рамки (вдавленная, выступающая)
 //  - используется для создания псевдо-3D-эффектов.
@@ -38,7 +63,6 @@ end;
 
 
 procedure TMainForm.NewLinesPlane;
-//var Form: TLinesplanFrame;
 begin
    if LinesplanFrame<>nil then with LinesplanFrame do begin
       WindowState:=wsNormal;
@@ -48,6 +72,7 @@ begin
       LinesplanFrame.PopUpParent:=Self;
       LinesplanFrame.FormStyle:=fsNormal;
       LinesplanFrame.BorderStyle:=bsSizeable;
+      LinesplanFrame.SetBounds( Left+50,Top+75,Width-50,((4*Height) div 5)-75);
       ShowTranslatedValues( LinesplanFrame) ;
       LinesplanFrame.Ship:=St;
       LinesplanFrame.Viewport.ZoomExtents;

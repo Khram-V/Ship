@@ -1,10 +1,10 @@
 object ExpanedplatesDialog: TExpanedplatesDialog
   Left = 24
-  Height = 800
+  Height = 768
   Top = 12
-  Width = 1284
-  ClientHeight = 800
-  ClientWidth = 1284
+  Width = 1280
+  ClientHeight = 768
+  ClientWidth = 1280
   Color = clBtnFace
   BorderIcons = []
   BorderStyle = bsSingle

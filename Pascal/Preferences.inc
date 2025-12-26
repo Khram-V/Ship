@@ -125,11 +125,13 @@ procedure TPreferences.LoadFromIni;
 var I,T,L,R,H,S: Integer; params: TColorIniFile; RecentFileNames: TStringList;
 begin
   if not FileExistsUTF8( iniFileName ) then begin        // и так на весь экран
-    if Application.Mainform<>nil then begin
+{   if Application.Mainform<>nil then begin
        Application.MainForm.WindowState:=wsNormal;
-       Application.MainForm.SetBounds( 0,0,Screen.WorkAreaWidth,Screen.WorkAreaHeight );
+       Application.MainForm.SetBounds( 0,0,min(1280,Screen.WorkAreaWidth),
+                                       //  min(768,Application.Mainform.ClientHeight) );
+                                           min(768,Screen.WorkAreaHeight-52) );
     end;
-    SetDefaults; exit;
+}   SetDefaults; exit;
   end;
   params:=TColorIniFile.Create( iniFilename,False );
   LastDirectory     :=params.ReadString(D,'LastDirectory',LastDirectory);
@@ -181,25 +183,19 @@ begin
     St.Edit.RecentFiles.Add( RecentFileNames.ValueFromIndex[I] );
   FreeAndNil( RecentFileNames );
   if assigned( St.OnUpdateRecentFileList ) then St.OnUpdateRecentFileList( self );
-
-  T:=params.ReadInteger( W,'Top',0 );
-  L:=params.ReadInteger( W,'Left',0 );
-  H:=params.ReadInteger( W,'Height',Screen.WorkAreaHeight);
-  R:=params.ReadInteger( W,'Width',Screen.WorkAreaWidth);
-  S:=params.ReadInteger( W,'State',integer( wsNormal ) );
-  if Application.Mainform<>nil then begin
-   //if L>Screen.Width then L:=0;
-   //if T>Screen.Height then T:=0;
-   //if R > Screen.Width then R:=Screen.WorkAreaWidth;
-   //if H > Screen.Height then H:=Screen.WorkAreaHeight;
-   { TWindowState=(wsNormal=0,wsMinimized=1,wsMaximized=2,wsFullScreen=3); }
-     case TWindowState( S ) of
-        wsNormal   : Application.MainForm.SetBounds( L,T,R,H );
-        wsMinimized: begin Application.MainForm.WindowState:=wsNormal;
-                           Application.MainForm.SetBounds(L,T,R,H); end;
-        wsMaximized: Application.MainForm.WindowState:=wsMaximized;
-        wsFullScreen: Application.MainForm.WindowState:=wsFullScreen
-     end;
+  T:=params.ReadInteger( W,'Top',1 );
+  L:=params.ReadInteger( W,'Left',1 );
+  R:=max(params.ReadInteger( W,'Width',min(1280,Screen.WorkAreaWidth)),1280);
+  H:=max(params.ReadInteger( W,'Height',min(768,Screen.WorkAreaHeight-52)),768);
+  S:=params.ReadInteger( W,'State',ord( wsNormal ) ); if S=1 then S:=0;
+  if Application.Mainform<>nil then
+  { TWindowState=(wsNormal=0,wsMinimized=1,wsMaximized=2,wsFullScreen=3); }
+  case TWindowState( S ) of
+       wsNormal: Application.MainForm.SetBounds( L,T,R,H );
+//     wsMinimized: begin Application.MainForm.WindowState:=wsNormal;
+//                        Application.MainForm.SetBounds(L,T,R,H); end;
+       wsMaximized: Application.MainForm.WindowState:=wsMaximized;
+       wsFullScreen: Application.MainForm.WindowState:=wsFullScreen;
   end;
   Language:=params.ReadString( 'General','Language',Language );
   LanguageFile:=LanguagesDirectory+Language+'.ini';         // ~ConfigDirectory

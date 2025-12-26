@@ -1,11 +1,13 @@
 object MainForm: TMainForm
-  Left = 0
-  Height = 989
   Top = 0
-  Width = 1920
-  ClientHeight = 989
-  ClientWidth = 1920
-  Color = 6908265
+  Left = 0
+  Width = 1280
+  Height = 768
+  ClientHeight = 0
+  ClientWidth = 0
+  Constraints.MinWidth = 720
+  Constraints.MinHeight = 300
+  Color = clWindow
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Times New Roman'
@@ -20,12 +22,12 @@ object MainForm: TMainForm
   object StatusBar: TPanel
     Left = 0
     Height = 18
-    Top = 971
-    Width = 1920
+    Top = 782
+    Width = 1280
     Align = alBottom
     BevelOuter = bvLowered
     ClientHeight = 18
-    ClientWidth = 1920
+    ClientWidth = 1280
     Color = clWindow
     Font.Color = clWindowText
     Font.Height = -11
@@ -71,7 +73,7 @@ object MainForm: TMainForm
       Left = 721
       Height = 16
       Top = 1
-      Width = 1600
+      Width = 900
       Align = alLeft
       AutoHint = True
       Color = 16777200
@@ -86,7 +88,7 @@ object MainForm: TMainForm
     Left = 0
     Height = 24
     Top = 0
-    Width = 1920
+    Width = 1280
     AutoSize = True
     Caption = 'ToolBar'
     Color = clBtnFace
@@ -781,7 +783,7 @@ object MainForm: TMainForm
     end
     object EditProjectSettings: TAction
       Category = 'Project'
-      Caption = 'Установки по проекту'
+      Caption = 'Описания и размерения'
       Hint = 'Настройка размерностей и описание цифровой модели корабля'
       OnExecute = EditProjectSettingsExecute
     end
@@ -830,7 +832,7 @@ object MainForm: TMainForm
     end
     object TransformLackenby: TAction
       Category = 'Transform'
-      Caption = 'Деформация Lackenby'
+      Caption = 'Деформация по Лакенби'
       Hint = 'Трансформация корпуса по главным размерениям и коэффициентам полноты.'
       OnExecute = TransformLackenbyExecute
     end
@@ -1668,7 +1670,7 @@ object MainForm: TMainForm
       end
     end
     object Project1: TMenuItem
-      Caption = 'Размерения'
+      Caption = 'Проект'
       object Projectsettings1: TMenuItem
         Action = EditProjectSettings
       end
@@ -1677,7 +1679,7 @@ object MainForm: TMainForm
       end
     end
     object Edit1: TMenuItem
-      Caption = 'Редактирование'
+      Caption = 'Операции'
       Hint = 'Контроль операций текущего редактирования'
       object Undo1: TMenuItem
         Action = Undo
@@ -1781,8 +1783,8 @@ object MainForm: TMainForm
       end
     end
     object Visibility1: TMenuItem
-      Caption = 'Видимость'
-      Hint = 'Настройка графического отображения цифровой модели корабля.'
+      Caption = 'Показ'
+      Hint = 'Элементы графического отображения цифровой модели корабля'
       object ShowControlNet1: TMenuItem
         Action = ShowControlNet
       end
@@ -1872,7 +1874,7 @@ object MainForm: TMainForm
       end
     end
     object Transform1: TMenuItem
-      Caption = 'Трансформация'
+      Caption = 'Изменить'
       Hint = 'Геометрическое перестроение размерений или положения корпуса...'
       object Scale3D1: TMenuItem
         Action = ScaleModel

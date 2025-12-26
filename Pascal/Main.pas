@@ -20,12 +20,11 @@ type TMainForm = class(TForm) {Ship:TShip;->St:ShipUnit~~TCustomForm}
     TB17,TB18,TB19,TB20,TB21,TB22,TB23,TB24,TB25,TB26,TB27,TB28,TB29,TB30,TB31,
     TB32,TB33,TB34,TB35,TB36,TB37,TB38,TB39,TB40,TB41,TB42,TB43,TB44,TB45,TB46,
                              TB47,TB48,ShowBuildCurve,tbMiddleFrame: TToolButton;
-    HelpAction   : THelpAction; HelpContents     : TMenuItem;
+    HelpAction: THelpAction; HelpAbout,HelpContents: TMenuItem;
     ExportAurora     : TAction; AuroraHullVsl    : TMenuItem;
     FramesDialog     : TAction; Intersections1   : TMenuItem;
-    ShowHydrostatics : TAction;
+    ShowHydrostatics,
     ActHydrostatics  : TAction; Hydrostatics1    : TMenuItem;
-                                HelpAbout        : TMenuItem;
     MidelDialog      : TAction; miSetSplitSection: TMenuItem;
     CascadeWindow    : TAction; Cascade1         : TMenuItem;
     TileWindow       : TAction; Tile1            : TMenuItem;
@@ -38,17 +37,18 @@ type TMainForm = class(TForm) {Ship:TShip;->St:ShipUnit~~TCustomForm}
     FileSaveas       : TAction; Save1            : TMenuItem;
     LayerAutoGroup   : TAction; Layer1           : TMenuItem;
     NewLayer         : TAction; New1             : TMenuItem;
+    ShowFlowlines    : TAction; Flowlines1       : TMenuItem;
+    SelectAll        : TAction; Selectall1       : TMenuItem;
                                 Visibility1: TMenuItem;
                                 Window1: TMenuItem;
                                 Autogroup1: TMenuItem;
                                 FindFile: TMenuItem;
                                 Edit1: TMenuItem;
                                 Point1: TMenuItem;
-    NewEdge: TAction;           Edge1: TMenuItem;
+    NewEdge: TAction;           New2,Edge1: TMenuItem;
                                 Face1: TMenuItem;
     EdgeCollapse: TAction;      Collapse1: TMenuItem;
     Delete: TAction;            Delete1: TMenuItem;
-                                New2: TMenuItem;
     EdgeCrease: TAction;        Crease1: TMenuItem;
     DeselectAll: TAction;       Selection1: TMenuItem;
                                 Clearselection1: TMenuItem;
@@ -62,7 +62,7 @@ type TMainForm = class(TForm) {Ship:TShip;->St:ShipUnit~~TCustomForm}
     Buttocks1: TMenuItem;       Waterlines1: TMenuItem;
     NewFace: TAction;           New4: TMenuItem;
     EdgeExtrude: TAction;       Extrude1: TMenuItem;
-        AboutAction: TAction;       About1: TMenuItem;
+    AboutAction: TAction;       About1: TMenuItem;
     EdgeSplit: TAction;         Split1: TMenuItem;
     EditProjectSettings: TAction; Project1: TMenuItem;
                                 Projectsettings1: TMenuItem;
@@ -70,8 +70,7 @@ type TMainForm = class(TForm) {Ship:TShip;->St:ShipUnit~~TCustomForm}
                                 Analyzesurface1: TMenuItem;
     ShowNormals: TAction;       Normals1: TMenuItem;
     ImportVRML: TAction;        VRML1: TMenuItem;
-                                Export1: TMenuItem;
-                                Import1: TMenuItem;
+                                Import1,Export1: TMenuItem;
     RemoveNegative: TAction;    Removenegative1: TMenuItem;
     RotateModel: TAction;       Rotatemodel1: TMenuItem;
     ScaleModel: TAction;        Scale3D1: TMenuItem;
@@ -110,8 +109,7 @@ type TMainForm = class(TForm) {Ship:TShip;->St:ShipUnit~~TCustomForm}
     PointsUnlockAll: TAction;   Unlockallpoints1: TMenuItem;
     ImportMarkers: TAction;     Import2: TMenuItem;
                                 Markers2: TMenuItem;
-    PointAlign: TAction;
-                                Projectline1: TMenuItem;
+    PointAlign: TAction;        Projectline1: TMenuItem;
     MirrorFace: TAction;        MirrorFace1: TMenuItem;
                                 Transform1: TMenuItem;
     ExportDXF2DPolylines: TAction; DXF2DPolylines1: TMenuItem;
@@ -128,8 +126,6 @@ type TMainForm = class(TForm) {Ship:TShip;->St:ShipUnit~~TCustomForm}
     ImportPolyCad: TAction;     PolyCad1: TMenuItem;
     RemoveUnusedPoints: TAction; Removeunusedpoints1: TMenuItem;
     ExportGHS:    TAction;      GHS1:       TMenuItem;
-    ShowFlowlines:TAction;      Flowlines1: TMenuItem;
-    SelectAll:    TAction;      Selectall1: TMenuItem;
     ImportSTL:    TAction;      MenuImportSTL:TMenuItem;
     ExportSTL:    TAction;      STL1,N2,N3,N4,N5,N6,N7: TMenuItem;
 
@@ -266,32 +262,6 @@ var MainForm: TMainForm;
 implementation uses SplashWndw,LanguageSupport;
 {$R *.lfm}
 {$include Main_Wins.inc} // раздельная и групповая обработка оконных запросов
-
-procedure TMainForm.FormCreate( Sender: TObject );
-begin
-   Windows:=TFasterList.Create;
-   WindowState:=wsNormal; //wsMaximized;
-   FormStyle:=fsNormal;
-// AlphaBlend:= True;
-// AlphaBlendValue:= 128;
-   Color:=1; //clWhite;        --- не лучший вариант ...
-   SetWindowLongPtr( Self.Handle,GWL_EXSTYLE,
-   GetWindowLongPtr( Self.Handle,GWL_EXSTYLE) or WS_EX_LAYERED );
-   SetLayeredWindowAttributes( Self.Handle,1{clWhite},128,LWA_COLORKEY );
-   St:=TShip.Create( self );
-   With St do begin        // ShipUnit оригинал воссоздания новых моделей
-      MainForm:=self;
-      FileChanged:=true;
-      Filename:='Example_Ship';
-      OnChangeCursorIncrement:=ShipChangeCursorIncrement;
-      OnFileChanged          :=ShipFileChanged;
-      OnUpdateGeometryInfo   :=ShipUpdateGeometryInfo;
-      OnUpdateRecentFileList :=ShipUpdateRecentFileList;
-      OnUpdateUndoData       :=ShipUpdateUndoData;
-      Precision:=fpLow;
-      SpinEditFontSize.value:=St.Preferences.FontSize;
-   end;
-end;
 
 procedure TMainForm.FormShow( Sender: TObject ); Var NF: String='';
 begin With St do begin                                // Initialize some data
@@ -648,39 +618,18 @@ procedure TMainForm.About1Click(Sender: TObject);   // Show splash screen again
           SplashWindow.Show;
           SplashWindow.Refresh;
     end;
-procedure TMainForm.Help1Click(Sender: TObject);   // begin correction Victor T
-Var Man: String;
-begin
-  Man:=St.Preferences.ManualsDirectory+St.Preferences.Language+'.pdf';
+procedure TMainForm.Help1Click(Sender: TObject);
+  Var Man: String;
+begin Man:=St.Preferences.ManualsDirectory+St.Preferences.Language+'.pdf';
   if not FileExistsUTF8( Man ) then begin
      write( Man ); Man:=St.Preferences.ManualsDirectory+'Russian.pdf';
      write( ' -> ',Man );
      if not FileExistsUTF8( Man ) then begin writeln( ' not found' ); exit end;
      writeln;
   end;
-  Exec( 'cmd','/C '+Man );
+  Exec( {GetEnv( 'COMSPEC')} 'cmd','/C Start '+Man );
+//OpenDocument( Man ) = +10 Kb ~~ ComSpec=C:\WINDOWS\system32\cmd.exe
 end;
-(* +10 Kb
-procedure TMainForm.Help1Click(Sender: TObject);   // begin correction Victor T
-var FileToFind,FManDirectory,FLang,man : AnsiString;
-begin
-  FLang:=St.Preferences.Language;
-  FManDirectory:=St.Preferences.ManualsDirectory;      //~ConfigDirectory
-  man:=FLang+'.pdf';
-  FileToFind:=FileSearch( FManDirectory+man,FManDirectory );
-  if (FileToFind='') and (FLang<>'English') then begin
-    ShowMessage( man+'" не найден в паке "'+FManDirectory
-      +EOL+'поиск с открытием русского руководства.'); man:='Russian.pdf'
-  end;
-  FileToFind:=FileSearch( FManDirectory+man,FManDirectory );
-  if FileToFind='' then begin
-     ShowMessage('Manual "'+man+'" not found in "'+FManDirectory+'" directory');
-     exit;
-  end;         // ComSpec=C:\WINDOWS\system32\cmd.exe
-  Exec( {GetEnv( 'COMSPEC')} 'cmd','/C '+FileToFind );
-//OpenDocument( FileToFind );
-end;
-*)
 procedure TMainForm.EdgeSplitExecute(Sender: TObject);
     begin St.Edit.Edge_Split; UpdateMenu; end;
 procedure TMainForm.EditProjectSettingsExecute(Sender: TObject);

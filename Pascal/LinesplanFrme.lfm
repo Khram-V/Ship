@@ -1,8 +1,8 @@
 object LinesplanFrame: TLinesplanFrame
-  Left = 0
-  Height = 642
   Top = 0
-  Width = 1000
+  Left = 0
+  Width = 1024
+  Height = 640
   Caption = 'Теоретические чертежи'
   Font.Style = []
   OldCreateOrder = False
@@ -10,13 +10,13 @@ object LinesplanFrame: TLinesplanFrame
   FormStyle = fsNormal
   OnClose = FormClose
   Visible = True
-  ClientHeight = 642
-  ClientWidth = 1000
+  ClientHeight = 640
+  ClientWidth = 1024
   object ToolBar1: TToolBar
     Left = 0
     Height = 24
     Top = 0
-    Width = 1000
+    Width = 1024
     AutoSize = True
     Color = clBtnFace
     Images = MenuImages
@@ -241,9 +241,9 @@ object LinesplanFrame: TLinesplanFrame
   end
 object Viewport: TViewport
   Left = 0
-  Top = 24
-  Width = 1200
-  Height = 800
+  Top = 0
+  Width = 1024
+  Height = 640
   Angle = 90
   Align = alClient
   CameraType = ftStandard

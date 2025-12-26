@@ -5,6 +5,8 @@ object HullWindow: THullWindow
   Width = 860
   ClientHeight = 562
   ClientWidth = 860
+  Constraints.MinWidth = 200
+  Constraints.MinHeight = 100
   Color = clBtnFace
   DesignTimePPI = 192
   Font.Color = clWindowText

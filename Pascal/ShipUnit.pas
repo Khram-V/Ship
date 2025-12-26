@@ -5208,9 +5208,7 @@ begin
 end;
 
 function TShip.FindLowestHydrostaticsPoint:Real;
-var I,J     : Integer;
-    First   : Boolean;
-    Layer   : SLayer;
+var I,J: Integer; First: Boolean; Layer: SLayer;
 begin
    Result:=Surface.Min.Z;
    First:=True;
