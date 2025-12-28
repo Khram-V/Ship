@@ -542,7 +542,7 @@ procedure TMainForm.DeleteExecute(Sender: TObject);
 procedure TMainForm.EdgeCollapseExecute(Sender: TObject);
     begin St.Edit.Edge_Collapse; UpdateMenu; end;
 procedure TMainForm.NewEdgeExecute(Sender: TObject);
-    begin St.Edit.Edge_Connect; UpdateMenu; end;
+    begin St.Edit.Edge_Connecte; UpdateMenu; end;
 procedure TMainForm.EdgeCreaseExecute(Sender: TObject);
     begin St.Edit.Edge_Crease; UpdateMenu; end;
 procedure TMainForm.DeselectAllExecute(Sender: TObject);

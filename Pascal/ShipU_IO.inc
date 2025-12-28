@@ -85,7 +85,6 @@ begin Result:=false; Strings:=nil;
      Strings.SaveToFile( St.Filename );
      Strings.Destroy;
   end else begin
-    Destination.Encoding:=St.Preferences.FbmEncoding;
     St.SaveProject( Destination );
     result:=Destination.SaveToFile( St.Filename );
     FreeAndNil( Destination );
@@ -198,7 +197,6 @@ begin    // Remember the filename because it will be erased by the clear method
    PrevCursor:=Screen.Cursor;
    Screen.Cursor:=crHourGlass;
    Source.Reset;
-   Source.Encoding:=Preferences.FbmEncoding;
    Source.LoadString(Str);
    if Str='FREE!ship' then begin
       Source.LoadTFileVersion(FFileVersion);

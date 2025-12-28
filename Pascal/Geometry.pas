@@ -9489,59 +9489,45 @@ begin
    end;
    backup.Sort;
    if backup.Count>0 then begin
-//    try
-         Faces:=TFasterList.Create;
-         Ind:=0;
-         repeat
-            Faces.Assign( Backup );
-            inc(Ind);
-            Face:=Faces[Ind-1];
-            Faces.Delete(Ind-1);
-            Rows:=2;
-            Cols:=2;
-            Setlength(Grid,Rows);
-            Setlength(grid[0],Cols);
-            Setlength(grid[1],Cols);
-            grid[0][1]:=Face.Point[0];
-            grid[0][0]:=Face.Point[1];
-            grid[1][0]:=Face.Point[2];
-            grid[1][1]:=Face.Point[3];
-            DoAssemble(Grid,Cols,Rows,Faces);
-         until (Faces.Count=0) or (Ind=Backup.Count);
-         if Faces.Count<>0 then  ShowMessage('Could not establish the entire grid!');
-         Faces.Destroy;
-//    finally
-         Backup.Destroy;
-//    end;
+      Faces:=TFasterList.Create; Ind:=0;
+      repeat
+         Faces.Assign( Backup );
+         inc(Ind);
+         Face:=Faces[Ind-1];
+         Faces.Delete(Ind-1);
+         Rows:=2;
+         Cols:=2;
+         Setlength(Grid,Rows);
+         Setlength(grid[0],Cols);
+         Setlength(grid[1],Cols);
+         grid[0][1]:=Face.Point[0];
+         grid[0][0]:=Face.Point[1];
+         grid[1][0]:=Face.Point[2];
+         grid[1][1]:=Face.Point[3];
+         DoAssemble(Grid,Cols,Rows,Faces);
+      until (Faces.Count=0) or (Ind=Backup.Count);
+      if Faces.Count<>0 then  ShowMessage('Could not establish the entire grid!');
+      Faces.Destroy;
+      Backup.Destroy;
    end;
 end;
 
 procedure SSurface.Edge_Connect;
-var Face: SControlFace;
-    Edge: SControlEdge;
-    V1,V2: SControlPoint;
-    I,J: Integer;
+var Face: SControlFace; Edge: SControlEdge; V1,V2: SControlPoint;
+    I,J,f1,f2: Integer;
 begin
    if NoSelectedControlPoints>1 then begin
-      for I:=NoSelectedControlPoints-1 downto 1 do begin
-         V1:=SelectedControlPoint[NoSelectedControlPoints-2];
-         V2:=SelectedControlPoint[NoSelectedControlPoints-1];
-         if EdgeExists(V1,V2)=nil then begin
-            if (V1.NoFaces=0) and (V2.NoFaces=0) then begin
-               Edge:=AddControlEdge(V1,V2);
-               if Edge<>nil then edge.Crease:=True;
-            end else For J:=1 to V1.NoFaces do begin
-               Face:=V1.Face[J-1] as SControlFace;
-               if V2.IndexOfFace(Face)<>-1 then begin
-                  Face.InsertEdge(V1,V2);
-                  V2.Selected:=false;
-                  Build:=False;
-                  break;
-               end;
-            end;
-         end else
-         if NoSelectedControlPoints=2 then
-            ShowMessage(Userstring(202)+'!');
+      for I:=NoSelectedControlPoints-1 downto 0 do
+      for J:=NoSelectedControlPoints-1 downto 0 do if I<>J then begin
+           V1:=SelectedControlPoint[I];
+           V2:=SelectedControlPoint[J];
+         if EdgeExists(V1,V2)=nil then
+          for f1:=0 to V1.NoFaces-1 do
+          for f2:=0 to V2.NoFaces-1 do
+           if f1<>f2 then if V1.Face[f1]=V2.Face[f2] then begin
+              (V1.Face[f1] as SControlFace).InsertEdge(V1,V2);
+              (V2.Face[f2] as SControlFace).InsertEdge(V2,V1); //break;
+           end;
       end;
       for I:=NoSelectedControlPoints downto 1
         do SelectedControlPoint[I-1].Selected:=False;
@@ -9552,27 +9538,27 @@ procedure SSurface.ExportFEFFile(Strings:TStringList);
 var I: Integer;
 begin                                                  // Add layer information
    Strings.Add(IntToStr(NoLayers));
-   for I:=1 to NoLayers do begin
-      Strings.Add(Layer[I-1].Name);
-      Strings.Add(IntToStr(Layer[I-1].LayerID)+#32+
-      I2S(Cardinal(Layer[I-1].Color and $FFFFFF)+(Cardinal(255-Layer[I-1].FAlphaBlend) shl 24))+#32+
-//                IntToStr(Layer[I-1].Color)+#32+
-                  BoolToStr(Layer[I-1].Visible)+#32+
-                  BoolToStr(Layer[I-1].Developable)+#32+
-                  BoolToStr(Layer[I-1].Symmetric)+#32+
-                  BoolToStr(Layer[I-1].FUseForIntersections)+#32+
-                  BoolToStr(Layer[I-1].FUseInHydrostatics)+#32+
-                  BoolToStr(Layer[I-1].FShowInLinesplan)+#32+
-                  FloatToStrF(Layer[I-1].MaterialDensity,ffFixed,10,8)+#32+
-                  FloatToStrF(Layer[I-1].Thickness,ffFixed,10,8));
-   end;    // first sort controlpoints for faster acces of function (Indexof())
+   for I:=0 to NoLayers-1 do begin
+      Strings.Add(Layer[I].Name);
+      Strings.Add(IntToStr(Layer[I].LayerID)+#32+
+      I2S(Cardinal(Layer[I].Color and $FFFFFF)+(Cardinal(255-Layer[I].FAlphaBlend) shl 24))
+//      +#32+IntToStr(Layer[I].Color)
+        +#32+BoolToStr(Layer[I].Visible)
+        +#32+BoolToStr(Layer[I].Developable)
+        +#32+BoolToStr(Layer[I].Symmetric)
+        +#32+BoolToStr(Layer[I].FUseForIntersections)
+        +#32+BoolToStr(Layer[I].FUseInHydrostatics)
+        +#32+BoolToStr(Layer[I].FShowInLinesplan)
+        +#32+FloatToStrF(Layer[I].MaterialDensity,ffFixed,10,8)
+        +#32+FloatToStrF(Layer[I].Thickness,ffFixed,10,8));
+   end; // first sort controlpoints for faster acces of function (Indexof())
    FControlPoints.Sort;
    Strings.Add(IntToStr(NoControlPoints));
-   for I:=1 to NoControlPoints do ControlPoint[I-1].SaveToStream(Strings);
+   for I:=0 to NoControlPoints-1 do ControlPoint[I].SaveToStream(Strings);
    Strings.Add(IntToStr(NoControlEdges));
-   for I:=1 to NoControlEdges do ControlEdge[I-1].SaveToStream(Strings);
+   for I:=0 to NoControlEdges-1 do ControlEdge[I].SaveToStream(Strings);
    Strings.Add(IntToStr(NoControlFaces));
-   for I:=1 to NoControlFaces do ControlFace[I-1].SaveToStream(Strings);
+   for I:=0 to NoControlFaces-1 do ControlFace[I].SaveToStream(Strings);
 end;
 
 procedure SSurface.ImportObjFile( Strings: TStringList );

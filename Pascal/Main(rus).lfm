@@ -1,0 +1,129 @@
+object MainForm: TMainForm
+  Align = alTop
+  Color = clAppWorkspace
+  Constraints.MinHeight = 200
+  Constraints.MinWidth = 300
+  Menu = MainMenu1  { !!!! }
+  Position = poDefault
+  ShowHint = True
+  LCLVersion = '4.2.0.0'
+  WindowState = wsMaximized
+  OnActivate = FormActivate
+  OnClose = MainFormClose
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnShow = FormShow
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  object ActionList1: TActionList
+    Images = MenuImages
+    Left = 224
+    Top = 400
+    object ExportFEF: TAction
+      Category = 'Export'
+      Caption = 'обменный фоормат.FEF...'
+      Hint = 'Сохранение в формате .FEF (ship Exchange Format).'
+      OnExecute = ExportFEFExecute
+    end
+    object ImportFEF: TAction
+      Category = 'Import'
+      Caption = 'восстановить из.FEF'
+      Hint = 'Выбрать корпус из .FEF (ship Exchange Format).'
+      OnExecute = ImportFEFExecute
+    end
+-------------------------------------
+    object RotateModelM: TAction
+      Category = 'Transform'
+      Caption = 'Кренование и/или дифферентование...'
+      Hint = 'Наклон ватерлиний с пересчётами гидростатики.'
+      OnExecute = RotateModelMExecute
+    end
+    object HydrostaticsDialog: TAction
+      Category = 'Calculate'
+      Caption = 'Кривые элементов теоретического чертежа...'
+      Hint = 'Расчёт гидростатических параметров при изменении посадки.'
+      OnExecute = HydrostaticsDialogExecute
+    end
+    object KeelRudderWizard: TAction
+      Category = 'Tools'
+      Caption = 'Изготовление киля и руля'
+      Hint = 'Создание профилированного руля или яхтенного киля с наделками.'
+      ImageIndex = 52
+      OnExecute = KeelRudderWizardExecute
+    end
+    object AddCylinder: TAction
+      Category = 'Geometry'
+      Caption = 'Добавить цилиндр...'
+      Hint = 'Добавление цилиндра может быть необходимо для дейдвудов, мачт и т.п.'
+      OnExecute = AddCylinderExecute
+    end
+    object AddPointToGroup: TAction
+      Category = 'Point'
+      Caption = 'Узлы в именованных группах'
+      Hint = 'Добавить или поправить именованные группы опорных узлов.'
+      OnExecute = AddPointToGroupExecute
+    end
+    object PointAlighnPermanently: TAction
+      Category = 'Point'
+      Caption = 'Уложить узлы по линии'
+      Hint = 'Связная группа лежит на прямой линии между крайними узлами'
+      ImageIndex = 48
+      OnExecute = PointAlighnPermanentlyExecute
+    end
+    object PointAnchor: TAction
+      Category = 'Point'
+      Caption = 'Репер-Anchor'
+      Hint = 'Реперная точка для построения корпуса в относительных отсчётах'
+      OnExecute = PointAnchorExecute
+    end
+    object SelectAllControlPoints: TAction
+      Category = 'Selection'
+      Caption = 'Выбор опорных точек'
+      Hint = 'Выбор и установка активности всех опорных точек цифровой модели'
+      OnExecute = SelectAllControlPointsExecute
+    end
+    object SelectLeakPoints: TAction
+      Category = 'Selection'
+      Caption = 'Выбор свободных точек'
+      Hint = 'Выборка всех точек, не включенных в структуру слоёв цифровой модели'
+      OnExecute = SelectLeakPointsExecute
+    end
+    object AddFlowLine: TAction
+      Category = 'Tools'
+      Caption = 'Добавить линию потока'
+      Hint = 'Для добавления линии потока использовать <alt>+leftMouse.'
+      OnExecute = AddFlowLineExecute
+    end
+    object AddGridPanel: TAction
+      Category = 'Tools'
+      Caption = 'Сетка чертежа'
+      Hint = 'Добавление сеточной разметки для чертёжных полей'
+      OnExecute = AddGridPanelExecute
+    end
+    object PointsCoincide: TAction
+      Category = 'Point'
+      Caption = 'Присоединение'
+      Hint = 'Объединить выбранные узлы с первым из выбранных.'
+      OnExecute = PointsCoincideExecute
+    end
+    object PointExtrude: TAction
+      Category = 'Point'
+      Caption = 'Вынос новой точки'
+      Hint = 'Установка новой свободной точки по смещению от активной избранной.'
+      OnExecute = PointExtrudeExecute
+    end
+    object ShowObjects: TAction
+      Category = 'Visibility'
+      Caption = 'Свободные элементы'
+      Hint = 'Объекты, не включённые в структуру слоёв цифровой модели'
+      ImageIndex = 61
+      OnExecute = ShowObjectsExecute
+    end
+    object LayerVisibilityDialog: TAction
+      Category = 'Layer'
+      Caption = 'Скрыть/показать графические слои'
+      Hint = 'Выбор слоёв для показа и редактрования'
+      ImageIndex = 62
+      OnExecute = LayerVisibilityDialogExecute
+    end
+  end
+end

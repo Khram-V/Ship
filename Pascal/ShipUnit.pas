@@ -93,8 +93,8 @@ end;
 }
 TUndoObject = class
 private
-   FOwner: TShip;
-   FUndoData: TFileBuffer;                  // some other data to be stored
+// St: TShip;                 // локальное перекрытие внешненго имени - а надо?
+   FUndoData: TTextBuffer;    // some other data to be stored
    FFileChanged,FFilenameSet,FIsTempRedoObject: Boolean;
    FUndoText,FFilename: String;
    FEditMode: TEditMode;
@@ -109,9 +109,9 @@ public
    procedure Delete;
    procedure Restore;
    property Memory  : integer read FGetMemory; // calculates the amount of bytes used for each undo object
-   property Owner   : TShip read FOwner;
+// property Owner   : TShip read FOwner;
    property Time    : String read FGetTime;
-   property UndoData: TFileBuffer read FUndoData;
+   property UndoData: TTextBuffer read FUndoData;
    property UndoText: string read FGetUndoText;
 end;
 {
@@ -335,10 +335,10 @@ public
    procedure BackgroundImage_Delete(Viewport:TViewport); // Delete the backgrundimage associated with this view
    procedure BackgroundImage_Open(Viewport:TViewport); // browse for and open a backgroundimage
    function  CreateRedoObject:TUndoObject; // Creates redo data before an undo is done
-   function  CreateUndoObject(UndoText:String;Accept:Boolean):TUndoObject;// Creates undodata just prior to modifications
+   function  CreateUndoObject(UndoText:String;Accept:Boolean):TUndoObject; // Creates undodata just prior to modifications
    procedure Curve_Add;          // Add a new controlcurve
    procedure Edge_Collapse;      // Remove an edge by replacing the two connected faces by one controlface
-   procedure Edge_Connect;       // Create a new edge by connection two controlpoints belonging to the same controlface
+   procedure Edge_Connecte;      // Create a new edge by connection two controlpoints belonging to the same controlface
    procedure Edge_Crease;        // Switch selected edges between normal or crease edges (knuckle lines)
    procedure Edge_Extrude;       // Create new controlfaces by extruding selected boundary edges (eg edges with only 1 controlface connected to it)
    procedure Edge_Split;         // Create new controlpoints by splitting an controledge into two.
@@ -802,52 +802,42 @@ function TUndoObject.FGetUndoText:string;
    begin Result:=FUndoText; end;
 
 procedure TUndoObject.Accept;
-var I  :Integer;
-    Obj:TUndoObject;
-begin
-// try
-   // Add the undo data to the undolist
-   if Owner.UndoCount>0 then begin
-      if Owner.UndoObject[Owner.UndoCount-1].FIsTempRedoObject then begin
-         Owner.UndoObject[Owner.UndoCount-1].Delete;
-      end;
-   end;                        // delete all undo objects after the current one
-   for I:=FOwner.FUndoObjects.Count downto Owner.FUndoPosition+1 do begin
-      Owner.UndoObject[I-1].Delete;
-   end;
-   Owner.FUndoObjects.Add(self);
-   Owner.FUndoPosition:=Owner.FUndoObjects.Count;
-   while (FOwner.UndoMemory/(1024*1024)>Owner.Preferences.MaxUndoMemory)
-     and (Owner.FUndoObjects.Count>2) do begin
-      Obj:=FOwner.FUndoObjects[0];
+  var I:Integer; Obj:TUndoObject;
+begin // Add the undo data to the undolist
+   if St.UndoCount>0 then
+   if St.UndoObject[St.UndoCount-1].FIsTempRedoObject then
+      St.UndoObject[St.UndoCount-1].Delete;
+                               // delete all undo objects after the current one
+   for I:=St.FUndoObjects.Count downto St.FUndoPosition+1 do // ?? и зачем ??
+          St.UndoObject[I-1].Delete;
+   St.FUndoObjects.Add(self);
+   St.FUndoPosition:=St.FUndoObjects.Count;
+   while (St.UndoMemory/(1024*1024)>St.Preferences.MaxUndoMemory)
+     and (St.FUndoObjects.Count>2) do begin
+      Obj:=St.FUndoObjects[0];
       Obj.Destroy;
-      FOwner.FUndoObjects.Delete(0);
-      Dec(Owner.FUndoPosition);
-      Dec(Owner.FPreviousUndoPosition);
+      St.FUndoObjects.Delete(0);
+      Dec(St.FUndoPosition);
+      Dec(St.FPreviousUndoPosition);
    end;
-// finally
-   if Assigned(Owner.FOnUpdateUndoData) then Owner.FOnUpdateUndoData(Owner);
-// end;
+   if Assigned(St.FOnUpdateUndoData) then St.FOnUpdateUndoData(St);
 end;
-
-constructor TUndoObject.Create(Owner:TShip);
+constructor TUndoObject.Create( Owner:TShip );
 begin
    inherited Create;
    FTime:=Now;
-   FOwner:=Owner;
+//   St:=Owner;
    FUndoText:='';
    FFilename:='';
-   FUndoData:=TFileBuffer.Create;
+   FUndoData:=TTextBuffer.Create;
    FIsTempRedoObject:=False;
 end;
-
-// deletes an undo object from the list
-procedure TUndoObject.Delete;
+procedure TUndoObject.Delete;           // deletes an undo object from the list
 var Index:integer;
 begin
-   Index:=FOwner.FUndoObjects.IndexOf(self);
-   if Index<>-1 then Owner.FUndoObjects.Delete(Index);
-   if Assigned(Owner.FOnUpdateUndoData) then Owner.FOnUpdateUndoData(Owner);
+   Index:=St.FUndoObjects.IndexOf( self );
+   if Index<>-1 then St.FUndoObjects.Delete(Index);
+   if Assigned(St.FOnUpdateUndoData) then St.FOnUpdateUndoData(St);
    Destroy;
 end;
 
@@ -855,7 +845,7 @@ destructor TUndoObject.Destroy;
      begin FUndoData.Destroy; Inherited Destroy; end;
 
 procedure TUndoObject.Restore;
-begin With Owner do begin
+begin With St do begin
    LoadProject(FUndoData);
    FFileChanged:=FFileChanged;
    FFilename:=FFilename;
@@ -865,8 +855,8 @@ begin With Owner do begin
 end end;
 {
   ship can import a max. of three different background images that may be
-  coupled either to the bodyplan, profile or planview. These images can be used
-  to trace the lines of an hullform and are stored within the !St file.
+  coupled either to the bodyplan, profile or planview. These images can be
+  used to trace the lines of an hullform and are stored within the !St file.
 }
 procedure TBackgroundImageData.Clear;
 begin
@@ -2595,64 +2585,6 @@ begin
    Dialog.Destroy;
 end;
 
-function SEdit.CreateRedoObject:TUndoObject;
-var UndoObject: TUndoObject;
-    Version   : TFileVersion;
-    Preview   : Boolean;
-begin
-   UndoObject:=TUndoObject.Create(St);
-   Result:=UndoObject;
-   UndoObject.FUndoText:=UserString(71);
-   Version:=St.FileVersion;
-   Preview:=St.ProjectSettings.SavePreview;
-            // Temp. set to the latest fileversion so that no data will be lost
-   St.FFileVersion:=Currentversion;  // Temp. disable saving of preview image
-   St.ProjectSettings.SavePreview:=False;
-   UndoObject.FFileChanged:=St.FileChanged;
-   UndoObject.FFileName:=St.Filename;
-   UndoObject.FEditMode:=St.EditMode;
-   UndoObject.FFilenameSet:=St.FFilenameSet;
-   UndoObject.FIsTempRedoObject:=True;
-   St.SaveProject(UndoObject.FUndoData);   // <=> St.SaveBinary
-   UndoObject.Accept;                       // Restore the original fileversion
-   St.FileVersion:=Version;
-   St.ProjectSettings.SavePreview:=Preview;
-   if Assigned(St.FOnUpdateUndoData) then St.FOnUpdateUndoData(St);
-end;
-
-// Creates undodata just prior to modifications
-function SEdit.CreateUndoObject( UndoText:String;Accept:Boolean ):TUndoObject;
-var UndoObject: TUndoObject;
-    Version: TFileVersion;
-    Preview: Boolean;
-    I: Integer;
-begin
-   UndoObject:=TUndoObject.Create(St);
-   Result:=UndoObject;
-   //if UndoText<>'' then UndoText[1]:=Lowercase(UndoText[1]);
-   UndoObject.FUndoText:=UndoText;
-   Version:=St.FileVersion;
-   Preview:=St.ProjectSettings.SavePreview;
-// try
-      // delete all undo objects after the current one
-      for I:=St.FUndoObjects.Count downto St.FUndoPosition+1
-          do St.UndoObject[I-1].Delete; // Temp. set to the latest fileversion so that no data will be lost
-      St.FFileVersion:=Currentversion;  // Temp. disable saving of preview image
-      St.ProjectSettings.SavePreview:=False;
-      UndoObject.FFileChanged:=St.FileChanged;
-      UndoObject.FFileName:=St.Filename;
-      UndoObject.FEditMode:=St.EditMode;
-      UndoObject.FFilenameSet:=St.FFilenameSet;
-      St.SaveProject(UndoObject.FUndoData);   // <##>SaveBinary
-      if Accept then UndoObject.Accept;
-// finally
-      // Restore the original fileversion
-      St.FileVersion:=Version;
-      St.ProjectSettings.SavePreview:=Preview;
-      if Assigned(St.FOnUpdateUndoData) then St.FOnUpdateUndoData(St);
-// end;
-end;
-
 // Add (a) new controlcurve(s)
 procedure SEdit.Curve_Add;
 var Edges,SortedEdges,Points: TFasterList; Edge: SControlEdge;
@@ -2727,14 +2659,12 @@ begin N:=0; K:=0;
 end;
 
 // Create a new edge by connection two controlpoints belonging to the same controlface
-procedure SEdit.Edge_Connect;
-var Undo: TUndoObject; N: integer;
+procedure SEdit.Edge_ConnectE;
+  var Undo: TUndoObject; N: integer; // здесь только фиксация
 begin
-   N:=St.Surface.NoControlEdges;
-   Undo:=CreateUndoObject(Userstring(74),False);
-   St.Surface.Edge_Connect;
-   if St.Surface.NoControlEdges>N then begin
-      Undo.Accept;
+   N:=St.Surface.NoControlEdges; Undo:=CreateUndoObject(Userstring(74),False);
+      St.Surface.Edge_Connect;
+   if St.Surface.NoControlEdges>N then begin Undo.Accept;
       St.FileChanged:=True;
       St.Build:=false;
       St.Redraw;
@@ -4258,6 +4188,61 @@ begin With St do begin
    Redraw;
 end end;
 
+function SEdit.CreateRedoObject:TUndoObject;
+var UndoObject: TUndoObject;
+    Version   : TFileVersion;
+    Preview   : Boolean;
+begin
+   UndoObject:=TUndoObject.Create(St);
+   Result:=UndoObject;
+   UndoObject.FUndoText:=UserString(71);
+   Version:=St.FileVersion;
+   Preview:=St.ProjectSettings.SavePreview;
+            // Temp. set to the latest fileversion so that no data will be lost
+   St.FFileVersion:=Currentversion;  // Temp. disable saving of preview image
+   St.ProjectSettings.SavePreview:=False;
+   UndoObject.FFileChanged:=St.FileChanged;
+   UndoObject.FFileName:=St.Filename;
+   UndoObject.FEditMode:=St.EditMode;
+   UndoObject.FFilenameSet:=St.FFilenameSet;
+   UndoObject.FIsTempRedoObject:=True;
+   St.SaveProject(UndoObject.FUndoData);   // <=> St.SaveBinary
+   UndoObject.Accept;                       // Restore the original fileversion
+   St.FileVersion:=Version;
+   St.ProjectSettings.SavePreview:=Preview;
+   if Assigned(St.FOnUpdateUndoData) then St.FOnUpdateUndoData(St);
+end;
+
+// Creates undodata just prior to modifications
+function SEdit.CreateUndoObject( UndoText:String;Accept:Boolean ):TUndoObject;
+var UndoObject: TUndoObject;
+    Version: TFileVersion;
+    Preview: Boolean;
+    I: Integer;
+begin
+   UndoObject:=TUndoObject.Create(St);
+   Result:=UndoObject;
+   //if UndoText<>'' then UndoText[1]:=Lowercase(UndoText[1]);
+   UndoObject.FUndoText:=UndoText;
+   Version:=St.FileVersion;
+   Preview:=St.ProjectSettings.SavePreview;
+   // delete all undo objects after the current one
+   for I:=St.FUndoObjects.Count downto St.FUndoPosition+1
+       do St.UndoObject[I-1].Delete; // Temp. set to the latest fileversion so that no data will be lost
+   St.FFileVersion:=Currentversion;  // Temp. disable saving of preview image
+   St.ProjectSettings.SavePreview:=False;
+   UndoObject.FFileChanged:=St.FileChanged;
+   UndoObject.FFileName:=St.Filename;
+   UndoObject.FEditMode:=St.EditMode;
+   UndoObject.FFilenameSet:=St.FFilenameSet;
+   St.SaveProject(UndoObject.FUndoData);   // <##>SaveBinary
+   if Accept then UndoObject.Accept;
+   // Restore the original fileversion
+   St.FileVersion:=Version;
+   St.ProjectSettings.SavePreview:=Preview;
+   if Assigned(St.FOnUpdateUndoData) then St.FOnUpdateUndoData(St);
+end;
+
 procedure SEdit.Undo;
 var UndoObject: TUndoObject; Preview: boolean;
 begin
@@ -4313,15 +4298,12 @@ var UndoObject : TUndoObject;
 begin
    if St.FUndoObjects.Count>0 then begin
       Preview:=St.ProjectSettings.SavePreview;
-//    try
-         if St.FPreviousUndoPosition>St.FUndoPosition then inc(St.FUndoPosition);
-         St.FPreviousUndoPosition:=St.FUndoPosition;
-         inc(St.FUndoPosition);
-         UndoObject:=St.FUndoObjects[St.FUndoPosition-1];
-         UndoObject.Restore;
-//    finally
-         St.ProjectSettings.SavePreview:=Preview;
-//    end;
+      if St.FPreviousUndoPosition>St.FUndoPosition then inc(St.FUndoPosition);
+      St.FPreviousUndoPosition:=St.FUndoPosition;
+      inc( St.FUndoPosition );
+      UndoObject:=St.FUndoObjects[St.FUndoPosition-1];
+      UndoObject.Restore;
+      St.ProjectSettings.SavePreview:=Preview;
    end;
 end;
 

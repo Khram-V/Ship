@@ -4,14 +4,14 @@ uses Interfaces,Math,Forms,SysUtils,
   SplashWndw in 'Pascal\SplashWndw.pas' {SplashWindow},
   ShipUnit   in 'Pascal\ShipUnit.pas'   {ShipUnit},
   STypes     in 'Pascal\STypes.pas'     {STypes},
-  LanguageSupport;                      // #226+#149+#169 + #10='╩'
+  LanguageSupport;                   // #226+#149+#169 + #10='╩'
 {$R *.res}
 begin
    WriteLn( 'FREEShip <числовая модель>.[ftm,fbm,fef]'+#10
-      +#10+'Compiled at '+{$I %DATE%}+' '+{$I %TIME%}
-      +#10+'CPU\OS: '+{$I %FPCTARGETCPU%}+' \ '+{$I %FPCTARGETOS%}
-      +#10+'Pascal: '+{$I %FPCVERSION%}
-      +#10+'free!Ship v.2.6.2 { от 1.65 до 5 }'+#10 );
+       +#10+'Compiled at '+{$I %DATE%}+' '+{$I %TIME%}
+       +#10+'CPU\OS: '+{$I %FPCTARGETCPU%}+' \ '+{$I %FPCTARGETOS%}
+       +#10+'Pascal: '+{$I %FPCVERSION%}
+       +#10+'free!Ship v.2.6.2 { от 1.6? до 5 }'+#10 );
    Application.Initialize;
    SplashWindow:=TSplashWindow.Create( Application );
    SplashWindow.Show;

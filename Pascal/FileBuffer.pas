@@ -21,8 +21,10 @@ TFileBuffer=class
     procedure FSetCapacity(val: integer); virtual;
     function FGetCapacity: integer; virtual;
   public
-    Encoding: String;
     FPosition:Integer; // current position when reading information from buffer
+    constructor Create;
+    destructor Destroy; override;
+    procedure Clear; virtual;
     procedure Add( IntegerValue: integer); overload; virtual;
     procedure Add( Text: String);        overload; virtual;
     procedure Add( BooleanValue: boolean); overload; virtual;
@@ -40,13 +42,10 @@ TFileBuffer=class
     procedure LoadVector(var Output: Vector); virtual;
     procedure LoadT3DPlane(var Output: Plate); virtual;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); virtual;
-    constructor Create;
-    procedure Clear; virtual;
     procedure LoadFromFile(Filename: String); virtual;
     procedure Reset; virtual;                  // reset the data before reading
     function SaveToFile(Filename: String):boolean; virtual;
     function GetPosition:integer; virtual;
-    destructor Destroy; override;
     property Capacity: integer read FGetCapacity write FSetCapacity;
     property Count: integer read FCount;
     property Version: TFileVersion read FVersion write FVersion;
@@ -90,7 +89,7 @@ TFileBuffer=class
     property Position: integer read GetPosition;
   end;
 
-implementation
+implementation Uses ShipUnit;
 {
   TFileBuffer
   Binary stream used to store file info
@@ -106,7 +105,7 @@ constructor TFileBuffer.Create;
 procedure TFileBuffer.Clear;
     begin FCapacity:=0;   FCount:=0;
           FPosition:=0;   Setlength( FData,0 );
-          FFileName:='';  Encoding:='cp1251';
+          FFileName:='';
     end;
 destructor TFileBuffer.Destroy;
      begin Clear; inherited Destroy; end;
@@ -180,7 +179,8 @@ begin Add( Plane.a ); Add( Plane.b ); Add( Plane.c ); Add( Plane.d ); end;
 
 procedure TFileBuffer.Add( Text: String ); var Size: integer;
 begin                                 // convert text from UTF8 to Windows ANSI
-  if Encoding<>'utf8' then Text:=ConvertEncoding( Text,'utf8',Encoding );
+  if St.Preferences.FbmEncoding<>'utf8' then
+    Text:=ConvertEncoding( Text,'utf8',St.Preferences.FbmEncoding );
   Size:=Length( Text );
   Add( Size );
   if Size=0 then exit;
@@ -245,18 +245,18 @@ var I,Size: integer; Ch: char; // S: String;
 begin Output:='';
   if FPosition=0 then
   if (Integer(FData[0])<>9) and (Integer(FData[0])<>18) then exit;// 0-контроль
-  LoadInteger( Size );                // if FPosition+Size >= FCount then exit;
+  LoadInteger( Size );
   for I:=1 to Size do begin
      Ch:=char( FData[FPosition] ); Inc( FPosition );
      Output:=Output+Ch;
-  end;                                                 //  EnCoding:='cp1251';
-  if Encoding<>'utf8' then Output:=ConvertEncoding( Output,Encoding,'utf8' );
-//   begin S:=Output; Output:=ConvertEncoding( S,Encoding,'utf8' ); end;
+  end;
+  if St.Preferences.FbmEncoding<>'utf8' then
+     Output:=ConvertEncoding( Output,St.Preferences.FbmEncoding,'utf8' );
 end;
 
 procedure TFileBuffer.LoadInteger( var Output: integer );
 var Size: integer;
-begin Size:=4; Output:=0;              //if FPosition+Size >= FCount then exit;
+begin Size:=4; Output:=0;
   Move( FData[FPosition],Output,Size );
   Output:=LEtoN( Output );
   Inc( FPosition,Size );
@@ -272,24 +272,19 @@ begin
 end;
 
 procedure TFileBuffer.LoadTFileVersion(var Output: TFileVersion);
-var
-  Size: integer;
+var Size: integer;
 begin
-  Size:=SizeOf( Output );         //if FPosition+Size >= FCount then exit;
+  Size:=SizeOf( Output );
   Move( FData[FPosition],Output,Size );
   Inc( FPosition,Size );
 end;
 
-procedure TFileBuffer.LoadBoolean( var Output: boolean );
-const Size=1;
-begin Output:=False;                   //if FPosition+Size >= FCount then exit;
-  Move(FData[FPosition],Output,Size);
-  Inc( FPosition,Size );
+procedure TFileBuffer.LoadBoolean( var Output: boolean ); const Size=1;
+begin Output:=False; Move(FData[FPosition],Output,Size); Inc(FPosition,Size);
 end;
 procedure TFileBuffer.LoadTFloatType( var Output: Real );
 const Size=sizeof( Single ); var W: Single=0.0;
-begin// if FPosition+Size >= FCount then exit;
-  Move( FData[FPosition],W,Size ); OutPut:=W; Inc( FPosition,Size );
+begin Move( FData[FPosition],W,Size ); OutPut:=W; Inc( FPosition,Size );
 end;
 procedure TFileBuffer.LoadVector( var Output: Vector );
 begin LoadTFloatType( OutPut.X );
@@ -307,33 +302,28 @@ end;
   Text file used to store file info
 }
 constructor TTextBuffer.Create;
-begin FLines:=TStringList.Create; inherited Create; WestPoint; end;
-
+   begin FLines:=TStringList.Create; inherited Create; WestPoint; end;
 function TTextBuffer.FGetCapacity: integer;
    begin Result:=FLines.Capacity; end;
 procedure TTextBuffer.FSetCapacity( val: integer );
     begin FLines.Capacity:=val; end;
 procedure TTextBuffer.Clear;
     begin if FLines<>nil then FLines.Clear; inherited Clear; end;
-
 procedure TTextBuffer.Add(Text: String); var S: String;
-begin
-  S:=ReplaceStr( Text,'\','\\' );
-  S:=ReplaceStr( S,EOL,'\n' );
-  FLines.Add( S );
-  Inc( FPosition );
-end;
-
+    begin S:=ReplaceStr( Text,'\','\\' );
+          S:=ReplaceStr( S,EOL,'\n' );
+          FLines.Add( S );
+          Inc( FPosition );
+    end;
 procedure TTextBuffer.Add(BooleanValue: boolean); var S: String;
-begin                        // if BooleanValue then S:='True' else S:='False';
-  S:=BoolToStr( BooleanValue,'1','0' );
-  FLines.Add( S );
-  Inc( FPosition );
-end;
-
+    begin                    // if BooleanValue then S:='True' else S:='False';
+      S:=BoolToStr( BooleanValue,'1','0' );
+      FLines.Add( S );
+      Inc( FPosition );
+    end;
 procedure TTextBuffer.Add( FloatValue: Real ); var S: String;
-begin S:=FloatTypeToStr( FloatValue ); FLines.Add(S); Inc(FPosition); end;
-
+    begin S:=FloatTypeToStr( FloatValue ); FLines.Add(S); Inc(FPosition);
+    end;
 procedure TTextBuffer.Add( IntegerValue: integer );
     begin FLines.Add( I2S( IntegerValue ) ); Inc( FPosition );
     end;
@@ -403,20 +393,15 @@ begin
 end;
 
 procedure TTextBuffer.LoadInteger( var Output: integer ); var S: String;
-    begin S:=FLines[FPosition];
-      Output:=GetInteger( S ); //StrToInt( S );
-      Inc(FPosition);
+    begin S:=FLines[FPosition]; Output:=GetInteger( S ); Inc(FPosition);
     end;
-
-procedure TTextBuffer.LoadString( var Output: String );
-var S: String;
-begin
-   S:=FLines[FPosition];
-   S:=ReplaceStr(S,'\n',EOL);
-   S:=ReplaceStr(S,'\\','\');
-   Output:=S;                //!!! Output:=ConvertEncoding(S,FEncoding,'utf8');
-   Inc( FPosition );
-end;
+procedure TTextBuffer.LoadString( var Output: String ); var S: String;
+    begin S:=FLines[FPosition];
+          S:=ReplaceStr(S,'\n',EOL);
+          S:=ReplaceStr(S,'\\','\');
+          Output:=S;
+          Inc( FPosition );
+    end;
 procedure TTextBuffer.LoadTFileVersion( var Output: TFileVersion );
     begin Output:=VersionBinary( FLines[FPosition] ); Inc( FPosition ); end;
 procedure TTextBuffer.LoadBoolean(var Output: boolean);

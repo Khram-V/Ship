@@ -76,6 +76,7 @@
       <Unit>
         <Filename Value="Pascal\Main.lfm"/>
         <IsPartOfProject Value="True"/>
+        <HasResources Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Pascal\BackgroundBlendingDlg.pas"/>

@@ -1,17 +1,15 @@
 unit PreferencesDlg;
 interface uses
-  LCLIntf, LCLType,
-  SysUtils,Variants,
-  Classes, Graphics,
-  Controls,Forms,
-  Dialogs, StdCtrls,
-  Buttons, ExtCtrls,
-  ComCtrls,Spin,Menus, ShipUnit,STypes;
-type                                                 { TPreferencesDialog }
+  Classes,  Controls,
+  Forms,    Dialogs,
+  StdCtrls, Buttons,
+  ExtCtrls, ComCtrls,
+  Spin, ShipUnit, STypes;
+type
   TPreferencesDialog=class(TForm)
     EditExportDir,EditImportDir,EditLanguagesDir,
     EditManualsDir,EditOpenDir,EditSaveDir: TEdit;
-    lbSubmergedSurfaceOpacity,
+    lbSubmergedOpacity,
     Label1,Label2,Label3,Label4,Label5,Label6,Label7,Label8,Label9,Label10,
     Label11,Label12,Label13,Label14,Label15,Label16,Label17,Label18,Label19,
     Label20,Label21,Label22,Label23,Label24,Label25,Label26,Label27,Label28,
@@ -27,11 +25,11 @@ type                                                 { TPreferencesDialog }
     BitBtn1,BitBtn2,SpeedButton9,SpeedButton14,SpeedButton15,
     SpeedButton16,SpeedButton17,SpeedButtonLanguagesDir: TSpeedButton;
     SpinEdit1,seFontSize,SubmergedOpacity,NumInput1: TSpinEdit;
-    TabSheet1,TabSheet2,TabSheet3:       TTabSheet;
-    ComboBox1,ComboBoxEncoding:          TComboBox;
+    TabSheet1,TabSheet2,TabSheet3: TTabSheet;
+    ComboBox1,ComboBoxEncoding: TComboBox;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
-    PageControl1:                     TPageControl;
-    ColorDialog:                      TColorDialog;
+    PageControl1: TPageControl;
+    ColorDialog: TColorDialog;
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ResetColorsButtonClick(Sender: TObject);
@@ -54,7 +52,6 @@ type                                                 { TPreferencesDialog }
     Fship: TShip;
     FConfigChanged: boolean;
     procedure Updatedata;
-    procedure ComboBoxEncodingFillItems;
     function getPreferredSize:TRect; reintroduce;
   public                                                { Public declarations }
     property IsConfigChanged: boolean read FConfigChanged;
@@ -98,17 +95,6 @@ begin with Sp do begin             //  Label Panel Top
   Panel25.Color:=HydrostaticsFont; //   24    25   346 'Hydrostatics font color'
   Panel26.Color:=ZebraStripe;      //   25    26   374 'Zebra stripes color'
   end;
-{ object ColorDialog: TColorDialog
-    Color=clBlack
-    CustomColors.Strings=(
-      'ColorA=000000' 'ColorB=000080' 'ColorC=008000' 'ColorD=008080'
-      'ColorE=800000' 'ColorF=800080' 'ColorG=808000' 'ColorH=808080'
-      'ColorI=C0C0C0' 'ColorJ=0000FF' 'ColorK=00FF00' 'ColorL=00FFFF'
-      'ColorM=FF0000' 'ColorN=FF00FF' 'ColorO=FFFF00' 'ColorP=FFFFFF'
-      'ColorQ=C0DCC0' 'ColorR=C08000' 'ColorS=F0FBFF' 'ColorT=A4A0A0' <-F0CAA6'
-    ) Left=240
-  end
-}
   SpinEdit1.Value:=Fship.Preferences.PointSize;
   seFontSize.Value:=Fship.Preferences.FontSize;
   if Fship.Preferences.MaxUndoMemory<1
@@ -122,9 +108,31 @@ begin with Sp do begin             //  Label Panel Top
     EditImportDir.Text:=   OnlyName( ImportDirectory );
     EditExportDir.Text:=   OnlyName( ExportDirectory );
   end;
-  ComboBoxEncodingFillItems;
+  with ComboBoxEncoding.Items do begin // совместимость для старых версий *.fbm
+    AddObject('UTF-8 стандарт Unicode(65001)',TObject(string('utf8')));
+    AddObject('866 Русский DOS and Windows console',TObject(string('cp866')));
+    AddObject('950 中文 (漢語/汉语) Traditional Chinese(Taiwan; Hong Kong SAR,PRC)',TObject(string('cp950')));
+    AddObject('1251 Русский (Windows)',      TObject(string('cp1251')));
+    AddObject('1252 Latin, Western European',TObject(string('cp1252')));
+    AddObject('1253 ελληνική γλώσσα, Greek', TObject(string('cp1253')));
+    AddObject('1254 Türkçe, Turkish',        TObject(string('cp1254')));
+    AddObject('1255 עִבְרִית Hebrew',        TObject(string('cp1255')));
+    AddObject('1256 اللُّغَةُ العَرَبِيَّة‎, Arabic', TObject(string('cp1256')));
+    AddObject('1258 Việt ngữ (越語) Vietnam',TObject(string('cp1258')));
+  { — (Unicode Transformation Format,8-bit)
+    AddObject('ISO_8859_1-Central Europe',TObject(string('iso88591')));
+    AddObject('ISO_8859_15-Western European languages',TObject(string('iso885915')));
+    AddObject('ISO_8859_2-Eastern Europe',TObject(string('iso88592')));
+    AddObject('1250 Central Europe',TObject(string('cp1250')));
+    AddObject('1257 Baltic',TObject(string('cp1257')));
+    AddObject( '437 DOS Central Europe',TObject(string('cp437')));
+    AddObject( '850 DOS Western Europe',TObject(string('cp850')));
+    AddObject( '852 DOS Central Europe',TObject(string('cp852')));
+    AddObject( '874 Thai',TObject(string('cp874')));
+    AddObject('KOI8 Russian Cyrillic',TObject(string('koi8'))); }
+  end;
   for I:=0 to ComboBoxEncoding.Items.Count-1 do
-    if string( ComboBoxEncoding.Items.Objects[i] ) =
+  if string( ComboBoxEncoding.Items.Objects[i] ) =
                Fship.Preferences.FbmEncoding then break;
   if I>ComboBoxEncoding.Items.Count then I:=-1;
        ComboBoxEncoding.ItemIndex:=I;
@@ -244,30 +252,4 @@ begin SelectDirectoryDialog1.FileName:=EditExportDir.Text;
    if SelectDirectoryDialog1.Execute then
       EditExportDir.Text:=SelectDirectoryDialog1.FileName;
 end;
-procedure TPreferencesDialog.ComboBoxEncodingFillItems; // для *.fbm фалов
-begin                                                      // или совместимость
-  with ComboBoxEncoding.Items do begin                    // к старым версиям
-    AddObject('UTF-8 (Unicode Transformation Format,8-bit) — стандарт кодирования Unicode(65001)',TObject(string('utf8')));
-    AddObject('CP866 Русский DOS and Windows console',TObject(string('cp866')));
-    AddObject('CP950 中文 (漢語/汉语) Traditional Chinese(Taiwan; Hong Kong SAR,PRC); Chinese Traditional(Big5)',TObject(string('cp950')));
-    AddObject('CP1251 Русский (Windows)',TObject(string('cp1251')));
-    AddObject('CP1252 Latin; Western European',TObject(string('cp1252')));
-    AddObject('CP1255 עִבְרִית Hebrew',TObject(string('cp1255')));
-    AddObject('CP1258 Việt ngữ (越語) Vietnam',TObject(string('cp1258')));
-(*  AddObject('ISO_8859_1-Central Europe',TObject(string('iso88591')));
-    AddObject('ISO_8859_15-Western European languages',TObject(string('iso885915')));
-    AddObject('ISO_8859_2-Eastern Europe',TObject(string('iso88592')));
-    AddObject('CP1250- Central Europe',TObject(string('cp1250')));
-    AddObject('CP1253- Greek', TObject(string('cp1253')));
-    AddObject('CP1254- Turkish',TObject(string('cp1254')));
-    AddObject('CP1256- Arabic',TObject(string('cp1256')));
-    AddObject('CP1257- Baltic',TObject(string('cp1257')));
-    AddObject( 'CP437- DOS Central Europe',TObject(string('cp437')));
-    AddObject( 'CP850- DOS Western Europe',TObject(string('cp850')));
-    AddObject( 'CP852- DOS Central Europe',TObject(string('cp852')));
-    AddObject( 'CP874- Thai',TObject(string('cp874')));
-    AddObject(  'KOI8- Russian Cyrillic',TObject(string('koi8')));
-*)end;
-end;
-
 end.

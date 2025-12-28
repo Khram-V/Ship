@@ -1060,7 +1060,7 @@ object PreferencesDialog: TPreferencesDialog
                 TabOrder = 4
                 OnClick = ColorPanelClick
               end
-              object lbSubmergedSurfaceOpacity: TLabel
+              object lbSubmergedOpacity: TLabel
                 Left = 10
                 Height = 23
                 Top = 130
