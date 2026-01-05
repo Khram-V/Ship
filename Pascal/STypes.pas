@@ -5,6 +5,7 @@ Const
   Radian = 57.295779513082320876798154814105; // 180/π = °\rad
   Foot = 0.3048;
   Lbs  = 0.4535924;
+  MaxRecent = 24;
   WeightConversionFactor=(1000/Lbs)/((1/Foot)*(1/Foot)*(1/Foot));
   EOL  = #13#10;
 Type

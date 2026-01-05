@@ -69,7 +69,7 @@ begin
     St.Preferences.ExportDirectory:=Dialog.InitialDir;
     Strings:=TStringList.Create;
     with St.FProjectSettings do                              // RawByteString
-    Strings.Add( '; !St'+EOL+';'
+    Strings.Add( '; free!Ship'+EOL+';'
             +EOL+'; File Name: '+Title
             +EOL+'; Name     : '+ProjectName
             +EOL+'; Designer : '+ProjectDesigner
@@ -604,7 +604,7 @@ begin
 //          try
             readln(FFile,I); // first read unit information; 0=metric, 1=imperial
             if I in [0,1] then UnitType:=TUnitType(I)
-                           else ShowMessage(Userstring(108));
+                          else ShowMessage(Userstring(108));
             Spline:=TSpline.Create;
             repeat
                Readln(FFile,Str);
@@ -794,7 +794,7 @@ begin
             Write(FFile,'** Appendage Hydrostatics Generator Version 1.0.1'+#10);
             Write(FFile,'** Copyright : John A.MacSween-2000'+#10);
             Write(FFile,'** www.naval-architecture.co.uk'+#10);
-            Write(FFile,'** File generated with !St'+#10);
+            Write(FFile,'** File generated with free!Ship'+#10);
             Write(FFile,'APPENDAGE_NAME'+#10);                     // Hull name
             if St.ProjectSettings.ProjectName<>''
                then Tmp:=St.ProjectSettings.ProjectName
@@ -1329,7 +1329,7 @@ begin
       if St.ProjectSettings.ProjectUnits=fuMetric then Strings.Add('P:M')
                                                      else Strings.Add('P:F');
       // Add max. 10 comments
-      Strings.Add('\Generated with !St');
+      Strings.Add('\Generated with free!Ship');
 //    Strings.Add('\www.ship.org');
       // Save shape
       Strings.Add('*');
@@ -1505,13 +1505,11 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
                          end;
                       end;
                    end;
-                end;
-                break;
+                end; break;
              end;
           end;
        end;
     end;
-
     procedure AssembleTriangle(var Cols,Rows:Integer;var Grid:SGrid;Face:SControlface);
     var I,J,N, Index: Integer;
         Points,Faces: TFasterList;
@@ -1564,7 +1562,6 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
       Faces.Destroy;
       Points.Destroy;
     end;
-
     procedure ProcessGrid(Cols,Rows:Integer;Grid:SGrid;ColorInd:Integer);
     var NURB,NURB2: TNURBsurface;           // convert grid to a NURB
         I,J       : Integer;
@@ -1585,14 +1582,12 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
            P7:=PhantomPoint(P8,P9);
            Result:=20*P5 - 4*P2 - P3 - 4*P4 - 4*P6 - P7 - 4*P8 -P9;
         end;
-
     begin
       if (Cols>0) and (Rows>0) then begin
          Setlength(BottomRow,Cols);
          Setlength(TopRow,Cols);
          Setlength(LeftColumn,Rows);
          Setlength(RightColumn,Rows);
-
          // assemble bottom row to set tangency
          BottomPresent:=True;
          for I:=2 to Cols do begin
@@ -1621,25 +1616,20 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
          BottomRight:=nil;
          TopLeft:=nil;
          TopRight:=nil;
-
          if BottomPresent and leftPresent then BottomLeft:=FindFourtPoint(LeftColumn[Rows-1],Grid[Rows-1][0],BottomRow[0]);               // find bottomleft cornerpoint
          if BottomPresent and RightPresent then BottomRight:=FindFourtPoint(RightColumn[Rows-1],Grid[Rows-1][Cols-1],BottomRow[Cols-1]);  // find bottomRight cornerpoint
          if TopPresent and leftPresent then TopLeft:=FindFourtPoint(LeftColumn[0],Grid[0][0],TopRow[0]);                                  // find Topleft cornerpoint
          if TopPresent and RightPresent then TopRight:=FindFourtPoint(RightColumn[0],Grid[0][Cols-1],TopRow[Cols-1]);                     // find TopRight cornerpoint
-
          NURB:=TNURBsurface.Create;
          NURB.SetCapacity(Cols+2,Rows+2);
          NURB.ColCount:=Nurb.ColCapacity;
          NURB.RowCount:=Nurb.RowCapacity;
-         for I:=1 to Rows do begin
-            for J:=1 to COLS do begin
+         for I:=1 to Rows do
+            for J:=1 to COLS do
                NURB.Point[J,I]:=Grid[I-1][J-1].Coordinate;
-            end;
-         end;
          if SendTriangles then begin         // check for special triangle case
-            if (Grid[Rows-1][Cols-1]=Grid[Rows-1][Cols-2]) and
-               (Grid[Rows-1][Cols-1]=Grid[Rows-2][Cols-1]) then
-            begin
+            if (Grid[Rows-1][Cols-1]=Grid[Rows-1][Cols-2])
+            and (Grid[Rows-1][Cols-1]=Grid[Rows-2][Cols-1]) then begin
                Nurb.Point[Cols,Rows]:=Grid[Rows-1][Cols-1].LimitPoint;
                Nurb.Point[Cols-1,Rows]:=Grid[Rows-1][Cols-1].LimitPoint;
                Nurb.Point[Cols,Rows-1]:=Grid[Rows-1][Cols-1].LimitPoint;
@@ -1654,7 +1644,6 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
                         else for I:=1 to Rows do Nurb.Point[0,I]:=PhantomPoint(Nurb.Point[1,I],Nurb.Point[2,I]);
          if RightPresent then for I:=1 to Rows do Nurb.Point[Cols+1,I]:=RightColumn[I-1].Coordinate
                          else for I:=1 to Rows do Nurb.Point[Cols+1,I]:=PhantomPoint(Nurb.Point[Cols,I],Nurb.Point[Cols-1,I]);
-
          if TopLeft<>nil then Nurb.Point[0,0]:=TopLeft.Coordinate
                          else Nurb.Point[0,0]:=CornerPoint(Nurb.Point[1,1],Nurb.Point[2,1],Nurb.Point[1,2],Nurb.Point[2,2]);
          if TopRight<>nil then Nurb.Point[Nurb.ColCount-1,0]:=TopRight.Coordinate
@@ -1663,12 +1652,10 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
                             else Nurb.Point[0,Nurb.RowCount-1]:=CornerPoint(Nurb.Point[1,Nurb.Rowcount-2],Nurb.Point[2,Nurb.Rowcount-2],Nurb.Point[1,Nurb.Rowcount-3],Nurb.Point[2,Nurb.Rowcount-3]);
          if BottomRight<>nil then Nurb.Point[Nurb.ColCount-1,Nurb.RowCount-1]:=BottomRight.Coordinate
                              else Nurb.Point[Nurb.ColCount-1,Nurb.RowCount-1]:=CornerPoint(Nurb.Point[Nurb.Colcount-2,Nurb.Rowcount-2],Nurb.Point[Nurb.Colcount-3,Nurb.Rowcount-2],Nurb.Point[Nurb.Colcount-2,Nurb.Rowcount-3],Nurb.Point[Nurb.Colcount-3,Nurb.Rowcount-3]);
-
          NURB.ColDegree:=3;
          NURB.RowDegree:=3;
          NURB.SetUniformColKnotvector;
          NURB.SetUniformRowKnotvector;
-
          // Insert knots to force the patch to interpolate start and endknots
          for I:=1 to Nurb.ColDegree do Nurb.InsertColKnot(Nurb.Colknotvector[Nurb.ColDegree]);
          for I:=1 to Nurb.ColDegree do Nurb.InsertColKnot(Nurb.Colknotvector[Nurb.ColCount]);
@@ -1682,20 +1669,7 @@ var I,J,K,Cols,Rows,NAssembled,PrevLevel,ColorIndex,NSurfaces: Integer;
          // Set knotvectors to open-knot iVect type (standard interpolating form)
          Nurb.SetDefaultColKnotvector;
          Nurb.SetDefaultRowKnotvector;
-
          // Check all cornerpoints for irregular vertices
-         {
-         if TopLeft=nil then if not Grid[0][0].IsRegularNURBSPoint(CheckFaces) then Nurb.Point[0,0]:=LimitPoint(Grid[0][0]);
-         if Topright=nil then if not Grid[0][Cols-1].IsRegularNURBSPoint(CheckFaces) then Nurb.Point[Cols+1,0]:=LimitPoint(Grid[0][Cols-1]);
-         if BottomLeft=nil then if not Grid[Rows-1][0].IsRegularNURBSPoint(CheckFaces) then Nurb.Point[0,Rows+1]:=LimitPoint(Grid[Rows-1][0]);
-         if bottomright=nil then if not Grid[Rows-1][Cols-1].IsRegularNURBSPoint(CheckFaces) then Nurb.Point[Cols+1,Rows+1]:=LimitPoint(Grid[Rows-1][Cols-1]);
-         }
-         {
-         if TopLeft=nil then Nurb.Point[0,0]:=LimitPoint(Grid[0][0]);
-         if Topright=nil then Nurb.Point[Cols+1,0]:=LimitPoint(Grid[0][Cols-1]);
-         if BottomLeft=nil then Nurb.Point[0,Rows+1]:=LimitPoint(Grid[Rows-1][0]);
-         if bottomright=nil then Nurb.Point[Cols+1,Rows+1]:=LimitPoint(Grid[Rows-1][Cols-1]);
-         }
          Nurb.Point[0,0]:=Grid[0][0].LimitPoint;
          Nurb.Point[Cols+1,0]:=Grid[0][Cols-1].LimitPoint;
          Nurb.Point[0,Rows+1]:=Grid[Rows-1][0].LimitPoint;
@@ -1733,9 +1707,9 @@ begin
    if Dialog.Execute then begin
       Prev:=Screen.Cursor;
       Screen.Cursor:=crHourglass;
-      PrevLevel:=St.Surface.DesiredSubdivisionLevel;
+      PrevLevel:=St.Surface.DivSec;
       NSurfaces:=0;
-      St.Surface.DesiredSubdivisionLevel:=1;
+      St.Surface.DivSec:=1;
       St.Surface.SubdivisionMode:=fmCatmullClark;
       if not St.Surface.Build then St.Surface.Rebuild;
       St.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
@@ -1833,14 +1807,13 @@ begin
             end;
          end;
 //    end;
-
       if NSurfaces>0 then begin
          IGESList.SaveToFile(ChangeFileExt(Dialog.Filename,'.igs'));
          ShowMessage('Exported '+IntToStr(NSurfaces)+' surfaces.');
       end else ShowMessage(Userstring(100));
       IGESList.Destroy;
       Layers.Destroy;
-      St.Surface.DesiredSubdivisionLevel:=PrevLevel;
+      St.Surface.DivSec:=PrevLevel;
       St.Surface.SubdivisionMode:=fmQuadTriangle;
       if not St.Surface.Build then St.Surface.Rebuild;
       Screen.Cursor:=Prev;

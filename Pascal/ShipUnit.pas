@@ -5,7 +5,7 @@ interface uses // do WIndows-specific code here
      Windows,iniFiles,Dialogs,Classes,
      Graphics,Geometry,FileBuffer,Matrices,
      FasterList,STypes,LanguageSupport,VersionUnit,ControlPointFrm;
-  // !St uses British imperial format, eg 1 long ton=2240 lbs
+  // free!Ship uses British imperial format, eg 1 long ton=2240 lbs
 const ShipExtention='.ftm'; // Default extention for hull model files
       SelectDistance   = 3;     // Max. distance in pixels between an item and the cursor in order to be selected
       Threshold        = 3;     // The distance that the cursor has to be moved before a controlpoint starts moving
@@ -118,7 +118,7 @@ end;
    ship can import a max. of three different background images that
    may be coupled either to the bodyplan, profile or planview.
    These images can be used to trace the lines of an
-   hullform and are stored within the !St file.
+   hullform and are stored within the free!Ship file.
 }
 TBackgroundImageData=class
 private
@@ -325,10 +325,10 @@ public
    destructor Destroy; override;
    procedure Drawing;     // автоматическое формирование теоретических контуров
    procedure File_Export_Aurora_Experiments; // Теория корабля и штормовой вычислительный эксперимент
-   procedure File_Load; overload; virtual; // Load a !St file by showing an opendialog
+   procedure File_Load; overload; virtual; // Load a free!Ship file by showing an opendialog
    procedure File_Load(filename:string); reintroduce; overload; // Loads the given filename quietly
-   function File_Save: Boolean;   // save as !St file without prompting for a filename (must already been set)
-   function File_SaveAs: Boolean; // Ask for filename and save as !St file
+   function File_Save: Boolean;   // save as free!Ship file without prompting for a filename (must already been set)
+   function File_SaveAs: Boolean; // Ask for filename and save as free!Ship file
    function File_SaveCheck:word;  // с запроосом необходимости -> mrOk,mrNo,mrCancel
    procedure Flowline_Add(Source:Place;View:TviewType);
    procedure AddToRecentFiles(Filename:String); // Takes a filename and adds it to the list with recent files
@@ -856,7 +856,7 @@ end end;
 {
   ship can import a max. of three different background images that may be
   coupled either to the bodyplan, profile or planview. These images can be
-  used to trace the lines of an hullform and are stored within the !St file.
+  used to trace the lines of an hullform and are stored within the free!Ship file
 }
 procedure TBackgroundImageData.Clear;
 begin
@@ -1918,7 +1918,6 @@ var Points,Faces: TFasterList;
        Setlength(Point.Triangles,Point.Ntriangles);
        Point.Triangles[Point.Ntriangles-1]:=TriangleIndex;
     end;
-
     procedure AddTriangle(P1,P2,P3:SPoint);
     begin
        if NTriangles=TriangleCapacity then begin
@@ -1936,7 +1935,6 @@ var Points,Faces: TFasterList;
        Triangles[NTriangles].Plane:=PlanePPP(P1.Coordinate,P2.Coordinate,P3.Coordinate);
        inc(NTriangles);
     end;
-
     function CalculateFlowDirection{2}( {Incoming:Vector;} Point:SPoint ):Vector;
     var Normal,Direction,P,Proj, Incoming: Vector; Plane: Plate;
     begin // Incoming.x-=1.001; Incoming.y*=0.4;
@@ -1951,8 +1949,9 @@ var Points,Faces: TFasterList;
        Direction:=Proj-P;
        Result:=Normalize( Direction );
     end;
+
     function FindInitialTriangle
-    ( StartPoint,EndPoint:Vector;var Int,Dir:Vector ):Integer;
+    ( StartPoint,EndPoint:Vector; var Int,Dir:Vector ): Integer;
     var Triangle: TTriangle;
         S1,S2,s,t, Distance,b0,b1,b2,UdotV,UdotU,VdotV,WdotU,WdotV: Real;
         P,u,v,w,P0,P1,P2: Vector;
@@ -1964,12 +1963,12 @@ var Points,Faces: TFasterList;
        Dir:=Zero;
        for I:=1 to NTriangles do begin
           Triangle:=Triangles[I-1];
-          S1:=Triangle.Plane.a*StartPoint.x+Triangle.Plane.b*StartPoint.y+Triangle.Plane.c*StartPoint.z+Triangle.Plane.d;
-          S2:=Triangle.Plane.a*EndPoint.x+Triangle.Plane.b*EndPoint.y+Triangle.Plane.c*EndPoint.z+Triangle.Plane.d;
-          if ((S1<0) and (S2>0)) or ((S1>0) and (S2<0)) then begin // possible intersection
+          S1:=Triangle.Plane.a*StartPoint.x + Triangle.Plane.b*StartPoint.y + Triangle.Plane.c*StartPoint.z + Triangle.Plane.d;
+          S2:=Triangle.Plane.a*EndPoint.x   + Triangle.Plane.b*EndPoint.y   + Triangle.Plane.c*EndPoint.z   + Triangle.Plane.d;
+          if ((S1<=0) and (S2>=0)) or ((S1>=0) and (S2<=0)) then begin // possible intersection
              if S1=S2 then T:=0.5
-                      else T:=-s1/(s2-s1);
-             P:=StartPoint+T*(EndPoint-StartPoint);
+                      else T:=s1/(s1-s2);
+             P:=StartPoint+(T*(EndPoint-StartPoint));
              if PointInTriangle( P,PointData[Triangle.P1].Coord,
                                    PointData[Triangle.P2].Coord,
                                    PointData[Triangle.P3].Coord ) then begin
@@ -1979,8 +1978,7 @@ var Points,Faces: TFasterList;
           end;
        end;
        if Result<>-1 then begin
-          // Calculate baycentric coordinates to interpolate between the three flowdirections
-          // http://softsurfer.com/Archive/algorithm_0104/algorithm_0104.htm
+       // Calculate baycentric coordinates to interpolate between the three flowdirections
           Triangle:=Triangles[result];
           P0:=PointData[Triangle.P1].Coord;
           P1:=PointData[Triangle.P2].Coord;
@@ -1988,17 +1986,17 @@ var Points,Faces: TFasterList;
           U:=P1-P0;
           V:=P2-P0;
           W:=Int-P0;
-          UdotU:=Dotproduct(U,U);
-          UdotV:=Dotproduct(U,V);
-          VdotV:=Dotproduct(V,V);
-          WdotU:=Dotproduct(W,U);
-          WdotV:=Dotproduct(W,V);
-          s:=(UdotV*WdotV-VdotV*WdotU)/(UdotV*UdotV-UdotU*VdotV);
-          t:=(UdotV*WdotU-UdotU*WdotV)/(UdotV*UdotV-UdotU*VdotV);
+          UdotU:=Dotproduct( U,U );
+          UdotV:=Dotproduct( U,V );
+          VdotV:=Dotproduct( V,V );
+          WdotU:=Dotproduct( W,U );
+          WdotV:=Dotproduct( W,V );
+          S:=( UdotV*WdotV-VdotV*WdotU )/( UdotV*UdotV-UdotU*VdotV );
+          T:=( UdotV*WdotU-UdotU*WdotV )/( UdotV*UdotV-UdotU*VdotV );
           b0:=1-s-t;
-          b1:=s;
-          b2:=t;                                                       // check
-          t:=b0+b1+b2;
+          b1:=S;
+          b2:=T;                                                       // check
+          T:=b0+b1+b2;
           if T=1 then begin
              P0:=PointData[Triangle.P1].FlowDir;
              P1:=PointData[Triangle.P2].FlowDir;
@@ -2008,6 +2006,7 @@ var Points,Faces: TFasterList;
           end else Result:=Result-1+1;
        end;
     end;
+
     function ProcessTriangle(var Triangle:TTriangle;var SkipInd1,SkipInd2:Integer;var Intersection,Direction:Vector;var NextTriangle:integer):boolean;
     var P1,P2,Dir1,Dir2,Int : Vector;
         Distance,Param: Real;
@@ -2041,7 +2040,7 @@ var Points,Faces: TFasterList;
           Case I of
              1 : Ind1:=Triangle.P1;
              2 : Ind1:=Triangle.P2;
-             3 : Ind1:=Triangle.P3; Else Ind1:=0;
+             3 : Ind1:=Triangle.P3; else Ind1:=0;
           end;
           Case I of
              1 : Ind2:=Triangle.P2;
@@ -2122,31 +2121,31 @@ begin                                                 // clear any present data
       Case FProjectionView of
          fvProfile: begin
            Startpoint.X:=FProjectionPoint.X;
-           StartPoint.Y:=Owner.Surface.Max.Y+10;
+           StartPoint.Y:=Owner.Surface.Max.Y; //+10;
            StartPoint.Z:=FProjectionPoint.Y;
            EndPoint:=iVect(StartPoint.X,0,StartPoint.Z); end;
          fvPlan: begin
            Startpoint.X:=FProjectionPoint.X;
            StartPoint.Y:=FProjectionPoint.Y;
-           StartPoint.Z:=Owner.Surface.Min.Z-10;
-           EndPoint:=iVect(StartPoint.X,StartPoint.Y,Owner.Surface.Max.Z+100); end;
+           StartPoint.Z:=Owner.Surface.Min.Z; //-10;
+           EndPoint:=iVect(StartPoint.X,StartPoint.Y,Owner.Surface.Max.Z{+100}); end;
          fvBodyplan: if FProjectionPoint.X<0 then begin
-           Startpoint.X:=Owner.Surface.Min.X-10;
+           Startpoint.X:=Owner.Surface.Min.X; //-10;
            StartPoint.Y:=-FProjectionPoint.X;
            StartPoint.Z:=FProjectionPoint.Y;
-           EndPoint:=iVect(Owner.Surface.Max.X+10,StartPoint.Y,StartPoint.Z);
+           EndPoint:=iVect(Owner.Surface.Max.X{+10},StartPoint.Y,StartPoint.Z);
          end else begin
-           Startpoint.X:=Owner.Surface.Max.X+10;
+           Startpoint.X:=Owner.Surface.Max.X; //+10;
            StartPoint.Y:=FProjectionPoint.X;
            StartPoint.Z:=FProjectionPoint.Y;
-           EndPoint:=iVect(Owner.Surface.Min.X-10,StartPoint.Y,StartPoint.Z);
+           EndPoint:=iVect(Owner.Surface.Min.X{-10},StartPoint.Y,StartPoint.Z);
          end;
       end;
       // find the initial triangle
       Index:=FindInitialTriangle(StartPoint,EndPoint,Intersection,Direction);
       Skip1:=-1;
-      Skip2:=-1;
-      if index<>-1 then begin //FFlowline.Add(Intersection); // trace triangles from here
+      Skip2:=-1;              // trace triangles from here
+      if index<>-1 then begin //(*##*) FFlowline.Add(Intersection);
          Iteration:=0;
          repeat
             if Triangles[index].Processed
@@ -2164,8 +2163,7 @@ begin                                                 // clear any present data
                FFlowline.DeletePoint(FFlowline.nS-1);
             end else
             if (FFlowline.Point[FFlowline.nS-1].Z>WlHeight)
-            and (FFlowline.Point[FFlowline.nS-2].Z<WlHeight)
-            then begin
+            and (FFlowline.Point[FFlowline.nS-2].Z<WlHeight) then begin
                Endpoint.X:=FFlowline.Point[FFlowline.nS-2].X
                         +( FFlowline.Point[FFlowline.nS-1].X
                           -FFlowline.Point[FFlowline.nS-2].X )
@@ -2184,7 +2182,7 @@ begin                                                 // clear any present data
                FFlowline.Point[FFlowline.nS-1]:=EndPoint;
             end else break;
          end;
-      end;  Points.Destroy;
+      end; Points.Destroy;
    end;
    Faces.Destroy;
    FBuild:=True;
@@ -2505,7 +2503,7 @@ begin
       if FRecentFiles.Count=0 then FRecentFiles.Add(Tmp)
                               else FRecentFiles.Insert(0,Tmp);
    end;                          // delete items until no more than 10 are left
-   while FRecentFiles.Count>10 do FRecentFiles.Delete(FRecentFiles.Count-1);
+   while FRecentFiles.Count>MaxRecent do FRecentFiles.Delete(FRecentFiles.Count-1);
    if assigned(St.FOnUpdateRecentFileList) then St.FOnUpdateRecentFileList(self);
 end;
 
@@ -2646,8 +2644,8 @@ begin N:=0; K:=0;
       I:=St.NoSelectedControlEdges;
       Edge:=St.SelectedControlEdge[K];
       Edge.Collapse;
-      if I=St.NoSelectedControlEdges then inc( K );  // нет слияния - пропуск
-      inc(N);
+      if I=St.NoSelectedControlEdges then inc( K )  // нет слияния - пропуск
+                                     else inc( N );
    end;
    if N>0 then begin
       Undo.Accept;
@@ -3025,8 +3023,7 @@ begin
             SinY:=Sin(DegToRad(Dialog.YValue));
             CosZ:=Cos(DegToRad(Dialog.ZValue));
             SinZ:=Sin(DegToRad(Dialog.ZValue));
-            for I:=1 to Points.Count do begin
-               Point:=Points[I-1];
+            for I:=1 to Points.Count do begin Point:=Points[I-1];
                if not Point.Locked then begin
                   Point.Coordinate:=RotateVector(Point.Coordinate,SinX,CosX,SinY,CosY,SinZ,CosZ);
                end;
@@ -3260,7 +3257,7 @@ begin
    end else ShowMessage(Userstring(95));
 end;
 
-procedure SEdit.Flowline_Add(Source:Place;View:TviewType);
+procedure SEdit.Flowline_Add( Source:Place; View:TviewType );
 var Flowline: TFlowline; Undo: TUndoObject;
 begin
    Undo:=CreateUndoObject(Userstring(130),False);
@@ -4620,7 +4617,7 @@ procedure TShip.FSetOnSelectItem(Val:TNotifyEvent);
 procedure TShip.FSetPrecision(Val:TPrecisionType);
 begin if Val<>FPrecision then begin
          FPrecision:=Val;
-         Surface.DesiredSubdivisionLevel:=Ord(Precision)+1;
+         Surface.DivSec:=Ord(Precision)+1;
          FileChanged:=True;
          Build:=False;
          Redraw;
@@ -5079,7 +5076,7 @@ begin
          DrawPoint(FDesignHydrostatics.FData.WaterplaneCOG,'S: '       // 'LCF='
         +FloatToDec(FDesignHydrostatics.Data.WaterplaneCOG.X,2),False);
       if Visibility.FShowHydrostLateralArea then              // Lateral center
-         DrawPoint(FDesignHydrostatics.FData.LateralCOG,Userstring(29)+'='
+         DrawPoint(FDesignHydrostatics.FData.LateralCOG,Userstring(1678)+'='
          +FloatToDec(FDesignHydrostatics.Data.LateralArea,2),True);
       if (Viewport.ViewType=fvProfile)     // строевая по шпангоутам ?? масштаб
       and (Visibility.FShowHydrostSectionalAreas) then begin
@@ -5235,7 +5232,7 @@ begin
    PrevCursor:=Screen.Cursor;
    if Screen.Cursor<>crHourglass then Screen.Cursor:=crHourglass;
    Build:=False;
-   Surface.DesiredSubdivisionLevel:=Ord(Precision)+1;
+   Surface.DivSec:=Ord(Precision)+1;
    Surface.Rebuild;
    Draw;
    //if Screen.Cursor<>PrevCursor then

@@ -3,8 +3,8 @@
 }
 
 function AreaStr(Units: TUnitType): String;
-begin if Units=fuImperial then Result:=UserString(465)  //Result:='ft^2 '
-                          else Result:=UserString(452); //Result:='m^2 ';
+begin if Units=fuImperial then Result:=UserString(465)  //'ft^2 '
+                          else Result:=UserString(452); //'m^2 ';
 end;
 // Returns a string value with the length units
 function LengthStr(Units: TUnitType): String;
@@ -13,13 +13,13 @@ begin if Units=fuImperial then Result:=UserString(464)  //'ft '
 end;
 // Returns a string value with the moment of inertia units
 function InertiaStr(Units: TUnitType): String;
-begin if Units=fuImperial then Result:=UserString(467) //  Result:='ft^4 '
-                          else Result:=UserString(470) //  Result:='m^4 ';
+begin if Units=fuImperial then Result:=UserString(467) //'ft^4 '
+                          else Result:=UserString(470) //'m^4 ';
 end;
 
 function VolStr(Units: TUnitType): String;
-begin if Units=fuImperial then Result:=UserString(466)  // Result:='ft^3 '
-                          else Result:=UserString(453); // Result:='m^3 ';
+begin if Units=fuImperial then Result:=UserString(466)  //'ft^3 '
+                          else Result:=UserString(453); //'m^3 ';
 end;
 {
 function DensStr(Units: TUnitType): String;
@@ -45,8 +45,8 @@ begin         // convert to British imperial tons (1 imperial LONG ton=2240 lb)
                       else Result:=Volume*AppCoeff*Density;
 end;
 function DensityStr(Units: TUnitType): String;
-begin if Units=fuImperial then Result:=UserString(468)  // Result:='lbs/ft^3 '
-                          else Result:=UserString(469); // Result:='t/m^3 ';
+begin if Units=fuImperial then Result:=UserString(468)  //'lbs/ft^3 '
+                          else Result:=UserString(469); //'t/m^3 ';
 end;
 function WeightStr(Units: TUnitType): String;
 begin if Units=fuImperial then Result:=UserString(473)  //'tons '
@@ -493,8 +493,11 @@ begin
   Result:=Input;
 end;
 
-function MakeLength(Value: String; DesLength: integer): String;
-   begin while UTF8Length(Value)<DesLength do Value:=Value+' '; Result:=Value;
+function MakeLength( Value:String; DesLength:integer ): String; var L: integer;
+   begin L:=UTF8Length( Value );
+     if L>DesLength then Value:=UTF8LeftStr( Value,DesLength-1 )+'…' else
+     if L<DesLength then repeat Value:=Value+' '; inc( L ) until L>=DesLength;
+     Result:=Value;
    end;
 procedure MinMax(P: Vector; var Min,Max: Vector);
    begin if P.X<Min.X then Min.X:=P.X else if P.X>Max.X then Max.X:=P.X;

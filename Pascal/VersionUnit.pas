@@ -21,7 +21,7 @@ type TFileVersion=
            fv510  { Textures }
    );
 const CurrentVersion=fv260;    // <> high( TFileVersion );
-                     // Current (latest) version of the !St project.
+                     // Current (latest) version of the free!Ship project.
                      // All new created models are initialized to this version
 function VersionString( Version:TFileVersion): String;
 function VersionBinary( V: String ):TFileVersion;

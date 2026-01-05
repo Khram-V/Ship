@@ -231,14 +231,4 @@ begin With St do begin N:=Windows.Count;
       Window1.Add( AI );
    end; NI:=N;                                 // и длина как есть запоминается
 end end;
-(*
-/// !!!    ViewPort.BevelWidth:=6;      // - не срабатывает
-/// !!!    ViewPort.BevelOuter:=bvNone; // ( bvNone, bvLowered, bvRaised, bvSpace )
-/// !!!    ViewPort.BevelInner:=bvNone; // Raised
-     ??    ViewPort.Caption.Height:=15;
-HullformWindow.ChildSizing.LeftRightSpacing:=0;
-HullformWindow.ChildSizing.TopBottomSpacing:=0;
-HullformWindow.ChildSizing.VerticalSpacing:=0;
-HullformWindow.ChildSizing.HorizontalSpacing:=0;
-*)
 

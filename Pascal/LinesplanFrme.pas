@@ -811,7 +811,7 @@ begin
       Viewport.FontColor:=clNavy;
       Pt:=Viewport.Project(iVect(FAftOrigin.X-FModelBeam/2,FPlanOrigin.Y+FModelBeam/2));
    // Pt.y+=Steps*2;
-   // Главные размерения по корпусу корабля='Basic dimensions of a St's hull
+   // Главные размерения по корпусу корабля='Basic dimensions of a free!Ship's hull
       Viewport.Canvas.TextOut( Pt.X,Pt.Y,UserString(1672) );
       Pt.y+=(3*Steps) div 2; // длина максимальная
       Viewport.Canvas.TextOut( Pt.X,Pt.Y,Userstring(45)+' : '+

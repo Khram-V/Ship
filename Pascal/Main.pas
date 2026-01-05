@@ -319,8 +319,8 @@ var I,NLayers: Integer;    // according to the current state and selected items
 begin With St do begin
    NLayers:=0;
    For I:=1 to NoLayers do if Layer[I-1].Count>0 then inc(NLayers); // File menu
-   FileSaveas.Enabled:=(Surface.NoControlPoints>0) or (FileChanged) or (FilenameSet);
-   FileSave.Enabled:=(FileSaveas.Enabled) and (FilenameSet);
+   FileSaveas.Enabled:=(Surface.NoControlPoints>0) or FileChanged or FilenameSet;
+   FileSave.Enabled:={(FileSaveas.Enabled) and} FileChanged and FilenameSet;
    ExportObj.Enabled:=Surface.NoControlFaces>0;
    ExportSTL.Enabled:=Surface.NoControlFaces>0;
    ExportDXF3DPolylines.Enabled:=((NoStations>0) and (Visibility.ShowStations)) or

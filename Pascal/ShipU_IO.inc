@@ -55,19 +55,28 @@ begin
    end; FileChanged:=False; Screen.Cursor:=PrevCursor;
 end;
 
-// save as !St file without prompting for a filename (must already been set)
+// save as free!Ship file without prompting for a filename (must already been set)
+
+const FileFilter = 'free!Ship [*.ftm *.fbm *.fef]|*.ftm;*.fbm;*.fef'
+                  +'|         <source types> [*.ftm]|*.ftm'
+                  +'|            <binary files> [*.fbm]|*.fbm'
+                  +'|    <обменный вид> [*.fef]|*.fef| All files [*.*]|*.*';
+    NameError = ' error[.fbm,.ftm,.fef]'; // ' ...нет ftm,fbm или fef';
+var NSF: Integer=0;
 
 function SEdit.File_Save: boolean;
 var Str: String; Strings: TStringList=nil; Destination: TFileBuffer;
 begin Result:=false; Strings:=nil;
-  if not St.FilenameSet // or St.FileIsReadOnl
-    then begin St.FilenameSet:=false; result:=File_SaveAs; exit; end;
-  DeleteFileUTF8( St.Filename+'.bak' );
-  RenameFileUTF8( St.Filename,St.Filename+'.bak' );
+  if not St.FilenameSet then begin result:=File_SaveAs; exit; end;
   Str:=LowerCase( ExtractFileExt( St.Filename ) );
   if Str='.fbm' then Destination:=TFileBuffer.Create else
   if Str='.ftm' then Destination:=TTextBuffer.Create else
-  if Str='.fef' then Strings:=TStringlist.Create;
+  if Str='.fef' then Strings:=TStringlist.Create else
+    begin WriteLn( St.Filename+' - save'+NameError ); exit end;
+  Str:=St.Filename+',v'+inttostr(NSF)+'.bak';
+  if FileExistsUTF8( Str ) then DeleteFileUTF8( Str );
+  RenameFileUTF8( St.Filename,Str );
+  if NSF>1 then DeleteFileUTF8( St.Filename+',v'+inttostr(NSF-1)+'.bak' ); inc( NSF );
   if Strings<>nil then begin
      Strings.Add( St.ProjectSettings.ProjectName );
      Strings.Add( St.ProjectSettings.ProjectDesigner );
@@ -94,15 +103,11 @@ begin Result:=false; Strings:=nil;
   AddToRecentFiles( St.FileName );
 end;
 
-const FileFilter = 'free!Ship [*.ftm *.fbm *.fef]|*.ftm;*.fbm;*.fef'
-                  +'|         <source types> [*.ftm]|*.ftm'
-                  +'|            <binary files> [*.fbm]|*.fbm'
-                  +'|    <обменный вид> [*.fef]|*.fef| All files [*.*]|*.*';
-
 function SEdit.File_SaveAs: boolean; var SaveDialog: TSaveDialog;
 begin result:=false;
    SaveDialog:=TSaveDialog.Create( St );
-   SaveDialog.InitialDir:=St.Preferences.SaveDirectory;
+   if St.FilenameSet then SaveDialog.InitialDir:=ExtractFilePath(St.FileName)
+                     else SaveDialog.InitialDir:=St.Preferences.SaveDirectory;
    Savedialog.FileName:=ExtractFilename( St.Filename );
    SaveDialog.Filter:=FileFilter;
    Savedialog.Options:=[ofOverwritePrompt,ofHideReadOnly];
@@ -120,9 +125,10 @@ procedure SEdit.File_Load; var Answer: word; OpenDialog: TOpenDialog;
 begin
   St.Edit.Selection_Clear; ///*** Selection_Clear
   OpenDialog:=TOpenDialog.Create( St );
-  OpenDialog.InitialDir:=St.Preferences.OpenDirectory; //+ ConfigDirectory
+  if St.FilenameSet then OpenDialog.InitialDir:=ExtractFilePath(St.FileName)
+                    else OpenDialog.InitialDir:=St.Preferences.OpenDirectory;
   OpenDialog.Filter:=FileFilter;
-  Opendialog.Options:=[ofHideReadOnly];
+//Opendialog.Options:=[ofHideReadOnly];
   if OpenDialog.Execute then begin
      Answer:=St.Edit.File_SaveCheck;
      if (Answer=mrCancel) or St.FileChanged then exit;
@@ -142,10 +148,10 @@ begin Source:=nil; Strings:=nil;
   if Str='.fbm' then Source:=TFileBuffer.Create else
   if Str='.ftm' then Source:=TTextBuffer.Create else
   if Str='.fef' then Strings:=TStringList.Create else
-       begin WriteLN( '...нет ftm,fbm или fef' ); exit; end;
+     begin WriteLn( St.Filename+' - open'+NameError ); exit end;
   St.Clear;
   St.Filename:=FileName;
-  if Strings<>nil then begin   // обменный формат из начальных версий !St
+  if Strings<>nil then begin   // обменный формат из начальных версий free!Ship
     Strings.LoadFromFile( Filename );
     LineNr:=-1;                 // Read general information and mainparticulars
     inc(LineNr); St.ProjectSettings.FProjectName:=Strings[LineNr];
@@ -160,7 +166,7 @@ begin Source:=nil; Strings:=nil;
     St.ProjectSettings.ProjectAppendageCoefficient:=GetFloat(Str);
     I:=GetInteger(Str);
     St.ProjectSettings.FProjectUnits:=TUnitType(I);
-   {St.ProjectSettings.FMainparticularsHasBeenset:=} GetBoolean(Str);
+   {St.ProjectSettings.FMainparticularsHasBeenset:=} GetBoolean(Str); // и мимо
     I:=GetInteger(Str);
     St.Precision:=TPrecisionType( I );
     St.Surface.ImportFEFFile(Strings,LineNr);
@@ -171,7 +177,7 @@ begin Source:=nil; Strings:=nil;
     St.LoadProject( Source );
     FreeAndNil( Source );
   end;
-  St.FilenameSet:=True;
+  St.FilenameSet:=not FileIsReadOnlyUTF8( St.Filename ); NSF:=0;
   with St do begin
     ZoomFitAllViewports; // Surface.Rebuild;
     for I:=0 to NoBackgroundImages-1 do BackgroundImage[I].UpdateViews;
@@ -179,12 +185,11 @@ begin Source:=nil; Strings:=nil;
   end;
 //#St.Edit.ProgressBar:=nil;
   if LinesplanFrame<>nil then Linesplanframe.Ship:=St;
-{ #if St.ModelIsLoaded then } AddToRecentFiles( FileName );
-                                Undo_Clear;
+{ #if St.ModelIsLoaded then } AddToRecentFiles( FileName ); Undo_Clear;
   St.FileChanged:=False;
 end;
 
-Procedure TShip.LoadProject( Source:TFileBuffer );                // LoadBinary
+Procedure TShip.LoadProject( Source:TFileBuffer );
 var PrevCursor: TCursor; I,N: Integer; Str: String;
     Data        : TBackgroundImageData;
     Intersection: TIntersection;
@@ -275,7 +280,7 @@ begin    // Remember the filename because it will be erased by the clear method
       WriteLn( '.' );
    end else ShowMessage( Userstring(189) );
    FileChanged:=False;
-   Surface.DesiredSubdivisionLevel:=Ord(Precision)+1;
+   Surface.DivSec:=Ord(Precision)+1;
 // Surface.Rebuild;
    Screen.Cursor:=PrevCursor;
 // for I:=1 to NoBackgroundImages do BackgroundImage[I-1].UpdateViews;
@@ -287,45 +292,43 @@ end;
 procedure SEdit.Drawing;
 Var D,DD:Real; I: Integer;
 begin with St.ProjectSettings do begin
-   dd:=AxisStep( (St.Surface.Max.X-St.Surface.Min.X)/5.75 ); // шаг шпации
+   dd:=AxisStep( (St.Surface.Max.X-St.Surface.Min.X)/5.75 );   // шаг шпации
    I:=round( St.Surface.Min.X/dd+0.5 );
-   repeat Intersection_Add( fiStation,I*dd ); inc( I );         // и шпангоуты
+   repeat Intersection_Add( fiStation,I*dd ); inc( I );        // и шпангоуты
    until I*dd>=St.Surface.Max.X;
-   dd:=AxisStep( ProjectBeam/1.75 ); I:=0;                      // Батоксы
+   dd:=AxisStep( ProjectBeam/1.75 ); I:=0;                     // Батоксы
    repeat Intersection_Add( fiButtock,I*dd ); inc( I ); until I*dd>=ProjectBeam-dd/4;
-// dd:=AxisStep( St.Surface.Max.Z-St.Surface.Min.Z );       // Ватерлинии
-   dd:=AxisStep( ProjectDraft*2 );                              // Ватерлинии
+// dd:=AxisStep( St.Surface.Max.Z-St.Surface.Min.Z );
+   dd:=AxisStep( ProjectDraft*2 );                             // Ватерлинии
    I:=round( St.Surface.Min.Z/dd+0.51 );
-   repeat Intersection_Add( fiWaterline,I*dd );                 // Ватерлинии и
+   repeat Intersection_Add( fiWaterline,I*dd );                // Ватерлинии и
           Intersection_Add( fiDiagonal,I*dd );  inc( I );      // рыбины там же
    until I*dd>=St.Surface.Max.Z-dd*0.25;
    while Intersection_Add( fiDiagonal,I*dd )<>Nil do inc( I ); // плюс по борту
-
-
 // D:=round( ProjectDraft/dd/2+0.51 );              // по паре на обе стороны =
-// D:=round( St.Surface.Min.Z/dd );               // по паре на обе стороны =
+// D:=round( St.Surface.Min.Z/dd );
 // for I:=0 to 5 do Intersection_Add( fiDiagonal,I*dd ); // шесть рыбин
-   SavePreview:=false;                              // без предпросмотра
+   SavePreview:=false;                                  // без предпросмотра
    St.FileChanged:=True;
-   St.Visibility.ModelView:=mvBoth;               // на оба борта
-   St.Visibility.ShowControlNet:=false;           // без выделения узлов
-   St.Visibility.ShowInteriorEdges:=True;         // внутрення разбивка рёбер
+   St.Visibility.ModelView:=mvBoth;                   // на оба борта
+   St.Visibility.ShowControlNet:=false;              // без выделения узлов
+   St.Visibility.ShowInteriorEdges:=True;           // внутрення разбивка рёбер
    St.ProjectSettings.SavePreview:=false;
    if Assigned(St.OnUpdateGeometryInfo) then St.OnUpdateGeometryInfo(self);
    // St.Build:=False;
    // St.RebuildModel;
 end end;
+
+function SEdit.Model_New: Boolean;
 //
 //    Выбор корабельной эпохи:
-//
-//    Великие географические открытия
-//
+//    1) Великие географические открытия
 const
  File_A='Галеон Великих Испанских географических открытий';
  Name_A='«Великие географические открытия». Корпус всепогодного корабля среднего водоизмещения (галеон)';
  Comm_A='Вариант эволюционного совершенствования корабельных обводов с уверенным штормованием в эпоху Великих Испанских географических открытий.';
  Ship_A: array [0..6,0..4] of Vector=
-{$if false}
+{$if false}  // = изначальный вариант в избыточно скромной архитектуре
  ( ( ( x: 0.06; y:0;    z:0    ),  // station 0,stern=Галеон
      ( x: 0.02; y:0;    z:1.75 ),
      ( x:-0.04; y:0.1;  z:2.1  ),
@@ -399,7 +402,7 @@ const
      ( x: 0.998;y:0;    z:4    ) ) );
 {$endif}
 //
-//   Новый корабль золотого XIX века
+//   2) Новый корабль золотого XIX века
 //
  File_B='Совершенный парусный корабль золотого XIX века';
  Name_B='«Новый корабль золотого XIX века». Корпус всепогодного корабля среднего водоизмещения (фрегат)';
@@ -441,7 +444,7 @@ const
      ( x: 0.998;y:0;    z:3.25 ),
      ( x: 0.998;y:0;    z:4    ) ) );
 //
-//   Чудо в перьях научно-технической революции
+//   3) Чудо в перьях научно-технической революции
 //
  File_C='Эстетика современных обводов корабля';
  Name_C='Обводы быстроходного высокоманевренного корабля среднего водоизмещения с мощными машинами';
@@ -482,11 +485,9 @@ const
      ( x: 0.961; y: 0    ; z: 0.61  ),     //         1 1
      ( x: 1    ; y: 0    ; z: 2     ),     //         1 1
      ( x: 1.1  ; y: 0    ; z: 4.55  ) ) ); //         3 1
-
-function SEdit.Model_New:Boolean;
+   Example: array [0..2] of string = ( 'первый','второй','третий' );
 var Answer: word; I,J,Cols,Rows: integer;
-    L,B,D,dd: Real; P: Vector;
-    Spline1,Spline2: TSpline;
+    L,B,D,dd: Real; P: Vector; Spline1,Spline2: TSpline;
     TrvSplines: TFasterList;
     Pts: array of array of SControlPoint;
     StemPoint: SControlPoint;
@@ -508,15 +509,15 @@ begin
       with St.ProjectSettings do begin                       // «free!Ship»
         case NewModelDialog.ShipBox.ItemIndex of
           0: begin St.FileName:=File_A; FProjectName:=Name_A;
-                                          FProjectComment:=Comm_A; end;
+                                        FProjectComment:=Comm_A; end;
           1: begin St.FileName:=File_B; FProjectName:=Name_B;
-                                          FProjectComment:=Comm_B; end;
+                                        FProjectComment:=Comm_B; end;
           2: begin St.FileName:=File_C; FProjectName:=Name_C;
-                                          FProjectComment:=Comm_C; end;
+                                        FProjectComment:=Comm_C; end;
         end;
         FProjectName:='«'+ChangeFileExt(ExtractFilename(St.FileName),'')+'». '+FProjectName;
         FProjectDesigner:='Подсекция штормовой мореходности, Научно-инженерное общество корабелов им.А.Н.Крылова';
-        FProjectFileCreatedBy:='©'+TimeString+' !St example'; //, № '+inttostr( NewModelDialog.ShipBox.ItemIndex+1); // FormatDateTime('YYYY-MM-DD_hh:nn',Now );
+        FProjectFileCreatedBy:='©'+TimeString+' free!Ship пример '+Example[NewModelDialog.ShipBox.ItemIndex]; //example'; //, № '+inttostr( NewModelDialog.ShipBox.ItemIndex+1); // FormatDateTime('YYYY-MM-DD_hh:nn',Now );
         ProjectLength:=L;
         ProjectBeam:=B;
         if NewModelDialog.ShipBox.ItemIndex=2 then ProjectDraft:=D*2.5
@@ -564,7 +565,7 @@ begin
          Spline1:=TrvSplines[I-1];
          Spline1.Destroy;
       end;
-      TrvSplines.Clear; // finally create controlfaces over newly calculated points
+      TrvSplines.Clear; // finally create controlfaces
       for I:=1 to Rows do
       for J:=1 to cols do begin
           TrvSplines.Clear;
@@ -576,16 +577,15 @@ begin
       end;
       St.Precision:=fpMedium;
       St.Surface.Initialize(1,1,1);
-      St.ActiveLayer.Name:=Userstring(179); // Обводы и общекорабельная архитектура
+      St.ActiveLayer.Name:=Userstring(179); // =Обводы и общекорабельная архитектура
       if StemPoint<>nil then
         if StemPoint.VertexType=svCorner then stempoint.VertexType:=svCrease;
       TrvSplines.Destroy;
-      St.Build:=False;
+      St.FileNameSet:=false;
+      St.Build:=false;
       Drawing;
       St.draw;
       Result:=true;
-//      St.ZoomFitAllViewports;
-//      St.ReDraw;
    end;
    NewModelDialog.Destroy;
 end;
