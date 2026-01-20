@@ -2067,15 +2067,18 @@ begin inherited;
 // TMainform( Application.MainForm ).SelectAllExecute(St); //
 end;
 *)
+
+Var ShMouse: Integer=2; // задержка начальной реакции мышки на поворот картинки
+
 procedure TViewport.MouseDown(Button:TMouseButton;Shift:TShiftState;X,Y:Integer);
 var Pt,Diff: TPoint;
     str,Tmp: String;
     XVal,YVal: Real;
     I,Ind: Integer;
     OK: Boolean;
-begin
-   Inherited;
+begin Inherited;
    FPreviousPosition:=Point( X,Y );
+   ShMouse:=St.Preferences.PointSize;
    if (BackgroundMode<>emNormal) and (ssRight in Shift) then
        BackgroundMode:=emNormal
    else               // Start moving the background image store current origin
@@ -2183,25 +2186,28 @@ begin
    if (Viewtype=fvPerspective)             // rotation using middle mousebutton
    and (shift<>[ssCtrl,ssLeft] ) and ((ssLeft in shift) or (ssmiddle in shift))
    then begin
-      Cursor:=crRotate;
-      FAngle:=Self.FAngle+(X-FPreviousPosition.X)/4;
-      while FAngle>180 do FAngle:=FAngle-360;
-      while FAngle<-180 do FAngle:=FAngle+360;
-      FCosAngle:=Cos(DegToRad(FAngle));
-      FSinAngle:=sin(DegToRad(FAngle));
+      Prev:=Point( X-FPreviousPosition.X,Y-FPreviousPosition.Y );
+      if abs(Prev.x)+abs(Prev.y)>=ShMouse then begin// St.Preferences.PointSize
+        Cursor:=crRotate;         ShMouse:=1;     // немножко излишний пересчёт
+        FAngle:=Self.FAngle+(Prev.X)/4;
+        while FAngle>180 do FAngle:=FAngle-360;
+        while FAngle<-180 do FAngle:=FAngle+360;
+        FCosAngle:=Cos(DegToRad(FAngle));
+        FSinAngle:=sin(DegToRad(FAngle));
 
-      FElevation:=FElevation+(Y-FPreviousPosition.Y)/4;
-      while FElevation>180 do FElevation:=FElevation-360;
-      while FElevation<-180 do FElevation:=FElevation+360;
-      FCosElevation:=Cos(DegToRad(FElevation));
-      FSinElevation:=sin(DegToRad(FElevation));
-      if FHorScrollbar<>nil then
-      if FHorScrollbar.Position<>round(angle) then
-         FHorScrollbar.Position:=Round(Angle);
-      if FVertScrollbar<>nil then
-      if FVertScrollbar.Position<>round(Elevation) then
-         FVertScrollbar.Position:=Round(Elevation);
-      InitializeViewport(FMin3D,FMax3D);
+        FElevation:=FElevation+(Prev.Y)/4;
+        while FElevation>180 do FElevation:=FElevation-360;
+        while FElevation<-180 do FElevation:=FElevation+360;
+        FCosElevation:=Cos(DegToRad(FElevation));
+        FSinElevation:=sin(DegToRad(FElevation));
+        if FHorScrollbar<>nil then
+        if FHorScrollbar.Position<>round(angle) then
+           FHorScrollbar.Position:=Round(Angle);
+        if FVertScrollbar<>nil then
+        if FVertScrollbar.Position<>round(Elevation) then
+           FVertScrollbar.Position:=Round(Elevation);
+        InitializeViewport( FMin3D,FMax3D );
+      end;
    end else
    if ssRight in shift then Cursor:=crPan;
    FPreviousPosition:=Point( X,Y );
@@ -2583,64 +2589,51 @@ end;
 procedure TViewport.ZoomExtents;
 var Min,Max:Vector;
 begin
-   if Assigned(FOnRequestExtents) then begin
-      FOnRequestExtents(self,Min,Max);
+   if Assigned( FOnRequestExtents ) then begin
+      FOnRequestExtents( self,Min,Max );
       FZoom:=1.0;
       FPan.X:=0;
       FPan.Y:=0;
-      InitializeViewport(Min,Max);
+      InitializeViewport( Min,Max );
    end;
 end;
 
 procedure TViewport.ZoomIn;
-begin
-   FZoom:=FZoom*Zoomfactor;
-   FPan.X:=round(Zoomfactor*FPan.X);
-   FPan.Y:=round(Zoomfactor*FPan.Y);
-   Refresh;
+begin FZoom*=Zoomfactor; FPan.X:=round(Zoomfactor*FPan.X);
+                         FPan.Y:=round(Zoomfactor*FPan.Y); Refresh;
 end;
-
 procedure TViewport.ZoomOut;
-begin
-   FZoom:=FZoom/Zoomfactor;
-   FPan.X:=round(FPan.X/Zoomfactor);
-   FPan.Y:=round(FPan.Y/Zoomfactor);
-   Refresh;
+begin FZoom/=Zoomfactor; FPan.X:=round(FPan.X/Zoomfactor);
+                         FPan.Y:=round(FPan.Y/Zoomfactor); Refresh;
 end;
 {
   TDevelopedPatch
   Unrolled Subdivision layer
 }
-function TDevelopedPatch.FGetMaxError:Real;
-var I:Integer;
-begin
-   Result:=0.0;
+function TDevelopedPatch.FGetMaxError:Real; var I:Integer;
+begin Result:=0.0;
    for I:=1 to FEdges.Count do begin
       if I=1 then Result:=FEdgeErrors[I-1] else
       if FEdgeErrors[I-1]>result then Result:=FEdgeErrors[I-1];
    end;
 end;
-
 function TDevelopedPatch.FGetShowErrorEdges:Boolean;
    begin Result:=ShowInteriorEdges and FShowErrorEdges; end;
 function TDevelopedPatch.FGetMidPoint:Place;
    begin Result.X:=0.5*(FMin2D.X+FMax2D.X);
          Result.Y:=0.5*(FMin2D.Y+FMax2D.Y);
    end;
-function TDevelopedPatch.FGetMinError:Real;
-var I:Integer;
-begin
-   Result:=0.0;
+function TDevelopedPatch.FGetMinError:Real; Var I:Integer;
+begin Result:=0.0;
    for I:=1 to FEdges.Count do begin
       if I=1 then Result:=FEdgeErrors[I-1] else
       if FEdgeErrors[I-1]<result then Result:=FEdgeErrors[I-1];
    end;
 end;
 
-function TDevelopedPatch.FGetPoint(index:Integer):Vector;
-var P : Place;
+function TDevelopedPatch.FGetPoint(index:Integer):Vector; var P: Place;
 begin
-   P:=F2DCoordinates[index]; //.Coordinate;
+   P:=F2DCoordinates[index];
    if (FMirrorOnScreen) and not (FMirror) then P.Y:=-P.Y;
    Result:=ConvertTo3D(P);
 end;
@@ -2649,7 +2642,7 @@ function TDevelopedPatch.FGetMirrorPoint(index:Integer):Vector;
 var P    : Place;
     Tmp  : Vector;
 begin
-   P:=F2DCoordinates[index]; //.Coordinate;
+   P:=F2DCoordinates[index];
    Tmp:=iVect(P.X,P.Y,0.0);
    Tmp:=MirrorPlane(Tmp,FMirrorplane);
    P.X:=Tmp.X;
@@ -10741,15 +10734,13 @@ begin
       FBuild:=True;
       while (FCurrenSLevel<FDivSec)
         and (FControlFaces.Count>0) do Subdivide;
-{     for I:=1 to NoControlfaces do begin ControlFace[I-1].CalcExtents;
-         if I=1 then begin
-            FMin:=Controlface[I-1].FMin;
-            FMax:=Controlface[I-1].FMax;
-         end else begin
-            MinMax(Controlface[I-1].FMin,FMin,FMax);
-            MinMax(Controlface[I-1].FMax,FMin,FMax);
+      for I:=1 to NoControlfaces do begin ControlFace[I-1].CalcExtents;
+         if I=1 then begin FMin:=Controlface[I-1].FMin;
+                           FMax:=Controlface[I-1].FMax;
+         end else begin MinMax(Controlface[I-1].FMin,FMin,FMax);
+                        MinMax(Controlface[I-1].FMax,FMin,FMax);
          end;
-      end; }
+      end;
       for I:=1 to NoControlCurves do begin
          Curve:=ControlCurve[I-1];
          Curve.FCurve.Clear;
@@ -10769,20 +10760,14 @@ begin
             end; Curve.FBuild:=true;
          end;
       end;
-   end;
-{  else if NoControlPoints>0 then begin
+   end
+   else if NoControlPoints>0 then begin
       for I:=1 to NoControlPoints do begin
          if I=1 then begin
-            FMin:=ControlPoint[I-1].Coordinate;
-            FMax:=FMin;
+            FMin:=ControlPoint[I-1].Coordinate; FMax:=FMin;
          end else MinMax(ControlPoint[I-1].Coordinate,FMin,FMax);
       end;
-   end else begin
-      FMin:=ZERO;
-      FMax.X:=1.0;
-      FMax.Y:=1.0;
-      FMax.Z:=1.0;
-   end; }
+   end else begin FMin:=ZERO; FMax.X:=1.0; FMax.Y:=1.0; FMax.Z:=1.0; end;
 end;
 
 procedure SSurface.SaveBinary(Destination:TFileBuffer);

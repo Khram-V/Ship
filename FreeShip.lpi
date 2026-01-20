@@ -365,10 +365,6 @@
       <Verbosity>
         <ShowNotes Value="False"/>
         <ShowHints Value="False"/>
-        <ShowLineNum Value="True"/>
-        <ShowCond Value="True"/>
-        <ShowExecInfo Value="True"/>
-        <ShowHintsForUnusedUnitsInMainSrc Value="True"/>
       </Verbosity>
       <WriteFPCLogo Value="False"/>
       <ConfigFile>

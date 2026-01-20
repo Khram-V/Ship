@@ -5240,11 +5240,11 @@ begin
 end;
 
 procedure TShip.Redraw;
-var I : integer;
-begin // Redraws model to all viewports using the current min/max coordinates of the boundingbox
-   For I:=1 to nV do begin
-      if Viewport[I-1].Zoom=1.0 then Viewport[I-1].ZoomExtents
-                                else Viewport[I-1].Refresh;
+  var I: integer;
+begin                         // Redraws model to all viewports using the
+   For I:=0 to nV-1 do begin  // current min/max coordinates of the boundingbox
+      if Viewport[I].Zoom=1.0 then Viewport[I].ZoomExtents
+                              else Viewport[I].Refresh;
    end;
    if LinesplanFrame<>nil then Linesplanframe.Viewport.Refresh;
 end;
@@ -5483,12 +5483,12 @@ begin
                     if NoSelectedControlPoints>0 then
                        for I:=NoSelectedControlPoints downto 1 do SelectedControlPoint[I-1].Selected:=False;
                     Point.Selected:=True;
-                    for J:=1 to nV do self.Viewport[J-1].Refresh;
                  end else begin
                     Point.Selected:=not Point.Selected;
                     if not Point.Selected then Point:=SelectedControlPoint[NoSelectedControlPoints-1];
-                    for J:=1 to nV do self.Viewport[J-1].Refresh;
+                    Sleep( 120 );
                  end;
+                 for J:=1 to nV do self.Viewport[J-1].Refresh;
                  if ActiveControlPoint<>point then ActiveControlPoint:=Point;
                  FCurrentlyMoving:=True;
                  FPointHasBeenMoved:=False;
