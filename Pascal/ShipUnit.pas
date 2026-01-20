@@ -5014,9 +5014,9 @@ begin
    // But the intersections that should be drawn last depends on the view
    Surface.MainframeLocation:=Projectsettings.MidleFrame;
    if Viewport.Viewtype<>fvPerspective then begin
-      if Visibility.ShowGrid then begin // Draws a rectangular grid with measurements, bigger then the hull
-         Drawgrid;
-      end else begin               // draws the actual splines as a dashed line
+      if Visibility.ShowGrid then // Draws a rectangular grid with measurements, bigger then the hull
+         Drawgrid
+      else begin               // draws the actual splines as a dashed line
          if Viewport.ViewType<>fvBodyplan then if Visibility.ShowStations then for I:=1 to NoStations do Station[I-1].Draw(Viewport);
          if Viewport.ViewType<>fvProfile then if Visibility.ShowButtocks then for I:=1 to NoButtocks do Buttock[I-1].Draw(Viewport);
          if Viewport.ViewType<>fvPlan then if Visibility.ShowWaterlines then for I:=1 to NoWaterlines do Waterline[I-1].Draw(Viewport);
@@ -5445,8 +5445,7 @@ begin
                  end; Inc(I);
               end;
            end;                                              // check flowlines
-           if (Entity=nil)
-           and (not ItemSelected)
+           if (Entity=nil) and (not ItemSelected)
            and (Visibility.ShowFlowlines) then begin I:=1;
               while I<=NoFlowlines do begin
                  Tmp:=Flowline[I-1].DistanceToCursor(X,Y,Viewport);
@@ -5460,15 +5459,13 @@ begin
                  end; Inc(I);
               end;
            end;                                                // check Markers
-           if (Entity=nil)
-           and (not ItemSelected)
+           if (Entity=nil) and (not ItemSelected)
            and (Visibility.ShowMarkers) then begin I:=1;
               while I<=NoMarkers do begin
                  Tmp:=Marker[I-1].DistanceToCursor(X,Y,Viewport);
                  if Tmp<=SelectDistance then begin
                     Marker[I-1].Selected:=not Marker[I-1].Selected;
-                    ItemSelected:=True;
-                    // Draw the selected Marker to all viewports
+                    ItemSelected:=True; // Draw the selected Marker to all viewports
                     for J:=1 to nV do
                       if self.Viewport[J-1].ViewportMode=vmWireframe then
                          Marker[I-1].Draw(self.Viewport[J-1]);
@@ -5479,8 +5476,8 @@ begin
            end;
            if Entity<>nil then begin  // apparently SOMEthing has been selected
               if Entity is SControlPoint then begin
-                 // If CTRL key is pressed, selection of multiple controlpoints is allowed,
-                 // otherwise select only ONE controlpoint
+                 // If CTRL key is pressed, selection of multiple controlpoints
+                 // is allowed, otherwise select only ONE controlpoint
                  Point:=Entity as SControlPoint;
                  if not (ssCtrl in shift) then begin
                     if NoSelectedControlPoints>0 then
@@ -5497,7 +5494,8 @@ begin
                  FPointHasBeenMoved:=False;
                  FPrevCursorPosition.X:=X;
                  FPrevCursorPosition.Y:=Y;
-              end else if Entity is SControlCurve then begin
+              end else
+              if Entity is SControlCurve then begin
                  for J:=1 to nV do
                   if self.Viewport[J-1].ViewportMode=vmWireframe then
                      self.Viewport[J-1].Refresh;
@@ -5506,8 +5504,8 @@ begin
          end;
       end;
    end else if Button=mbRight then EditMode:=emSelectItems;
-///if ActiveControlPoint<>nil then ActiveControlPoint:=ActiveControlPoint;
-///if not Viewport.Focused then Viewport.SetFocus;
+   // if ActiveControlPoint<>nil then ActiveControlPoint:=ActiveControlPoint;
+   // if not Viewport.Focused then Viewport.SetFocus;
 end;
 
 procedure TShip.MouseMove(Viewport:TViewport; Shift: TShiftState; X,Y: integer);

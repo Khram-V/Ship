@@ -42,7 +42,7 @@ object MainForm: TMainForm
       Width = 200
       Align = alLeft
       BevelOuter = bvLowered
-      Caption = 'Память отката: 0 kb.'
+      Caption = 'Объём отката: 0 kb.'
       ParentBackground = False
       TabOrder = 0
     end
@@ -620,7 +620,7 @@ object MainForm: TMainForm
     object FileSaveas: TAction
       Category = 'File'
       Caption = 'Сохранить как...'
-      Hint = 'Запись с новым импенем, типом(fef,ftm,fbm) и местоположением файла'
+      Hint = 'Запись с новым местоположением, именем и типом(fef,ftm,fbm) файла'
       ImageIndex = 39
       OnExecute = FileSaveasExecute
     end

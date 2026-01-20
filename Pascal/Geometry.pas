@@ -2070,20 +2070,17 @@ end;
 procedure TViewport.MouseDown(Button:TMouseButton;Shift:TShiftState;X,Y:Integer);
 var Pt,Diff: TPoint;
     str,Tmp: String;
-    I,Ind: Integer;
     XVal,YVal: Real;
-    OK   : Boolean;
+    I,Ind: Integer;
+    OK: Boolean;
 begin
    Inherited;
    FPreviousPosition:=Point( X,Y );
    if (BackgroundMode<>emNormal) and (ssRight in Shift) then
        BackgroundMode:=emNormal
-   else
-   if (BackgroundMode=emSetOrigin) and (ssLeft in Shift) then begin
-      // Start moving the background image
-      // store current origin
-      FBackgroundOrigin:=BackgroundImage.Origin;
-   end else
+   else               // Start moving the background image store current origin
+   if (BackgroundMode=emSetOrigin) and (ssLeft in Shift)
+   then FBackgroundOrigin:=BackgroundImage.Origin else
    if (BackgroundMode=emSetScale) and (ssLeft in Shift) then begin
       Pt:=Project(ZERO);
       if (Scale*Zoom*BackgroundImage.Scale)<>0 then begin
@@ -10334,12 +10331,10 @@ begin                                                 // Read layer information
 end;
 
 procedure SSurface.ImportGrid(Points:TCoordinateGrid;Cols,Rows:Integer;Layer:SLayer);
-var Grid       : SGrid;
-    FacePoints : TFasterList;
-    Edge       : SEdge;
-    I,J        : Integer;
+var Grid: SGrid; FacePoints: TFasterList;
+    Edge: SEdge; I,J: Integer;
 begin
-   Setlength(Grid,Rows);
+   Setlength( Grid,Rows );
    for I:=1 to Rows do begin
       Setlength(Grid[I-1],Cols);
       for J:=1 to Cols do Grid[I-1][J-1]:=AddControlPoint(Points[I-1][J-1]);
@@ -10736,8 +10731,7 @@ var I,J: Integer; Curve: SControlCurve; Edge1,Edge2: SEdge; Point: SPoint;
 begin
    if not FInitialized then Initialize(1,1,1);
    if self.NoControlFaces>0 then begin
-      for I:=1 to NoControlCurves do begin
-         Curve:=ControlCurve[I-1];
+      for I:=1 to NoControlCurves do begin Curve:=ControlCurve[I-1];
          if FCurrenSLevel=0 then begin
             Curve.FBuild:=False;
             Curve.FSubdividedPoints.Clear;
@@ -10747,7 +10741,7 @@ begin
       FBuild:=True;
       while (FCurrenSLevel<FDivSec)
         and (FControlFaces.Count>0) do Subdivide;
-      for I:=1 to NoControlfaces do begin ControlFace[I-1].CalcExtents;
+{     for I:=1 to NoControlfaces do begin ControlFace[I-1].CalcExtents;
          if I=1 then begin
             FMin:=Controlface[I-1].FMin;
             FMax:=Controlface[I-1].FMax;
@@ -10755,7 +10749,7 @@ begin
             MinMax(Controlface[I-1].FMin,FMin,FMax);
             MinMax(Controlface[I-1].FMax,FMin,FMax);
          end;
-      end;
+      end; }
       for I:=1 to NoControlCurves do begin
          Curve:=ControlCurve[I-1];
          Curve.FCurve.Clear;
@@ -10765,19 +10759,18 @@ begin
             Curve.FCurve.Add(Point.Coordinate);
             if (J>1) and (J<Curve.FSubdividedPoints.Count) then begin
                if Point.VertexType=svCorner
-               then Curve.FCurve.Knuckle[J-1]:=True
-               else begin
+               then Curve.FCurve.Knuckle[J-1]:=True else begin
                   Edge1:=EdgeExists(Curve.FSubdividedPoints[J-2],Curve.FSubdividedPoints[J-1]);
                   Edge2:=EdgeExists(Curve.FSubdividedPoints[J-1],Curve.FSubdividedPoints[J]);
                   if (Edge1=nil) or (Edge2=nil) then begin
-                     //if (Edge1.Crease=False) and (Edge2.Crease=False) then Curve.FCurve.Knuckle[J-1]:=Point.VertexType=svCrease;
+                    //if (Edge1.Crease=False) and (Edge2.Crease=False) then Curve.FCurve.Knuckle[J-1]:=Point.VertexType=svCrease;
                   end else if (Edge1.Crease=False) and (Edge2.Crease=False) then Curve.FCurve.Knuckle[J-1]:=Point.VertexType=svCrease;
                end;
-            end;
-            Curve.FBuild:=true;
+            end; Curve.FBuild:=true;
          end;
       end;
-   end else if NoControlPoints>0 then begin
+   end;
+{  else if NoControlPoints>0 then begin
       for I:=1 to NoControlPoints do begin
          if I=1 then begin
             FMin:=ControlPoint[I-1].Coordinate;
@@ -10789,7 +10782,7 @@ begin
       FMax.X:=1.0;
       FMax.Y:=1.0;
       FMax.Z:=1.0;
-   end;
+   end; }
 end;
 
 procedure SSurface.SaveBinary(Destination:TFileBuffer);
@@ -10798,7 +10791,7 @@ begin                                                   // First save layerdata
    Destination.Add(NoLayers);
    for I:=1 to NoLayers do Layer[I-1].SaveBinary(Destination);
    Destination.Add(ActiveLayer.LayerIndex);       // Save index of active layer
-   // first sort controlpoints for faster acces of function (Indexof())
+           // first sort controlpoints for faster acces of function (Indexof())
    FControlPoints.Sort;
    Destination.Add(NoControlPoints);
    for I:=1 to NoControlPoints do ControlPoint[I-1].SaveBinary(Destination);

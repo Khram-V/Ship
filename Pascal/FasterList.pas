@@ -47,19 +47,24 @@ constructor TFasterList.Create;
                            FData:=nil; FCapacity:=0; FSorted:=False; end;
 destructor TFasterList.Destroy;
    begin Clear;
-     if FCapacity>0 then SetLength( FList,0 ); FList:=nil; FCapacity:=0;
-      if FData<>nil then SetLength( FData,0 ); FData:=nil; inherited Destroy;
+      if FCapacity>0 then SetLength( FList,0 ); FList:=nil; FCapacity:=0;
+       if FData<>nil then SetLength( FData,0 ); FData:=nil; inherited Destroy;
    end;
-procedure TFasterList.FSetCapacity( NewCapacity: integer );
-    begin if FCapacity<=NewCapacity+256 then begin
-             FCapacity:=NewCapacity+512; SetLength( FList,FCapacity );
-                    if FUseUserData then SetLength( FData,FCapacity );
+procedure TFasterList.Clear;
+   begin FCount:=0; FSorted:=False; FUseUserData:=False; // SetLength( FData,0 );
+//     if FCapacity>0 then SetLength( FList,0 ); FList:=nil; FCapacity:=0;
+//      if FData<>nil then SetLength( FData,0 ); FData:=nil;
+   end;
+procedure TFasterList.FSetCapacity( NewCapacity: integer ); var delta: Integer; 
+    begin if FCapacity<=NewCapacity then begin
+             if FCapacity>64 then begin Delta:=FCapacity div 4;
+                if Delta>1000 then Delta:=1000 end else  // оригинально из v2.6
+             if FCapacity>8 then Delta:=16 else Delta:=4;
+          FCapacity:=NewCapacity+Delta; SetLength( FList,FCapacity );
+                   if FUseUserData then SetLength( FData,FCapacity );
           end else if FUseUserData then
                    if FData=nil then SetLength( FData,FCapacity );
     end;
-procedure TFasterList.Clear;
-   begin FCount:=0; FSorted:=False; FUseUserData:=False; // SetLength( FData,0 );
-   end;
 procedure TFasterList.FSet( Index: Integer; Item: Pointer );
    begin FList[Index]:=Item; if FUseUserData then FData[index]:=nil;
    end;
