@@ -42,65 +42,59 @@ implementation uses LanguageSupport;
 procedure TIntersectionDialog.UpdateMenu;
 begin
    if ViewStations.Checked then begin
-//      AddOne.Hint:=Userstring(223)+'.';
-//      AddRange.Hint:=Userstring(224)+'.';
-//      DeleteAll.Hint:=Userstring(225)+'.';
+{     AddOne.Hint:=Userstring(223)+'.';
+      AddRange.Hint:=Userstring(224)+'.';
+      DeleteAll.Hint:=Userstring(225)+'.'; }
       DeleteAll.Enabled:=St.NoStations>0;
    end else if ViewButtocks.Checked then begin
-//      AddOne.Hint:=Userstring(226)+'.';
-//      AddRange.Hint:=Userstring(227)+'.';
-//      DeleteAll.Hint:=Userstring(228)+'.';
+{     AddOne.Hint:=Userstring(226)+'.';
+      AddRange.Hint:=Userstring(227)+'.';
+      DeleteAll.Hint:=Userstring(228)+'.'; }
       DeleteAll.Enabled:=St.NoButtocks>0;
    end else if ViewWaterlines.Checked then begin
-//      AddOne.Hint:=Userstring(229)+'.';
-//      AddRange.Hint:=Userstring(230)+'.';
-//      DeleteAll.Hint:=Userstring(231)+'.';
+{     AddOne.Hint:=Userstring(229)+'.';
+      AddRange.Hint:=Userstring(230)+'.';
+      DeleteAll.Hint:=Userstring(231)+'.'; }
       DeleteAll.Enabled:=St.NoWaterlines>0;
    end else if ViewDiagonals.Checked then begin
-//      AddOne.Hint:=Userstring(232)+'.';
-//      AddRange.Hint:=Userstring(233)+'.';
-//      DeleteAll.Hint:=Userstring(234)+'.';
+{     AddOne.Hint:=Userstring(232)+'.';
+      AddRange.Hint:=Userstring(233)+'.';
+      DeleteAll.Hint:=Userstring(234)+'.'; }
       DeleteAll.Enabled:=St.NoDiagonals>0;
    end;
 end;
 
 procedure TIntersectionDialog.FillBox;
-var I,Ind   : Integer;
-    PrevInd : Integer;
+  var I,Ind,PrevInd: Integer;
 begin
    PrevInd:=ListBox.ItemIndex;
    ListBox.Items.BeginUpdate;
    ListBox.Clear;
-   if ViewStations.Checked then begin                 // Fill box with stations
-      for I:=1 to St.NoStations do begin
-         Ind:=ListBox.Items.AddObject(St.Station[I-1].Description,St.Station[I-1]);
-         ListBox.Checked[Ind]:=St.Station[I-1].ShowCurvature;
-      end;
-   end else if ViewButtocks.Checked then begin        // Fill box with buttocks
-      for I:=1 to St.NoButtocks do begin
-         Ind:=ListBox.Items.AddObject(St.Buttock[I-1].Description,St.Buttock[I-1]);
-         ListBox.Checked[Ind]:=St.Buttock[I-1].ShowCurvature;
-      end;
-   end else if ViewWaterlines.Checked then begin    // Fill box with waterlines
-      for I:=1 to St.NoWaterlines do begin
-         Ind:=ListBox.Items.AddObject(St.Waterline[I-1].Description,St.Waterline[I-1]);
-         ListBox.Checked[Ind]:=St.Waterline[I-1].ShowCurvature;
-     end;
-   end else begin                                    // Fill box with diagonals
-      for I:=1 to St.NoDiagonals do begin
-         Ind:=ListBox.Items.AddObject(St.Diagonal[I-1].Description,St.Diagonal[I-1]);
-         ListBox.Checked[Ind]:=St.Diagonal[I-1].ShowCurvature;
-      end;
+   if ViewStations.Checked then                       // Fill box with stations
+   for I:=1 to St.NoStations do begin
+     Ind:=ListBox.Items.AddObject(St.Station[I-1].Description,St.Station[I-1]);
+     ListBox.Checked[Ind]:=St.Station[I-1].ShowCurvature;
+   end else
+   if ViewButtocks.Checked then                       // Fill box with buttocks
+   for I:=1 to St.NoButtocks do begin
+     Ind:=ListBox.Items.AddObject(St.Buttock[I-1].Description,St.Buttock[I-1]);
+     ListBox.Checked[Ind]:=St.Buttock[I-1].ShowCurvature;
+   end else
+   if ViewWaterlines.Checked then                   // Fill box with waterlines
+   for I:=1 to St.NoWaterlines do begin
+     Ind:=ListBox.Items.AddObject(St.Waterline[I-1].Description,St.Waterline[I-1]);
+     ListBox.Checked[Ind]:=St.Waterline[I-1].ShowCurvature;
+   end else                                          // Fill box with diagonals
+   for I:=1 to St.NoDiagonals do begin
+     Ind:=ListBox.Items.AddObject(St.Diagonal[I-1].Description,St.Diagonal[I-1]);
+     ListBox.Checked[Ind]:=St.Diagonal[I-1].ShowCurvature;
    end;
    ListBox.Items.EndUpdate;
    if (PrevInd>=0) and (PrevInd<ListBox.Count) then ListBox.ItemIndex:=PrevInd;
 end;
 
 procedure TIntersectionDialog.Execute( Ship:TShip );
-    begin St:=Ship;
-          FillBox;
-          UpdateMenu;
-          ShowModal;
+    begin St:=Ship; FillBox; UpdateMenu; ShowModal;
 end;
 
 procedure TIntersectionDialog.ListBoxKeyDown
@@ -177,14 +171,14 @@ begin
    ViewButtocks.Checked:=False;
    ViewWaterlines.Checked:=False;
    ViewDiagonals.Checked:=True;
+   UpdateMenu;
    FillBox;
 end;
 
-procedure TIntersectionDialog.CloseDialogExecute(Sender: TObject);
-    begin Close; end;
+procedure TIntersectionDialog.CloseDialogExecute(Sender: TObject); begin Close end;
 
 procedure TIntersectionDialog.AddOneExecute(Sender: TObject);
-var Str: String; Int: TIntersection;
+var Str: String; Int: TIntersection=nil;
 begin Str:='1.0';
    if InputQuery(Userstring(235),Userstring(236)+':',Str) then begin Int:=nil;
       if ViewStations.Checked then Int:=St.Edit.Intersection_Add(fiStation,StrToFloat(Str));
@@ -222,18 +216,12 @@ begin Str:='1.0';
    FillBox;
 end;
 
-procedure TIntersectionDialog.DeleteAllExecute(Sender: TObject);
-  var I: Integer;
+procedure TIntersectionDialog.DeleteAllExecute(Sender: TObject); var I:Integer;
 begin with St do begin
-   if ViewStations.Checked then begin
-      for I:=NoStations downto 1 do Station[I-1].Delete(I=1); FillBox;
-   end else if ViewButtocks.Checked then begin
-      for I:=NoButtocks downto 1 do Buttock[I-1].Delete(I=1); FillBox;
-   end else if ViewWaterlines.Checked then begin
-      for I:=NoWaterlines downto 1 do Waterline[I-1].Delete(I=1); FillBox;
-   end else if ViewDiagonals.Checked then begin
-      for I:=NoDiagonals downto 1 do Diagonal[I-1].Delete(I=1); FillBox;
-   end;
+   if ViewStations.Checked   then begin for I:=NoStations   downto 1 do Station[I-1].Delete(I=1);   FillBox; end else
+   if ViewButtocks.Checked   then begin for I:=NoButtocks   downto 1 do Buttock[I-1].Delete(I=1);   FillBox; end else
+   if ViewWaterlines.Checked then begin for I:=NoWaterlines downto 1 do Waterline[I-1].Delete(I=1); FillBox; end else
+   if ViewDiagonals.Checked  then begin for I:=NoDiagonals  downto 1 do Diagonal[I-1].Delete(I=1);  FillBox; end;
    UpdateMenu;
 end end;
 

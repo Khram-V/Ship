@@ -248,7 +248,12 @@ procedure THullWindow.ZoomExtentsExecute(Sender: TObject);
 procedure THullWindow.ZoomOutExecute(Sender: TObject);
     begin Viewport.ZoomOut; end;
 
-procedure THullWindow.ViewportMouseDown(Sender: TObject;Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure THullWindow.ViewportMouseDown
+( Sender: TObject;
+  Button: TMouseButton;
+  Shift: TShiftState;
+  X,Y: Integer
+);
 var Select: Boolean; P:Place;
 begin
    FInitialPosition:=Point( X,Y );
@@ -273,6 +278,7 @@ begin
      Viewport.SelectionFrameActive:=true;
    end;
 end;
+
 procedure THullWindow.ViewportMouseMove(Sender: TObject;Shift: TShiftState; X, Y: Integer);
 var P2D: Place; P3D: Vector; Str: string;
 begin

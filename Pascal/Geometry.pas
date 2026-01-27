@@ -221,7 +221,6 @@ private
 protected
    procedure Paint; override;
    procedure Resize; override;
-// procedure KeyPress( var Key: Char ); override;
    procedure MouseDown(Button:TMouseButton;Shift:TShiftState;X,Y:Integer); override;
    procedure MouseMove(Shift:TShiftState;X,Y:Integer); override;
    procedure MouseUp(Button:TMouseButton;Shift:TShiftState;X,Y:Integer); override;
@@ -231,9 +230,9 @@ public
    destructor Destroy; override;
    procedure DrawLineToZBuffer(Point1,Point2:Vector;R,G,B:Integer);
    procedure InitializeViewport(Min,Max:Vector);
-   function Project(P:Vector):TPoint;
-   function ProjectBack(P:TPoint;Input:Vector):Vector;
-   function ProjectBackTo2D(P:TPoint):Place;        // Takes the cursor position and projects it to 2D object space
+   function Project( P:Vector ):TPoint;
+   function ProjectBack( P:TPoint; Input:Vector ):Vector;
+   function ProjectBackTo2D( P:TPoint ):Place; // Takes the cursor position and projects it to 2D object space
    function ProjectToZBuffer(P:Vector):TShadePoint; overload;virtual; // Projects a 3D point to the screen and calculate it's Z-value for the Z-buffer
    function ProjectToZBuffer(Scale:Real;P:Vector):TShadePoint;  reintroduce;overload;// Projects a 3D point with a certain z-buffer offset to the screen, used for drawing lines on top of shaded surfaces
    function RotatedPoint(P:Vector):Vector;
@@ -620,12 +619,10 @@ public
    procedure Draw(Viewport:TViewport);
    procedure Extents(var Min,Max:Vector);
    procedure LoadBinary(Source:TFileBuffer);
-   procedure LoadFromStream(var LineNr:Integer;Strings:TStringList);
    procedure MoveDown;
    procedure MoveUp;
    procedure SaveToDXF(Strings:TStringList);
    procedure SaveBinary(Destination:TFileBuffer);
-   procedure SaveToStream(Strings:TStringList);
    procedure Unroll(Destination:TFasterList);
    property  AlphaBlend          : Byte read FAlphaBlend write FAlphaBlend;
    property  Color               : TColor read FGetColor write FSetColor;
@@ -710,7 +707,7 @@ public
    constructor Create(Owner:SSurface); override;
    procedure  Collapse;
    function  FGetIndex:Integer; override;
-   function  DistanceToCursor(X,Y:Integer;Viewport:TViewport):integer;
+   function  DistanceToCursor(X,Y:Integer;Viewport:TViewport):Integer;
    procedure SelDeletePoint;
    procedure Draw(Viewport:TViewport);
    procedure LoadBinary(Source:TFileBuffer);
@@ -843,8 +840,6 @@ public
    procedure   Draw(Viewport:TViewport;MinCurvature,MaxCurvature:Real); reintroduce;overload;
    function    InsertEdge(P1,P2:SControlPoint):SControlEdge;
    procedure   LoadBinary(Source:TFileBuffer);
-   procedure   LoadFromStream(var LineNr:Integer;Strings:TStringList);
-// procedure   RemoveReferences;
    procedure   SaveBinary(Destination:TFileBuffer);
    procedure   SaveToDXF(Strings:TStringList);
    procedure   SaveToStream(Strings:TStringlist); virtual;
@@ -852,7 +847,7 @@ public
                ( Owner:SSurface; ControlFace:Boolean;
                  VertexPoints,EdgePoints,FacePoints,InteriorEdges,ControlEdges,Dest:TFasterList
                ); override;
-   procedure   Trace; // select all controlfaces connected to the current one
+   procedure   Trace;   // select all controlfaces connected to the current one
         // that belong to the same layer and are not separated by a crease edge
 // property    Color: TColor read FGetColor;
    property    ControlEdge[index:Integer]: SEdge read FGetControlEdge;
@@ -979,12 +974,10 @@ public
    procedure   InsertPlane(Plane:Plate;AddCurves:Boolean);  // inserts points on edges (visible edges only) that intersect the input plane
    procedure   IsolateEdges(Source,Destination:TFasterList);overload;virtual;
    procedure   LoadBinary(Source:TFileBuffer);
-   procedure   LoadFromStream(var LineNr:Integer;Strings:TStringList);
    procedure   LoadVRMLFile(Filename:string);
    function    PointExists(P:SControlPoint):Boolean;
    procedure   Rebuild; override;
    procedure   SaveBinary(Destination:TFileBuffer);
-   procedure   SaveToStream(Strings:TStringlist);
    procedure   Selection_Add( item: SBase );
    procedure   Selection_Delete;
    procedure   SortEdges(Edges:TFasterList); overload; virtual;
@@ -1875,18 +1868,15 @@ function TViewport.ProjectBack(P:TPoint;Input:Vector):Vector;
 var P2D: Place;
     P1,P2,P3D: Vector;
     Dist: Real;
-begin
-   // convert from screencoordinate to 2D world coordinate
+begin                  // convert from screencoordinate to 2D world coordinate
    P2D.X:=(P.X-FPan.X-FScreencenter.X)/(FZoom*FScale);
    P2D.Y:=(P.Y-FPan.Y-FScreencenter.Y)/-(FZoom*FScale);
-   // Now correct for perspective projection and create
-   //            a 3D ray through the screen coordinate
+// Now correct for perspective projection and create a 3D ray through the screen coordinate
    P3D.X:=FMin3D.X;
    Dist:=FCameralocation.X-P3D.X;
    P3D.Y:=P2D.X*dist/FCameralocation.X;
    P3D.Z:=P2D.Y*Dist/FCameralocation.X;
    P1:=RotatedPointBack(P3D);
-
    P3D.X:=FMax3D.X;
    Dist:=FCameralocation.X-P3D.X;
    P3D.Y:=P2D.X*dist/FCameralocation.X;
@@ -1896,14 +1886,14 @@ begin
    Result:=ProjectPointOnLine( Input,P1,P2 ); //-- Dist_PL_3D
 end;
 
-function TViewport.ProjectBackTo2D(P:TPoint):Place;
+function TViewport.ProjectBackTo2D( P:TPoint ): Place;
 var P2D: Place;
     P1,P2,P3D: Vector;
     Dist: Real;
 begin                   // convert from screencoordinate to 2D world coordinate
    P2D.X:=(P.X-FPan.X-FScreencenter.X)/(FZoom*FScale);
    P2D.Y:=(P.Y-FPan.Y-FScreencenter.Y)/-(FZoom*FScale);
-   // convert from screencoordinate to 2D world coordinate
+// convert from screencoordinate to 2D world coordinate
    P3D.X:=FMin3D.X;
    Dist:=FCameralocation.X-P3D.X;
    P3D.Y:=P2D.X*dist/FCameralocation.X;
@@ -1974,11 +1964,11 @@ begin      // This function takes a point from worldspace and rotates it around
    SinAngle:=sin(DegToRad(-FAngle));
    CosElevation:=Cos(DegToRad(-FElevation));
    SinElevation:=sin(DegToRad(-FElevation));
-   P:=P-FMidPoint; // Rotate a point first around Y-axis then around the Z-axis
+   P-=FMidPoint;  // Rotate a point first around Y-axis then around the Z-axis
    Result.x:=(P.x*CosElevation+P.z*SinElevation)*CosAngle-P.y*SinAngle;
    Result.y:=(P.x*CosElevation+P.z*SinElevation)*SinAngle+P.y*CosAngle;
    Result.z:=(-P.x*SinElevation+P.z*CosElevation); // Translate origin back to midpoint
-   Result:=Result+FMidPoint;
+   Result+=FMidPoint;
 end;
 
 procedure TViewport.Paint;
@@ -2055,18 +2045,6 @@ end;
 
 procedure TViewport.Resize;
     begin Inherited Resize; InitializeViewport(FMin3D,FMax3D); end;
-(*
-procedure TViewport.KeyPress(var Key: Char);
-begin inherited;
-   if key=#112 then MainForm.Help1Click( Self ) else  // 112=F1 VK_F1
-   if key in ['a','A'] then ZoomExtents else
-   if key in ['i','I'] then ZoomIn else
-   if key in ['o','O'] then ZoomOut; // else
-   if key in ['s','S'] then begin St.Edit.Selection_SelectAll; end; //Application.MainForm.UpdateMenu; end;
-// Application.MainForm.SelectAllExecute(St);
-// TMainform( Application.MainForm ).SelectAllExecute(St); //
-end;
-*)
 
 Var ShMouse: Integer=2; // задержка начальной реакции мышки на поворот картинки
 
@@ -5706,33 +5684,12 @@ begin
    end;
 end;
 
-procedure SLayer.LoadFromStream(var LineNr:Integer;Strings:TStringList);
-var Str: string;
-begin
-   inc(LineNr); FDescription:=Strings[LineNr]; // read description
-   inc(LineNr); Str:=Strings[LineNr];          // read Layer identification
-   FLayerID:=GetInteger(Str);
-   if FLayerID>Owner.FLastusedLayerID then Owner.FLastusedLayerID:=FLayerID;
-   FColor:=GetInteger(Str);                    // read color
-   FVisible:=GetBoolean(Str);                  // read visible
-   FSymmetric:=GetBoolean(Str);
-   if Str<>'' then FDevelopable:=GetBoolean(Str) // read developability
-              else FDevelopable:=False;
-   if Str<>'' then FUseForIntersections:=GetBoolean(Str) // read calc. intersections flag
-              else FUseForIntersections:=True;
-   if Str<>'' then FUseInHydrostatics:=GetBoolean(Str) // read use in hydrostatics flag
-              else FUseInHydrostatics:=True;
-end;
-
-procedure SLayer.MoveDown;
-var Index:Integer;
+procedure SLayer.MoveDown; var Index:Integer;
 begin
    Index:=Owner.FLayers.IndexOf(self);
    if index<Owner.Flayers.Count-1 then Owner.FLayers.Exchange(Index+1,index);
 end;
-
-procedure SLayer.MoveUp;
-var Index:Integer;
+procedure SLayer.MoveUp; var Index:Integer;
 begin
    Index:=Owner.FLayers.IndexOf(self);
    if index>0 then Owner.FLayers.Exchange(Index-1,index);
@@ -5825,19 +5782,6 @@ begin
          end;
       end;
    end;
-end;
-
-procedure SLayer.SaveToStream(Strings:TStringList);
-var Str   : string;
-begin
-   Strings.Add(FDescription);
-   Str:=IntToStr(FLayerID)+#32+
-        IntToStr(FColor)+#32+
-        BoolToStr(FVisible)+#32+
-        BoolToStr(FSymmetric)+#32+
-        BoolToStr(FDevelopable);
-   Str:=Str+#32+BoolToStr(FUseForIntersections)+#32+BoolToStr(FUseInHydrostatics);
-   Strings.Add(Str);
 end;
 
 procedure SLayer.Unroll(Destination:TFasterList);
@@ -6411,29 +6355,26 @@ begin
       if Pen.Width<>1 then Pen.Width:=1;
       Viewport.PenColor:=Color;
       if Brush.Style<>bsClear then Brush.Style:=bsClear;
-      if Selected then begin        //FInitializeCanvas(Viewport,1,Color,Mode);
-         for I:=1 to Owner.ControlPointSize
-           do Viewport.Canvas.Rectangle(P.X-I,P.Y-I,P.X+I,P.Y+I);
-         Viewport.Canvas.Rectangle( P.X-Owner.ControlPointSize-2,
-                                    P.Y-Owner.ControlPointSize-2,
-                                    P.X+Owner.ControlPointSize+2,
-                                    P.Y+Owner.ControlPointSize+2 );
-      end else begin
-         for I:=1 to Owner.ControlPointSize
-           do Viewport.Canvas.Rectangle( P.X-I,P.Y-I,P.X+I,P.Y+I );
-      end;
+      for I:=1 to Owner.ControlPointSize
+         do Viewport.Canvas.Rectangle( P.X-I,P.Y-I,P.X+I,P.Y+I );
+      if Selected then           // FInitializeCanvas( Viewport,1,Color,Mode );
+            Viewport.Canvas.Rectangle( P.X-Owner.ControlPointSize-2,
+                                       P.Y-Owner.ControlPointSize-2,
+                                       P.X+Owner.ControlPointSize+2,
+                                       P.Y+Owner.ControlPointSize+2 );
    end;
 end;
 
-function SControlPoint.DistanceToCursor(X,Y:Integer;Viewport:TViewport):integer;
+function SControlPoint.DistanceToCursor(X,Y:Integer;Viewport:TViewport):Integer;
 var Pt: TPoint; P: Vector;
 begin                    // Check if cursor position lies within the boundaries
    P:=FCoordinate;
-   if (Viewport.ViewType=fvBodyplan) and (P.X<=Owner.MainframeLocation) then P.Y:=-P.Y;
-   Pt:=Viewport.Project(P);
+   if (Viewport.ViewType=fvBodyplan)
+   and (P.X<=Owner.MainframeLocation) then P.Y:=-P.Y;
+   Pt:=Viewport.Project( P );
    if (Pt.X>=0) and (Pt.X<=Viewport.Width)
-   and (Pt.Y>=0) and (Pt.Y<=Viewport.Height) then Result:=Round( hypot(Pt.X-X,Pt.Y-Y) )
-                                             else Result:=100000;
+   and (Pt.Y>=0) and (Pt.Y<=Viewport.Height)
+   then Result:=max(abs(Pt.X-X),abs(Pt.Y-Y)) else Result:=10000;
 end;
 
 procedure SControlPoint.LoadBinary(Source:TFileBuffer);
@@ -6449,16 +6390,15 @@ end;
 
 procedure SControlPoint.LoadFromStream(var LineNr:Integer;Strings:TStringList);
 var Str: string; I: Integer; sel: Boolean;
-begin                                                            // FCoordinate
-   Inc(LineNr);
+begin Inc(LineNr);                                               // FCoordinate
    Str:=Strings[LineNr];
-   FCoordinate:=GetVector(Str);                                  // FVertexType
+   FCoordinate:=GetVector(Str);
    if Str<>'' then begin I:=GetInteger(Str);
       FVertextype:=TVertexType(I);
       if Str<>'' then begin Sel:=GetBoolean(Str);
          if Sel then Selected:=True;
-      end;
-   end else FVertextype:=TVertexType(0);
+      end;                  // TVertexType=(svRegular,svCrease,svDart,svCorner)
+   end else FVertextype:=svRegular;
 end;
 
 procedure SControlPoint.SaveBinary(Destination:TFileBuffer);
@@ -6469,12 +6409,14 @@ begin
    if Destination.Version>=fv198 then Destination.Add( Locked );
 end;
 
-procedure SControlPoint.SaveToStream( Strings:TStringlist );
-begin
+procedure SControlPoint.SaveToStream( Strings:TStringlist ); Var Str:String;
+begin Str:='';
+   if Selected then Str:=IntToStr( Ord( VertexType ) )+' 1' else
+   if VertexType<>svRegular then Str:=IntToStr( Ord( VertexType ) );
    Strings.Add( FloatToDec( Fcoordinate.X,5 )+#32
               + FloatToDec( Fcoordinate.Y,5 )+#32
-              + FloatToDec( Fcoordinate.Z,5 )+#32
-              + IntToStr( Ord( VertexType ) )+#32 + BoolToStr( Selected ) );
+              + FloatToDec( Fcoordinate.Z,5 )+#32+Str );
+//            + IntToStr( Ord( VertexType ) )+#32 + BoolToStr( Selected ) );
 end;
 {
    SEdge
@@ -7162,11 +7104,12 @@ begin
    Destination.Add(FCrease);
    Destination.Add(Selected);
 end;
-procedure SControlEdge.SaveToStream(Strings:TStringlist);
+procedure SControlEdge.SaveToStream(Strings:TStringlist); Var Str: String;
 begin
+   if Selected then Str:=' 1' else Str:='';
    Strings.Add(IntToStr(Owner.FControlPoints.SortedIndexOf(Startpoint))+#32+
                IntToStr(Owner.FControlPoints.SortedIndexOf(Endpoint))+#32+
-               IntToStr(Ord(FCrease))+#32+BoolToStr(Selected));
+               IntToStr(Ord(FCrease))+Str ); // #32+BoolToStr(Selected));
 end;
 procedure SControlEdge.Trace;
 var P          : SControlPoint;
@@ -8091,62 +8034,6 @@ begin Source.LoadInteger(N); // Read controlpoint data
    end;
 end;
 
-procedure SControlFace.LoadFromStream( var LineNr:Integer;Strings:TStringList );
-var Str: string;
-    I,N,Index: Integer;
-    P1,P2: SControlPoint;
-    Edge: SControlEdge;
-    Sel: Boolean;
-begin
-   Inc(LineNr);
-   Str:=Strings[LineNr];                              // Read controlpoint data
-   N:=GetInteger(Str);
-   FPoints.Clear;
-   FPoints.Capacity:=N;
-   for I:=1 to N do begin Index:=GetInteger(Str);
-      if Index=-1 then Index:=0;
-      if Index<>-1 then begin
-         P1:=Owner.FControlPoints[Index];
-         FPoints.Add(P1);
-         P1.FFaces.Add(Self);
-      end;
-   end;                                                     // Read layer-index
-   Index:=GetInteger(Str);
-   if (Index>=0) and (Index<Owner.FLayers.Count)
-      then FLayer:=Owner.Layer[Index]
-      else FLayer:=Owner.Layer[0];    // Reference to an invalid layer. Assign to owners default layer
-   if FLayer<>nil then FLayer.AddControlFace(self)
-             ; // else Raise Exception.Create('Invalid layer reference in procedure SControlFace.LoadFromStream!');
-   if Str<>'' then begin
-      Sel:=GetBoolean(Str);
-      if sel then Selected:=True;
-   end;
-   P1:=FPoints[NoPoints-1];
-   for I:=1 to NoPoints do begin
-      P2:=FPoints[I-1];
-      Edge:=Owner.EdgeExists(P1,P2) as SControlEdge;
-//+//+// if Edge<>nil then Edge.FFaces.Add(Self) else ShowMessage( Userstring(201)+'!' );
-      if Edge<>nil then Edge.FFaces.Add(Self) else begin  //Edge.AddFace(Face)
-        Edge:=Owner.AddControlEdge( P1,P2 );
-        Edge.FFaces.Add(Self);                         //Edge.FFaces.Add(Face);
-        Edge.Crease:=True;
-      end; P1:=P2;
-   end;
-end;
-{
-procedure SControlFace.RemoveReferences;
-var P1,P2: SPoint; I: Integer; Edge: SEdge;
-begin
-   P1:=FPoints[FPoints.Count-1];
-   for I:=1 to FPoints.Count do begin
-      P2:=FPoints[I-1];
-      P2.DeleteFace(self);
-      Edge:=FOwner.EdgeExists(P1,P2);
-      if Edge<>nil then Edge.DeleteFace(self);
-      P1:=p2;
-   end;
-end;
-}
 procedure SControlFace.SaveBinary(Destination:TFileBuffer);
 var I,Index : Integer;
 begin
@@ -8241,9 +8128,10 @@ begin
    Str:=IntToStr(NoPoints);
    for I:=1 to NoPoints do
        Str:=Str+#32+IntToStr(Owner.FControlPoints.SortedIndexOf(Point[I-1]));
-   if Layer<>nil then Index:=Owner.FLayers.IndexOf(Layer)    // Add layer index
+   if Layer<>nil then Index:=Owner.FLayers.IndexOf(Layer) // Add layer index
                  else Index:=-1;
-   Str:=Str+#32+IntToStr(Index)+#32+BoolToStr(Selected);
+   Str:=Str+#32+IntToStr(Index); //+#32+BoolToStr(Selected); без выделений
+   if Selected then Str:=Str+' 1';
    strings.Add(Str);
 end;
 
@@ -9540,8 +9428,10 @@ begin                                                  // Add layer information
         +#32+BoolToStr(Layer[I].FUseForIntersections)
         +#32+BoolToStr(Layer[I].FUseInHydrostatics)
         +#32+BoolToStr(Layer[I].FShowInLinesplan)
-        +#32+FloatToStrF(Layer[I].MaterialDensity,ffFixed,10,8)
-        +#32+FloatToStrF(Layer[I].Thickness,ffFixed,10,8));
+        +#32+FloatToDec(Layer[I].MaterialDensity,8)
+        +#32+FloatToDec(Layer[I].Thickness,8));
+//      +#32+FloatToStrF(Layer[I].MaterialDensity,ffFixed,10,8)
+//      +#32+FloatToStrF(Layer[I].Thickness,ffFixed,10,8));
    end; // first sort controlpoints for faster acces of function (Indexof())
    FControlPoints.Sort;
    Strings.Add(IntToStr(NoControlPoints));
@@ -10290,7 +10180,6 @@ begin                                                 // Read layer information
    end;                                                    // Read controlFaces
    Inc(LineNr); Str:=Strings[LineNr];
    N:=GetInteger(Str);
-//{$omp parallel for} // private(I,J)}
    for I:=1 to N do begin
       Face:=SControlFace.Create(self);
       FControlFaces.Add(Face);
@@ -10308,8 +10197,8 @@ begin                                                 // Read layer information
          if Edge<>nil then Edge.AddFace(Face) else begin
            Edge:=AddControlEdge( P1,P2 );
            Edge.FFaces.Add(Face);
-           Edge.Crease:=True;
-         end; //#//#// else ShowMessage(Userstring(201)+'!');
+           Edge.Crease:=False; // True;
+         end;                  // #//#// else ShowMessage(Userstring(201)+'!');
          P1:=P2;
       end;
       Index:=GetInteger(Str);                                // Read Layerindex
@@ -10591,62 +10480,6 @@ begin                                                   // First load layerdata
    if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
 end;
 
-procedure SSurface.LoadFromStream(var LineNr:Integer;Strings:TStringList);
-var Str: string; I,N: Integer;
-    Point: SControlPoint;
-    Edge : SControlEdge;
-    Face : SControlFace;
-    Layer: SLayer;
-begin                                                   // First read layerdata
-   Inc(LineNr);
-   Str:=Strings[LineNr];
-   N:=GetInteger(Str);
-   if N<>0 then begin                // Delete current layers and load new ones
-      for I:=1 to NoLayers do self.Layer[I-1].Destroy;
-      FLayers.Clear;
-      FLayers.Capacity:=N;
-      for I:=1 to N do begin
-         Layer:=AddNewLayer;
-         Layer.LoadFromStream(LineNr,Strings);
-      end;
-   end; // else          No layers in the file, so keep the current default one
-   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   Inc(LineNr);                                   // Read index of active layer
-   Str:=Strings[LineNr];
-   N:=GetInteger(Str);
-   ActiveLayer:=self.Layer[N];
-   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
-   Inc(LineNr);
-   Str:=Strings[LineNr];
-   N:=GetInteger(Str);
-   for I:=1 to N do begin                                 // Read controlpoints
-      Point:=SControlPoint.Create(self);
-      FControlPoints.Add(Point);
-      Point.LoadFromStream(LineNr,Strings);
-   end;
-   Inc(LineNr);                                            // Read controlEdges
-   Str:=Strings[LineNr];
-   N:=GetInteger(Str);
-   for I:=1 to N do begin
-      Edge:=SControlEdge.Create(self);
-      Edge.FControlEdge:=True;
-      FControlEdges.Add(Edge);
-      Edge.LoadFromStream(LineNr,Strings);
-   end;
-   Inc(LineNr);                                            // Read controlFaces
-   Str:=Strings[LineNr];
-   N:=GetInteger(Str);
-   for I:=1 to N do begin
-      Face:=SControlFace.Create(self);
-      FControlFaces.Add(Face);
-      Face.LoadFromStream(LineNr,Strings);
-   end;
-   Build:=False;
-   FInitialized:=True;
-   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
-end;
-
 procedure SSurface.LoadVRMLFile(Filename:string);
 var VRMLList: TVRMLList;
     I,J,K,N,Index: Integer;
@@ -10788,21 +10621,6 @@ begin                                                   // First save layerdata
    end;
    Destination.Add(NoControlFaces);
    for I:=1 to NoControlFaces do ControlFace[I-1].SaveBinary(Destination);
-end;
-
-procedure SSurface.SaveToStream( Strings:TStringlist );
-var I: Integer;
-begin
-   Strings.Add(IntToStr(NoLayers));               // First save layerdata
-   for I:=1 to NoLayers do Layer[I-1].SaveToStream(Strings);
-   Strings.Add(IntToStr(ActiveLayer.LayerIndex)); // Save index of active layer
-   FControlPoints.Sort; // first sort controlpoints for faster acces of function (Indexof())
-   Strings.Add(IntToStr(NoControlPoints));
-   for I:=1 to NoControlPoints do ControlPoint[I-1].SaveToStream(Strings);
-   Strings.Add(IntToStr(NoControlEdges));
-   for I:=1 to NoControlEdges do ControlEdge[I-1].SaveToStream(Strings);
-   Strings.Add(IntToStr(NoControlFaces));
-   for I:=1 to NoControlFaces do ControlFace[I-1].SaveToStream(Strings);
 end;
 
 procedure SSurface.Selection_Add( item: SBase );

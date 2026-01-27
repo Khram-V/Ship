@@ -382,8 +382,8 @@ begin
             FInitialPosition:=Point( X,Y );
          end;
       end else if ssRight in Shift then begin // Pan the window left, right, top or bottom
-         if (abs(FInitialPosition.X-X)>4) or (abs(FInitialPosition.Y-Y)>4)  then
-         begin
+         if (abs(FInitialPosition.X-X)>4)
+         or (abs(FInitialPosition.Y-Y)>4)  then begin
             P.X:=Viewport.Pan.X+X-FInitialPosition.X;
             P.Y:=Viewport.Pan.Y+Y-FInitialPosition.Y;
             Viewport.Pan:=P;
@@ -393,10 +393,8 @@ begin
    end else begin
       Patch:=ActivePatch;
       if (ssLeft in Shift) and (Patch<>nil) then // Translate the selected patch
-      if (abs(FInitialPosition.X-X)>0) or (abs(FInitialPosition.Y-Y)>0)
-      then begin
-         P.X:=X;
-         P.Y:=Y;
+      if (abs(FInitialPosition.X-X)>0)
+      or (abs(FInitialPosition.Y-Y)>0) then begin P.X:=X; P.Y:=Y;
          P1:=Viewport.ProjectBackTo2D(FInitialPosition);
          P2:=Viewport.ProjectBackTo2D(P);
          Diff.X:=Patch.Translation.X+(P2.X-P1.X);

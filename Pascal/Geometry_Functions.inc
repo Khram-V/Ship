@@ -267,12 +267,9 @@ begin
 end;
 
 function PlanePPP(P1,P2,P3:Vector):Plate;
-var N : Vector;
-    L : Real;
-begin
-   // Calculate normal
-   N:=(P2-P1)*(P3-P1);
-   // Make normal unit length
+var N: Vector; L: Real;
+begin                      // Calculate normal
+   N:=(P2-P1)*(P3-P1);     // Make normal unit length
    L:=Abs( N ); // Sqrt((N.X*N.X)+(N.Y*N.Y)+(N.Z*N.Z));
    if L<=0 then L:=0.0000001;
    Result.a:=N.x/L;
@@ -292,8 +289,7 @@ end;
 function PointInTriangle( P,A,B,C:Vector ):Boolean;
    function SameSide( P1,P2,A,B: Vector ):Boolean; var BA: Vector; Dp: Real;
    begin BA:=B-A; Dp:=DotProduct( BA*(P1-A),BA*(P2-A) );
-          if abs( Dp )<1e-5 then Dp:=0.0;   //? Dp-1+1;
-          Result:=Dp>=0.0; end;
+      { if abs(Dp)<1e-5 then Dp:=Dp-1+1; } Result:=Dp>=0.0; end;
 begin Result:=SameSide(P,A,B,C) and SameSide(P,B,A,C) and SameSide(P,C,A,B);
 end;
 

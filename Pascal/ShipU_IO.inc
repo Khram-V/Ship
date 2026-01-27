@@ -171,7 +171,13 @@ begin Source:=nil; Strings:=nil;
     St.Precision:=TPrecisionType( I );
     St.Surface.ImportFEFFile(Strings,LineNr);
     Strings.Destroy;
-    Drawing;
+ // LineDrawing; ~~~
+    St.Visibility.ModelView:=mvBoth;                // на оба борта
+    St.Visibility.ShowControlNet:=false;            // без выделения узлов
+    St.Visibility.ShowInteriorEdges:=True;          // внутрення разбивка рёбер
+    St.ProjectSettings.SavePreview:=false;          // без предпросмотра
+    St.Visibility.ShowHydrostaticData:=false;
+    if Assigned(St.OnUpdateGeometryInfo) then St.OnUpdateGeometryInfo(self);
   end else begin
     Source.LoadFromFile( FileName );
     St.LoadProject( Source );
@@ -267,7 +273,7 @@ begin    // Remember the filename because it will be erased by the clear method
                      Source.LoadInteger(N);
                      FFlowlines.Capacity:=N;
                      for I:=1 to N do begin
-                         Flowline:=TFlowline.Create(self);
+                         Flowline:=TFlowline.Create; //(self);
                          FFlowlines.Add(Flowline);
                          Flowline.LoadBinary(Source);
                      end;
@@ -289,7 +295,7 @@ end;
 
 // автоматическое формирование теоретических контуров
 
-procedure SEdit.Drawing;
+procedure SEdit.LineDrawing;
 Var D,DD:Real; I: Integer;
 begin with St.ProjectSettings do begin
    dd:=AxisStep( (St.Surface.Max.X-St.Surface.Min.X)/5.75 );   // шаг шпации
@@ -305,18 +311,17 @@ begin with St.ProjectSettings do begin
           Intersection_Add( fiDiagonal,I*dd );  inc( I );      // рыбины там же
    until I*dd>=St.Surface.Max.Z-dd*0.25;
    while Intersection_Add( fiDiagonal,I*dd )<>Nil do inc( I ); // плюс по борту
-// D:=round( ProjectDraft/dd/2+0.51 );              // по паре на обе стороны =
-// D:=round( St.Surface.Min.Z/dd );
-// for I:=0 to 5 do Intersection_Add( fiDiagonal,I*dd ); // шесть рыбин
+{~ D:=round( ProjectDraft/dd/2+0.51 );              // по паре на обе стороны =
+~~ D:=round( St.Surface.Min.Z/dd );
+~~ for I:=0 to 5 do Intersection_Add( fiDiagonal,I*dd ); // шесть рыбин
    SavePreview:=false;                                  // без предпросмотра
    St.FileChanged:=True;
    St.Visibility.ModelView:=mvBoth;                   // на оба борта
    St.Visibility.ShowControlNet:=false;              // без выделения узлов
    St.Visibility.ShowInteriorEdges:=True;           // внутрення разбивка рёбер
-   St.ProjectSettings.SavePreview:=false;
    if Assigned(St.OnUpdateGeometryInfo) then St.OnUpdateGeometryInfo(self);
-   // St.Build:=False;
-   // St.RebuildModel;
+~~ St.Build:=False;
+~~ St.RebuildModel; }
 end end;
 
 function SEdit.Model_New: Boolean;
@@ -583,7 +588,13 @@ begin
       TrvSplines.Destroy;
       St.FileNameSet:=false;
       St.Build:=false;
-      Drawing;
+      LineDrawing;
+      St.ProjectSettings.SavePreview:=false;               // без предпросмотра
+      St.FileChanged:=True;
+      St.Visibility.ModelView:=mvBoth;                   // на оба борта
+      St.Visibility.ShowControlNet:=false;               // без выделения узлов
+      St.Visibility.ShowInteriorEdges:=True;        // внутрення разбивка рёбер
+      if Assigned(St.OnUpdateGeometryInfo) then St.OnUpdateGeometryInfo(self);
       St.draw;
       Result:=true;
    end;

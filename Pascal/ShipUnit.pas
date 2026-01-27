@@ -217,11 +217,10 @@ public
 }
 TFlowline = class
 private
+   FFlowLine: TSpline;
    FProjectionPoint: Place;
-   FProjectionView : TViewType;
-   FFlowLine       : TSpline;
-   FBuild          : Boolean;
-   FOwner          : TShip;
+   FProjectionView: TViewType;
+   FBuild: Boolean;
 // FMethodNew:Boolean;
    function FGetColor:TColor;
    function FGetSelected:Boolean;
@@ -230,7 +229,7 @@ private
    procedure FSetSelected(val:Boolean);
 public
    procedure Clear;
-   constructor Create(Owner:TShip);
+   constructor Create; //(Owner:TShip);
    procedure Delete;
    destructor Destroy; override;
    function  DistanceToCursor(X,Y:Integer;Viewport:TViewport):integer;
@@ -240,7 +239,6 @@ public
    procedure SaveBinary(Destination:TFileBuffer);
    property Build   : Boolean read FBuild write FSetBuild;
    property Color   : TColor read FGetColor;
-   property Owner   : TShip read FOwner;
    property Selected: Boolean read FGetSelected write FSetSelected;
    property Visible : boolean read FGetvisible;
 end;
@@ -311,19 +309,18 @@ published
    property ShowStations       : boolean read FShowStations write FSetShowStations;
    property ShowWaterlines     : boolean read FShowWaterlines write FSetShowWaterlines;
 end;
-{
-   Container class for all editing commandsns for the hull
-}
-SEdit = class { Ship: TShip; -> St }
+
+{ Container class for all editing commandsns for the hull }
+
+SEdit = class { Ship: TShip; -=> St }
 private
    FRecentFiles: TStringList;
    function FGetRecentFile(Index:integer):string;
    function FGetRecentFileCount:integer;
-public
-   St: TShip;
+public St: TShip;
    constructor Create( Owner:TShip );
    destructor Destroy; override;
-   procedure Drawing;     // автоматическое формирование теоретических контуров
+   procedure LineDrawing; // автоматическое формирование теоретических контуров
    procedure File_Export_Aurora_Experiments; // Теория корабля и штормовой вычислительный эксперимент
    procedure File_Load; overload; virtual; // Load a free!Ship file by showing an opendialog
    procedure File_Load(filename:string); reintroduce; overload; // Loads the given filename quietly
@@ -1526,8 +1523,7 @@ begin
             if ((V1.X<Owner.ProjectSettings.MidleFrame)
             and (V2.X<Owner.ProjectSettings.MidleFrame))
             or ((V1.X>Owner.ProjectSettings.MidleFrame)
-            and (V2.X>Owner.ProjectSettings.MidleFrame)) then
-            begin
+            and (V2.X>Owner.ProjectSettings.MidleFrame)) then begin
                P1:=Viewport.Project(V1);
                P2:=Viewport.Project(V2);
                Tmp:=Round(DistanceToLine(P1,P2,X,Y,Param));
@@ -1689,28 +1685,27 @@ begin
 end;
 
 function TFlowline.FGetSelected:Boolean;
-   begin Result:=Owner.FSelectedFlowlines.SortedIndexOf(self)<>-1; end;
+   begin Result:=St.FSelectedFlowlines.SortedIndexOf(self)<>-1; end;
 function TFlowline.FGetVisible:Boolean;
-   begin Result:=owner.Visibility.ShowFlowlines; end;
+   begin Result:=St.Visibility.ShowFlowlines; end;
 
 procedure TFlowline.FSetSelected(val:Boolean);
 var Index : Integer;
 begin
-   Index:=Owner.FSelectedFlowlines.SortedIndexOf(self);
+   Index:=St.FSelectedFlowlines.SortedIndexOf(self);
    if Val then begin               // Only add if it is not already in the list
-      if Index=-1 then Owner.FSelectedFlowlines.AddSorted(self);
+      if Index=-1 then St.FSelectedFlowlines.AddSorted(self);
    end else begin
-      if Index<>-1 then Owner.FSelectedFlowlines.Delete(index);
+      if Index<>-1 then St.FSelectedFlowlines.Delete(index);
    end;
-   if Assigned(Owner.Surface.OnSelectItem) then Owner.Surface.OnSelectItem(self);
+   if Assigned(St.Surface.OnSelectItem) then St.Surface.OnSelectItem(self);
 end;
 
-procedure TFlowline.FSetBuild(val:Boolean);
-    begin FBuild:=val; if not Build then FFlowline.Clear; end;
+procedure TFlowline.FSetBuild( val:Boolean );
+    begin FBuild:=val; if not val then FFlowline.Clear; end;
 
-constructor TFlowline.Create(Owner:TShip);
-      begin inherited Create;
-            FOwner:=owner;
+constructor TFlowline.Create; // (Owner:TShip);
+      begin inherited Create; // (*##*) St:=owner;
             FFlowLine:=Tspline.Create; Clear;
       end;
 procedure TFlowline.Clear;
@@ -1728,10 +1723,10 @@ destructor TFlowline.Destroy;
 procedure TFlowline.Delete;
 var Index:Integer;
 begin
-   Index:=Owner.FSelectedFlowlines.SortedIndexOf(Self);
-   if Index<>-1 then Owner.FSelectedFlowlines.Delete(Index);
-   Index:=Owner.FFlowLines.IndexOf(Self);
-   if Index<>-1 then Owner.FFlowlines.Delete(Index);
+   Index:=St.FSelectedFlowlines.SortedIndexOf(Self);
+   if Index<>-1 then St.FSelectedFlowlines.Delete(Index);
+   Index:=St.FFlowLines.IndexOf(Self);
+   if Index<>-1 then St.FFlowlines.Delete(Index);
    Destroy;
 end;
 
@@ -1743,20 +1738,20 @@ var I,Tmp    : Integer;
 begin
    Result:=1000000;
    if (Viewport.ViewType=fvBodyPlan)
-   and (not (Owner.Visibility.ModelView=mvBoth)) then begin
+   and (not (St.Visibility.ModelView=mvBoth)) then begin
       Pt.X:=X;           // Check if cursor position lies within the boundaries
       Pt.Y:=Y;
       if (Pt.X>=0) and (Pt.X<=Viewport.Width)
       and (Pt.Y>=0) and (Pt.Y<=Viewport.Height) then begin
          V1:=FFlowline.Value(0.0);
-         if V1.X<Owner.ProjectSettings.MidleFrame then V1.Y:=-V1.Y;
+         if V1.X<St.ProjectSettings.MidleFrame then V1.Y:=-V1.Y;
          for I:=1 to FFlowline.Fragments do begin
             V2:=FFlowline.Value((I-1)/(FFlowline.Fragments-1));
-            if V2.X<Owner.ProjectSettings.MidleFrame then V2.Y:=-V2.Y;
-            if ((V1.X<Owner.ProjectSettings.MidleFrame)
-            and (V2.X<Owner.ProjectSettings.MidleFrame))
-            or ((V1.X>Owner.ProjectSettings.MidleFrame)
-            and (V2.X>Owner.ProjectSettings.MidleFrame)) then begin
+            if V2.X<St.ProjectSettings.MidleFrame then V2.Y:=-V2.Y;
+            if ((V1.X<St.ProjectSettings.MidleFrame)
+            and (V2.X<St.ProjectSettings.MidleFrame))
+            or ((V1.X>St.ProjectSettings.MidleFrame)
+            and (V2.X>St.ProjectSettings.MidleFrame)) then begin
                P1:=Viewport.Project(V1);
                P2:=Viewport.Project(V2);
                Tmp:=Round(DistanceToLine(P1,P2,X,Y,Param));
@@ -1767,7 +1762,7 @@ begin
          end;
       end;
    end else Result:=FFlowline.DistanceToCursor(X,Y,Viewport);
-   if Owner.Visibility.ModelView=mvBoth then begin
+   if St.Visibility.ModelView=mvBoth then begin
       for I:=1 to FFlowline.nS do begin
          V1:=FFlowline.Point[I-1]; V1.Y:=-V1.Y;
              FFlowline.Point[I-1]:=V1;
@@ -1792,33 +1787,32 @@ var I,J,Scale,Size,NParam,Fragm: Integer;
     Pt      : TPoint;
     T       : Real;
 begin
-   if not build then rebuild;
+   if not build then ReBuild;
    FFlowline.Color:=Color;
    FFlowline.Fragments:=600;
    if (FFlowline.nS>0) and (Viewport.ViewportMode=vmWireframe) then begin
       P3D:=FFlowline.Point[0];                          // draw flowline source
       if (Viewport.ViewType=fvBodyplan)
-      and (Owner.Visibility.ModelView<>mvBoth)
-      and (P3D.X<Owner.ProjectSettings.MidleFrame)
+      and (St.Visibility.ModelView<>mvBoth)
+      and (P3D.X<St.ProjectSettings.MidleFrame)
       then P3D.Y:=-P3D.Y;
       Pt:=Viewport.Project(P3D);
-      Size:=Round( Sqrt(Viewport.Zoom)*(Owner.Preferences.PointSize+1)/2 );
+      Size:=Round( Sqrt(Viewport.Zoom)*(St.Preferences.PointSize+1)/2 );
       if size<1 then size:=1;
       Viewport.BrushStyle:=bsClear;
-//    if Viewport.Printing then Size:=round(Size*Viewport.PrintResolution/150);
       Viewport.PenColor:=clDkGray;
       Viewport.BrushColor:=clAqua; //White;
       Viewport.BrushStyle:=bsSolid;             // Draw entire circle in white;
       Viewport.Canvas.Ellipse(Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size);
-      if Owner.Visibility.ModelView=mvBoth then begin
+      if St.Visibility.ModelView=mvBoth then begin
          P3D.Y:=-P3D.Y;
          Pt:=Viewport.Project(P3D);             // Draw entire circle in white;
          Viewport.Canvas.Ellipse(Pt.X-Size,Pt.Y-Size,Pt.X+Size,Pt.Y+Size);
       end;
    end;
    if (Viewport.ViewType=fvBodyPlan)
-   and (Owner.Visibility.ModelView<>mvBoth) then begin
-      Plane:=SetPlane(1.0,0.0,0.0,-Owner.ProjectSettings.MidleFrame);
+   and (St.Visibility.ModelView<>mvBoth) then begin
+      Plane:=SetPlane(1.0,0.0,0.0,-St.ProjectSettings.MidleFrame);
       NParam:=2;
       Setlength( Param,NParam );
       Param[0]:=0.0;
@@ -1832,7 +1826,7 @@ begin
       end;
       for I:=2 to NParam do begin
          P3D:=FFlowline.Value(0.5*(Param[I-2]+Param[I-1]));
-         if P3D.X<Owner.ProjectSettings.MidleFrame then Scale:=-1
+         if P3D.X<St.ProjectSettings.MidleFrame then Scale:=-1
                                                    else scale:=1;
          Fragm:=Round((Param[I-1]-Param[I-2])*FFlowline.Fragments);
          if Fragm<10 then Fragm:=10;
@@ -1850,7 +1844,7 @@ begin
       end;
    end else begin
       FFlowline.Draw(Viewport);
-      if Owner.Visibility.ModelView=mvBoth then begin
+      if St.Visibility.ModelView=mvBoth then begin
          for I:=1 to FFlowline.nS do begin
             P3D:=FFlowline.Point[I-1];
             P3D.Y:=-P3D.Y;
@@ -1877,7 +1871,7 @@ begin
    FProjectionView:=TviewType(I);
    Source.LoadBoolean(FBuild);
    Source.loadBoolean(K);
-   if K then Owner.FSelectedFlowlines.AddSorted(self);
+   if K then St.FSelectedFlowlines.AddSorted(self);
    Source.LoadInteger(N);
    FFlowline.Capacity:=N;
    for I:=1 to N do begin
@@ -1912,10 +1906,10 @@ var Points,Faces: TFasterList;
     StartPoint,EndPoint,Intersection,Direction: Vector;
     Valid: Boolean;
 
-    procedure AddTriangleToPoint(var Point:TPointData;TriangleIndex:Integer);
+    procedure AddTriangleToPoint( var Point:TPointData; TriangleIndex:Integer );
     begin
-       inc(Point.Ntriangles);
-       Setlength(Point.Triangles,Point.Ntriangles);
+       inc( Point.Ntriangles );
+       Setlength( Point.Triangles,Point.Ntriangles );
        Point.Triangles[Point.Ntriangles-1]:=TriangleIndex;
     end;
     procedure AddTriangle(P1,P2,P3:SPoint);
@@ -1939,7 +1933,7 @@ var Points,Faces: TFasterList;
     var Normal,Direction,P,Proj, Incoming: Vector; Plane: Plate;
     begin // Incoming.x-=1.001; Incoming.y*=0.4;
                              // Incoming.z*=0.4; Incoming:=Normalize(Incoming);
-       Incoming:=iVect( -1.0 );
+       Incoming:=iVect( -1.0,0.0,0.0 );
        Normal:=Point.Normal;
        P:=Point.Coordinate;
        Plane:=PlanePointNormal( P,Normal );
@@ -1949,7 +1943,6 @@ var Points,Faces: TFasterList;
        Direction:=Proj-P;
        Result:=Normalize( Direction );
     end;
-
     function FindInitialTriangle
     ( StartPoint,EndPoint:Vector; var Int,Dir:Vector ): Integer;
     var Triangle: TTriangle;
@@ -1963,12 +1956,17 @@ var Points,Faces: TFasterList;
        Dir:=Zero;
        for I:=1 to NTriangles do begin
           Triangle:=Triangles[I-1];
-          S1:=Triangle.Plane.a*StartPoint.x + Triangle.Plane.b*StartPoint.y + Triangle.Plane.c*StartPoint.z + Triangle.Plane.d;
-          S2:=Triangle.Plane.a*EndPoint.x   + Triangle.Plane.b*EndPoint.y   + Triangle.Plane.c*EndPoint.z   + Triangle.Plane.d;
-          if ((S1<=0) and (S2>=0)) or ((S1>=0) and (S2<=0)) then begin // possible intersection
+          S1:=Triangle.Plane.a*StartPoint.x
+            + Triangle.Plane.b*StartPoint.y
+            + Triangle.Plane.c*StartPoint.z + Triangle.Plane.d;
+          S2:=Triangle.Plane.a*EndPoint.x
+            + Triangle.Plane.b*EndPoint.y
+            + Triangle.Plane.c*EndPoint.z + Triangle.Plane.d;
+          if ((S1<0) and (S2>0))
+          or ((S1>0) and (S2<0)) then begin          // possible intersection
              if S1=S2 then T:=0.5
                       else T:=s1/(s1-s2);
-             P:=StartPoint+(T*(EndPoint-StartPoint));
+             P:=StartPoint + (T*(EndPoint-StartPoint));
              if PointInTriangle( P,PointData[Triangle.P1].Coord,
                                    PointData[Triangle.P2].Coord,
                                    PointData[Triangle.P3].Coord ) then begin
@@ -1993,37 +1991,38 @@ var Points,Faces: TFasterList;
           WdotV:=Dotproduct( W,V );
           S:=( UdotV*WdotV-VdotV*WdotU )/( UdotV*UdotV-UdotU*VdotV );
           T:=( UdotV*WdotU-UdotU*WdotV )/( UdotV*UdotV-UdotU*VdotV );
-          b0:=1-s-t;
-          b1:=S;
-          b2:=T;                                                       // check
+          B0:=1-S-T;
+          B1:=S;
+          B2:=T;                                                       // check
           T:=b0+b1+b2;
           if T=1 then begin
              P0:=PointData[Triangle.P1].FlowDir;
              P1:=PointData[Triangle.P2].FlowDir;
              P2:=PointData[Triangle.P3].FlowDir;
-             Dir:=b0*P0+b1*P1+b2*P2;
+             Dir:=B0*P0 + B1*P1 + B2*P2;
           // if FMethodNew then Dir:=Normalize(iVect(-1,0.1,-0.1));
-          end else Result:=Result-1+1;
+          end; // else Result:=Result-1+1;
        end;
     end;
 
-    function ProcessTriangle(var Triangle:TTriangle;var SkipInd1,SkipInd2:Integer;var Intersection,Direction:Vector;var NextTriangle:integer):boolean;
-    var P1,P2,Dir1,Dir2,Int : Vector;
+    function ProcessTriangle( var Triangle:TTriangle;
+                              var SkipInd1,SkipInd2:Integer;
+                              var Intersection,Direction:Vector;
+                              var NextTriangle:integer ):boolean;
+     var P1,P2,Dir1,Dir2,Int: Vector;
         Distance,Param: Real;
         Ind1,Ind2,I: Integer;
 
         function NextTriangleIndex(P1,P2,CurrIndex:Integer):Integer;
-        var Point1,Point2:TPointData; I,J: Integer;
-        begin
-           Result:=-1;
+        var Point1,Point2: TPointData; I,J: Integer;
+        begin Result:=-1;
            Point1:=PointData[P1];
            Point2:=PointData[P2];
-           for I:=1 to Point1.Ntriangles do begin
-              for J:=1 to Point2.Ntriangles do begin
-                 if (Point1.Triangles[I-1]=Point2.Triangles[J-1])
-                 and (Point1.Triangles[I-1]<>CurrIndex) then begin
-                    Result:=Point1.Triangles[I-1]; exit;
-                 end;
+           for I:=1 to Point1.Ntriangles do
+           for J:=1 to Point2.Ntriangles do begin
+              if (Point1.Triangles[I-1]=Point2.Triangles[J-1])
+              and (Point1.Triangles[I-1]<>CurrIndex) then begin
+                 Result:=Point1.Triangles[I-1]; exit;
               end;
            end;
         end;
@@ -2033,9 +2032,10 @@ var Points,Faces: TFasterList;
        Triangle.Processed:=True;
        P1:=ProjectPointOnPlane(Intersection,Triangle.Plane) + 0.0005*Direction;
        if not PointInTriangle(P1,PointData[Triangle.P1].Coord,PointData[Triangle.P2].Coord,PointData[Triangle.P3].Coord)
-       then P1:=ProjectPointOnPlane(Intersection,Triangle.Plane);
+          then P1:=ProjectPointOnPlane(Intersection,Triangle.Plane);
        P1:=ProjectPointOnPlane(P1,Triangle.Plane); // test all three linesegments for intersection
-       P2:=ProjectPointOnPlane(P1+50*Direction,Triangle.Plane);
+       Distance:=50;
+       P2:=ProjectPointOnPlane(P1+Distance*Direction,Triangle.Plane);
        for I:=1 to 3 do begin
           Case I of
              1 : Ind1:=Triangle.P1;
@@ -2051,7 +2051,9 @@ var Points,Faces: TFasterList;
           or ((Ind1=SkipInd2) and (Ind2=SkipInd1)) then begin end else
           if Lines3DIntersect(P1,P2,PointData[Ind1].Coord,PointData[Ind2].Coord,Param,Int)
           then begin
-             Distance:=Triangle.Plane.a*Int.x+Triangle.Plane.b*Int.y+Triangle.Plane.c*Int.z+Triangle.Plane.d;
+             Distance:=Triangle.Plane.a*Int.x
+                      +Triangle.Plane.b*Int.y
+                      +Triangle.Plane.c*Int.z+Triangle.Plane.d;
              if Distance<1e-1 then begin Intersection:=Int; // calculate direction
 {              if FMethodNew then begin
                   Dir1:=CalculateFlowDirection2(Direction,Points[Ind1]);
@@ -2062,31 +2064,30 @@ var Points,Faces: TFasterList;
 //             end;
                SkipInd1:=Ind1;
                SkipInd2:=ind2;
-               Direction:=Dir1+Param*(Dir2-Dir1);
+               Direction:=Dir1 + Param*(Dir2-Dir1);
                NextTriangle:=NextTriangleIndex(ind1,Ind2,Triangle.Index);
-               Result:=True;
-               Exit;
+               Result:=True; exit;
              end;
           end;
        end;
     end;
-begin                                                 // clear any present data
+begin                                            // clear any present data
    Build:=false;
-        // Assemble all faces that are (partially) submerged and extract points
+   // Assemble all faces that are (partially) submerged and extract points
    Faces:=TFasterList.Create;
-   WlHeight:=Owner.FindLowestHydrostaticsPoint+Owner.ProjectSettings.ProjectDraft;
+   WlHeight:=St.FindLowestHydrostaticsPoint+St.ProjectSettings.ProjectDraft;
    // WlHeight:=owner.surface.max.z;
-   if Owner.surface.NoPoints<0 then exit;
-   for I:=1 to Owner.Surface.NoLayers
-   do if Owner.Surface.Layer[I-1].UseInHydrostatics then begin
-      Layer:=Owner.Surface.Layer[I-1];
+   if St.surface.NoPoints<0 then exit;
+   for I:=1 to St.Surface.NoLayers
+   do if St.Surface.Layer[I-1].UseInHydrostatics then begin
+      Layer:=St.Surface.Layer[I-1];
       for J:=1 to Layer.Count do if Layer.Items[J-1].Min.Z<=WlHeight then begin
          Face:=Layer.Items[J-1];
          for K:=1 to Face.ChildCount do begin
             Child:=Face.Child[K-1];
             for L:=1 to Child.Nopoints do
             if Child.Point[L-1].Coordinate.Z<=WlHeight then begin
-               Faces.Add(Child);              // Face is (partially) submerged;
+               Faces.Add(Child);          // Face is (partially) submerged;
                break;
             end;
          end;
@@ -2095,20 +2096,19 @@ begin                                                 // clear any present data
    if Faces.Count>0 then begin
       Points:=TFasterList.create;
       Points.Capacity:=Faces.Count+100;
-      for I:=1 to Faces.Count do begin
-         Child:=Faces[I-1];
+      for I:=1 to Faces.Count do begin Child:=Faces[I-1];
          for J:=1 to Child.Nopoints do begin
             Point:=Child.Point[J-1];
             if Points.SortedIndexOf(Point)=-1 then Points.AddSorted(Point);
          end;
       end;
-      Points.Sort;
+      Points.Sort; {##}
       Setlength(PointData,Points.Count);
-      for I:=1 to Points.Count do begin
-         Point:=Points[I-1];
-         PointData[I-1].Coord:=Point.Coordinate;
-         PointData[I-1].FlowDir:=CalculateFlowDirection(Point);
-         PointData[I-1].Ntriangles:=0;
+      for I:=0 to Points.Count-1 do begin
+         Point:=Points[I];
+         PointData[I].Coord:=Point.Coordinate;
+         PointData[I].FlowDir:=CalculateFlowDirection(Point);
+         PointData[I].Ntriangles:=0;
       end;
       TriangleCapacity:=2*Faces.Count;
       Setlength(Triangles,TriangleCapacity);
@@ -2116,52 +2116,49 @@ begin                                                 // clear any present data
       for I:=1 to Faces.Count do begin
          Child:=Faces[I-1];
          for J:=3 to Child.Nopoints do
-           AddTriangle( Child.Point[0],Child.Point[J-2],Child.Point[J-1] );
+             AddTriangle( Child.Point[0],Child.Point[J-2],Child.Point[J-1] );
       end;
       Case FProjectionView of
          fvProfile: begin
            Startpoint.X:=FProjectionPoint.X;
-           StartPoint.Y:=Owner.Surface.Max.Y; //+10;
+           StartPoint.Y:=St.Surface.Max.Y; //+1; //0;
            StartPoint.Z:=FProjectionPoint.Y;
            EndPoint:=iVect(StartPoint.X,0,StartPoint.Z); end;
          fvPlan: begin
            Startpoint.X:=FProjectionPoint.X;
            StartPoint.Y:=FProjectionPoint.Y;
-           StartPoint.Z:=Owner.Surface.Min.Z; //-10;
-           EndPoint:=iVect(StartPoint.X,StartPoint.Y,Owner.Surface.Max.Z{+100}); end;
-         fvBodyplan: if FProjectionPoint.X<0 then begin
-           Startpoint.X:=Owner.Surface.Min.X; //-10;
-           StartPoint.Y:=-FProjectionPoint.X;
-           StartPoint.Z:=FProjectionPoint.Y;
-           EndPoint:=iVect(Owner.Surface.Max.X{+10},StartPoint.Y,StartPoint.Z);
-         end else begin
-           Startpoint.X:=Owner.Surface.Max.X; //+10;
-           StartPoint.Y:=FProjectionPoint.X;
-           StartPoint.Z:=FProjectionPoint.Y;
-           EndPoint:=iVect(Owner.Surface.Min.X{-10},StartPoint.Y,StartPoint.Z);
-         end;
-      end;
-      // find the initial triangle
+           StartPoint.Z:=St.Surface.Min.Z-10;
+           EndPoint:=iVect(StartPoint.X,StartPoint.Y,St.Surface.Max.Z+100); end;
+         fvBodyplan:
+           if FProjectionPoint.X<0 then begin
+              Startpoint.X:=St.Surface.Min.X-10;
+              StartPoint.Y:=-FProjectionPoint.X;
+              StartPoint.Z:=FProjectionPoint.Y;
+              EndPoint:=iVect(St.Surface.Max.X+10,StartPoint.Y,StartPoint.Z);
+           end else begin
+              Startpoint.X:=St.Surface.Max.X+10;
+              StartPoint.Y:=FProjectionPoint.X;
+              StartPoint.Z:=FProjectionPoint.Y;
+              EndPoint:=iVect(St.Surface.Min.X-10,StartPoint.Y,StartPoint.Z); end;
+         else exit;
+      end;                                         // find the initial triangle
       Index:=FindInitialTriangle(StartPoint,EndPoint,Intersection,Direction);
       Skip1:=-1;
-      Skip2:=-1;              // trace triangles from here
-      if index<>-1 then begin //(*##*) FFlowline.Add(Intersection);
+      Skip2:=-1;                                   // trace triangles from here
+      if index<>-1 then begin (*##*) FFlowline.Add(Intersection);
          Iteration:=0;
          repeat
-            if Triangles[index].Processed
-            then Valid:=False
-            else Valid:=ProcessTriangle(Triangles[index],Skip1,Skip2,Intersection,Direction,Index);
-            if Valid
-            then FFlowline.Add(Intersection)
-            else Valid:=ProcessTriangle(Triangles[index],Skip1,Skip2,Intersection,Direction,Index);
+            if Triangles[index].Processed then Valid:=False else
+               Valid:=ProcessTriangle(Triangles[index],Skip1,Skip2,Intersection,Direction,Index);
+            if Valid then FFlowline.Add(Intersection) else
+               Valid:=ProcessTriangle(Triangles[index],Skip1,Skip2,Intersection,Direction,Index);
             inc(Iteration);
          until (not valid) or (index=-1) or (Iteration>5000);
+
          While FFlowline.nS>1 do begin
             if (FFlowline.Point[FFlowline.nS-1].Z>WlHeight)
             and (FFlowline.Point[FFlowline.nS-2].Z>WlHeight)
-            then begin
-               FFlowline.DeletePoint(FFlowline.nS-1);
-            end else
+            then FFlowline.DeletePoint(FFlowline.nS-1) else
             if (FFlowline.Point[FFlowline.nS-1].Z>WlHeight)
             and (FFlowline.Point[FFlowline.nS-2].Z<WlHeight) then begin
                Endpoint.X:=FFlowline.Point[FFlowline.nS-2].X
@@ -3258,20 +3255,20 @@ begin
 end;
 
 procedure SEdit.Flowline_Add( Source:Place; View:TviewType );
-var Flowline: TFlowline; Undo: TUndoObject;
+var Flowline: TFlowline; //Undo: TUndoObject;
 begin
-   Undo:=CreateUndoObject(Userstring(130),False);
-   Flowline:=Tflowline.Create(St);
-   St.FFlowLines.Add(Flowline);
+// Undo:=CreateUndoObject(Userstring(130),False);
+   Flowline:=Tflowline.Create; //( St );
+   St.FFlowLines.Add( Flowline );
    Flowline.FProjectionPoint:=Source;
    Flowline.FProjectionView:=View;
    Flowline.Rebuild;
    if Flowline.FFlowLine.nS>0 then begin
       St.FileChanged:=True;
-      Undo.Accept;
+//    Undo.Accept;
       St.Redraw;
    end else begin
-      Undo.Delete;
+//    Undo.Delete;
       Flowline.Delete;
    end;
 end;
@@ -4407,44 +4404,26 @@ function TShip.FGetSelectedFlowline(index:Integer):TFlowline;
 function TShip.FGetSelectedMarker(index:Integer):TMarker;
    begin Result:=FSelectedMarkers[index]; end;
 function TShip.FGetStation(Index:integer):TIntersection;
-begin Result:=FStations[index];
-// if (Index>=0) and (INdex<Fstations.Count) then Result:=FStations[index]
-//                                           else raise exception.Create('Invalid station-index');
-end;
+   begin Result:=FStations[index]; end;
 function TShip.FGetMarker(Index:integer):TMarker;
-begin Result:=FMarkers[index];
-// if (Index>=0) and (Index<FMarkers.Count) then Result:=FMarkers[index]
-//                                          else raise exception.Create('Invalid marker-index');
-end;
+   begin Result:=FMarkers[index]; end;
 function TShip.FGetNoBackgroundImages:Integer;
    begin Result:=FBackgroundImages.Count; end;
 function TShip.FGetUndoCount:integer;
    begin Result:=FUndoObjects.Count; end;
 function TShip.FGetUndoMemory:integer; var I:integer;
-begin
-   result:=0; for I:=1 to UndoCount do Result:=Result+UndoObject[I-1].Memory;
-end;
+   begin result:=0; for I:=1 to UndoCount do Result+=UndoObject[I-1].Memory;
+   end;
 function TShip.FGetUndoObject(Index:integer):TUndoObject;
    begin Result:=FUndoObjects[Index]; end;
 function TShip.FGetButtock(Index:integer):TIntersection;
-begin Result:=FButtocks[index];
-// if (Index>=0) and (Index<FButtocks.Count) then Result:=FButtocks[index]
-//                                           else raise exception.Create('Invalid Buttock-index');
-end;
+   begin Result:=FButtocks[index]; end;
 function TShip.FGetDiagonal(Index:integer):TIntersection;
-begin Result:=FDiagonals[index];
-// if (Index>=0) and (Index<FDiagonals.Count) then Result:=FDiagonals[index]
-//                                            else raise exception.Create('Invalid Diagonal-index');
-end;
-
+   begin Result:=FDiagonals[index]; end;
 function TShip.FGetFlowline(Index:integer):TFlowline;
    begin Result:=FFlowlines[index]; end;
-
 function TShip.FGetWaterline(Index:integer):TIntersection;
-begin Result:=FWaterlines[index];
-// if (Index>=0) and (Index<FWaterlines.Count) then Result:=FWaterlines[index]
-//                                             else raise exception.Create('Invalid Waterline-index');
-end;
+   begin Result:=FWaterlines[index]; end;
 
 // Assembles all stations and builds a 2D bodyplan for export to other calculating programs
 
@@ -4547,8 +4526,7 @@ end;
 procedure TShip.FSetActiveLayer(Val:SLayer);
     begin Surface.ActiveLayer:=Val; end;
 
-procedure TShip.FSetBuild(Val:Boolean);
-var I : integer;
+procedure TShip.FSetBuild( Val:Boolean ); var I : integer;
 begin
    Surface.Build:=Val;
    if not Build then begin
@@ -5360,8 +5338,13 @@ begin
    end;
 end;
 
-procedure TShip.MouseDown(Viewport:TViewport;Button:TMouseButton;Shift:TShiftState;X,Y:integer;var ItemSelected:Boolean);
-var I,J,Tmp: integer; P3D: Vector;
+procedure TShip.MouseDown
+( Viewport:TViewport;
+  Button:TMouseButton;
+  Shift:TShiftState;
+  X,Y:integer;
+  var ItemSelected:Boolean );
+var I,J: integer; P3D: Vector; Tmp,MinDistance:Real;
     Point: SControlPoint;
     Edge: SControlEdge;
     Curve: SControlCurve;
@@ -5375,17 +5358,24 @@ begin
            while I<=Surface.NoControlPoints do begin
               if Surface.ControlPoint[I-1].Visible then begin
                  Point:=Surface.ControlPoint[I-1];
-                 Tmp:=Point.DistanceToCursor(X,Y,Viewport);
-                 if Tmp<=SelectDistance then begin
-                    Entity:=Point;      // Point.Selected:=not Point.Selected;
-                    ItemSelected:=True; // Draw the selected point to all viewports
-                    for J:=1 to nV do
-                    if self.Viewport[J-1].ViewportMode=vmWireframe then
-                       Point.Draw(self.Viewport[J-1]);
-                    break;
+                 if Point.DistanceToCursor( X,Y,Viewport )<=SelectDistance then begin
+                    Tmp:=Abs( Point.Coordinate-ViewPort.CameraLocation );
+                    if not ItemSelected then begin
+                      ItemSelected:=True;   // Draw selected point to viewports
+                      MinDistance:=Tmp;
+                      Entity:=Point;      // Point.Selected:=not Point.Selected;
+                    end else
+                    if Tmp<MinDistance then begin
+                       Tmp:=MinDistance;
+                       Entity:=Point;      // Point.Selected:=not Point.Selected;
+                    end; // else continue;
                  end;
               end; Inc(I);
            end;
+           if ItemSelected then for J:=0 to nV-1 do
+              if self.Viewport[J].ViewportMode=vmWireframe then
+                  SControlPoint( Entity ).Draw(self.Viewport[J]);
+
            if Entity=nil then begin // No points found, search for nearest controlEdge
               I:=1;
               while I<=Surface.NoControlEdges do begin
@@ -5395,8 +5385,8 @@ begin
                     if Tmp<=SelectDistance then begin
                        Entity:=Edge;
                        Edge.Selected:=not Edge.Selected;
-                       // If CTRL key is pressed, select multiple edges in one pass
-                       // by tracing regular edges to a boundary or irregular points
+                    // If CTRL key is pressed, select multiple edges in one pass
+                    // by tracing regular edges to a boundary or irregular points
                        if (ssCtrl in shift) then Edge.Trace;
                        ItemSelected:=True;
                        // Draw the selected edge to all viewports
@@ -5476,18 +5466,18 @@ begin
            end;
            if Entity<>nil then begin  // apparently SOMEthing has been selected
               if Entity is SControlPoint then begin
-                 // If CTRL key is pressed, selection of multiple controlpoints
-                 // is allowed, otherwise select only ONE controlpoint
+           // If CTRL key is pressed, selection of multiple controlpoints
+           //    is allowed, otherwise select only ONE controlpoint
                  Point:=Entity as SControlPoint;
                  if not (ssCtrl in shift) then begin
                     if NoSelectedControlPoints>0 then
-                       for I:=NoSelectedControlPoints downto 1 do SelectedControlPoint[I-1].Selected:=False;
+                      for I:=NoSelectedControlPoints downto 1 do SelectedControlPoint[I-1].Selected:=False;
                     Point.Selected:=True;
-                 end else begin
-                    Point.Selected:=not Point.Selected;
-                    if not Point.Selected then Point:=SelectedControlPoint[NoSelectedControlPoints-1];
-                    Sleep( 120 );
-                 end;
+                 end else
+                 if not Point.Selected then begin
+                   Point.Selected:=True;
+//                 Point:=SelectedControlPoint[NoSelectedControlPoints-1];
+                 end;;
                  for J:=1 to nV do self.Viewport[J-1].Refresh;
                  if ActiveControlPoint<>point then ActiveControlPoint:=Point;
                  FCurrentlyMoving:=True;

@@ -863,8 +863,14 @@ begin
   UpdateMenu;
 end;
 procedure TMainForm.ShowHydrostaticsExecute(Sender: TObject);
-begin With St.Visibility do ShowHydrostaticData:=not ShowHydrostaticData;
-      updatemenu;
+begin if St.NoStations=0 then begin
+         if St.NoButtocks=0 then
+         if St.NoWaterlines=0 then
+         if St.NoDiagonals=0 then begin St.Edit.LineDrawing;
+            St.Visibility.ShowHydrostaticData:=true end;
+      end else
+      With St.Visibility do ShowHydrostaticData:=not ShowHydrostaticData;
+      UpdateMenu;
 end;
 
 end.

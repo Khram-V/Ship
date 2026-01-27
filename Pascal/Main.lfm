@@ -39,7 +39,7 @@ object MainForm: TMainForm
       Left = 1
       Height = 16
       Top = 1
-      Width = 200
+      Width = 160
       Align = alLeft
       BevelOuter = bvLowered
       Caption = 'Объём отката: 0 kb.'
@@ -47,19 +47,19 @@ object MainForm: TMainForm
       TabOrder = 0
     end
     object Panel3: TPanel
-      Left = 201
+      Left = 161
       Height = 16
       Top = 1
-      Width = 200
+      Width = 160
       Align = alLeft
       BevelOuter = bvLowered
-      Caption = 'Шаг приращений : 0.1'
+      Caption = 'Шаг приращений: 0.1'
       ParentBackground = False
       TabOrder = 1
       OnClick = Panel3Click
     end
     object Panel4: TPanel
-      Left = 401
+      Left = 321
       Height = 16
       Top = 1
       Width = 320
@@ -70,10 +70,10 @@ object MainForm: TMainForm
       OnClick = Panel3Click
     end
     object HintBar: TStatusBar
-      Left = 721
+      Left = 641
       Height = 16
       Top = 1
-      Width = 900
+      Width = 3160
       Align = alLeft
       AutoHint = True
       Color = 16777200
