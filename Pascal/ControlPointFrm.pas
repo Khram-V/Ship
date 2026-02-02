@@ -140,7 +140,7 @@ procedure TControlPointForm.CheckBoxCornerChange( Sender: TObject );
 procedure TControlPointForm.OrdinateEditorEnter(Sender: TObject);
     begin EnteredControl:=Sender as TControl;
 //        FActiveControlPointChanging:=false;
-//        FPointEditorChanging:=false;  //EntryMethod:=emNone;
+//        FPointEditorChanging:=false; //EntryMethod:=emNone;
    end;
 procedure TControlPointForm.OrdinateEditorExit(Sender: TObject);
     begin EnteredControl:=nil; // EntryMethod:=emNone;
@@ -148,8 +148,8 @@ procedure TControlPointForm.OrdinateEditorExit(Sender: TObject);
 procedure TControlPointForm.FSetActiveControlPointCorner(isCorner: boolean);
 var I,N: Integer; OldType: TVertexType; Undo: TUndoObject;
 begin
-  if (ActiveControlPoint<>nil)
-  and (isCorner<>(ActiveControlPoint.VertexType=svCorner)) then begin // Count the number of crease edges connected to this point
+  if (ActiveControlPoint<>nil) // Count the number of crease edges connected to this point
+  and (isCorner<>(ActiveControlPoint.VertexType=svCorner)) then begin
     OldType:=ActiveControlPoint.VertexType;
     Undo:=St.Edit.CreateUndoObject( 'Corner',false );
     if (ActiveControlPoint.Vertextype=svCorner) and (not isCorner) then begin
@@ -159,8 +159,8 @@ begin
       Case N of
         0 : ActiveControlPoint.Vertextype:=svRegular;
         1 : ActiveControlPoint.VertexType:=svDart;
-        2 : ActiveControlPoint.VertexType:=svCrease; // points with more than two crease edges must always be a corner
-      end;
+        2 : ActiveControlPoint.VertexType:=svCrease;   // points with more than
+      end;                          // two crease edges must always be a corner
     end;
     if (ActiveControlPoint.Vertextype<>svCorner) and (isCorner)
     then ActiveControlPoint.VertexType:=svCorner;

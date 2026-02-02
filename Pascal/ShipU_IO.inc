@@ -7,10 +7,11 @@ function TShip.DetectMinFileVersion( isText: boolean ): TFileVersion;
 var I: integer;      // 160 => если с картинкой - и хотелось бы никак не меньше
 begin result:=fv165; // в оригинале ошибка на версии 165 = всё должно быть выше
   if NoDiagonals>0 then result:=fv180;
-  if NoMarkers>0   then result:=fv191;   // не очень надо,но пусть будет
+  if NoMarkers>0 then result:=fv191;            // не очень надо,но пусть будет
+  if NoControlCurves>0 then result:=fv195;
   if ProjectSettings.FSavePreview then Result:=fv210;
   if (NobackgroundImages>0) or (NoFlowlines>0) then result:=fv250;
-  if not isText then                     // TFileBuffer или TTextBuffer
+  if not isText then                           // TFileBuffer или TTextBuffer
     for i:=0 to Surface.NoLayers-1 do
       if Surface.Layer[i].AlphaBlend<255 then result:=fv260;
 end;

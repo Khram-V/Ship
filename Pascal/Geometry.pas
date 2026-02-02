@@ -325,30 +325,15 @@ Private
    FRotation         : Real;
    FMirrorPlane      : Plate;
    FMirror           : Boolean;
-   FMin2D            : Place;
-   FMax2D            : Place;
+   FMin2D,FMax2D     : Place;
    FTranslation      : Place;
    FMaxAreaError     : Real;
    FTotalAreaError   : Real;
    FXGrid,FYGrid,FCos,FSin: Real;
    F2DCoordinates    : array of Place; //TUnrolledPoint;
    FEdgeErrors       : RealArray;                         // Visibility options
-   FVisible          : boolean;
-   FShowSolid        : Boolean; // Fills the surface with the layer color
-   FShowPartName     : Boolean; // draws the name of the surface at the center
-   FShowBoundingBox  : Boolean; // Draws a boundary box around the surface
-   FShowInteriorEdges: boolean; // Draw the interior edges (none crease edges)
-   FShowStations     : Boolean;
-   FShowButtocks     : Boolean;
-   FShowDiagonals    : Boolean;
-   FShowWaterlines   : Boolean;
-   FShowErrorEdges   : Boolean;
-   FShowDimensions   : Boolean;
    FMirrorOnScreen   : Boolean;
-   FShadeSubmerged   : Boolean;
    FNoIterations     : Integer;
-   FUnits            : TUnitType;
-   function FGetShowErrorEdges:Boolean;
    function FGetMidPoint:Place;
    function FGetMinError:Real;
    function FGetMaxError:Real;
@@ -358,6 +343,21 @@ Private
    procedure FSetTranslation(Val:Place);
    procedure FSetMirrorOnScreen(val:Boolean);
 public
+   Units: TUnitType;
+   XGrid,YGrid: Real;
+   Visible,
+   ShadeSubmerged,
+   ShowBoundingBox,   // Draws a boundary box around the surface
+   ShowButtocks,
+   ShowDiagonals,
+   ShowDimensions,
+   ShowInteriorEdges, // Draw the interior edges (none crease edges)
+   ShowPartName,      // draws the name of the surface at the center
+   ShowSolid,         // Fills the surface with the layer color
+   ShowStations,
+   ShowWaterlines,
+   ShowErrorEdges: boolean;
+
    constructor Create(Owner:SLayer);
    destructor Destroy; override;
    procedure Assign(Org:TDevelopedPatch;Mirror:Boolean);
@@ -381,23 +381,9 @@ public
    property MirrorPoint[index:Integer] : Vector read FGetMirrorPoint;
    property Point[index:Integer] : Vector read FGetPoint;
    property Rotation             : Real read FRotation write FSetRotation;
-   property ShadeSubmerged       : Boolean read FShadeSubmerged write FShadeSubmerged;
-   property ShowBoundingBox      : boolean read FShowBoundingBox write FShowBoundingBox;
-   property ShowButtocks         : Boolean read FShowButtocks write FShowButtocks;
-   property ShowDiagonals        : Boolean read FShowDiagonals write FShowDiagonals;
-   property ShowDimensions       : boolean read FShowDimensions write FShowDimensions;
-   property ShowErrorEdges       : boolean read FGetShowErrorEdges write FShowErrorEdges;
-   property ShowInteriorEdges    : Boolean read FShowInteriorEdges write FShowInteriorEdges;
-   property ShowPartName         : boolean read FShowPartName write FShowPartName;
-   property ShowSolid            : boolean read FShowSolid write FShowSolid;
-   property ShowStations         : Boolean read FShowStations write FShowStations;
-   property ShowWaterlines       : Boolean read FShowWaterlines write FShowWaterlines;
    property TotalAreaError       : Real read FTotalAreaError;
    property Translation          : Place read FTranslation write FSetTranslation;
-   property Units                : TUnitType read FUnits write FUnits;
-   property Visible              : Boolean read FVisible write FVisible;
-   property XGrid                : Real read FXGrid write FXGrid;
-   property YGrid                : Real read FYGrid write FYGrid;
+
 end;
 
 TEntity = class // This is the base class of all 3D entities in the project
@@ -482,9 +468,9 @@ public
 end;
 
 TNURBSurface  = class(TEntity)
+   ColCount,
+   RowCount: Integer;
 private
-   FColCount,
-   FRowCount,
    FColCapacity,
    FRowCapacity,
    FColDegree,
@@ -512,12 +498,10 @@ public
    procedure SetUniformColKnotvector;
    procedure SetUniformRowKnotvector;
    property  ColCapacity  : integer read FColCapacity write FSetColCapacity;
-   property  ColCount     : integer read FColCount write FColCount;
    property  ColDegree    : integer read FColDegree write FSetColDegree;
    property  ColKnotVector: RealArray read FColknots;
    property  Point[Col,Row:Integer]: Vector read FGetpoint write FSetPoint;
    property  RowCapacity  : integer read FRowCapacity write FSetRowCapacity;
-   property  RowCount     : Integer read FRowCount write FRowCount;
    property  RowDegree    : integer read FRowDegree write FSetRowDegree;
    property  RowKnotVector: RealArray read FRowknots;
 end;
@@ -526,11 +510,9 @@ end;
 { for all subdivision points, edges and faces }
 
 SBase = class
-private
-   FOwner: SSurface;
+   Owner: SSurface;
 public
-   constructor Create(Owner:SSurface); virtual;
-   property    Owner: SSurface read FOwner write FOwner;
+   constructor Create( Own: SSurface ); virtual;
 end;
 
 { Controlcurves are curves that can be added to the controlnet an are subdivide with the surface. }
@@ -577,9 +559,8 @@ public
 { visibility etc. are common for all controlfaces belonging the the same layer      }
 
 SLayer = class // color, visibility, symmetric, calc intersections/part of hull
+   Owner: SSurface;     // Pointer to the subdivisionsurface
 private
-   FOwner: SSurface; // Pointer to the subdivisionsurface
-   FLayerID: integer;   // Unique identification number for internal references
    FColor  : TColor;    // Color of this layer
    FVisible: boolean;   // Visibility switch
    FDescription: string;// Description of the layer, used as user identification
@@ -588,10 +569,7 @@ private
    FUseForIntersections,// If set to true, stations, waterlines, buttocks and diagonals are calculated
    FUseInHydrostatics,  // If set to true, the panels of this layer will be used for hydrostatic calculations
    FShowInLinesplan: boolean; // Flag to hide or show this layer in the linesplan
-   FMaterialDensity,    // Density of material used to calculate the weight of the surface
-   FThickness: Real;    // Also used for weight calculation
    FPatches: TFasterList; // List containing all controlpatches
-   FAlphaBlend: Byte;
    function  FGetColor:TColor;
    function  FGetCount:Integer;
    function  FGetDXFLayername:string;
@@ -608,10 +586,14 @@ private
    procedure FSetVisible(Val:Boolean);
    procedure FSetSymmetric(Val:Boolean);
 public
+   LayerID: integer; // Unique identification number for internal references
+   MaterialDensity,  // Density of material used to calculate the weight of the surface
+   Thickness: Real; // Also used for weight calculation
+   AlphaBlend: Byte;
    procedure AddControlFace(ControlFace:SControlFace);
    procedure AssignProperties(Source:SLayer);
    function CalculateIntersectionPoints(Layer:SLayer):Boolean;
-   constructor Create(Owner:SSurface);
+   constructor Create( Own:SSurface );
    procedure Clear;
    function  Delete:Boolean;
    procedure DeleteControlFace(ControlFace:SControlFace);
@@ -624,21 +606,16 @@ public
    procedure SaveToDXF(Strings:TStringList);
    procedure SaveBinary(Destination:TFileBuffer);
    procedure Unroll(Destination:TFasterList);
-   property  AlphaBlend          : Byte read FAlphaBlend write FAlphaBlend;
    property  Color               : TColor read FGetColor write FSetColor;
    property  Count               : Integer read FGetCount;
    property  Developable         : boolean read FDevelopable write FSetFDevelopable;
    property  DXFLayername        : string read FGetDXFLayername;
    property  Items[Index:Integer]: SControlFace read FGetItems;
-   property  LayerID             : Integer read FLayerID write FLayerID;
    property  LayerIndex          : integer read FGetLayerIndex;
-   property  MaterialDensity     : Real read FMaterialDensity write FMaterialDensity;
    property  Name                : string read FGetName write FSetName;
-   property  Owner               : SSurface read FOwner write FOwner;
    property  ShowInLinesplan     : Boolean read FShowInLinesplan write FSetShowInLinesplan;
    property  SurfaceProperties   : TLayerProperties read FGetSurfaceProperties;
    property  Symmetric           : Boolean read FSymmetric write FSetSymmetric;
-   property  Thickness           : Real read FThickness write FThickness;
    property  UseInHydrostatics   : boolean read FUseInHydrostatics write FSetUseInHydrostatics;
    property  UseForIntersections : boolean read FUseForIntersections write FSetUseForIntersections;
    property  Visible             : boolean read FVisible write FSetVisible;
@@ -650,7 +627,6 @@ SPoint = class(SBase)
 private
    FFaces,FEdges: TFasterList;
    FCoordinate: Vector;
-   FVertexType: TVertexType;
    function FGetEdge(Index:Integer):SEdge;
    function FGetCoordinate:Vector;
    function FGetCurvature:Real;
@@ -665,6 +641,7 @@ private
    function FGetLimitPoint:Vector;
    procedure FSetCoordinate(Val:Vector); virtual;
 public
+   VertexType: TVertexType;
    constructor Create(Owner:SSurface); override;
    destructor Destroy; override;
    procedure Clear;
@@ -688,7 +665,6 @@ public
    property NoFaces     : integer read FGetNoFaces;
    property RegularPoint: Boolean read FGetRegularPoint;
    property VertexIndex : integer Read FGetIndex;
-   property VertexType  : TVertexType read FVertexType write FVertexType;
  end;
 {
  SControlPoint
@@ -803,10 +779,10 @@ public
    procedure   FlipNormal; // Inverts the point ordering of the face
    function    IndexOfPoint(P:SPoint):Integer;
    procedure   Subdivide(Owner:SSurface;ControlFace:Boolean;VertexPoints,EdgePoints,FacePoints,InteriorEdges,ControlEdges,Dest:TFasterList);virtual;
-   property    Area                : Real read FGetArea;
-   property    FaceCenter          : Vector read FGetFaceCenter;
-   property    FaceNormal          : Vector read FGetFaceNormal;
-   property    Nopoints      : Integer read FGetNoPoints;
+   property    Area      : Real read FGetArea;
+   property    FaceCenter: Vector read FGetFaceCenter;
+   property    FaceNormal: Vector read FGetFaceNormal;
+   property    Nopoints  : Integer read FGetNoPoints;
    property    Point[index:Integer]: SPoint read FGetPoint;
 end;
 
@@ -818,7 +794,6 @@ private
    FEdges,FControlEdges: TFasterList;
    function FGetChild(Index:Integer):SFace;
    function FGetChildCount:Integer;
-// function FGetColor:TColor;
    function FGetControlEdge(Index:Integer):SEdge;
    function FGetControlEdgeCount:Integer;
    function FGetEdge(Index:Integer):SEdge;
@@ -830,38 +805,37 @@ private
    procedure FSetSelected(val:Boolean);
 public
    constructor Create(Owner:SSurface); override;
-   destructor  Destroy; override;
-   procedure   Clear; override;
-   procedure   CalcExtents;
-   procedure   ClearChildren;
-   function    DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TViewport):integer;
-   procedure   SelDeleteFace;
-   procedure   Draw(Viewport:TViewport); overload; virtual;
-   procedure   Draw(Viewport:TViewport;MinCurvature,MaxCurvature:Real); reintroduce;overload;
-   function    InsertEdge(P1,P2:SControlPoint):SControlEdge;
-   procedure   LoadBinary(Source:TFileBuffer);
-   procedure   SaveBinary(Destination:TFileBuffer);
-   procedure   SaveToDXF(Strings:TStringList);
-   procedure   SaveToStream(Strings:TStringlist); virtual;
-   procedure   Subdivide
-               ( Owner:SSurface; ControlFace:Boolean;
-                 VertexPoints,EdgePoints,FacePoints,InteriorEdges,ControlEdges,Dest:TFasterList
-               ); override;
+   destructor Destroy; override;
+   procedure Clear; override;
+   procedure CalcExtents;
+   procedure ClearChildren;
+   function  DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TViewport):integer;
+   procedure SelDeleteFace;
+   procedure Draw(Viewport:TViewport); overload; virtual;
+   procedure Draw(Viewport:TViewport;MinCurvature,MaxCurvature:Real); reintroduce;overload;
+   function  InsertEdge(P1,P2:SControlPoint):SControlEdge;
+   procedure LoadBinary(Source:TFileBuffer);
+   procedure SaveBinary(Destination:TFileBuffer);
+   procedure SaveToDXF(Strings:TStringList);
+   procedure SaveToStream(Strings:TStringlist); virtual;
+   procedure Subdivide
+           ( Owner:SSurface; ControlFace:Boolean;
+             VertexPoints,EdgePoints,FacePoints,InteriorEdges,ControlEdges,Dest:TFasterList
+           ); override;
    procedure   Trace;   // select all controlfaces connected to the current one
         // that belong to the same layer and are not separated by a crease edge
-// property    Color: TColor read FGetColor;
-   property    ControlEdge[index:Integer]: SEdge read FGetControlEdge;
-   property    ControlEdgeCount: Integer read FGetControlEdgeCount;
-   property    Child[index:Integer]: SFace read FGetChild;
-   property    ChildCount: integer read FGetChildCount;
-   property    Edge[index:Integer]: SEdge read FGetEdge;
-   property    EdgeCount: Integer read FGetEdgeCount;
-   property    FaceIndex: integer read FGetIndex;
-   property    Layer: SLayer read FLayer write FSetLayer;
-   property    Max: Vector read FMax;
-   property    Min: Vector read FMin;
-   property    Selected: boolean read FGetSelected write FSetSelected;       // Property to see if this controlface has been selected by the user
-   property    Visible: Boolean read FGetVisible;
+   property ControlEdge[index:Integer]: SEdge read FGetControlEdge;
+   property ControlEdgeCount: Integer read FGetControlEdgeCount;
+   property Child[index:Integer]: SFace read FGetChild;
+   property ChildCount: integer read FGetChildCount;
+   property Edge[index:Integer]: SEdge read FGetEdge;
+   property EdgeCount: Integer read FGetEdgeCount;
+   property FaceIndex: integer read FGetIndex;
+   property Layer: SLayer read FLayer write FSetLayer;
+   property Max: Vector read FMax;
+   property Min: Vector read FMin;
+   property Selected: boolean read FGetSelected write FSetSelected; // Property to see if this controlface has been selected by the user
+   property Visible: Boolean read FGetVisible;
  end;
 { 
   This is the subdivision surface used for modelling the hull.
@@ -883,9 +857,7 @@ private
    FLayers,                // All layers are stored in this list
    FEdges: TFasterList;    // this list edges obtained by subdividing the controledges
    FActiveLayer: SLayer;// Currently active layer, may not be nil!
-   FShowControlNet,      // Flag to switch controlpoints and control-edges visibility
    FInitialized,         // Flag to check if the surface has been initialised.
-   FShowInteriorEdges,   // Switch to turn on drawing off all interior edges as well.
    FDrawMirror: Boolean; // If this is set tot true, the other imaginary half (starboard side) will be drawn aswell
    FSubdivisionMode: SMode; // Varaiable to switch between quad-triangle and Catmull Clark subdivision
    FDivSec,
@@ -895,10 +867,7 @@ private
    FOnChangeLayerData,          // Event which is raised when layer-data has been changed
    FOnSelectItem: TNotifyEvent; // This event is raised whenever an item
    // (such as controlpoint,controledge or controlface) is selected or deselected
-   FShowNormals     : boolean; // show normals of selected controlfaces
    FControlPointSize: Integer;
-   FShowCurvature,
-   FShowControlCurves: Boolean;
    FGausCurvature: RealArray; // list with precalculated values of gauss.
    FMinGaussCurvature,
    FMaxGaussCurvature,
@@ -937,6 +906,11 @@ private
    procedure FSeSMode(val:SMode);
 public
    WaterlinePlane: Plate; // This plane is used to clip the hull, and shade the underwatership in a different color
+   ShowNormals,       // show normals of selected controlfaces
+   ShowControlNet,    // Flag to switch controlpoints and control-edges visibility
+   ShowInteriorEdges, // Switch to turn on drawing off all interior edges as well.
+   ShowCurvature,
+   ShowControlCurves: Boolean;
    procedure   AddControlCurve(Curve:SControlCurve);
    function    AddControlEdge(P1,P2:SPoint):SControlEdge;                         overload;virtual;
    function    AddControlFace(Points: VectorArray;NoPoints:Integer):SControlFace;      overload;virtual;
@@ -1021,11 +995,6 @@ public
    property    SelectedControlEdge[index:Integer] : SControlEdge read FGetSelectedControlEdge;
    property    SelectedControlFace[index:Integer] : SControlFace read FGetSelectedControlFace;
    property    SelectedControlPoint[index:Integer]: SControlPoint read FGetSelectedControlPoint;
-   property    ShowControlCurves: boolean read FShowControlCurves write FShowControlCurves;
-   property    ShowControlNet   : boolean read FShowControlNet write FSetFShowControlNet;
-   property    ShowCurvature    : Boolean read FShowCurvature write FShowCurvature;
-   property    ShowInteriorEdges: Boolean read FShowInteriorEdges write FShowInteriorEdges;
-   property    ShowNormals      : Boolean read FShowNormals write FShowNormals;
    property    SubdivisionMode  : SMode read FSubdivisionMode write FSeSMode;
 end;
 
@@ -1974,13 +1943,14 @@ end;
 procedure TViewport.Paint;
 var OldCanvas: TCanvas; L: Real; //N: Vector;
 begin
+ {#!#} Flight.Position:=iVect( 1,0.125,0.0625 ); // {Zero-}CameraLocation;
    if (not (csDestroying in ComponentState))
    and (not (csLoading in ComponentState))
    and (not (csReading in ComponentState))
    and (not (csWriting in ComponentState))
    and (Parent<>nil) then begin  // See if the contents is drawn to the printer
      if ViewportMode<>vmWireframe then begin
-        L:=7.5*Abs( FMin3D-FMax3D );
+        L:=-7.5*Abs( FMin3D-FMax3D );
         FLight.Position:=L*Normalize( FLight.Position );
      end;
      OldCanvas:=Canvas;
@@ -2241,16 +2211,15 @@ procedure TViewport.SetPenWidth( Width:integer );
     end;
 {$if true}
 Procedure TViewport.ShadedColor( Dp:Real; R,G,B:byte; var ROut,GOut,BOut:byte );
-const Ambient=0.3; { =0.2 } var C,Tmp:Real;
+const Ambient=0.2; var C,Tmp:Real;
 begin
-   if Dp<0 then Dp:=-Dp else if Dp>1 then Dp:=1;
+   if Dp<0 then Dp:=-Dp; {else} if Dp>1 then Dp:=1 else Dp:=power( Dp,0.66 );// sqrt( Dp );
    if Dp>=0.80 then begin Tmp:=5-5*Dp;
       if Tmp<0 then C:=0 else C:=Sqrt(Tmp);
       ROut:=Round(255-(255-Dp*R)*C);
       GOut:=Round(255-(255-Dp*G)*C);
       BOut:=Round(255-(255-Dp*B)*C);
-   end else begin
-      Dp-=Ambient;
+   end else begin Dp-=Ambient;
       if Dp<0 then Dp:=0;
       C:=Dp/(0.8-Ambient);
       C:=Ambient+(0.8-Ambient)*C*C;
@@ -2290,16 +2259,15 @@ var Normal,Center: Vector;
       if (X1>FDestinationWidth-1) or (X2<0) then exit;
       if (X1<0) then begin Z1+=abs(X1)*TZ; X1:=0; end;
       if X2>FDestinationWidth-1 then X2:=FDestinationWidth-1;
-      if X1>=0 then begin      // Use scanline property for faster pixel access
-         while X1<=X2 do begin
-            if Z1>=FZBuffer.FBuffer[Y][X1] then begin
-              if Alpha=255 then begin
-                 Canvas.Pixels[X1,Y]:={(Alpha shl 24) or} (B shl 16) or (G shl 8) or R; // RGBtoColor( R,G,B );
-                 FZBuffer.FBuffer[Y][X1]:=Z1;
-              end else AlphaBuffer.AddPixelData( X1,Y,R,G,B,Alpha,Z1 );
-            end;
-            Z1+=TZ; Inc( X1 );
+      if X1>=0 then            // Use scanline property for faster pixel access
+      while X1<=X2 do begin
+         if Z1>=FZBuffer.FBuffer[Y][X1] then begin
+            if Alpha=255 then begin
+               Canvas.Pixels[X1,Y]:={(Alpha shl 24) or} (B shl 16) or (G shl 8) or R; // RGBtoColor( R,G,B );
+               FZBuffer.FBuffer[Y][X1]:=Z1;
+            end else AlphaBuffer.AddPixelData( X1,Y,R,G,B,Alpha,Z1 );
          end;
+         Z1+=TZ; Inc( X1 );
       end;
    end;
 begin                                          // Calculate data for the points
@@ -2309,6 +2277,7 @@ begin                                          // Calculate data for the points
    P_1:=RotatedPoint( P_1 );
    P_2:=RotatedPoint( P_2 );
    P_3:=RotatedPoint( P_3 );            // Calculate triangle normal and center
+// FLight.Position:=3*CameraLocation;
    Center:=( P_1+P_2+P_3 )/3.0 - FLight.Position;      // Calculate light iVect
    Normal:=UnifiedNormal( P_1,P_2,P_3 );
    LIntensityRatio:=Dotproduct( Normal,Normalize( Center ) ); // /2;
@@ -2444,7 +2413,9 @@ begin                                          // Calculate data for the points
    P_3:=RotatedPoint(P_3);              // Calculate triangle normal and center
    Normal:=UnifiedNormal(P_1,P_2,P_3);
    Center:=(P_1+P_2+P_3)/3.0;
-   LIntensityRatio:=Dotproduct(Normal,Normalize(Center-FLight.Position));
+// FLight.Position:=CameraLocation;
+// LIntensityRatio:=abs( Dotproduct(Normal,Normalize(Center-FLight.Position)) );
+   LIntensityRatio:=Dotproduct( Normal,Normalize( Center-FLight.Position ) );
    SetColor(V1,R1,G1,B1);
    SetColor(V2,R2,G2,B2);
    SetColor(V3,R3,G3,B3);
@@ -2595,8 +2566,8 @@ begin Result:=0.0;
       if FEdgeErrors[I-1]>result then Result:=FEdgeErrors[I-1];
    end;
 end;
-function TDevelopedPatch.FGetShowErrorEdges:Boolean;
-   begin Result:=ShowInteriorEdges and FShowErrorEdges; end;
+//function TDevelopedPatch.FGetShowErrorEdges:Boolean;
+//   begin Result:=ShowInteriorEdges and FShowErrorEdges; end;
 function TDevelopedPatch.FGetMidPoint:Place;
    begin Result.X:=0.5*(FMin2D.X+FMax2D.X);
          Result.Y:=0.5*(FMin2D.Y+FMax2D.Y);
@@ -2653,17 +2624,17 @@ procedure TDevelopedPatch.Assign(Org:TDevelopedPatch;Mirror:Boolean);
 var I : Integer;
 begin
    FName:=Org.FName;
-   FShowSolid:=org.FShowSolid;
-   FShowPartName:=Org.FShowPartName;
-   FShowBoundingBox:=Org.FShowBoundingBox;
-   FShowInteriorEdges:=Org.FShowInteriorEdges;
-   FShowStations:=Org.FShowStations;
-   FShowButtocks:=Org.FShowButtocks;
-   FShowWaterlines:=Org.FShowWaterlines;
-   FShowDiagonals:=Org.FShowDiagonals;
-   FShowErrorEdges:=Org.FShowErrorEdges;
-   FShowDimensions:=Org.FShowDimensions;
-   FShadeSubmerged:=Org.FShadeSubmerged;
+   ShowSolid:=org.ShowSolid;
+   ShowPartName:=Org.ShowPartName;
+   ShowBoundingBox:=Org.ShowBoundingBox;
+   ShowInteriorEdges:=Org.ShowInteriorEdges;
+   ShowStations:=Org.ShowStations;
+   ShowButtocks:=Org.ShowButtocks;
+   ShowWaterlines:=Org.ShowWaterlines;
+   ShowDiagonals:=Org.ShowDiagonals;
+   ShowErrorEdges:=Org.ShowErrorEdges;
+   ShowDimensions:=Org.ShowDimensions;
+   ShadeSubmerged:=Org.ShadeSubmerged;
    FBoundaryEdges.Clear;
    FBoundaryEdges.AddList(Org.FBoundaryEdges);
    FPoints.Clear;
@@ -2721,18 +2692,18 @@ begin
    FMin2D.Y:=0.0;
    FMax2D:=FMin2D;
    FTranslation:=FMin2D;
-   FShowSolid:=True;
-   FShowBoundingBox:=False;
-   FShowInteriorEdges:=True;
-   FShowStations:=True;
-   FShowButtocks:=True;
-   FShowWaterlines:=True;
-   FShowDiagonals:=True;
-   FShowErrorEdges:=True;
-   FShowDimensions:=True;
-   FShowPartName:=True;
-   FShadeSubmerged:=True;
-   FVisible:=True;
+   ShowSolid:=True;
+   ShowBoundingBox:=False;
+   ShowInteriorEdges:=True;
+   ShowStations:=True;
+   ShowButtocks:=True;
+   ShowWaterlines:=True;
+   ShowDiagonals:=True;
+   ShowErrorEdges:=True;
+   ShowDimensions:=True;
+   ShowPartName:=True;
+   ShadeSubmerged:=True;
+   Visible:=True;
    FMirrorOnScreen:=False;
    for I:=1 to FStations.Count do begin
       Spline:=FStations[I-1];
@@ -2924,7 +2895,7 @@ begin
    b:=( 11*GetBValue(Owner.Color) ) div 10; if b>255 then b:=255;
    Viewport.BrushColor:=RGB( r,g,b );
    Viewport.PenWidth:=1;                                      //PenwidthFactor;
-   if FShowInteriorEdges then Viewport.PenColor:=EdgeColor else
+   if ShowInteriorEdges then Viewport.PenColor:=EdgeColor else
    if ShowSolid then Viewport.PenColor:=Viewport.BrushColor
                 else Viewport.PenColor:=clWhite;
    if ShowSolid then Viewport.BrushStyle:=bsSolid
@@ -2941,7 +2912,7 @@ begin
             Cap:=Face.Nopoints;
             setlength(Pts,Cap);
          end;
-         if FShadeSubmerged then begin
+         if ShadeSubmerged then begin
             for J:=3 to Face.Nopoints do begin
                Index:=FPoints.SortedIndexOf(Face.Point[0]);
                if Index<>-1 then P1:=self.Point[index];
@@ -3048,7 +3019,7 @@ begin
          end;
       end;
    end;
-   if ShowErrorEdges then begin                       // show edges with errors
+   if ShowInteriorEdges and ShowErrorEdges then begin // show edges with errors
       Viewport.PenWidth:=2; //*PenwidthFactor;
       for I:=1 to FEdges.Count do begin
          if abs(FEdgeErrors[I-1])>1e-4 then begin
@@ -3177,7 +3148,7 @@ begin
                Setlength(IntArray,ArrayLength);
             end;
             IntArray[NoPoints-1].Point:=Output;
-            Edge:=Owner.FOwner.EdgeExists(P1,P2);
+            Edge:=Owner.Owner.EdgeExists(P1,P2);
             if Edge<>nil then IntArray[NoPoints-1].Knuckle:=Edge.Crease
                          else IntArray[NoPoints-1].Knuckle:=False;
          end else begin        // Does the edge lie entirely within the plane??
@@ -3607,7 +3578,7 @@ var I,J,K,N,BestIndex,ErrorIndex: Integer;
             P1:=Face.Point[Face.NoPoints-1];
             for J:=1 to Face.Nopoints do begin
                P2:=Face.Point[J-1];
-               Edge:=Owner.FOwner.EdgeExists(P1,P2);
+               Edge:=Owner.Owner.EdgeExists(P1,P2);
                if Edge<>nil then begin
                   for K:=1 to Edge.NoFaces do begin
                      Child:=Edge.Face[K-1];
@@ -3926,18 +3897,15 @@ end;
 
 procedure TEntity.FSetBuild(Val:Boolean);
 begin
-   if Val<>FBuild then begin
-      FBuild:=Val;
+   if Val<>FBuild then begin FBuild:=Val;
       if not Val then begin FMin:=ZERO; FMAx:=ZERO; end;
    end;
 end;
 
 constructor TEntity.Create;               // Create and initialise all data
-begin
-   inherited Create;
-   Clear;
-   Build:=False;
-end;
+      begin inherited Create; Clear; Build:=False; end;
+destructor TEntity.Destroy;
+     begin Inherited Destroy; end;
 
 procedure TEntity.Clear;
 begin
@@ -3949,10 +3917,6 @@ begin
    FPenStyle:=psSolid;
 end;
 
-destructor TEntity.Destroy;
-begin
-   Inherited Destroy;
-end;
 
 procedure TEntity.Extents(Var Min,Max : Vector);
 begin
@@ -4009,40 +3973,16 @@ function TSpline.FGetFragments:Integer;
 begin Result:=FFragments; end;
 
 function TSpline.FGetKnuckle(Index:integer):Boolean;
-begin
-{  if (Index>=0) and (Index<nS) then } Result:=FKnuckles[Index];
-// else Raise Exception.Create('List index out of bounds in '+ClassName+'.FGetKnuckle. ('+IntToStr(Index)+').');
-end;
-
+   begin Result:=FKnuckles[Index]; end;
 procedure TSpline.FSetKnuckle(Index:integer;Value:Boolean);
-begin
-// if (Index>=0) and (Index<nS) then begin
-      FKnuckles[Index]:=Value;
-      Build:=false;
-// end else Raise Exception.Create('List index out of bounds in '+ClassName+'.FSetKnuckle. ('+IntToStr(Index)+').');
-end;
-
+    begin FKnuckles[Index]:=Value; Build:=false; end;
 procedure TSpline.FSetPoint(Index:Integer;P:Vector);
-begin
-// if (Index>=0) and (Index<Ns) then begin
-      FPoints[index]:=P;
-      Build:=False;
-// end else Raise exception.Create('Point index out of bounds!');
-end;
-
+    begin FPoints[index]:=P; Build:=False; end;
 function TSpline.FGetParameter(Index:integer):Real;
-begin
-// if (Index>=0) and (Index<nS) then begin
-      if not build then rebuild;
-      Result:=FParameters[Index];
-// end else Raise Exception.Create('List index out of bounds in '+ClassName+'.FGetParameter. ('+IntToStr(Index)+').');
-end;
+   begin if not build then rebuild; Result:=FParameters[Index]; end;
 
 function TSpline.FGetPoint(Index:Integer):Vector;
-begin Result:=FPoints[index];
-// if (Index>=0) and (Index<Ns) then Result:=FPoints[index]
-//                              else Raise exception.Create('Point index out of bounds!');
-end;
+   begin Result:=FPoints[index]; end;
 
 procedure TSpline.Rebuild;
 var I,K: integer;
@@ -4058,12 +3998,10 @@ begin
       FTotalLength:=FTotalLength+Length;
       Inc(I);
    end;
-
    if nS>1 then begin
       Setlength(FDerivatives,nS);
       Setlength(FParameters,nS);
       SetLength(U,nS);
-
       Length:=0;
       if abs(FTotalLength)<1e-5 then begin // zero arclength, use uniform parameterisation
          for I:=1 to nS do FParameters[I-1]:=(I-1)/(nS-1);
@@ -4137,8 +4075,7 @@ begin
    else begin Hi:=nS-1;
       repeat
          K:=(Lo+Hi) div 2;
-         if FParameters[K]<Parameter then Lo:=K
-                                     else Hi:=K;
+         if FParameters[K]<Parameter then Lo:=K else Hi:=K;
       until Hi-Lo<=1;
    end;
    if FParameters[Hi]-FParameters[Lo]<=0.0
@@ -4708,10 +4645,10 @@ end;
 procedure TNURBSurface.SetDefaultColKnotvector;
 var I,L,No: Integer;
 begin
-   if FColDegree>FColCount-1 then FColDegree:=FColCount-1;
-   L:=FColCount+FColDegree+1;
+   if FColDegree>ColCount-1 then FColDegree:=ColCount-1;
+   L:=ColCount+FColDegree+1;
    Setlength(FColKnots,L);
-   No:=(FColCount+FColDegree+1)-2*FColDegree;
+   No:=(ColCount+FColDegree+1)-2*FColDegree;
    for I:=1 to FColDegree do FColKnots[I-1]:=0.0;
    for I:=1 to No do begin
       FColKnots[I+FColDegree-1]:=((I-1)/(No-1));
@@ -4724,10 +4661,10 @@ end;
 procedure TNURBSurface.SetDefaultRowKnotvector;
 var I,L,No: Integer;
 begin
-   if FRowDegree>FRowCount-1 then FRowDegree:=FRowCount-1;
-   L:=FRowCount+FRowDegree+1;
+   if FRowDegree>RowCount-1 then FRowDegree:=RowCount-1;
+   L:=RowCount+FRowDegree+1;
    Setlength(FRowKnots,L);
-   No:=(FRowCount+FRowDegree+1)-2*FRowDegree;
+   No:=(RowCount+FRowDegree+1)-2*FRowDegree;
    for I:=1 to FRowDegree do FRowKnots[I-1]:=0.0;
    for I:=1 to No do begin
       FRowKnots[I+FRowDegree-1]:=((I-1)/(No-1));
@@ -4740,8 +4677,8 @@ end;
 procedure TNURBSurface.SetUniformColKnotvector;
 var I,L: Integer;
 begin
-   if FColDegree>FColCount-1 then FColDegree:=FColCount-1;
-   L:=FColCount+FColDegree+1;
+   if FColDegree>ColCount-1 then FColDegree:=ColCount-1;
+   L:=ColCount+FColDegree+1;
    Setlength(FColKnots,L);
    for I:=1 to L do begin
       FColKnots[I-1]:=(I-1)/(L-1);
@@ -4753,8 +4690,8 @@ end;
 procedure TNURBSurface.SetUniformRowKnotvector;
 var I,L: Integer;
 begin
-   if FRowDegree>FRowCount-1 then FRowDegree:=FRowCount-1;
-   L:=FRowCount+FRowDegree+1;
+   if FRowDegree>RowCount-1 then FRowDegree:=RowCount-1;
+   L:=RowCount+FRowDegree+1;
    Setlength(FRowKnots,L);
    for I:=1 to L do begin
       FRowKnots[I-1]:=(I-1)/(L-1);
@@ -4787,8 +4724,8 @@ begin
    Build:=false;
    Inherited Clear;
    SetCapacity(0,0);
-   FColCount:=0;
-   FRowCount:=0;
+   ColCount:=0;
+   RowCount:=0;
    FColDegree:=3;
    FRowDegree:=3;
    Setlength(FColKnots,0);
@@ -4802,7 +4739,7 @@ begin
       Move( FControlpoints[I-1][Col+1],
             FControlpoints[I-1][Col],(Colcount-Col-1)*SizeOf(Vector));
    end;
-   Dec(FColCount);
+   Dec(ColCount);
    Build:=False;
 end;
 
@@ -4811,7 +4748,7 @@ var I:Integer;
 begin
    for I:=Row+1 to Rowcount-1 do
      Move(FControlpoints[I][0],FControlpoints[I-1][0],(Colcount)*SizeOf(Vector));
-   Dec(FRowCount);
+   Dec(RowCount);
    Build:=False;
 end;
 
@@ -4831,7 +4768,7 @@ begin
    end;
    if Index<>-1 then begin
       I:=index;
-      N:=FColcount;;
+      N:=Colcount;;
       k:=FColdegree+1;
       Setlength(Alpha,N+1);
       Setlength(Newpoints,RowCount);
@@ -4855,15 +4792,15 @@ begin
          end;
       end;
       for I:=1 to Rowcount do begin
-         setlength(FControlpoints[I-1],FColcount+1);
-         Move(Newpoints[I-1][0],FControlpoints[I-1][0],(FColcount+1)*SizeOf(Vector));
+         setlength(FControlpoints[I-1],Colcount+1);
+         Move(Newpoints[I-1][0],FControlpoints[I-1][0],(Colcount+1)*SizeOf(Vector));
       end;                                             // create new knotvector
       X:=length(FColknots);
       Setlength(FColknots,X+1);
       Move(FColknots[index],FColknots[index+1],(X-Index)*SizeOf(Real));
       FColknots[index+1]:=U;
-      FColCapacity:=FColcount;
-      inc(FColcount);
+      FColCapacity:=Colcount;
+      inc(Colcount);
    end;
 end;
 
@@ -4885,7 +4822,7 @@ begin
    end;
    if Index<>-1 then begin
       I:=index;
-      N:=FRowcount;
+      N:=Rowcount;
       k:=FRowdegree+1;
       Setlength(Alpha,N+1);
       Setlength(Newpoints,RowCount+1);
@@ -4906,23 +4843,23 @@ begin
       end;               // Replace the current controlpoints with the new ones
       Setlength(FControlpoints,Rowcount+1);
       for I:=0 to Rowcount do begin
-         setlength(FControlpoints[I],FColcount);
-         Move(Newpoints[I][0],FControlpoints[I][0],(FColcount)*SizeOf(Vector));
+         setlength(FControlpoints[I],Colcount);
+         Move(Newpoints[I][0],FControlpoints[I][0],(Colcount)*SizeOf(Vector));
       end;
       X:=length(FRowknots);                    // create the new new knotvector
       Setlength(FRowknots,X+1);
       Move(FRowknots[index],FRowknots[index+1],(X-Index)*SizeOf(Real));
       FRowknots[index+1]:=V;
-      inc(FRowcount);
-      FRowCapacity:=FRowcount;
+      inc(Rowcount);
+      FRowCapacity:=Rowcount;
    end;
 end;
 
 procedure TNURBSurface.Rebuild;
 begin
    if Build then Build:=false;
-   if FColDegree>FColcount-1 then FColDegree:=FColcount-1;
-   if FRowDegree>FRowcount-1 then FRowDegree:=FRowcount-1;
+   if FColDegree>Colcount-1 then FColDegree:=Colcount-1;
+   if FRowDegree>Rowcount-1 then FRowDegree:=Rowcount-1;
    SetDefaultColKnotVector;
    SetDefaultRowKnotVector;
    Build:=True;
@@ -4932,8 +4869,8 @@ end;
   SBase
   SBase is the base class for all subdivision points, edges and faces
 }
-constructor SBase.Create(Owner:SSurface);
-      begin Inherited Create; FOwner:=Owner; end;
+constructor SBase.Create( Own:SSurface);
+      begin Inherited Create; Owner:=Own; end;
 {
   SControlCurve
 }
@@ -5166,7 +5103,7 @@ begin
    if FCurve.nS>1 then begin
       FCurve.Color:=Color;
       Sel:=Selected;
-      FCurve.ShowCurvature:=(Sel) and (Owner.FShowCurvature);
+      FCurve.ShowCurvature:=(Sel) and (Owner.ShowCurvature);
       if FCurve.ShowCurvature then FCurve.Fragments:=600
                               else FCurve.Fragments:=250;
       if not Owner.ShowControlNet and (Sel) then
@@ -5406,10 +5343,10 @@ end;
 
 procedure SLayer.FSetColor(Val:TColor);
 begin
-   if Val<>FColor then begin
-      FColor:=Val;
+   if Val<>FColor then begin FColor:=Val;
       if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
-      if (self=Owner.ActiveLayer) and (assigned(Owner.FOnChangeActiveLayer)) then owner.FOnChangeActiveLayer(Owner,Owner.ActiveLayer);
+      if (self=Owner.ActiveLayer) and (assigned(Owner.FOnChangeActiveLayer))
+                then owner.FOnChangeActiveLayer(Owner,Owner.ActiveLayer);
    end;
 end;
 
@@ -5460,8 +5397,8 @@ begin
    FDescription:='';
    FSymmetric:=Source.FSymmetric;
    FDevelopable:=Source.FDevelopable;
-   FMaterialDensity:=Source.FMaterialDensity;
-   FThickness:=Source.FThickness;
+   MaterialDensity:=Source.MaterialDensity;
+   Thickness:=Source.Thickness;
 end;
 
 function SLayer.CalculateIntersectionPoints(Layer:SLayer):Boolean;
@@ -5557,17 +5494,17 @@ begin
    NewPoints.Destroy;
 end;
 
-constructor SLayer.Create(Owner:SSurface);
+constructor SLayer.Create( Own:SSurface );
 begin
    inherited Create;
-   FOwner:=Owner;
+   Owner:=Own;
    FPatches:=TFasterList.Create;
    Clear;
 end;
 
 procedure SLayer.Clear;
 begin
-   FLayerID:=-1;
+   LayerID:=-1;
    FPatches.Clear;
    FColor:=Sp.Layer;
    FVisible:=True;
@@ -5577,9 +5514,9 @@ begin
    FUseForIntersections:=True;
    FUseInHydrostatics:=True;
    FShowInLinesplan:=True;
-   FMaterialDensity:=0.0;
-   FThickness:=0.0;
-   FAlphaBlend:=255;
+   MaterialDensity:=0.0;
+   Thickness:=0.0;
+   AlphaBlend:=255;
 end;
 
 function SLayer.Delete:Boolean; var I,Index: Integer;
@@ -5654,16 +5591,16 @@ procedure SLayer.LoadBinary(Source:TFileBuffer);
 var I:Integer;
 begin
    Source.LoadString(FDescription);
-   Source.LoadInteger(FLayerID);
-   if FLayerID>Owner.FLastusedLayerID then Owner.FLastusedLayerID:=FLayerID;
+   Source.LoadInteger( LayerID );
+   if LayerID>Owner.FLastusedLayerID then Owner.FLastusedLayerID:=LayerID;
    Source.LoadInteger(FColor);
-     FAlphaBlend:=255-byte( Cardinal( FColor ) shr 24 );
+     AlphaBlend:=255-byte( Cardinal( FColor ) shr 24 );
      FColor:=FColor and $FFFFFF;
     Source.LoadBoolean(FVisible);
    Source.LoadBoolean(FSymmetric);
    Source.LoadBoolean(FDevelopable);
-   FMaterialDensity:=0.0;
-   FThickness:=0.0;
+   MaterialDensity:=0.0;
+   Thickness:=0.0;
    FUseForIntersections:=True;
    FUseInHydrostatics:=True;
    FShowInLinesplan:=True;
@@ -5671,13 +5608,13 @@ begin
       Source.LoadBoolean(FUseForIntersections);
       Source.LoadBoolean(FUseInHydrostatics);
       if Source.Version>=fv191 then begin
-         Source.LoadTFloatType(FMaterialDensity);
-         Source.LoadTFloatType(FThickness);
+         Source.LoadTFloatType(MaterialDensity);
+         Source.LoadTFloatType(Thickness);
          if Source.Version>=fv201 then begin
             Source.LoadBoolean(FShowInLinesplan);
             if Source.Version>=fv260 then begin
                Source.LoadInteger(I);
-               FalphaBlend:=I;
+               AlphaBlend:=I;
             end;
          end;
       end;
@@ -5762,8 +5699,8 @@ procedure SLayer.SaveBinary( Destination:TFileBuffer );
 Var C: Cardinal;
 begin
    Destination.Add(FDescription);
-   Destination.Add(FLayerID);
-   C:=(Cardinal(FColor) and $FFFFFF)+(Cardinal(255-FAlphaBlend) shl 24);
+   Destination.Add( LayerID );
+   C:=(Cardinal(FColor) and $FFFFFF)+(Cardinal(255-AlphaBlend) shl 24);
    Destination.Add( Integer( C ) );               //~~ Destination.Add(FColor);
    Destination.Add(FVisible);
    Destination.Add(FSymmetric);
@@ -5772,12 +5709,12 @@ begin
       Destination.Add(FUseForIntersections);
       Destination.Add(FUseInHydrostatics);
       if Destination.Version>=fv191 then begin
-         Destination.Add(FMaterialDensity);
-         Destination.Add(FThickness);
+         Destination.Add(MaterialDensity);
+         Destination.Add(Thickness);
          if Destination.Version>=fv201 then begin
             Destination.Add(FShowInLinesplan);
             if Destination.Version>=fv260 then begin
-               Destination.Add(FalphaBlend);
+               Destination.Add(AlphaBlend);
             end;
          end;
       end;
@@ -6036,8 +5973,8 @@ var I,J,Nt,Nq: Integer;
     P: SPoint;
 begin
    if (Noedges=0)
-   or (FVertexType=svCorner) then Result:=FCoordinate else begin
-      if FVertexType=svCrease then begin
+   or (VertexType=svCorner) then Result:=FCoordinate else begin
+      if VertexType=svCrease then begin
          Result:=0.5*FCoordinate;
          for I:=1 to FEdges.Count do begin
             Edge:=FEdges[I-1];
@@ -6092,7 +6029,7 @@ function SPoint.CalculateVertexPoint:SPoint;
   var Point: Vector; Edge: SEdge; I: Integer;
 begin Point:=FCoordinate;
    Result:=SPoint.Create(Owner);
-   Result.FVertexType:=FVertexType;
+   Result.VertexType:=VertexType;
    Result.FCoordinate:=Point;
    for I:=0 to Fedges.Count-1 do begin Edge:=FEdges[I];
       if Edge.Curve<>nil then Edge.Curve.ReplaceVertexPoint(Self,Result);
@@ -6104,7 +6041,7 @@ begin
    FCoordinate:=Zero; // Fillchar(FCoordinate,SizeOf(Vector),0);
    FFaces.Clear;
    FEdges.Clear;
-   FVertexType:=svRegular;
+   VertexType:=svRegular;
 end;
 constructor SPoint.Create(Owner:SSurface);
       begin inherited Create(Owner);
@@ -6136,7 +6073,7 @@ begin
    if Selected then Result:=Sp.Select else begin
       if Locked then Result:=clDkGray else begin
          if IsLeak then Result:=Sp.LeakPoint else
-         Case FVertexType of
+         Case VertexType of
             svRegular : Result:=Sp.RegularPoint;
             svCorner  : Result:=Sp.CornerPoint;
             svDart    : result:=Sp.DartPoint;
@@ -6250,12 +6187,12 @@ begin
          Face:=FFaces[I-1];
          Points:=TFasterList.Create;
          for J:=1 to Face.FPoints.Count do if Face.FPoints[J-1]<>self then Points.Add(Face.FPoints[J-1]);
-         FOwner.AddControlFace(Points,False,Face.Layer);
+         Owner.AddControlFace(Points,False,Face.Layer);
          Points.Destroy;
          Face.SelDeleteFace;
       end;
       if EdgeCollapse then begin
-         Edge1:=FOwner.EdgeExists(P1,P2) as SControlEdge;
+         Edge1:=Owner.EdgeExists(P1,P2) as SControlEdge;
          if Edge1<>nil then begin
             Edge1.Crease:=Crease;// or (Edge1.NoFaces=1);
          end;
@@ -6271,7 +6208,7 @@ begin
          for J:=1 to Face.FPoints.Count do begin
             P2:=face.FPoints[J-1];
             if (P1<>self) and (P2<>self) then begin
-               Edge1:=FOwner.EdgeExists(P1,P2) as SControlEdge;
+               Edge1:=Owner.EdgeExists(P1,P2) as SControlEdge;
                if Edge1<>nil then if Edges.IndexOf(Edge1)=-1 then Edges.Add(Edge1);
             end;
             P1:=P2;
@@ -6280,17 +6217,17 @@ begin
       // sort edges in correct order and add new face
       if Edges.Count>2 then begin
          Sorted:=TFasterList.Create;
-         Fowner.IsolateEdges(Edges,Sorted);
+         Owner.IsolateEdges(Edges,Sorted);
          Edges.Destroy;
          for I:=1 to Sorted.Count do begin
             Points:=Sorted[I-1];
             if Points.Count>2 then begin
-               Face:=FOwner.AddControlFace(Points,False);
+               Face:=Owner.AddControlFace(Points,False);
                if Face<>nil then begin
                   P1:=Face.FPoints[Face.FPoints.Count-1];
                   for J:=1 to Face.FPoints.Count do begin
                      P2:=face.FPoints[J-1];
-                     Edge1:=fowner.EdgeExists(p1,p2) as SControlEdge;
+                     Edge1:=Owner.EdgeExists(p1,p2) as SControlEdge;
                   {  if edge1<>nil then begin
                        Cur:=Edge.FFaces.IndexOf(self);
                         if Cur=-1 then Edge.Crease:=Edge.NoFaces<2 else
@@ -6382,7 +6319,7 @@ var I: Integer; Sel: Boolean;
 begin
    Source.LoadVector(FCoordinate);
    Source.LoadInteger(I);
-   FVertextype:=TVertexType(I);
+   Vertextype:=TVertexType(I);
    Source.LoadBoolean(Sel);
    if Sel then Selected:=True;
    if Source.Version>=fv198 then Source.LoadBoolean(FLocked);
@@ -6394,11 +6331,11 @@ begin Inc(LineNr);                                               // FCoordinate
    Str:=Strings[LineNr];
    FCoordinate:=GetVector(Str);
    if Str<>'' then begin I:=GetInteger(Str);
-      FVertextype:=TVertexType(I);
+      Vertextype:=TVertexType(I);
       if Str<>'' then begin Sel:=GetBoolean(Str);
          if Sel then Selected:=True;
       end;                  // TVertexType=(svRegular,svCrease,svDart,svCorner)
-   end else FVertextype:=svRegular;
+   end else Vertextype:=svRegular;
 end;
 
 procedure SControlPoint.SaveBinary(Destination:TFileBuffer);
@@ -6471,7 +6408,7 @@ begin
            if N=2 then Endpoint.VertexType:=svCrease else
             if N>2 then Endpoint.VertexType:=svCorner;
       end;
-      StartPoint.FOwner.Build:=false;
+      StartPoint.Owner.Build:=false;
    end;
 end;
 
@@ -6549,7 +6486,7 @@ var Point: Vector;
 begin
    Point:=0.5*(Startpoint.FCoordinate+Endpoint.FCoordinate);
    Result:=SPoint.Create(StartPoint.Owner);
-   if FCrease then Result.FVertexType:=svCrease;
+   if FCrease then Result.VertexType:=svCrease;
    if Curve<>nil then Curve.InsertEdgePoint(StartPoint,EndPoint,Result);
    Result.FCoordinate:=Point;
 end;
@@ -7027,13 +6964,13 @@ var I,I1,I2: Integer;
     Face: SFace;
     Edge: SControlEdge;
 begin
-   Result:=SControlpoint.Create(FOwner);
+   Result:=SControlpoint.Create(Owner);
    Result.FCoordinate:=P;
    if Curve<>nil then begin        // insert the new point in the controlcurve
       Curve.InsertControlPoint(SControlPoint(StartPoint),
                                SControlPoint(EndPoint),Result);
    end;
-   FOwner.FControlPoints.Add(Result);
+   Owner.FControlPoints.Add(Result);
    for I:=1 to NoFaces do begin
       Face:=FFaces[I-1];
       I1:=Face.FPoints.IndexOf(StartPoint);
@@ -7047,10 +6984,10 @@ begin
       end;
    end;
    Endpoint.DeleteEdge(self);
-   Edge:=FOwner.AddControlEdge(Result,EndPoint);
+   Edge:=Owner.AddControlEdge(Result,EndPoint);
    Edge.FCrease:=FCrease;
    Edge.Curve:=Curve;
-   if FCrease then Result.FVertexType:=svCrease;
+   if FCrease then Result.VertexType:=svCrease;
    for I:=1 to Nofaces do Edge.AddFace(FFaces[I-1]);
    EndPoint:=Result;
    Result.AddEdge(self);
@@ -7992,10 +7929,10 @@ begin Result:=nil; if P1=P2 then exit;
          Pts.Destroy;
          SelDeleteFace;
       end;
-      Result:=Fowner.EdgeExists(P1,P2) as SControlEdge;
+      Result:=Owner.EdgeExists(P1,P2) as SControlEdge;
       if Result<>nil then Result.Crease:=False;
    except
-     Result:=Fowner.EdgeExists(P1,P2) as SControlEdge; // ##??
+     Result:=Owner.EdgeExists(P1,P2) as SControlEdge; // ##??
    end;
 end;
 
@@ -8255,7 +8192,7 @@ end;
 
 procedure SSurface.AddControlPoint( P:SControlPoint );
     begin if FControlPoints.IndexOf(P)=-1 then
-          begin FControlPoints.Add(P); P.FOwner:=self; end;
+          begin FControlPoints.Add(P); P.Owner:=self; end;
           Build:=False;
     end;
 // Adds a new controlpoint at 0,0,0 without checking other points
@@ -8268,7 +8205,7 @@ function SSurface.AddNewLayer:SLayer;
    begin
       Result:=SLayer.Create(Self);
       FLayers.Add(Result);
-      Result.FLayerID:=FRequestNewLayerID;
+      Result.LayerID:=FRequestNewLayerID;
       ActiveLayer:=Result;
       if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
    end;
@@ -8857,12 +8794,8 @@ function SSurface.FGetSelectedControlFace(Index:Integer):SControlFace;
    begin Result:=FSelectedControlfaces[index]; end;
 function SSurface.FGetSelectedControlPoint(Index:Integer):SControlPoint;
    begin Result:=FSelectedControlPoints[index]; end;
-
 function SSurface.FRequestNewLayerID:Integer;
-begin
-   inc(FLastusedLayerID);
-   Result:=FLastusedLayerID;
-end;
+   begin inc(FLastusedLayerID); Result:=FLastusedLayerID; end;
 
 procedure SSurface.FSetActiveLayer(Val:SLayer);
 begin
@@ -8890,7 +8823,7 @@ procedure SSurface.FSetDivSec(val:byte);
                   FDivSec:=val; Build:=False; end;
 end;
 procedure SSurface.FSetFShowControlNet(Val:Boolean);
-    begin if Val<>FShowControlNet then FShowControlNet:=Val; end;
+    begin if Val<>ShowControlNet then ShowControlNet:=Val; end;
 
 procedure SSurface.FSeSMode(val:SMode);
 begin
@@ -8985,7 +8918,7 @@ end;
 procedure SSurface.AddControlCurve(Curve:SControlCurve);
 begin
    FControlCurves.Add(Curve);
-   Curve.FOwner:=self;
+   Curve.Owner:=self;
    Build:=False;
 end;
 
@@ -9097,11 +9030,11 @@ begin
    ActiveLayer:=Layer;
    Build:=False;
    FDrawMirror:=False;
-   FShowControlNet:=True;
-   FShowInteriorEdges:=False;
+   ShowControlNet:=True;
+   ShowInteriorEdges:=False;
    FInitialized:=False;
    FDivSec:=1;
-   FShowNormals:=True;
+   ShowNormals:=True;
    Sp.UColorIs:=false;                               // ShadeUnderWater:=False;
    FMainframeLocation:=1e10;
 end;
@@ -9420,7 +9353,7 @@ begin                                                  // Add layer information
    for I:=0 to NoLayers-1 do begin
       Strings.Add(Layer[I].Name);
       Strings.Add(IntToStr(Layer[I].LayerID)+#32+
-      I2S(Cardinal(Layer[I].Color and $FFFFFF)+(Cardinal(255-Layer[I].FAlphaBlend) shl 24))
+      I2S(Cardinal(Layer[I].Color and $FFFFFF)+(Cardinal(255-Layer[I].AlphaBlend) shl 24))
 //      +#32+IntToStr(Layer[I].Color)
         +#32+BoolToStr(Layer[I].Visible)
         +#32+BoolToStr(Layer[I].Developable)
@@ -9944,8 +9877,8 @@ begin
    FSelectedControlFaces:=TFasterList.Create;
    FSelectedControlCurves:=TFasterList.Create;
    FControlPointSize:=4;
-   FShowCurvature:=True;
-   FShowControlCurves:=True;
+   ShowCurvature:=True;
+   ShowControlCurves:=True;
    FSubdivisionMode:=fmQuadTriangle;
    inherited Create;
 end;
@@ -10148,10 +10081,10 @@ begin                                                 // Read layer information
       Layer.FDescription:=Strings[LineNr];;
       inc(LineNr);
       Str:=Strings[LineNr];
-      Layer.FLayerID:=GetInteger(Str);
-      if Layer.FLayerID>FLastusedLayerID then FLastusedLayerID:=Layer.FLayerID;
+      Layer.LayerID:=GetInteger(Str);
+      if Layer.LayerID>FLastusedLayerID then FLastusedLayerID:=Layer.LayerID;
       Layer.FColor:=GetInteger(Str);
-         Layer.FAlphaBlend:=255-byte( Cardinal( Layer.FColor ) shr 24 );
+         Layer.AlphaBlend:=255-byte( Cardinal( Layer.FColor ) shr 24 );
          Layer.FColor:=Layer.FColor and $FFFFFF;
       Layer.FVisible:=GetBoolean(Str);
       Layer.FDevelopable:=GetBoolean(Str);
@@ -10159,8 +10092,8 @@ begin                                                 // Read layer information
       Layer.FUseForIntersections:=GetBoolean(Str);
       Layer.FUseInHydrostatics:=GetBoolean(Str);
       Layer.FShowInLinesplan:=GetBoolean(Str);
-      Layer.FMaterialDensity:=GetFloat(Str);
-      Layer.FThickness:=GetFloat(Str);
+      Layer.MaterialDensity:=GetFloat(Str);
+      Layer.Thickness:=GetFloat(Str);
    end;
    if Assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
    Inc( LineNr ); Str:=Strings[LineNr];                   // Read controlpoints
@@ -10196,8 +10129,10 @@ begin                                                 // Read layer information
          Edge:=EdgeExists(P1,P2) as SControlEdge;
          if Edge<>nil then Edge.AddFace(Face) else begin
            Edge:=AddControlEdge( P1,P2 );
+{          if  (P1.coordinate.y<>0)
+           and (P2.coordinate.y<>0) then Edge.Crease:=false else
+}                                        Edge.Crease:=true;
            Edge.FFaces.Add(Face);
-           Edge.Crease:=False; // True;
          end;                  // #//#// else ShowMessage(Userstring(201)+'!');
          P1:=P2;
       end;

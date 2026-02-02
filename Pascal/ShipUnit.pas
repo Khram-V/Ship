@@ -758,12 +758,6 @@ uses Math,
      UndoHistoryDlg,
      LayerDlg,
      HydrostaticsDlg;
-//     HullformWindow,
-//     HydrostaticsFrm,
-//     MichletOutputDlg,
-//     Resistance_KaperDlg,
-//     Resistance_DelftDlg,
-//     CrosscurvesDlg,
 
 // function to find the corresponding water viscosity based on the density
 function FindWaterViscosity(Density:Real;Units:TUnitType):Real;
