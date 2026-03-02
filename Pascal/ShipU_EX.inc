@@ -1715,7 +1715,7 @@ begin
       St.Preferences.ExportDirectory:=ExtractFilePath(Dialog.FileName);
       IGESList:=TIGESList.Create;
       IGESList.IGESUnits:=St.ProjectSettings.ProjectUnits;
-      IGESList.SystemID:='free!Ship'+#32+VersionString(CurrentVersion);
+      IGESList.SystemID:='free!Ship ver.2.6'; //+#32+VersionString(CurrentVersion);
       IGESList.FileCreatedBy:=St.ProjectSettings.ProjectFileCreatedBy;
       IGESList.FileName:=Dialog.FileName;                  // Build color table
       Layers:=TFasterList.Create;

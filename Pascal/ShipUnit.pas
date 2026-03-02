@@ -635,7 +635,7 @@ public
    procedure Clear;
    procedure Draw;
    procedure Redraw; // Redraws the model on all viewports
-   function  DetectMinFileVersion( isText: boolean ): TFileVersion;
+// function  DetectMinFileVersion( isText: boolean ): TFileVersion; ~ в запись только 2.6
    procedure AddViewport(Viewport:TViewport); // Add a viewport to the list of viewports connected to the model
    function  AdjustMarkers:Boolean;
    procedure ClearUndo;
@@ -1442,7 +1442,7 @@ procedure TIntersection.SaveBinary( Destination:TFileBuffer );
 var I,J: integer; Spline: TSpline; P: Vector;
 begin
    Destination.Add(Ord(IntersectionType));
-   if St.FileVersion>=fv191 then Destination.Add(ShowCurvature);
+  {if St.FileVersion>=fv191 then} Destination.Add(ShowCurvature);
    Destination.Add(FPlane);
    Destination.Add(FBuilt);
    Destination.Add(Count);
@@ -1451,7 +1451,7 @@ begin
       Destination.Add(Spline.nS);
       for J:=1 to Spline.nS do begin
          P:=Spline.Point[J-1];
-         if St.FileVersion>=fv160 then begin
+//       if St.FileVersion>=fv160 then begin
             Case IntersectionType of
                fiStation: begin
                    Destination.Add(P.Y);
@@ -1469,11 +1469,11 @@ begin
                    Destination.Add(P);
                    Destination.Add(Spline.Knuckle[J-1]); end;
             end;
-         end else begin
+{        end else begin
             Destination.Add(P);
             Destination.Add(Spline.Knuckle[J-1]);
          end;
-      end;
+}     end;
    end;
 end;
 {
@@ -1665,7 +1665,7 @@ end;
 procedure TMarker.SaveBinary(Destination:TFileBuffer);
 begin
    Destination.Add(FVisible);
-   if Owner.FileVersion>=fv260 then Destination.Add(Selected);
+  {if Owner.FileVersion>=fv260 then} Destination.Add(Selected);
    Inherited SaveBinary( Destination );
 end;
 {
@@ -2442,21 +2442,21 @@ begin
    Destination.Add(FShowMarkers);
    Destination.Add(FShowCurvature);
    Destination.Add(Sp.CurvatureScale);
-   if Owner.FileVersion>=fv195 then begin
+// if Owner.FileVersion>=fv195 then begin
       Destination.Add(FShowControlCurves);
-      if Owner.FileVersion>=fv210 then begin
+//    if Owner.FileVersion>=fv210 then begin
          Destination.Add(FCursorIncrement);
-         if Owner.FileVersion>=fv220 then begin
+//       if Owner.FileVersion>=fv220 then begin
             Destination.Add(FShowHydrostaticData);
             Destination.Add(FShowHydrostDisplacement);
             Destination.Add(FShowHydrostLateralArea);
             Destination.Add(FShowHydrostSectionalAreas);
             Destination.Add(FShowHydrostMetacentricHeight);
             Destination.Add(FShowHydrostLCF);
-            if Owner.FileVersion>=fv250 then Destination.Add( FShowFlowlines );
-         end;
-      end;
-   end;
+           {if Owner.FileVersion>=fv250 then} Destination.Add( FShowFlowlines );
+//       end;
+//    end;
+// end;
 end;
 {
   SEdit
@@ -4630,7 +4630,7 @@ begin
    FPreferences:=TPreferences.Create(self);
    FPreferences.Load;
    FProjectSettings:=TProjectSettings.Create(self);
-   FFileVersion:=CurrentVersion;
+   FFileVersion:=CurrentVersion;                     // Ver.2.6
    FActiveControlPoint:=nil;
    FSurface:=SSurface.Create;
    FViewports:=TFasterList.Create;

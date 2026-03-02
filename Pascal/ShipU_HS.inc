@@ -188,7 +188,6 @@ begin                                                  // Initial setup of data
             // calculate volume aft of this face
             if NoPoints>2 then Submerged:=True;
             for L:=3 to NoPoints do ProcessTriangle(Points[0],Points[L-2],Points[L-1]);
-
             if Layer.Symmetric then begin // Calculate the starboardside of the model
                NoPoints:=0;
                P1:=Child.Point[Child.NoPoints-1].Coordinate;

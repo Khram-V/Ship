@@ -115,16 +115,14 @@ procedure TLayerDialog.LayerBoxClick(Sender: TObject);
 var Layer   : SLayer;
     Prop    : TLayerProperties;
 begin
-   if Layerbox.ItemIndex<>-1 then
-   begin
+   if Layerbox.ItemIndex<>-1 then begin
       Layer:=Layerbox.Items.Objects[Layerbox.ItemIndex] as SLayer;
       if Layer.Visible<>Layerbox.Checked[Layerbox.ItemIndex] then begin
          Layer.Visible:=Layerbox.Checked[Layerbox.ItemIndex];
          St.FileChanged:=true;
          St.Redraw;
       end;
-      if Layer<>nil then
-      begin
+      if Layer<>nil then begin
          Edit1.Text:=Layer.Name;
          Panel3.Color:=Layer.Color;
          Checkbox1.Checked:=Layer.Developable;

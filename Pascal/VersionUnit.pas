@@ -23,11 +23,11 @@ type TFileVersion=
 const CurrentVersion=fv260;    // <> high( TFileVersion );
                      // Current (latest) version of the free!Ship project.
                      // All new created models are initialized to this version
-function VersionString( Version:TFileVersion): String;
+//function VersionString( Version:TFileVersion): String;
 function VersionBinary( V: String ):TFileVersion;
 
 implementation
-
+(*
 function VersionString(Version:TFileVersion):String; begin
   Case Version of
     fv100: Result:='1.0';  fv110: Result:='1.1';  fv120: Result:='1.2';
@@ -37,9 +37,9 @@ function VersionString(Version:TFileVersion):String; begin
     fv195: Result:='1.95'; fv198: Result:='1.98'; fv200: Result:='2.0';
     fv201: Result:='2.01'; fv210: Result:='2.1';  fv220: Result:='2.2';
     fv230: Result:='2.3';  fv240: Result:='2.4';  fv250: Result:='2.5'
-     else  Result:='2.6'; {=fv261 - для совместимости лучше не трогать...}
+     else  Result:='2.6'; {=fv261 - для совместимости это лучше не трогать...}
   end
-end;
+end; *)
 function VersionBinary( V: String ):TFileVersion; begin
   if V='1.0'   then Result:=fv100 else   if V='1.1'   then Result:=fv110 else
   if V='1.2'   then Result:=fv120 else   if V='1.3'   then Result:=fv130 else

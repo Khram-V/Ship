@@ -14,13 +14,13 @@ TFileBuffer=class
   private
     FCapacity,         // Amount of bytes allocated
     FCount: Integer;   // The amount of bytes actually used
-    FVersion: TFileVersion;
     FData: array of byte;
     FFileName: String;
     FFile: file;
     procedure FSetCapacity(val: integer); virtual;
     function FGetCapacity: integer; virtual;
   public
+    Version: TFileVersion;
     FPosition:Integer; // current position when reading information from buffer
     constructor Create;
     destructor Destroy; override;
@@ -31,7 +31,7 @@ TFileBuffer=class
     procedure Add( FloatValue: Real);    overload; virtual;
     procedure Add( Coordinate: Vector);  overload; virtual;
     procedure Add( Plane: Plate);        overload; virtual;
-    procedure Add( Version: TFileVersion); overload; virtual;
+    procedure Add( Ver: TFileVersion);   overload; virtual;
     procedure Add( JPegImage: TJPEGImage ); overload; virtual;
     procedure LoadInteger(var Output: integer); virtual;
     procedure LoadString(var Output: String); virtual;
@@ -48,7 +48,6 @@ TFileBuffer=class
     function GetPosition:integer; virtual;
     property Capacity: integer read FGetCapacity write FSetCapacity;
     property Count: integer read FCount;
-    property Version: TFileVersion read FVersion write FVersion;
     property Position: integer read GetPosition;
   end;
   {  TTextBuffer
@@ -68,7 +67,7 @@ TFileBuffer=class
     procedure Add(Text: String); override; overload;
     procedure Add(BooleanValue: boolean); override; overload;
     procedure Add(FloatValue: Real); override; overload;
-    procedure Add(PVersion: TFileVersion); override; overload;
+    procedure Add(Ver: TFileVersion); override; overload;
     procedure Add(Coordinate: Vector); override; overload;
     procedure Add(Plane: Plate); override; overload;
     procedure Add(JPegImage: TJPEGImage); override; overload;
@@ -197,10 +196,10 @@ begin
   Inc( FCount,Size );
 end;
 
-procedure TFileBuffer.Add(Version: TFileVersion);
+procedure TFileBuffer.Add( Ver: TFileVersion );
 var Size: integer;
 begin
-  FVersion:=Version;
+  Version:=Ver;
   Size:=SizeOf(Version);
   if Count+Size>Capacity then Capacity:=Count+Size;
   Move( Version,FData[FCount],Size );
@@ -327,9 +326,9 @@ procedure TTextBuffer.Add( FloatValue: Real ); var S: String;
 procedure TTextBuffer.Add( IntegerValue: integer );
     begin FLines.Add( I2S( IntegerValue ) ); Inc( FPosition );
     end;
-procedure TTextBuffer.Add( PVersion: TFileVersion ); var S: String;
-    begin FVersion:=PVersion;
-      S:=VersionString( PVersion );
+procedure TTextBuffer.Add( Ver: TFileVersion ); const S: String='2.6';
+    begin //Version:=Ver;
+          //S:=VersionString( Version );   == функция скрыта в комментариях
       FLines.Add( S );
       Inc( FPosition );
     end;

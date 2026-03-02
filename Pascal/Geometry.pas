@@ -681,7 +681,7 @@ private
    procedure FSetCoordinate(Val:Vector); override;
 public
    constructor Create(Owner:SSurface); override;
-   procedure  Collapse;
+   procedure Collapse;
    function  FGetIndex:Integer; override;
    function  DistanceToCursor(X,Y:Integer;Viewport:TViewport):Integer;
    procedure SelDeletePoint;
@@ -712,9 +712,9 @@ private
    function  FGetPreviousEdge:SEdge;
    function  FGetNextEdge:SEdge;
 public
-   Curve     : SControlCurve;
+   Curve: SControlCurve;
    Startpoint: SPoint;
-   Endpoint  : SPoint;
+   Endpoint: SPoint;
    constructor Create(Owner:SSurface); override;
    destructor  Destroy; virtual;
    procedure   Clear;
@@ -725,13 +725,13 @@ public
    function    DistanceToCursor(X,Y:Integer;var P:Vector;Viewport:TViewport):integer;virtual;
    procedure   Draw(DrawMirror:Boolean;Viewport:TViewport); virtual;
    procedure   SwapData;
-   property    Crease       : Boolean read FCrease write FSetCrease;
-   property    EdgeIndex    : integer read FGetIndex;
+   property    Crease: Boolean read FCrease write FSetCrease;
+   property    EdgeIndex: integer read FGetIndex;
    property    Face[index:integer]: SFace read FGetFace;
    property    IsBoundaryEdge: Boolean read FGetIsBoundaryEdge;
-   property    NextEdge     : SEdge read FGetNextEdge;
+   property    NextEdge: SEdge read FGetNextEdge;
    property    NoFaces: integer read FGetNoFaces;
-   property    PreviousEdge : SEdge read FGetPreviousEdge;
+   property    PreviousEdge: SEdge read FGetPreviousEdge;
  end;
 {
    SControlEdge
@@ -745,6 +745,7 @@ private
    function  FGetSelected:Boolean;
    function  FGetVisible:Boolean;
 public
+   isRead: boolean;   // отметка прочитанного и заново построенного ребра в FEF
    constructor Create(Owner:SSurface); override;
    destructor Destroy; override;
    procedure Collapse;
@@ -5596,7 +5597,7 @@ begin
    Source.LoadInteger(FColor);
      AlphaBlend:=255-byte( Cardinal( FColor ) shr 24 );
      FColor:=FColor and $FFFFFF;
-    Source.LoadBoolean(FVisible);
+   Source.LoadBoolean(FVisible);
    Source.LoadBoolean(FSymmetric);
    Source.LoadBoolean(FDevelopable);
    MaterialDensity:=0.0;
@@ -5705,20 +5706,20 @@ begin
    Destination.Add(FVisible);
    Destination.Add(FSymmetric);
    Destination.Add(FDevelopable);
-   if Destination.Version>=fv180 then begin
+// if Destination.Version>=fv180 then begin       == всегда ver.2.6
       Destination.Add(FUseForIntersections);
       Destination.Add(FUseInHydrostatics);
-      if Destination.Version>=fv191 then begin
+//    if Destination.Version>=fv191 then begin
          Destination.Add(MaterialDensity);
          Destination.Add(Thickness);
-         if Destination.Version>=fv201 then begin
+//       if Destination.Version>=fv201 then begin
             Destination.Add(FShowInLinesplan);
-            if Destination.Version>=fv260 then begin
+//          if Destination.Version>=fv260 then begin
                Destination.Add(AlphaBlend);
-            end;
-         end;
-      end;
-   end;
+//          end;
+//       end;
+//    end;
+// end;
 end;
 
 procedure SLayer.Unroll(Destination:TFasterList);
@@ -6343,7 +6344,7 @@ begin
    Destination.Add(FCoordinate);
    Destination.Add(Ord(VertexType));
    Destination.Add(Selected);
-   if Destination.Version>=fv198 then Destination.Add( Locked );
+  {if Destination.Version>=fv198 then} Destination.Add( Locked );
 end;
 
 procedure SControlPoint.SaveToStream( Strings:TStringlist ); Var Str:String;
@@ -6823,8 +6824,8 @@ begin
    end;
 end;
 
-constructor SControlEdge.Create(Owner:SSurface);
-      begin Inherited Create(Owner); end;
+constructor SControlEdge.Create( Owner:SSurface );
+      begin Inherited Create( Owner ); end;
 
 procedure SControlEdge.SelDeleteEdge;
 var I: Integer;
@@ -7018,16 +7019,16 @@ begin
    Str:=Strings[LineNr];                                         // FStartpoint
    Index:=GetInteger(Str);
    if index=-1 then index:=0;
-   if Index<>-1 then begin
+// if Index<>-1 then begin
       StartPoint:=Owner.FControlPoints[Index];
       StartPoint.FEdges.Add(Self);
-   end;                                                            // FEndpoint
+// end;                                                            // FEndpoint
    Index:=GetInteger(Str);
    if index=-1 then index:=0;
-   if Index<>-1 then begin
+// if Index<>-1 then begin
       EndPoint:=Owner.FControlPoints[Index];
       EndPoint.FEdges.Add(Self);
-   end;                                                              // FCrease
+// end;                                                              // FCrease
    FCrease:=GetInteger(Str)=1;
    if Str<>'' then begin // Flag to indicate that this edge was selected when the model was saved (for undo-purposes)
       Sel:=GetBoolean(Str);
@@ -8911,8 +8912,9 @@ begin
       P1.AddEdge(Edge);
       P2.AddEdge(Edge);
       FControlEdges.Add(Edge);
-      Result:=Edge;
-   end else Result:=Edge;
+        // Result:=Edge;
+   end; // else
+   Result:=Edge;
 end;
 
 procedure SSurface.AddControlCurve(Curve:SControlCurve);
@@ -9363,9 +9365,7 @@ begin                                                  // Add layer information
         +#32+BoolToStr(Layer[I].FShowInLinesplan)
         +#32+FloatToDec(Layer[I].MaterialDensity,8)
         +#32+FloatToDec(Layer[I].Thickness,8));
-//      +#32+FloatToStrF(Layer[I].MaterialDensity,ffFixed,10,8)
-//      +#32+FloatToStrF(Layer[I].Thickness,ffFixed,10,8));
-   end; // first sort controlpoints for faster acces of function (Indexof())
+   end;    // first sort controlpoints for faster acces of function (Indexof())
    FControlPoints.Sort;
    Strings.Add(IntToStr(NoControlPoints));
    for I:=0 to NoControlPoints-1 do ControlPoint[I].SaveToStream(Strings);
@@ -9923,28 +9923,22 @@ begin
       if ControlCurve[I-1].Visible then ControlCurve[I-1].Draw(Viewport);
 end;
 
-function SSurface.EdgeExists(P1,P2:SPoint):SEdge;
-var I: Integer; Edge: SEdge;
+function SSurface.EdgeExists( P1,P2:SPoint ): SEdge;
+  var I: Integer; Edge: SEdge;
 begin Result:=nil;
-   // If the edge exists then it must exist
-   // in both the points, therefore only the point
-   // with the smallest number of edges has to be checked
-   if P1.FEdges.Count<=P2.FEdges.Count then begin
-      for I:=1 to P1.FEdges.Count do begin
-         Edge:=P1.FEdges[I-1];
-         if ((Edge.Startpoint=P1) and (Edge.Endpoint=P2))
-         or ((Edge.Startpoint=P2) and (Edge.Endpoint=P1)) then begin
-            Result:=Edge;
-            exit;
-         end;
+      // If the edge exists then it must exist in both the points, therefore
+      // only the point with the smallest number of edges has to be checked
+   if P1.FEdges.Count<=P2.FEdges.Count then begin    /// <=
+      for I:=1 to P1.FEdges.Count do begin Edge:=P1.FEdges[I-1];
+//       if (Edge.Endpoint=P2) or (Edge.Startpoint=P2)
+         if ((Edge.Startpoint=P1) and (Edge.Endpoint=P2)) or ((Edge.Startpoint=P2) and (Edge.Endpoint=P1))
+         then begin Result:=Edge; break; end;
       end;
-   end else for I:=1 to P2.FEdges.Count do begin
-      Edge:=P2.FEdges[I-1];
-      if ((Edge.Startpoint=P1) and (Edge.Endpoint=P2))
-      or ((Edge.Startpoint=P2) and (Edge.Endpoint=P1)) then begin
-         Result:=Edge;
-         exit;
-      end;
+   end else
+   for I:=1 to P2.FEdges.Count do begin Edge:=P2.FEdges[I-1];
+//    if (Edge.Endpoint=P1) or (Edge.Startpoint=P1)
+      if ((Edge.Startpoint=P1) and (Edge.Endpoint=P2)) or ((Edge.Startpoint=P2) and (Edge.Endpoint=P1))
+      then begin Result:=Edge; break; end;
    end;
 end;
 
@@ -10023,10 +10017,7 @@ end;
 
 // Extracts all controlpoints from thee entire selection of faces, edges and points
 procedure SSurface.ExtractPointsFromSelection(SelectedPoints:TFasterList;var LockedPoints:Integer);
-var I,J     : Integer;
-    Face    : SFace;
-    Edge    : SEdge;
-    P       : SControlPoint;
+var I,J: Integer; Face: SFace; Edge: SEdge; P: SControlPoint;
 begin
    SelectedPoints.Capacity:=4*NoSelectedControlfaces+
                             2*NoSelectedControlEdges+
@@ -10058,7 +10049,7 @@ end;
 
 procedure SSurface.ImportFEFFile(Strings:TStringList;var LineNr:Integer);
 var Str: string;
-    I,J,N,Np,Index: Integer;
+    I,J,K,N,Np,Index: Integer;  Sxr: boolean;
     Point,P1,P2: SControlPoint;
     Edge       : SControlEdge;
     Face       : SControlFace;
@@ -10076,71 +10067,105 @@ begin                                                 // Read layer information
       begin Inc( LineNr ); Str:=Strings[LineNr]; N:=GetInteger( Str ); end;
    for I:=1 to N do begin
       if I>NoLayers then Layer:=self.AddNewLayer
-                          else Layer:=self.Layer[I-1];
-      inc(LineNr);
-      Layer.FDescription:=Strings[LineNr];;
-      inc(LineNr);
-      Str:=Strings[LineNr];
+                    else Layer:=self.Layer[I-1];
+      inc(LineNr); Layer.FDescription:=Strings[LineNr];;
+      inc(LineNr); Str:=Strings[LineNr];
       Layer.LayerID:=GetInteger(Str);
       if Layer.LayerID>FLastusedLayerID then FLastusedLayerID:=Layer.LayerID;
       Layer.FColor:=GetInteger(Str);
          Layer.AlphaBlend:=255-byte( Cardinal( Layer.FColor ) shr 24 );
          Layer.FColor:=Layer.FColor and $FFFFFF;
-      Layer.FVisible:=GetBoolean(Str);
-      Layer.FDevelopable:=GetBoolean(Str);
-      Layer.FSymmetric:=GetBoolean(Str);
-      Layer.FUseForIntersections:=GetBoolean(Str);
-      Layer.FUseInHydrostatics:=GetBoolean(Str);
-      Layer.FShowInLinesplan:=GetBoolean(Str);
-      Layer.MaterialDensity:=GetFloat(Str);
-      Layer.Thickness:=GetFloat(Str);
+      Layer.FVisible            :=GetBoolean(Str); // видимость
+      Layer.FDevelopable        :=GetBoolean(Str); // под развёртку
+      Layer.FSymmetric          :=GetBoolean(Str); // только левый борт
+      Layer.FUseForIntersections:=GetBoolean(Str); // к теоретическим контурам
+      Layer.FUseInHydrostatics  :=GetBoolean(Str); // в расчёты гидростатики
+      Layer.FShowInLinesplan    :=GetBoolean(Str); // в теоретические чертежи
+      Layer.MaterialDensity     :=GetFloat(Str);   // плотность материала
+      Layer.Thickness           :=GetFloat(Str);   // и толщина листов обшивки
    end;
-   if Assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   Inc( LineNr ); Str:=Strings[LineNr];                   // Read controlpoints
+   write( ' L=',NoLayers );
+
+// if Assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+   Inc( LineNr ); Str:=Strings[LineNr];
    N:=GetInteger(Str);
-   for I:=1 to N do begin
+   for I:=1 to N do begin                                 // Read controlpoints
       Point:=SControlPoint.Create(self);
       FControlPoints.Add(Point);
       Point.LoadFromStream(LineNr,Strings);
-   end;                                                    // Read controlEdges
+   end;
+   write( ', K=',FControlPoints.Count );
    Inc(LineNr); Str:=Strings[LineNr];
    N:=GetInteger(Str);
-   for I:=1 to N do begin
-      Edge:=SControlEdge.Create(self);
-      Edge.FControlEdge:=True;
+   for I:=1 to N do begin                                  // Read controlEdges
+      Edge:=SControlEdge.Create( self );
+      Edge.isRead:=true;
+      Edge.FControlEdge:=true;
       FControlEdges.Add(Edge);
       Edge.LoadFromStream(LineNr,Strings);
-   end;                                                    // Read controlFaces
+   end;
+   write( ', E=',FControlEdges.Count );
    Inc(LineNr); Str:=Strings[LineNr];
    N:=GetInteger(Str);
-   for I:=1 to N do begin
+   for I:=1 to N do begin                                  // Read controlFaces
+      Inc(LineNr);
+      if LineNr>=Strings.Count then break; // неожиданный конец файла по списку
+      Str:=Trim( Strings[LineNr] );
+      if Length(Str)<2 then break;       // пустая строка здесь = конец файла
+      Np:=GetInteger(Str);              // и далее следуют комментарии описания
+      if Np<3 then break;
       Face:=SControlFace.Create(self);
       FControlFaces.Add(Face);
-      Inc(LineNr);
-      Str:=Strings[LineNr];
-      Np:=GetInteger(Str);
       for J:=1 to Np do begin
-         Index:=GetInteger(Str);         // Attach controlface to controlpoints
-         Face.AddPoint(ControlPoint[Index]);
+        Index:=GetInteger(Str);          // Attach controlface to controlpoints
+        for K:=FControlPoints.Count-1 downto 0 do
+         if ControlPoint[K]=ControlPoint[Index] then begin Index:=K; break end;
+        Face.AddPoint(ControlPoint[Index]);
       end;          // Attach controlface to the already existing control edges
-      P1:=Face.FPoints[Face.FPoints.Count-1];
-      for J:=1 to Face.FPoints.Count do begin
-         P2:=Face.FPoints[J-1];
-         Edge:=EdgeExists(P1,P2) as SControlEdge;
-         if Edge<>nil then Edge.AddFace(Face) else begin
-           Edge:=AddControlEdge( P1,P2 );
-{          if  (P1.coordinate.y<>0)
-           and (P2.coordinate.y<>0) then Edge.Crease:=false else
-}                                        Edge.Crease:=true;
-           Edge.FFaces.Add(Face);
-         end;                  // #//#// else ShowMessage(Userstring(201)+'!');
-         P1:=P2;
-      end;
       Index:=GetInteger(Str);                                // Read Layerindex
       While Index>NoLayers-1 do AddNewLayer;
       Layer:=FLayers[Index];
       Layer.AddControlFace(Face);
    end;
+   write( ', F=',FControlFaces.Count );
+
+   Sxr:=false;                                      // для небольшого ускорения
+   for I:=0 to FControlFaces.Count-1 do begin Face:=FControlFaces[I];
+      P1:=Face.FPoints[Face.FPoints.Count-1];            // повтор для перебора
+      for J:=0 to Face.FPoints.Count-1 do begin
+         P2:=Face.FPoints[J]; Edge:=nil;
+//       Edge:=EdgeExists( P1,P2 ) as SControlEdge;
+         for K:=FControlEdges.Count-1 downto 0 do begin Edge:=FControlEdges[K];
+            if ((Edge.StartPoint=P1) and (Edge.EndPoint=P2))
+            or ((Edge.StartPoint=P2) and (Edge.EndPoint=P1)) then break
+                                                             else Edge:=nil;
+         end;
+         if Edge=nil then begin Sxr:=true;         // есть пропуск любого ребра
+            Edge:=SControlEdge.Create(Self);
+            Edge.Startpoint:=P2;
+            Edge.Endpoint:=P1;
+            Edge.isRead:=false;
+            Edge.Selected:=false;
+            Edge.FControlEdge:=true;
+            P1.AddEdge(Edge);
+            P2.AddEdge(Edge);
+            FControlEdges.Add(Edge);
+(*          Edge:=AddControlEdge( P1,P2 );
+         // if (P1.coordinate.y<>0)                           // IsBoundaryEdge
+         // or (P2.coordinate.y<>0) then Edge.Crease:=false else
+*)          Edge.Crease:=true;
+         end;
+         Edge.FFaces.Add(Face);
+         P1:=P2;
+      end;
+   end;
+   write( ', +E=',FControlEdges.Count );
+   if Sxr then
+   for I:=0 to FControlEdges.Count-1 do begin Edge:=FControlEdges[I];
+     if not Edge.isRead then                   // считанные рёбра без изменений
+     if Edge.NoFaces=2 then Edge.Crease:=false;
+   end;
+   writeln( '...' );
    Build:=False;
    FInitialized:=True;
    if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
@@ -10550,10 +10575,10 @@ begin                                                   // First save layerdata
    for I:=1 to NoControlPoints do ControlPoint[I-1].SaveBinary(Destination);
    Destination.Add(NoControlEdges);
    for I:=1 to NoControlEdges do ControlEdge[I-1].SaveBinary(Destination);
-   if Destination.Version>=fv195 then begin
+// if Destination.Version>=fv195 then begin == всегда ver.2.6
       Destination.Add(NoControlCurves);
       for I:=1 to NoControlCurves do ControlCurve[I-1].SaveBinary(Destination);
-   end;
+// end;
    Destination.Add(NoControlFaces);
    for I:=1 to NoControlFaces do ControlFace[I-1].SaveBinary(Destination);
 end;

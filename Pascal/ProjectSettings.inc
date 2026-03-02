@@ -329,8 +329,8 @@ end;
 
 procedure TProjectSettings.SaveBinary( Destination: TFileBuffer );
 var Jpg: TJPegImage;
-begin
-  if St.FileVersion>=fv120 then begin
+begin St.FileVersion:=fv260;                           // на всякий пожарный...
+//if St.FileVersion>=fv120 then begin
     Destination.Add( BlankOff(ProjectName) );
     Destination.Add( BlankOff(ProjectDesigner) );
     Destination.Add( FProjectlength );
@@ -351,14 +351,14 @@ begin
   { end; }
     Destination.Add( BlankOff(FProjectComment) );
     Destination.Add( BlankOff(FProjectFileCreatedBy) );
-    if St.FileVersion>=fv210 then begin
+//  if St.FileVersion>=fv210 then begin
       Destination.Add( Ord( ProjectCoefficients ) );
       if FSavePreview then begin Jpg:=St.FGetPreview;
         FSavePreview:=Jpg<>nil; Destination.Add( FSavePreview );
         if FSavePreview then begin Destination.Add( Jpg ); Jpg.Destroy end
       end else Destination.Add( false );
-      if St.FileVersion>=fv230 then Destination.Add(FProjectSimplifyIntersections);
-      if St.Fileversion>=fv250 then begin // save settings for hydrostatics
+    { if St.FileVersion>=fv230 then } Destination.Add(FProjectSimplifyIntersections);
+//    if St.Fileversion>=fv250 then begin // save settings for hydrostatics
         Destination.Add( FStartdraft );
         Destination.Add( FEndDraft );
         Destination.Add( FDraftStep );
@@ -375,12 +375,12 @@ begin
 //      for I:=1 to FNoStabTrims do Destination.Add( FStabTrims[I-1] );
         Destination.Add( YesTrim );
         Destination.Add( FVCG );
-      end;
+//    end;
 //    if St.Fileversion>=fv317 then Destination.Add(EnableModelAutoMove);
 //    if St.Fileversion>=fv332 then Destination.Add(EnableBonjeanSAC); !!
 //    if St.Fileversion>=fv332 then Destination.Add( false );
 //    if St.Fileversion>=fv500 then Destination.Add( FProjectUnderWaterColorAlpha );
-    end;
-  end;
+//  end;
+//end;
 end;
 

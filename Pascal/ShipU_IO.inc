@@ -1,6 +1,6 @@
 {
   included in ShipUnit
-}
+
 //*** Detect Minimal File Version depneding on features used
 
 function TShip.DetectMinFileVersion( isText: boolean ): TFileVersion;
@@ -15,13 +15,13 @@ begin result:=fv165; // в оригинале ошибка на версии 165
     for i:=0 to Surface.NoLayers-1 do
       if Surface.Layer[i].AlphaBlend<255 then result:=fv260;
 end;
-
+}
 Procedure TShip.SaveProject( Destination:TFileBuffer );
 var PrevCursor: TCursor; I: integer;
 begin
    PrevCursor:=Screen.Cursor;
-   Screen.Cursor:=crHourGlass;
-   FileVersion:=DetectMinFileVersion( Destination is TTextBuffer );
+   Screen.Cursor:=crHourGlass;        // не хочется здесь терять свойства слоёв
+   FileVersion:=fv260;   // DetectMinFileVersion( Destination is TTextBuffer );
    Destination.Add( 'FREE!ship' );
    Destination.Add( FileVersion );
    Destination.Add( Ord( Precision ) );
@@ -34,35 +34,36 @@ begin
    For I:=1 to NoButtocks do Buttock[I-1].SaveBinary(Destination); // Save Waterlines
    Destination.Add( NoWaterlines );
    For I:=1 to NoWaterlines do Waterline[I-1].SaveBinary(Destination);
-   if FileVersion>=fv180 then begin                           // Save Diagonals
+// if FileVersion>=fv180 then begin                           // Save Diagonals
       Destination.Add( NoDiagonals );
       For I:=1 to NoDiagonals do Diagonal[I-1].SaveBinary(Destination);
-      if FileVersion>=fv191 then begin                          // Save markers
+//    if FileVersion>=fv191 then begin                          // Save markers
          Destination.Add( NoMarkers );
          for I:=1 to NoMarkers do Marker[I-1].SaveBinary(Destination);
-         if FileVersion>=fv210 then begin     // пропускается и не используется
+//       if FileVersion>=fv210 then begin     // пропускается и не используется
             if Destination is TTextBuffer then I:=0 else I:=1; {112 или 29}
             while I<=28 do begin Destination.Add( integer( 0 ) ); inc( I ) end;
-//          for I:=1 to 17 do Destination.Add(0); +2b (+2) // Delft
-//          for I:=1 to 9 do Destination.Add(0);  +1b (+3) // Kaper
-            if FileVersion>=fv250 then begin
-               Destination.Add(NobackgroundImages);
+{           for I:=1 to 17 do Destination.Add(0); +2b (+2) // Delft
+            for I:=1 to 9 do Destination.Add(0);  +1b (+3) // Kaper
+--          if FileVersion>=fv250 then begin
+}              Destination.Add(NobackgroundImages);
                for I:=1 to NoBackgroundImages do BackgroundImage[I-1].SaveBinary(Destination);
                Destination.Add(NoFlowlines);
                for I:=1 to NoFlowlines do Flowline[I-1].SaveBinary(Destination);
-            end;
-         end;
-      end;
-   end; FileChanged:=False; Screen.Cursor:=PrevCursor;
+//          end;
+//       end;
+//    end;
+// end;
+   FileChanged:=False; Screen.Cursor:=PrevCursor;
 end;
 
 // save as free!Ship file without prompting for a filename (must already been set)
 
-const FileFilter = 'free!Ship [*.ftm *.fbm *.fef]|*.ftm;*.fbm;*.fef'
-                  +'|         <source types> [*.ftm]|*.ftm'
-                  +'|            <binary files> [*.fbm]|*.fbm'
-                  +'|    <обменный вид> [*.fef]|*.fef| All files [*.*]|*.*';
-    NameError = ' error[.fbm,.ftm,.fef]'; // ' ...нет ftm,fbm или fef';
+const FileFilter='free!Ship [*.ftm *.fbm *.fef]|*.ftm;*.fbm;*.fef'
+                +'|         <source types> [*.ftm]|*.ftm'
+                +'|            <binary files> [*.fbm]|*.fbm'
+                +'|    <обменный вид> [*.fef]|*.fef| All files [*.*]|*.*';
+       NameError=' error[.fbm,.ftm,.fef]'; // ' ...нет ftm,fbm или fef';
 var NSF: Integer=0;
 
 function SEdit.File_Save: boolean;
@@ -105,7 +106,7 @@ begin Result:=false; Strings:=nil;
 end;
 
 function SEdit.File_SaveAs: boolean; var SaveDialog: TSaveDialog;
-begin result:=false;
+begin Result:=false;
    SaveDialog:=TSaveDialog.Create( St );
    if St.FilenameSet then SaveDialog.InitialDir:=ExtractFilePath(St.FileName)
                      else SaveDialog.InitialDir:=St.Preferences.SaveDirectory;
@@ -117,7 +118,8 @@ begin result:=false;
       St.Filename:=Savedialog.Filename;
       St.FilenameSet:=True;
       Result:=File_Save;
-      if Result then St.Preferences.LastDirectory:=ExtractFilePath(SaveDialog.FileName);
+      if Result then
+         St.Preferences.LastDirectory:=ExtractFilePath(SaveDialog.FileName);
    end;
    SaveDialog.Destroy;
 end;
@@ -154,6 +156,7 @@ begin Source:=nil; Strings:=nil;
   St.Filename:=FileName;
   if Strings<>nil then begin   // обменный формат из начальных версий free!Ship
     Strings.LoadFromFile( Filename );
+    Write( ExtractFilename( Filename ),' <',Strings.Count,'> ~ ' );
     LineNr:=-1;                 // Read general information and mainparticulars
     inc(LineNr); St.ProjectSettings.FProjectName:=Strings[LineNr];
     inc(LineNr); St.ProjectSettings.FProjectDesigner:=Strings[LineNr];
@@ -305,24 +308,12 @@ begin with St.ProjectSettings do begin
    until I*dd>=St.Surface.Max.X;
    dd:=AxisStep( ProjectBeam/1.75 ); I:=0;                     // Батоксы
    repeat Intersection_Add( fiButtock,I*dd ); inc( I ); until I*dd>=ProjectBeam-dd/4;
-// dd:=AxisStep( St.Surface.Max.Z-St.Surface.Min.Z );
    dd:=AxisStep( ProjectDraft*2 );                             // Ватерлинии
    I:=round( St.Surface.Min.Z/dd+0.51 );
    repeat Intersection_Add( fiWaterline,I*dd );                // Ватерлинии и
           Intersection_Add( fiDiagonal,I*dd );  inc( I );      // рыбины там же
    until I*dd>=St.Surface.Max.Z-dd*0.25;
    while Intersection_Add( fiDiagonal,I*dd )<>Nil do inc( I ); // плюс по борту
-{~ D:=round( ProjectDraft/dd/2+0.51 );              // по паре на обе стороны =
-~~ D:=round( St.Surface.Min.Z/dd );
-~~ for I:=0 to 5 do Intersection_Add( fiDiagonal,I*dd ); // шесть рыбин
-   SavePreview:=false;                                  // без предпросмотра
-   St.FileChanged:=True;
-   St.Visibility.ModelView:=mvBoth;                   // на оба борта
-   St.Visibility.ShowControlNet:=false;              // без выделения узлов
-   St.Visibility.ShowInteriorEdges:=True;           // внутрення разбивка рёбер
-   if Assigned(St.OnUpdateGeometryInfo) then St.OnUpdateGeometryInfo(self);
-~~ St.Build:=False;
-~~ St.RebuildModel; }
 end end;
 
 function SEdit.Model_New: Boolean;

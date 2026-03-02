@@ -139,7 +139,7 @@ object UndoHistoryDialog: TUndoHistoryDialog
   object Ship1: TShip
     FileChanged = True
     Filename = 'New model.fbm'
-    FileVersion = fv230
+    FileVersion = fv260
     Precision = fpLow
     Left = 116
     Top = 4
