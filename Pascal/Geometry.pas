@@ -10085,7 +10085,6 @@ begin                                                 // Read layer information
       Layer.Thickness           :=GetFloat(Str);   // и толщина листов обшивки
    end;
    write( ' L=',NoLayers );
-
 // if Assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
    Inc( LineNr ); Str:=Strings[LineNr];
    N:=GetInteger(Str);
@@ -10113,7 +10112,7 @@ begin                                                 // Read layer information
       Str:=Trim( Strings[LineNr] );
       if Length(Str)<2 then break;       // пустая строка здесь = конец файла
       Np:=GetInteger(Str);              // и далее следуют комментарии описания
-      if Np<3 then break;
+      if Np<3 then continue;            // это неверно, так пусть лучше пропуск
       Face:=SControlFace.Create(self);
       FControlFaces.Add(Face);
       for J:=1 to Np do begin
@@ -10150,10 +10149,7 @@ begin                                                 // Read layer information
             P1.AddEdge(Edge);
             P2.AddEdge(Edge);
             FControlEdges.Add(Edge);
-(*          Edge:=AddControlEdge( P1,P2 );
-         // if (P1.coordinate.y<>0)                           // IsBoundaryEdge
-         // or (P2.coordinate.y<>0) then Edge.Crease:=false else
-*)          Edge.Crease:=true;
+            Edge.Crease:=true;                                // IsBoundaryEdge
          end;
          Edge.FFaces.Add(Face);
          P1:=P2;
