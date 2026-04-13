@@ -553,6 +553,7 @@ begin
          for J:=1 to Points.Count do begin
             P1:=Points[J-1];
             if St.Surface.PointExists(P1) then P1.SelDeletePoint;
+//            if St.Surface.ControlPoints.IndexOf( P )<>-1 then P1.SelDeletePoint;
          end;
          for I:=1 to St.Surface.NoControlPoints do
            if St.Surface.ControlPoint[I-1].NoFaces=1 then

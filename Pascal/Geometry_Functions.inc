@@ -183,36 +183,32 @@ function Interpolate( P1,P2: Vector; Param: Real): Vector;
 Function Lines3DIntersect(P1,P2,P3,P4:Vector;var Param:Real;var Int:Vector):Boolean;
 //   Calculate the line segment PaPb that is the shortest route between
 //   two lines P1P2 and P3P4. Calculate also the values of mua and mub where
-//      Pa = P1 + mua (P2 - P1)
-//      Pb = P3 + mub (P4 - P3)
-//   Return FALSE if no solution exists.
-
-const eps=1e-12; // 1e-6;
-var pa,{pb,}p13,p43,p21:Vector;
-    denom,mua,mub,d1343,d4321,d1321,d4343,d2121: Real; // L1,L2:Real;
+//      Pa = P1 + mua( P2-P1 )
+//      Pb = P3 + mub( P4-P3 )
+var PA,PB,p13,p43,p21:Vector;
+    L1,L2,denom,mua,mub,d1343,d4321,d1321,d4343,d2121: Real;
 begin Result:=False;
    P13:=P1-P3;
    P43:=P4-P3; d4343:=Sqr( P43 ); if sqr( d4343 )<eps then exit;
    P21:=P2-P1; d2121:=Sqr( P21 ); if sqr( d2121 )<eps then exit;
    d4321:=p43.x * p21.x + p43.y * p21.y + p43.z * p21.z;
-   denom:=d2121*d4343 - d4321*d4321; if (abs(denom)<eps) then exit;
+   denom:=d2121*d4343 - d4321*d4321; if (abs( denom )<eps) then exit;
    d1343:=p13.x*p43.x + p13.y*p43.y + p13.z*p43.z;
    d1321:=p13.x*p21.x + p13.y*p21.y + p13.z*p21.z;
    mua:=(d1343*d4321 - d1321*d4343)/denom;
-   mub:=(d1343 + d4321*(mua)) / d4343;
+   mub:=(d1343 + d4321*( mua )) / d4343;
    PA:=P1+mua*P21;
    if (mua>-1e-6) and (mua<1) and (mub>-1e-6) and (mub<1) then begin
       Result:=true;
       Int:=Pa;
    end;
-{  PB:=P3+mub*P43;
-   if not result then begin
-      L1:=Abs(P1-P2);
-      L2:=Abs(P3-P4);
-      Result:=(Abs(P1-Pa)<=L1) and (Abs(P2-Pa)<=L1) and
-              (Abs(P3-Pb)<=L2) and (Abs(P4-Pb)<=L2);
+   if not result then begin PB:=P3+mub*P43;
+      L1:=Abs( P1-P2 );
+      L2:=Abs( P3-P4 );
+      Result:=(Abs(P1-PA)<=L1) and (Abs(P2-PA)<=L1)
+          and (Abs(P3-PB)<=L2) and (Abs(P4-PB)<=L2);
       if Result then Int:=Pa;
-   end; }
+   end;
 end;
 
 // Calculate the mid-point between P1 and P2

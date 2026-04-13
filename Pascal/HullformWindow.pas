@@ -325,7 +325,7 @@ var P:TPoint;
 begin
    if Button=mbRight then begin
       // Tracing:=false;
-      // Only show pop-up menu if user has not panned the viewport (with right mouse-button)
+      // Only show pop-up menu if user has not panned the viewport (with right-mouse button)
       if FPanned then begin FPanned:=False; end else begin
          P:=Viewport.ClientToScreen( Point( X,Y ) );
          PopupMenu.Popup( P.X,P.Y );

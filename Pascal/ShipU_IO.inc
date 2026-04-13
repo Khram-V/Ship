@@ -265,7 +265,7 @@ begin    // Remember the filename because it will be erased by the clear method
                end;
                if FileVersion>=fv210 then begin
                   if Source is TTextBuffer
-                  then (Source as TTextBuffer).FPosition+=29  // 9+1 + 17+2
+                  then (Source as TTextBuffer).FPosition+=29     // 9+1 + 17+2
                    else Source.FPosition += 112;     // = Delft(72) + Kaper(40)
                   if FileVersion>=fv250 then begin
                      Source.LoadInteger( N );

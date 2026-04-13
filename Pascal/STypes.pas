@@ -7,7 +7,8 @@ Const
   Lbs  = 0.4535924;
   MaxRecent = 24;
   WeightConversionFactor=(1000/Lbs)/((1/Foot)*(1/Foot)*(1/Foot));
-  EOL  = #13#10;
+  Eps = 1.0e-12;
+  EOL = #13#10;
 Type
   Real = Double;  { желательно всё привести к единому числовому представлению }
   RealArray = array of Real;  // Single=32b; // Real=double; // Float=extended;
@@ -272,7 +273,7 @@ begin                                              // begin procedure ArraySort
   if N<2 then exit; QuickSort( 0,N-1 );
   if not Clear then exit;
   I:=2;
-  while I<=N do if A[I-1]-A[I-2]<1e-4 then           // remove duplicate values
+  while I<=N do if A[I-1]-A[I-2]<Eps then       // 1e-4 remove duplicate values
      begin Move(A[I-1],A[I-2],(N-I+1)*SizeOf(Real)); Dec(N); end else Inc(I);
 end;
 {$endif}

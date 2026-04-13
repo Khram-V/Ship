@@ -2474,25 +2474,21 @@ function SEdit.FGetRecentFileCount:integer;
 
 // Takes a filename and adds it to the list with recent files
 procedure SEdit.AddToRecentFiles(Filename:String);
-var I,Index: integer; AlreadyPresent: Boolean; Tmp {#,Ext}: String;
+var I,Index: integer; AlreadyPresent: Boolean; Tmp: String;
 begin
    AlreadyPresent:=false;
-//# Ext:=Uppercase(ExtractFileExt(Filename));
-//# Tmp:=ChangeFileExt(Filename,'');
-//# Tmp:=Trim(Tmp);
    Tmp:=Trim( Filename );
    for I:=1 to FRecentFiles.Count do
-   if FRecentFiles[I-1] = Tmp then begin Index:=I-1;
-// if Uppercase(FRecentFiles[I])=Uppercase(Tmp) then begin Index:=I-1;
+   if FRecentFiles[I-1]=Tmp then begin Index:=I-1;
       AlreadyPresent:=True; // if not add the front of the list then move to the front;
       if Index<>0 then begin
-         FRecentFiles.Delete(Index);
-         FRecentFiles.Insert(0,Tmp);
+         FRecentFiles.Delete( Index );
+         FRecentFiles.Insert( 0,Tmp );
       end;
    end;
    if not AlreadyPresent then begin // file not yet in the list, add at the front
-      if FRecentFiles.Count=0 then FRecentFiles.Add(Tmp)
-                              else FRecentFiles.Insert(0,Tmp);
+      if FRecentFiles.Count=0 then FRecentFiles.Add( Tmp )
+                              else FRecentFiles.Insert( 0,Tmp );
    end;                          // delete items until no more than 10 are left
    while FRecentFiles.Count>MaxRecent do FRecentFiles.Delete(FRecentFiles.Count-1);
    if assigned(St.FOnUpdateRecentFileList) then St.FOnUpdateRecentFileList(self);
@@ -2503,17 +2499,17 @@ procedure SEdit.BackgroundImage_Delete( Viewport:TViewport );
 var I:Integer;
 begin
    if MessageDlg(Userstring(68),mtConfirmation,[mbYes,mbNo],0)=mrYes then begin
-      for I:=St.NoBackgroundImages downto 1 do
-      if St.BackgroundImage[I-1].AssignedView=Viewport.ViewType then begin
-         St.BackgroundImage[I-1].Destroy;
-         St.FBackgroundImages.Delete(I-1);
+      for I:=St.NoBackgroundImages-1 downto 0 do
+      if St.BackgroundImage[I].AssignedView=Viewport.ViewType then begin
+         St.BackgroundImage[I].Destroy;
+         St.FBackgroundImages.Delete(I);
          St.FileChanged:=True;
          break;
       end;
-      for I:=1 to St.nV do
-      if St.Viewport[I-1].ViewType=Viewport.ViewType then begin
-         St.Viewport[I-1].BackgroundImage.Clear;
-         St.Viewport[I-1].Refresh;
+      for I:=0 to St.nV-1 do
+      if St.Viewport[I].ViewType=Viewport.ViewType then begin
+         St.Viewport[I].BackgroundImage.Clear;
+         St.Viewport[I].Refresh;
       end;
    end;
 end;
@@ -2623,8 +2619,7 @@ begin
    Edges.Destroy;
 end;
 
-destructor SEdit.Destroy;
-     begin FRecentFiles.Destroy; Inherited Destroy; end;
+destructor SEdit.Destroy; begin FRecentFiles.Destroy; Inherited Destroy; end;
 
 // Remove an edge by replacing the two connected faces by one controlface
 procedure SEdit.Edge_Collapse;
@@ -2638,8 +2633,7 @@ begin N:=0; K:=0;
       if I=St.NoSelectedControlEdges then inc( K )  // нет слияния - пропуск
                                      else inc( N );
    end;
-   if N>0 then begin
-      Undo.Accept;
+   if N>0 then begin Undo.Accept;
       St.Build:=false;
       St.Redraw;
       St.FileChanged:=True;
@@ -2662,8 +2656,7 @@ begin
 end;
 
 // Switch selected edges between normal or crease edges (knuckle lines)
-procedure SEdit.Edge_Crease;
-var I    : integer;
+procedure SEdit.Edge_Crease; var I: integer;
 begin
    CreateUndoObject(Userstring(75),True);
    for I:=St.NoSelectedControlEdges downto 1 do St.SelectedControlEdge[I-1].Crease:=not St.SelectedControlEdge[I-1].Crease;
@@ -4586,10 +4579,10 @@ procedure TShip.FSetOnChangeLayerData(Val:TNotifyEvent);
 procedure TShip.FSetOnSelectItem(Val:TNotifyEvent);
     begin Surface.OnSelectItem:=Val; end;
 
-procedure TShip.FSetPrecision(Val:TPrecisionType);
+procedure TShip.FSetPrecision( Val:TPrecisionType );
 begin if Val<>FPrecision then begin
          FPrecision:=Val;
-         Surface.DivSec:=Ord(Precision)+1;
+         Surface.DivSec:=Ord( Precision )+1;
          FileChanged:=True;
          Build:=False;
          Redraw;
@@ -4734,8 +4727,8 @@ end;
 procedure TShip.Draw;
 var I: integer;
 begin        // Redraws model to all viewports by re-initializing all viewports
-   for I:=1 to nV do Viewport[I-1].ZoomExtents;
-    if LinesplanFrame<>nil then Linesplanframe.Viewport.ZoomExtents;
+   for I:=0 to nV-1 do Viewport[I].ZoomExtents;
+   if LinesplanFrame<>nil then Linesplanframe.Viewport.ZoomExtents;
 end;
 
 procedure TShip.DrawToViewport(Viewport:TViewport);
@@ -5204,20 +5197,18 @@ begin
    PrevCursor:=Screen.Cursor;
    if Screen.Cursor<>crHourglass then Screen.Cursor:=crHourglass;
    Build:=False;
-   Surface.DivSec:=Ord(Precision)+1;
+   Surface.DivSec:=Ord( Precision )+1;
    Surface.Rebuild;
    Draw;
-   //if Screen.Cursor<>PrevCursor then
-   Screen.Cursor:=PrevCursor;
+   if Screen.Cursor<>PrevCursor then Screen.Cursor:=PrevCursor;
 end;
 
 procedure TShip.Redraw;
   var I: integer;
 begin                         // Redraws model to all viewports using the
-   For I:=0 to nV-1 do begin  // current min/max coordinates of the boundingbox
-      if Viewport[I].Zoom=1.0 then Viewport[I].ZoomExtents
-                              else Viewport[I].Refresh;
-   end;
+   For I:=0 to nV-1 do        // current min/max coordinates of the boundingbox
+    if Viewport[I].Zoom=1.0 then Viewport[I].ZoomExtents
+                           else Viewport[I].Refresh;
    if LinesplanFrame<>nil then Linesplanframe.Viewport.Refresh;
 end;
 
@@ -5338,12 +5329,11 @@ procedure TShip.MouseDown
   Shift:TShiftState;
   X,Y:integer;
   var ItemSelected:Boolean );
-var I,J: integer; P3D: Vector; Tmp,MinDistance:Real;
+var I,J: integer; P3D: Vector; Tmp,MinDistance:Real; Entity: SBase;
     Point: SControlPoint;
-    Edge: SControlEdge;
+    Edge:  SControlEdge;
     Curve: SControlCurve;
-    Face: SControlFace;
-    Entity: SBase;
+    Face:  SControlFace;
 begin
    ItemSelected:=False;
    if Button=mbLeft then begin
@@ -5511,7 +5501,7 @@ begin
                     ShowMessage( Userstring(191)+'!' );
                     exit;
                  end;
-                 Edit.CreateUndoObject(Userstring(190),True);
+                 Edit.CreateUndoObject( Userstring(190),True );
               end;
               PtS:=ActiveControlPoint;
               FileChanged:=True;
@@ -5519,21 +5509,17 @@ begin
               FPointHasBeenMoved:=True;
               P2D:=Viewport.ProjectBackTo2D( Point( X,Y ) );
               P:=PtS.Coordinate;
-              Case Viewport.Viewtype of
-                 fvProfile : begin P.X:=P2D.X; P.Z:=P2D.Y; end;
-                 fvPlan    : begin P.X:=P2D.X; P.Y:=P2D.Y; end;
-                 fvBodyplan: begin
-                   if P.X<=ProjectSettings.MidleFrame
-                    then P.Y:=-P2D.X
-                    else P.Y:=P2D.X;
-                         P.Z:=P2D.Y; end;
+              case Viewport.Viewtype of
+                fvProfile : begin P.X:=P2D.X; P.Z:=P2D.Y; end;
+                fvPlan    : begin P.X:=P2D.X; P.Y:=P2D.Y; end;
+                fvBodyplan: begin if P.X<=ProjectSettings.MidleFrame
+                                  then P.Y:=-P2D.X
+                                  else P.Y:=P2D.X; P.Z:=P2D.Y; end;
               end;
               PtS.Coordinate:=P;
               ActiveControlPoint:=PtS;
-              if ControlpointForm.Visible then begin
-                 // This lines updates the coordinate information in the controlpoint form
-                 ControlPointform.ActiveControlPoint:=PtS;
-                 // and forces a repaint of the form
+              if ControlpointForm.Visible then begin // This lines updates the coordinate information in the controlpoint form
+                 ControlPointform.ActiveControlPoint:=PtS; // and forces a repaint of the form
                  if not Viewport.Focused then Viewport.SetFocus;
                  application.ProcessMessages;
                  TForm(Viewport.Owner).BringToFront;
