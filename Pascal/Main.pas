@@ -263,7 +263,8 @@ implementation uses SplashWndw,LanguageSupport;
 {$R *.lfm}
 {$include Main_Wins.inc} // раздельная и групповая обработка оконных запросов
 
-procedure TMainForm.FormShow( Sender: TObject ); Var NF: String='';
+procedure TMainForm.FormShow( Sender: TObject );
+Var NF: String=''; // FFile: text;
 begin With St do begin                                // Initialize some data
    OnChangeActiveLayer:=ShipChangeActiveLayer;
    OnChangeLayerData:=ShipChangeLayerData;
@@ -271,8 +272,12 @@ begin With St do begin                                // Initialize some data
    Preferences.Load;
    Clear;
    if ParamCount>0 then NF:=ParamStr( 1 ) else
-   if Edit.RecentFiles.Count>0 then NF:=Edit.RecentFiles[0];
-   if FileExistsUTF8( NF ) then Edit.File_Load( NF );
+   if Edit.RecentFiles.Count>0 then NF:=Edit.RecentFiles[0]; (* writeln( NF );
+   AssignFile( FFile,NF );
+{$I-}Reset( FFile );{$I+}
+   if IOResult=0 then begin CloseFile( FFile ); Edit.File_Load( NF ); end;
+*) if FileExistsUTF8( NF ) then Edit.File_Load( NF );
+// if FileExists( NF ) then Edit.File_Load( NF );
    FOpenHullWindows;
    SetCaption;
    UpdateMenu;
@@ -282,9 +287,7 @@ procedure TMainForm.ExitProgramExecute(Sender: TObject);
     begin UpdateMenu; Close; end;
 
 procedure TMainForm.FOnselectItem(Sender:TObject);
-var Face1,Face2: SControlFace;
-    Diff: Boolean;
-    I: Integer;
+var Face1,Face2: SControlFace; Diff: Boolean; I: Integer;
 begin
    if (Sender is SControlPoint)
    and (Sender=St.ActiveControlPoint)
@@ -628,7 +631,7 @@ begin Man:=St.Preferences.ManualsDirectory+St.Preferences.Language+'.pdf';
      writeln;
   end;
   Exec( {GetEnv( 'COMSPEC')} 'cmd','/C Start '+Man );
-//OpenDocument( Man ) = +10 Kb ~~ ComSpec=C:\WINDOWS\system32\cmd.exe
+      // OpenDocument( Man ) = +10 Kb ~~ ComSpec=C:\WINDOWS\system32\cmd.exe
 end;
 procedure TMainForm.EdgeSplitExecute(Sender: TObject);
     begin St.Edit.Edge_Split; UpdateMenu; end;

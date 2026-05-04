@@ -172,7 +172,6 @@ begin
            then File_ImportSTLtext( FileName )
            else File_ImportSTLbin( FileName );
       end;
-//    CloseFile( FFile );
       St.FileName:=ChangeFileExt( Opendialog.FileName,'' );
 //    St.ModelIsLoaded:=True;
       St.FileChanged:=True;
@@ -930,21 +929,18 @@ begin
       {$I-}Rewrite(FFile);{$I+}
       if IOResult=0 then begin
          St.Preferences.ExportDirectory:=ExtractFilePath(SaveDialog.FileName);
-         {
          for I:=1 to St.Surface.NoControlPoints do begin
             Point:=St.Surface.ControlPoint[I-1];
             Writeln(FFile,MakeLength(Point.Coordinate.X,6,12),#32,
                           MakeLength(Point.Coordinate.Y,6,12),#32,
                           MakeLength(Point.Coordinate.Z,6,12));
          end;
-         }
-         for I:=1 to St.Surface.NoPoints do begin
+{        for I:=1 to St.Surface.NoPoints do begin
             Point:=St.Surface.Point[I-1];
             Writeln( FFile,MakeLength(Point.Coordinate.X,5,12),#32,
                            MakeLength(Point.Coordinate.Y,5,12),#32,
-                           MakeLength(Point.Coordinate.Z,5,12) );
-         end;
-         CloseFile(FFile);
+                           MakeLength(Point.Coordinate.Z,5,12) ); end;
+}        CloseFile(FFile);
       end else ShowMessage( Userstring(97) );
    end;
    SaveDialog.Destroy;
@@ -1399,7 +1395,6 @@ begin
       until I=0;
       Str:=ExtractFilePath(SaveDialog.Filename)+Str;
       Strings.SaveToFile(Str);
-
       SaveDialog.Destroy;
    Frames.Destroy;
    Screen.Cursor:=PrevCursor;

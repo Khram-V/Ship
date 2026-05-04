@@ -78,7 +78,8 @@ begin Result:=false; Strings:=nil;
   Str:=St.Filename+',v'+inttostr(NSF)+'.bak';
   if FileExistsUTF8( Str ) then DeleteFileUTF8( Str );
   RenameFileUTF8( St.Filename,Str );
-  if NSF>1 then DeleteFileUTF8( St.Filename+',v'+inttostr(NSF-1)+'.bak' ); inc( NSF );
+  if NSF>1 then DeleteFileUTF8( St.Filename+',v'+inttostr( NSF-1 )+'.bak' );
+  inc( NSF );
   if Strings<>nil then begin
      Strings.Add( St.ProjectSettings.ProjectName );
      Strings.Add( St.ProjectSettings.ProjectDesigner );
@@ -142,7 +143,7 @@ begin
 end;
 
 procedure SEdit.File_Load( FileName: String );
-var Source: TFileBuffer; I,LineNR: Integer; Str: String;
+var Source: TFileBuffer; I,L,LineNR: Integer; Str: String;
     Strings: TStringList=nil;
 begin Source:=nil; Strings:=nil;
   if ExtractFileExt( FileName )=''
@@ -154,26 +155,33 @@ begin Source:=nil; Strings:=nil;
      begin WriteLn( St.Filename+' - open'+NameError ); exit end;
   St.Clear;
   St.Filename:=FileName;
+//writeln( St.FileName );
   if Strings<>nil then begin   // обменный формат из начальных версий free!Ship
     Strings.LoadFromFile( Filename );
     Write( ExtractFilename( Filename ),' <',Strings.Count,'> ~ ' );
-    LineNr:=-1;                 // Read general information and mainparticulars
-    inc(LineNr); St.ProjectSettings.FProjectName:=Strings[LineNr];
-    inc(LineNr); St.ProjectSettings.FProjectDesigner:=Strings[LineNr];
-    inc(LineNr); St.ProjectSettings.FProjectFileCreatedBy:=Strings[LineNr];
-    inc(LineNr); St.ProjectSettings.FProjectComment:=Strings[LineNr];
-    Inc(LineNr); Str:=Strings[LineNr];
-    St.ProjectSettings.ProjectLength:=GetFloat(Str);
-    St.ProjectSettings.ProjectBeam:=GetFloat(Str);
-    St.ProjectSettings.ProjectDraft:=GetFloat(Str);
-    St.ProjectSettings.ProjectWaterDensity:=GetFloat(Str);
-    St.ProjectSettings.ProjectAppendageCoefficient:=GetFloat(Str);
-    I:=GetInteger(Str);
-    St.ProjectSettings.FProjectUnits:=TUnitType(I);
-   {St.ProjectSettings.FMainparticularsHasBeenset:=} GetBoolean(Str); // и мимо
-    I:=GetInteger(Str);
-    St.Precision:=TPrecisionType( I );
-    St.Surface.ImportFEFFile(Strings,LineNr);
+    LineNr:=0; //-1;            // Read general information and mainparticulars
+   {inc(LineNr);} Str:=Strings[0]; L:=-1;
+    for I:=1 to Length( Str ) do begin L:=-1;
+      if (I<6) and (Str[I] in ['0'..'9']) then L:=I; // else break;
+    end;
+    if L<1 then begin
+                   St.ProjectSettings.FProjectName:=Str;
+      inc(LineNr); St.ProjectSettings.FProjectDesigner:=Strings[LineNr];
+      inc(LineNr); St.ProjectSettings.FProjectFileCreatedBy:=Strings[LineNr];
+      inc(LineNr); St.ProjectSettings.FProjectComment:=Strings[LineNr];
+      Inc(LineNr); Str:=Strings[LineNr];
+      St.ProjectSettings.ProjectLength:=GetFloat(Str);
+      St.ProjectSettings.ProjectBeam:=GetFloat(Str);
+      St.ProjectSettings.ProjectDraft:=GetFloat(Str);
+      St.ProjectSettings.ProjectWaterDensity:=GetFloat(Str);
+      St.ProjectSettings.ProjectAppendageCoefficient:=GetFloat(Str);
+      I:=GetInteger(Str);
+      St.ProjectSettings.FProjectUnits:=TUnitType(I);
+     {St.ProjectSettings.FMainparticularsHasBeenset:=}GetBoolean(Str);// и мимо
+      I:=GetInteger( Str );
+      St.Precision:=TPrecisionType( I );
+    end;
+    St.Surface.ImportFEFFile( Strings,LineNr );
     Strings.Destroy;
  // LineDrawing; ~~~
     St.Visibility.ModelView:=mvBoth;                // на оба борта

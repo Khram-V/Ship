@@ -3533,8 +3533,8 @@ begin
    OpenDialog.Filter:='Text files [*.txt]|*.txt';
    Opendialog.Options:=[ofHideReadOnly];
    if OpenDialog.Execute then begin
-      assignFile(FFile,ChangeFileExt(Opendialog.FileName,'.txt'));
-      {$I-}Reset(FFile);{$I+}
+      assignFile( FFile,ChangeFileExt( Opendialog.FileName,'.txt' ) );
+      {$I-}Reset( FFile );{$I+}
       if IOResult=0 then begin
          St.Preferences.ImportDirectory:=ExtractFilePath(OpenDialog.FileName);
 //       LineNr:=1;                          // skip the first line of the file

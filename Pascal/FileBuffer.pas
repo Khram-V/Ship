@@ -35,7 +35,6 @@ TFileBuffer=class
     procedure Add( JPegImage: TJPEGImage ); overload; virtual;
     procedure LoadInteger(var Output: integer); virtual;
     procedure LoadString(var Output: String); virtual;
-    procedure LoadTStrings(var Output: TStrings); virtual;
     procedure LoadTFileVersion(var Output: TFileVersion); virtual;
     procedure LoadBoolean(var Output: boolean); virtual;
     procedure LoadTFloatType(var Output: Real); virtual;
@@ -76,7 +75,6 @@ TFileBuffer=class
     procedure LoadTFileVersion(var Output: TFileVersion); override;
     procedure LoadBoolean(var Output: boolean); override;
     procedure LoadTFloatType(var Output: Real); override;
-    procedure LoadTStrings(var Output: TStrings); override;
     procedure LoadVector(var Output: Vector); override;
     procedure LoadT3DPlane(var Output: Plate); override;
     procedure LoadTJPEGImage(var JPegImage: TJPEGImage); override;
@@ -260,15 +258,6 @@ begin Size:=4; Output:=0;
   Output:=LEtoN( Output );
   Inc( FPosition,Size );
 end;
-procedure TFileBuffer.LoadTStrings(var Output: TStrings);
-var i,c: integer; S:String;
-begin
-  LoadInteger( c );
-  for i:=1 to c do begin
-    LoadString(S);
-    Output.Add(S);
-    end;
-end;
 
 procedure TFileBuffer.LoadTFileVersion(var Output: TFileVersion);
 var Size: integer;
@@ -396,8 +385,8 @@ procedure TTextBuffer.LoadInteger( var Output: integer ); var S: String;
     end;
 procedure TTextBuffer.LoadString( var Output: String ); var S: String;
     begin S:=FLines[FPosition];
-          S:=ReplaceStr(S,'\n',EOL);
-          S:=ReplaceStr(S,'\\','\');
+          S:=ReplaceStr( S,'\n',EOL );
+          S:=ReplaceStr( S,'\\','\' );
           Output:=S;
           Inc( FPosition );
     end;
@@ -421,17 +410,6 @@ begin S:=FLines[FPosition]; Output.a:=GetFloat( S );
 end;
 
 // load string of words separated by spaces
-
-procedure TTextBuffer.LoadTStrings(var Output: TStrings);
-var  I:integer; S,V: String; //SS:TStrings;
-begin S:=FLines[FPosition]; I:=1;
-  while true do begin V:=ExtractWord(i,S,[' ']);
-    if V='' then break;
-    Output.Add( V );
-    inc( I );
-  end;
-  Inc(FPosition);
-end;
 
 destructor TTextBuffer.Destroy; begin Clear; inherited Destroy; end;
 

@@ -857,21 +857,14 @@ private
    FPoints,                // List with points obtained by subdividing the surface
    FLayers,                // All layers are stored in this list
    FEdges: TFasterList;    // this list edges obtained by subdividing the controledges
-   FActiveLayer: SLayer;// Currently active layer, may not be nil!
-   FInitialized,         // Flag to check if the surface has been initialised.
-   FDrawMirror: Boolean; // If this is set tot true, the other imaginary half (starboard side) will be drawn aswell
+   FActiveLayer: SLayer;   // Currently active layer, may not be nil!
    FSubdivisionMode: SMode; // Varaiable to switch between quad-triangle and Catmull Clark subdivision
-   FDivSec,
-   FCurrenSLevel: byte;
    FLastusedLayerID: Integer;
-   FOnChangeActiveLayer: TChangeActiveLayerEvent; // Event raised when the active layer is changed
-   FOnChangeLayerData,          // Event which is raised when layer-data has been changed
-   FOnSelectItem: TNotifyEvent; // This event is raised whenever an item
-   // (such as controlpoint,controledge or controlface) is selected or deselected
    FGausCurvature: RealArray; // list with precalculated values of gauss.
    FMinGaussCurvature,
-   FMaxGaussCurvature,
-   FMainframeLocation: Real;
+   FMaxGaussCurvature: Real;
+   FInitialized: Boolean; // Flag to check if the surface has been initialised.
+   FDivSec,FCurrenSLevel: byte;
    function FGetControlPoint(Index:Integer):SControlPoint;
    function FGetControlCurve(Index:Integer):SControlCurve;
    function FGetControlEdge(Index:Integer):SControlEdge;
@@ -906,12 +899,19 @@ private
    procedure FSeSMode(val:SMode);
 public
    WaterlinePlane: Plate; // This plane is used to clip the hull, and shade the underwatership in a different color
-   ShowNormals,       // show normals of selected controlfaces
-   ShowControlNet,    // Flag to switch controlpoints and control-edges visibility
+   DrawMirror, // If this is set tot true, the other imaginary half (starboard side) will be drawn aswell
+   ShowNormals,    // show normals of selected controlfaces
+   ShowControlNet, // Flag to switch controlpoints and control-edges visibility
    ShowInteriorEdges, // Switch to turn on drawing off all interior edges as well.
    ShowCurvature,
    ShowControlCurves: Boolean;
    ControlPointSize: Integer;
+   MainframeLocation: Real;
+   OnChangeActiveLayer:
+      TChangeActiveLayerEvent; // Event raised when the active layer is changed
+   OnChangeLayerData, // Event which is raised when layer-data has been changed
+   OnSelectItem: TNotifyEvent; // This event is raised whenever an item
+ // (such as controlpoint,controledge or controlface) is selected or deselected
    procedure   AddControlCurve(Curve:SControlCurve);
    function    AddControlEdge(P1,P2:SPoint):SControlEdge;                         overload;virtual;
    function    AddControlFace(Points: VectorArray;NoPoints:Integer):SControlFace;      overload;virtual;
@@ -958,20 +958,20 @@ public
    procedure   SortEdges(Edges:TFasterList); overload; virtual;
    procedure   SortEdges(Edges:TFasterList;var Points:TFasterList); reintroduce;overload;
    procedure   SubDivide;
+// property    DrawMirror : boolean read FDrawMirror write FDrawMirror;
+// property    MainframeLocation: Real read FMainframeLocation write FMainframeLocation;
    property    ActiveLayer                : SLayer read FActiveLayer write FSetActiveLayer;
    property    ControlPoint[index:Integer]: SControlPoint read FGetControlpoint;
    property    ControlCurve[index:Integer]: SControlCurve read FGetControlCurve;
-   property    ControlEdge[index:Integer] : SControlEdge read FGetControlEdge;
-   property    ControlEdges               : TFasterlist read FCOntrolEdges;
-   property    ControlFace[index:Integer] : SControlFace read FGetControlFace;
+   property    ControlEdge[index:Integer] : SControlEdge  read FGetControlEdge;
+   property    ControlEdges               : TFasterlist   read FCOntrolEdges;
+   property    ControlFace[index:Integer] : SControlFace  read FGetControlFace;
    property    CurrenSLevel: byte read FCurrenSLevel;
    property    DivSec: byte read FDivSec write FSetDivSec;
-   property    DrawMirror : boolean read FDrawMirror write FDrawMirror;
    property    GaussCurvatureCalculated: boolean read FGetGaussCurvatureCalculated;
    property    Layer[index:integer]: SLayer read FGetLayer;
-   property    MainframeLocation: Real read FMainframeLocation write FMainframeLocation;
-   property    MaxGaussCurvature: Real read FMaxGaussCurvature;
-   property    MinGaussCurvature: Real read FMinGaussCurvature;
+   property    MaxGaussCurvature: Real    read FMaxGaussCurvature;
+   property    MinGaussCurvature: Real    read FMinGaussCurvature;
    property    NoControlFaces   : Integer read FGetNoControlFaces;
    property    NoControlEdges   : Integer read FGetNoControlEdges;
    property    NoControlCurves  : Integer read FGetNoControlCurves;
@@ -984,9 +984,6 @@ public
    property    NoSelectedControlFaces : Integer read FGetNoSelectedControlFaces;
    property    NoSelectedControlPoints: Integer read FGetNoSelectedControlPoints;
    property    NoSelectedLockedPoints : Integer read FGetNoSelectedLockedPoints;
-   property    OnChangeActiveLayer : TChangeActiveLayerEvent read FOnChangeActiveLayer write FOnChangeActiveLayer;
-   property    OnChangeLayerData   : TNotifyEvent read FOnChangeLayerData write FOnChangeLayerData;
-   property    OnSelectItem        : TNotifyEvent read FOnSelectItem write FOnSelectItem;
    property    Point[index:Integer]: SPoint read FGetpoint;
    property    Edge[index:Integer] : SEdge read FGetEdge;
    property    NoEdges       : Integer read FGetNoEdges;
@@ -4869,7 +4866,7 @@ begin
    end else begin
       if Index<>-1 then Owner.FSelectedControlCurves.Delete(index);
    end;
-   if Assigned(Owner.FOnSelectItem) then Owner.FOnSelectItem(self);
+   if Assigned(Owner.OnSelectItem) then Owner.OnSelectItem(self);
 end;
 
 procedure SControlCurve.AddPoint(P:SPoint);
@@ -5303,7 +5300,7 @@ procedure SLayer.FSetFDevelopable(Val:Boolean);
 begin
    if val<>FDevelopable then begin
       FDevelopable:=Val;
-      if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
+      if assigned(Owner.OnChangeLayerData) then Owner.OnChangeLayerData(self);
    end;
 end;
 
@@ -5311,8 +5308,8 @@ procedure SLayer.FSetName(Val:String);
 begin
    if Uppercase(Val)<>Uppercase(FDescription) then begin
       FDescription:=Val;
-      if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
-      if (self=Owner.ActiveLayer) and (assigned(Owner.FOnChangeActiveLayer)) then owner.FOnChangeActiveLayer(Owner,Owner.ActiveLayer);
+      if assigned(Owner.OnChangeLayerData) then Owner.OnChangeLayerData(self);
+      if (self=Owner.ActiveLayer) and (assigned(Owner.OnChangeActiveLayer)) then owner.OnChangeActiveLayer(Owner,Owner.ActiveLayer);
    end;
 end;
 
@@ -5320,16 +5317,16 @@ procedure SLayer.FSetSymmetric(Val:Boolean);
 begin
    if Val<>FSymmetric then begin
       FSymmetric:=Val;
-      if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
+      if assigned(Owner.OnChangeLayerData) then Owner.OnChangeLayerData(self);
    end;
 end;
 
 procedure SLayer.FSetColor(Val:TColor);
 begin
    if Val<>FColor then begin FColor:=Val;
-      if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
-      if (self=Owner.ActiveLayer) and (assigned(Owner.FOnChangeActiveLayer))
-                then owner.FOnChangeActiveLayer(Owner,Owner.ActiveLayer);
+      if assigned(Owner.OnChangeLayerData) then Owner.OnChangeLayerData(self);
+      if (self=Owner.ActiveLayer) and (assigned(Owner.OnChangeActiveLayer))
+                then owner.OnChangeActiveLayer(Owner,Owner.ActiveLayer);
    end;
 end;
 
@@ -5337,7 +5334,7 @@ procedure SLayer.FSetShowInLinesplan(val:boolean);
 begin
    if Val<>FShowInLinesplan then begin
       FShowInLinesplan:=val;
-      if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
+      if assigned(Owner.OnChangeLayerData) then Owner.OnChangeLayerData(self);
    end;
 end;
 
@@ -5346,7 +5343,7 @@ begin
    if val<>FUseInHydrostatics then begin
       FUseInHydrostatics:=Val;
       if FUseInHydrostatics and (not FSymmetric) then FSymmetric:=true;
-      if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
+      if assigned(Owner.OnChangeLayerData) then Owner.OnChangeLayerData(self);
    end;
 end;
 
@@ -5354,7 +5351,7 @@ procedure SLayer.FSetUseForIntersections(val:Boolean);
 begin
    if val<>FUseForIntersections then begin
       FUseForIntersections:=Val;
-      if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
+      if assigned(Owner.OnChangeLayerData) then Owner.OnChangeLayerData(self);
    end;
 end;
 
@@ -5362,7 +5359,7 @@ procedure SLayer.FSetVisible(Val:Boolean);
 begin
    if Val<>FVisible then begin
       FVisible:=Val;
-      if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
+      if assigned(Owner.OnChangeLayerData) then Owner.OnChangeLayerData(self);
    end;
 end;
 
@@ -5509,7 +5506,7 @@ begin Result:=True;
    Index:=LayerIndex;
    if Index<>-1 then Owner.FLayers.Delete(Index);
    Clear;
-   if assigned(Owner.FOnChangeLayerData) then Owner.FOnChangeLayerData(self);
+   if assigned(Owner.OnChangeLayerData) then Owner.OnChangeLayerData(self);
    Destroy;
 end;
 
@@ -6112,7 +6109,7 @@ begin
    end else begin
       if Index<>-1 then Owner.FSelectedControlPoints.Delete(index);
    end;
-   if Assigned(Owner.FOnSelectItem) then Owner.FOnSelectItem(self);
+   if Assigned(Owner.OnSelectItem) then Owner.OnSelectItem(self);
 end;
 
 procedure SControlPoint.FSetLocked(val:Boolean);
@@ -6675,7 +6672,7 @@ begin
    end else begin
       if Index<>-1 then Owner.FSelectedControlEdges.Delete(index);
    end;
-   if Assigned(Owner.FOnSelectItem) then Owner.FOnSelectItem(self);
+   if Assigned(Owner.OnSelectItem) then Owner.OnSelectItem(self);
 end;
 
 function SControlEdge.FGetSelected:Boolean;
@@ -7323,7 +7320,7 @@ begin
    end else begin
       if Index<>-1 then Owner.FSelectedControlFaces.Delete(index);
    end;
-   if Assigned(Owner.FOnSelectItem) then Owner.FOnSelectItem(self);
+   if Assigned(Owner.OnSelectItem) then Owner.OnSelectItem(self);
 end;
 function SControlFace.FGetSelected:Boolean;
    begin Result:=Owner.FSelectedControlFaces.IndexOf(self)<>-1; end;
@@ -8175,7 +8172,7 @@ function SSurface.AddNewLayer:SLayer;
       FLayers.Add(Result);
       Result.LayerID:=FRequestNewLayerID;
       ActiveLayer:=Result;
-      if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+      if assigned(OnChangeLayerData) then OnChangeLayerData(self);
    end;
 
 // Tries to assemble quads into as few as possible rectangular patches
@@ -8768,7 +8765,7 @@ function SSurface.FRequestNewLayerID:Integer;
 procedure SSurface.FSetActiveLayer(Val:SLayer);
 begin
    FActiveLayer:=Val;
-   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,FActiveLayer);
+   if assigned(OnChangeActiveLayer) then OnChangeActiveLayer(self,FActiveLayer);
 end;
 
 procedure SSurface.FSetBuild(Val:Boolean);
@@ -8981,13 +8978,13 @@ var I: Integer; Layer: SLayer;
 begin
    inherited Clear;
    for I:=1 to FControlPoints.Count do ControlPoint[I-1].Destroy; FControlPoints.Clear;
-   for I:=1 to NoControlFaces do ControlFace[I-1].Destroy;  FControlFaces.Clear;
-   for I:=1 to NoControlEdges do ControlEdge[I-1].Destroy;  FControlEdges.Clear;
+   for I:=1 to NoControlFaces do ControlFace[I-1].Destroy; FControlFaces.Clear;
+   for I:=1 to NoControlEdges do ControlEdge[I-1].Destroy; FControlEdges.Clear;
    for I:=1 to NoControlCurves do ControlCurve[I-1].Destroy; FControlCurves.Clear;
-   for I:=1 to FEdges.Count do Edge[I-1].Destroy;                 FEdges.Clear;
-   for I:=1 to FPoints.Count do Point[I-1].Destroy;               FPoints.Clear;
-   for i:=1 to NoLayers do self.Layer[I-1].Destroy;         FLayers.Clear;
-   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+   for I:=1 to FEdges.Count do Edge[I-1].Destroy;            FEdges.Clear;
+   for I:=1 to FPoints.Count do Point[I-1].Destroy;          FPoints.Clear;
+   for i:=1 to NoLayers do self.Layer[I-1].Destroy;          FLayers.Clear;
+   if assigned(OnChangeLayerData) then OnChangeLayerData(self);
    FLastusedLayerID:=-1;
    // delete lists with selected items
    FSelectedControlPoints.Clear;
@@ -8998,14 +8995,14 @@ begin
    Layer:=AddNewLayer;
    ActiveLayer:=Layer;
    Build:=False;
-   FDrawMirror:=False;
+   DrawMirror:=False;
    ShowControlNet:=True;
    ShowInteriorEdges:=False;
    FInitialized:=False;
    FDivSec:=1;
    ShowNormals:=True;
    Sp.UColorIs:=false;                               // ShadeUnderWater:=False;
-   FMainframeLocation:=1e10;
+   MainframeLocation:=1e8;
 end;
 
 procedure SSurface.ClearFaces;
@@ -9024,13 +9021,13 @@ begin
    FSelectedControlEdges.Clear;
    FSelectedControlFaces.Clear;
    FSelectedControlCurves.Clear;
-   if Assigned(FOnSelectItem) then FOnSelectItem(nil);
+   if Assigned(OnSelectItem) then OnSelectItem(nil);
 end;
 
 procedure SSurface.ConvertToGrid(Input:TFaceGrid;var Cols,Rows:Integer;var Grid:SGrid);
-var CtrlFace   : SControlFace;
-    Faces,Backup     : TFasterList;
-    Face       : SFace;
+var CtrlFace: SControlFace;
+    Faces,Backup: TFasterList;
+    Face: SFace;
     I,J,N,Ind  : Integer;
         procedure DoAssemble(var Grid:SGrid;var Cols,Rows:Integer;Faces:TFasterList);
         var SearchBottom,SearchTop,SearchLeft,SearchRight: Boolean;
@@ -9041,12 +9038,10 @@ var CtrlFace   : SControlFace;
 
             function ValidFace(Face:Sface):Boolean;
             var I,J,N,Index: Integer; Tmp: SFace;
-            begin
-               Result:=False;
+            begin Result:=False;
                if Face.Nopoints=4 then begin
                   Index:=Faces.SortedIndexOf(Face);
-                  if Index<>-1 then begin
-                     Result:=True;
+                  if Index<>-1 then begin Result:=True;
                      for I:=1 to NFaces do if TmpFaces[I-1]=face then begin
                         result:=false;
                         exit;
@@ -9177,9 +9172,9 @@ var CtrlFace   : SControlFace;
                  if NFaces=Cols-1 then begin          // search was successfull
                    Setlength(Grid,Rows+1);
                    Setlength(Grid[Rows],Cols);
-                   for I:=Rows downto 1 do begin
-                      for J:=1 to Cols do Grid[I][J-1]:=Grid[I-1][J-1];
-                   end;
+                   for I:=Rows downto 1 do
+                   for J:=1 to Cols do Grid[I][J-1]:=Grid[I-1][J-1];
+
                    for I:=1 to Cols do Grid[0][I-1]:=nil;
                    for I:=1 to NFaces do begin
                       Face:=TmpFaces[I-1];
@@ -9193,8 +9188,7 @@ var CtrlFace   : SControlFace;
                          Grid[0][I]:=Face.Point[index];
                          Index:=(Index+1) mod Face.Nopoints;
                          Grid[0][I-1]:=Face.Point[index];
-                      end else
-                      begin
+                      end else begin
                          Index:=Face.IndexOfPoint(Grid[1][I]);
                          Index:=(Index+1) mod Face.Nopoints;
                          if Face.Point[index]=Grid[1][I-1] then begin
@@ -9278,14 +9272,14 @@ begin
          Faces.Delete(Ind-1);
          Rows:=2;
          Cols:=2;
-         Setlength(Grid,Rows);
-         Setlength(grid[0],Cols);
-         Setlength(grid[1],Cols);
+         Setlength( Grid,Rows );
+         Setlength( Grid[0],Cols );
+         Setlength( Grid[1],Cols );
          grid[0][1]:=Face.Point[0];
          grid[0][0]:=Face.Point[1];
          grid[1][0]:=Face.Point[2];
          grid[1][1]:=Face.Point[3];
-         DoAssemble(Grid,Cols,Rows,Faces);
+         DoAssemble( Grid,Cols,Rows,Faces );
       until (Faces.Count=0) or (Ind=Backup.Count);
 //      if Faces.Count<>0 then  ShowMessage('Could not establish the entire grid!');
       Faces.Destroy;
@@ -9332,7 +9326,7 @@ begin                                                  // Add layer information
         +#32+BoolToStr(Layer[I].FShowInLinesplan)
         +#32+FloatToDec(Layer[I].MaterialDensity,8)
         +#32+FloatToDec(Layer[I].Thickness,8));
-   end;    // first sort controlpoints for faster acces of function (Indexof())
+   end; // first sort controlpoints for faster acces of function ( Indexof() )
    FControlPoints.Sort;
    Strings.Add(IntToStr(NoControlPoints));
    for I:=0 to NoControlPoints-1 do ControlPoint[I].SaveToStream(Strings);
@@ -10008,10 +10002,11 @@ begin
    end;
 end;
 
-procedure SSurface.ImportFEFFile(Strings:TStringList;var LineNr:Integer);
+procedure SSurface.ImportFEFFile( Strings:TStringList; var LineNr:Integer );
 var Str: string;
     I,J,K,N,Np,Index: Integer;  Sxr: boolean;
     Point,P1,P2: SControlPoint;
+    Curve      : SControlCurve;
     Edge       : SControlEdge;
     Face       : SControlFace;
     Layer      : SLayer;
@@ -10020,33 +10015,36 @@ var Str: string;
          FControlPoints.Add( Result );
    end; }
 begin                                          // Read layer information
-   Inc( LineNr );                              Sp.UColor:=clGreen;
-   Str:=Strings[LineNr];                       Sp.UAlfa:=64;
-   N:=GetInteger(Str);                         Sp.UColorIs:=true;
-   if N=0 then             /// *** в преобразованиях из Delft есть лишний нолик
-      begin Inc( LineNr ); Str:=Strings[LineNr]; N:=GetInteger( Str ); end;
-   for I:=1 to N do begin
-      if I>NoLayers then Layer:=self.AddNewLayer
-                    else Layer:=self.Layer[I-1];
-      inc(LineNr); Layer.FDescription:=Strings[LineNr];;
-      inc(LineNr); Str:=Strings[LineNr];
-      Layer.LayerID:=GetInteger(Str);
-      if Layer.LayerID>FLastusedLayerID then FLastusedLayerID:=Layer.LayerID;
-      Layer.FColor:=GetInteger(Str);
-         Layer.AlphaBlend:=255-byte( Cardinal( Layer.FColor ) shr 24 );
-         Layer.FColor:=Layer.FColor and $FFFFFF;
-      Layer.FVisible            :=GetBoolean(Str); // видимость
-      Layer.FDevelopable        :=GetBoolean(Str); // под развёртку
-      Layer.FSymmetric          :=GetBoolean(Str); // только левый борт
-      Layer.FUseForIntersections:=GetBoolean(Str); // к теоретическим контурам
-      Layer.FUseInHydrostatics  :=GetBoolean(Str); // в расчёты гидростатики
-      Layer.FShowInLinesplan    :=GetBoolean(Str); // в теоретические чертежи
-      Layer.MaterialDensity     :=GetFloat(Str);   // плотность материала
-      Layer.Thickness           :=GetFloat(Str);   // и толщина листов обшивки
+   if LineNr>0 then begin
+     Inc( LineNr );                              Sp.UColor:=clGreen;
+     Str:=Strings[LineNr];                       Sp.UAlfa:=64;
+     N:=GetInteger(Str);                         Sp.UColorIs:=true;
+     if N=0 then             /// *** в преобразованиях из Delft есть лишний нолик
+        begin Inc( LineNr ); Str:=Strings[LineNr]; N:=GetInteger( Str ); end;
+     for I:=1 to N do begin
+        if I>NoLayers then Layer:=self.AddNewLayer
+                      else Layer:=self.Layer[I-1];
+        inc(LineNr); Layer.FDescription:=Strings[LineNr];;
+        inc(LineNr); Str:=Strings[LineNr];
+        Layer.LayerID:=GetInteger(Str);
+        if Layer.LayerID>FLastusedLayerID then FLastusedLayerID:=Layer.LayerID;
+        Layer.FColor:=GetInteger(Str);
+           Layer.AlphaBlend:=255-byte( Cardinal( Layer.FColor ) shr 24 );
+           Layer.FColor:=Layer.FColor and $FFFFFF;
+        Layer.FVisible            :=GetBoolean(Str); // видимость
+        Layer.FDevelopable        :=GetBoolean(Str); // под развёртку
+        Layer.FSymmetric          :=GetBoolean(Str); // только левый борт
+        Layer.FUseForIntersections:=GetBoolean(Str); // к теоретическим контурам
+        Layer.FUseInHydrostatics  :=GetBoolean(Str); // в расчёты гидростатики
+        Layer.FShowInLinesplan    :=GetBoolean(Str); // в теоретические чертежи
+        Layer.MaterialDensity     :=GetFloat(Str);   // плотность материала
+        Layer.Thickness           :=GetFloat(Str);   // и толщина листов обшивки
+     end;
+     write( ' L=',NoLayers );
+     if Assigned(OnChangeLayerData) then OnChangeLayerData(self);
+     Inc( LineNr );
    end;
-   write( ' L=',NoLayers );
-   if Assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   Inc( LineNr ); Str:=Strings[LineNr];
+   Str:=Strings[LineNr];
    N:=GetInteger(Str);
    for I:=1 to N do begin                                 // Read controlpoints
       Point:=SControlPoint.Create(self);
@@ -10066,7 +10064,8 @@ begin                                          // Read layer information
    write( ', E=',FControlEdges.Count );
    Inc(LineNr); Str:=Strings[LineNr];
    N:=GetInteger(Str);
-   for I:=1 to N do begin                                  // Read controlFaces
+// parallel - не срабатывает
+   for I:=1 to N do begin                         // Read controlFaces
       Inc(LineNr);
       if LineNr>=Strings.Count then break; // неожиданный конец файла по списку
       Str:=Trim( Strings[LineNr] );
@@ -10120,11 +10119,46 @@ begin                                          // Read layer information
      if not Edge.isRead then                   // считанные рёбра без изменений
      if Edge.NoFaces=2 then Edge.Crease:=false;
    end;
+{ !!!                                          оППа, и не тут-то было !!!
+   if LineNr<Strings.Count then begin          // продолжение с контурами
+      Inc( LineNr ); Str:=Trim( Strings[LineNr] );
+      N:=GetInteger( Str );
+      FControlCurves.Capacity:=N;
+      for I:=1 to N do begin
+         Source.LoadInteger(N);
+         FControlPoints.Capacity:=N;
+         P1:=nil;
+         for I:=1 to N do begin
+            Source.LoadInteger(Ind);
+            P2:=Owner.FControlPoints[ind];
+            FControlPoints.Add(P2);
+            if I>1 then begin
+               Edge:=Owner.EdgeExists(P1,P2);
+               if Edge<>nil then Edge.Curve:=self;
+            end;
+            P1:=P2;
+         end;
+         FSubdividedPoints.AddList(FControlPoints);
+         Source.LoadBoolean(Sel);
+         if Sel then selected:=True;
+
+         Curve:=SControlCurve.Create( self );
+         Inc( LineNr ); Str:=Trim( Strings[LineNr] );
+         K:=GetInteger( Str );
+         FControlCurves.Add( Curve );
+         Inc( LineNr ); Str:=Trim( Strings[LineNr] );
+         K:=GetInteger( Str ); Curve.Capacity:=K;
+        FControlCurves.Add( Curve );
+        Curve.LoadBinary(Source);
+     end;                                                 // Read controlFaces
+//   if LineNr>=Strings.Count then break; // неожиданный конец файла по списку
+   end;
+}
    writeln( '...' );
    Build:=False;
    FInitialized:=True;
-   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
+   if assigned(OnChangeLayerData) then OnChangeLayerData(self);
+   if assigned(OnChangeActiveLayer) then OnChangeActiveLayer(self,self.Layer[0]);
 end;
 
 procedure SSurface.ImportGrid(Points:TCoordinateGrid;Cols,Rows:Integer;Layer:SLayer);
@@ -10354,10 +10388,10 @@ begin                                                   // First load layerdata
          Layer.LoadBinary(Source);
       end;
    end; // else          No layers in the file, so keep the current default one
-   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
+   if assigned(OnChangeLayerData) then OnChangeLayerData(self);
    Source.LoadInteger(N);                         // Read index of active layer
    ActiveLayer:=self.Layer[N];
-   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
+   if assigned(OnChangeActiveLayer) then OnChangeActiveLayer(self,self.Layer[0]);
    Source.LoadInteger(N);                                 // Read controlpoints
    FControlPoints.Capacity:=N;
    for I:=1 to N do begin
@@ -10391,8 +10425,8 @@ begin                                                   // First load layerdata
    end;
    Build:=False;
    FInitialized:=True;
-   if assigned(FOnChangeLayerData) then FOnChangeLayerData(self);
-   if assigned(FOnChangeActiveLayer) then FOnChangeActiveLayer(self,self.Layer[0]);
+   if assigned(OnChangeLayerData) then OnChangeLayerData(self);
+   if assigned(OnChangeActiveLayer) then OnChangeActiveLayer(self,self.Layer[0]);
 end;
 
 procedure SSurface.LoadVRMLFile(Filename:string);
