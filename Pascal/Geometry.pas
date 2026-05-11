@@ -541,7 +541,8 @@ public
    procedure Draw(Viewport:TViewport);
    procedure InsertControlPoint(P1,P2,New:SControlPoint);
    procedure InsertEdgePoint(P1,P2,New:SPoint);
-   procedure LoadBinary(Source:TFileBuffer);
+   procedure LoadBinary( Source:TFileBuffer );
+   procedure LoadString( Src: AnsiString ); function SaveString: AnsiString;
    procedure ReplaceVertexPoint(Old,New:SPoint);
    procedure SaveBinary(Destination:TFileBuffer);
    procedure SaveToDXF(Strings:TStringList);
@@ -5164,34 +5165,29 @@ begin
 end;
 
 procedure SControlCurve.InsertControlPoint(P1,P2,New:SControlPoint);
-var I : Integer;
-begin
-   I:=2;
+  var I: Integer;
+begin I:=2;
    While I<=FControlPoints.Count do begin
-      if ((FControlPoints[I-2]=P1) and (FControlPoints[I-1]=P2))
-      or ((FControlPoints[I-1]=P1) and (FControlPoints[I-2]=P2))
-      then FControlPoints.Insert(I-1,New);
+      if( (FControlPoints[I-2]=P1) and (FControlPoints[I-1]=P2) )
+      or( (FControlPoints[I-1]=P1) and (FControlPoints[I-2]=P2) )
+      then FControlPoints.Insert( I-1,New );
       inc(I);
    end;
 end;
 
 procedure SControlCurve.InsertEdgePoint(P1,P2,New:SPoint);
-var I : Integer;
-begin
-   I:=2;
+  var I: Integer;
+begin I:=2;
    While I<=FSubdividedPoints.Count do begin
-      if ((FSubdividedPoints[I-2]=P1) and (FSubdividedPoints[I-1]=P2))
-      or ((FSubdividedPoints[I-1]=P1) and (FSubdividedPoints[I-2]=P2))
-      then FSubdividedPoints.Insert(I-1,New);
+      if( (FSubdividedPoints[I-2]=P1) and (FSubdividedPoints[I-1]=P2))
+      or( (FSubdividedPoints[I-1]=P1) and (FSubdividedPoints[I-2]=P2))
+      then FSubdividedPoints.Insert( I-1,New );
       inc(I);
    end;
 end;
 
 procedure SControlCurve.LoadBinary(Source:TFileBuffer);
-var I,N,Ind : Integer;
-    P1,P2  : SPoint;
-    Edge   : SEdge;
-    Sel    : Boolean;
+var I,N,Ind: Integer; P1,P2: SPoint; Edge: SEdge; Sel: Boolean;
 begin
    Source.LoadInteger(N);
    FControlPoints.Capacity:=N;
@@ -5203,12 +5199,29 @@ begin
       if I>1 then begin
          Edge:=Owner.EdgeExists(P1,P2);
          if Edge<>nil then Edge.Curve:=self;
-      end;
-      P1:=P2;
+      end; P1:=P2;
    end;
    FSubdividedPoints.AddList(FControlPoints);
    Source.LoadBoolean(Sel);
    if Sel then selected:=True;
+end;
+
+procedure SControlCurve.LoadString( Src: AnsiString );
+var I,N: Integer;
+    P1,P2: SPoint;
+    Edge: SEdge;
+begin
+  N:=GetInteger( Src ); FControlPoints.Capacity:=N;
+  P1:=nil;
+  for I:=1 to N do begin
+      P2:=Owner.FControlPoints[GetInteger( Src )];
+      FControlPoints.Add(P2);
+      if I>1 then begin Edge:=Owner.EdgeExists( P1,P2 );
+         if Edge<>nil then Edge.Curve:=self;
+      end; P1:=P2;
+   end;
+   Selected:=GetBoolean( Src );
+   FSubdividedPoints.AddList(FControlPoints);
 end;
 
 procedure SControlCurve.ReplaceVertexPoint(Old,New:SPoint);
@@ -5231,6 +5244,21 @@ begin
       Destination.Add(Ind);
    end;
    Destination.Add(Selected);
+end;
+
+function SControlCurve.SaveString: AnsiString; var I:Integer; Str: AnsiString;
+begin
+   Str:=IntToStr( NoControlPoints );
+   for I:=0 to NoControlPoints-1 do
+     Str:=Str+' '+InttoStr(Owner.FControlPoints.SortedIndexOf(FControlPoints[I]));
+   if Selected then Str:=Str+' '+IntToStr( ord( Selected ) );
+   Result:=Str;
+{    begin
+      P:=FControlPoints[I-1];
+      Ind:=Owner.FControlPoints.SortedIndexOf(FControlPoints[I-1]);
+      Destination.Add(Ind);
+   end;
+   Destination.Add(Selected);}
 end;
 
 procedure SControlCurve.SaveToDXF(Strings:TStringList);
@@ -9310,7 +9338,7 @@ begin
 end;
 
 procedure SSurface.ExportFEFFile(Strings:TStringList);
-var I: Integer;
+var I,J: Integer; Str: AnsiString;
 begin                                                  // Add layer information
    Strings.Add(IntToStr(NoLayers));
    for I:=0 to NoLayers-1 do begin
@@ -9334,19 +9362,20 @@ begin                                                  // Add layer information
    for I:=0 to NoControlEdges-1 do ControlEdge[I].SaveToStream(Strings);
    Strings.Add(IntToStr(NoControlFaces));
    for I:=0 to NoControlFaces-1 do ControlFace[I].SaveToStream(Strings);
+   if NoControlCurves>0 then begin
+     Strings.Add( IntToStr( NoControlCurves ) );
+     for I:=0 to NoControlCurves-1 do Strings.Add( ControlCurve[I].SaveString );
+   end;
 end;
 
 procedure SSurface.ImportObjFile( Strings: TStringList );
 var
   I,J,K,Index: integer; Str: String;
-// CFace: SControlFace; CPoint: SCOntrolPoint;
-  CPoints,FacePoints: TFasterList; //SControlPoint;
+  CPoints,FacePoints: TFasterList;
   C3d: Vector;
   Faces: TStringList;
   Vindex: array of String;
 begin
-//   CPoints:=SControlPoint.Create;
-//   FacePoints:=SControlPoint.Create;
    CPoints:=TFasterList.Create;
    FacePoints:=TFasterList.Create;
   Faces:=TStringList.Create;
@@ -10065,7 +10094,7 @@ begin                                          // Read layer information
    Inc(LineNr); Str:=Strings[LineNr];
    N:=GetInteger(Str);
 // parallel - не срабатывает
-   for I:=1 to N do begin                         // Read controlFaces
+   for I:=1 to N do begin                                  // Read controlFaces
       Inc(LineNr);
       if LineNr>=Strings.Count then break; // неожиданный конец файла по списку
       Str:=Trim( Strings[LineNr] );
@@ -10119,41 +10148,19 @@ begin                                          // Read layer information
      if not Edge.isRead then                   // считанные рёбра без изменений
      if Edge.NoFaces=2 then Edge.Crease:=false;
    end;
-{ !!!                                          оППа, и не тут-то было !!!
+//!!!                                           и не тут-то было !!!
+   Inc( LineNr );
    if LineNr<Strings.Count then begin          // продолжение с контурами
-      Inc( LineNr ); Str:=Trim( Strings[LineNr] );
+      Str:=Strings[LineNr];
       N:=GetInteger( Str );
       FControlCurves.Capacity:=N;
-      for I:=1 to N do begin
-         Source.LoadInteger(N);
-         FControlPoints.Capacity:=N;
-         P1:=nil;
-         for I:=1 to N do begin
-            Source.LoadInteger(Ind);
-            P2:=Owner.FControlPoints[ind];
-            FControlPoints.Add(P2);
-            if I>1 then begin
-               Edge:=Owner.EdgeExists(P1,P2);
-               if Edge<>nil then Edge.Curve:=self;
-            end;
-            P1:=P2;
-         end;
-         FSubdividedPoints.AddList(FControlPoints);
-         Source.LoadBoolean(Sel);
-         if Sel then selected:=True;
-
+      for I:=1 to N do begin Inc( LineNr );
          Curve:=SControlCurve.Create( self );
-         Inc( LineNr ); Str:=Trim( Strings[LineNr] );
-         K:=GetInteger( Str );
          FControlCurves.Add( Curve );
-         Inc( LineNr ); Str:=Trim( Strings[LineNr] );
-         K:=GetInteger( Str ); Curve.Capacity:=K;
-        FControlCurves.Add( Curve );
-        Curve.LoadBinary(Source);
+         Curve.LoadString( Strings[LineNr] );
      end;                                                 // Read controlFaces
 //   if LineNr>=Strings.Count then break; // неожиданный конец файла по списку
    end;
-}
    writeln( '...' );
    Build:=False;
    FInitialized:=True;

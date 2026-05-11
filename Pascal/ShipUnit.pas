@@ -7,8 +7,8 @@ interface uses // do WIndows-specific code here
      FasterList,STypes,LanguageSupport,VersionUnit,ControlPointFrm;
   // free!Ship uses British imperial format, eg 1 long ton=2240 lbs
 const ShipExtention='.ftm'; // Default extention for hull model files
-      SelectDistance   = 3;     // Max. distance in pixels between an item and the cursor in order to be selected
-      Threshold        = 3;     // The distance that the cursor has to be moved before a controlpoint starts moving
+      SelectDistance   = 3; // Max. distance in pixels between an item and the cursor in order to be selected
+      Threshold        = 3; // The distance that the cursor has to be moved before a controlpoint starts moving
 type  TShip= class;         // to be declared later
       TIntersection= class;
       THydrostaticCoeff= (fcProjectSettings,fcActualData);
