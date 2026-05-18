@@ -5815,8 +5815,7 @@ function SPoint.FGetCurvature:Real;
    end;
 begin Result:=0.0;
    for I:=1 to FEdges.Count do If Edge[I-1].NoFaces<2 then exit;
-   if VertexType in [svRegular,svDart] then
-   begin
+   if VertexType in [svRegular,svDart] then begin
       Sigma:=0;
       for I:=1 to NoFaces do begin
          Face:=FFaces[I-1];
@@ -6337,10 +6336,10 @@ procedure SControlPoint.LoadFromStream(var LineNr:Integer;Strings:TStringList);
 var Str: string; I: Integer; sel: Boolean;
 begin Inc(LineNr);                                               // FCoordinate
    Str:=Strings[LineNr];
-   FCoordinate:=GetVector(Str);
-   if Str<>'' then begin I:=GetInteger(Str);
-      Vertextype:=TVertexType(I);
-      if Str<>'' then begin Sel:=GetBoolean(Str);
+   FCoordinate:=GetVector( Str );
+   if Str<>'' then begin I:=GetInteger( Str );
+      Vertextype:=TVertexType( I );
+      if Str<>'' then begin Sel:=GetBoolean( Str );
          if Sel then Selected:=True;
       end;                  // TVertexType=(svRegular,svCrease,svDart,svCorner)
    end else Vertextype:=svRegular;
