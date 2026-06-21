@@ -272,12 +272,8 @@ begin With St do begin                                // Initialize some data
    Preferences.Load;
    Clear;
    if ParamCount>0 then NF:=ParamStr( 1 ) else
-   if Edit.RecentFiles.Count>0 then NF:=Edit.RecentFiles[0]; (* writeln( NF );
-   AssignFile( FFile,NF );
-{$I-}Reset( FFile );{$I+}
-   if IOResult=0 then begin CloseFile( FFile ); Edit.File_Load( NF ); end;
-*) if FileExistsUTF8( NF ) then Edit.File_Load( NF );
-// if FileExists( NF ) then Edit.File_Load( NF );
+   if Edit.RecentFiles.Count>0 then NF:=Edit.RecentFiles[0];
+   if FileExistsUTF8( NF ) then Edit.File_Load( NF );
    FOpenHullWindows;
    SetCaption;
    UpdateMenu;
@@ -640,19 +636,15 @@ procedure TMainForm.EditProjectSettingsExecute(Sender: TObject);
 procedure TMainForm.CheckModelExecute(Sender: TObject);
     begin St.Edit.Model_Check(True); UpdateMenu; end;
 procedure TMainForm.ShowNormalsExecute(Sender: TObject);
-    begin St.Visibility.ShowNormals:=not St.Visibility.ShowNormals;
-          UpdateMenu;
-    end;
+    begin St.Visibility.ShowNormals:=not St.Visibility.ShowNormals; UpdateMenu; end;
 procedure TMainForm.ExportAuroraHullVslExecute(Sender: TObject);
     begin St.Edit.File_Export_Aurora_Experiments; UpdateMenu; end;
 procedure TMainForm.ImportOBJExecute(Sender: TObject);
-    begin St.Edit.File_ImportOBJ; FOpenHullWindows; SetCaption; UpdateMenu;
-    end;
+    begin St.Edit.File_ImportOBJ; FOpenHullWindows; SetCaption; UpdateMenu; end;
 procedure TMainForm.ExportObjExecute(Sender: TObject);
     begin St.Edit.File_ExportObj; UpdateMenu; end;
 procedure TMainForm.ImportSTLExecute(Sender: TObject);
-    begin St.Edit.File_ImportSTL; FOpenHullWindows; SetCaption; UpdateMenu;
-    end;
+    begin St.Edit.File_ImportSTL; FOpenHullWindows; SetCaption; UpdateMenu; end;
 procedure TMainForm.ImportVRMLExecute(Sender: TObject);
     begin St.Edit.File_ImportVRML; FOpenHullWindows; UpdateMenu; end;
 procedure TMainForm.RemoveNegativeExecute(Sender: TObject);
@@ -662,16 +654,13 @@ procedure TMainForm.RotateModelExecute(Sender: TObject);
 procedure TMainForm.ScaleModelExecute(Sender: TObject);
     begin St.Edit.Face_Scale; UpdateMenu; end;
 procedure TMainForm.ShowGridExecute(Sender: TObject);
-    begin St.Visibility.ShowGrid:=not St.Visibility.ShowGrid; UpdateMenu;
-    end;
+    begin St.Visibility.ShowGrid:=not St.Visibility.ShowGrid; UpdateMenu; end;
 procedure TMainForm.UndoExecute(Sender: TObject);
     begin St.Edit.Undo; UpdateMenu; SetCaption; end;
 
 // Update undo memory usage
-procedure TMainForm.ShipUpdateUndoData(Sender: TObject);
-var Memory : Integer;
-begin
-   Memory:=Trunc( St.UndoMemory/1024 );
+procedure TMainForm.ShipUpdateUndoData(Sender: TObject); var Memory: Integer;
+begin Memory:=Trunc( St.UndoMemory/1024 );
    if Memory<1024 then Panel2.Caption:=Userstring(283)+' : '+IntToStr(Memory)+' Kb.'
                   else Panel2.Caption:=Userstring(283)+' : '+FloatToDec(Memory/1024,3)+' Mb.';
    Undo.Enabled:=St.UndoCount>0;
@@ -723,14 +712,12 @@ end;
 procedure TMainForm.ImportCareneExecute(Sender: TObject);
     begin St.Edit.File_ImportCarene; FOpenHullWindows; UpdateMenu; end;
 procedure TMainForm.ShowMarkersExecute(Sender: TObject);
-    begin St.Visibility.ShowMarkers:=not St.Visibility.ShowMarkers;
-          UpdateMenu;
+    begin St.Visibility.ShowMarkers:=not St.Visibility.ShowMarkers; UpdateMenu;
     end;
 procedure TMainForm.DeleteMarkersExecute(Sender: TObject);
     begin St.Edit.Marker_Delete; UpdateMenu; end;
 procedure TMainForm.ImportSurfaceExecute(Sender: TObject);
-    begin St.Edit.File_ImportSurface; FOpenHullWindows; SetCaption;
-          UpdateMenu;
+    begin St.Edit.File_ImportSurface; FOpenHullWindows; SetCaption; UpdateMenu;
     end;
 procedure TMainForm.ShowcurvatureExecute(Sender: TObject);
     begin St.Visibility.ShowCurvature:=not St.Visibility.ShowCurvature;
@@ -780,18 +767,15 @@ procedure TMainForm.MirrorFaceExecute(Sender: TObject);
     begin St.Edit.Face_MirrorPlane; UpdateMenu; end;
 procedure TMainForm.ExportDXF2DPolylinesExecute(Sender: TObject);
     begin St.Edit.File_ExportDXF_2DPolylines; UpdateMenu; end;
-procedure TMainForm.SpinEditFontSizeChange( Sender: TObject );
-var I: integer;                              // нет единого управления шрифтами
-begin
+procedure TMainForm.SpinEditFontSizeChange( Sender: TObject ); var I: integer;
+begin // нет единого управления шрифтами
   St.Preferences.FontSize:=SpinEditFontSize.value;
 //if SpinEditFontSize.value<10 then SpinEditFontSize.Constraints.MinWidth:=16+24+2
 //                             else SpinEditFontSize.Constraints.MinWidth:=16+16+24+2;
   SpinEditFontSize.Width:=SpinEditFontSize.Constraints.MinWidth;
   for I:=0 to St.nV-1 do St.ViewPort[I].InValidate;
 end;
-
-procedure TMainForm.ShipUpdateGeometryInfo(Sender: TObject);
-Var Str: String;
+procedure TMainForm.ShipUpdateGeometryInfo(Sender: TObject); Var Str: String;
 begin with St.Surface do begin
   Str:=UserString(288);                                          // Узлы Points
   if NoControlPoints>NoSelectedControlPoints then Str:=Str+' '+IntToStr( NoControlPoints );
@@ -851,16 +835,15 @@ begin
   if FSplitSectionDialog=nil then
      FSplitSectionDialog:=TSplitSectionDialog.Create(Self);
   FSplitSectionDialog.SetDimensions;
-                    { St.Surface.Max.X+St.Surface.Min.X)/2,
-                      St.DesignHydrostatics.Data.CenterOfBuoyancy.X }
+                 { St.Surface.Max.X+St.Surface.Min.X)/2,
+                   St.DesignHydrostatics.Data.CenterOfBuoyancy.X }
   if St.ProjectSettings.MidleFrame > 0
     then FSplitSectionDialog.Mif:=St.ProjectSettings.MidleFrame
     else FSplitSectionDialog.Mif:=(St.Surface.Max.X+St.Surface.Min.X)/2;
   FSplitSectionDialog.OnMifChange:=OnMidMove;
   St.ProjectSettings.UseMidleFrame:=false;
   FSplitSectionDialog.Show;
-  St.ProjectSettings.MidleFrame:=FSplitSectionDialog.Mif;
-//FSplitSectionDialog.Free;
+  St.ProjectSettings.MidleFrame:=FSplitSectionDialog.Mif; //FSplitSectionDialog.Free;
   St.FileChanged:=True;
   St.Redraw;
   UpdateMenu;

@@ -94,7 +94,7 @@ begin Result:=false; Strings:=nil;
 //           +#32+BoolToStr(St.ProjectSettings.MainparticularsHasBeenset)
              +' 1 '+IntToStr( Ord( St.Precision ) ) );
      St.Surface.ExportFeFFile( Strings );
-     Strings.SaveToFile( St.Filename );
+     Strings.SaveToFile( St.Filename,true );
      Strings.Destroy;
   end else begin
     St.SaveProject( Destination );
@@ -157,7 +157,7 @@ begin Source:=nil; Strings:=nil;
   St.Filename:=FileName;
 //writeln( St.FileName );
   if Strings<>nil then begin   // обменный формат из начальных версий free!Ship
-    Strings.LoadFromFile( Filename );
+    Strings.LoadFromFile( Filename,true );
     Write( ExtractFilename( Filename ),' <',Strings.Count,'> ~ ' );
     LineNr:=0; //-1;            // Read general information and mainparticulars
    {inc(LineNr);} Str:=Strings[0]; L:=-1;

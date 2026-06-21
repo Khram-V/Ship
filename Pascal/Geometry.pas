@@ -9353,7 +9353,7 @@ begin                                                  // Add layer information
         +#32+BoolToStr(Layer[I].FShowInLinesplan)
         +#32+FloatToDec(Layer[I].MaterialDensity,8)
         +#32+FloatToDec(Layer[I].Thickness,8));
-   end; // first sort controlpoints for faster acces of function ( Indexof() )
+   end; // first sort controlpoints for faster acces of function ( Indexof( ) )
    FControlPoints.Sort;
    Strings.Add(IntToStr(NoControlPoints));
    for I:=0 to NoControlPoints-1 do ControlPoint[I].SaveToStream(Strings);

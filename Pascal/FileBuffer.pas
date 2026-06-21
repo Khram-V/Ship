@@ -417,12 +417,12 @@ destructor TTextBuffer.Destroy; begin Clear; inherited Destroy; end;
 procedure TTextBuffer.Reset; begin FPosition:=0; end;
 
 procedure TTextBuffer.LoadFromFile( Filename: String );
-    begin FFileName:=Filename; FLines.LoadFromFile( Filename ); FPosition:=0;
-    end;
+   begin FFileName:=Filename; FLines.LoadFromFile(Filename,true); FPosition:=0;
+   end;
 
 function TTextBuffer.SaveToFile( Filename: String ):boolean;
    begin result:=false; FFileName:=Filename;
-                        FLines.SaveToFile( Filename ); result:=true;
+                        FLines.SaveToFile( Filename,true ); result:=true;
    end;
 
 function TTextBuffer.GetPosition:integer; begin Result:=FPosition; end;
