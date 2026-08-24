@@ -10145,7 +10145,7 @@ begin                                          // Read layer information
    if Sxr then
    for I:=0 to FControlEdges.Count-1 do begin Edge:=FControlEdges[I];
      if not Edge.isRead then                   // считанные рёбра без изменений
-     if Edge.NoFaces=2 then Edge.Crease:=false;
+     if Edge.NoFaces=2 then Edge.Crease:=true; //false;
    end;
 //!!!                                           и не тут-то было !!!
    Inc( LineNr );
