@@ -34,6 +34,5 @@ except                 // Floating point operation - сбои и ошибки и
     on E: EOverflow  do Writeln( 'Overflow exception!' );
     on E: EUnderflow do Writeln( 'Underflow exception!' ); }
 end
-
 end.
 

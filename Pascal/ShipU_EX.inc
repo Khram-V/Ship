@@ -766,7 +766,7 @@ begin
    end;
    OpenDialog.Destroy;
 end;
-
+(*
 procedure SEdit.File_ExportArchimedes;
 var Frames     : TFasterList;
     Frame      : TSpline;
@@ -911,7 +911,7 @@ begin
    end;
    Frames.Destroy;
 end;
-
+*)
 // export the coordinates of all controlpoints to a textfile
 procedure SEdit.File_ExportCoordinates;
 var I          : integer;
@@ -1278,7 +1278,7 @@ begin
    end;
    Dialog.Destroy;
 end;
-
+(*
 // Save ordinates to the GHS file format
 
 procedure SEdit.File_ExportGHS;
@@ -1400,7 +1400,7 @@ begin
    Screen.Cursor:=PrevCursor;
    Strings.Destroy;
 end;
-
+*)
 // Save part of the geometry to a file
 procedure SEdit.File_ExportPart;
 var SelectDlg  : TSelectLayersDialog;
@@ -1937,9 +1937,9 @@ begin
    end;
    SaveDialog.Destroy;
 end;
-
+(*
 // imports a Carene XYZ file and creates a multichine boat with developable surfaces
-procedure SEdit.File_ImportCarene;
+procedure SEdit.File_ImportCarene; // begin ShowMessage( 'Временно исключено' ) end;
 var OpenDialog : TOpenDialog;
     Answer     : Word;
     Str        : string;
@@ -2000,7 +2000,7 @@ begin
    end;
    OpenDialog.Destroy;
 end;
-
+*)
 // Imports a file created with Carlssons's Hulls program
 
 procedure SEdit.File_ImportHull;
@@ -2261,9 +2261,8 @@ begin
 end;
 
 // Imports a PolyCad file
-
-procedure SEdit.File_ImportPolycad; begin ShowMessage( 'Временно исключено' ) end;
 (*
+procedure SEdit.File_ImportPolycad; // begin ShowMessage( 'Временно исключено' ) end;
 var OpenDialog : TOpenDialog;
     Answer     : Word;
     PrevCursor : TCursor;
@@ -2458,7 +2457,6 @@ begin
    OpenDialog.Destroy;
 end;
 *)
-
 // Load a VRML file
 
 Procedure SEdit.File_ImportVRML;

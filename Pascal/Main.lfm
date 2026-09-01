@@ -489,20 +489,6 @@ object MainForm: TMainForm
       ImageIndex = 28
       OnExecute = ImportHullFileExecute
     end
-    object ImportCarene: TAction
-      Category = 'Import'
-      Caption = 'Carene.XYZ...'
-      Hint = 'Считывания яхтенного формата.'
-      ImageIndex = 35
-      OnExecute = ImportCareneExecute
-    end
-    object ImportPolyCad: TAction
-      Category = 'Import'
-      Caption = 'PolyCad.geo '
-      Hint = 'B-Spline поверхности (ShipLines,YachtLines) из PolyCAD Маркуса Боул'
-      ImageIndex = 53
-      OnExecute = ImportPolyCadExecute
-    end
     object ExportPart: TAction
       Category = 'Export'
       Caption = 'Часть корпуса (.Part)...'
@@ -560,20 +546,6 @@ object MainForm: TMainForm
       Caption = 'Расчётные теоретические контуры'
       Hint = 'Ординаты теоретического чертежа и контрольные контуры'
       OnExecute = ExportOffsetsExecute
-    end
-    object ExportArchimedes: TAction
-      Category = 'Export'
-      Caption = 'Archimedes...'
-      Hint = 'Export stations to Arcimedes'
-      ImageIndex = 26
-      OnExecute = ExportArchimedesExecute
-    end
-    object ExportGHS: TAction
-      Category = 'Export'
-      Caption = 'GHS...'
-      Hint = 'Запись шпангоутов в GHS (Creative Systems, Inc.)'
-      ImageIndex = 54
-      OnExecute = ExportGHSExecute
     end
     object ShowControlNet: TAction
       Category = 'Visibility'
@@ -1601,12 +1573,6 @@ object MainForm: TMainForm
         object Carlssonhulfile1: TMenuItem
           Action = ImportHullFile
         end
-        object Carenefile1: TMenuItem
-          Action = ImportCarene
-        end
-        object PolyCad1: TMenuItem
-          Action = ImportPolyCad
-        end
         object N6: TMenuItem
           Caption = '-'
         end
@@ -1645,12 +1611,6 @@ object MainForm: TMainForm
         end
         object AuroraHullVsl: TMenuItem
           Action = ExportAurora
-        end
-        object ArchimedesMB1: TMenuItem
-          Action = ExportArchimedes
-        end
-        object GHS1: TMenuItem
-          Action = ExportGHS
         end
       end
       object ExitProgram1: TMenuItem

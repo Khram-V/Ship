@@ -347,12 +347,10 @@ public St: TShip;
    procedure Face_Rotate;        // Rotate selected faces around the X,Y and/or Z axis
    procedure Face_Scale;         // Scale selected faces
    procedure Face_Move;          // Move selected faces in X,Y and Z direction
-   procedure File_ExportArchimedes; // Exports stations to Archimedes or ArchimedesMB
    procedure File_ExportCoordinates; // export the coordinates of all controlpoints to a textfile
    procedure File_ExportDXF_2DPolylines; // Export all intersections to an individual DXF file as 2D polylines
    procedure File_ExportDXF_3DPolylines; // Export all lines to a 3D DXF model as polylines
    procedure File_ExportDXF_Faces; // Export all faces to a 3D DXF model
-   procedure File_ExportGHS;     // Save ordinates to the GHS file format
    procedure File_ExportPart;    // Save part of the geometry to a file
    procedure File_ExportIGES;    // Save NURBS patches to an IGES file
    procedure File_ImportObj;     // Import the model as a Wavefront Technologies.Obj file
@@ -362,11 +360,9 @@ public St: TShip;
    procedure File_ImportSTLbin( FileName: String );
    procedure File_ImportSTLtext( FileName: String );
    procedure File_ExportSTL;     // Export the surface to a STL file
-   procedure File_ImportCarene;  // imports a Carene XYZ file and creates a multichine boat with developable surfaces
    procedure File_ImportHull; overload;virtual; // Imports a file created with Carlssons's Hulls program
    procedure File_ImportHull(Filename:string;Quiet:Boolean);reintroduce;overload; // Imports a file created with Carlssons's Hulls program
    procedure File_ImportPart;    // Import a partfile and add it to the current geometry
-   procedure File_ImportPolycad; // Imports a PolyCad file
    procedure File_ImportSurface; // Imports a number of curves and fits a surface
    Procedure File_ImportVRML;    // Import a VRML 1.0 file
    function  Hydrostatics_Calculate(Draft,AngleOfHeel,Trim:Real):HydrostaticCalc;// Creates and calculates a hydrostatics calculation
