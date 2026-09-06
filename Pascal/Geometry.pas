@@ -6082,9 +6082,9 @@ begin
          if IsLeak then Result:=Sp.LeakPoint else
          Case VertexType of
             svRegular : Result:=Sp.RegularPoint;
-            svCorner  : Result:=Sp.CornerPoint;
-            svDart    : result:=Sp.DartPoint;
             svCrease  : result:=Sp.CreasePoint;
+            svDart    : result:=Sp.DartPoint;
+            svCorner  : Result:=Sp.CornerPoint;
             else Result:=clRed;
          end;
       end;
@@ -6360,7 +6360,6 @@ begin Str:='';
    Strings.Add( FloatToDec( Fcoordinate.X,5 )+#32
               + FloatToDec( Fcoordinate.Y,5 )+#32
               + FloatToDec( Fcoordinate.Z,5 )+#32+Str );
-//            + IntToStr( Ord( VertexType ) )+#32 + BoolToStr( Selected ) );
 end;
 {
    SEdge
@@ -6413,7 +6412,7 @@ begin
          if N=0 then Endpoint.VertexType:=svRegular else
           if N=1 then Endpoint.VertexType:=svDart else
            if N=2 then Endpoint.VertexType:=svCrease else
-            if N>2 then Endpoint.VertexType:=svCorner;
+             if N>2 then Endpoint.VertexType:=svCorner;
       end;
       StartPoint.Owner.Build:=false;
    end;
@@ -10219,7 +10218,7 @@ begin                                              // Identify all border edges
       end else if Edge.NoFaces<>2 then Edge.Crease:=true;
    end;
 // for I:=1 to NoControlEdges do if ControlEdge[I-1].NoFaces<>2 then ControlEdge[I-1].Crease:=True;
-   for I:=PointStartIndex to NoControlPoints do if ControlPoint[I-1].NoFaces<2 then ControlPoint[I-1].VertexType:=svCorner;
+   for I:=PointStartIndex to NoControlPoints do if ControlPoint[I-1].NoFaces<2 then ControlPoint[I-1].VertexType:=svCorner; // svRegular;
    FInitialized:=True;
 end;
 
