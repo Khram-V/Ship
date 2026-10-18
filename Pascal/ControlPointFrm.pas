@@ -94,9 +94,9 @@ begin
              +FloatToDec( Abs( Angle ),4 );
      Angle:=Angles( Angle );                           // и направление
      if Npoi>=2 then begin Len:=0.0;                   // длина всего пути
-        for I:=1 to Npoi do
-          Len+=Abs( St.SelectedControlPoint[i-1].Coordinate
-                 -  St.SelectedControlPoint[i].Coordinate );
+       for I:=1 to Npoi do
+         Len+=Abs( St.SelectedControlPoint[i-1].Coordinate
+                 - St.SelectedControlPoint[i].Coordinate );
         Str:=Str+'.  '+UserString(1493)+'='+FloatToDec( Len,4 );
      end;
   end;
